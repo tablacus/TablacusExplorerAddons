@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+	<General>
+		<Version>1.04</Version>
+		<MinVersion>2013.1.28</MinVersion>
+		<pubDate>Mon, 28 Jan 2013 00:00:00 +0900</pubDate>
+		<Options>dialogWidth: 640px; dialogHeight: 120px; resizable: yes; status: 0</Options>
+		<Creator>Gaku</Creator>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+		<License>MIT License</License>
+	</General>
+	<en>
+		<Name>Extract</Name>
+		<Description>Extract the compressed files.</Description>
+	</en>
+	<ja>
+		<Name>解凍</Name>
+		<Description>圧縮ファイルの解凍</Description>
+	</ja>
+</TablacusExplorer>

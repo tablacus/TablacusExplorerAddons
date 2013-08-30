@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+	<General>
+		<Version>1.03</Version>
+		<MinVersion>2013.2.4</MinVersion>
+		<pubDate>Mon, 4 Feb 2013 00:00:00 UTC</pubDate>
+		<Options>dialogWidth: 320px; dialogHeight: 120px; resizable: yes; status=0</Options>
+		<Creator>Gaku</Creator>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+		<License>MIT License</License>
+	</General>
+	<en>
+		<Name>Task Tray</Name>
+		<Description>Task Tray</Description>
+	</en>
+	<ja>
+		<Name>タスクトレイ</Name>
+		<Description>タスクトレイ</Description>
+	</ja>
+</TablacusExplorer>

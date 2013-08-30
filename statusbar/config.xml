@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+	<General>
+		<Version>1.02</Version>
+		<MinVersion>2012.02.05</MinVersion>
+		<Options>Location</Options>
+		<pubDate>Sun, 29 Jul 2012 00:00:00 +0900</pubDate>
+	</General>
+	<en>
+		<Name>Status Bar</Name>
+		<Creator>Gaku</Creator>
+		<Description>Status Bar</Description>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+	</en>
+	<ja>
+		<Name>ステータス バー</Name>
+		<Creator>Gaku</Creator>
+		<Description>ステータス バー</Description>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+	</ja>
+</TablacusExplorer>

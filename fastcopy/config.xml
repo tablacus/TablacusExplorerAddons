@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+	<General>
+		<Version>1.03</Version>
+    <MinVersion>2013.8.4</MinVersion>
+    <pubDate>Sun, 4 Aug 2013 00:00:00 UTC</pubDate>
+    <Options>Default</Options>
+		<Creator>Gaku</Creator>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+		<License>MIT License</License>
+	</General>
+	<en>
+		<Name>FastCopy</Name>
+		<Description>File operations in FastCopy.</Description>
+	</en>
+	<ja>
+		<Name>FastCopy</Name>
+		<Description>FastCopyでファイル操作を行います。</Description>
+	</ja>
+</TablacusExplorer>

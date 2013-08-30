@@ -1,0 +1,150 @@
+﻿if (window.Addon == 1) { (function () {
+	Addons.FastCopy =
+	{
+		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bDelete)
+		{
+			if (!(grfKeyState & MK_LBUTTON) || Items.Count == 0) {
+				return false;
+			}
+			var fastcopy = te.Data.Addons.getElementsByTagName("fastcopy");
+			if (fastcopy.length == 0) {
+				return false;
+			}
+			var item = fastcopy[0];
+			var strCmd = api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Path")));
+			if (!strCmd || !fso.FileExists(strCmd)) {
+				return false;
+			}
+			if (!bDelete && api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
+				return false;
+			}
+			if (Dest != "") {
+				try {
+					Dest = Dest.IsLink ? Dest.GetLink.Path : Dest.Path;
+				} catch (e) {
+					return false;
+				}
+			}
+			if (bDelete || (Dest != "" && fso.FolderExists(Dest))) {
+				var hDrop = Items.hDrop;
+				if (Items.Count == api.DragQueryFile(hDrop, -1)) {
+					var strFunc;
+					var bStart;
+					if (bDelete) {
+						strFunc = item.getAttribute("Delete");
+						bStart = item.getAttribute("DeleteStart");
+					}
+					else {
+						if (bOver) {
+							var DropTarget = api.DropTarget(Dest);
+							DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
+						}
+						if (pdwEffect.x & DROPEFFECT_COPY) {
+							strFunc = item.getAttribute("Copy");
+							bStart = item.getAttribute("CopyStart");
+						}
+						else if (pdwEffect.x & DROPEFFECT_MOVE) {
+							strFunc = item.getAttribute("Move");
+							bStart = item.getAttribute("MoveStart");
+						}
+					}
+					if (strFunc) {
+						setTimeout(function () {
+							var oExec = wsh.Exec([api.PathQuoteSpaces(strCmd), strFunc.replace(/%dest%/i, Dest)].join(" "));
+							var hwnd = GethwndFromPid(oExec.ProcessID);
+							api.PostMessage(hwnd, WM_DROPFILES, hDrop, 0);
+							setTimeout(function () {
+								if (bStart) {
+									api.PostMessage(hwnd, WM_KEYDOWN, VK_RETURN, 0);
+									api.PostMessage(hwnd, WM_KEYUP, VK_RETURN, 0);
+								}
+								else {
+									wsh.AppActivate(oExec.ProcessID);
+								}
+							}, 100);
+						}, 1);
+						return true;
+					}
+				}
+				api.DragFinish(hDrop);
+			}
+			return false;
+		}
+	};
+
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
+	{
+		switch (Ctrl.Type) {
+			case CTRL_SB:
+			case CTRL_EB:
+				var Items = Ctrl.Items();
+				var Dest;
+				var i = Ctrl.HitTest(pt, LVHT_ONITEM);
+				if (i >= 0) {
+					Dest = Items.Item(i);
+					if (!fso.FolderExists(Dest.Path)) {
+						if (api.DropTarget(Dest)) {
+							return E_FAIL;
+						}
+						Dest = Ctrl.FolderItem;
+					}
+				}
+				else {
+					Dest = Ctrl.FolderItem;
+				}
+				if (Addons.FastCopy.FO(Ctrl, dataObj, Dest, grfKeyState, pt, pdwEffect, true)) {
+					return S_OK
+				}
+				break;
+			case CTRL_DT:
+				if (Addons.FastCopy.FO(null, dataObj, Ctrl.FolderItem, grfKeyState, pt, pdwEffect, true)) {
+					return S_OK
+				}
+				break;
+		}
+	});
+
+	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
+	{
+		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
+			switch ((wParam & 0xfff) + 1) {
+				case CommandID_PASTE:
+					var Items = api.OleGetClipboard()
+					if (Addons.FastCopy.FO(null, Items, Ctrl.FolderItem, MK_LBUTTON, null, Items.pdwEffect, false)) {
+						return S_OK;
+					}
+					break;
+				case CommandID_DELETE:
+					var Items = Ctrl.SelectedItems();
+					if (Addons.FastCopy.FO(null, Items, "", MK_LBUTTON, null, Items.pdwEffect, false, true)) {
+						return S_OK;
+					}
+					break;
+			}
+		}
+	});
+
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
+	{
+		switch (Verb + 1) {
+			case CommandID_PASTE:
+				var Target = ContextMenu.Items();
+				if (Target.Count) {
+					var Items = api.OleGetClipboard()
+					if (Addons.FastCopy.FO(null, Items, Target.Item(0), MK_LBUTTON, null, Items.pdwEffect, false)) {
+						return S_OK;
+					}
+				}
+				break;
+			case CommandID_DELETE:
+				var Items = ContextMenu.Items();
+				if (Addons.FastCopy.FO(null, Items, "", MK_LBUTTON, null, Items.pdwEffect, false, true)) {
+					return S_OK;
+				}
+				break;
+		}
+	});
+
+	te.HookDragDrop(CTRL_FV, true);
+	te.HookDragDrop(CTRL_TV, true);
+})();}

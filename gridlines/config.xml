@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.01</Version>
+    <MinVersion>2013.4.7</MinVersion>
+    <pubDate>Sun, 7 Apr 2013 00:00:00 UTC</pubDate>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Gridlines</Name>
+    <Description>Display the gridlines when the details view.</Description>
+  </en>
+  <ja>
+    <Name>格子線</Name>
+    <Description>詳細表示の際に格子線を表示します。</Description>
+  </ja>
+</TablacusExplorer>

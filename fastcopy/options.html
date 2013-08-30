@@ -1,0 +1,65 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<META HTTP-EQUIV="MSThemeCompatible" CONTENT="Yes">
+<title>Tablcus Add-ons</title>
+<link rel="stylesheet" type="text/css" href="../../script/options.css">
+<script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="../../script/common.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="options.js">
+</script>
+</head>
+<body onload="InitOptions();">
+
+<form name="F" style="display: inline;">
+<div class="panel" style="display: block;">
+<label>Path</label>
+<input type="text" id="Path" style="width: 100%">
+<input type="button" value="..." onclick="Ref()">
+<input id="defalut_path" type="button" value="Default" onclick="SetData(this, 'Path')">
+<input type="button" value="Portable" onclick="SetProtable()">
+</div>
+<div class="panel" style="display: block;">
+<label>Copy</label>
+<input type="text" id="Copy" style="width: 100%">
+<input type="button" value="None" onclick="SetData(this, 'Copy')">
+<input type="button" value="Default" title='/cmd=diff /auto_close /to="%Dest%\"' onclick="SetData(this, 'Copy')">
+<input type="button" value="Overwrite all" title='/cmd=force_copy /auto_close /to="%Dest%\"' onclick="SetData(this, 'Copy')">
+<input type="button" value="No Overwrite" title='/cmd=noexist_only /auto_close /to="%Dest%\"' onclick="SetData(this, 'Copy')">
+<input type="button" value="Update" title='/cmd=update /auto_close /to="%Dest%\"' onclick="SetData(this, 'Copy')">
+<input type="button" value="Sync" title='/cmd=sync /auto_close /to="%Dest%\"' onclick="SetData(this, 'Copy')">
+<br>
+<input type="checkbox" id="CopyStart"><label for="CopyStart">Automatically start</label>
+</div>
+<div class="panel" style="display: block;">
+<label>Move</label>
+<input type="text" id="Move" style="width: 100%">
+<input type="button" value="None" onclick="SetData(this, 'Move')">
+<input type="button" value="Default" title='/cmd=move /auto_close /to="%Dest%\"' onclick="SetData(this, 'Move')">
+<br>
+<input type="checkbox" id="MoveStart"><label for="MoveStart">Automatically start</label>
+</div>
+<div class="panel" style="display: block;">
+<label>Delete</label>
+<input type="text" id="Delete" style="width: 100%">
+<input type="button" value="None" title="" onclick="SetData(this, 'Delete')">
+<input type="button" value="Default" title="/cmd=delete /auto_close" onclick="SetData(this, 'Delete')">
+<input type="button" value="No Confirm" title="/cmd=delete /auto_close /no_confirm_del" onclick="SetData(this, 'Delete')">
+<br>
+<input type="checkbox" id="DeleteStart"><label for="DeleteStart">Automatically start</label>
+</div>
+<!-------------------------------------------->
+<table width="97%"><tr>
+<td>
+<input type="button" id="GetFastCopy" value="Get FastCopy..." title="http://ipmsg.org/tools/fastcopy.html.en" onclick="wsh.Run(this.title)">
+</td>
+<td align="right">
+<input type="button" value="OK" style="width: 96px;" onclick="SetOptions();">
+<input type="button" value="Cancel" style="width: 96px;" onclick="window.close();">
+</td></tr></table>
+</form>
+</body>
+</html>

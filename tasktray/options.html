@@ -1,0 +1,36 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="MSThemeCompatible" content="Yes">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Tablcus Add-ons</title>
+<link rel="stylesheet" type="text/css" href="../../script/options.css" />
+<script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="../../script/common.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="../../script/options.js">
+</script>
+<script type="text/javascript">
+var Addon_Id = 'tasktray';
+</script>
+</head>
+<body onload="InitAddonOptions();">
+
+<form name="F" style="display: inline;">
+<div class="panel" style="display: block;">
+<input type="checkbox" id="MinimizeToTray">
+<label for="MinimizeToTray">Minimize to tray</label><br>
+<input type="checkbox" id="CloseToTray">
+<label for="CloseToTray">Close to tray</label><br>
+<input type="checkbox" id="AlwaysInTray">
+<label for="AlwaysInTray">Always in tray</label><br>
+<!-------------------------------------------->
+</div>
+<table width="95%"><tr><td align="right">
+<input type="button" value="OK" style="width: 96px;" onclick="SetAddonOptions();">
+<input type="button" value="Cancel" style="width: 96px;" onclick="window.close();">
+</td></tr></table>
+</form>
+</body>
+</html>

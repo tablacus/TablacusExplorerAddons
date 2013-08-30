@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+	<General>
+		<Version>1.00</Version>
+		<MinVersion>2012.02.26</MinVersion>
+		<pubDate>Sun, 26 Feb 2012 00:00:00 +0900</pubDate>
+		<Options>Location</Options>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+		<License>MIT License</License>
+	</General>
+	<en>
+		<Name>Folder Button</Name>
+		<Creator>Gaku</Creator>
+		<Description>Folder Button</Description>
+	</en>
+	<ja>
+		<Name>フォルダ ボタン</Name>
+		<Creator>Gaku</Creator>
+		<Description>フォルダ ボタン</Description>
+	</ja>
+</TablacusExplorer>

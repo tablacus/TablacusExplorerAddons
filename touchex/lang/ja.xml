@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<text s="Change the Time Stamp...">タイムスタンプの変更...</text>
+	<text s="Creation Time">作成日時</text>
+	<text s="Last Access Time">最終アクセス日時</text>
+	<text s="Last Write Time">最終更新日時</text>
+</resources>

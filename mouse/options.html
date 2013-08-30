@@ -1,0 +1,105 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="MSThemeCompatible" content="Yes">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Tablcus Add-ons</title>
+<link rel="stylesheet" type="text/css" href="../../script/options.css" />
+<script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="../../script/common.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="../../script/options.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="script.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="options.js">
+</script>
+</head>
+<body onload="InitMouseOptions();">
+
+<form name="F" style="display: inline;">
+
+<div class="panel" id="panel0" style="display: block;">
+<table width="100%"><tr><td width="150px" valign="top">
+<select name="Mouse" style="width: 150px" onchange="SwitchX('Mouse', this)">
+</select><br>
+<select name="MouseAll" size="18" style="width: 150px; height: 360px" ondblclick="EditX('Mouse')">
+</select>
+<select name="MouseList" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')">
+</select>
+<select name="MouseTree" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')">
+</select>
+<select name="MouseTabs" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')">
+</select>
+<select name="MouseBrowser" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')">
+</select>
+</td><td valign="top">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr>
+<td width="100%" colspan=3>
+<table width="100%" cellspacing="0" cellpadding="0"><tr><td>
+<label>Mouse</label>
+</td><td>
+<input type="button" value="Input" onclick="InputMouse();ChangeX('Mouse');">
+</td><td align="right">
+<script type="text/javascript">
+document.write('<input type="button" value="' + MainWindow.g_KeyState[0][0] + '" title="S" onclick="AddMouse(this)">');
+document.write('<input type="button" value="' + MainWindow.g_KeyState[1][0] + '" title="C" onclick="AddMouse(this)">');
+document.write('<input type="button" value="' + MainWindow.g_KeyState[2][0] + '" title="A" onclick="AddMouse(this)">');
+</script>
+</td></tr></table>
+</td>
+<td align="center"><input type="button" value="LB" title="1" onclick="AddMouse(this)"></td>
+<td align="center"><input type="button" value="WB" title="3" onclick="AddMouse(this)"></td>
+<td align="center"><input type="button" value="RB" title="2" onclick="AddMouse(this)"></td>
+</td></tr>
+<tr><td width="100%">
+<input type="text" name="MouseMouse" style="width: 100%" onchange="ChangeX('Mouse')"></td>
+<td align="center"><input type="button" value="X1" title="4" onclick="AddMouse(this)"></td>
+<td align="center"><input type="button" value="WU" title="8" onclick="AddMouse(this)"></td>
+<td align="right" rowspan=2><input type="button" value=" L " title="L" onclick="AddMouse(this)"></td>
+<td align="center" rowspan=2><input type="button" value=" U " title="U" onclick="AddMouse(this)"><br>
+<input type="button" value=" D " title="D" onclick="AddMouse(this)" width="100%"></td>
+<td align="left" rowspan=2><input type="button" value=" R " title="R" onclick="AddMouse(this)"></td>
+</td></tr><tr>
+<td><label>Type</label>
+</td>
+<td align="center"><input type="button" value="X2" title="5" onclick="AddMouse(this)"></td>
+<td align="center"><input type="button" value="WD" title="9" onclick="AddMouse(this)"></td>
+</tr></table>
+<select name="MouseType" style="width: 100%" onchange="ChangeX('Mouse')">
+<option value="Open">Open
+<option value="Exec">Exec
+<option value="JScript">JScript
+<option value="VBScript">VBScript
+</select>
+<table class="layout"><tr><td>
+<label>Options</label></td>
+<td align="right"><input type="button" value="Reference..." onclick="RefX('MousePath', true, this, 'ChangeX(\'mouse\');')"  style="width: 128px">
+</td></tr></table>
+<textarea name="MousePath" style="width: 100%; height: 250px" onchange="ChangeX('Mouse')">
+</textarea>
+</td></tr></table>
+<table width="100%"><tr><td>
+<input type="button" value="Remove" onclick="RemoveX('Mouse')">
+<input type="button" value="Up" onclick="MoveX('Mouse', -1)">
+<input type="button" value="Down" onclick="MoveX('Mouse', 1)">
+<input type="button" value="Edit" onclick="EditX('Mouse')">
+</td><td align="right">
+<input type="button" value="Add" onclick="AddX('Mouse')">
+<input type="button" value="Replace" onclick="ReplaceX('Mouse')">
+</td></tr></table>
+</div>
+<!--panel_end-->
+<!-------------------------------------------->
+</div>
+<table width="97%"><tr>
+<td><input type="button" value="Location" onclick="ShowLocation();"></td>
+<td align="right">
+<input type="button" value="OK" style="width: 96px;" onclick="SetMouseOptions(); return true;">
+<input type="button" value="Cancel" style="width: 96px;" onclick="window.close(); return true;">
+</td></tr></table>
+</form>
+</body>
+</html>

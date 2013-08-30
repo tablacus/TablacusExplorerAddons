@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<META HTTP-EQUIV="MSThemeCompatible" CONTENT="Yes">
+<title>Retouch</title>
+<style type="text/css">
+.color {
+	border: 1px solid #7F9DB9;
+	width: 24px;
+}
+.block {
+	padding: 8px;
+	border: 1px solid gray;
+	margin-bottom: 8px;
+	display: block;
+}
+.layout {
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
+	border-collapse: collapse;
+}
+</style>
+<script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="../../script/common.js">
+</script>
+<script type="text/javascript">
+Addon = 2;
+</script>
+<script type="text/javascript" charset="utf-8" src="script.js">
+</script>
+</head>
+<body onload="Addons.Retouch.Load()">
+<form name="F">
+<table id="table1">
+<tr><td nowrap>
+<input type="button" value="Save" onclick="Addons.Retouch.Save(this)">
+<label>Width</label><input type="text" name="width" size="4" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)">px 
+<label>Height</label><input type="text" name="height" size="4" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)">px 
+<input type="text" name="percent" size="2" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)">% 
+<input type="hidden" name="rotation" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)">
+<input type="button" name="left" value="Rotate left" onclick="Addons.Retouch.Rotate(this)">
+<input type="button" name="right" value="Rotate right" onclick="Addons.Retouch.Rotate(this)">
+<label>Quality</label><input type="text" name="quality" size="2" value="75">%
+</td></tr>
+</table>
+</form>
+<img id="img1">
+</body>
+</html>

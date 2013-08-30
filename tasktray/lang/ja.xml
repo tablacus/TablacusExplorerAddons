@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<text s="&amp;Restore">元のサイズに戻す(&amp;R)</text>
+	<text s="Minimize to tray">最小化時にタスクトレイに格納</text>
+	<text s="Close to tray">閉じる代わりにタスクトレイに格納</text>
+	<text s="Always in tray">常にタスクトレイに表示</text>
+</resources>

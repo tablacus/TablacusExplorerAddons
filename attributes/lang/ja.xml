@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<text s="Attributes...">属性の変更...</text>
+	<text s="Read Only">読み取り専用</text>
+	<text s="Hidden">隠しファイル</text>
+	<text s="Archive">アーカイブ</text>
+</resources>
