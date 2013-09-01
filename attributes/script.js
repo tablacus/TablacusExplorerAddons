@@ -19,10 +19,7 @@ var Addon_Id = "attributes";
 		{
 			Exec: function (Ctrl)
 			{
-				if (!Ctrl) {
-					Ctrl = te.Ctrl(CTRL_FV);
-				}
-				var Selected = Ctrl.SelectedItems();
+				var Selected = GetSelectedArray(Ctrl, pt, true).shift();
 				if (Selected && Selected.Count) {
 					var h = 100 + 26 * Selected.Count;
 					if (h > 480) {
@@ -41,26 +38,22 @@ var Addon_Id = "attributes";
 			//Menu
 			if (item.getAttribute("MenuExec")) {
 				Addons.Attributes.nPos = api.LowPart(item.getAttribute("MenuPos"));
-				AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+				AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
 				{
-					var Selected = Ctrl.SelectedItems();
-					if (Selected && Selected.Count) {
-						var item = Selected.Item(0);
-						if (item.IsFileSystem) {
-							api.InsertMenu(hMenu, Addons.Attributes.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.Attributes.strName);
-							ExtraMenuCommand[nPos] = Addons.Attributes.Exec;
-						}
+					if (item && item.IsFileSystem) {
+						api.InsertMenu(hMenu, Addons.Attributes.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.Attributes.strName);
+						ExtraMenuCommand[nPos] = Addons.Attributes.Exec;
 					}
 					return nPos;
 				});
 			}
 			//Key
 			if (item.getAttribute("KeyExec")) {
-				SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.Attributes.Exec();", "JScript");
+				SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Attributes.Exec, "Func");
 			}
 			//Mouse
 			if (item.getAttribute("MouseExec")) {
-				SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.Attributes.Exec();", "JScript");
+				SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Attributes.Exec, "Func");
 			}
 
 			AddTypeEx("Add-ons", "Attributes...", Addons.Attributes.Exec);

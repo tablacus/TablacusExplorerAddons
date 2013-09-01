@@ -19,23 +19,15 @@ var Addon_Id = "touchex";
 		{
 			Exec: function (Ctrl, pt)
 			{
-				var FV = GetFolderView(Ctrl, pt);
-				if (FV) {
+				var Selected = GetSelectedArray(Ctrl, pt, true).shift();
+				if (Selected && Selected.Count) {
 					try {
-						var ModifyDate;
-						var Selected = FV.SelectedItems();
-						if (!Selected.Count && FV.FocusedItem) {
-							Selected = te.FolderItems();
-							Selected.AddItem(FV.FocusedItem);
-						}
-						if (Selected.Count) {
-							Addons.TouchEx.Selected = Selected;
-							var s = showModalDialog("../addons/touchex/dialog.html", window, "dialogWidth: 320px; dialogHeight: 280px; resizable: yes; status: 0");
-							if (s) {
-								s = s.split("#:-D`");
-								for (var i = Selected.Count - 1; i >= 0; i--) {
-									api.SetFileTime(Selected.Item(i), s[0], s[1], s[2]);
-								}
+						Addons.TouchEx.Selected = Selected;
+						var s = showModalDialog("../addons/touchex/dialog.html", window, "dialogWidth: 320px; dialogHeight: 280px; resizable: yes; status: 0");
+						if (s) {
+							s = s.split("#:-D`");
+							for (var i = Selected.Count; i-- > 0;) {
+								api.SetFileTime(Selected.Item(i), s[0], s[1], s[2]);
 							}
 						}
 					}
@@ -54,38 +46,44 @@ var Addon_Id = "touchex";
 			//Menu
 			if (item.getAttribute("MenuExec")) {
 				Addons.TouchEx.nPos = api.LowPart(item.getAttribute("MenuPos"));
-				AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+				AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
 				{
-					var Selected = Ctrl.SelectedItems();
-					if (Selected && Selected.Count) {
-						var item = Selected.Item(0);
-						if (item.IsFileSystem) {
-							api.InsertMenu(hMenu, Addons.TouchEx.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.TouchEx.strName);
-							ExtraMenuCommand[nPos] = Addons.TouchEx.Exec;
-						}
+					if (item && item.IsFileSystem) {
+						api.InsertMenu(hMenu, Addons.TouchEx.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.TouchEx.strName);
+						ExtraMenuCommand[nPos] = Addons.TouchEx.Exec;
 					}
 					return nPos;
 				});
 			}
 			//Key
 			if (item.getAttribute("KeyExec")) {
-				SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.TouchEx.Exec();", "JScript");
+				SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.TouchEx.Exec, "Func");
 			}
 			//Mouse
 			if (item.getAttribute("MouseExec")) {
-				SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.TouchEx.Exec();", "JScript");
+				SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TouchEx.Exec, "Func");
 			}
 
 			AddTypeEx("Add-ons", "Change the Time Stamp...", Addons.TouchEx.Exec);
 		}
 	}
 	if (window.Addon == 2) {
-		SetTimeStamp = function ()
+		window.SetTimeStamp = function ()
 		{
 			returnValue = [document.F.Creation.value, document.F.LastAccess.value, document.F.LastWrite.value].join("#:-D`");
 			window.close();
 			return true;
-		}
+		};
+
+		document.onkeydown = function ()
+		{
+			if (event.keyCode == VK_RETURN) {
+				SetTimeStamp();
+			}
+			return true;
+		};
+
+
 		AddEventEx(window, "load", function ()
 		{
 			ApplyLang(document);
@@ -104,7 +102,7 @@ var Addon_Id = "touchex";
 				document.getElementById("lLastAccess").innerHTML = s;
 				document.F.LastAccess.value = s;
 
-				var s = vbFormatDateTime(FindData.ftLastWriteTime);
+				s = vbFormatDateTime(FindData.ftLastWriteTime);
 				document.getElementById("lLastWrite").innerHTML = s;
 				document.F.LastWrite.value = s;
 			}
