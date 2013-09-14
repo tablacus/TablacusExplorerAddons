@@ -54,11 +54,11 @@ if (window.Addon == 1) { (function () {
 
 		Length: function (o)
 		{
-			if (o.length && api.LowPart(document.documentMode) >= 10) {
+			if (o.length && osInfo.dwMajorVersion == 6 && osInfo.dwMinorVersion == 1) {
 				var ie10 = document.getElementById("Size");
-				ie10.style.fontSize = "125%";
 				var s = o.options[0].text.replace(/\s*$/g, "");
 				ie10.innerText = s;
+				ie10.style.fontSize = "125%";
 				var w = o.offsetWidth - ie10.offsetWidth;
 				if (w > 0) {
 					ie10.innerText = new Array(10).join("\xa0");
@@ -212,7 +212,7 @@ if (window.Addon == 1) { (function () {
 	s.push(' onclick="return Addons.AddressBar.Click(this);"');
 	s.push(' oncontextmenu="return Addons.AddressBar.Popup(this);"');
 	s.push(' onresize="Addons.AddressBar.Resize();"');
-	s.push(' hidefocus="true" style="width: 100%;"></select>');
+	s.push(' hidefocus="true" style="width: 100%;"><option>\xa0</option></select>');
 
 	s.push('<img id="addr_img" icon="shell32.dll,3,16"');
 	s.push(' onmousedown="Addons.AddressBar.MouseDown(this);"');
