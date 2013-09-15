@@ -1,7 +1,7 @@
 var Addon_Id = "treeview";
 var Default = "ToolBar2Left";
 
-if (window.Addon == 1) { (function () {
+if (window.Addon == 1) {
 	Addons.TreeView =
 	{
 		Exec: function (Ctrl, pt)
@@ -62,9 +62,10 @@ if (window.Addon == 1) { (function () {
 			}
 		}
 	});
-
-	var s = (IconSize == 16) ? 'src="../image/toolbar/m_1_43.png" bitmap="ieframe.dll,216,16,43"' : 'src="../image/toolbar/m_1_43.png" bitmap="ieframe.dll,214,24,43"';
-	s = '<span id="TreeViewButton" class="button" onclick="Addons.TreeView.Exec()" oncontextmenu="Addons.TreeView.Popup(); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img alt="Tree" ' + s + '></span><span style="width: 1px"> </span>';
+	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
+	var s = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,43" : "bitmap:ieframe.dll,214,24,43");
+	s = 'src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px"';
+	s = '<span id="TreeViewButton" class="button" onclick="Addons.TreeView.Exec()" oncontextmenu="Addons.TreeView.Popup(); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Tree" ' + s + '></span>';
 	SetAddon(Addon_Id, Default, s);
 
 	SetGestureExec("Tree", "1", function ()
@@ -106,4 +107,4 @@ if (window.Addon == 1) { (function () {
 
 	AddTypeEx("Add-ons", "Tree", Addons.TreeView.Exec);
 
-})();}
+}
