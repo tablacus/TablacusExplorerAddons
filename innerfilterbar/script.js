@@ -19,7 +19,7 @@
 			var FV =  GetInnerFV(Id);
 			if (FV.Type == CTRL_EB) {
 				var docRange = document.selection.createRange();
-				var range = document.F.filter.createTextRange();
+				var range = o.createTextRange();
 				range.setEndPoint('EndToEnd', docRange);
 				Addons.InnerFilterBar.iCaret[Id] = range.text.length;
 			}
@@ -70,5 +70,23 @@
 	{
 		var s = '<input type="text" name="filter_$" onkeydown="Addons.InnerFilterBar.KeyDown(this, $)" onfocus="Addons.InnerFilterBar.Focus(this, $)" style="width: 160px; vertical-align: middle"><span onclick="Addons.InnerFilterBar.Clear(true, $)" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" style="vertical-align: middle"><input type="image" src="../addons/filterbar/filter.png" id="ButtonFilter_$" hidefocus="true" style="vertical-align: middle"><input type="image" id="ButtonFilterClear_$" bitmap="ieframe.dll,206,16,2" style="display: none" hidefocus="true" style="vertical-align: middle"></span>';
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.replace(/\$/g, Ctrl.Id));
+	});
+
+	AddEvent("ChangeView", function (Ctrl)
+	{
+		var Id = Ctrl.Parent.Id;
+		var o = document.F.elements["filter_" + Id];
+		if (o) {
+			clearTimeout(Addons.InnerFilterBar.tid[Id]);
+			var s = Ctrl.FilterView;
+			if (s.match(/^\*(.*)\*$/)) {
+				s = RegExp.$1;
+			}
+			else if (api.strcmpi(s, "*") == 0) {
+				s = "";
+			}
+			o.value = s;
+			Addons.InnerFilterBar.ShowButton(Id, o);
+		}
 	});
 }
