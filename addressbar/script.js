@@ -1,7 +1,7 @@
 var Addon_Id = "addressbar";
 var Default = "ToolBar2Center";
 
-if (window.Addon == 1) { (function () {
+if (window.Addon == 1) {
 	Addons.AddressBar =
 	{
 		tid: null,
@@ -28,7 +28,10 @@ if (window.Addon == 1) { (function () {
 			var ie6 = document.getElementById("forie6");
 			var img = document.getElementById("addr_img");
 			var ie10 = document.getElementById("Size");
-
+			if (!addr.style.border) {
+				cbbx.style.height = addr.offsetHeight + "px";
+				addr.style.border = "0px";
+			}
 			var p = GetPos(cbbx, false);
 			var w = cbbx.offsetWidth - 41;
 			w = w > 0 ? w : 0;
@@ -44,9 +47,6 @@ if (window.Addon == 1) { (function () {
 			img.style.top = p.y + (cbbx.offsetHeight - 16) / 2 + "px";
 			addr.style.left = p.x + 21 + "px";
 			addr.style.top = p.y + 2 + "px";
-			if (h >= 2) {
-				h -= 2;
-			}
 			addr.style.height = h + "px";
 			addr.style.width = w + "px";
 			this.Length(cbbx);
@@ -70,8 +70,11 @@ if (window.Addon == 1) { (function () {
 
 		Select: function (o)
 		{
-			Navigate(o[o.selectedIndex].value);
-			o.selectedIndex = -1;
+			var s = o[o.selectedIndex].value;
+			if (s != "-") {
+				Navigate(s);
+				o.selectedIndex = -1;
+			}
 		},
 
 		KeyDown: function (o)
@@ -220,7 +223,7 @@ if (window.Addon == 1) { (function () {
 	s.push(' onclick="return Addons.AddressBar.Open(document.getElementById(\'combobox\'));"');
 	s.push(' oncontextmenu="return Addons.AddressBar.Popup(this);"');
 	s.push(' onmouseout="Addons.AddressBar.Drag(this);"');
-	s.push(' style="position: absolute;left 0; width: 0px; width: 16px; height: 16px; z-index: 3; border: 0px">');
+	s.push(' style="position: absolute;left 0; width: 0px; width: 16px; height: 16px; z-index: 3; border: 0px" />');
 
 	if (document.documentMode) {
 		s.push('<div id="forie6" scrolling="no" frameborder="0" style="position: absolute; left 0px; width: 0px; height: 1px; z-index: 2; display: inline; background-color: window"></div>');
@@ -229,7 +232,7 @@ if (window.Addon == 1) { (function () {
 		s.push('<iframe id="forie6" scrolling="no" frameborder="0" style="position: absolute; left 0px; width: 0px; height: 1px; z-index: 2; display: inline"></iframe>');
 	}
 	s.push('<input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="this.select()"');
-	s.push(' style="position: absolute;left 0; width: 0px; height: 1px; z-index: 3; border: 0px">');
+	s.push(' style="position: absolute; z-index: 3;" />');
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
 
 	if (o.style.verticalAlign.length == 0) {
@@ -240,6 +243,11 @@ if (window.Addon == 1) { (function () {
 	AddEvent("DeviceChanged", function ()
 	{
 		document.F.combobox.length = 0;
+		if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion >= 602) {
+			var o = document.F.combobox.options[++document.F.combobox.length - 1];
+			o.text = GetText("Select");
+			o.value = "-";
+		}
 		Addons.AddressBar.Add(0, ssfDESKTOP);
 		Addons.AddressBar.Add(1, ssfPERSONAL);
 		Addons.AddressBar.Add(1, ssfDRIVES);
@@ -279,4 +287,4 @@ if (window.Addon == 1) { (function () {
 	{
 		return document.F.addressbar.value;
 	}
-})();}
+}

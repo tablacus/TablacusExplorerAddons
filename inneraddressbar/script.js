@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) { (function () {
+﻿if (window.Addon == 1) {
 	Addons.InnerAddressBar =
 	{
 		tid: [],
@@ -34,7 +34,10 @@
 					var addr = document.getElementById("addressbar_" + Id);
 					var ie6 = document.getElementById("forie6_" + Id);
 					var img = document.getElementById("addr_img_" + Id);
-
+					if (!addr.style.border) {
+						cbbx.style.height = addr.offsetHeight + "px";
+						addr.style.border = "0px";
+					}
 					var p = GetPos(cbbx, false);
 					var panel = document.getElementById("Panel_" + Id);
 					p.x -= panel.style.left.replace(/\D/g, "");
@@ -52,10 +55,9 @@
 					img.style.position = "absolute";
 					img.style.left = p.x + 4 + "px";
 					img.style.top = p.y + (cbbx.offsetHeight - 16) / 2 + "px";
-					addr.style.position = "absolute";
 					addr.style.left = p.x + 21 + "px";
 					addr.style.top = p.y + 2 + "px";
-					addr.style.height = Math.abs(h - 2) + "px";
+					addr.style.height = h + "px";
 					addr.style.width = w + "px";
 				}
 			} catch (e) {}
@@ -79,11 +81,14 @@
 
 		Select: function (o, Id)
 		{
-			var FV = GetInnerFV(Id);
-			if (FV) {
-				FV.Navigate(o[o.selectedIndex].value);
+			var s = o[o.selectedIndex].value;
+			if (s != "-") {
+				var FV = GetInnerFV(Id);
+				if (FV) {
+					FV.Navigate(s);
+				}
+				o.selectedIndex = -1;
 			}
-			o.selectedIndex = -1;
 		},
 
 		KeyDown: function (o, Id)
@@ -258,7 +263,7 @@
 		s.push(' onclick="return Addons.InnerAddressBar.Open(document.getElementById(\'combobox_$\'), $);"');
 		s.push(' oncontextmenu="return Addons.InnerAddressBar.Popup(this, $);"');
 		s.push(' onmouseout="Addons.InnerAddressBar.Drag(this);"');
-		s.push(' style="width: 16px; height: 16px; z-index: 3; border: 0px">');
+		s.push(' style="width: 16px; height: 16px; z-index: 3; border: 0px" />');
 		if (document.documentMode) {
 			s.push('<div id="forie6_$" scrolling="no" frameborder="0" style="width: 0px; height: 1px; z-index: 2; display: inline; background-color: window"></div>');
 		}
@@ -266,7 +271,7 @@
 			s.push('<iframe id="forie6_$" scrolling="no" frameborder="0" style="width: 0px; height: 1px; z-index: 2; display: inline"></iframe>');
 		}
 		s.push('<input id="addressbar_$" type="text" onkeydown="return Addons.InnerAddressBar.KeyDown(this, $)" onfocus="Addons.InnerAddressBar.Focus(this, $)"');
-		s.push(' style="z-index: 3; border: 0px">');
+		s.push(' style="position: absolute; z-index: 3;" />');
 		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 		var o = document.getElementById("Inner1Center_" + Ctrl.Id);
 		if (o.style.verticalAlign.length == 0) {
@@ -282,11 +287,16 @@
 	AddEvent("DeviceChanged", function ()
 	{
 		var cTC = te.Ctrls(CTRL_TC);
-		for (var nTC = cTC.Count - 1; nTC >= 0; nTC--) {
+		for (var nTC = cTC.Count; nTC--;) {
 			var TC = cTC.Item(nTC);
 			var cbbx = document.getElementById("combobox_" + TC.Id);
 			if (cbbx) {
 				cbbx.length = 0;
+				if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion >= 602) {
+					var o = cbbx.options[++cbbx.length - 1];
+					o.text = GetText("Select");
+					o.value = "-"
+				}
 			}
 			else if (TC.Visible) {
 				setTimeout(DeviceChanged, 1000);
@@ -324,5 +334,4 @@
 			}
 		}
 	});
-
-})();}
+}
