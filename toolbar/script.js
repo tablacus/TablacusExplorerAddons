@@ -1,7 +1,7 @@
 var Addon_Id = "toolbar";
 var Default = "ToolBar2Left";
 
-if (window.Addon == 1) { (function () {
+if (window.Addon == 1) {
 	Addons.ToolBar =
 	{
 		Open: function (i)
@@ -19,7 +19,10 @@ if (window.Addon == 1) { (function () {
 				var hMenu = api.CreatePopupMenu();
 				var ContextMenu = null;
 				if (i < items.length) {
-					ContextMenu = api.ContextMenu(this.GetPath(items, i));
+					var path = this.GetPath(items, i);
+					if (path != "") {
+						ContextMenu = api.ContextMenu(path);
+					}
 				}
 				if (ContextMenu) {
 					ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_NORMAL);
@@ -39,19 +42,19 @@ if (window.Addon == 1) { (function () {
 					}
 				}
 				if (nVerb == 1) {
-					this.ShowOptions();
+					this.ShowOptions(i + 1);
 				}
 				api.DestroyMenu(hMenu);
 			}
 		},
 
-		ShowOptions: function ()
+		ShowOptions: function (nEdit)
 		{
 			AddonOptions("toolbar", function ()
 			{
 				Addons.ToolBar.Arrange();
 				ApplyLang(document);
-			});
+			}, {nEdit: nEdit});
 		},
 
 		FromPt: function (n, pt)
@@ -67,8 +70,11 @@ if (window.Addon == 1) { (function () {
 		GetPath: function (items, i)
 		{
 			if (i < items.length) {
-				var line = items[i].text.split("\n");
-				return api.PathUnquoteSpaces(ExtractMacro(null, line[0]));
+				var s = items[i].getAttribute("Type");
+				if (s.match(/^Open$|^Open in New Tab$|Open in Background/i)) {
+					var line = items[i].text.split("\n");
+					return api.PathUnquoteSpaces(ExtractMacro(null, line[0]));
+				}
 			}
 			return '';
 		},
@@ -123,7 +129,7 @@ if (window.Addon == 1) { (function () {
 					MouseOver(document.getElementById("_toolbar" + i));
 					return S_OK;
 				}
-				hr = Exec(external, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect);
+				hr = Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect);
 				if (hr == S_OK && pdwEffect.x) {
 					MouseOver(document.getElementById("_toolbar" + i));
 				}
@@ -169,7 +175,7 @@ if (window.Addon == 1) { (function () {
 					}
 					return S_OK;
 				}
-				return Exec(external, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
+				return Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
 			}
 		}
 	});
@@ -179,4 +185,4 @@ if (window.Addon == 1) { (function () {
 		MouseOut();
 		return S_OK;
 	});
-})();}
+}

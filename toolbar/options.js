@@ -6,7 +6,10 @@ function InitToolOptions()
 {
 	ApplyLang(document);
 	document.title = GetText(AddonName);
-	LoadX("List");
+	LoadX("List", dialogArguments.Data.nEdit ? function () {
+		document.F.List.selectedIndex = dialogArguments.Data.nEdit - 1;
+		EditTB();
+	} : null);
 }
 
 function SetToolOptions()
