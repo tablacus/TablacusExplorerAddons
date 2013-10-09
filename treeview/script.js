@@ -8,8 +8,8 @@ if (window.Addon == 1) {
 		{
 			TV = te.Ctrl(CTRL_TV);
 			if (TV) {
-				TV.Align = TV.Align ^ 2;
-				if (TV.Width == 0 && TV.Align & 2) {
+				TV.Visible = !TV.Visible;
+				if (TV.Width == 0 && TV.Visible) {
 					TV.Width = 200;
 				}
 			}
@@ -17,36 +17,13 @@ if (window.Addon == 1) {
 
 		Popup: function ()
 		{
-			var o = document.getElementById("TreeViewButton");
 			var TV = te.Ctrl(CTRL_TV);
 			if (TV) {
-				var hMenu = api.CreatePopupMenu();
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("Width"));
-				if (te.Tab) {
-					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 3, GetText("Auto"));
-					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 7, GetText("Left"));
+				var n = InputDialog(GetText("Width"), TV.Width);
+				if (n) {
+					TV.Width = n;
+					TV.Align = true;
 				}
-				var pt = api.Memory("POINT");
-				api.GetCursorPos(pt);
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
-				switch (nVerb) {
-					case 1:	//Width
-						var n = InputDialog(GetText("Width"), TV.Width);
-						if (n) {
-							TV.Width = n;
-							TV.Align = TV.Align | 2;
-						}
-						break;
-					case 3:	//Auto
-					case 7:	//Left
-						var cTV = te.Ctrls(CTRL_TV);
-						for (i = 0; i < cTV.Count; i++) {
-							TV = cTV.Item(i);
-							TV.Align = (TV.Align & 2) | (nVerb & ~2);
-						}
-						break;
-				}
-				api.DestroyMenu(hMenu);
 			}
 		}
 	};
