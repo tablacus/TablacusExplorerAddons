@@ -68,7 +68,7 @@
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var s = '<input type="text" name="filter_$" onkeydown="Addons.InnerFilterBar.KeyDown(this, $)" onfocus="Addons.InnerFilterBar.Focus(this, $)" style="width: 160px; vertical-align: middle"><span onclick="Addons.InnerFilterBar.Clear(true, $)" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" style="vertical-align: middle"><input type="image" src="../addons/filterbar/filter.png" id="ButtonFilter_$" hidefocus="true" style="vertical-align: middle"><input type="image" id="ButtonFilterClear_$" bitmap="ieframe.dll,206,16,2" style="display: none" hidefocus="true" style="vertical-align: middle"></span>';
+		var s = '<input type="text" name="filter_$" onkeydown="Addons.InnerFilterBar.KeyDown(this, $)" onfocus="Addons.InnerFilterBar.Focus(this, $)" style="width: 160px; vertical-align: middle"><span onclick="Addons.InnerFilterBar.Clear(true, $)" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" style="vertical-align: middle"><input type="image" src="../addons/innerfilterbar/filter.png" id="ButtonFilter_$" hidefocus="true" style="vertical-align: middle"><input type="image" id="ButtonFilterClear_$" bitmap="ieframe.dll,206,16,2" style="display: none" hidefocus="true" style="vertical-align: middle"></span>';
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.replace(/\$/g, Ctrl.Id));
 	});
 

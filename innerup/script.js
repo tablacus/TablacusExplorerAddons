@@ -1,7 +1,7 @@
 ﻿if (window.Addon == 1) {
-	g_innerup =
+	Addons.InnerUp =
 	{
-		Click: function (Id)
+		Exec: function (Id)
 		{
 			var FV = GetInnerFV(Id);
 			if (FV) {
@@ -10,10 +10,9 @@
 			return false;
 		},
 
-		Popup: function (Id)
+		Popup: function (o, id)
 		{
-			var o = document.getElementById("UpButton_" + Id);
-			var FV = GetInnerFV(Id);
+			var FV = GetInnerFV(id);
 			if (FV) {
 				FolderMenu.Clear();
 				var hMenu = api.CreatePopupMenu();
@@ -51,7 +50,10 @@
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var s = '<span class="button" id="UpButton_$" onclick="g_innerup.Click($)" oncontextmenu="g_innerup.Popup($); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img alt="Up" src="../image/toolbar/s_1_28.png" bitmap="ieframe.dll,216,16,28"></span><span style="width: 0px"> </span>';
+		var h = GetAddonOption("innerup", "IconSize") || 16;
+		var s = GetAddonOption("innerup", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,28" : "bitmap:ieframe.dll,214,24,28");
+		s = 'src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px"';
+		s = '<span class="button" onclick="return Addons.InnerUp.Exec($)" oncontextmenu="Addons.InnerUp.Popup(this, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Up" ' + s + '></span>';
 		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.replace(/\$/g, Ctrl.Id));
 	});
 }
