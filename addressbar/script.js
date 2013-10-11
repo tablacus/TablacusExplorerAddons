@@ -204,8 +204,8 @@ if (window.Addon == 1) {
 
 		Resize: function ()
 		{
-			if (!this.tid) {
-				this.tid = setTimeout("Addons.AddressBar.Arrange()", 100);
+			if (!Addons.AddressBar.tid) {
+				Addons.AddressBar.tid = setTimeout("Addons.AddressBar.Arrange()", 100);
 			}
 		}
 	};
@@ -214,7 +214,7 @@ if (window.Addon == 1) {
 	s.push('<select id="combobox" onchange="Addons.AddressBar.Select(this);"')
 	s.push(' onclick="return Addons.AddressBar.Click(this);"');
 	s.push(' oncontextmenu="return Addons.AddressBar.Popup(this);"');
-	s.push(' onresize="Addons.AddressBar.Resize();"');
+	s.push(' onresize="Addons.AddressBar.Resize()"');
 	s.push(' hidefocus="true" style="width: 100%;"><option>\xa0</option></select>');
 
 	s.push('<img id="addr_img" icon="shell32.dll,3,16"');
@@ -234,11 +234,13 @@ if (window.Addon == 1) {
 	s.push('<input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="this.select()"');
 	s.push(' style="position: absolute; z-index: 3;" />');
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
+	var cbbx = document.getElementById("combobox");
 
 	if (o.style.verticalAlign.length == 0) {
 		o.style.verticalAlign = "middle";
 	}
-	Addons.AddressBar.tid = setTimeout("Addons.AddressBar.Arrange()", 100);
+	Resize();
+	AddEvent("Resize", Addons.AddressBar.Resize);
 
 	AddEvent("DeviceChanged", function ()
 	{

@@ -81,13 +81,13 @@ if (window.Addon == 1) {
 
 		Arrange: function ()
 		{
-			var s = "";
+			var s = [];
 			var items = te.Data.xmlToolBar.getElementsByTagName("Item");
 			var image = te.GdiplusBitmap;
 			for (var i = 0; i < items.length; i++) {
 				var img = items[i].getAttribute("Name");
 				if (img == "/" || img == "//") {
-					s += "<br>";
+					s.push("<br />");
 				}
 				else {
 					var icon = items[i].getAttribute("Icon");
@@ -97,13 +97,14 @@ if (window.Addon == 1) {
 						h -= 0;
 						img = '<img src="' + icon.replace(/"/g, "") + '"' + sh + '>';
 					}
-					s += '<span id="_toolbar' + i + '" onmousedown="Addons.ToolBar.Open(' + i + ')" oncontextmenu="Addons.ToolBar.Popup(' + i + '); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="' + GetText(items[i].getAttribute("Name").replace(/"/g, "&quot;")) + '">' + img + '</span>';
+					s.push('<span id="_toolbar' + i + '" onmousedown="Addons.ToolBar.Open(' + i + ')" oncontextmenu="Addons.ToolBar.Popup(' + i + '); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="' + GetText(items[i].getAttribute("Name").replace(/"/g, "&quot;")) + '">' + img + '</span>');
 				}
 			}
 			if (items.length == 0) {
-				s += '<label id="_toolbar' + items.length + '" title="Edit" onclick="Addons.ToolBar.ShowOptions()" oncontextmenu="Addons.ToolBar.ShowOptions(); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">+</label>';
+				s.push('<label id="_toolbar' + items.length + '" title="Edit" onclick="Addons.ToolBar.ShowOptions()" oncontextmenu="Addons.ToolBar.ShowOptions(); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">+</label>');
 			}
-			document.getElementById('_toolbar').innerHTML = s;
+			document.getElementById('_toolbar').innerHTML = s.join("");
+			Resize();
 		}
 
 	}
