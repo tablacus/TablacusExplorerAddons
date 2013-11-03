@@ -14,10 +14,11 @@ function InitToolOptions()
 
 function SetToolOptions()
 {
-	ConfirmTB();
-	SaveTB("List");
-	TEOk();
-	window.close();
+	if (ConfirmTB()) {
+		SaveTB("List");
+		TEOk();
+		window.close();
+	}
 }
 
 function ShowLocation()
@@ -100,11 +101,20 @@ function ReplaceTB(mode)
 
 function ConfirmTB()
 {
-	if (g_Chg.Data && g_x[g_Chg.Data].selectedIndex >= 0) {
-		if (confirm(GetText("Do you want to replace?"))) {
-			ReplaceTB(g_Chg.Data);
+	if (g_Chg.Data) {
+		switch (wsh.Popup(GetText("Do you want to replace?"), 0, TITLE, MB_ICONQUESTION | MB_YESNOCANCEL)) {
+			case IDYES:
+				if (g_x[g_Chg.Data].selectedIndex >= 0) {
+					ReplaceTB(g_Chg.Data);
+				}
+				else {
+					AddTB();
+				}
+			case IDNO:
+				ClearX(g_Chg.Data);
+				return true;
 		}
-		ClearX(g_Chg.Data);
+		return false;
 	}
+	return true;
 }
-

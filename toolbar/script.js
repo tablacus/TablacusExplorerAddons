@@ -29,6 +29,7 @@ if (window.Addon == 1) {
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 				}
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("&Edit"));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Add"));
 				var pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
 				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, ContextMenu);
@@ -43,6 +44,9 @@ if (window.Addon == 1) {
 				}
 				if (nVerb == 1) {
 					this.ShowOptions(i + 1);
+				}
+				if (nVerb == 2) {
+					this.ShowOptions();
 				}
 				api.DestroyMenu(hMenu);
 			}

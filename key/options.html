@@ -1,69 +1,86 @@
 ﻿<html>
-<head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta http-equiv="MSThemeCompatible" content="Yes">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Tablcus Add-ons</title>
-<link rel="stylesheet" type="text/css" href="../../script/options.css" />
-<script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-</script>
-<script type="text/javascript" charset="utf-8" src="../../script/common.js">
-</script>
-<script type="text/javascript" charset="utf-8" src="../../script/options.js">
-</script>
-<script type="text/javascript" charset="utf-8" src="options.js">
-</script>
-</head>
-<body onload="InitKeyOptions();">
-
-<form name="F" style="display: inline;">
-<div class="panel" style="display: block;">
-<table width="99%"><tr><td width="150px" valign="top">
-<select name="Key" style="width: 150px" onchange="SwitchX('Key', this)">
-</select><br>
-<select name="KeyAll" size="18" style="width: 150px; height: 360px" ondblclick="EditX('Key')">
-</select>
-<select name="KeyList" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Key')">
-</select>
-<select name="KeyTree" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Key')">
-</select>
-<select name="KeyBrowser" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Key')">
-</select>
-</td><td valign="top">
-<label>Key</label>
-<input type="text" name="KeyKey" style="width: 100%" onchange="ChangeX('Key');SetKeyShift();">
-<div id="_KeyState" style="white-space; nowrap">
-<select id="_KeySelect" onchange="KeySelect(this)"></select>
-<input type="button" value="Input" onclick="InputKey();ChangeX('Key');"></div>
-<label>Type</label><br>
-<select name="KeyType" style="width: 100%" onchange="ChangeX('Key')">
-<option value="Open">Open
-<option value="Exec">Exec
-<option value="JScript">JScript
-<option value="VBScript">VBScript
-</select>
-<table class="layout"><tr><td>
-<label>Options</label></td>
-<td align="right"><input type="button" value="Reference..." onclick="RefX('KeyPath', true, this, 'ChangeX(\'mouse\');')"  style="width: 128px">
-</td></tr></table>
-<textarea name="KeyPath" style="width: 100%; height: 250px" onchange="ChangeX('Key')">
-</textarea>
-</td></tr></table>
-<table width="97%"><tr><td>
-<input type="button" value="Remove" onclick="RemoveX('Key')">
-<input type="button" value="Up" onclick="MoveX('Key', -1)">
-<input type="button" value="Down" onclick="MoveX('Key', 1)">
-<input type="button" value="Edit" onclick="EditX('Key')">
-</td><td align="right">
-<input type="button" value="Add" onclick="AddX('Key')">
-<input type="button" value="Replace" onclick="ReplaceX('Key')">
-</td></tr></table>
-<!-------------------------------------------->
-</div>
-<table width="97%"><tr><td align="right">
-<input type="button" value="OK" style="width: 96px;" onclick="SetKeyOptions();">
-<input type="button" value="Cancel" style="width: 96px;" onclick="window.close();">
-</td></tr></table>
-</form>
-</body>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="MSThemeCompatible" content="Yes" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Tablcus Add-ons</title>
+    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="options.js">
+    </script>
+  </head>
+  <body onload="InitKeyOptions();">
+    <form name="F" style="display: inline;">
+      <div class="panel" style="display: block;">
+        <table width="99%">
+          <tr>
+            <td width="150px" valign="top">
+              <select name="Key" style="width: 150px" onchange="SwitchX('Key', this)">
+              </select>
+              <br />
+              <select name="KeyAll" size="18" style="width: 150px; height: 360px" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              </select>
+              <select name="KeyList" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              </select>
+              <select name="KeyTree" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              </select>
+              <select name="KeyBrowser" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              </select>
+            </td>
+            <td valign="top">
+              <label>Key</label>
+              <input type="text" name="KeyKey" style="width: 100%" onchange="ChangeX('Key');SetKeyShift();" />
+              <div id="_KeyState" style="white-space; nowrap">
+                <select id="_KeySelect" onchange="KeySelect(this)"></select>
+                <input type="button" value="Input" onclick="InputKey();ChangeX('Key');" />
+              </div>
+              <label>Type</label>
+              <br />
+              <select name="KeyType" style="width: 100%" onchange="ChangeX('Key')">
+              </select>
+              <table class="layout">
+                <tr>
+                  <td>
+                    <label>Options</label>
+                  </td>
+                  <td align="right">
+                    <input type="button" value="Portable" onclick="PortableX('KeyPath')" />
+                    <input type="button" value="Reference..." onclick="RefX('KeyPath', true, this)" style="width: 224px" />
+                  </td>
+                </tr>
+              </table>
+              <textarea name="KeyPath" style="width: 100%; height: 250px" onchange="ChangeX('Key')"></textarea>
+            </td>
+          </tr>
+        </table>
+        <table width="97%">
+          <tr>
+            <td>
+              <input type="button" value="Remove" onclick="RemoveX('Key')" />
+              <input type="button" value="Up" onclick="MoveX('Key', -1)" />
+              <input type="button" value="Down" onclick="MoveX('Key', 1)" />
+              <input type="button" value="Edit" onclick="EditX('Key')" />
+            </td>
+            <td align="right">
+              <input type="button" value="Add" onclick="AddX('Key')" />
+              <input type="button" value="Replace" onclick="ReplaceX('Key')" />
+            </td>
+          </tr>
+        </table>
+      </div>
+      <table width="97%">
+        <tr>
+          <td align="right">
+            <input type="button" value="OK" style="width: 96px;" onclick="SetKeyOptions();" />
+            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+          </td>
+        </tr>
+      </table>
+    </form>
+  </body>
 </html>

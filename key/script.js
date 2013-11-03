@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) { (function () {
+﻿if (window.Addon == 1) {
 	var xml = OpenXml("key.xml", false, true);
 	for (var mode in eventTE.Key) {
 		var items = xml.getElementsByTagName(mode);
@@ -10,4 +10,4 @@
 			SetKeyExec(mode, item.getAttribute("Key"), item.text, item.getAttribute("Type"));
 		}
 	}
-})();}
+}

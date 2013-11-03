@@ -1,7 +1,7 @@
 var Addon_Id = "mouse";
 var Default = "ToolBar1Center";
 
-if (window.Addon == 1) { (function () {
+if (window.Addon == 1) {
 	SetAddon(Addon_Id, Default, '<span id="mouse" style="color: gray; position: absolute;">&nbsp;</span>');
 	var xml = OpenXml("mouse.xml", false, true);
 	for (var mode in eventTE.Mouse) {
@@ -20,4 +20,4 @@ if (window.Addon == 1) { (function () {
 		document.getElementById("mouse").innerText = Text;
 	});
 
-})();}
+}
