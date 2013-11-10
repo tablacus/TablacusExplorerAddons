@@ -14,7 +14,7 @@ function InitToolOptions()
 
 function SetToolOptions()
 {
-	if (ConfirmTB()) {
+	if (ConfirmX(false, ReplaceTB)) {
 		SaveTB("List");
 		TEOk();
 		window.close();
@@ -79,12 +79,6 @@ function EditTB(mode)
 	SetImage();
 }
 
-function AddTB()
-{
-	g_x.List.selectedIndex = ++g_x.List.length - 1;
-	ReplaceTB("List");
-}
-
 function ReplaceTB(mode)
 {
 	ClearX();
@@ -95,26 +89,6 @@ function ReplaceTB(mode)
 	var o = document.F.Type;
 	var p = { s: document.F.Path.value };
 	MainWindow.OptionEncode(o[o.selectedIndex].value, p);
-	SetData(sel, new Array(document.F.Name.value, p.s, o[o.selectedIndex].value, document.F.Icon.value, document.F.Height.value));
+	SetData(sel, [document.F.Name.value, p.s, o[o.selectedIndex].value, document.F.Icon.value, document.F.Height.value]);
 	g_Chg[mode] = true;
-}
-
-function ConfirmTB()
-{
-	if (g_Chg.Data) {
-		switch (wsh.Popup(GetText("Do you want to replace?"), 0, TITLE, MB_ICONQUESTION | MB_YESNOCANCEL)) {
-			case IDYES:
-				if (g_x[g_Chg.Data].selectedIndex >= 0) {
-					ReplaceTB(g_Chg.Data);
-				}
-				else {
-					AddTB();
-				}
-			case IDNO:
-				ClearX(g_Chg.Data);
-				return true;
-		}
-		return false;
-	}
-	return true;
 }
