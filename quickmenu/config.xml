@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
+    <Version>1.01</Version>
     <MinVersion>2013.11.17</MinVersion>
-    <pubDate>Sun, 17 Nov 2013 00:00:00 UTC</pubDate>
+    <pubDate>Mon, 18 Nov 2013 00:00:00 UTC</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
     <License>MIT License</License>
@@ -13,7 +13,7 @@
     <Description>Quick and simple menu</Description>
   </en>
   <ja>
-    <Name>クイックメニュー</Name>
-    <Description>迅速な簡易メニュー</Description>
+    <Name>クイック メニュー</Name>
+    <Description>簡素で軽快なメニュー</Description>
   </ja>
 </TablacusExplorer>
