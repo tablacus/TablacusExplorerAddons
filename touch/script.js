@@ -25,9 +25,8 @@ var Addon_Id = "touch";
 						var ModifyDate;
 						var item = Selected.Item(0);
 						try {
-							Addons.Touch.s = item.ModifyDate;
-							execScript("Addons.Touch.s = FormatDateTime(Addons.Touch.s)", "VBScript");
-							ModifyDate = Addons.Touch.s;
+							var vb = api.GetScriptDispatch('Function fn(s)\n fn = FormatDateTime(s)\nEnd Function', "VBScript");
+							ModifyDate = vb.fn(item.ModifyDate);
 						}
 						catch (e) {
 							ModifyDate = new Date(item.ModifyDate).toLocaleString();
@@ -41,7 +40,7 @@ var Addon_Id = "touch";
 						}
 					}
 					catch (e) {
-						wsh.Popup(e.description + "\n" + s, 0, TITLE, MB_ICONEXCLAMATION);
+						wsh.Popup(e.description + "\n" + s, 0, TITLE, MB_ICONSTOP);
 					}
 				}
 			}

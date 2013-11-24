@@ -6,21 +6,24 @@
 		SendTo: function (hMenu)
 		{
 			hMenu = api.sscanf(hMenu, "%llx");
-			var wID = 0x6000;
 			Addons.QuickMenu.Items = sha.NameSpace(ssfSENDTO).Items();
 			for (var i = 0; i < Addons.QuickMenu.Items.Count; i++) {
-				ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
-				{
-					var DropTarget = api.DropTarget(Addons.QuickMenu.Items.Item(nVerb - 0x6000));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 0x6000 + i, api.GetDisplayNameOf(Addons.QuickMenu.Items.Item(i), SHGDN_INFOLDER));
+			}
+			AddEvent("MenuCommand", function (Ctrl, pt, Name, nVerb)
+			{
+				nVerb -= 0x6000;
+				if (nVerb >= 0 && nVerb < Addons.QuickMenu.Items.Count) {
+					var DropTarget = api.DropTarget(Addons.QuickMenu.Items.Item(nVerb));
 					pdwEffect = api.Memory("DWORD");
 					pdwEffect[0] = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
 					var Selected = Ctrl.SelectedItems();
 					if (Selected) {
 						DropTarget.Drop(Selected, MK_LBUTTON, pt, pdwEffect);
 					}
-				};
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, wID++, api.GetDisplayNameOf(Addons.QuickMenu.Items.Item(i), SHGDN_INFOLDER));
-			}
+					return S_OK;
+				}
+			});
 		}
 	}
 
@@ -46,7 +49,7 @@
 
 				mii.fMask = MIIM_STRING | MIIM_STATE | MIIM_ID;
 				mii.fState = MFS_DEFAULT;
-				mii.wID = nPos + 0x1000;
+				mii.wID = nPos + 0x4000;
 				mii.dwTypeData = api.GetMenuString(hMenu2, 0, MF_BYPOSITION);
 				ExtraMenuCommand[mii.wID] = function (Ctrl, pt, Name, nVerb)
 				{
@@ -58,14 +61,15 @@
 				api.DestroyMenu(hMenu2);
 				api.DestroyMenu(hMenu1);
 
-				mii.wID = nPos + 0x1000;
-				ExtraMenuCommand[mii.wID] = function (Ctrl, pt, Name, nVerb)
-				{
-					InvokeCommand(Ctrl.SelectedItems(), 0, te.hwnd, "Edit", null, null, SW_SHOWNORMAL, 0, 0);
-				};
-				api.InsertMenu(hMenu, nPos++, MF_BYPOSITION | MF_STRING, mii.wID, GetText("Edit"));
-
-				mii.wID = nPos + 0x1000;
+				if (Selected.Count == 1 && api.AssocQueryString(ASSOCF_NOTRUNCATE, ASSOCSTR_COMMAND, Selected.Item(0).Path, "Edit")) {
+					mii.wID = nPos + 0x4000;
+					ExtraMenuCommand[mii.wID] = function (Ctrl, pt, Name, nVerb)
+					{
+						InvokeCommand(Ctrl.SelectedItems(), 0, te.hwnd, "Edit", null, null, SW_SHOWNORMAL, 0, 0);
+					};
+					api.InsertMenu(hMenu, nPos++, MF_BYPOSITION | MF_STRING, mii.wID, GetText("Edit"));
+				}
+				mii.wID = nPos + 0x4000;
 				ExtraMenuCommand[mii.wID] = function (Ctrl, pt, Name, nVerb)
 				{
 					ExecMenu(Ctrl, Name, pt, 0x8000);
@@ -76,7 +80,7 @@
 				hMenu2 = api.GetSubMenu(hMenu1, 0);
 				api.InsertMenu(hMenu, nPos++, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 				mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_SUBMENU;
-				mii.wID = nPos + 0x1000;
+				mii.wID = nPos + 0x4000;
 				mii.dwTypeData = api.GetMenuString(hMenu2, 0, MF_BYPOSITION);
 				mii.hSubMenu = api.CreatePopupMenu();
 				api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, api.sprintf(100, '\tJScript\tAddons.QuickMenu.SendTo("%llx")', mii.hSubMenu));
@@ -89,15 +93,15 @@
 				hMenu2 = api.GetSubMenu(hMenu1, 0);
 
 				for (var wID = CommandID_CUT - 1; wID < CommandID_COPY; wID++) {
-					mii.wID = 0x2000 + wID;
+					mii.wID = 0x5000 + wID;
 					api.InsertMenu(hMenu, nPos++, MF_BYPOSITION | MF_STRING, mii.wID, api.GetMenuString(hMenu2, wID, MF_BYCOMMAND));
 					ExtraMenuCommand[mii.wID] = function (Ctrl, pt, Name, nVerb)
 					{
-						InvokeCommand(Ctrl.SelectedItems(), 0, te.hwnd, nVerb - 0x2000, null, null, SW_SHOWNORMAL, 0, 0);
+						InvokeCommand(Ctrl.SelectedItems(), 0, te.hwnd, nVerb - 0x5000, null, null, SW_SHOWNORMAL, 0, 0);
 					};
 				}
 
-				mii.wID = 0x2000 + CommandID_PASTE - 1;
+				mii.wID = 0x5000 + CommandID_PASTE - 1;
 				api.InsertMenu(hMenu, nPos++, MF_BYPOSITION | MF_STRING, mii.wID, api.GetMenuString(hMenu2, CommandID_PASTE - 1, MF_BYCOMMAND));
 				ExtraMenuCommand[mii.wID] = function (Ctrl, pt, Name, nVerb)
 				{
@@ -124,7 +128,7 @@
 				while (api.GetMenuItemInfo(hMenu, 0, true, mii) && mii.fType & MFT_SEPARATOR) {
 					api.DeleteMenu(hMenu, 0, MF_BYPOSITION);
 				}
-				var wID = nPos + 0x1000;
+				var wID = nPos + 0x4000;
 				ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
 				{
 					ExecMenu(Ctrl, Name, pt, 0x8000);
@@ -133,7 +137,7 @@
 				return [hMenu];
 			case 5:
 				hMenu = te.MainMenu(FCIDM_MENU_EDIT);
-				var wID = nPos + 0x1000;
+				var wID = nPos + 0x4000;
 				ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
 				{
 					ExecMenu(Ctrl, Name, pt, 0x8000);
@@ -142,7 +146,7 @@
 				return [hMenu];
 			case 6:
 				hMenu = te.MainMenu(FCIDM_MENU_VIEW);
-				var wID = nPos + 0x1000;
+				var wID = nPos + 0x4000;
 				ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
 				{
 					ExecMenu(Ctrl, Name, pt, 0x8000);
