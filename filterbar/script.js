@@ -29,20 +29,18 @@ if (window.Addon == 1) {
 		{
 			Addons.FilterBar.ShowButton();
 			var FV = te.Ctrl(CTRL_FV);
-			if (FV.Type == CTRL_EB) {
-				var docRange = document.selection.createRange();
-				var range = document.F.filter.createTextRange();
-				range.setEndPoint('EndToEnd', docRange);
-				Addons.FilterBar.iCaret = range.text.length;
-			}
 			s = document.F.filter.value;
-			if (!s.match(/\*/)) {
-				s = "*" + s + "*";
+			if (s) {
+				if (!s.match(/\*/)) {
+					s = "*" + s + "*";
+				}
 			}
-			FV.FilterView = s;
-			FV.Refresh();
-			if (FV.Type == CTRL_EB) {
-				document.F.filter.focus();
+			else {
+				s = null;
+			}
+			if (FV.FilterView != s) {
+				FV.FilterView = s;
+				FV.Refresh();
 			}
 		},
 

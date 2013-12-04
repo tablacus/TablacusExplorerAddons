@@ -17,21 +17,18 @@
 			var o = document.F.elements["filter_" + Id];
 			Addons.InnerFilterBar.ShowButton(Id, o);
 			var FV =  GetInnerFV(Id);
-			if (FV.Type == CTRL_EB) {
-				var docRange = document.selection.createRange();
-				var range = o.createTextRange();
-				range.setEndPoint('EndToEnd', docRange);
-				Addons.InnerFilterBar.iCaret[Id] = range.text.length;
-			}
 			s = o.value;
-			if (!s.match(/\*/)) {
-				s = "*" + s + "*";
+			if (s) {
+				if (!s.match(/\*/)) {
+					s = "*" + s + "*";
+				}
 			}
-			FV.FilterView = s;
-			FV.Refresh();
-
-			if (FV.Type == CTRL_EB) {
-				o.focus();
+			else {
+				s = null;
+			}
+			if (FV.FilterView != s) {
+				FV.FilterView = s;
+				FV.Refresh();
 			}
 		},
 
