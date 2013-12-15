@@ -1,0 +1,105 @@
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="MSThemeCompatible" content="Yes" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Tablcus Add-ons</title>
+    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="script.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="options.js">
+    </script>
+  </head>
+  <body onload="InitToolOptions();">
+    <form name="F" style="display: inline;">
+      <div class="panel" id="panel0" style="display: block;">
+        <table width="99%">
+          <tr>
+            <td width="150px" valign="top">
+              <select name="List" size="19" style="width: 150px; height: 380px" ondblclick="EditIC()" oncontextmenu="CancelX('List')">
+              </select>
+            </td>
+            <td valign="top">
+              <label>Type</label>
+              <br />
+              <input type="text" name="Type" style="width: 100%" onchange="ChangeX('List')" />
+              <label>Small</label> : <span id="size1"></span>
+              <table class="layout">
+                <tr>
+                  <td style="width: 100%">
+                    <input type="text" name="Small" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
+                  </td>
+                  <td align="right">
+                    <input type="button" value="Reference..." onclick="RefX('Small', false, this)" />
+                  </td>
+                </tr>
+              </table>
+              <label>SysSmall</label> : <span id="size3"></span>
+              <table class="layout">
+                <tr>
+                  <td style="width: 100%">
+                    <input type="text" name="SysSmall" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
+                  </td>
+                  <td align="right">
+                    <input type="button" value="Reference..." onclick="RefX('SysSmall', false, this)" />
+                  </td>
+                </tr>
+              </table>
+              <label>Large</label> : <span id="size0"></span>
+              <table class="layout">
+                <tr>
+                  <td style="width: 100%">
+                    <input type="text" name="Large" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
+                  </td>
+                  <td align="right">
+                    <input type="button" value="Reference..." onclick="RefX('Large', false, this)" />
+                  </td>
+                </tr>
+              </table>
+              <label>ExtraLarge</label> : <span id="size2"></span>
+              <table class="layout">
+                <tr>
+                  <td style="width: 100%">
+                    <input type="text" name="ExtraLarge" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
+                  </td>
+                  <td align="right">
+                    <input type="button" value="Reference..." onclick="RefX('ExtraLarge', false, this)" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <table width="97%">
+          <tr>
+            <td>
+              <input type="button" value="Remove" onclick="RemoveX('List')" />
+              <input type="button" value="Up" onclick="MoveX('List',-1)" />
+              <input type="button" value="Down" onclick="MoveX('List',1)" />
+              <input type="button" value="Edit" onclick="EditIC('List')" />
+            </td>
+            <td align="right">
+              <input type="button" value="Add" onclick="AddX('List', ReplaceIC)" />
+              <input type="button" value="Replace" onclick="ReplaceIC('List')" />
+            </td>
+          </tr>
+        </table>
+      </div>
+      <!--panel_end-->
+      <table id="buttons" width="97%">
+        <tr>
+          <td align="right">
+            <input type="button" value="OK" style="width: 96px;" onclick="SetToolOptions();" />
+            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+          </td>
+        </tr>
+      </table>
+    </form>
+  </body>
+</html>
