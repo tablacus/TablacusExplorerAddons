@@ -1,7 +1,7 @@
 var Addon_Id = "mainmenu";
 var Default = "ToolBar1Left";
 
-if (window.Addon == 1) { (function () {
+if (window.Addon == 1) {
 	Addons.MainMenu =
 	{
 		Menu: [],
@@ -46,7 +46,7 @@ if (window.Addon == 1) { (function () {
 			if (msg == WM_MOUSEMOVE) {
 				var Ctrl2 = te.CtrlFromPoint(pt);
 				if (Ctrl2 && Ctrl2.Type == CTRL_WB && !HitTest(Addons.MainMenu.Item, pt)) {
-					for (var i = 0; i < Addons.MainMenu.Menu.length; i++) {
+					for (var i = Addons.MainMenu.Menu.length; i--;) {
 						if (HitTest(Addons.MainMenu.Menu[i], pt)) {
 							Addons.MainMenu.bClose = false;
 							wsh.SendKeys("{Esc}");
@@ -62,7 +62,7 @@ if (window.Addon == 1) { (function () {
 	// Init
 	var used = {};
 	var strMenus = ["&File", "&Edit", "&View", "F&avorites", "&Tools", "&Help"];
-	var s = '';
+	var s = [];
 	for (var i = 0; i < strMenus.length; i++) {
 		var s1 = strMenus[i].replace("&", "");
 		var strMenu = GetText(strMenus[i]);
@@ -73,11 +73,11 @@ if (window.Addon == 1) { (function () {
 				SetKeyExec("All", "Alt+" + c, 'Addons.MainMenu.Popup("' + s1 + '");', "JScript");
 			}
 		}
-		s += '<label class="menu" id="Menu' + s1 + '" onmousedown="Addons.MainMenu.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + strMenu + '</label>';
+		s.push('<label class="menu" id="Menu' + s1 + '" onmousedown="Addons.MainMenu.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + strMenu + '</label>');
 	}
 	SetAddon(Addon_Id, Default, s);
-	for (var i = 0; i < strMenus.length; i++) {
+	for (var i = strMenus.length; i--;) {
 		var s1 = strMenus[i].replace("&", "");
 		Addons.MainMenu.Menu[i] = document.getElementById('Menu' + s1);
 	}	
-})();}
+}
