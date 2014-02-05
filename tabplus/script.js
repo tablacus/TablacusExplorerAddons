@@ -26,6 +26,13 @@ if (window.Addon == 1) {
 
 		Arrange: function (Id)
 		{
+			var TC = te.Ctrl(CTRL_TC, Id);
+			if (TC) {
+				if (this.nCount[Id] != TC.Count) {
+					clearTimeout(Addons.TabPlus.tids[Id]);
+					delete Addons.TabPlus.tids[Id];
+				}
+			}
 			if (!Addons.TabPlus.tids[Id]) {
 				Addons.TabPlus.tids[Id] = setTimeout(function ()
 				{
@@ -36,19 +43,22 @@ if (window.Addon == 1) {
 
 		Arrange2: function (Id)
 		{
-			delete Addons.TabPlus.tids[Id];
+			Addons.TabPlus.tids[Id] = setTimeout(function ()
+			{
+				delete Addons.TabPlus.tids[Id];
+			}, 500);
 			var o = document.getElementById("tabplus_" + Id);
 			if  (o) {
 				var TC = te.Ctrl(CTRL_TC, Id);
 				if (TC) {
-					this.nIndex[Id] = TC.SeletedIndex;
+					this.nIndex[Id] = TC.SelectedIndex;
 					this.nCount[Id] = TC.Count;
-					var s = [];
+					var s = ['<button style="width: 0px; border 0px; padding: 0px; margin: 0px; outline: 0px; position: absolute; left: -99999px"></button>'];
 					for (var i = 0; i < this.nCount[Id]; i++) {
 						this.Tab(s, TC, i);
 					}
 					if (this.opt.New) {
-						s.push('<button class="tab" onclick="Addons.TabPlus.New(' + Id + ');return false" hidefocus="true" title="' + GetText("New Tab") + '" style="font-family: ' + document.body.style.fontFamily + ';">+</button>');
+						s.push('<button class="tab" onclick="Addons.TabPlus.New(', Id, ');return false" hidefocus="true" title="', GetText("New Tab"), '" style="font-family: ', document.body.style.fontFamily, ';">+</button>');
 					}
 					try {
 						var FocusedId = te.Ctrl(CTRL_TC).Id;
@@ -63,6 +73,25 @@ if (window.Addon == 1) {
 			}
 		},
 
+		SelectionChanged: function (Id)
+		{
+			var TC = te.Ctrl(CTRL_TC, Id);
+			if (TC) {
+				var o = document.getElementById("tabplus_" + Id + "_" + this.nIndex[Id]);
+				if  (o) {
+					o.className = "tab";
+					var o = document.getElementById("tabplus_" + Id + "_" + TC.SelectedIndex);
+					if  (o) {
+						o.className = "activetab";
+						this.nIndex[Id] = TC.SelectedIndex;
+						clearTimeout(Addons.TabPlus.tids[Id]);
+						delete Addons.TabPlus.tids[Id];
+					}
+				}
+				Addons.TabPlus.Arrange(Id);
+			}
+		},
+		
 		SetActiveColor: function (Id, s)
 		{
 			this.SetActiveColor2(this.nFocused, "");
@@ -95,61 +124,64 @@ if (window.Addon == 1) {
 			var FV = TC.Item(i);
 			if (FV) {
 				var bActive = (i == TC.SelectedIndex);
-				s.push('<button style="border: 1px solid #898C95;');
+				s.push('<button style="');
 				for (var e in eventTE.GetTabColor) {
 					var cl = eventTE.GetTabColor[e](FV);
 					if (cl) {
 						if (bActive) {
-							s.push('background-color: ' + cl);
+							s.push("background-color:", cl, ";");
 							break;
 						}
 						if (document.documentMode >= 10) {
-							s.push('background: linear-gradient(to bottom, ' + cl + ', #cccccc);');
+							s.push('background: linear-gradient(to bottom, ', cl, ', #cccccc);');
 							break;
 						}
-						s.push('filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=' + cl + ',endcolorstr=#cccccc)');
+						s.push('filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=', cl, ',endcolorstr=#cccccc);');
 						break;
 					}
 				}
-				s.push('; font-family: ' + document.body.style.fontFamily + '; margin: 0px; white-space: nowrap;');
-				s.push('" id="tabplus_$_' + i);
-				s.push('" title="');
 				var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-				s.push(path);
-				s.push('" onmousemove="Addons.TabPlus.Move(this, $)"');
-				s.push('class="');
+				s.push('font-family: ', document.body.style.fontFamily, '; margin: 0px; white-space: nowrap;');
+				s.push('" id="tabplus_$_', i,'" title="', path.replace(/\\/g, "\\\\") ,'" onmousemove="Addons.TabPlus.Move(this, $)" class="');
 				s.push(bActive ? 'activetab' : 'tab');
-				s.push('" hidefocus="true"><table><tr>');
-				if (FV.Data.Lock) {
-					s.push('<td style="padding-right: 3px"><img src="' + this.ImgLock + '"></td>');
-				}
-				if (this.opt.Icon) {
-					if (api.PathIsNetworkPath(path)) {
-						path = this.ImgNet;
-					}
-					else {
-						var info = api.Memory("SHFILEINFO");
-						api.ShGetFileInfo(FV, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_OPENICON | SHGFI_PIDL);
-						var image = te.GdiplusBitmap;
-						image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
-						api.DestroyIcon(info.hIcon);
-						path = image.DataURI("image/png");
-					}
-					s.push('<td style="padding-right: 3px"><img src="' + path + '"></td>');
-				}
-				s.push('<td><div style="overflow: hidden;');
-				s.push(this.opt.Fix ? 'width: ' + this.opt.Width + 'px">' : '">');
-				if (FV.FolderItem) {
-					s.push((FV.Title || FV.FolderItem.Name).replace(/</g, "&lt;"));
-				}
-				s.push('</div></td>');
-				if (this.opt.Close && !FV.Data.Lock) {
-					s.push('<td style="padding-left: 3px"><img class="button" src="' + this.ImgClose + '" id="tabplus_' + TC.Id + '_' + i + 'x" title="' + GetText("Close Tab") + '" onmouseover="MouseOver(this)" onmouseout="MouseOut()"></td>');
-				}
-				s.push('</tr></table></button>');
+				s.push('" hidefocus="true">');
+				this.Tab2(s, FV, i, path);
+				s.push('</button>');
 			}
 		},
 
+		Tab2: function (s, FV, i, path)
+		{
+			s.push('<table><tr>');
+			if (FV.Data.Lock) {
+				s.push('<td style="padding-right: 3px"><img src="', this.ImgLock, '"></td>');
+			}
+			if (this.opt.Icon) {
+				if (api.PathIsNetworkPath(path)) {
+					path = this.ImgNet;
+				}
+				else {
+					var info = api.Memory("SHFILEINFO");
+					api.ShGetFileInfo(FV, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_OPENICON | SHGFI_PIDL);
+					var image = te.GdiplusBitmap;
+					image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
+					api.DestroyIcon(info.hIcon);
+					path = image.DataURI("image/png");
+				}
+				s.push('<td style="padding-right: 3px"><img src="', path, '"></td>');
+			}
+			s.push('<td><div style="overflow: hidden;');
+			s.push(this.opt.Fix ? 'width: ' + this.opt.Width + 'px">' : '">');
+			if (FV.FolderItem) {
+				s.push((FV.Title || FV.FolderItem.Name).replace(/</g, "&lt;"));
+			}
+			s.push('</div></td>');
+			if (this.opt.Close && !FV.Data.Lock) {
+				s.push('<td style="padding-left: 3px"><img class="button" src="', this.ImgClose, '" id="tabplus_', TC.Id, '_', i, 'x" title="', GetText("Close Tab"), '" onmouseover="MouseOver(this)" onmouseout="MouseOut()"></td>');
+			}
+			s.push('</tr></table>');
+		},
+		
 		Down: function (Id)
 		{
 			var TC = te.Ctrl(CTRL_TC, Id);
@@ -168,7 +200,6 @@ if (window.Addon == 1) {
 						}
 						else {
 							TC.SelectedIndex = n;
-							this.Arrange2(Id);
 						}
 						return false;
 					}
@@ -181,12 +212,12 @@ if (window.Addon == 1) {
 		{
 			var TC = te.Ctrl(CTRL_TC, Id);
 			if (TC) {
+				var pt = api.Memory("POINT");
+				api.GetCursorPos(pt);
 				if (this.Button[Id] && this.Button[Id].match(/3/)) {
 					GestureExec(TC, "Tabs", GetGestureKey() + this.Button[Id], pt);
 					return false;
 				}
-				var pt = api.Memory("POINT");
-				api.GetCursorPos(pt);
 				var nDrop = this.FromPt(Id, pt);
 				if (nDrop < 0) {
 					nDrop = TC.Count;
@@ -194,7 +225,6 @@ if (window.Addon == 1) {
 				if (this.Drag.length && (new Date().getTime() - this.DragTime > 500) && (this.Drag[0] != Id || this.Drag[1] != nDrop)) {
 					te.Ctrl(CTRL_TC, this.Drag[0]).Move(this.Drag[1], nDrop, TC);
 					this.Drop = [];
-					this.Arrange(Id);
 				}
 				else {
 					(function (TC) { setTimeout(function () {
@@ -271,15 +301,7 @@ if (window.Addon == 1) {
 			var TC = te.Ctrl(CTRL_TC, Id);
 			if (TC) {
 				var i = TC.selectedIndex + (event.wheelDelta > 0 ? -1 : 1);
-				if (i < 0) {
-					TC.selectedIndex = TC.Count - 1;
-				}
-				else if (i >= TC.Count) {
-					TC.selectedIndex = 0;
-				}
-				else {
-					TC.selectedIndex = i;
-				}
+				TC.selectedIndex = i < 0 ? TC.Count - 1 : i < TC.Count ? i : 0;
 			}
 		},
 
@@ -323,10 +345,7 @@ if (window.Addon == 1) {
 	AddEvent("HitTest", function (Ctrl, pt, flags)
 	{
 		if (Ctrl.Type == CTRL_TC) {
-			var i = Addons.TabPlus.FromPt(Ctrl.Id, pt);
-			if (i >= 0) {
-				return i;
-			}
+			return Addons.TabPlus.FromPt(Ctrl.Id, pt);
 		}
 	});
 
@@ -416,7 +435,7 @@ if (window.Addon == 1) {
 	AddEvent("SelectionChanged", function (Ctrl)
 	{
 		if (Ctrl.Type == CTRL_TC) {
-			Addons.TabPlus.Arrange(Ctrl.Id);
+			Addons.TabPlus.SelectionChanged(Ctrl.Id);
 		}
 	});
 
