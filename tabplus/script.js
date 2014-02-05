@@ -142,7 +142,7 @@ if (window.Addon == 1) {
 				}
 				var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				s.push('font-family: ', document.body.style.fontFamily, '; margin: 0px; white-space: nowrap;');
-				s.push('" id="tabplus_$_', i,'" title="', path.replace(/\\/g, "\\\\") ,'" onmousemove="Addons.TabPlus.Move(this, $)" class="');
+				s.push('" id="tabplus_$_', i,'" title="', path,'" onmousemove="Addons.TabPlus.Move(this, $)" class="');
 				s.push(bActive ? 'activetab' : 'tab');
 				s.push('" hidefocus="true">');
 				this.Tab2(s, FV, i, path);

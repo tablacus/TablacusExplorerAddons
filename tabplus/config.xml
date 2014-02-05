@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2014.3.2</MinVersion>
+    <Version>1.06</Version>
+    <MinVersion>2014.2.3</MinVersion>
     <pubDate>Wed, 5 Feb 2014 00:00:00 UTC</pubDate>
     <Options>dialogWidth: 250px; dialogHeight: 285px; resizable: yes; status: 0</Options>
     <Creator>Gaku</Creator>
