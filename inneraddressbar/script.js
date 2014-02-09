@@ -85,7 +85,7 @@
 			if (s != "-") {
 				var FV = GetInnerFV(Id);
 				if (FV) {
-					FV.Navigate(s);
+					NavigateFV(FV, s);
 				}
 				o.selectedIndex = -1;
 			}
@@ -225,7 +225,7 @@
 
 		GetAddress: function (Ctrl)
 		{
-			if (Ctrl.FolderItem) {
+			if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id) {
 				var Id = Ctrl.Parent.Id;
 				var o = document.getElementById("addressbar_" + Id);
 				if (o) {

@@ -2,21 +2,8 @@
 var Default = "ToolBar2Center";
 
 if (window.Addon == 1) {
-	g_simpleaddressbar =
+	Addons.SimpleAddressBar =
 	{
-		SetAddress: window.SetAdderss,
-
-		Init: function ()
-		{
-			var s = '<input id="simpleaddressbar" type="text" onkeydown="return g_simpleaddressbar.KeyDown(this)" onfocus="this.select()" style="width: 100%; vertical-align: middle;	box-sizing: border-box;">';
-
-			var o = document.getElementById(SetAddon(Addon_Id, Default, s));
-
-			if (o.style.verticalAlign.length == 0) {
-				o.style.verticalAlign = "middle";
-			}
-		},
-
 		KeyDown: function (o)
 		{
 			if (event.keyCode == VK_RETURN) {
@@ -38,21 +25,26 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeView", function (Ctrl)
 	{
-		if (Ctrl.FolderItem) {
+		if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
 			document.F.simpleaddressbar.value = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		}
 	});
 
-	SetAddress = function (s)
+	AddEvent("SetAddress", function (s)
 	{
-		document.F.simpleaddressbar.value = s;
-		return g_simpleaddressbar.SetAddress ? g_simpleaddressbar.SetAddress(s) : S_OK;
-	}
+		document.F.addressbar.value = s;
+	});
 
 	GetAddress = function ()
 	{
 		return document.F.simpleaddressbar.value;
 	}
 
-	g_simpleaddressbar.Init();
+	var s = '<input id="simpleaddressbar" type="text" onkeydown="return Addons.SimpleAddressBar.KeyDown(this)" onfocus="this.select()" style="width: 100%; vertical-align: middle; box-sizing: border-box;">';
+
+	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
+
+	if (o.style.verticalAlign.length == 0) {
+		o.style.verticalAlign = "middle";
+	}
 }

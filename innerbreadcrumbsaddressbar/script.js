@@ -19,7 +19,7 @@ if (window.Addon == 1) {
 				window.Input = o.value;
 				if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
 					FV = GetInnerFV(Id);
-					FV.Navigate(o.value, OpenMode);
+					NavigateFV(FV, o.value, OpenMode);
 				}
 				return false;
 			}
@@ -99,7 +99,7 @@ if (window.Addon == 1) {
 		Go: function (n, Id)
 		{
 			var FV = GetInnerFV(Id);
-			FV.Navigate(this.GetPath(n, Id), OpenMode);
+			NavigateFV(FV, this.GetPath(n, Id), OpenMode);
 		},
 
 		GetPath: function(n, Id)
@@ -169,7 +169,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeView", function (Ctrl)
 	{
-		if (Ctrl.FolderItem) {
+		if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id) {
 			var Id = Ctrl.Parent.Id;
 			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			Addons.InnerBreadcrumbsAddressBar.path2[Id] = path
@@ -205,7 +205,7 @@ if (window.Addon == 1) {
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var s = Addons.InnerBreadcrumbsAddressBar.path2[Ctrl.Id].replace(/"/, "");
+		var s = (Addons.InnerBreadcrumbsAddressBar.path2[Ctrl.Id] || "").replace(/"/, "");
 		s = '<span id="breadcrumbsbuttons_$" style="margin 2px; background-color: window; white-space: nowrap; position: absolute"></span><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(this, $)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(this, $)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; color: window">';
 		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.replace(/\$/g, Ctrl.Id));
 	});

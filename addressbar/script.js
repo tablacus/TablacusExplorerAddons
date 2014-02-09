@@ -33,7 +33,7 @@ if (window.Addon == 1) {
 				addr.style.border = "0px";
 			}
 			var p = GetPos(cbbx, false);
-			var w = cbbx.offsetWidth - 41;
+			var w = cbbx.offsetWidth - 42;
 			w = w > 0 ? w : 0;
 			var h = cbbx.offsetHeight - 4;
 			h = h > 0 ? h : 0;
@@ -210,6 +210,56 @@ if (window.Addon == 1) {
 		}
 	};
 
+	AddEvent("Resize", Addons.AddressBar.Resize);
+
+	AddEvent("DeviceChanged", function ()
+	{
+		document.F.combobox.length = 0;
+		if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion >= 602) {
+			var o = document.F.combobox.options[++document.F.combobox.length - 1];
+			o.text = GetText("Select");
+			o.value = "-";
+		}
+		Addons.AddressBar.Add(0, ssfDESKTOP);
+		Addons.AddressBar.Add(1, ssfPERSONAL);
+		Addons.AddressBar.Add(1, ssfDRIVES);
+
+		var Items = sha.NameSpace(ssfDRIVES).Items();
+		for (var i = 0; i < Items.Count; i++) {
+			var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING);
+			if (path.length <= 3) {
+				Addons.AddressBar.Add(2, path);
+			}
+		}
+		Addons.AddressBar.Add(1, ssfBITBUCKET);
+		document.F.combobox.selectedIndex = -1
+	});
+
+	AddEvent("ChangeView", function (Ctrl)
+	{
+		if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
+			document.F.addressbar.value = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+			if (document.documentMode) {
+				var info = api.Memory("SHFILEINFO");
+				api.ShGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
+				var image = te.GdiplusBitmap();
+				image.FromHICON(info.hIcon, api.GetSysColor(COLOR_WINDOW));
+				api.DestroyIcon(info.hIcon);
+				document.getElementById("addr_img").src = image.DataURI("image/png");
+			}
+		}
+	});
+
+	AddEvent("SetAddress", function (s)
+	{
+		document.F.addressbar.value = s;
+	});
+
+	GetAddress = function ()
+	{
+		return document.F.addressbar.value;
+	}
+
 	var s = [];
 	s.push('<select id="combobox" onchange="Addons.AddressBar.Select(this);"')
 	s.push(' onclick="return Addons.AddressBar.Click(this);"');
@@ -240,53 +290,4 @@ if (window.Addon == 1) {
 		o.style.verticalAlign = "middle";
 	}
 	Resize();
-	AddEvent("Resize", Addons.AddressBar.Resize);
-
-	AddEvent("DeviceChanged", function ()
-	{
-		document.F.combobox.length = 0;
-		if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion >= 602) {
-			var o = document.F.combobox.options[++document.F.combobox.length - 1];
-			o.text = GetText("Select");
-			o.value = "-";
-		}
-		Addons.AddressBar.Add(0, ssfDESKTOP);
-		Addons.AddressBar.Add(1, ssfPERSONAL);
-		Addons.AddressBar.Add(1, ssfDRIVES);
-
-		var Items = sha.NameSpace(ssfDRIVES).Items();
-		for (var i = 0; i < Items.Count; i++) {
-			var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING);
-			if (path.length <= 3) {
-				Addons.AddressBar.Add(2, path);
-			}
-		}
-		Addons.AddressBar.Add(1, ssfBITBUCKET);
-		document.F.combobox.selectedIndex = -1
-	});
-
-	AddEvent("ChangeView", function (Ctrl)
-	{
-		if (Ctrl.FolderItem) {
-			document.F.addressbar.value = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-			if (document.documentMode) {
-				var info = api.Memory("SHFILEINFO");
-				api.ShGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
-				var image = te.GdiplusBitmap;
-				image.FromHICON(info.hIcon, api.GetSysColor(COLOR_WINDOW));
-				api.DestroyIcon(info.hIcon);
-				document.getElementById("addr_img").src = image.DataURI("image/png");
-			}
-		}
-	});
-
-	AddEvent("SetAddress", function (s)
-	{
-		document.F.addressbar.value = s;
-	});
-
-	GetAddress = function ()
-	{
-		return document.F.addressbar.value;
-	}
 }
