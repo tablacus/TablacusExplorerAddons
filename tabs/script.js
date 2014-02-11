@@ -1,4 +1,4 @@
-if (window.Addon == 1) { (function () {
+if (window.Addon == 1) {
 	Addons.Tabs =
 	{
 		tid: null,
@@ -152,8 +152,8 @@ if (window.Addon == 1) { (function () {
 	AddEventEx(window, "load", function ()
 	{
 		var cTC = te.Ctrls(CTRL_TC);
-		for (var i = cTC.Count - 1; i >= 0; i--) {
-			Addons.Tabs.Init(cTC.Item(i));
+		for (var i = cTC.Count; i--;) {
+			Addons.Tabs.Init(cTC[i]);
 		}
 	});
 
@@ -165,10 +165,9 @@ if (window.Addon == 1) { (function () {
 		}
 	});
 
-	var hModule = api.LoadLibraryEx(fso.BuildPath(system32, "ieframe.dll"), 0, LOAD_LIBRARY_AS_DATAFILE) || api.LoadLibraryEx(fso.BuildPath(system32, "browseui.dll"), 0, LOAD_LIBRARY_AS_DATAFILE);
+	var hModule = api.GetModuleHandle(fso.BuildPath(system32, "ieframe.dll"), 0, LOAD_LIBRARY_AS_DATAFILE) || api.GetModuleHandle(fso.BuildPath(system32, "browseui.dll"), 0, LOAD_LIBRARY_AS_DATAFILE);
 	if (hModule) {
 		Addons.Tabs.himl = api.ImageList_LoadImage(hModule, 545, 13, 0, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION);
-		api.FreeLibrary(hModule);
 	}
 
 	AddEvent("Lock", function (Ctrl, i, bLock)
@@ -178,4 +177,4 @@ if (window.Addon == 1) { (function () {
 		tcItem.iImage = bLock ? 2 : -1;
 		api.SendMessage(Ctrl.hwnd, TCM_SETITEM, i, tcItem.P);
 	});
-})();}
+}

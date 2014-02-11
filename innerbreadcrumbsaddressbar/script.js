@@ -202,11 +202,19 @@ if (window.Addon == 1) {
 		}
 	});
 
-
 	AddEvent("PanelCreated", function (Ctrl)
 	{
 		var s = (Addons.InnerBreadcrumbsAddressBar.path2[Ctrl.Id] || "").replace(/"/, "");
 		s = '<span id="breadcrumbsbuttons_$" style="margin 2px; background-color: window; white-space: nowrap; position: absolute"></span><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(this, $)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(this, $)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; color: window">';
 		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.replace(/\$/g, Ctrl.Id));
+	});
+
+	AddEvent("Arrange", function (Ctrl, rc)
+	{
+		if (Ctrl.Type == CTRL_TC) {
+			if (Ctrl.Selected) {
+				Addons.InnerBreadcrumbsAddressBar.Resize(Ctrl.Id);
+			}
+		}
 	});
 }
