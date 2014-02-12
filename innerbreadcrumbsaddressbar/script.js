@@ -1,3 +1,18 @@
+var Addon_Id = "innerbreadcrumbsaddressbar";
+
+var items = te.Data.Addons.getElementsByTagName(Addon_Id);
+if (items.length) {
+	var item = items[0];
+	if (!item.getAttribute("Set")) {
+		item.setAttribute("Menu", "Edit");
+		item.setAttribute("MenuPos", -1);
+
+		item.setAttribute("KeyExec", 1);
+		item.setAttribute("KeyOn", "All");
+		item.setAttribute("Key", "Alt+D");
+	}
+}
+
 if (window.Addon == 1) {
 	Addons.InnerBreadcrumbsAddressBar =
 	{
@@ -8,6 +23,8 @@ if (window.Addon == 1) {
 		tid2: [],
 		path2: [],
 		bClose: false,
+		nPos: 0,
+		strName: "Inner Breadcrumbs Address Bar",
 
 		KeyDown: function (o, Id)
 		{
@@ -93,7 +110,8 @@ if (window.Addon == 1) {
 		Blur: function (o, Id)
 		{
 			o.style.color = "window";
-			document.getElementById("breadcrumbsbuttons_" + Id).style.display = "inline";
+			document.getElementById("breadcrumbsbuttons_" + Id).style.display = "inline-block";
+			o.value = o.value;
 		},
 
 		Go: function (n, Id)
@@ -164,7 +182,17 @@ if (window.Addon == 1) {
 				FV.Focus();
 				FolderMenu.Invoke(FolderItem);
 			}
+		},
+
+		Exec: function ()
+		{
+			var TC = te.Ctrl(CTRL_TC);
+			if (TC) {
+				document.getElementById("breadcrumbsaddressbar_" + TC.Id).focus();
+			}
+			return S_OK;
 		}
+
 	};
 
 	AddEvent("ChangeView", function (Ctrl)
@@ -217,4 +245,30 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+
+	if (items.length) {
+		//Menu
+		if (item.getAttribute("MenuExec")) {
+			Addons.InnerBreadcrumbsAddressBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
+			var s = item.getAttribute("MenuName");
+			if (s && s != "") {
+				Addons.InnerBreadcrumbsAddressBar.strName = s;
+			}
+			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+			{
+				api.InsertMenu(hMenu, Addons.InnerBreadcrumbsAddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.InnerBreadcrumbsAddressBar.strName));
+				ExtraMenuCommand[nPos] = Addons.InnerBreadcrumbsAddressBar.Exec;
+				return nPos;
+			});
+		}
+		//Key
+		if (item.getAttribute("KeyExec")) {
+			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.InnerBreadcrumbsAddressBar.Exec, "Func");
+		}
+		//Mouse
+		if (item.getAttribute("MouseExec")) {
+			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerBreadcrumbsAddressBar.Exec, "Func");
+		}
+	}
+	AddTypeEx("Add-ons", "Inner Breadcrumbs Address Bar", Addons.InnerBreadcrumbsAddressBar.Exec);
 }

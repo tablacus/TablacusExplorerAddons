@@ -22,6 +22,7 @@ if (window.Addon == 1) {
 		tids: [],
 		ImgLock: MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13),
 		ImgClose: MakeImgSrc("bitmap:ieframe.dll,545,13,1", 0, false, 13),
+		ImgFolder: document.documentMode ? null : MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16),
 		ImgNet: MakeImgSrc("icon:shell32.dll,9,16", 0, false, 16),
 
 		Arrange: function (Id)
@@ -133,10 +134,10 @@ if (window.Addon == 1) {
 							break;
 						}
 						if (document.documentMode >= 10) {
-							s.push('background: linear-gradient(to bottom, ', cl, ', #cccccc);');
+							s.push('background: linear-gradient(to bottom, #ffffff,', cl, ' 70%);');
 							break;
 						}
-						s.push('filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=', cl, ',endcolorstr=#cccccc);');
+						s.push('filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=#ffffff,endcolorstr=', cl, ');');
 						break;
 					}
 				}
@@ -145,12 +146,12 @@ if (window.Addon == 1) {
 				s.push('" id="tabplus_$_', i,'" title="', path,'" onmousemove="Addons.TabPlus.Move(this, $)" class="');
 				s.push(bActive ? 'activetab' : 'tab');
 				s.push('" hidefocus="true">');
-				this.Tab2(s, FV, i, path);
+				this.Tab2(s, FV, i, path, bActive);
 				s.push('</button>');
 			}
 		},
 
-		Tab2: function (s, FV, i, path)
+		Tab2: function (s, FV, i, path, bActive)
 		{
 			s.push('<table><tr>');
 			if (FV.Data.Lock) {
@@ -160,15 +161,20 @@ if (window.Addon == 1) {
 				if (api.PathIsNetworkPath(path)) {
 					path = this.ImgNet;
 				}
+				if (this.ImgFolder) {
+					path = this.ImgFolder;
+				}
 				else {
 					var info = api.Memory("SHFILEINFO");
-					api.ShGetFileInfo(FV, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_OPENICON | SHGFI_PIDL);
+					api.ShGetFileInfo(FV, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
 					var image = te.GdiplusBitmap;
 					image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
 					api.DestroyIcon(info.hIcon);
 					path = image.DataURI("image/png");
 				}
-				s.push('<td style="padding-right: 3px"><img src="', path, '"></td>');
+				if (path) {
+					s.push('<td style="padding-right: 3px"><img src="', path, '"></td>');
+				}
 			}
 			s.push('<td><div style="overflow: hidden;');
 			s.push(this.opt.Fix ? 'width: ' + this.opt.Width + 'px">' : '">');

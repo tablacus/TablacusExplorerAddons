@@ -1,11 +1,26 @@
 var Addon_Id = "addressbar";
 var Default = "ToolBar2Center";
 
+var items = te.Data.Addons.getElementsByTagName(Addon_Id);
+if (items.length) {
+	var item = items[0];
+	if (!item.getAttribute("Set")) {
+		item.setAttribute("Menu", "Edit");
+		item.setAttribute("MenuPos", -1);
+
+		item.setAttribute("KeyExec", 1);
+		item.setAttribute("KeyOn", "All");
+		item.setAttribute("Key", "Alt+D");
+	}
+}
+
 if (window.Addon == 1) {
 	Addons.AddressBar =
 	{
 		tid: null,
 		bDrag: false,
+		nPos: 0,
+		strName: "Address Bar",
 
 		Add: function (level, path)
 		{
@@ -207,6 +222,12 @@ if (window.Addon == 1) {
 			if (!Addons.AddressBar.tid) {
 				Addons.AddressBar.tid = setTimeout("Addons.AddressBar.Arrange()", 100);
 			}
+		},
+
+		Focus: function ()
+		{
+			document.F.addressbar.focus();
+			return S_OK;
 		}
 	};
 
@@ -258,7 +279,33 @@ if (window.Addon == 1) {
 	GetAddress = function ()
 	{
 		return document.F.addressbar.value;
+	};
+
+	if (items.length) {
+		//Menu
+		if (item.getAttribute("MenuExec")) {
+			Addons.AddressBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
+			var s = item.getAttribute("MenuName");
+			if (s && s != "") {
+				Addons.AddressBar.strName = s;
+			}
+			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+			{
+				api.InsertMenu(hMenu, Addons.AddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.AddressBar.strName));
+				ExtraMenuCommand[nPos] = Addons.AddressBar.Focus;
+				return nPos;
+			});
+		}
+		//Key
+		if (item.getAttribute("KeyExec")) {
+			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.AddressBar.Focus, "Func");
+		}
+		//Mouse
+		if (item.getAttribute("MouseExec")) {
+			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.AddressBar.Focus, "Func");
+		}
 	}
+	AddTypeEx("Add-ons", "Address Bar", Addons.AddressBar.Focus);
 
 	var s = [];
 	s.push('<select id="combobox" onchange="Addons.AddressBar.Select(this);"')
@@ -281,7 +328,7 @@ if (window.Addon == 1) {
 	else {
 		s.push('<iframe id="forie6" scrolling="no" frameborder="0" style="position: absolute; left 0px; width: 0px; height: 1px; z-index: 2; display: inline"></iframe>');
 	}
-	s.push('<input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="this.select()"');
+	s.push('<input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="this.select()" onblur="this.value=this.value"');
 	s.push(' style="position: absolute; z-index: 3;" />');
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
 	var cbbx = document.getElementById("combobox");

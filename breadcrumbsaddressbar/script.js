@@ -1,8 +1,21 @@
 var Addon_Id = "breadcrumbsaddressbar";
 var Default = "ToolBar2Center";
 
+var items = te.Data.Addons.getElementsByTagName(Addon_Id);
+if (items.length) {
+	var item = items[0];
+	if (!item.getAttribute("Set")) {
+		item.setAttribute("Menu", "Edit");
+		item.setAttribute("MenuPos", -1);
+
+		item.setAttribute("KeyExec", 1);
+		item.setAttribute("KeyOn", "All");
+		item.setAttribute("Key", "Alt+D");
+	}
+}
+
 if (window.Addon == 1) {
-	Addons.BreadCrumbsAddressBar =
+	Addons.BreadcrumbsAddressBar =
 	{
 		tid: null,
 		Item: null,
@@ -10,6 +23,8 @@ if (window.Addon == 1) {
 		nLevel: 0,
 		tid2: null,
 		bClose: false,
+		nPos: 0,
+		strName: "Breadcrumbs Address Bar",
 
 		KeyDown: function (o)
 		{
@@ -53,9 +68,9 @@ if (window.Addon == 1) {
 				var n = 0;
 				do {
 					if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
-						s.unshift('<span id="breadcrumbsaddressbar' + n + '" class="button" style="font-family: webdings; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.BreadCrumbsAddressBar.Popup(this,' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
+						s.unshift('<span id="breadcrumbsaddressbar' + n + '" class="button" style="font-family: webdings; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.BreadcrumbsAddressBar.Popup(this,' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
 					}
-					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.BreadCrumbsAddressBar.Go(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
+					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.BreadcrumbsAddressBar.Go(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
 					FolderItem = api.ILRemoveLastID(FolderItem);
 					o.innerHTML = s.join("");
 					if (o.offsetWidth > width && n > 0) {
@@ -67,11 +82,11 @@ if (window.Addon == 1) {
 				} while (!api.ILIsEmpty(FolderItem));
 				if (api.ILIsEmpty(FolderItem)) {
 					if (!bRoot) {
-						o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar' + n + '" class="button" style="font-family: webdings; line-height: ' + height + 'px" onclick="Addons.BreadCrumbsAddressBar.Popup(this, ' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
+						o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar' + n + '" class="button" style="font-family: webdings; line-height: ' + height + 'px" onclick="Addons.BreadcrumbsAddressBar.Popup(this, ' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
 					}
 				}
 				else {
-					o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.BreadCrumbsAddressBar.Popup2(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">&laquo;</span>');
+					o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.BreadcrumbsAddressBar.Popup2(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">&laquo;</span>');
 				}
 				this.nLevel = n;
 				(function (o) { setTimeout(function () {
@@ -80,6 +95,12 @@ if (window.Addon == 1) {
 					o.style.top = (pt.y + (oAddr.offsetHeight - o.offsetHeight) / 2) + "px";
 				}, 100);}) (o);
 			}
+		},
+
+		Exec: function ()
+		{
+			document.F.breadcrumbsaddressbar.focus();
+			return S_OK;
 		},
 
 		Focus: function (o)
@@ -92,7 +113,7 @@ if (window.Addon == 1) {
 		Blur: function (o)
 		{
 			o.style.color = "window";
-			document.getElementById("breadcrumbsbuttons").style.display = "inline";
+			document.getElementById("breadcrumbsbuttons").style.display = "inline-block";
 		},
 
 		Go: function (n)
@@ -114,15 +135,15 @@ if (window.Addon == 1) {
 
 		Popup: function (o, n)
 		{
-			if (!Addons.BreadCrumbsAddressBar.bClose) {
-				Addons.BreadCrumbsAddressBar.Item = o;
+			if (!Addons.BreadcrumbsAddressBar.bClose) {
+				Addons.BreadcrumbsAddressBar.Item = o;
 				var pt = GetPos(o, true);
-				Addons.BreadCrumbsAddressBar.bLoop = true;
+				Addons.BreadcrumbsAddressBar.bLoop = true;
 				AddEvent("ExitMenuLoop", function () {
-					Addons.BreadCrumbsAddressBar.bLoop = false;
-					Addons.BreadCrumbsAddressBar.bClose = true;
-					clearTimeout(Addons.BreadCrumbsAddressBar.tid2);
-					Addons.BreadCrumbsAddressBar.tid2 = setTimeout("Addons.BreadCrumbsAddressBar.bClose = false;", 500);
+					Addons.BreadcrumbsAddressBar.bLoop = false;
+					Addons.BreadcrumbsAddressBar.bClose = true;
+					clearTimeout(Addons.BreadcrumbsAddressBar.tid2);
+					Addons.BreadcrumbsAddressBar.tid2 = setTimeout("Addons.BreadcrumbsAddressBar.bClose = false;", 500);
 
 				});
 				MouseOver(o);
@@ -141,10 +162,10 @@ if (window.Addon == 1) {
 					FolderItem = api.ILRemoveLastID(FolderItem);
 					FolderMenu.AddMenuItem(hMenu, FolderItem);
 				}
-				Addons.BreadCrumbsAddressBar.Item = o;
-				Addons.BreadCrumbsAddressBar.bLoop = true;
+				Addons.BreadcrumbsAddressBar.Item = o;
+				Addons.BreadcrumbsAddressBar.bLoop = true;
 				ExitMenuLoop = function () {
-					Addons.BreadCrumbsAddressBar.bLoop = false;
+					Addons.BreadcrumbsAddressBar.bLoop = false;
 				};
 				MouseOver(o);
 				var pt = GetPos(o, true);
@@ -165,27 +186,27 @@ if (window.Addon == 1) {
 	{
 		if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
 			document.F.breadcrumbsaddressbar.value = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-			Addons.BreadCrumbsAddressBar.Arrange(Ctrl.FolderItem);
+			Addons.BreadcrumbsAddressBar.Arrange(Ctrl.FolderItem);
 		}
 	});
 
 	AddEvent("Resize", function ()
 	{
-		Addons.BreadCrumbsAddressBar.Arrange();
+		Addons.BreadcrumbsAddressBar.Arrange();
 	});
 
 	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo)
 	{
-		if (msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_TE && Addons.BreadCrumbsAddressBar.bLoop) {
+		if (msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_TE && Addons.BreadcrumbsAddressBar.bLoop) {
 			var Ctrl2 = te.CtrlFromPoint(pt);
-			if (Ctrl2 && Ctrl2.Type == CTRL_WB && !HitTest(Addons.BreadCrumbsAddressBar.Item, pt)) {
-				for (var i = Addons.BreadCrumbsAddressBar.nLevel; i >= 0; i--) {
+			if (Ctrl2 && Ctrl2.Type == CTRL_WB && !HitTest(Addons.BreadcrumbsAddressBar.Item, pt)) {
+				for (var i = Addons.BreadcrumbsAddressBar.nLevel; i >= 0; i--) {
 					var o = document.getElementById("breadcrumbsaddressbar" + i);
 					if (o) {
 						if (HitTest(o, pt)) {
 							wsh.SendKeys("{Esc}");
 							(function (o) { setTimeout(function () {
-								Addons.BreadCrumbsAddressBar.bClose = false;
+								Addons.BreadcrumbsAddressBar.bClose = false;
 								o.click();
 							}, 100);}) (o);
 						}
@@ -205,11 +226,37 @@ if (window.Addon == 1) {
 		return document.F.breadcrumbsaddressbar.value;
 	}
 
+	if (items.length) {
+		//Menu
+		if (item.getAttribute("MenuExec")) {
+			Addons.BreadcrumbsAddressBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
+			var s = item.getAttribute("MenuName");
+			if (s && s != "") {
+				Addons.BreadcrumbsAddressBar.strName = s;
+			}
+			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+			{
+				api.InsertMenu(hMenu, Addons.BreadcrumbsAddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.BreadcrumbsAddressBar.strName));
+				ExtraMenuCommand[nPos] = Addons.BreadcrumbsAddressBar.Exec;
+				return nPos;
+			});
+		}
+		//Key
+		if (item.getAttribute("KeyExec")) {
+			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.BreadcrumbsAddressBar.Exec, "Func");
+		}
+		//Mouse
+		if (item.getAttribute("MouseExec")) {
+			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.BreadcrumbsAddressBar.Exec, "Func");
+		}
+	}
+	AddTypeEx("Add-ons", "Breadcrumbs Address Bar", Addons.BreadcrumbsAddressBar.Exec);
+
 	var s = ['<span id="breadcrumbsbuttons" style="margin 2px; background-color: window; white-space: nowrap; position: absolute"></span>'];
-	s.push('<input id="breadcrumbsaddressbar" type="text" onkeydown="return Addons.BreadCrumbsAddressBar.KeyDown(this)" onfocus="Addons.BreadCrumbsAddressBar.Focus(this)" onblur="Addons.BreadCrumbsAddressBar.Blur(this)" onresize="Addons.BreadCrumbsAddressBar.Resize()" style="width: 100%; vertical-align: middle; color: window">');
+	s.push('<input id="breadcrumbsaddressbar" type="text" onkeydown="return Addons.BreadcrumbsAddressBar.KeyDown(this)" onfocus="Addons.BreadcrumbsAddressBar.Focus(this)" onblur="Addons.BreadcrumbsAddressBar.Blur(this)" onresize="Addons.BreadcrumbsAddressBar.Resize()" style="width: 100%; vertical-align: middle; color: window">');
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s.join("")));
 	if (o.style.verticalAlign.length == 0) {
 		o.style.verticalAlign = "middle";
 	}
-	Addons.BreadCrumbsAddressBar.Resize();
+	Addons.BreadcrumbsAddressBar.Resize();
 }

@@ -1,14 +1,31 @@
-﻿if (window.Addon == 1) {
+﻿var Addon_Id = "inneraddressbar";
+
+var items = te.Data.Addons.getElementsByTagName(Addon_Id);
+if (items.length) {
+	var item = items[0];
+	if (!item.getAttribute("Set")) {
+		item.setAttribute("Menu", "Edit");
+		item.setAttribute("MenuPos", -1);
+
+		item.setAttribute("KeyExec", 1);
+		item.setAttribute("KeyOn", "All");
+		item.setAttribute("Key", "Alt+D");
+	}
+}
+
+if (window.Addon == 1) {
 	Addons.InnerAddressBar =
 	{
 		tid: [],
 		bDrag: false,
 		bSet: [],
+		nPos: 0,
+		strName: "Inner Address Bar",
 
 		Add: function (level, path)
 		{
 			var cTC = te.Ctrls(CTRL_TC);
-			for (var nTC = cTC.Count - 1; nTC >= 0; nTC--) {
+			for (var nTC = cTC.Count; nTC-- > 0;) {
 				var o = document.getElementById("combobox_" + cTC.Item(nTC).Id);
 				if (o) {
 					o.options[++o.length - 1].text = new Array(level * 4 + 1).join("\xa0") + api.GetDisplayNameOf(path, SHGDN_INFOLDER);
@@ -233,7 +250,7 @@
 					if (document.documentMode) {
 						var info = api.Memory("SHFILEINFO");
 						api.ShGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
-						var image = te.GdiplusBitmap;
+						var image = te.GdiplusBitmap();
 						image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
 						api.DestroyIcon(info.hIcon);
 						document.getElementById("addr_img_" + Id).src = image.DataURI("image/png");
@@ -242,7 +259,17 @@
 				Addons.InnerAddressBar.bSet[Id] = true;
 				Addons.InnerAddressBar.Resize(Id);
 			}
+		},
+
+		Exec: function ()
+		{
+			var TC = te.Ctrl(CTRL_TC);
+			if (TC) {
+				document.getElementById("addressbar_" + TC.Id).focus();
+			}
+			return S_OK;
 		}
+
 	};
 
 	AddEvent("PanelCreated", function (Ctrl)
@@ -270,7 +297,7 @@
 		else {
 			s.push('<iframe id="forie6_$" scrolling="no" frameborder="0" style="width: 0px; height: 1px; z-index: 2; display: inline"></iframe>');
 		}
-		s.push('<input id="addressbar_$" type="text" onkeydown="return Addons.InnerAddressBar.KeyDown(this, $)" onfocus="Addons.InnerAddressBar.Focus(this, $)"');
+		s.push('<input id="addressbar_$" type="text" onkeydown="return Addons.InnerAddressBar.KeyDown(this, $)" onfocus="Addons.InnerAddressBar.Focus(this, $)" onblur="this.value=this.value"');
 		s.push(' style="position: absolute; z-index: 3;" />');
 		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 		var o = document.getElementById("Inner1Center_" + Ctrl.Id);
@@ -316,7 +343,7 @@
 		}
 		Addons.InnerAddressBar.Add(1, ssfBITBUCKET);
 
-		for (var nTC = cTC.Count - 1; nTC >= 0; nTC--) {
+		for (var nTC = cTC.Count; nTC-- > 0;) {
 			var cbbx = document.getElementById("combobox_" + cTC.Item(nTC).Id);
 			if (cbbx) {
 				cbbx.selectedIndex = -1
@@ -334,4 +361,30 @@
 			}
 		}
 	});
+
+	if (items.length) {
+		//Menu
+		if (item.getAttribute("MenuExec")) {
+			Addons.InnerAddressBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
+			var s = item.getAttribute("MenuName");
+			if (s && s != "") {
+				Addons.InnerAddressBar.strName = s;
+			}
+			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+			{
+				api.InsertMenu(hMenu, Addons.InnerAddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.InnerAddressBar.strName));
+				ExtraMenuCommand[nPos] = Addons.InnerAddressBar.Exec;
+				return nPos;
+			});
+		}
+		//Key
+		if (item.getAttribute("KeyExec")) {
+			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.InnerAddressBar.Exec, "Func");
+		}
+		//Mouse
+		if (item.getAttribute("MouseExec")) {
+			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerAddressBar.Exec, "Func");
+		}
+	}
+	AddTypeEx("Add-ons", "Inner Breadcrumbs Address Bar", Addons.InnerAddressBar.Exec);
 }
