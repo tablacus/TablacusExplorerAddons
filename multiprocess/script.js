@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) { (function () {
+﻿if (window.Addon == 1) {
 	Addons.MultiProcess =
 	{
 		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bDelete)
@@ -31,6 +31,12 @@
 						if (bOver) {
 							var DropTarget = api.DropTarget(Dest);
 							DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
+						}
+						if (pdwEffect.x & DROPEFFECT_COPY) {
+							grfKeyState |= MK_CONTROL;
+						}
+						else if (pdwEffect.x & DROPEFFECT_MOVE) {
+							grfKeyState |= MK_SHIFT;
 						}
 						strFunc = '-grfKeyState ' + grfKeyState + ' -drop "' + Dest + '"';
 					}
@@ -125,4 +131,4 @@
 
 	te.HookDragDrop(CTRL_FV, true);
 	te.HookDragDrop(CTRL_TV, true);
-})();}
+}
