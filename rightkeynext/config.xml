@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2014.2.17</MinVersion>
+    <pubDate>Mon, 17 Feb 2014 00:00:00 UTC</pubDate>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Right key next</Name>
+    <Description>In Icon View.
+Right-arrow key: Move to the next item.
+Left-arrow key: Move to the previous item.</Description>
+  </en>
+  <ja>
+    <Name>右キーで次に</Name>
+    <Description>アイコン表示で、
+右方向キー: 次の項目に移動。
+左方向キー: 前の項目に移動。</Description>
+  </ja>
+</TablacusExplorer>

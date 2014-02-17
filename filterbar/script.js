@@ -8,16 +8,6 @@ if (window.Addon == 1) {
 		filter: null,
 		iCaret: -1,
 
-		Init: function ()
-		{
-			var s = '<input type="text" name="filter" onkeydown="Addons.FilterBar.KeyDown(this)" onfocus="Addons.FilterBar.Focus(this)" style="width: 160px; vertical-align: middle"><span onclick="Addons.FilterBar.Clear(true)" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" style="vertical-align: middle"><input type="image" src="../addons/filterbar/filter.png" id="ButtonFilter" hidefocus="true" style="vertical-align: middle"><input type="image" id="ButtonFilterClear" bitmap="ieframe.dll,206,16,2" style="display: none" hidefocus="true" style="vertical-align: middle"></span>';
-			var o = document.getElementById(SetAddon(Addon_Id, Default, s));
-
-			if (o.style.verticalAlign.length == 0) {
-				o.style.verticalAlign = "middle";
-			}
-		},
-
 		KeyDown: function (o)
 		{
 			this.filter = o.value;
@@ -35,11 +25,8 @@ if (window.Addon == 1) {
 					s = "*" + s + "*";
 				}
 			}
-			else {
-				s = null;
-			}
-			if (FV.FilterView != s) {
-				FV.FilterView = s;
+			if (api.strcmpi(s, FV.FilterView)) {
+				FV.FilterView = s ? s : null;
 				FV.Refresh();
 			}
 		},
@@ -68,8 +55,10 @@ if (window.Addon == 1) {
 
 		ShowButton: function ()
 		{
-			document.getElementById("ButtonFilter").style.display = document.F.filter.value.length ? "none" : "inline";
-			document.getElementById("ButtonFilterClear").style.display = document.F.filter.value.length ? "inline" : "none";
+			if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602) {
+				document.getElementById("ButtonFilter").style.display = document.F.filter.value.length ? "none" : "inline";
+				document.getElementById("ButtonFilterClear").style.display = document.F.filter.value.length ? "inline" : "none";
+			}
 		}
 	};
 
@@ -87,5 +76,10 @@ if (window.Addon == 1) {
 		Addons.FilterBar.ShowButton();
 	});
 
-	Addons.FilterBar.Init();
+	var s = '<input type="text" name="filter" placeholder="Filter" onkeydown="Addons.FilterBar.KeyDown(this)" onfocus="Addons.FilterBar.Focus(this)" onmouseup="Addons.FilterBar.KeyDown(this)" style="width: 176px; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="../addons/filterbar/filter.png" id="ButtonFilter" hidefocus="true" style="position: absolute; left: -18px; top: -7px"><input type="image" id="ButtonFilterClear" src="bitmap:ieframe.dll,545,13,1" style="display: none; position: absolute; left: -17px; top: -4px" hidefocus="true" onclick="Addons.FilterBar.Clear(true)"></span>';
+	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
+
+	if (o.style.verticalAlign.length == 0) {
+		o.style.verticalAlign = "middle";
+	}
 }
