@@ -46,22 +46,15 @@ if (window.Addon == 1) {
 			if (!addr.style.border) {
 				cbbx.style.height = addr.offsetHeight + "px";
 				addr.style.border = "0px";
+				img.style.top = (cbbx.offsetHeight - 16) / 2 + "px";
+				addr.style.visibility = "visible";
 			}
-			var p = GetPos(cbbx, false);
 			var w = cbbx.offsetWidth - 42;
 			w = w > 0 ? w : 0;
 			var h = cbbx.offsetHeight - 4;
 			h = h > 0 ? h : 0;
-			if (ie6) {
-				ie6.style.left = p.x + 2 + "px";
-				ie6.style.top = p.y + 2 + "px";
-				ie6.style.width = w + 19 + "px";
-				ie6.style.height = (h - 0) + "px";
-			}
-			img.style.left = p.x + 4 + "px";
-			img.style.top = p.y + (cbbx.offsetHeight - 16) / 2 + "px";
-			addr.style.left = p.x + 21 + "px";
-			addr.style.top = p.y + 2 + "px";
+			ie6.style.width = w + 19 + "px";
+			ie6.style.height = h + "px";
 			addr.style.height = h + "px";
 			addr.style.width = w + "px";
 			this.Length(cbbx);
@@ -248,7 +241,7 @@ if (window.Addon == 1) {
 		var Items = sha.NameSpace(ssfDRIVES).Items();
 		for (var i = 0; i < Items.Count; i++) {
 			var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING);
-			if (path.length <= 3) {
+			if (path && path.length <= 3) {
 				Addons.AddressBar.Add(2, path);
 			}
 		}
@@ -308,11 +301,12 @@ if (window.Addon == 1) {
 	AddTypeEx("Add-ons", "Address Bar", Addons.AddressBar.Focus);
 
 	var s = [];
+	s.push('<div style="position: relative; width; 100px">');
 	s.push('<select id="combobox" onchange="Addons.AddressBar.Select(this);"')
 	s.push(' onclick="return Addons.AddressBar.Click(this);"');
 	s.push(' oncontextmenu="return Addons.AddressBar.Popup(this);"');
 	s.push(' onresize="Addons.AddressBar.Resize()"');
-	s.push(' hidefocus="true" style="width: 100%;"><option>\xa0</option></select>');
+	s.push(' hidefocus="true" style="width: 100%"><option>\xa0</option></select>');
 
 	s.push('<img id="addr_img" icon="shell32.dll,3,16"');
 	s.push(' onmousedown="Addons.AddressBar.MouseDown(this);"');
@@ -320,16 +314,15 @@ if (window.Addon == 1) {
 	s.push(' onclick="return Addons.AddressBar.Open(document.getElementById(\'combobox\'));"');
 	s.push(' oncontextmenu="return Addons.AddressBar.Popup(this);"');
 	s.push(' onmouseout="Addons.AddressBar.Drag(this);"');
-	s.push(' style="position: absolute;left 0; width: 0px; width: 16px; height: 16px; z-index: 3; border: 0px" />');
-
+	s.push(' style="position: absolute; left: 4px; top: 2px; width: 16px; height: 16px; z-index: 3; border: 0px" />');
 	if (document.documentMode) {
-		s.push('<div id="forie6" scrolling="no" frameborder="0" style="position: absolute; left 0px; width: 0px; height: 1px; z-index: 2; display: inline; background-color: window"></div>');
+		s.push('<div id="forie6" scrolling="no" frameborder="0" style="position: absolute; left: 2px; top: 2px; width: 0px; height: 1px; z-index: 2; display: inline; background-color: window"></div>');
 	}
 	else {
-		s.push('<iframe id="forie6" scrolling="no" frameborder="0" style="position: absolute; left 0px; width: 0px; height: 1px; z-index: 2; display: inline"></iframe>');
+		s.push('<iframe id="forie6" scrolling="no" frameborder="0" style="position: absolute; left: 2px; top: 2px; width: 0px; height: 1px; z-index: 2; display: inline"></iframe>');
 	}
 	s.push('<input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="this.select()" onblur="this.value=this.value"');
-	s.push(' style="position: absolute; z-index: 3;" />');
+	s.push(' style="position: absolute; left: 21px; top: 2px; z-index: 3; visibility: hidden" /></div>');
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
 	var cbbx = document.getElementById("combobox");
 

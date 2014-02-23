@@ -54,26 +54,17 @@ if (window.Addon == 1) {
 					if (!addr.style.border) {
 						cbbx.style.height = addr.offsetHeight + "px";
 						addr.style.border = "0px";
+						img.style.top = (cbbx.offsetHeight - 16) / 2 + "px";
+						addr.style.visibility = "visible";
 					}
-					var p = GetPos(cbbx, false);
 					var panel = document.getElementById("Panel_" + Id);
-					p.x -= panel.style.left.replace(/\D/g, "");
-					p.y -= panel.style.top.replace(/\D/g, "");
 					var w = cbbx.offsetWidth - 41;
 					w = w > 0 ? w : 0;
 					var h = cbbx.offsetHeight - 4;
 					h = h > 0 ? h : 0;
 
-					ie6.style.position = "absolute";
-					ie6.style.left = p.x + 2 + "px";
-					ie6.style.top = p.y + 2 + "px";
 					ie6.style.width = w + 19 + "px";
-					ie6.style.height = (h - 0) + "px";
-					img.style.position = "absolute";
-					img.style.left = p.x + 4 + "px";
-					img.style.top = p.y + (cbbx.offsetHeight - 16) / 2 + "px";
-					addr.style.left = p.x + 21 + "px";
-					addr.style.top = p.y + 2 + "px";
+					ie6.style.height = h + "px";
 					addr.style.height = h + "px";
 					addr.style.width = w + "px";
 				}
@@ -275,30 +266,29 @@ if (window.Addon == 1) {
 	AddEvent("PanelCreated", function (Ctrl)
 	{
 		var s = [];
+		s.push('<div style="position: relative; width; 100px">');
 		s.push('<select id="combobox_$" onchange="Addons.InnerAddressBar.Select(this, $);" hidefocus="true"')
 		s.push(' onclick="return Addons.InnerAddressBar.Click(this, $);"');
 		s.push(' oncontextmenu="return Addons.InnerAddressBar.Popup(this, $);"');
 		s.push(' onmouseout="Addons.InnerAddressBar.Drag(this, $);"');
 		s.push(' onresize="Addons.InnerAddressBar.Resize($);"');
-		s.push(' style="width: 100%;');
-		s.push('"><option>\xa0</option></select>');
+		s.push(' style="width: 100%"><option>\xa0</option></select>');
 
 		s.push('<img id="addr_img_$" icon="shell32.dll,3,16"');
-
 		s.push(' onmousedown="Addons.InnerAddressBar.MouseDown(this, $);"');
 		s.push(' onmouseup="Addons.InnerAddressBar.MouseUp();"');
 		s.push(' onclick="return Addons.InnerAddressBar.Open(document.getElementById(\'combobox_$\'), $);"');
 		s.push(' oncontextmenu="return Addons.InnerAddressBar.Popup(this, $);"');
 		s.push(' onmouseout="Addons.InnerAddressBar.Drag(this);"');
-		s.push(' style="width: 16px; height: 16px; z-index: 3; border: 0px" />');
+		s.push(' style="position: absolute; left: 4px; top: 2px; width: 16px; height: 16px; z-index: 3; border: 0px" />');
 		if (document.documentMode) {
-			s.push('<div id="forie6_$" scrolling="no" frameborder="0" style="width: 0px; height: 1px; z-index: 2; display: inline; background-color: window"></div>');
+			s.push('<div id="forie6_$" scrolling="no" frameborder="0" style="position: absolute; left: 2px; top: 2px; width: 0px; height: 1px; z-index: 2; display: inline; background-color: window"></div>');
 		}
 		else {
-			s.push('<iframe id="forie6_$" scrolling="no" frameborder="0" style="width: 0px; height: 1px; z-index: 2; display: inline"></iframe>');
+			s.push('<iframe id="forie6_$" scrolling="no" frameborder="0" style="position: absolute; left: 2px; top: 2px; width: 0px; height: 1px; z-index: 2; display: inline"></iframe>');
 		}
 		s.push('<input id="addressbar_$" type="text" onkeydown="return Addons.InnerAddressBar.KeyDown(this, $)" onfocus="Addons.InnerAddressBar.Focus(this, $)" onblur="this.value=this.value"');
-		s.push(' style="position: absolute; z-index: 3;" />');
+		s.push(' style="position: absolute; left: 21px; top: 2px; z-index: 3; visibility: hidden" /></div>');
 		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 		var o = document.getElementById("Inner1Center_" + Ctrl.Id);
 		if (o.style.verticalAlign.length == 0) {
@@ -337,7 +327,7 @@ if (window.Addon == 1) {
 		var Items = sha.NameSpace(ssfDRIVES).Items();
 		for (var i = 0; i < Items.Count; i++) {
 			var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING);
-			if (path.length <= 3) {
+			if (path && path.length <= 3) {
 				Addons.InnerAddressBar.Add(2, path);
 			}
 		}
