@@ -89,11 +89,6 @@ if (window.Addon == 1) {
 					o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.BreadcrumbsAddressBar.Popup2(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">&laquo;</span>');
 				}
 				this.nLevel = n;
-				(function (o) { setTimeout(function () {
-					var pt = GetPos(oAddr);
-					o.style.left = (pt.x + 1) + "px";
-					o.style.top = (pt.y + (oAddr.offsetHeight - o.offsetHeight) / 2) + "px";
-				}, 100);}) (o);
 			}
 		},
 
@@ -252,9 +247,8 @@ if (window.Addon == 1) {
 	}
 	AddTypeEx("Add-ons", "Breadcrumbs Address Bar", Addons.BreadcrumbsAddressBar.Exec);
 
-	var s = ['<span id="breadcrumbsbuttons" style="margin 2px; background-color: window; white-space: nowrap; position: absolute"></span>'];
-	s.push('<input id="breadcrumbsaddressbar" type="text" onkeydown="return Addons.BreadcrumbsAddressBar.KeyDown(this)" onfocus="Addons.BreadcrumbsAddressBar.Focus(this)" onblur="Addons.BreadcrumbsAddressBar.Blur(this)" onresize="Addons.BreadcrumbsAddressBar.Resize()" style="width: 100%; vertical-align: middle; color: window">');
-	var o = document.getElementById(SetAddon(Addon_Id, Default, s.join("")));
+	var s = '<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbsbuttons" style="margin 2px; background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 2px"></div><input id="breadcrumbsaddressbar" type="text" onkeydown="return Addons.BreadcrumbsAddressBar.KeyDown(this)" onfocus="Addons.BreadcrumbsAddressBar.Focus(this)" onblur="Addons.BreadcrumbsAddressBar.Blur(this)" onresize="Addons.BreadcrumbsAddressBar.Resize()" style="width: 100%; vertical-align: middle; color: window"></div>';
+	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
 	if (o.style.verticalAlign.length == 0) {
 		o.style.verticalAlign = "middle";
 	}
