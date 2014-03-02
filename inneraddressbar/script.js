@@ -266,7 +266,7 @@ if (window.Addon == 1) {
 	AddEvent("PanelCreated", function (Ctrl)
 	{
 		var s = [];
-		s.push('<div style="position: relative; width; 100px">');
+		s.push('<div style="position: relative; width; 100px; overflow: hidden">');
 		s.push('<select id="combobox_$" onchange="Addons.InnerAddressBar.Select(this, $);" hidefocus="true"')
 		s.push(' onclick="return Addons.InnerAddressBar.Click(this, $);"');
 		s.push(' oncontextmenu="return Addons.InnerAddressBar.Popup(this, $);"');
@@ -321,13 +321,12 @@ if (window.Addon == 1) {
 			}
 		}
 		Addons.InnerAddressBar.Add(0, ssfDESKTOP);
-		Addons.InnerAddressBar.Add(1, ssfPERSONAL);
 		Addons.InnerAddressBar.Add(1, ssfDRIVES);
 
 		var Items = sha.NameSpace(ssfDRIVES).Items();
 		for (var i = 0; i < Items.Count; i++) {
-			var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING);
-			if (path && path.length <= 3) {
+			var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+			if (path) {
 				Addons.InnerAddressBar.Add(2, path);
 			}
 		}
@@ -376,5 +375,5 @@ if (window.Addon == 1) {
 			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerAddressBar.Exec, "Func");
 		}
 	}
-	AddTypeEx("Add-ons", "Inner Breadcrumbs Address Bar", Addons.InnerAddressBar.Exec);
+	AddTypeEx("Add-ons", "Inner Address Bar", Addons.InnerAddressBar.Exec);
 }

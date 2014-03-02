@@ -20,7 +20,7 @@
 				mii.cbSize = mii.Size;
 				mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
 				var arBM = [];
-				for (var i = Log.Index - 1; i >= 0; i--) {
+				for (var i = Log.Index; i-- > 0;) {
 					var FolderItem = Log.Item(i);
 					mii.dwTypeData = ' ' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
 					var image = te.GdiplusBitmap;
@@ -53,17 +53,16 @@
 	AddEvent("PanelCreated", function (Ctrl)
 	{
 		var h = GetAddonOption("innerforward", "IconSize") || 16;
-		var s = GetAddonOption("innerforward", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,1" : "bitmap:ieframe.dll,214,24,1");
-		s = 'src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px"';
-		var s = '<span class="button" onclick="return Addons.InnerForward.Click($)" oncontextmenu="Addons.InnerForward.Popup(this, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img id="ImgForward_$" title="Forward" ' + s + '></span>';
-		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.replace(/\$/g, Ctrl.Id));
+		var src = GetAddonOption("innerforward", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,1" : "bitmap:ieframe.dll,214,24,1");
+		var s = ['<span class="button" onclick="return Addons.InnerForward.Click($)" oncontextmenu="Addons.InnerForward.Popup(this, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img id="ImgForward_$" title="Forward" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
+		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
 	AddEvent("ChangeView", function (Ctrl)
 	{
 		var Log = Ctrl.History;
 		var TC = Ctrl.Parent;
-		if (TC) {
+		if (TC && Ctrl.Id == TC.Selected.Id) {
 			DisableImage(document.getElementById("ImgForward_" + TC.Id), Log && Log.Index == 0);
 		}
 	});

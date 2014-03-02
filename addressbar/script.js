@@ -235,13 +235,12 @@ if (window.Addon == 1) {
 			o.value = "-";
 		}
 		Addons.AddressBar.Add(0, ssfDESKTOP);
-		Addons.AddressBar.Add(1, ssfPERSONAL);
 		Addons.AddressBar.Add(1, ssfDRIVES);
 
 		var Items = sha.NameSpace(ssfDRIVES).Items();
 		for (var i = 0; i < Items.Count; i++) {
-			var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING);
-			if (path && path.length <= 3) {
+			var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+			if (path) {
 				Addons.AddressBar.Add(2, path);
 			}
 		}
@@ -301,7 +300,7 @@ if (window.Addon == 1) {
 	AddTypeEx("Add-ons", "Address Bar", Addons.AddressBar.Focus);
 
 	var s = [];
-	s.push('<div style="position: relative; width; 100px">');
+	s.push('<div style="position: relative; width; 100px; overflow: hidden">');
 	s.push('<select id="combobox" onchange="Addons.AddressBar.Select(this);"')
 	s.push(' onclick="return Addons.AddressBar.Click(this);"');
 	s.push(' oncontextmenu="return Addons.AddressBar.Popup(this);"');

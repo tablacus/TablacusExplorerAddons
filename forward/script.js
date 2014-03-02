@@ -1,7 +1,7 @@
 ﻿var Addon_Id = "forward";
 var Default = "ToolBar2Left";
 
-if (window.Addon == 1) { (function () {
+if (window.Addon == 1) {
 	Addons.Forward =
 	{
 		Popup: function (o)
@@ -14,7 +14,7 @@ if (window.Addon == 1) { (function () {
 				mii.cbSize = mii.Size;
 				mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
 				var arBM = [];
-				for (var i = Log.Index - 1; i >= 0; i--) {
+				for (var i = Log.Index; i-- > 0;) {
 					var FolderItem = Log.Item(i);
 					mii.dwTypeData = ' ' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
 					var image = te.GdiplusBitmap;
@@ -46,14 +46,14 @@ if (window.Addon == 1) { (function () {
 
 	AddEvent("ChangeView", function (Ctrl)
 	{
-		var Log = Ctrl.History;
-		DisableImage(document.getElementById("ImgForward"), Log && Log.Index == 0);
+		if (Ctrl.Id == Ctrl.Parent.Selected.Id) {
+			var Log = Ctrl.History;
+			DisableImage(document.getElementById("ImgForward"), Log && Log.Index == 0);
+		}
 	});
 
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,1" : "bitmap:ieframe.dll,214,24,1");
-	s = 'src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px"';
-	s = '<span class="button" onclick="Navigate(null, SBSP_NAVIGATEFORWARD | SBSP_SAMEBROWSER); return false;" oncontextmenu="Addons.Forward.Popup(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img id="ImgForward" title="Forward" ' + s + '></span>';
+	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,1" : "bitmap:ieframe.dll,214,24,1");
+	var s = ['<span class="button" onclick="Navigate(null, SBSP_NAVIGATEFORWARD | SBSP_SAMEBROWSER); return false;" oncontextmenu="Addons.Forward.Popup(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img id="ImgForward" title="Forward" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
 	SetAddon(Addon_Id, Default, s);
-})();}
-
+}

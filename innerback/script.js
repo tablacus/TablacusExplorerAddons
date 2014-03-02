@@ -48,19 +48,17 @@
 	AddEvent("PanelCreated", function (Ctrl)
 	{
 		var h = GetAddonOption("innerback", "IconSize") || 16;
-		var s = GetAddonOption("innerback", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,0" : "bitmap:ieframe.dll,214,24,0");
-		s = 'src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px"';
-		s = '<span class="button" onclick="return Addons.InnerBack.Click($)" oncontextmenu="Addons.InnerBack.Popup(this, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img id="ImgBack_$" title="Back" ' + s + '></span>';
-		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.replace(/\$/g, Ctrl.Id));
+		var src = GetAddonOption("innerback", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,0" : "bitmap:ieframe.dll,214,24,0");
+		var s = ['<span class="button" onclick="return Addons.InnerBack.Click($)" oncontextmenu="Addons.InnerBack.Popup(this, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img id="ImgBack_$" title="Back" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
+		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
 	AddEvent("ChangeView", function (Ctrl)
 	{
 		var Log = Ctrl.History;
 		var TC = Ctrl.Parent;
-		if (TC) {
+		if (TC && Ctrl.Id == TC.Selected.Id) {
 			DisableImage(document.getElementById("ImgBack_" + TC.Id), Log && Log.Index >= Log.Count - 1);
 		}
 	});
 }
-

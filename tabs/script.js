@@ -176,5 +176,6 @@ if (window.Addon == 1) {
 		tcItem.mask = TCIF_IMAGE;
 		tcItem.iImage = bLock ? 2 : -1;
 		api.SendMessage(Ctrl.hwnd, TCM_SETITEM, i, tcItem.P);
+		Resize();
 	});
 }

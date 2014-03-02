@@ -1,9 +1,20 @@
 var Addon_Id = "treeview";
 var Default = "ToolBar2Left";
 
+var items = te.Data.Addons.getElementsByTagName(Addon_Id);
+if (items.length) {
+	var item = items[0];
+	if (!item.getAttribute("Set")) {
+		item.setAttribute("MenuPos", -1);
+	}
+}
+
 if (window.Addon == 1) {
 	Addons.TreeView =
 	{
+		strName: "Tree",
+		nPos: 0,
+
 		Exec: function (Ctrl, pt)
 		{
 			TV = te.Ctrl(CTRL_TV);
@@ -13,6 +24,7 @@ if (window.Addon == 1) {
 					TV.Width = 200;
 				}
 			}
+			return S_OK;
 		},
 
 		Popup: function ()
@@ -39,10 +51,34 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+
+	if (items.length) {
+		//Menu
+		if (item.getAttribute("MenuExec")) {
+			Addons.TreeView.nPos = api.LowPart(item.getAttribute("MenuPos"));
+			var s = item.getAttribute("MenuName");
+			if (s && s != "") {
+				Addons.TreeView.strName = s;
+			}
+			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+			{
+				api.InsertMenu(hMenu, Addons.TreeView.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TreeView.strName));
+				ExtraMenuCommand[nPos] = Addons.TreeView.Exec;
+				return nPos;
+			});
+		}
+		//Key
+		if (item.getAttribute("KeyExec")) {
+			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.TreeView.Exec, "Func");
+		}
+		//Mouse
+		if (item.getAttribute("MouseExec")) {
+			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TreeView.Exec, "Func");
+		}
+	}
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,43" : "bitmap:ieframe.dll,214,24,43");
-	s = 'src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px"';
-	s = '<span id="TreeViewButton" class="button" onclick="Addons.TreeView.Exec()" oncontextmenu="Addons.TreeView.Popup(); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Tree" ' + s + '></span>';
+	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,43" : "bitmap:ieframe.dll,214,24,43");
+	var s = ['<span id="TreeViewButton" class="button" onclick="Addons.TreeView.Exec()" oncontextmenu="Addons.TreeView.Popup(); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Tree" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
 	SetAddon(Addon_Id, Default, s);
 
 	SetGestureExec("Tree", "1", function ()
@@ -51,14 +87,7 @@ if (window.Addon == 1) {
 		if (hItem) {
 			Ctrl.FolderView.Navigate(Ctrl.SelectedItem, OpenMode);
 		}
-	}, "Func");
-
-	SetGestureExec("Tree", "1", function ()
-	{
-		var hItem = Ctrl.HitTest(pt, TVHT_ONITEM);
-		if (hItem) {
-			Ctrl.FolderView.Navigate(Ctrl.SelectedItem, OpenMode);
-		}
+		return S_OK;
 	}, "Func", true);
 
 	SetGestureExec("Tree", "3", function ()
@@ -67,6 +96,7 @@ if (window.Addon == 1) {
 		if (hItem) {
 			Ctrl.FolderView.Navigate(Ctrl.SelectedItem, SBSP_NEWBROWSER);
 		}
+		return S_OK;
 	}, "Func", true);
 
 	//Tab
@@ -74,14 +104,15 @@ if (window.Addon == 1) {
 	{
 		var FV = GetFolderView(Ctrl, pt);
 		FV.focus();
+		return S_OK;
 	}, "Func", true);
 	//Enter
 	SetKeyExec("Tree", "$1c", function (Ctrl, pt)
 	{
 		var FV = GetFolderView(Ctrl, pt);
 		FV.Navigate(Ctrl.SelectedItem, OpenMode);
+		return S_OK;
 	}, "Func", true);
 
-	AddTypeEx("Add-ons", "Tree", Addons.TreeView.Exec);
-
+	AddTypeEx("Add-ons", Addons.TreeView.strName, Addons.TreeView.Exec);
 }
