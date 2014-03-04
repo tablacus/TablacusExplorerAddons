@@ -16,7 +16,7 @@ if (window.Addon == 1) {
 		{
 			if (FV && FV.FolderItem) {
 				if (api.ILisEqual(FV.FolderItem, FV.Data.Remember)) {
-					var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
+					var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 					Addons.Remember.db[path] = [new Date().getTime(), FV.CurrentViewMode, FV.IconSize, FV.Columns, FV.SortColumn, FV.FocusedItem];
 				}
 			}
@@ -44,10 +44,10 @@ if (window.Addon == 1) {
 	{
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Prev) {
-				var path = api.GetDisplayNameOf(Prev, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
+				var path = api.GetDisplayNameOf(Prev, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 				Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, Ctrl.Columns, Ctrl.SortColumn, Ctrl.FocusedItem];
 			}
-			var path = api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
+			var path = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 
 			var ar = Addons.Remember.db[path];
 			if (ar) {
@@ -63,7 +63,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ListViewCreated", function (Ctrl)
 	{
-		Ctrl.Data.Remember = api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
+		Ctrl.Data.Remember = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 		var ar = Addons.Remember.db[Ctrl.Data.Remember];
 		if (ar) {
 			Ctrl.CurrentViewMode(ar[1], ar[2]);
