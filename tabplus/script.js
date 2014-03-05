@@ -69,7 +69,18 @@ if (window.Addon == 1) {
 					} catch (e) {
 					}
 					o.innerHTML = s.join("").replace(/\$/g, Id);
-					SetCursor(o, "default");
+					if (this.Drag.length) {
+						if (api.GetKeyState(VK_LBUTTON) < 0) {
+							this.Cursor("move");
+						}
+						else {
+							this.Drag = [];
+							this.Cursor("default");
+						}
+					}
+					else {
+						this.Cursor("default");
+					}
 				}
 			}
 		},
@@ -115,7 +126,7 @@ if (window.Addon == 1) {
 			var TC = te.Ctrl(CTRL_TC, Id);
 			if (TC) {
 				var FV = TC.Selected;
-				FV.Navigate(FV ? FV.FolderItem : 0, SBSP_NEWBROWSER);
+				FV.Navigate(HOME_PATH ? HOME_PATH : FV ? FV.FolderItem : HOME_PATH, SBSP_NEWBROWSER);
 				TC.Move(TC.SelectedIndex, TC.Count - 1);
 			}
 		},
@@ -197,7 +208,6 @@ if (window.Addon == 1) {
 				this.Click = [Id, n];
 				this.Drag = [];
 				this.Button[Id] = GetGestureButton();
-				this.DragTime = new Date().getTime();
 				if (n >= 0) {
 					if (api.GetKeyState(VK_LBUTTON) < 0) {
 						var o = document.getElementById('tabplus_' + Id + '_' + n + 'x');
@@ -207,6 +217,17 @@ if (window.Addon == 1) {
 						else {
 							TC.SelectedIndex = n;
 						}
+						(function (Id, n) { setTimeout(function ()
+						{
+							if (api.GetKeyState(VK_LBUTTON) < 0) {
+								var pt = api.Memory("POINT");
+								api.GetCursorPos(pt);
+								if (n == Addons.TabPlus.FromPt(Id, pt)) {
+									Addons.TabPlus.Cursor("move");
+									Addons.TabPlus.Drag = Addons.TabPlus.Click.slice(0);
+								}
+							}
+						}, 500);}) (Id, n);
 						return false;
 					}
 				}
@@ -228,17 +249,19 @@ if (window.Addon == 1) {
 				if (nDrop < 0) {
 					nDrop = TC.Count;
 				}
-				if (this.Drag.length && (new Date().getTime() - this.DragTime > 500) && (this.Drag[0] != Id || this.Drag[1] != nDrop)) {
+				if (this.Drag.length && (this.Drag[0] != Id || this.Drag[1] != nDrop)) {
 					te.Ctrl(CTRL_TC, this.Drag[0]).Move(this.Drag[1], nDrop, TC);
 					this.Drop = [];
 				}
 				else {
-					(function (TC) { setTimeout(function () {
+					setTimeout(function () {
 						TC.Selected.Focus();
-					}, 100);}) (TC);
+					}, 100);
 				}
-				this.Cursor("default");
-				this.Drag = [];
+				if (this.Drag.length) {
+					this.Cursor("default");
+					this.Drag = [];
+				}
 			}
 			this.Click = [];
 			return true;
@@ -246,22 +269,14 @@ if (window.Addon == 1) {
 
 		Move: function (o, Id)
 		{
-			if (api.GetKeyState(VK_LBUTTON) < 0) {
-				this.Drop = [Id, o.id.replace(/^.*_\d+_/, '') - 0];
-				if (!isFinite(this.Drag[1])) {
-					if (this.Click[1] == this.Drop[1]) {
-						var pt = api.Memory("POINT");
-						api.GetCursorPos(pt);
-						if (IsDrag(pt, Addons.TabPlus.pt)) {
-							this.Drag = this.Click.slice(0);
-							this.Cursor("move");
-						}
-					}
+			if (this.Drag.length) {
+				if (api.GetKeyState(VK_LBUTTON) < 0) {
+					this.Drop = [Id, o.id.replace(/^.*_\d+_/, '') - 0];
 				}
-			}
-			else if (isFinite(this.Drag[1])) {
-				this.Cursor("default");
-				this.Drag = [];
+				else {
+					this.Cursor("default");
+					this.Drag = [];
+				}
 			}
 		},
 
@@ -269,8 +284,7 @@ if (window.Addon == 1) {
 		{
 			var cTC = te.Ctrls(CTRL_TC);
 			for (var j = cTC.Count; j-- > 0;) {
-				var Id = cTC.Item(j).Id;
-				SetCursor(document.getElementById('tabplus_' + Id), s);
+				SetCursor(document.getElementById('tabplus_' + cTC[j].Id), s);
 			}
 		},
 
@@ -464,7 +478,7 @@ if (window.Addon == 1) {
 	te.Tab = false;
 	if (items.length) {
 		var attrs = item.attributes;
-		for(var i = attrs.length; i-- > 0;) {
+		for (var i = attrs.length; i-- > 0;) {
 			Addons.TabPlus.opt[attrs[i].name] = attrs[i].value;
 		}
 	}
