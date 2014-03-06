@@ -67,7 +67,7 @@ if (window.Addon == 1) {
 		ShowButton: function ()
 		{
 			if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602) {
-				document.getElementById("ButtonSearchClear").style.display = document.F.everythingsearch.value.length ? "inline" : "none";
+				document.getElementById("ButtonEverythingClear").style.display = document.F.everythingsearch.value.length ? "inline" : "none";
 			}
 		},
 
@@ -90,10 +90,10 @@ if (window.Addon == 1) {
 		setTimeout(function () {
 			var Path = Ctrl.FolderItem.Path;
 			if (api.PathMatchSpec(Path, Addons.Everything.PATH + "*")) {
-				Path = Path.replace(Addons.Everything.PATH, "").replace(/^\s+|\s+$|[>\|]/g, "");
+				Path = Path.replace(new RegExp("^" + Addons.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
 				if (Path) {
 					try {
-						var exec = wsh.Exec('"' + wsh.ExpandEnvironmentStrings("%ComSpec%") + '" /C "' + Addons.Everything.ES + '" ' + Path);
+						var exec = wsh.Exec('"' + wsh.ExpandEnvironmentStrings("%ComSpec%") + '" /C "' + Addons.Everything.ES + '" ' + Path.replace(/([<\|>])/g, "^$1"));
 						while (!exec.StdOut.AtEndOfStream) {
 							Ctrl.AddItem(exec.StdOut.ReadLine());
 						}
@@ -146,14 +146,14 @@ if (window.Addon == 1) {
 		if (item.getAttribute("MouseExec")) {
 			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Everything.Exec, "Func");
 		}
-		AddTypeEx("Add-ons", "Search Bar", Addons.Everything.Exec);
+		AddTypeEx("Add-ons", "Everything", Addons.Everything.Exec);
 		var s = item.getAttribute("Path");
 		if (s) {
 			Addons.Everything.ES = api.PathUnquoteSpaces(ExtractMacro(te, s));
 		}
 	}
 
-	var s = ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', width, '; padding-right:', osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602 ? "32": "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonSearchClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', icon, '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'];
+	var s = ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', width, '; padding-right:', osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602 ? "32": "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', icon, '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'];
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
 
 	if (o.style.verticalAlign.length == 0) {
