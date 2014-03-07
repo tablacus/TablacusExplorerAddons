@@ -157,16 +157,16 @@ if (window.Addon == 1) {
 				s.push('" id="tabplus_$_', i,'" title="', path,'" onmousemove="Addons.TabPlus.Move(this, $)" class="');
 				s.push(bActive ? 'activetab' : 'tab');
 				s.push('" hidefocus="true">');
-				this.Tab2(s, FV, i, path, bActive);
+				this.Tab2(s, FV, i, path);
 				s.push('</button>');
 			}
 		},
 
-		Tab2: function (s, FV, i, path, bActive)
+		Tab2: function (s, FV, i, path)
 		{
 			s.push('<table><tr>');
 			if (FV.Data.Lock) {
-				s.push('<td style="padding-right: 3px"><img src="', this.ImgLock, '"></td>');
+				s.push('<td style="padding-right: 2px; vertical-align: middle"><img src="', this.ImgLock, '"></td>');
 			}
 			if (this.opt.Icon) {
 				if (api.PathIsNetworkPath(path)) {
@@ -184,17 +184,17 @@ if (window.Addon == 1) {
 					path = image.DataURI("image/png");
 				}
 				if (path) {
-					s.push('<td style="padding-right: 3px"><img src="', path, '"></td>');
+					s.push('<td style="padding-right: 3px; vertical-align: middle;"><img src="', path, '"></td>');
 				}
 			}
-			s.push('<td><div style="overflow: hidden;');
+			s.push('<td style="vertical-align: middle;"><div style="overflow: hidden;');
 			s.push(this.opt.Fix ? 'width: ' + this.opt.Width + 'px">' : '">');
 			if (FV.FolderItem) {
 				s.push((FV.Title || FV.FolderItem.Name).replace(/</g, "&lt;"));
 			}
 			s.push('</div></td>');
 			if (this.opt.Close && !FV.Data.Lock) {
-				s.push('<td style="padding-left: 3px"><img class="button" src="', this.ImgClose, '" id="tabplus_', TC.Id, '_', i, 'x" title="', GetText("Close Tab"), '" onmouseover="MouseOver(this)" onmouseout="MouseOut()"></td>');
+				s.push('<td style="vertical-align: middle"><img class="button" src="', this.ImgClose, '" id="tabplus_', FV.Parent.Id, '_', i, 'x" title="', GetText("Close Tab"), '" onmouseover="MouseOver(this)" onmouseout="MouseOut()"></td>');
 			}
 			s.push('</tr></table>');
 		},
@@ -371,7 +371,15 @@ if (window.Addon == 1) {
 
 	AddEvent("Lock", function (Ctrl, i, bLock)
 	{
-		Addons.TabPlus.Arrange(Ctrl.Id);
+		var s = [];
+		var FV = Ctrl.Selected;
+		if (FV) {
+			Addons.TabPlus.Tab2(s, FV, i, api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+			var o = document.getElementById('tabplus_' + Ctrl.Id + '_' + i);
+			if (o) {
+				o.innerHTML = s.join("");
+			}
+		}
 	});
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
