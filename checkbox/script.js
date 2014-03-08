@@ -37,7 +37,7 @@ if (window.Addon == 1) {
 
 	AddEvent("SelectionChanged", function (Ctrl, uChange)
 	{
-		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
+		if (Ctrl.Type <= CTRL_EB) {
 			clearTimeout(Addons.CheckBox.tid[Ctrl.Id]);
 			Addons.CheckBox.tid[Ctrl.Id] = setTimeout(function ()
 			{
@@ -72,15 +72,18 @@ if (window.Addon == 1) {
 	AddEvent("AddonDisabled", function (Id)
 	{
 		if (api.strcmpi(Id, "checkbox") == 0) {
-			var cFV = te.Ctrls(CTRL_FV);
-			for (i in cFV) {
-				var FV = cFV[i];
-				var fFlags = FV.FolderFlags;
-				if (fFlags & FWF_CHECKSELECT) {
-					FV.FolderFlags = fFlags & ~FWF_CHECKSELECT;
+			AddEventEx(window, "beforeunload", function ()
+			{
+				var cFV = te.Ctrls(CTRL_FV);
+				for (i in cFV) {
+					var FV = cFV[i];
+					var fFlags = FV.FolderFlags;
+					if (fFlags & FWF_CHECKSELECT) {
+						FV.FolderFlags = fFlags & ~FWF_CHECKSELECT;
+					}
 				}
-			}
-			te.Data.View_fFlags &= ~FWF_CHECKSELECT;
+				te.Data.View_fFlags &= ~FWF_CHECKSELECT;
+			});
 		}
 	});
 }
