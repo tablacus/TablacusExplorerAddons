@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2013.4.7</MinVersion>
-    <pubDate>Sun, 7 Apr 2013 00:00:00 UTC</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2014.3.10</MinVersion>
+    <pubDate>Mon, 10 Mar 2014 00:00:00 UTC</pubDate>
     <Options>dialogWidth: 320px; dialogHeight: 100px; resizable: yes; status: 0</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
@@ -16,7 +16,7 @@
     </Description>
   </en>
   <ja>
-    <Name>交互縞</Name>
+    <Name>交互縞(ストライプ)</Name>
     <Description>詳細表示の際に背景を交互縞で表示します。
       Internet Explorer 8以降が必要
     </Description>

@@ -4,23 +4,10 @@ var Default = "ToolBar2Right";
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 var item = items.length ? items[0] : null;
 
-EverythingDefaultPath = function ()
-{
-	var path = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), 'Everything\\es.exe');
-	if (!fso.FileExists(path)) {
-		var path2 = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILESx86, SHGDN_FORPARSING), 'Everything\\es.exe');
-		if (fso.FileExists(path2)) {
-			path = path2;
-		}
-	}
-	return path;
-}
-
 if (window.Addon == 1) {
 	Addons.Everything =
 	{
 		PATH: "es:",
-		ES: '"C:\\Program Files\\Everything\\es.exe"',
 		iCaret: -1,
 		strName: "Everything",
 
@@ -71,11 +58,20 @@ if (window.Addon == 1) {
 			}
 		},
 
+		GetSearchString: function(Ctrl)
+		{
+			var Path = Ctrl.FolderItem.Path;
+			if (api.PathMatchSpec(Path, Addons.Everything.PATH + "*")) {
+				return Path.replace(new RegExp("^" + Addons.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
+			}
+			return "";
+		},
+
 		Exec: function ()
 		{
 			document.F.everythingsearch.focus();
 			return S_OK;
-		}
+		},
 	};
 
 	AddEvent("TranslatePath", function (Ctrl, Path)
@@ -85,26 +81,73 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("ListViewCreated", function (Ctrl)
+	AddEvent("NavigateComplete", function (Ctrl)
 	{
 		setTimeout(function () {
-			var Path = Ctrl.FolderItem.Path;
-			if (api.PathMatchSpec(Path, Addons.Everything.PATH + "*")) {
-				Path = Path.replace(new RegExp("^" + Addons.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
-				if (Path) {
-					try {
-						var exec = wsh.Exec('"' + wsh.ExpandEnvironmentStrings("%ComSpec%") + '" /C "' + Addons.Everything.ES + '" ' + Path.replace(/([<\|>])/g, "^$1"));
-						while (!exec.StdOut.AtEndOfStream) {
-							Ctrl.AddItem(exec.StdOut.ReadLine());
-						}
-					} catch (e) {
-						ShowError(e);
-					}
+			var Path = Addons.Everything.GetSearchString(Ctrl);
+			if (Path) {
+				var hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
+				if (hwnd) {
+					var query = new ApiStruct({
+						reply_hwnd: [VT_I4, 4],
+						reply_copydata_message: [VT_I4, 4],
+						search_flags: [VT_I4, api.sizeof("DWORD")],
+						offset: [VT_I4, api.sizeof("DWORD")],
+						max_results: [VT_I4, api.sizeof("DWORD")],
+						search_string: [VT_LPWSTR, api.sizeof("WCHAR"), Path.length + 1],
+					}, 4);
+					query.Write("reply_hwnd", Ctrl.hwndView);
+					query.Write("reply_copydata_message", 2);
+					query.Write("max_results", 0xFFFFFFFF);
+					query.Write("search_string", Path);
+
+					var cds = api.Memory("COPYDATASTRUCT");
+					cds.cbData = query.Size;
+					cds.dwData = 2;//EVERYTHING_IPC_COPYDATAQUERY;
+					cds.lpData = query.Memory;
+					api.SendMessage(hwnd, WM_COPYDATA, Ctrl.hwndView, cds);
 				}
 			}
 		}, 200);
 	});
 
+	AddEvent("CopyData", function (Ctrl, cd, wParam)
+	{
+		if (cd.dwData == 2 && cd.cbData) {
+			var data = api.Memory("BYTE", cd.cbData, cd.lpData);
+			var EVERYTHING_IPC_LIST =
+			{
+				totfolders: [VT_I4, api.sizeof("DWORD")],
+				totfiles: [VT_I4, api.sizeof("DWORD")],
+				totitems: [VT_I4, api.sizeof("DWORD")],
+				numfolders: [VT_I4, api.sizeof("DWORD")],
+				numfiles: [VT_I4, api.sizeof("DWORD")],
+				numitems: [VT_I4, api.sizeof("DWORD")],
+				offset: [VT_I4, api.sizeof("DWORD")],
+			};
+			var list = new ApiStruct(EVERYTHING_IPC_LIST, 4, data);
+			var nItems = list.Read("totitems");
+
+			var EVERYTHING_IPC_ITEM =
+			{
+				flags: [VT_I4, api.sizeof("DWORD")],
+				filename_offset: [VT_I4, api.sizeof("DWORD")],
+				path_offset: [VT_I4, api.sizeof("DWORD")],
+			};
+			var Items = Ctrl.Items();
+			for (var i = Items.Count; i--;) {
+				Ctrl.RemoveItem(Items.Item(i));
+			}
+			var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4);
+			var itemSize = item.Size;
+			for (var i = 0; i < nItems; i++) {
+				var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4, api.Memory("BYTE", itemSize, cd.lpData + list.Size + list.Read("offset") + itemSize * i));
+				Ctrl.AddItem(fso.BuildPath(data.Read(item.Read("path_offset"), VT_LPWSTR), data.Read(item.Read("filename_offset"), VT_LPWSTR)));
+			}
+			return S_OK;
+		}
+	});
+	
 	AddEvent("GetTabName", function (Ctrl)
 	{
 		var Path = Ctrl.FolderItem.Path;
@@ -112,6 +155,12 @@ if (window.Addon == 1) {
 			return Path.replace(Addons.Everything.PATH, "");
 		}
 	}, true);
+
+	AddEvent("ChangeView", function (Ctrl)
+	{
+		document.F.everythingsearch.value = Addons.Everything.GetSearchString(Ctrl);
+		Addons.Everything.ShowButton();
+	});
 
 	var width = "176px";
 	var icon = "bitmap:ieframe.dll,216,16,17";
@@ -147,10 +196,6 @@ if (window.Addon == 1) {
 			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Everything.Exec, "Func");
 		}
 		AddTypeEx("Add-ons", "Everything", Addons.Everything.Exec);
-		var s = item.getAttribute("Path");
-		if (s) {
-			Addons.Everything.ES = api.PathUnquoteSpaces(ExtractMacro(te, s));
-		}
 	}
 
 	var s = ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', width, '; padding-right:', osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602 ? "32": "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', icon, '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'];
@@ -162,28 +207,5 @@ if (window.Addon == 1) {
 }
 else {
 	document.getElementById("tab0").value = "General";
-	var ado = te.CreateObject("Adodb.Stream");
-	ado.CharSet = "utf-8";
-	ado.Open();
-	var fname = [fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons"), Addon_Id, "options.html"].join("\\");
-	ado.LoadFromFile(fname);
-	document.getElementById("panel0").innerHTML = ado.ReadText();
-	ado.Close();
-	
-	Ref = function ()
-	{
-		setTimeout(function ()
-		{
-			var commdlg = te.CommonDialog;
-			var path = OpenDialog(document.getElementById("Path").value)
-			if (path) {
-				document.getElementById("Path").value = path;
-			}
-		}, 100);
-	}
-
-	SetDefaultPath = function ()
-	{
-		document.getElementById("Path").value = EverythingDefaultPath();
-	}
+	document.getElementById("panel0").innerHTML = '<input type="button" value="Get Everything..." title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">';
 }
