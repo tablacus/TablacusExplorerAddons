@@ -60,9 +60,11 @@ if (window.Addon == 1) {
 
 		GetSearchString: function(Ctrl)
 		{
-			var Path = Ctrl.FolderItem.Path;
-			if (api.PathMatchSpec(Path, Addons.Everything.PATH + "*")) {
-				return Path.replace(new RegExp("^" + Addons.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
+			if (Ctrl.FolderItem) {
+				var Path = Ctrl.FolderItem.Path;
+				if (api.PathMatchSpec(Path, Addons.Everything.PATH + "*")) {
+					return Path.replace(new RegExp("^" + Addons.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
+				}
 			}
 			return "";
 		},
