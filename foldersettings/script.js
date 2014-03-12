@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) { (function () {
+﻿if (window.Addon == 1) {
 	te.Data.xmlFolderSettings = OpenXml("foldersettings.xml", false, true);
 	Addons.FolderSettings =
 	{
@@ -6,8 +6,7 @@
 		{
 			var items = te.Data.xmlFolderSettings.getElementsByTagName("Item");
 			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
-			var i = items.length;
-			while (--i >= 0) {
+			for (var i = items.length; i-- > 0;) {
 				var item = items[i];
 				if (api.PathMatchSpec(path, item.getAttribute("Filter"))) {
 					return item;
@@ -15,7 +14,7 @@
 			}
 		}
 
-	}
+	};
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
 	{
@@ -42,8 +41,8 @@
 	{
 		ExtraMenuCommand[28722] = function (Ctrl)
 		{
-			showModelessDialog("../addons/foldersettings/options.html", window, "dialogWidth: 640px; dialogHeight: 480px; resizable: yes; status=0");
+			showModelessDialog("../addons/foldersettings/options.html", window, "dialogWidth: 640px; dialogHeight: 480px; resizable: yes; status: 0");
 		}
 		return nPos;
 	});
-})();}
+}

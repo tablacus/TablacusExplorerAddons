@@ -9,13 +9,15 @@ function GetCurrentSetting()
 	var FV = te.Ctrl(CTRL_FV);
 	var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
 
-	var s = "Ctrl.CurrentViewMode=" + FV.CurrentViewMode + ";\n";
-	s += "Ctrl.IconSize=" + FV.IconSize + ";\n";
-	s += "Ctrl.Columns='" + FV.Columns + "';\n";
-	s += "Ctrl.SortColumn='" + FV.SortColumn + "';\n";
-	if (confirm(path + "\n" + s)) {
-		document.F.elements["Filter"].value = path;
-		document.F.elements["Path"].value = s;
+	var s = ["Ctrl.CurrentViewMode=", FV.CurrentViewMode, ";\n"];
+	s.push("Ctrl.IconSize=", FV.IconSize, ";\n");
+	s.push("Ctrl.Columns='", FV.Columns, "';\n");
+	s.push("Ctrl.SortColumn='", FV.SortColumn, "';\n");
+	s = s.join("");
+	if (confirm([path, s].join("\n"))) {
+		document.F.Filter.value = path;
+		document.F.Path.value = s;
+		SetType(document.F.Type, "JScript");
 	}
 }
 
@@ -35,21 +37,35 @@ function SetOptions()
 function LoadX()
 {
 	if (!g_List) {
-		g_List = document.F.List;
-		g_List.length = 0;
-		var xml = te.Data["xml" + AddonName];
-		if (!xml) {
-			xml = OpenXml(AddonName + ".xml", false, false);
-			te.Data["xml" + AddonName] = xml;
-		}
-		var items = xml.getElementsByTagName("Item");
-		var i = items.length;
-		g_List.length = i;
-		while (--i >= 0) {
-			var item = items[i];
-			SetData(g_List[i], new Array(item.getAttribute("Filter"), item.text, item.getAttribute("Type")));
-		}
-		xml = null;
+		setTimeout(function ()
+		{
+			var arFunc = [];
+			for (var i in MainWindow.eventTE.AddType) {
+				MainWindow.eventTE.AddType[i](arFunc);
+			}
+			var oa = document.F.Type;
+			for (var i = 0; i < arFunc.length; i++) {
+				var o = oa[++oa.length - 1];
+				o.value = arFunc[i];
+				o.innerText = GetText(arFunc[i]);
+			}
+			g_List = document.F.List;
+			g_List.length = 0;
+			var xml = te.Data["xml" + AddonName];
+			if (!xml) {
+				xml = OpenXml(AddonName + ".xml", false, false);
+				te.Data["xml" + AddonName] = xml;
+			}
+			if (xml) {
+				var items = xml.getElementsByTagName("Item");
+				var i = items.length;
+				g_List.length = i;
+				while (--i >= 0) {
+					var item = items[i];
+					SetData(g_List[i], [item.getAttribute("Filter"), item.text, item.getAttribute("Type")]);
+				}
+			}
+		}, 100);
 	}
 }
 
@@ -99,14 +115,7 @@ function EditX()
 	var a = g_List[g_List.selectedIndex].value.split(g_sep);
 	document.F.elements["Filter"].value = a[0];
 	document.F.elements["Path"].value = a[1];
-	o = document.F.elements["Type"];
-	i = o.length;
-	while (--i >= 0) {
-		if (o(i).value == a[2]) {
-			o.selectedIndex = i;
-			break;
-		}
-	}
+	SetType(document.F.Type, a[2]);
 }
 
 function SwitchX()
