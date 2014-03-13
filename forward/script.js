@@ -10,37 +10,32 @@ if (window.Addon == 1) {
 			if (FV) {
 				var Log = FV.History;
 				var hMenu = api.CreatePopupMenu();
-				var mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
-				mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
-				var arBM = [];
+				FolderMenu.Clear();
 				for (var i = Log.Index; i-- > 0;) {
-					var FolderItem = Log.Item(i);
-					mii.dwTypeData = ' ' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
-					var image = te.GdiplusBitmap;
-					var info = api.Memory("SHFILEINFO");
-					api.ShGetFileInfo(FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
-					var hIcon = info.hIcon;
-					var cl = api.GetSysColor(COLOR_MENU);
-					image.FromHICON(hIcon, cl);
-					api.DestroyIcon(hIcon);
-					mii.hbmpItem = image.GetHBITMAP(cl);
-					arBM.push(mii.hbmpItem);
-					mii.wID = i + 1;
-					api.InsertMenuItem(hMenu, MAXINT, false, mii);
+					FolderMenu.AddMenuItem(hMenu, Log.Item(i));
 				}
 				var pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
+				window.g_menu_click = true;
 				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
-				while (arBM.length) {
-					api.DeleteObject(arBM.pop());
-				}
 				if (nVerb) {
-					Log.Index = nVerb - 1;
-					FV.History = Log;
+					var FolderItem = FolderMenu.Items[nVerb - 1];
+					switch (window.g_menu_button - 0) {
+						case 2:
+							PopupContextMenu(FolderItem);
+							break;
+						case 3:
+							Navigate(FolderItem, SBSP_NEWBROWSER);
+							break;
+						default:
+							Navigate(FolderItem, OpenMode);
+							break;
+					}
 				}
+				FolderMenu.Clear();
 			}
+			return false;
 		}
 	};
 
