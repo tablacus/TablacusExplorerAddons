@@ -16,32 +16,43 @@
 			if (FV) {
 				var Log = FV.History;
 				var hMenu = api.CreatePopupMenu();
-				FolderMenu.Clear();
+				var mii = api.Memory("MENUITEMINFO");
+				mii.cbSize = mii.Size;
+				mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
+				var arBM = [];
 				for (var i = Log.Index; i-- > 0;) {
-					FolderMenu.AddMenuItem(hMenu, Log.Item(i));
+					var FolderItem = Log.Item(i);
+					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
+					mii.wID = i + 1;
+					AddMenuIconFolderItem(mii, FolderItem);
+					api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				}
 				var pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
-				window.g_menu_click = true;
 				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				if (nVerb) {
-					var FolderItem = FolderMenu.Items[nVerb - 1];
-					switch (window.g_menu_button - 0) {
-						case 2:
-							PopupContextMenu(FolderItem);
-							break;
-						case 3:
-							Navigate(FolderItem, SBSP_NEWBROWSER);
-							break;
-						default:
-							Navigate(FolderItem, OpenMode);
-							break;
-					}
+					Log.Index = nVerb - 1;
+					FV.History = Log;
 				}
-				FolderMenu.Clear();
 			}
-			return false;
+		},
+		
+		ChangeView: function (Ctrl)
+		{
+			var TC = Ctrl.Parent;
+			var o = document.getElementById("ImgForward_" + TC.Id);
+			if (o) {
+				if (TC && Ctrl.Id == TC.Selected.Id) {
+					var Log = Ctrl.History;
+					DisableImage(o, Log && Log.Index == 0);
+				}
+			}
+			else {
+				(function (Ctrl) { setTimeout(function () {
+					Addons.InnerForward.ChangeView(Ctrl);
+				}, 1000);}) (Ctrl);
+			}
 		}
 	};
 
@@ -53,12 +64,5 @@
 		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
-	AddEvent("ChangeView", function (Ctrl)
-	{
-		var Log = Ctrl.History;
-		var TC = Ctrl.Parent;
-		if (TC && Ctrl.Id == TC.Selected.Id) {
-			DisableImage(document.getElementById("ImgForward_" + TC.Id), Log && Log.Index == 0);
-		}
-	});
+	AddEvent("ChangeView", Addons.InnerForward.ChangeView);
 }
