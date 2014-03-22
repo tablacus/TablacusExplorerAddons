@@ -8,19 +8,18 @@
 		db: [],
 		bSave: false,
 		Prev: null,
-		
+
 		IsHandle: function (Ctrl)
 		{
 			return api.PathMatchSpec(Ctrl.FolderItem.Path, Addons.SpeedDial.PATH);
 		},
-		
+
 		IsDisp: function (path)
 		{
 			if (!api.PathMatchSpec("\\\\")) {
 				if (api.PathMatchSpec(path, "?:\\*")) {
 					try {
-						var d = fso.GetDrive(path[0]);
-						return d.DriveType == 2;
+						var d = fso.GetDrive(fso.GetDriveName(path));
 					}
 					catch (e) {
 						return false;

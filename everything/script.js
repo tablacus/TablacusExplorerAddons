@@ -73,7 +73,7 @@ if (window.Addon == 1) {
 		{
 			document.F.everythingsearch.focus();
 			return S_OK;
-		},
+		}
 	};
 
 	AddEvent("TranslatePath", function (Ctrl, Path)
@@ -96,7 +96,7 @@ if (window.Addon == 1) {
 						search_flags: [VT_I4, api.sizeof("DWORD")],
 						offset: [VT_I4, api.sizeof("DWORD")],
 						max_results: [VT_I4, api.sizeof("DWORD")],
-						search_string: [VT_LPWSTR, api.sizeof("WCHAR"), Path.length + 1],
+						search_string: [VT_LPWSTR, api.sizeof("WCHAR"), Path.length + 1]
 					}, 4);
 					query.Write("reply_hwnd", Ctrl.hwndView);
 					query.Write("reply_copydata_message", 2);
@@ -125,7 +125,7 @@ if (window.Addon == 1) {
 				numfolders: [VT_I4, api.sizeof("DWORD")],
 				numfiles: [VT_I4, api.sizeof("DWORD")],
 				numitems: [VT_I4, api.sizeof("DWORD")],
-				offset: [VT_I4, api.sizeof("DWORD")],
+				offset: [VT_I4, api.sizeof("DWORD")]
 			};
 			var list = new ApiStruct(EVERYTHING_IPC_LIST, 4, data);
 			var nItems = list.Read("totitems");
@@ -134,7 +134,7 @@ if (window.Addon == 1) {
 			{
 				flags: [VT_I4, api.sizeof("DWORD")],
 				filename_offset: [VT_I4, api.sizeof("DWORD")],
-				path_offset: [VT_I4, api.sizeof("DWORD")],
+				path_offset: [VT_I4, api.sizeof("DWORD")]
 			};
 			var Items = Ctrl.Items();
 			for (var i = Items.Count; i--;) {

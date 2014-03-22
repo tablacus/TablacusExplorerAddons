@@ -1,37 +1,44 @@
 var Addon_Id = "tabname";
 
-if (window.Addon == 1) { (function () {
-	g_tabname = {
+if (window.Addon == 1) {
+	Addons.TabName =
+	{
 		db: {},
 		nPos: 0,
-		strName: "Name the Tab...",
+		strName: "Change tab name...",
 
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
-				var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
 				var s = FV.Title;
 				s = InputDialog(s, s);
 				if (s !== null) {
-					if (s.length) {
-						g_tabname.db[path] = s;
-					}
-					else {
-						delete g_tabname.db[path];
-						s = FV.FolderItem.Name;
-					}
-					FV.Title = s;
-					g_tabname.db[true] = true;
+					Addons.TabName.Set(FV, s);
 				}
 			}
+			return S_OK;
+		},
+
+		Set: function (FV, NewName)
+		{
+			var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
+			if (NewName && NewName.length) {
+				Addons.TabName.db[path] = NewName;
+			}
+			else {
+				delete Addons.TabName.db[path];
+				NewName = FV.FolderItem.Name;
+			}
+			FV.Title = NewName;
+			Addons.TabName.db[true] = true;
 		}
 	};
 	var xml = OpenXml("tabname.xml", true, false);
 	if (xml) {
 		var items = xml.getElementsByTagName('Item');
-		for (i = items.length - 1; i >= 0; i--) {
-			g_tabname.db[items[i].getAttribute("Path")] = items[i].text;
+		for (i = items.length; i-- > 0;) {
+			Addons.TabName.db[items[i].getAttribute("Path")] = items[i].text;
 		}
 	}
 
@@ -42,7 +49,6 @@ if (window.Addon == 1) { (function () {
 			item.setAttribute("MenuExec", 1);
 			item.setAttribute("Menu", "Tabs");
 			item.setAttribute("MenuPos", 0);
-			item.setAttribute("MenuName", g_tabname.strName);
 
 			item.setAttribute("KeyOn", "List");
 			item.setAttribute("Key", "");
@@ -52,42 +58,42 @@ if (window.Addon == 1) { (function () {
 		}
 		//Menu
 		if (item.getAttribute("MenuExec")) {
-			g_tabname.nPos = api.LowPart(item.getAttribute("MenuPos"));
+			Addons.TabName.nPos = api.LowPart(item.getAttribute("MenuPos"));
 			var s = item.getAttribute("MenuName");
 			if (s && s != "") {
-				g_tabname.strName = s;
+				Addons.TabName.strName = s;
 			}
 			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 			{
-				api.InsertMenu(hMenu, g_tabname.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(g_tabname.strName));
-				ExtraMenuCommand[nPos] = g_tabname.Exec;
+				api.InsertMenu(hMenu, Addons.TabName.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TabName.strName));
+				ExtraMenuCommand[nPos] = Addons.TabName.Exec;
 				return nPos;
 			});
 		}
 		//Key
 		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "g_tabname.Exec();", "JScript");
+			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.TabName.Exec();", "JScript");
 		}
 		//Mouse
 		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "g_tabname.Exec();", "JScript");
+			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.TabName.Exec();", "JScript");
 		}
 	}
 
 	AddEvent("GetTabName", function (Ctrl)
 	{
-		return g_tabname.db[api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX)];
+		return Addons.TabName.db[api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX)];
 	}, true);
 
 	AddEvent("Finalize", function ()
 	{
-		if (g_tabname.db[true]) {
-			delete g_tabname.db[true];
+		if (Addons.TabName.db[true]) {
+			delete Addons.TabName.db[true];
 			var xml = CreateXml();
 			var root = xml.createElement("TablacusExplorer");
 
-			for (var path in g_tabname.db) {
-				var name = g_tabname.db[path];
+			for (var path in Addons.TabName.db) {
+				var name = Addons.TabName.db[path];
 				if (path && name) {
 					var item = xml.createElement("Item");
 					item.setAttribute("Path", path);
@@ -99,4 +105,6 @@ if (window.Addon == 1) { (function () {
 			SaveXmlEx("tabname.xml", xml, true);
 		}
 	});
-})();}
+
+	AddTypeEx("Add-ons", Addons.TabName.strName, Addons.TabName.Exec);
+}
