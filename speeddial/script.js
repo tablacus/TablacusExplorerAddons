@@ -20,6 +20,7 @@
 				if (api.PathMatchSpec(path, "?:\\*")) {
 					try {
 						var d = fso.GetDrive(fso.GetDriveName(path));
+						return d.DriveType == 2;
 					}
 					catch (e) {
 						return false;
