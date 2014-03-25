@@ -1,5 +1,4 @@
 ﻿if (window.Addon == 1) {
-
 	Addons.QuickMenu =
 	{
 		Items: null,
@@ -8,11 +7,11 @@
 			hMenu = api.sscanf(hMenu, "%llx");
 			Addons.QuickMenu.Items = sha.NameSpace(ssfSENDTO).Items();
 			for (var i = 0; i < Addons.QuickMenu.Items.Count; i++) {
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 0x7100 + i, api.GetDisplayNameOf(Addons.QuickMenu.Items.Item(i), SHGDN_INFOLDER));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 0x6e00 + i, api.GetDisplayNameOf(Addons.QuickMenu.Items.Item(i), SHGDN_INFOLDER));
 			}
 			AddEvent("MenuCommand", function (Ctrl, pt, Name, nVerb)
 			{
-				nVerb -= 0x7100;
+				nVerb -= 0x6e00;
 				if (nVerb >= 0 && nVerb < Addons.QuickMenu.Items.Count) {
 					var DropTarget = api.DropTarget(Addons.QuickMenu.Items.Item(nVerb));
 					pdwEffect = api.Memory("DWORD");
@@ -29,12 +28,12 @@
 
 	AddEvent("GetBaseMenu", function (nBase, FV, Selected, uCMF, Mode, SelItem)
 	{
-		if (Mode & 0x8000) {
+		if ((Mode & 0x8000) || api.GetKeyState(VK_SHIFT) < 0) {
 			return;
 		}
 		var hMenu;
 		var nPos = 0;
-		var wID = 0x7000;
+		var wID = 0x6f00;
 		var ContextMenu = null;
 		switch (nBase) {
 			case 2:
@@ -45,9 +44,9 @@
 				ContextMenu = api.ContextMenu(Items, FV);
 				if (ContextMenu) {
 					hMenu = api.CreatePopupMenu();
-					ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x6FFF, CMF_DEFAULTONLY | CMF_CANRENAME);
+					ContextMenu.QueryContextMenu(hMenu, 0, 0x3001, 0x6dff, CMF_DEFAULTONLY | CMF_CANRENAME);
 					if (!FV) {
-						SetRenameMenu(0x1001);
+						SetRenameMenu(ContextMenu.idCmdFirst);
 					}
 					var mii = api.Memory("MENUITEMINFO");
 					mii.cbSize = mii.Size;
@@ -79,7 +78,7 @@
 				if (FV) {
 					ContextMenu = FV.ViewMenu();
 					if (ContextMenu) {
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x6FFF, CMF_DEFAULTONLY);
+						ContextMenu.QueryContextMenu(hMenu, 0, 0x3001, 0x6dff, CMF_DEFAULTONLY);
 						ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
 						{
 							ExecMenu(Ctrl, Name, pt, 0x8000);
@@ -98,17 +97,15 @@
 					ContextMenu = api.ContextMenu(Items, FV);
 					if (ContextMenu) {
 						hMenu = api.CreatePopupMenu();
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x6FFF, CMF_DEFAULTONLY | CMF_CANRENAME);
-						if (!FV) {
-							SetRenameMenu(0x1001);
-						}
+						ContextMenu.QueryContextMenu(hMenu, 0, 0x3001, 0x6dff, CMF_DEFAULTONLY | CMF_CANRENAME);
+						SetRenameMenu(ContextMenu.idCmdFirst);
 					}
 				}
 				else if (FV) {
 					hMenu = api.CreatePopupMenu();
 					ContextMenu = FV.ViewMenu();
 					if (ContextMenu) {
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x6FFF, CMF_DEFAULTONLY);
+						ContextMenu.QueryContextMenu(hMenu, 0, 0x3001, 0x6dff, CMF_DEFAULTONLY);
 						var mii = api.Memory("MENUITEMINFO");
 						mii.cbSize = mii.Size;
 						mii.fMask = MIIM_FTYPE | MIIM_SUBMENU;
