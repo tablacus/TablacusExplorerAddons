@@ -53,6 +53,9 @@ if (window.Addon == 1) {
 							nVerb = GetAddonOption("ffc", "Copy");
 						}
 						else if (pdwEffect.x & DROPEFFECT_MOVE) {
+							if (api.ILIsEqual(Parent, Dest)) {
+								return false;
+							}
 							nVerb = GetAddonOption("ffc", "Move");
 						}
 						nVerb = api.LowPart(nVerb);
@@ -63,11 +66,9 @@ if (window.Addon == 1) {
 							if (ContextMenu) {
 								var hMenu = api.CreatePopupMenu();
 								ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_NORMAL);
-								var hr = ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 1, null, null, SW_SHOWNORMAL, 0, 0);
+								ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 1, null, null, SW_SHOWNORMAL, 0, 0);
 								api.DestroyMenu(hMenu);
-								if (hr >= 0) {
-									return true;
-								}
+								return true;
 							}
 						}
 					}
