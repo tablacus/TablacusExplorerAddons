@@ -7,7 +7,7 @@ if (window.Addon == 1) {
 	AddEvent("StatusText", function (Ctrl, Text, iPart)
 	{
 		var s = String(Text);
-		if (Ctrl.Type == CTRL_SB && s.match(/^\d/)) {
+		if (Ctrl.Type <= CTRL_EB && s.match(/^\d/)) {
 			var Items = Ctrl.SelectedItems();
 			if (Items.Count == 1) {
 				try {
@@ -15,7 +15,7 @@ if (window.Addon == 1) {
 				} catch (e) {}
 			}
 		}
-		document.getElementById("statusbar").innerHTML = "&nbsp" + s;
+		document.getElementById("statusbar").innerHTML = "&nbsp;" + s;
 		return S_OK;
 	});
 }

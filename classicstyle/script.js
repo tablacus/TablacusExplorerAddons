@@ -22,11 +22,10 @@
 					}
 				}
 			}
-		},
-
+		}
 	};
 
-	AddEvent("NavigateComplete", Addons.ClassicStyle.SetTheme);
+	AddEvent("ViewCreated", Addons.ClassicStyle.SetTheme);
 
 	AddEvent("TreeViewCreated", function(Ctrl)
 	{
