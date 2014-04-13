@@ -75,6 +75,17 @@ var Addon_Id = "touchex";
 			return true;
 		};
 
+		window.vbFormatDateTime = function (s)
+		{
+			try {
+				var vb = api.GetScriptDispatch('Function fn(s)\n fn = FormatDateTime(s)\nEnd Function', "VBScript");
+				return vb.fn(s);
+			}
+			catch (e) {
+				return Date(s).toLocaleString();
+			}
+		};
+
 		document.onkeydown = function ()
 		{
 			if (event.keyCode == VK_RETURN) {
@@ -82,7 +93,6 @@ var Addon_Id = "touchex";
 			}
 			return true;
 		};
-
 
 		AddEventEx(window, "load", function ()
 		{
