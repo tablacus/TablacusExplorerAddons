@@ -1,19 +1,24 @@
 var Addon_Id = "preview";
-var Default = "LeftBar3";
 
 if (window.Addon == 1) {
-	g_preview = 
+	Addons.Preview = 
 	{	
 		tid: null,
+		Align: api.strcmpi(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
+		Width: 0,
 
 		Arrange: function (Item)
 		{
-			g_preview.Item = Item;
+			Addons.Preview.Item = Item;
 			var o = document.getElementById('PreviewBar');
 			var s = [];
 			if (Item) {
 				var Folder = sha.NameSpace(Item.Parent);
-				var info = [Folder.GetDetailsOf(Item, 0), "\n", Folder.GetDetailsOf(Item, 1)];
+				var info = [Folder.GetDetailsOf(Item, 0), "<br />"];
+				var nSize = Item.ExtendedProperty("Size");
+				if (nSize) {
+					info.push(api.StrFormatByteSize(nSize));
+				}
 				if (Item.IsLink) {
 					Item = api.ILCreateFromPath(Item.GetLink.Path);
 				}
@@ -26,41 +31,27 @@ if (window.Addon == 1) {
 				}
 				var style;
 				if (nWidth  > nHeight) {
-					style = "width: " + te.offsetLeft + "px; height: " + (te.offsetLeft * nHeight / nWidth) + "px";
+					style = ["width: ", this.Width, "px; height: ", this.Width * nHeight / nWidth, "px"];
 				} else {
-					style = "width: " + (te.offsetLeft * nWidth / nHeight) + "px; height: " + te.offsetLeft + "px";
+					style = ["width: ", this.Width * nWidth / nHeight, "px; height: ", this.Width, "px"];
 				}
-				var info2 = [];
-				for (var i = 2; i < 4; i++) {
-					info2.push("\n" + Folder.GetDetailsOf(null, i) + ": " + Folder.GetDetailsOf(Item, i));
-				}
-				info = info.join("");
 				if (nWidth && nHeight) {
-					s.push('<img src="');
-					s.push(Item.Path);
-					s.push('" alt="');
-					s.push(info);
-					s.push(info2.join(""));
-					s.push('" style="display: block;');
-					s.push(style);
-					s.push('" onerror="this.style.display=\'none\'" oncontextmenu="g_preview.Popup(this); return false;" ondrag="g_preview.Drag(); return false">');
+					s.splice(s.length, 0, '<img src="', Item.Path, '" title="', Folder.GetDetailsOf(Item, 0), "\n", Folder.GetDetailsOf(Item, -1), '" style="display: block;', style.join(""), '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false">');
 				}
-				s.push('<div style="font-size: 10px; margin: 0px 4px">');
-				s.push(info.replace(/\n/g,"<br>"));
-				s.push('</div>');
+				s.splice(s.length, 0, '<div style="font-size: 10px; margin: 0px 4px">', info.join(""), '</div>');
 			}
 			else {
 				s.push('<div style="font-size: 10px; margin-left: 4px">Preview</div>');
 			}
-			o.innerHTML = s.join("");//.replace(/</, "&lt;");
+			o.innerHTML = s.join("");
 			Resize2();
 		},
 
 		Popup: function (o)
 		{
-			if (g_preview.Item) {
+			if (Addons.Preview.Item) {
 				var hMenu = api.CreatePopupMenu();
-				var ContextMenu = api.ContextMenu(g_preview.Item);
+				var ContextMenu = api.ContextMenu(Addons.Preview.Item);
 				if (ContextMenu) {
 					ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_NORMAL);
 					var pt = api.Memory("POINT");
@@ -78,31 +69,35 @@ if (window.Addon == 1) {
 		{
 			var pdwEffect = api.Memory("DWORD");
 			pdwEffect.X = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
-			api.DoDragDrop(g_preview.Item, pdwEffect.X, pdwEffect);
+			api.DoDragDrop(Addons.Preview.Item, pdwEffect.X, pdwEffect);
+		},
+		
+		Init: function ()
+		{
+			this.Width = te.Data["Conf_" + this.Align + "BarWidth"];
+			if (!this.Width) {
+				this.Width = 178;
+				te.Data["Conf_" + Addons.Preview.Align + "BarWidth"] = this.Width;
+			}
+			var s = '<div id="PreviewBar" style="width: 100%; height: 100%; background-color: window; border: 1px solid WindowFrame; overflow-x: hidden; overflow-y: hidden;"></div>';
+			SetAddon(Addon_Id, this.Align + "Bar3", s);
+			this.Arrange();
 		}
 	}
 
-	if (!te.Data.Conf_LeftBarWidth) {
-		te.Data.Conf_LeftBarWidth = 150;
-	}
-	var px = (te.Data.Conf_LeftBarWidth - 2) + "px";
-	var s = '<div id="PreviewBar" style="width: 100%; height: 100%; background-color: window; border: 1px solid WindowFrame; overflow-x: hidden; overflow-y: hidden;"></div>';
-	SetAddon(Addon_Id, Default, s);
-	g_preview.Arrange();
+	Addons.Preview.Init();
 
 	AddEvent("SelectionChanged", function (Ctrl)
 	{
-		if ((Ctrl.Type >> 16) == (CTRL_FV >> 16)) {
-			clearTimeout(g_preview.tid);
-			if (te.offsetLeft && !document.getElementById('PreviewBar').style.display.match(/none/i)) {
-				var Selected = Ctrl.SelectedItems();
-				if (Selected.Count == 1) {
-					if (g_preview.tid) {
-						clearTimeout(g_preview.tid);
-					}
-					(function (Item) { g_preview.tid = setTimeout(function () {
-						g_preview.Arrange(Item);
-					}, 500);}) (Selected.Item(0));
+		if (Ctrl.Type <= CTRL_EB) {
+			if (Addons.Preview.Width && !document.getElementById('PreviewBar').style.display.match(/none/i)) {
+				if (Addons.Preview.tid) {
+					clearTimeout(Addons.Preview.tid);
+				}
+				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
+					(function (Item) { Addons.Preview.tid = setTimeout(function () {
+						Addons.Preview.Arrange(Item);
+					}, 500);}) (Ctrl.SelectedItems().Item(0));
 				}
 			}
 		}
