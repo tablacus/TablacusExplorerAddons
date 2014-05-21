@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="MSThemeCompatible" content="Yes" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Tablcus Add-ons</title>
+    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
+    </script>
+    <script type="text/javascript">
+      var Addon_Id = 'tabposition';
+    </script>
+  </head>
+  <body onload="InitAddonOptions();">
+
+    <form name="F">
+      <div class="panel" style="display: block;">
+        <div>
+          <label>Active Tab After Tab Closing</label>
+        </div>
+        <input type="hidden" name="Close" />
+        <input type="radio" name="_Close" id="Close=5" onclick="SetRadio(this)" />
+        <label for="Close=5">First</label>
+        <input type="radio" name="_Close" id="Close=4" onclick="SetRadio(this)" />
+        <label for="Close=4">Last</label>
+        <input type="radio" name="_Close" id="Close=3" onclick="SetRadio(this)" />
+        <label for="Close=3">Left</label>
+        <input type="radio" name="_Close" id="Close=2" onclick="SetRadio(this)" />
+        <label for="Close=2">Right</label><br />
+        <input type="radio" name="_Close" id="Close=1" onclick="SetRadio(this)" />
+        <label for="Close=1">Parent folder</label>
+        <input type="radio" name="_Close" id="Close=0" onclick="SetRadio(this)" checked />
+        <label for="Close=0">In actived order</label>
+      </div>
+      <table width="95%">
+        <tr>
+          <td align="right">
+            <input type="button" value="OK" style="width: 96px;" onclick="SetAddonOptions();" />
+            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+          </td>
+        </tr>
+      </table>
+    </form>
+  </body>
+</html>
