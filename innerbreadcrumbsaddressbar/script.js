@@ -54,7 +54,7 @@ if (window.Addon == 1) {
 			this.tid[Id] = null;
 			if (!FolderItem) {
 				var FV = GetInnerFV(CTRL_FV);
-				if (FV) {
+				if (FV && Id == FV.Parent.Id) {
 					FolderItem = FV.FolderItem;
 				}
 			}
