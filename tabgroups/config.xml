@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
-	<General>
-		<Version>1.04</Version>
-		<MinVersion>2013.2.12</MinVersion>
-		<pubDate>Tue, 12 Feb 2013 00:00:00 UTC</pubDate>
-		<Options>Location</Options>
-		<Creator>Gaku</Creator>
-		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
-		<License>MIT License</License>
-	</General>
-	<en>
-		<Name>Tab Groups</Name>
-		<Description>Tab Groups</Description>
-	</en>
-	<ja>
-		<Name>タブグループ</Name>
-		<Description>タブグループ</Description>
-	</ja>
+  <General>
+    <Version>1.05</Version>
+    <MinVersion>2014.7.21</MinVersion>
+    <pubDate>Mon, 21 Jul 2014 00:00:00 UTC</pubDate>
+    <Options>Location</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Tab groups</Name>
+    <Description>Tab groups</Description>
+  </en>
+  <ja>
+    <Name>タブグループ</Name>
+    <Description>タブグループ</Description>
+  </ja>
 </TablacusExplorer>

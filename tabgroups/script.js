@@ -1,7 +1,7 @@
 ﻿var Addon_Id = "tabgroups";
 var Default = "ToolBar5Center";
 
-if (window.Addon == 1) { (function () {
+if (window.Addon == 1) {
 	Addons.Tabgroups =
 	{
 		Name: null,
@@ -17,7 +17,7 @@ if (window.Addon == 1) { (function () {
 		{
 			var s = []
 			s.push('<span id="tabgroups">tabgroups</span>');
-			s.push('<input type="button" class="tab" value="+" onclick="return Addons.Tabgroups.Add()" hidefocus="true">');
+			s.push('<input type="button" class="tab" value="+" title="' + GetText("New Tab") + '" onclick="return Addons.Tabgroups.Add()" hidefocus="true">');
 			SetAddon(Addon_Id, Default, s.join(""));
 			this.Name = [''];
 			xml = OpenXml("tabgroups.xml", true, true);
@@ -68,6 +68,7 @@ if (window.Addon == 1) { (function () {
 			s.push(' onmousemove="Addons.Tabgroups.Move(this)"');
 			s.push(' oncontextmenu="return Addons.Tabgroups.Popup(this)" onmousewheel="Addons.Tabgroups.Wheel()"');
 			s.push(' ondblclick="return Addons.Tabgroups.Edit(this)"');
+			s.push(' draggable="true" ondragstart="Addons.Tabgroups.Start5(this)" ondragover="Addons.Tabgroups.Over5(this)" ondrop="Addons.Tabgroups.Drop5(this)" ondragend="Addons.Tabgroups.End5(this)"');
 			s.push('class="');
 			s.push(i == this.Index ? 'activetab' : 'tab');
 			s.push('"  hidefocus="true">');
@@ -220,7 +221,6 @@ if (window.Addon == 1) { (function () {
 			if (api.GetKeyState(VK_LBUTTON) < 0) {
 				api.GetCursorPos(this.pt);
 				this.Change();
-				return false;
 			}
 			return true;
 		},
@@ -231,6 +231,11 @@ if (window.Addon == 1) { (function () {
 				this.Close(o.id.replace(/\D/g, ''));
 				return false;
 			}
+			this.Swap(o)
+		},
+
+		Swap: function (o)
+		{
 			if (this.nDrag && this.nDrag != this.nDrop) {
 				var nDrop = o.id.replace(/\D/g, '');
 				if (nDrop == this.nDrop) {
@@ -343,8 +348,37 @@ if (window.Addon == 1) { (function () {
 			Addons.Tabgroups.tid = null;
 			var pt = api.Memory("POINT");
 			api.GetCursorPos(pt);
-			if (!IsDrag(pt, Addons.Tabgroups.pt)) {
+			if (!Addons.Tabgroups.Drag5 && !IsDrag(pt, Addons.Tabgroups.pt)) {
 				Addons.Tabgroups.Change(Addons.Tabgroups.FromPt(pt));
+			}
+		},
+
+		Start5: function (o)
+		{
+			event.dataTransfer.effectAllowed = 'move';
+			this.Drag5 = o.id;
+		},
+
+		End5: function (o)
+		{
+			this.Drag5 = null;
+		},
+
+		Over5: function (o)
+		{
+			if (this.Drag5) {
+				event.preventDefault();
+			}
+		},
+
+		Drop5: function (o)
+		{
+			if (/^tabgroups(\d+)/.test(o.id)) {
+				this.nDrop = RegExp.$1;
+				if (/^tabgroups(\d+)/.test(this.Drag5)) {
+					this.nDrag = RegExp.$1;
+					this.Swap(o);
+				}
 			}
 		},
 
@@ -427,5 +461,4 @@ if (window.Addon == 1) { (function () {
 		clearTimeout(Addons.Tabgroups.tid);
 		Addons.Tabgroups.tid = null;
 	});
-
-})();}
+}
