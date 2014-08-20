@@ -71,9 +71,9 @@ if (window.Addon == 1) {
 				var n = 0;
 				do {
 					if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
-						s.unshift('<span id="breadcrumbsaddressbar_' + Id + "_"  + n + '" class="button" style="font-family: webdings; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
+						s.unshift('<span id="breadcrumbsaddressbar_' + Id + "_"  + n + '" class="button" style="font-family: webdings; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">4</span>');
 					}
-					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
+					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
 					FolderItem = api.ILRemoveLastID(FolderItem);
 					o.innerHTML = s.join("");
 					if (o.offsetWidth > width && n > 0) {
@@ -92,6 +92,11 @@ if (window.Addon == 1) {
 					o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup2(this, '+ Id +')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">&laquo;</span>');
 				}
 				this.nLevel = n;
+				var o = document.getElementById("breadcrumbsselect_" + Id);
+				o.style.left = (width + 16) + "px";
+				o.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
+				var img = document.getElementById("breadcrumbsaddr_img_" + Id);
+				img.style.top = Math.abs(oAddr.offsetHeight - 16) / 2 + "px";
 			}
 		},
 
@@ -179,11 +184,47 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Exec: function ()
+		Popup3: function (o, Id)
 		{
-			var TC = te.Ctrl(CTRL_TC);
-			if (TC) {
-				document.getElementById("breadcrumbsaddressbar_" + TC.Id).focus();
+			var FV = GetInnerFV(Id);
+			if (FV) {
+				FV.Focus();
+				FolderMenu.Clear();
+				var hMenu = api.CreatePopupMenu();
+				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDESKTOP));
+				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDRIVES), api.GetDisplayNameOf(ssfDRIVES, SHGDN_INFOLDER), true);
+				var Items = sha.NameSpace(ssfDRIVES).Items();
+				for (var i = 0; i < Items.Count; i++) {
+					var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					if (path) {
+						FolderMenu.AddMenuItem(hMenu, Items.Item(i));
+					}
+				}
+				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfBITBUCKET), api.GetDisplayNameOf(ssfBITBUCKET, SHGDN_INFOLDER), true);
+
+				var pt = GetPos(o, true);
+				window.g_menu_click = true;
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight, external.hwnd, null, null);
+				api.DestroyMenu(hMenu);
+				FolderItem = null;
+				if (nVerb) {
+					FolderItem = FolderMenu.Items[nVerb - 1];
+				}
+				FolderMenu.Clear();
+				FolderMenu.Invoke(FolderItem);
+			}
+		},
+
+		Exec: function (Id)
+		{
+			if (isNaN(Id)) {
+				var TC = te.Ctrl(CTRL_TC);
+				if (TC) {
+					Id = TC.Id;
+				}
+			}
+			if (isFinite(Id)) {
+				document.getElementById("breadcrumbsaddressbar_" + Id).focus();
 			}
 			return S_OK;
 		}
@@ -201,6 +242,17 @@ if (window.Addon == 1) {
 				o.value = path;
 			}
 			Addons.InnerBreadcrumbsAddressBar.Arrange(Ctrl.FolderItem, Id);
+			if (document.documentMode) {
+				o = document.getElementById("breadcrumbsaddr_img_" + Id);
+				if (o) {
+					var info = api.Memory("SHFILEINFO");
+					api.ShGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
+					var image = te.GdiplusBitmap();
+					image.FromHICON(info.hIcon, api.GetSysColor(COLOR_WINDOW));
+					api.DestroyIcon(info.hIcon);
+					o.src = image.DataURI("image/png");
+				}
+			}
 		}
 	});
 
@@ -228,8 +280,12 @@ if (window.Addon == 1) {
 	AddEvent("PanelCreated", function (Ctrl)
 	{
 		var s = (Addons.InnerBreadcrumbsAddressBar.path2[Ctrl.Id] || "").replace(/"/, "");
-		s = '<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbsbuttons_$" style="margin 2px; background-color: window; white-space: nowrap; position: absolute; top: 2px; left: 2px"></div><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(this, $)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(this, $)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; color: window"></div>';
-		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.replace(/\$/g, Ctrl.Id));
+		s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbsbuttons_$" style="margin 2px; background-color: window; white-space: nowrap; position: absolute; top: 2px; left: 2px; padding-left: 20px"></div><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(this, $)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(this, $)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="breadcrumbsselect_$" class="button" style="position: absolute; font-family: webdings; top: 2px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, $)">6</span></div>'];
+		s.push('<img id="breadcrumbsaddr_img_$" src="icon:shell32.dll,3,16"');
+		s.push(' onclick="return Addons.InnerBreadcrumbsAddressBar.Exec($);"');
+		s.push(' oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec($); return false;"');
+		s.push(' style="position: absolute; left: 4px; top: 2px; width: 16px; height: 16px; z-index: 3; border: 0px" /></div>');
+		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
 	AddEvent("Arrange", function (Ctrl, rc)
