@@ -2,7 +2,7 @@ var Addon_Id = "preview";
 
 if (window.Addon == 1) {
 	Addons.Preview = 
-	{	
+	{
 		tid: null,
 		Align: api.strcmpi(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
 		Width: 0,
@@ -20,7 +20,10 @@ if (window.Addon == 1) {
 					info.push(api.StrFormatByteSize(nSize));
 				}
 				if (Item.IsLink) {
-					Item = api.ILCreateFromPath(Item.GetLink.Path);
+					var path = Item.ExtendedProperty("linktarget");
+					if (path) {
+						Item = api.ILCreateFromPath(path);
+					}
 				}
 				var nWidth = 0, nHeight = 0;
 				var s1 = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 13");
@@ -95,7 +98,8 @@ if (window.Addon == 1) {
 					clearTimeout(Addons.Preview.tid);
 				}
 				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
-					(function (Item) { Addons.Preview.tid = setTimeout(function () {
+					(function (Item) {
+						Addons.Preview.tid = setTimeout(function () {
 						Addons.Preview.Arrange(Item);
 					}, 500);}) (Ctrl.SelectedItems().Item(0));
 				}
@@ -103,4 +107,3 @@ if (window.Addon == 1) {
 		}
 	});
 }
-
