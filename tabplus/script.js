@@ -47,7 +47,8 @@ if (window.Addon == 1) {
 						if (Id == FocusedId) {
 							this.SetActiveColor(Id);
 						}
-					} catch (e) {
+					}
+					catch (e) {
 					}
 					o.innerHTML = s.join("").replace(/\$/g, Id);
 					if (this.Drag.length) {
@@ -85,6 +86,7 @@ if (window.Addon == 1) {
 					break;
 				}
 			}
+			this.SetActiveColor(Id);
 		},
 		
 		SetActiveColor: function (Id, s)
