@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) { (function () {
+﻿if (window.Addon == 1) {
 	Addons.MultiThread =
 	{
 		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bDelete)
@@ -10,7 +10,7 @@
 			if (!bDelete && api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Parent, false)) {
 				return false;
 			}
-			if (Dest != "") {
+			if (Dest || Dest != "") {
 				try {
 					Dest = Dest.IsLink ? Dest.GetLink.Path : Dest.Path;
 				} catch (e) {
@@ -134,5 +134,4 @@
 	});
 	te.HookDragDrop(CTRL_FV, true);
 	te.HookDragDrop(CTRL_TV, true);
-})();}
-
+}
