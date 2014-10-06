@@ -12,7 +12,6 @@ if (window.Addon == 1) {
 			
 			close: function (Ctrl, hwnd, pt, line)
 			{
-			
 				var p = ExtractMacro(Ctrl, line);
 				if (api.strcmpi(p, "Window") == 0) {
 					return Exec(Ctrl, "Close Application", "Tools", hwnd, pt);
@@ -357,6 +356,122 @@ if (window.Addon == 1) {
 						}
 					}
 				}
+			},
+
+			numbering: function (Ctrl, hwnd, pt, line)
+			{
+				var FileList, FileIndex, i, strPath, nMode;
+				var nStart, nInc, wsSrc, wsDist;
+				var DoRename = function(n)
+				{
+					try {
+						var wsPath, nSame;
+						var strPath = FileList[n];
+						var wsFile = fso.GetBaseName(strPath);
+						var wsExt = fso.GetExtensionName(strPath);
+						wsExt = wsExt ? "." + wsExt : wsExt;
+						var wsParam = ar[0];
+						var nD = nStart + FileIndex[n] * nInc;
+						var z = wsParam.length + MAX_PATH;
+						switch (nMode) {
+							case 1:
+								wsPath = api.sprintf(z, wsParam, wsFile, wsExt);		// %s%s
+								break;
+							case 2:
+								wsPath = api.sprintf(z, wsParam, wsFile, nD, wsExt); 	// %s%d%s
+								break;
+							case 3:
+								wsPath = api.sprintf(z, wsParam, nD, wsFile, wsExt);	// %d%s%s
+								break;
+							default:
+								wsPath = api.sprintf(z, wsParam, nD) + wsExt; 			// %d
+								break;
+						}
+						wsPath = fso.BuildPath(fso.GetParentFolderName(strPath), wsPath.replace(wsSrc, wsDist));
+						if (api.strcmpi(wsPath, FileList[n])) {
+							nSame = FileList.indexOf(wsPath);
+							if (nSame >= 0) {
+								DoRename(nSame);
+								if (nSame < n) {
+									n--;
+								}
+							}
+							arFrom.push(FileList[n]);
+							arTo.push(wsPath);
+						}
+					} catch (e) {
+					}
+					FileList.splice(n, 1);
+					FileIndex.splice(n, 1);
+				}
+
+				var FV = GetFolderView(Ctrl, pt);
+				if (FV) {
+					var Selected = FV.Items(SVGIO_SELECTION | SVGIO_FLAG_VIEWORDER);
+					var ar = Addons.XFinder.SetCommaText(ExtractMacro(Ctrl, line));
+					if (ar.length) {
+						if (!/\/|\\/.test(ar[0])) {
+							FileList = [];
+							FileIndex = [];
+							if (!FileList.indexOf) {
+								FileList.indexOf = function (s)
+								{
+									var n = FileList.length;
+									for (var i = 0; i < n; i++) {
+										if (s === FileList[i]) {
+											return i;
+										}
+									}
+									return -1;
+								}
+							}
+							for (i = 0; i < Selected.length; i++) {
+								strPath = Selected.Item(i).Path;
+								if (strPath) {
+									FileList.unshift(strPath);
+									FileIndex.unshift(i);
+								}
+							}
+
+							nMode = 0;
+							for (i = 0; i < ar[0].length; i++) {
+								if (ar[0].charAt(i) == '%') {
+									while (i < ar[0].length && ar[0].charAt(i) < 'A') {
+										i++;
+									}
+									if (api.strcmpi(ar[0].charAt(i), 's') == 0) {
+										if (nMode == 0) {
+											nMode = 1;
+										}
+										else if (nMode == 4) {
+											nMode = 3;
+										}
+									}
+									else if (nMode == 0) {
+										nMode = 4;
+									}
+									else if (nMode == 1) {
+										nMode = 2;
+									}
+								}
+							}
+							nStart = api.QuadPart(ar[1]);
+							nInc = api.QuadPart(ar[2]) || 1;
+							wsSrc = ar[3] || '';
+							wsDist = ar[4] || '';
+							if (nInc) {
+								arFrom = [];
+								arTo = [];
+								while (FileList.length) {
+									DoRename(0);
+								}
+								if (arFrom.length) {
+									api.SHFileOperation(FO_MOVE, arFrom.join("\0") + "\0\0", arTo.join("\0") + "\0\0", FOF_ALLOWUNDO | FOF_MULTIDESTFILES, false);
+								}
+							}
+						}
+					}
+				}
 			}
 /*
 			: function (Ctrl, hwnd, pt, line)
@@ -521,12 +636,12 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("ReplaceMacro", [/%X-Finder%/ig, function (Ctrl)
+	AddEnv("X-Finder", function(Ctrl)
 	{
 		return (fso.GetParentFolderName(api.GetModuleFileName(null)) + "\\").replace(/\\\\$/, "\\");
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%Focused%/ig, function (Ctrl)
+	AddEnv("Focused", function(Ctrl)
 	{
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
@@ -535,10 +650,9 @@ if (window.Addon == 1) {
 				return api.GetDisplayNameOf(Focused, SHGDN_FORPARSING);
 			}
 		}
-	}]);
+	});
 
-
-	AddEvent("ReplaceMacro", [/%FocusedName%/ig, function (Ctrl)
+	AddEnv("FocusedName", function(Ctrl)
 	{
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
@@ -547,58 +661,33 @@ if (window.Addon == 1) {
 				return fso.GetFileName(api.GetDisplayNameOf(Focused, SHGDN_FORPARSING));
 			}
 		}
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%InstallDrive%/ig, function (Ctrl)
+	AddEnv("InstallDrive", function(Ctrl)
 	{
 		return fso.GetDriveName(api.GetModuleFileName(null));
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%sysdir%/ig, function (Ctrl)
+	AddEnv("sysdir", function(Ctrl)
 	{
 		return system32;
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%CurrentSelected%/ig, function (Ctrl)
+	AddEnv("CurrentSelected", function(Ctrl)
 	{
 		var ar = [];
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
-			var Selected = FV.SelectedItems();
+			var Selected = FV.Items(SVGIO_SELECTION | SVGIO_FLAG_VIEWORDER);
 			if (Selected) {
 				for (var i = Selected.Count; i > 0; ar.unshift(api.PathQuoteSpaces(api.GetDisplayNameOf(Selected.Item(--i), SHGDN_FORPARSING)))) {
 				}
 			}
 		}
 		return ar.join(" ");
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%DateTime:[^%]*%/ig, function (Ctrl)
-	{
-		try {
-			var vb = api.GetScriptDispatch('Function fn()\n fn = CStr(Now())\nEnd Function', "VBScript");
-			return vb.fn();
-		}
-		catch (e) {
-			return new Date().toLocaleString();
-		}
-	}]);
-
-	AddEvent("ReplaceMacro", [/%TimeStamp:[^%]*%/ig, function (Ctrl)
-	{
-		var FV = GetFolderView(Ctrl, pt);
-		if (FV) {
-			try {
-				var vb = api.GetScriptDispatch('Function fn(s)\n fn = FormatDateTime(s)\nEnd Function', "VBScript");
-				return vb.fn(FV.FocusedItem.ModifyDate);
-			}
-			catch (e) {
-				return new Date().toLocaleString();
-			}
-		}
-	}]);
-
-	AddEvent("ReplaceMacro", [/%Other%/ig, function (Ctrl)
+	AddEnv("Other", function(Ctrl)
 	{
 		var TC = te.Ctrl(CTRL_TC);
 		var cTC = te.Ctrls(CTRL_TC);
@@ -607,14 +696,14 @@ if (window.Addon == 1) {
 				return api.PathQuoteSpaces(api.GetDisplayNameOf(cTC[i].Selected, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			}
 		}
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%SendTo%/ig, function (Ctrl)
+	AddEnv("SendTo", function(Ctrl)
 	{
 		return api.GetDisplayNameOf(ssfSENDTO, SHGDN_FORPARSING);
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%FileContents%/ig, function (Ctrl)
+	AddEnv("FileContents", function(Ctrl)
 	{
 		var s = "";
 		var FV = GetFolderView(Ctrl);
@@ -634,9 +723,9 @@ if (window.Addon == 1) {
 			}
 		}
 		return s;
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%Clipboard%/ig, function (Ctrl)
+	AddEnv("Clipboard", function(Ctrl)
 	{
 		var s = clipboardData.getData("text");
 		if (!s) {
@@ -647,9 +736,9 @@ if (window.Addon == 1) {
 			}
 		}
 		return s;
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%Clipboard1%/ig, function (Ctrl)
+	AddEnv("Clipboard1", function(Ctrl)
 	{
 		var s = clipboardData.getData("text");
 		if (!s) {
@@ -661,9 +750,9 @@ if (window.Addon == 1) {
 			return s.join(" ");
 		}
 		return s.replace(/[\r\n]/g, " ");
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%Attrib%/ig, function (Ctrl)
+	AddEnv("Attrib", function(Ctrl)
 	{
 		var s = [];
 		var FV = GetFolderView(Ctrl);
@@ -676,21 +765,46 @@ if (window.Addon == 1) {
 			}
 		}
 		return s.join(" ");
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%TabName%/ig, function (Ctrl)
+	AddEnv("TabName", function(Ctrl)
 	{
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
 			return GetTabName(FV);
 		}
-	}]);
+	});
 
-	AddEvent("ReplaceMacro", [/%TabColor%/ig, function (Ctrl)
+	AddEnv("TabColor", function(Ctrl)
 	{
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
 			return RunEvent4("GetTabColor", FV);
+		}
+	});
+
+	AddEvent("ReplaceMacro", [/%DateTime:([^%]*%)/ig, function (Ctrl)
+	{
+		try {
+			var vb = api.GetScriptDispatch('Function fn()\n fn = CStr(Now())\nEnd Function', "VBScript");
+			return vb.fn();
+		}
+		catch (e) {
+			return new Date().toLocaleString();
+		}
+	}]);
+
+	AddEvent("ReplaceMacro", [/%TimeStamp:([^%]*)%/ig, function (Ctrl, re)
+	{
+		var FV = GetFolderView(Ctrl, pt);
+		if (FV) {
+			try {
+				var vb = api.GetScriptDispatch('Function fn(s)\n fn = FormatDateTime(s)\nEnd Function', "VBScript");
+				return vb.fn(FV.FocusedItem.ModifyDate);
+			}
+			catch (e) {
+				return new Date().toLocaleString();
+			}
 		}
 	}]);
 
