@@ -53,10 +53,9 @@ if (window.Addon == 1) {
 							nVerb = GetAddonOption("ffc", "Copy");
 						}
 						else if (pdwEffect.x & DROPEFFECT_MOVE) {
-							if (api.ILIsEqual(Parent, Dest)) {
-								return false;
+							if (api.strcmpi(fso.GetDriveName(Parent.Path), fso.GetDriveName(path))) {
+								nVerb = GetAddonOption("ffc", "Move");
 							}
-							nVerb = GetAddonOption("ffc", "Move");
 						}
 						nVerb = api.LowPart(nVerb);
 						if (nVerb > 0) {
