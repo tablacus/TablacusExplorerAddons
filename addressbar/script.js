@@ -18,240 +18,224 @@ if (window.Addon == 1) {
 	Addons.AddressBar =
 	{
 		tid: null,
-		bDrag: false,
+		Item: null,
+		bLoop: false,
+		nLevel: 0,
+		tid2: null,
+		bClose: false,
+		bXP: false,
 		nPos: 0,
+		nWidth: 0,
 		strName: "Address Bar",
-
-		Add: function (level, path)
-		{
-			var o = document.getElementById("combobox");
-			o.options[++o.length - 1].text = new Array(level * 3 + 1).join("\xa0") + api.GetDisplayNameOf(path, SHGDN_INFOLDER);
-			o.options[o.length - 1].value = path;
-			if (o.length == 1) {
-				this.Length(o);
-			}
-		},
-
-		Arrange: function ()
-		{
-			if (this.tid) {
-				clearTimeout(this.tid);
-				this.tid = null;
-			}
-			var cbbx = document.getElementById("combobox");
-			var addr = document.getElementById("addressbar");
-			var ie6 = document.getElementById("forie6");
-			var img = document.getElementById("addr_img");
-			var ie10 = document.getElementById("Size");
-			if (!addr.style.border) {
-				cbbx.style.height = addr.offsetHeight + "px";
-				addr.style.border = "0px";
-				img.style.top = (cbbx.offsetHeight - 16) / 2 + "px";
-				addr.style.visibility = "visible";
-			}
-			var w = cbbx.offsetWidth - 42;
-			w = w > 0 ? w : 0;
-			var h = cbbx.offsetHeight - 4;
-			h = h > 0 ? h : 0;
-			ie6.style.width = w + 19 + "px";
-			ie6.style.height = h + "px";
-			addr.style.height = h + "px";
-			addr.style.width = w + "px";
-			this.Length(cbbx);
-		},
-
-		Length: function (o)
-		{
-			if (o.length && osInfo.dwMajorVersion == 6 && osInfo.dwMinorVersion == 1) {
-				var ie10 = document.getElementById("Size");
-				var s = o.options[0].text.replace(/\s*$/g, "");
-				ie10.innerText = s;
-				ie10.style.fontSize = "125%";
-				var w = o.offsetWidth - ie10.offsetWidth;
-				if (w > 0) {
-					ie10.innerText = new Array(10).join("\xa0");
-					o.options[0].text = s + new Array(Math.floor(w * 10 / ie10.offsetWidth)).join("\xa0");
-				}
-				ie10.innerText = "";
-			}
-		},
-
-		Select: function (o)
-		{
-			var s = o[o.selectedIndex].value;
-			if (s != "-") {
-				Navigate(s);
-				o.selectedIndex = -1;
-			}
-		},
 
 		KeyDown: function (o)
 		{
 			if (event.keyCode == VK_RETURN) {
-				this.Navigate();
-				return false;
-			}
-			return true;
-		},
-
-		Click: function (o)
-		{
-			var pt = api.Memory("POINT");
-			api.GetCursorPos(pt);
-			p = GetPos(document.getElementById("addressbar"), true);
-			if (pt.x < p.x) {
-				this.Open(o);
-				return false;
-			}
-			return true;
-		},
-
-		MouseDown: function (o)
-		{
-			this.bDrag = true;
-		},
-
-		MouseUp: function (o)
-		{
-			this.bDrag = false;
-		},
-
-		Navigate: function ()
-		{
-			var o = document.F.addressbar;
-			var p = GetPos(o, true);
-			var pt = api.Memory("POINT");
-			pt.y = p.y + o.offsetHeight;
-			window.Input = o.value;
-			if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
-				Navigate(o.value, OpenMode);
-			}
-		},
-
-		Open: function (o)
-		{
-			var FV = te.Ctrl(CTRL_FV);
-			if (FV) {
-				pt = GetPos(o, true);
-				var FolderItem = FolderMenu.Open(FV.FolderItem, pt.x, pt.y + o.offsetHeight);
-				if (FolderItem) {
-					switch (window.g_menu_button - 0) {
-						case 2:
-							PopupContextMenu(FolderItem);
-							break;
-						case 3:
-							Navigate(FolderItem, SBSP_NEWBROWSER);
-							break;
-						default:
-							Navigate(FolderItem, OpenMode);
-							break;
-					}
-				}
-			}
-			return false;
-		},
-
-		Popup: function (o)
-		{
-			o.blur();
-			var FV = te.Ctrl(CTRL_FV);
-			if (FV) {
-				var hMenu = api.CreatePopupMenu();
-				FolderMenu.Clear();
+				var o = document.F.addressbar;
+				var p = GetPos(o);
 				var pt = api.Memory("POINT");
-				api.GetCursorPos(pt);
-				p = GetPos(document.getElementById("addressbar"), true);
-				var Log = (pt.x < p.x) ? FV.History : sha.NameSpace(ssfDRIVES).Items();
-				for (var i = 0; i < Log.Count; i++) {
-					FolderMenu.AddMenuItem(hMenu, Log.Item(i));
-					if (pt.x < p.x && i == Log.Index) {
-						var mii = api.Memory("MENUITEMINFO");
-						mii.cbSize = mii.Size;
-						mii.fMask  = MIIM_STATE;
-						mii.fState = MF_DEFAULT;
-						api.SetMenuItemInfo(hMenu, i, true, mii);
-					}
+				pt.x = screenLeft + p.x;
+				pt.y = screenTop + p.y + o.offsetHeight;
+				window.Input = o.value;
+				if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
+					Navigate(o.value, GetNavigateFlags());
 				}
-				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
-				api.DestroyMenu(hMenu);
-				if (nVerb) {
-					var FolderItem = FolderMenu.Items[nVerb - 1];
-					switch (window.g_menu_button - 0) {
-						case 2:
-							PopupContextMenu(FolderItem);
-							break;
-						case 3:
-							Navigate(FolderItem, SBSP_NEWBROWSER);
-							break;
-						default:
-							Navigate(FolderItem, OpenMode);
-							break;
-					}
-				}
-				FolderMenu.Clear();
+				return false;
 			}
-			return false;
-		},
-
-		Drag: function ()
-		{
-			if (this.bDrag) {
-				this.bDrag = false;
-				var TC = te.Ctrl(CTRL_TC);
-				if (TC && TC.SelectedIndex >= 0) {
-					var pdwEffect = api.Memory("DWORD");
-					pdwEffect.Item(0) = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
-					te.Data.DragTab = TC;
-					te.Data.DragIndex = TC.SelectedIndex;
-					api.DoDragDrop(TC.Item(TC.SelectedIndex).FolderItem, pdwEffect.Item(0), pdwEffect);
-					te.Data.DragTab = null;
-				}
-			}
+			return true;
 		},
 
 		Resize: function ()
 		{
-			if (!Addons.AddressBar.tid) {
-				Addons.AddressBar.tid = setTimeout("Addons.AddressBar.Arrange()", 100);
+			clearTimeout(this.tid);
+			this.tid = setTimeout(this.Arrange, 500);
+		},
+
+		Arrange: function (FolderItem)
+		{
+			this.tid = null;
+
+			if (!FolderItem) {
+				var FV = te.Ctrl(CTRL_FV);
+				if (FV) {
+					FolderItem = FV.FolderItem;
+				}
+			}
+			if (FolderItem) {
+				var bRoot = api.ILIsEmpty(FolderItem);
+				var s = [];
+				var o = document.getElementById("breadcrumbbuttons");
+				var oAddr = document.F.addressbar;
+				var width = oAddr.offsetWidth - 32;
+				var height = oAddr.offsetHeight - 6;
+				if (Addons.AddressBar.bXP) {
+					oAddr.style.color = "windowtext";
+				}
+				else {
+					var n = 0;
+					do {
+						if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
+							s.unshift('<span id="addressbar' + n + '" class="button" style="font-family: webdings; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.AddressBar.Popup(this,' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">4</span>');
+						}
+						s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Go(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
+						FolderItem = api.ILRemoveLastID(FolderItem);
+						o.innerHTML = s.join("");
+						if (o.offsetWidth > width && n > 0) {
+							s.splice(0, 2);
+							o.innerHTML = s.join("");
+							break;
+						}
+						n++;
+					} while (!api.ILIsEmpty(FolderItem));
+					if (api.ILIsEmpty(FolderItem)) {
+						if (!bRoot) {
+							o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="font-family: webdings; line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup(this, ' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
+						}
+					}
+					else {
+						o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup2(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">&laquo;</span>');
+					}
+					this.nLevel = n;
+				}
+				var o = document.getElementById("addressbarselect");
+				o.style.left = (width + 16) + "px";
+				o.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
+				var img = document.getElementById("addr_img");
+				img.style.top = Math.abs(oAddr.offsetHeight - 16) / 2 + "px";
 			}
 		},
 
-		Focus: function ()
+		Exec: function ()
 		{
 			document.F.addressbar.focus();
 			return S_OK;
+		},
+
+		Focus: function (o)
+		{
+			o.select();
+			o.style.color = "windowtext";
+			document.getElementById("breadcrumbbuttons").style.display = "none";
+		},
+
+		Blur: function (o)
+		{
+			o.value = o.value;
+			if (!Addons.AddressBar.bXP) {
+				o.style.color = "window";
+				document.getElementById("breadcrumbbuttons").style.display = "inline-block";
+			}
+		},
+
+		Go: function (n)
+		{
+			Navigate(this.GetPath(n), GetNavigateFlags());
+		},
+
+		GetPath: function(n)
+		{
+			var FV = te.Ctrl(CTRL_FV);
+			if (FV) {
+				FolderItem = FV.FolderItem;
+			}
+			while (n--) {
+				FolderItem = api.ILRemoveLastID(FolderItem);
+			}
+			return FolderItem;
+		},
+
+		Popup: function (o, n)
+		{
+			if (Addons.AddressBar.CanPopup()) {
+				Addons.AddressBar.Item = o;
+				var pt = GetPos(o, true);
+				MouseOver(o);
+				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n), pt.x, pt.y + o.offsetHeight));
+			}
+		},
+
+		Popup2: function (o)
+		{
+			var FV = te.Ctrl(CTRL_FV);
+			if (FV) {
+				var FolderItem = FV.FolderItem;
+				FolderMenu.Clear();
+				var hMenu = api.CreatePopupMenu();
+				while (!api.ILIsEmpty(FolderItem)) {
+					FolderItem = api.ILRemoveLastID(FolderItem);
+					FolderMenu.AddMenuItem(hMenu, FolderItem);
+				}
+				Addons.AddressBar.Item = o;
+				Addons.AddressBar.bLoop = true;
+				ExitMenuLoop = function () {
+					Addons.AddressBar.bLoop = false;
+				};
+				MouseOver(o);
+				var pt = GetPos(o, true);
+				window.g_menu_click = true;
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight, external.hwnd, null, null);
+				api.DestroyMenu(hMenu);
+				FolderItem = null;
+				if (nVerb) {
+					FolderItem = FolderMenu.Items[nVerb - 1];
+				}
+				FolderMenu.Clear();
+				FolderMenu.Invoke(FolderItem);
+			}
+		},
+		
+		Popup3: function (o)
+		{
+			if (Addons.AddressBar.CanPopup()) {
+				FolderMenu.Clear();
+				var hMenu = api.CreatePopupMenu();
+				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDESKTOP));
+				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDRIVES), api.GetDisplayNameOf(ssfDRIVES, SHGDN_INFOLDER), true);
+				var Items = sha.NameSpace(ssfDRIVES).Items();
+				for (var i = 0; i < Items.Count; i++) {
+					var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					if (path) {
+						FolderMenu.AddMenuItem(hMenu, Items.Item(i));
+					}
+				}
+				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfBITBUCKET), api.GetDisplayNameOf(ssfBITBUCKET, SHGDN_INFOLDER), true);
+
+				var pt = GetPos(o, true);
+				window.g_menu_click = true;
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight, external.hwnd, null, null);
+				api.DestroyMenu(hMenu);
+				FolderItem = null;
+				if (nVerb) {
+					FolderItem = FolderMenu.Items[nVerb - 1];
+				}
+				FolderMenu.Clear();
+				FolderMenu.Invoke(FolderItem);
+			}
+		},
+
+		CanPopup: function ()
+		{
+			if (!Addons.AddressBar.bClose) {
+				Addons.AddressBar.bLoop = true;
+				AddEvent("ExitMenuLoop", function () {
+					Addons.AddressBar.bLoop = false;
+					Addons.AddressBar.bClose = true;
+					clearTimeout(Addons.AddressBar.tid2);
+					Addons.AddressBar.tid2 = setTimeout("Addons.AddressBar.bClose = false;", 500);
+
+				});
+				return true;
+			}
+			return false;
 		}
 	};
 
-	AddEvent("Resize", Addons.AddressBar.Resize);
-
-	AddEvent("DeviceChanged", function ()
-	{
-		document.F.combobox.length = 0;
-		if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion >= 602) {
-			var o = document.F.combobox.options[++document.F.combobox.length - 1];
-			o.text = GetText("Select");
-			o.value = "-";
-		}
-		Addons.AddressBar.Add(0, ssfDESKTOP);
-		Addons.AddressBar.Add(1, ssfDRIVES);
-
-		var Items = sha.NameSpace(ssfDRIVES).Items();
-		for (var i = 0; i < Items.Count; i++) {
-			var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-			if (path) {
-				Addons.AddressBar.Add(2, path);
-			}
-		}
-		Addons.AddressBar.Add(1, ssfBITBUCKET);
-		document.F.combobox.selectedIndex = -1
-	});
 
 	AddEvent("ChangeView", function (Ctrl)
 	{
 		if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
 			document.F.addressbar.value = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+			Addons.AddressBar.Arrange(Ctrl.FolderItem);
 			if (document.documentMode) {
 				var info = api.Memory("SHFILEINFO");
 				api.ShGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
@@ -259,6 +243,32 @@ if (window.Addon == 1) {
 				image.FromHICON(info.hIcon, api.GetSysColor(COLOR_WINDOW));
 				api.DestroyIcon(info.hIcon);
 				document.getElementById("addr_img").src = image.DataURI("image/png");
+			}
+		}
+	});
+
+	AddEvent("Resize", function ()
+	{
+		Addons.AddressBar.Arrange();
+	});
+
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo)
+	{
+		if (msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_TE && Addons.AddressBar.bLoop) {
+			var Ctrl2 = te.CtrlFromPoint(pt);
+			if (Ctrl2 && Ctrl2.Type == CTRL_WB && !HitTest(Addons.AddressBar.Item, pt)) {
+				for (var i = Addons.AddressBar.nLevel; i >= 0; i--) {
+					var o = document.getElementById("addressbar" + i);
+					if (o) {
+						if (HitTest(o, pt)) {
+							wsh.SendKeys("{Esc}");
+							(function (o) { setTimeout(function () {
+								Addons.AddressBar.bClose = false;
+								o.click();
+							}, 100);}) (o);
+						}
+					}
+				}
 			}
 		}
 	});
@@ -271,9 +281,10 @@ if (window.Addon == 1) {
 	GetAddress = function ()
 	{
 		return document.F.addressbar.value;
-	};
+	}
 
 	if (items.length) {
+		Addons.AddressBar.bXP = item.getAttribute("XP");
 		//Menu
 		if (item.getAttribute("MenuExec")) {
 			Addons.AddressBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -284,49 +295,42 @@ if (window.Addon == 1) {
 			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 			{
 				api.InsertMenu(hMenu, Addons.AddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.AddressBar.strName));
-				ExtraMenuCommand[nPos] = Addons.AddressBar.Focus;
+				ExtraMenuCommand[nPos] = Addons.AddressBar.Exec;
 				return nPos;
 			});
 		}
 		//Key
 		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.AddressBar.Focus, "Func");
+			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.AddressBar.Exec, "Func");
 		}
 		//Mouse
 		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.AddressBar.Focus, "Func");
+			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.AddressBar.Exec, "Func");
 		}
 	}
-	AddTypeEx("Add-ons", "Address Bar", Addons.AddressBar.Focus);
+	AddTypeEx("Add-ons", "Address Bar", Addons.AddressBar.Exec);
 
-	var s = [];
-	s.push('<div style="position: relative; width; 100px; overflow: hidden">');
-	s.push('<select id="combobox" onchange="Addons.AddressBar.Select(this);"')
-	s.push(' onclick="return Addons.AddressBar.Click(this);"');
-	s.push(' oncontextmenu="return Addons.AddressBar.Popup(this);"');
-	s.push(' onresize="Addons.AddressBar.Resize()"');
-	s.push(' hidefocus="true" style="width: 100%"><option>\xa0</option></select>');
-
-	s.push('<img id="addr_img" icon="shell32.dll,3,16"');
-	s.push(' onmousedown="Addons.AddressBar.MouseDown(this);"');
-	s.push(' onmouseup="Addons.AddressBar.MouseUp();"');
-	s.push(' onclick="return Addons.AddressBar.Open(document.getElementById(\'combobox\'));"');
-	s.push(' oncontextmenu="return Addons.AddressBar.Popup(this);"');
-	s.push(' onmouseout="Addons.AddressBar.Drag(this);"');
-	s.push(' style="position: absolute; left: 4px; top: 2px; width: 16px; height: 16px; z-index: 3; border: 0px" />');
-	if (document.documentMode) {
-		s.push('<div id="forie6" scrolling="no" frameborder="0" style="position: absolute; left: 2px; top: 2px; width: 0px; height: 1px; z-index: 2; display: inline; background-color: window"></div>');
+	var s = item.getAttribute("Width");
+	if (s) {
+		s = (api.QuadPart(s) == s) ? (s + "px") : s;
 	}
 	else {
-		s.push('<iframe id="forie6" scrolling="no" frameborder="0" style="position: absolute; left: 2px; top: 2px; width: 0px; height: 1px; z-index: 2; display: inline"></iframe>');
+		s = "100%";
 	}
-	s.push('<input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="this.select()" onblur="this.value=this.value"');
-	s.push(' style="position: absolute; left: 21px; top: 2px; z-index: 3; visibility: hidden" /></div>');
-	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
-	var cbbx = document.getElementById("combobox");
+	s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbbuttons" style="margin 2px; background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 2px; padding-left: 20px"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus(this)" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="addressbarselect" class="button" style="position: absolute; font-family: webdings; top: 2px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">6</span></div>'];
+	
+	s.push('<img id="addr_img" src="icon:shell32.dll,3,16"');
+	s.push(' onclick="return Addons.AddressBar.Exec();"');
+	s.push(' oncontextmenu="Addons.AddressBar.Exec(); return false;"');
+	s.push(' style="position: absolute; left: 4px; top: 2px; width: 16px; height: 16px; z-index: 3; border: 0px" /></div>');
 
+	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
 	if (o.style.verticalAlign.length == 0) {
 		o.style.verticalAlign = "middle";
 	}
-	Resize();
+	Addons.AddressBar.Resize();
+}
+else {
+	document.getElementById("tab0").value = "General";
+	document.getElementById("panel0").innerHTML = '<table style="width: 100%"><tr><td><input type="checkbox" id="XP" /><label for="XP">XP ' + GetText("Style").toLowerCase() + '</label></td></tr><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Auto" onclick="document.F.Width.value=\'\'" /></td></tr></table>';
 }
