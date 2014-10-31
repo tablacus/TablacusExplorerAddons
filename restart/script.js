@@ -7,7 +7,6 @@ if (items.length) {
 	if (!item.getAttribute("Set")) {
 		item.setAttribute("MenuExec", 1);
 		item.setAttribute("Menu", "File");
-		item.setAttribute("Menu", "File");
 		item.setAttribute("MenuPos", -1);
 		item.setAttribute("MenuName", "Restart");
 	}
@@ -60,7 +59,6 @@ if (window.Addon == 1) {
 		if (item.getAttribute("MouseExec")) {
 			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.Restart.Exec();", "JScript");
 		}
-		
 		AddTypeEx("Add-ons", "Restart", Addons.Restart.Exec);
 	}
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
@@ -71,5 +69,5 @@ if (window.Addon == 1) {
 	else {
 		s = GetText('Restart');
 	}
-	SetAddon(Addon_Id, Default, ['<span class="button" id="UpButton" onclick="Addons.Restart.Exec();" oncontextmenu="Addons.Restart.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s ,'</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Restart.Exec();" oncontextmenu="Addons.Restart.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
 }

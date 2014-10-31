@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
-	<General>
-		<Version>1.00</Version>
-		<MinVersion>2012.01.29</MinVersion>
-		<pubDate>Sat, 17 Mar 2012 00:00:00 +0900</pubDate>
-		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
-		<License>MIT License</License>
-		<Name>VBS InputBox</Name>
-		<Creator>Gaku</Creator>
-		<Description>VBS InputBox</Description>
-	</General>
+  <General>
+    <Version>1.01</Version>
+    <MinVersion>2014.10.26</MinVersion>
+    <pubDate>Fri, 31 Oct 2014 00:00:00 UTC</pubDate>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+    <Name>VBS InputBox</Name>
+    <Creator>Gaku</Creator>
+    <Description>VBS InputBox</Description>
+  </General>
 </TablacusExplorer>
