@@ -1,8 +1,9 @@
-if (window.Addon == 1) { (function () {
+if (window.Addon == 1) {
 	Addons.TaskTray =
 	{
-		WM: TEM_APP++,
+		WM: TWM_APP++,
 		bTray: false,
+		WM_TaskbarCreated: api.RegisterWindowMessage("TaskbarCreated"),
 
 		CreateIcon: function (f, bShow)
 		{
@@ -13,18 +14,14 @@ if (window.Addon == 1) { (function () {
 				return;
 			}
 			Addons.TaskTray.bTray = true;
-			if (!te.Data.TaskBarRecreate) {
-				te.Data.TaskBarRecreate = api.RegisterWindowMessage("TaskbarCreated");
-			}
 			var NotifyData = api.Memory("NOTIFYICONDATA");
 			NotifyData.cbSize = NotifyData.Size;
 			NotifyData.hWnd = te.hwnd;
 			NotifyData.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
-			NotifyData.uCallbackMessage = this.WM;
+			NotifyData.uCallbackMessage = Addons.TaskTray.WM;
 			NotifyData.hIcon = api.GetClassLongPtr(te.hwnd, GCLP_HICONSM);
-			NotifyData.szTip = "Tablacus Explorer";
-			var nDog = 5;
-			while (!api.Shell_NotifyIcon(NIM_ADD, NotifyData) && nDog-- >= 0) {
+			NotifyData.szTip = TITLE;
+			for (var nDog = 5; !api.Shell_NotifyIcon(NIM_ADD, NotifyData) && nDog--;) {
 				api.Sleep(100);
 			}
 			api.DestroyIcon(NotifyData.hIcon);
@@ -38,13 +35,11 @@ if (window.Addon == 1) { (function () {
 				var NotifyData = api.Memory("NOTIFYICONDATA");
 				NotifyData.cbSize = NotifyData.Size;
 				NotifyData.hWnd = te.hwnd;
-				var nDog = 5;
-				while (!api.Shell_NotifyIcon(NIM_DELETE, NotifyData) && nDog-- >= 0) {
+				for (var nDog = 5; !api.Shell_NotifyIcon(NIM_DELETE, NotifyData) && nDog--;) {
 					api.Sleep(100);
 				}
 			}
 		}
-
 	}
 
 	AddEvent("SystemMessage", function (Ctrl, hwnd, msg, wParam, lParam)
@@ -55,13 +50,13 @@ if (window.Addon == 1) { (function () {
 					switch (wParam & 0xFFF0) {
 						case SC_MINIMIZE:
 							if (GetAddonOption("tasktray", "MinimizeToTray")) {
-						   	Addons.TaskTray.CreateIcon(true, false);
+								Addons.TaskTray.CreateIcon(true, false);
 								return 1;
 							}
 							break;
 						case SC_CLOSE:
 							if (GetAddonOption("tasktray", "CloseToTray")) {
-						   	Addons.TaskTray.CreateIcon(true, false);
+								Addons.TaskTray.CreateIcon(true, false);
 								return 1;
 							}
 							break;
@@ -96,7 +91,7 @@ if (window.Addon == 1) { (function () {
 					case WM_QUERYENDSESSION:
 						return 1;
 					default:
-						if (lParam == te.Data.TaskBarRecreate) {
+						if (lParam == Addons.TaskTray.WM_TaskbarCreated) {
 							Addons.TaskTray.CreateIcon(false, true);
 						}
 						break;
@@ -131,7 +126,6 @@ if (window.Addon == 1) { (function () {
 	});
 
 	if (GetAddonOption("tasktray", "AlwaysInTray")) {
-   	Addons.TaskTray.CreateIcon(true, true);
+		Addons.TaskTray.CreateIcon(true, true);
 	}
-
-})();}
+}
