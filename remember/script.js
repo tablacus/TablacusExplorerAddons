@@ -11,13 +11,14 @@ if (window.Addon == 1) {
 	Addons.Remember =
 	{
 		db: {},
+		ID: ["Time", "ViewMode", "IconSize", "Columns", "SortColumn", "Path"],
 
 		RememberFolder: function (FV)
 		{
 			if (FV && FV.FolderItem) {
 				if (api.ILisEqual(FV.FolderItem, FV.Data.Remember)) {
 					var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-					Addons.Remember.db[path] = [new Date().getTime(), FV.CurrentViewMode, FV.IconSize, FV.Columns, FV.SortColumn, FV.FocusedItem];
+					Addons.Remember.db[path] = [new Date().getTime(), FV.CurrentViewMode, FV.IconSize, FV.Columns, FV.SortColumn];
 				}
 			}
 		}
@@ -25,13 +26,13 @@ if (window.Addon == 1) {
 
 	var xml = OpenXml("remember.xml", true, false);
 	if (xml) {
-		var ID = ["Time", "ViewMode", "IconSize", "Columns", "SortColumn", "Focused", "Path"];
 		var items = xml.getElementsByTagName('Item');
-		for (i = items.length; i-- > 0;) {
+		for (var i = items.length; i-- > 0;) {
 			var item = items[i];
-			var ar = new Array(ID.length);
-			for (j = ID.length; j--;) {
-				ar[j] = item.getAttribute(ID[j]);
+			var j = Addons.Remember.ID.length;
+			var ar = new Array(j);
+			while (j--) {
+				ar[j] = item.getAttribute(Addons.Remember.ID[j]);
 			}
 			if (ar[1]) {
 				Addons.Remember.db[ar.pop()] = ar;
@@ -45,7 +46,7 @@ if (window.Addon == 1) {
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Prev) {
 				var path = api.GetDisplayNameOf(Prev, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-				Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, Ctrl.Columns, Ctrl.SortColumn, Ctrl.FocusedItem];
+				Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, Ctrl.Columns, Ctrl.SortColumn];
 			}
 			var path = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 
@@ -70,9 +71,6 @@ if (window.Addon == 1) {
 			Ctrl.Columns = ar[3];
 			Ctrl.SortColumn = ar[4];
 
-			if (ar[5]) {
-				Ctrl.SelectItem(ar[5], SVSI_FOCUSED | SVSI_ENSUREVISIBLE);
-			}
 			ar[0] = new Date().getTime();
 		}
 	});
@@ -93,7 +91,7 @@ if (window.Addon == 1) {
 		Addons.Remember.RememberFolder(te.Ctrl(CTRL_FV));
 
 		var arFV = [];
-		for (path in Addons.Remember.db) {
+		for (var path in Addons.Remember.db) {
 			if (path) {
 				var ar = Addons.Remember.db[path];
 				ar.push(path);
@@ -113,12 +111,11 @@ if (window.Addon == 1) {
 		var xml = CreateXml();
 		var root = xml.createElement("TablacusExplorer");
 
-		var ID = ["Time", "ViewMode", "IconSize", "Columns", "SortColumn", "Focused", "Path"];
 		while (arFV.length) {
-			var ar = arFV.shift()
+			var ar = arFV.shift();
 			var item = xml.createElement("Item");
-			for (j = ID.length; j-- > 0;) {
-				item.setAttribute(ID[j], ar[j]);
+			for (var j = Addons.Remember.ID.length; j--;) {
+				item.setAttribute(Addons.Remember.ID[j], ar[j]);
 			}
 			root.appendChild(item);
 		}
