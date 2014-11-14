@@ -71,19 +71,11 @@ function Ref()
 	{
 		var commdlg = te.CommonDialog;
 		var arg = api.CommandLineToArgv(document.getElementById("Path").value);
-		commdlg.InitDir = fso.GetParentFolderName(arg.Item(0));
+		commdlg.InitDir = fso.GetParentFolderName(arg[0]);
 		commdlg.Filter = "All Files|*.*";
 		commdlg.Flags = OFN_FILEMUSTEXIST;
 		if (commdlg.ShowOpen()) {
 			document.getElementById("Path").value = commdlg.FileName;
 		}
 	}, 100);
-}
-
-function SetProtable()
-{
-	if (confirmYN(GetText("Are you sure?"))) {
-		var o = document.getElementById("Path");
-		o.value = o.value.replace(new RegExp(fso.GetDriveName(api.GetModuleFileName(null)), "i"), '%Installed%');
-	}
 }

@@ -513,7 +513,7 @@ if (window.Addon == 1) {
 			timestamp: function (Ctrl, hwnd, pt, s)
 			{
 				var ar = Addons.XFinder.SetCommaText(s);
-				for (var i = 1; i < ar.Count; i++) {
+				for (var i = 1; i < ar.length; i++) {
 					api.SetFileTime(ar[i], ar[0], null, null);
 				}
 			 	return S_OK;

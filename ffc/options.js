@@ -49,7 +49,7 @@ function Ref()
 	{
 		var commdlg = te.CommonDialog;
 		var arg = api.CommandLineToArgv(document.getElementById("Path").value);
-		commdlg.InitDir = fso.GetParentFolderName(arg.Item(0));
+		commdlg.InitDir = fso.GetParentFolderName(arg[0]);
 		commdlg.Filter = "DLL File|*.dll";
 		commdlg.Flags = OFN_FILEMUSTEXIST;
 		if (commdlg.ShowOpen()) {
@@ -68,7 +68,10 @@ function RefId(o, s)
 		var hMenu = api.CreatePopupMenu();
 		ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_NORMAL);
 		var pt = GetPos(o, true);
-		document.F.elements[s].value = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight, te.hwnd, null, ContextMenu);
+		var n = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight, te.hwnd, null, ContextMenu);
+		if (n) {
+			document.F.elements[s].value = n;
+		}
 		api.DestroyMenu(hMenu);
 	}
 }
