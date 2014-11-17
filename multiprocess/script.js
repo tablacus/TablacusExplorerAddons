@@ -1,58 +1,35 @@
 ﻿if (window.Addon == 1) {
 	Addons.MultiProcess =
 	{
-		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bDelete)
+		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver)
 		{
 			if (Items.Count == 0) {
 				return false;
 			}
-			var strCmd = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\multiprocess\\tcm" + (api.sizeof("HANDLE") * 8) + ".exe");
-			if (!fso.FileExists(strCmd)) {
-				return false;
-			}
-			if (!bDelete && api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
-				return false;
-			}
-			if (Dest != "") {
-				try {
-					Dest = Dest.IsLink ? Dest.GetLink.Path : Dest.Path;
-				} catch (e) {
+			var dwEffect = pdwEffect[0];
+			if (Dest !== null) {
+				if (api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
 					return false;
 				}
-			}
-			if (bDelete || (Dest != "" && fso.FolderExists(Dest))) {
-				var hDrop = Items.hDrop;
-				if (Items.Count == api.DragQueryFile(hDrop, -1)) {
-					var strFunc;
-					if (bDelete) {
-						strFunc = "-invoke delete";
-					}
-					else {
-						if (bOver) {
-							var DropTarget = api.DropTarget(Dest);
-							DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
-						}
-						if (pdwEffect.x & DROPEFFECT_COPY) {
-							grfKeyState |= MK_CONTROL;
-						}
-						else if (pdwEffect.x & DROPEFFECT_MOVE) {
-							grfKeyState |= MK_SHIFT;
-						}
-						strFunc = '-grfKeyState ' + grfKeyState + ' -drop "' + Dest + '"';
-					}
-					if (strFunc) {
-						setTimeout(function () {
-							var oExec = wsh.Exec([api.PathQuoteSpaces(strCmd), strFunc].join(" "));
-							var hwnd = GethwndFromPid(oExec.ProcessID);
-							api.PostMessage(hwnd, WM_DROPFILES, hDrop, 0);
-							wsh.AppActivate(oExec.ProcessID);
-						}, 1);
-						return true;
-					}
+				if (bOver) {
+					var DropTarget = api.DropTarget(Dest);
+					DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 				}
-				api.DragFinish(hDrop);
 			}
-			return false;
+			var uid;
+			do {
+				uid = String(Math.random()).replace(/^0?\./, "");
+			} while (Exchange[uid]);
+			Exchange[uid] = 
+			{
+				Items: Items,
+				Dest: Dest,
+				grfKeyState: grfKeyState,
+				pt: pt,
+				dwEffect: dwEffect
+			};
+			wsh.Run([api.PathQuoteSpaces(api.GetModuleFileName(null)), '/run', "addons\\multiprocess\\worker.js", uid].join(" "));
+			return true;
 		}
 	};
 
@@ -100,7 +77,7 @@
 					break;
 				case CommandID_DELETE:
 					var Items = Ctrl.SelectedItems();
-					if (Addons.MultiProcess.FO(null, Items, "", MK_LBUTTON, null, Items.pdwEffect, false, true)) {
+					if (Addons.MultiProcess.FO(null, Items, null, MK_LBUTTON, null, Items.pdwEffect, false)) {
 						return S_OK;
 					}
 					break;
@@ -122,7 +99,7 @@
 				break;
 			case CommandID_DELETE:
 				var Items = ContextMenu.Items();
-				if (Addons.MultiProcess.FO(null, Items, "", MK_LBUTTON, null, Items.pdwEffect, false, true)) {
+				if (Addons.MultiProcess.FO(null, Items, null, MK_LBUTTON, null, Items.pdwEffect, false)) {
 					return S_OK;
 				}
 				break;

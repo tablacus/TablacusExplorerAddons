@@ -29,9 +29,13 @@
               </select>
               <select name="MouseList" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
+              <select name="MouseList_Background" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              </select>
               <select name="MouseTree" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
               <select name="MouseTabs" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              </select>
+              <select name="MouseTabs_Background" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
               <select name="MouseBrowser" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
@@ -50,11 +54,10 @@
                         </td>
                         <td align="right">
                           <script type="text/javascript">
-                            <!--
-                              document.write('<input type="button" value="' + MainWindow.g_KeyState[0][0] + '" title="S" onclick="AddMouse(this)" />');
-                              document.write('<input type="button" value="' + MainWindow.g_KeyState[1][0] + '" title="C" onclick="AddMouse(this)" />');
-                              document.write('<input type="button" value="' + MainWindow.g_KeyState[2][0] + '" title="A" onclick="AddMouse(this)" />');
-                            //-->
+                            var s = "CSA";
+                            for (var i = 0; i < s.length; i++) {
+	                            document.write('<input type="button" value="' + MainWindow.g_KeyState[i][0] + '" title="' + s.charAt(i) + '" onclick="AddMouse(this)" />');
+                            }
                           </script>
                         </td>
                       </tr>

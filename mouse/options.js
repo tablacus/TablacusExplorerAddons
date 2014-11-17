@@ -3,7 +3,7 @@ var nTabMax = 0;
 
 var g_x = {Mouse: null};
 var g_Chg = {Mouse: false, Data: null};
-g_Types = {Mouse: ["All", "List", "Tree", "Tabs", "Browser"]};
+g_Types = {Mouse: ["All", "List", "List_Background", "Tree", "Tabs", "Tabs_Background", "Browser"]};
 
 function InitMouseOptions()
 {

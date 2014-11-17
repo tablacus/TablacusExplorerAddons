@@ -19,5 +19,4 @@ if (window.Addon == 1) {
 	{
 		document.getElementById("mouse").innerText = Text;
 	});
-
 }

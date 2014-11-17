@@ -13,7 +13,9 @@ if (items.length) {
 		item.setAttribute("Key", "Shift+Ctrl+T");
 		item.setAttribute("KeyOn", "All");
 
-		item.setAttribute("MouseOn", "List");
+		item.setAttribute("MouseExec", 1);
+		item.setAttribute("Mouse", "3");
+		item.setAttribute("MouseOn", "Tabs_Background");
 	}
 }
 if (window.Addon == 1) {
@@ -49,6 +51,7 @@ if (window.Addon == 1) {
 				}
 				Addons.UndoCloseTab.bLock = false;
 			}
+			return S_OK;
 		}
 	}
 
@@ -105,7 +108,6 @@ if (window.Addon == 1) {
 		}
 	});
 
-
 	if (items.length) {
 		var s = item.getAttribute("MenuName");
 		if (s && s != "") {
@@ -123,11 +125,11 @@ if (window.Addon == 1) {
 		}
 		//Key
 		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.UndoCloseTab.Exec();", "JScript");
+			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.UndoCloseTab.Exec, "Func");
 		}
 		//Mouse
 		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.UndoCloseTab.Exec();", "JScript");
+			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.UndoCloseTab.Exec, "Func");
 		}
 
 		AddTypeEx("Add-ons", "Undo close tab", Addons.UndoCloseTab.Exec);
