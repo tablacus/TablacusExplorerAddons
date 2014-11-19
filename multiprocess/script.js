@@ -20,7 +20,7 @@
 			do {
 				uid = String(Math.random()).replace(/^0?\./, "");
 			} while (Exchange[uid]);
-			Exchange[uid] = 
+			Exchange[uid] =
 			{
 				Items: Items,
 				Dest: Dest,
@@ -28,7 +28,8 @@
 				pt: pt,
 				dwEffect: dwEffect
 			};
-			wsh.Run([api.PathQuoteSpaces(api.GetModuleFileName(null)), '/run', "addons\\multiprocess\\worker.js", uid].join(" "));
+			var oExec = wsh.Exec([api.PathQuoteSpaces(api.GetModuleFileName(null)), '/run', "addons\\multiprocess\\worker.js", uid].join(" "));
+			wsh.AppActivate(oExec.ProcessID);
 			return true;
 		}
 	};
