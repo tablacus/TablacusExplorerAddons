@@ -1,14 +1,9 @@
 if (window.Addon == 1) {
 	Addons.Tabs =
 	{
-		tid: null,
-
 		Init: function (Ctrl)
 		{
-			var LogFont = api.Memory("LOGFONT");
-			api.SystemParametersInfo(SPI_GETICONTITLELOGFONT, LogFont.Size, LogFont, 0);
-			var hFont = api.CreateFontIndirect(LogFont);
-			api.SendMessage(Ctrl.hwnd, WM_SETFONT, hFont, 1);
+			api.SendMessage(Ctrl.hwnd, WM_SETFONT, this.hFont, 1);
 			api.SendMessage(Ctrl.hwnd, TCM_SETIMAGELIST, 0, this.himl);
 		},
 
@@ -42,7 +37,7 @@ if (window.Addon == 1) {
 	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo)
 	{
 		if (Ctrl.Type == CTRL_TC) {
-			if (!te.Data.DragTab) {
+			if (!Addons.Tabs.DragTab) {
 				if (api.GetKeyState(VK_LBUTTON) < 0) {
 					if (IsDrag(pt, te.Data.pt)) {
 						g_mouse.str = "";
@@ -51,11 +46,11 @@ if (window.Addon == 1) {
 						var i = Ctrl.HitTest(pt, TCHT_ONITEM);
 						if (i >= 0) {
 							var pdwEffect = api.Memory("DWORD");
-							pdwEffect.Item(0) = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
-							te.Data.DragTab = Ctrl;
-							te.Data.DragIndex = i;
-							api.DoDragDrop(Ctrl.Item(i).FolderItem, pdwEffect.Item(0), pdwEffect);
-							te.Data.DragTab = null;
+							pdwEffect[0] = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
+							Addons.Tabs.DragTab = Ctrl;
+							Addons.Tabs.DragIndex = i;
+							api.DoDragDrop(Ctrl.Item(i).FolderItem, pdwEffect[0], pdwEffect);
+							Addons.Tabs.DragTab = null;
 						}
 					}
 				}
@@ -66,8 +61,8 @@ if (window.Addon == 1) {
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		if (Ctrl.Type == CTRL_TC) {
-			if (te.Data.DragTab) {
-				pdwEffect.X = DROPEFFECT_LINK;
+			if (Addons.Tabs.DragTab) {
+				pdwEffect[0] = DROPEFFECT_LINK;
 			}
 			return S_OK;
 		}
@@ -84,9 +79,9 @@ if (window.Addon == 1) {
 					Addons.Tabs.tid = setTimeout(Addons.Tabs.Over, 300);
 				}
 			}
-			var nDragTab = te.Data.DragIndex;
-			if (te.Data.DragTab && nDragTab >= 0) {
-				pdwEffect.X = (nDragTab != nIndex) ? DROPEFFECT_LINK : DROPEFFECT_NONE;
+			var nDragTab = Addons.Tabs.DragIndex;
+			if (Addons.Tabs.DragTab && nDragTab >= 0) {
+				pdwEffect[0] = (nDragTab != nIndex) ? DROPEFFECT_LINK : DROPEFFECT_NONE;
 				return S_OK;
 			}
 			else if (nIndex >= 0) {
@@ -99,11 +94,11 @@ if (window.Addon == 1) {
 						}
 					}
 				}
-				pdwEffect.X = DROPEFFECT_NONE;
+				pdwEffect[0] = DROPEFFECT_NONE;
 				return S_OK;
 			}
 			else if (dataObj.Item(0) && dataObj.Item(0).IsFolder) {
-				pdwEffect.X = DROPEFFECT_LINK;
+				pdwEffect[0] = DROPEFFECT_LINK;
 				return S_OK;
 			}
 		}
@@ -113,12 +108,12 @@ if (window.Addon == 1) {
 	{
 		if (Ctrl.Type == CTRL_TC) {
 			var nIndex = Ctrl.HitTest(pt, TCHT_ONITEM);
-			if (te.Data.DragTab) {
-				pdwEffect.X = DROPEFFECT_LINK;
+			if (Addons.Tabs.DragTab) {
+				pdwEffect[0] = DROPEFFECT_LINK;
 				if (nIndex < 0) {
 					nIndex = Ctrl.Count;
 				}
-				te.Data.DragTab.Move(te.Data.DragIndex, nIndex, Ctrl);
+				Addons.Tabs.DragTab.Move(Addons.Tabs.DragIndex, nIndex, Ctrl);
 				Ctrl.SelectedIndex = nIndex;
 			}
 			else if (nIndex >= 0) {
@@ -149,27 +144,6 @@ if (window.Addon == 1) {
 		Addons.Tabs.Init(Ctrl);
 	});
 
-	AddEventEx(window, "load", function ()
-	{
-		var cTC = te.Ctrls(CTRL_TC);
-		for (var i = cTC.Count; i--;) {
-			Addons.Tabs.Init(cTC[i]);
-		}
-	});
-
-	AddEvent(window, "Finalize", function ()
-	{
-		if (Addons.Tabs.himl) {
-			api.ImageList_Destroy(Addons.Tabs.himl);
-			Addons.Tabs.himl = null;
-		}
-	});
-
-	var hModule = api.GetModuleHandle(fso.BuildPath(system32, "ieframe.dll"), 0, LOAD_LIBRARY_AS_DATAFILE) || api.GetModuleHandle(fso.BuildPath(system32, "browseui.dll"), 0, LOAD_LIBRARY_AS_DATAFILE);
-	if (hModule) {
-		Addons.Tabs.himl = api.ImageList_LoadImage(hModule, 545, 13, 0, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION);
-	}
-
 	AddEvent("Lock", function (Ctrl, i, bLock)
 	{
 		var tcItem = api.Memory("TCITEM");
@@ -178,4 +152,31 @@ if (window.Addon == 1) {
 		api.SendMessage(Ctrl.hwnd, TCM_SETITEM, i, tcItem.P);
 		Resize();
 	});
+
+	AddEventEx(window, "load", function ()
+	{
+		var cTC = te.Ctrls(CTRL_TC);
+		for (var i = cTC.Count; i--;) {
+			Addons.Tabs.Init(cTC[i]);
+		}
+	});
+
+	AddEventEx(window, "beforeunload", function ()
+	{
+		if (Addons.Tabs.hFont) {
+			api.DeleteObject(Addons.Tabs.hFont);
+		}
+		if (Addons.Tabs.himl) {
+			api.ImageList_Destroy(Addons.Tabs.himl);
+			Addons.Tabs.himl = null;
+		}
+	});
+
+	var LogFont = api.Memory("LOGFONT");
+	api.SystemParametersInfo(SPI_GETICONTITLELOGFONT, LogFont.Size, LogFont, 0);
+	Addons.Tabs.hFont = api.CreateFontIndirect(LogFont);
+	var hModule = api.GetModuleHandle(fso.BuildPath(system32, "ieframe.dll"), 0, LOAD_LIBRARY_AS_DATAFILE) || api.GetModuleHandle(fso.BuildPath(system32, "browseui.dll"), 0, LOAD_LIBRARY_AS_DATAFILE);
+	if (hModule) {
+		Addons.Tabs.himl = api.ImageList_LoadImage(hModule, 545, 13, 0, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION);
+	}
 }
