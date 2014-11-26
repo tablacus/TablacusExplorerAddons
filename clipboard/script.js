@@ -1,19 +1,14 @@
 ﻿var Addon_Id = "clipboard";
 var Default = "ToolBar2Left";
 
-if (!window.dialogArguments) {
-	g_clipboard =
+if (window.Addon == 1) {
+	Addons.ClipBoard =
 	{
-		DragEnter: te.OnDragEnter,
-		DragOver: te.OnDragOver,
-		Drop: te.OnDrop,
-		DragLeave: te.OnDragleave,
-
 		Init: function ()
 		{
 			var n = window.IconSize == 16 ? 16 : 24;
 			var s = '<img alt="Clipboard" src="../addons/clipboard/' + n + '.png">'
-			s = '<span id="Clipboard" class="button" onclick="g_clipboard.Click(this)" oncontextmenu="g_clipboard.Popup(this); return false;" ondrag="g_clipboard.Drag(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + s + '</span><span style="width: 1px"> </span>';
+			s = '<span id="Clipboard" class="button" onclick="Addons.ClipBoard.Click(this)" oncontextmenu="Addons.ClipBoard.Popup(this); return false;" ondrag="Addons.ClipBoard.Drag(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + s + '</span><span style="width: 1px"> </span>';
 			SetAddon(Addon_Id, Default, s);
 		},
 
@@ -115,44 +110,39 @@ if (!window.dialogArguments) {
 
 	};
 
-	te.OnDragEnter = function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
-		var hr = g_clipboard.DragEnter ? g_clipboard.DragEnter(Ctrl, dataObj, grfKeyState, pt, pdwEffect) : E_FAIL;
 		if (Ctrl.Type == CTRL_WB) {
-			hr = S_OK;
+			return S_OK;
 		}
-		return hr;
-	}
+	});
 
-	te.OnDragOver = function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		var o = document.getElementById("Clipboard");
 		if (HitTest(o, pt)) {
-			g_clipboard.grfKeyState = grfKeyState;
+			Addons.ClipBoard.grfKeyState = grfKeyState;
 			pdwEffect.x = (grfKeyState & MK_SHIFT) ? DROPEFFECT_MOVE : DROPEFFECT_COPY;
 			MouseOver(o);
 			return S_OK;
 		}
 		MouseOut("Clipboard");
-		return g_clipboard.DragOver ? g_clipboard.DragOver(Ctrl, dataObj, grfKeyState, pt, pdwEffect) : E_FAIL;
-	}
+	});
 
-	te.OnDrop = function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		MouseOut();
 		if (HitTest(document.getElementById("Clipboard"), pt)) {
-			dataObj.dwEffect = (g_clipboard.grfKeyState & MK_SHIFT) ? DROPEFFECT_MOVE : DROPEFFECT_COPY | DROPEFFECT_LINK;
+			dataObj.dwEffect = (Addons.ClipBoard.grfKeyState & MK_SHIFT) ? DROPEFFECT_MOVE : DROPEFFECT_COPY | DROPEFFECT_LINK;
 			api.OleSetClipboard(dataObj);
 			return S_OK;
 		}
-		return g_clipboard.Drop ? g_clipboard.Drop(Ctrl, dataObj, grfKeyState, pt, pdwEffect) : E_FAIL;
-	}
+	});
 
-	te.OnDragleave = function (Ctrl)
+	AddEvent("Dragleave", function (Ctrl)
 	{
 		MouseOut();
-		return g_clipboard.DragLeave ? g_clipboard.DragLeave(Ctrl): S_OK;
-	}
+	});
 
-	g_clipboard.Init();
+	Addons.ClipBoard.Init();
 }

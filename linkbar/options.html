@@ -1,117 +1,99 @@
-﻿<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<META HTTP-EQUIV="MSThemeCompatible" CONTENT="Yes">
-<title>Tablcus Add-ons</title>
-<style type="text/css">
-body {
-	overflow:hidden;
-}
-.panel {
-	border: 1px solid #aca899;
-	padding: 8px;
-	display: none;
-	font-size: 80%;
-	line-height: 150%;
-	overflow-y: scroll;
-}
-.color {
-	border: 1px solid #7F9DB9;
-	width: 24px;
-}
-.block {
-	padding: 8px;
-	border: 1px solid gray;
-	margin-bottom: 8px;
-	display: block;
-}
-.group {
-	padding: 8px;
-	border-left: 1px solid gray;
-	border-right: 1px solid gray;
-	border-bottom: 1px solid gray;
-	margin-bottom: 8px;
-	display: none;
-}
-.groupbutton {
-	width: 100%;
-}
-.oddline {
-	background-color: #dddddd;
-}
-.layout {
-	width: 100%;
-	padding: 0px;
-	margin: 0px;
-	border: 0px;
-	border-collapse: collapse;
-	overflow: hidden;
-}
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="MSThemeCompatible" content="Yes" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Tablcus Add-ons</title>
+    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="script.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="options.js">
+    </script>
+  </head>
+  <body onload="InitToolOptions();">
+    <form name="F" style="display: inline;">
+      <div class="panel" id="panel0" style="display: block;">
+        <table width="99%">
+          <tr>
+            <td width="150px" valign="top">
+              <select name="List" size="19" style="width: 150px; height: 380px" ondblclick="EditTB()" oncontextmenu="CancelX('List')">
+              </select>
+            </td>
+            <td valign="top">
+              <label>Name</label>
+              <br />
+              <input type="text" name="Name" style="width: 100%" onchange="ChangeX('List')" />
+              <label>Type</label>
+              <br />
+              <select name="Type" style="width: 100%" onchange="ChangeX('List')">
+              </select>
+              <table class="layout">
+                <tr>
+                  <td>
+                    <label>Options</label>
+                  </td>
+                  <td align="right">
+                    <input type="button" value="Portable" onclick="PortableX('Path')" />
+                    <input type="button" value="Reference..." onclick="RefX('Path', true, this)" style="width: 224px" />
+                  </td>
+                </tr>
+              </table>
+              <textarea name="Path" style="width: 100%; height: 200px" onchange="ChangeX('List')"></textarea>
+              <table class="layout">
+                <tr>
+                  <td>
+                    <label>Icon</label>
+                  </td>
+                  <td>
+                    <div id="_Icon" style="height: 40px; overflow: auto"></div>
+                  </td>
+                  <td align="right">
+                    <label>Height</label>
+                    <input type="text" name="Height" style="width: 64px" onchange="ChangeX('List'); SetImage();" />
+                    <input type="button" value="File" onclick="RefX('Icon', false, null, 'ChangeX(\'List\');SetImage();'); SetImage();" />
+                    <input type="button" value="Reference..." onclick="ShowIcon();" />
+                  </td>
+                </tr>
+              </table>
+              <input type="text" name="Icon" style="width: 100%" onchange="ChangeX('List');SetImage();" />
 
-input {
-	font-size: 13px !important;
-	height: 22px !important;
-}
-td {
-	font-size: 13px;
-	height: 22px;
-	padding: 0px;
-}
-</style>
-<script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-</script>
-<script type="text/javascript" charset="utf-8" src="../../script/common.js">
-</script>
-<script type="text/javascript" charset="utf-8" src="script.js">
-</script>
-<script type="text/javascript" charset="utf-8" src="options.js">
-</script>
-</head>
-<body onload="InitOptions();">
-
-<div class="panel" id="panel0" style="display: block;">
-
-<form name="F" style="display: inline;">
-<table width="97%"><tr><td width="150px" valign="top">
-<select name="List" size="19" style="width: 150px" ondblclick="EditX()">
-</select>
-</td><td valign="top">
-<label>Name</label><br>
-<input type="text" name="Name" style="width: 100%" onchange="ChangeX()">
-<table class="layout"><tr><td>
-<label>Path</label></td>
-<td align="right"><input type="button" value="..." onclick="RefX('Path', true)"></td></tr></table>
-<textarea name="Path" style="width: 100%; height: 270px" onchange="ChangeX()">
-</textarea>
-<label>Type</label><br>
-<select name="Type" style="width: 100%" onchange="ChangeX()">
-<option value="Open">Open
-<option value="Exec">Exec
-<option value="JScript">JScript
-<option value="VBScript">VBScript
-</select>
-</td></tr></table>
-<table width="97%"><tr><td>
-<input type="button" value="Remove" onclick="RemoveX()">
-<input type="button" value="Up" onclick="MoveX(-1)">
-<input type="button" value="Down" onclick="MoveX(1)">
-<input type="button" value="Edit" onclick="EditX()">
-<input type="button" value="Get the current folder view" onclick="GetCurrentSetting()">
-</td><td align="right">
-<input type="button" value="Add" onclick="AddX()">
-<input type="button" value="Replace" onclick="ReplaceX()">
-</td></tr></table>
-<!-------------------------------------------->
-</form>
-</div>
-</div>
-<table width="97%"><tr>
-<td><input type="button" value="Location" onclick="ShowLocation();"></td>
-<td align="right">
-<input type="button" value="OK" style="width: 96px;" onclick="SetOptions();">
-<input type="button" value="Cancel" style="width: 96px;" onclick="window.close();">
-</td></tr></table>
-</form>
-
-</body>
+            </td>
+          </tr>
+        </table>
+        <table width="97%">
+          <tr>
+            <td>
+              <input type="button" value="Remove" onclick="RemoveX('List')" />
+              <input type="button" value="Up" onclick="MoveX('List',-1)" />
+              <input type="button" value="Down" onclick="MoveX('List',1)" />
+              <input type="button" value="Edit" onclick="EditTB('List')" />
+              <input type="button" value="Get the current folder view" onclick="GetCurrentSetting()" />
+            </td>
+            <td align="right">
+              <input type="button" value="Add" onclick="AddX('List', ReplaceTB)" />
+              <input type="button" value="Replace" onclick="ReplaceTB('List')" />
+            </td>
+          </tr>
+        </table>
+      </div>
+      <!--panel_end-->
+      <table id="buttons" width="97%">
+        <tr>
+          <td>
+            <input type="button" value="Location" onclick="ShowLocation();" />
+          </td>
+          <td align="right">
+            <input type="button" value="OK" style="width: 96px;" onclick="SetToolOptions();" />
+            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+          </td>
+        </tr>
+      </table>
+    </form>
+  </body>
 </html>
