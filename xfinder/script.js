@@ -31,7 +31,7 @@ if (window.Addon == 1) {
 					if (FV) {
 						var TC = FV.Parent;
 						for (var i = TC.Count; i--;) {
-							if (PathMatchEx(api.GetDisplayNameOf(TC[i], SHGDN_FORPARSINGEX | SHGDN_FORPARSING) + "", p)) {
+							if (PathMatchEx(api.GetDisplayNameOf(TC[i], SHGDN_FORADDRESSBAR | SHGDN_FORPARSINGEX | SHGDN_FORPARSING) + "", p)) {
 								TC[i].Close();
 							}
 						}
@@ -74,6 +74,67 @@ if (window.Addon == 1) {
 				}
 			},
 			
+			closed: function (Ctrl, hwnd, pt, line)
+			{
+				if (Addons.UndoCloseTab) {
+					var FV = GetFolderView(Ctrl, pt);
+					if (FV) {
+						var hMenu = api.CreatePopupMenu();
+						var nCount = Addons.UndoCloseTab.db.length;
+						if (nCount > 16) {
+							nCount = 16;
+						}
+						for (var i = 0; i < nCount; i++) {
+							var mii = api.Memory("MENUITEMINFO");
+							mii.cbSize = mii.Size;
+							mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
+							mii.wId = i + 1;
+							var s = Addons.UndoCloseTab.db[i];
+							if (typeof(s) == "string") {
+								s = s.split("\n");
+								s = s[s[s.length - 1]];
+								if (api.PathIsNetworkPath(s)) {
+									MenusIcon(mii, 'icon:dsuiext.dll,25,16');
+									s = fso.GetFileName(s) || s;
+								}
+								else {
+									s = api.ILCreateFromPath(s);
+									AddMenuIconFolderItem(mii, s);
+									s = api.GetDisplayNameOf(s, SHGDN_INFOLDER);
+								}
+							}
+							else {
+								s = s.Item(s.Index);
+								AddMenuIconFolderItem(mii, s);
+								s = api.GetDisplayNameOf(s, SHGDN_INFOLDER);
+							}
+							mii.dwTypeData = String(s);
+							api.InsertMenuItem(hMenu, 0, false, mii);
+						}
+						if (!pt) {
+							pt = api.Memory("POINT");
+							api.GetCursorPos(pt);
+						}
+						s = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
+						if (s) {
+							var s = Addons.UndoCloseTab.db[s - 1];
+							if (typeof(s) == "string") {
+								var a = s.split(/\n/);
+								if (a.length > 1) {
+									s = te.FolderItems(a.length - 1);
+									s.Index = a.pop();
+									for (i in a) {
+										s.AddItem(a[i]);
+									}
+								}
+							}
+							FV.Navigate(s, SBSP_NEWBROWSER);
+						}
+					}
+				}
+				return S_OK;
+			},
+
 			refresh: function (Ctrl, hwnd, pt, line)
 			{
 				return Exec(Ctrl, "Refresh", "Tabs", hwnd, pt);
@@ -321,7 +382,7 @@ if (window.Addon == 1) {
 				api.GetCursorPos(pt);
 				var FolderItem = FolderMenu.Open(ExtractMacro(Ctrl, line), pt.x, pt.y);
 				if (FolderItem) {
-					te.Data.XFEnv.inputdata = api.GetDisplayNameOf(FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+					te.Data.XFEnv.inputdata = api.GetDisplayNameOf(FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 				 	return S_OK;
 				}
 				return S_FALSE;
@@ -350,7 +411,7 @@ if (window.Addon == 1) {
 					var Selected = FV.SelectedItems();
 					if (Selected) {
 						for (var i = 0; i < Selected.Count; i++) {
-							if (Addons.XFinder.Exec(Ctrl, hwnd, pt, line.replace(/%Variable%/ig, api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING))) != S_OK) {
+							if (Addons.XFinder.Exec(Ctrl, hwnd, pt, line.replace(/%Variable%/ig, api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) != S_OK) {
 								break;
 							}
 						}
@@ -647,7 +708,7 @@ if (window.Addon == 1) {
 		if (FV) {
 			var Focused = FV.FocusedItem;
 			if (Focused) {
-				return api.GetDisplayNameOf(Focused, SHGDN_FORPARSING);
+				return api.GetDisplayNameOf(Focused, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			}
 		}
 	});
@@ -658,7 +719,7 @@ if (window.Addon == 1) {
 		if (FV) {
 			var Focused = FV.FocusedItem;
 			if (Focused) {
-				return fso.GetFileName(api.GetDisplayNameOf(Focused, SHGDN_FORPARSING));
+				return fso.GetBaseName(api.GetDisplayNameOf(Focused, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			}
 		}
 	});
@@ -680,7 +741,7 @@ if (window.Addon == 1) {
 		if (FV) {
 			var Selected = FV.Items(SVGIO_SELECTION | SVGIO_FLAG_VIEWORDER);
 			if (Selected) {
-				for (var i = Selected.Count; i > 0; ar.unshift(api.PathQuoteSpaces(api.GetDisplayNameOf(Selected.Item(--i), SHGDN_FORPARSING)))) {
+				for (var i = Selected.Count; i > 0; ar.unshift(api.PathQuoteSpaces(api.GetDisplayNameOf(Selected.Item(--i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)))) {
 				}
 			}
 		}
@@ -700,7 +761,7 @@ if (window.Addon == 1) {
 
 	AddEnv("SendTo", function(Ctrl)
 	{
-		return api.GetDisplayNameOf(ssfSENDTO, SHGDN_FORPARSING);
+		return api.GetDisplayNameOf(ssfSENDTO, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 	});
 
 	AddEnv("FileContents", function(Ctrl)
