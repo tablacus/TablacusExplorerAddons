@@ -45,7 +45,7 @@
 				if (ContextMenu) {
 					hMenu = api.CreatePopupMenu();
 					ContextMenu.QueryContextMenu(hMenu, 0, 0x3001, 0x6dff, CMF_DEFAULTONLY | CMF_CANRENAME);
-					if (!FV) {
+					if (SelItem) {
 						SetRenameMenu(ContextMenu.idCmdFirst);
 					}
 					var mii = api.Memory("MENUITEMINFO");
@@ -89,7 +89,7 @@
 				return [hMenu, ContextMenu];
 			case 4:
 				var Items = Selected;
-				if (!FV && (!Items || !Items.Count)) {
+				if (!Items || !Items.Count) {
 					Items = SelItem;
 				}
 

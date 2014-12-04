@@ -332,14 +332,14 @@ if (window.Addon == 1) {
 			{
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV) {
-					FV.Columns = ExtractMacro(FV, line.substr(x)).replace(/,/g, " ");
+					FV.Columns = ExtractMacro(FV, line.trim()).replace(/,/g, " ");
 				}
 			 	return S_OK;
 			},
 
 			sendkeys: function (Ctrl, hwnd, pt, line)
 			{
-				wsh.SendKeys(ExtractMacro(Ctrl, line.substr(x).trim()));
+				wsh.SendKeys(ExtractMacro(Ctrl, line.trim()));
 			 	return S_OK;
 			},
 
