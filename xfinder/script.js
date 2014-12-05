@@ -641,14 +641,14 @@ if (window.Addon == 1) {
 					Navigate(line, OpenMode);
 					break;
 				case 1:
-					wsh.Run(ExtractMacro(Ctrl, line), this.SW);
+					ShellExecute(ExtractMacro(Ctrl, line), null, this.SW);
 					break;
 				case 2:
-					wsh.Run(ExtractMacro(Ctrl, line + " %Focused%"), this.SW);
+					ShellExecute(ExtractMacro(Ctrl, line + " %Focused%"), null, this.SW);
 					break;
 				case 3:
 				case 4:
-					wsh.Run(ExtractMacro(Ctrl, line + " %Selected%"), this.SW);
+					ShellExecute(ExtractMacro(Ctrl, line + " %Selected%"), null, this.SW);
 					break;
 			}
 			return S_OK;
