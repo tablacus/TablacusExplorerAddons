@@ -48,7 +48,12 @@
 					}
 					if (wFunc) {
 						var fFlags = FOF_ALLOWUNDO;
-						if (!bDelete && api.ILIsEqual(Dest, Parent)) {
+						if (bDelete) {
+							if (api.GetKeyState(VK_SHIFT) < 0) {
+								fFlags = 0;
+							}
+						}
+						else if (api.ILIsEqual(Dest, Parent)) {
 							fFlags |= FOF_RENAMEONCOLLISION;
 						}
 						api.SHFileOperation(wFunc, arFrom.join("\0"), Dest, fFlags, true);

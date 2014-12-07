@@ -6,9 +6,35 @@ if (window.Addon == 1) {
 	{
 		Open: function (i)
 		{
+			if (Addons.ToolBar.bClose) {
+				return S_OK;
+			}
 			if (api.GetKeyState(VK_LBUTTON) < 0) {
 				var items = te.Data.xmlToolBar.getElementsByTagName("Item");
-				Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, null);
+				var item = items[i];
+				if (api.PathMatchSpec(item.getAttribute("Type"), "Menus") && api.PathMatchSpec(item.text, "Open")) {
+					var hMenu = api.CreatePopupMenu();
+					var arMenu = [];
+					for (var j = items.length; --j > i;) {
+						arMenu.unshift(j);
+					}
+					var o = document.getElementById("_toolbar" + i);
+					var pt = GetPos(o, true);
+					pt.y += o.offsetHeight;
+					MakeMenus(hMenu, null, arMenu, items, te, pt);
+					AdjustMenuBreak(hMenu);
+					AddEvent("ExitMenuLoop", function () {
+						Addons.ToolBar.bClose = true;
+						setTimeout("Addons.ToolBar.bClose = false;", 100);
+					});
+					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
+					api.DestroyMenu(hMenu);
+					item = nVerb > 0 ? items[nVerb - 1] : null;
+				}
+				if (item) {
+					Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
+				}
+				return S_OK;
 			}
 		},
 
@@ -87,21 +113,43 @@ if (window.Addon == 1) {
 		{
 			var s = [];
 			var items = te.Data.xmlToolBar.getElementsByTagName("Item");
+			var menus = 0;
 			var image = te.GdiplusBitmap;
 			for (var i = 0; i < items.length; i++) {
-				var img = items[i].getAttribute("Name");
-				if (img == "/" || img == "//") {
+				var item = items[i];
+				var strFlag = api.strcmpi(item.getAttribute("Type"), "Menus") ? "" : item.text;
+				if (api.PathMatchSpec(strFlag, "Close") && menus) {
+					menus--;
+					continue;
+				}
+				var menus1 = menus;
+				if (api.PathMatchSpec(strFlag, "Open")) {
+					if (menus++) {
+						continue;
+					}
+				}
+				else if (menus) {
+					continue;
+				}
+				var img = item.getAttribute("Name");
+				if (img == "/" || api.strcmpi(strFlag, "Break") == 0) {
 					s.push("<br />");
 				}
+				else if (img == "//" || api.strcmpi(strFlag, "BarBreak") == 0) {
+					s.push('<hr />');
+				}
+				else if (img == "-" || api.strcmpi(strFlag, "Separator") == 0) {
+					s.push('<span style="color: gray">|</span>');
+				}
 				else {
-					var icon = items[i].getAttribute("Icon");
+					var icon = item.getAttribute("Icon");
 					if (icon != "") {
-						var h = items[i].getAttribute("Height").replace(/"/g, "");
+						var h = item.getAttribute("Height").replace(/"/g, "");
 						var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
 						h -= 0;
 						img = '<img src="' + icon.replace(/"/g, "") + '"' + sh + '>';
 					}
-					s.push('<span id="_toolbar' + i + '" onmousedown="Addons.ToolBar.Open(' + i + ')" oncontextmenu="Addons.ToolBar.Popup(' + i + '); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="' + GetText(items[i].getAttribute("Name").replace(/"/g, "&quot;")) + '">' + img + '</span>');
+					s.push('<span id="_toolbar' + i + '" onmousedown="Addons.ToolBar.Open(' + i + ')" oncontextmenu="Addons.ToolBar.Popup(' + i + '); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="' + GetText(item.getAttribute("Name").replace(/"/g, "&quot;")) + '">' + img + '</span>');
 				}
 			}
 			if (items.length == 0) {
@@ -185,7 +233,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Dragleave", function (Ctrl)
+	AddEvent("DragLeave", function (Ctrl)
 	{
 		MouseOut();
 		return S_OK;

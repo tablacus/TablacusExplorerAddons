@@ -6,8 +6,36 @@ if (window.Addon == 1) {
 	{
 		Open: function (i)
 		{
-			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
-			Exec(external, items[i].text, items[i].getAttribute("Type"), te.hwnd, null);
+			if (Addons.LinkBar.bClose) {
+				return S_OK;
+			}
+			if (api.GetKeyState(VK_LBUTTON) < 0) {
+				var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
+				var item = items[i];
+				if (api.PathMatchSpec(item.getAttribute("Type"), "Menus") && api.PathMatchSpec(item.text, "Open")) {
+					var hMenu = api.CreatePopupMenu();
+					var arMenu = [];
+					for (var j = items.length; --j > i;) {
+						arMenu.unshift(j);
+					}
+					var o = document.getElementById("_linkbar" + i);
+					var pt = GetPos(o, true);
+					pt.y += o.offsetHeight;
+					MakeMenus(hMenu, null, arMenu, items, te, pt);
+					AdjustMenuBreak(hMenu);
+					AddEvent("ExitMenuLoop", function () {
+						Addons.LinkBar.bClose = true;
+						setTimeout("Addons.LinkBar.bClose = false;", 100);
+					});
+					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
+					api.DestroyMenu(hMenu);
+					item = nVerb > 0 ? items[nVerb - 1] : null;
+				}
+				if (item) {
+					Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
+				}
+				return S_OK;
+			}
 		},
 
 		Popup: function (i)
@@ -55,39 +83,57 @@ if (window.Addon == 1) {
 		{
 			var s = [];
 			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
+			var menus = 0;
 			var image = te.GdiplusBitmap;
 			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				var strFlag = api.strcmpi(item.getAttribute("Type"), "Menus") ? "" : item.text;
+				if (api.PathMatchSpec(strFlag, "Close") && menus) {
+					menus--;
+					continue;
+				}
+				var menus1 = menus;
+				if (api.PathMatchSpec(strFlag, "Open")) {
+					if (menus++) {
+						continue;
+					}
+				}
+				else if (menus) {
+					continue;
+				}
 				var img = '';
-				var icon = items[i].getAttribute("Icon");
+				var icon = item.getAttribute("Icon");
 				if (icon != "") {
-					var h = items[i].getAttribute("Height").replace(/"/g, "");
+					var h = (item.getAttribute("Height") || "").replace(/"/g, "");
 					var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
 					h -= 0;
-					img = '<img src="' + icon.replace(/"/g, "") + '"' + sh + '>';
+					img = '<img src="' + (icon || "").replace(/"/g, "") + '"' + sh + '>';
 				}
-				else if (document.documentMode) { //IE8-
-					var info = api.Memory("SHFILEINFO");
-					var path = this.GetPath(items, i);
-					var pidl = api.ILCreateFromPath(path);
-					if (!pidl) {
-						if (path.match(/"([^"]*)"/)) {
-							pidl = api.ILCreateFromPath(RegExp.$1);
+				else if (/Open/i.test(item.getAttribute("Type"))) {
+					if (document.documentMode) { //IE8-
+						var info = api.Memory("SHFILEINFO");
+						var path = this.GetPath(items, i);
+						var pidl = api.ILCreateFromPath(path);
+						if (!pidl) {
+							if (path.match(/"([^"]*)"/)) {
+								pidl = api.ILCreateFromPath(RegExp.$1);
+							}
+							else if (path.match(/([^ ]*)/)) {
+								pidl = api.ILCreateFromPath(RegExp.$1);
+							}
 						}
-						else if (path.match(/([^ ]*)/)) {
-							pidl = api.ILCreateFromPath(RegExp.$1);
+						if (pidl) {
+							api.ShGetFileInfo(pidl, 0, info, info.Size, SHGFI_PIDL | SHGFI_ICON | SHGFI_SMALLICON);
+							image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
+							img = '<img src="data:image/png;base64,' + image.Base64("image/png" , info.hIcon) + '" /> ';
+							api.DestroyIcon(info.hIcon);
 						}
 					}
-					if (pidl) {
-						api.ShGetFileInfo(pidl, 0, info, info.Size, SHGFI_PIDL | SHGFI_ICON | SHGFI_SMALLICON);
-						image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
-						img = '<img src="data:image/png;base64,' + image.Base64("image/png" , info.hIcon) + '" /> ';
-						api.DestroyIcon(info.hIcon);
+					else {
+						img = '<img src="icon:shell32.dll,3,16" /> ';
 					}
 				}
-				else if (/Open/i.test(items[i].getAttribute("Type"))) {
-					img = '<img src="icon:shell32.dll,3,16" /> ';
-				}
-				s.push('<span id="Link', i, '" onclick="Addons.LinkBar.Open(', i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', items[i].text.replace(/"/g, "&quot;"), '">', img, ' ', items[i].getAttribute("Name"), '</span> ');
+				s.push('<span id="_linkbar', i, '" onmousedown="Addons.LinkBar.Open(', i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, ' ', items[i].getAttribute("Name"), '</span> ');
 			}
 			s.push('<label id="Link', items.length, '" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
 			s.push('&nbsp;</label>');
@@ -114,7 +160,7 @@ if (window.Addon == 1) {
 		FromPt: function (n, pt)
 		{
 			while (--n >= 0) {
-				if (HitTest(document.getElementById("Link" + n), pt)) {
+				if (HitTest(document.getElementById("_linkbar" + n), pt)) {
 					return n;
 				}
 			}
@@ -141,12 +187,12 @@ if (window.Addon == 1) {
 			if (i >= 0) {
 				if (i == items.length) {
 					pdwEffect.x = DROPEFFECT_LINK;
-					MouseOver(document.getElementById("Link" + i));
+					MouseOver(document.getElementById("_linkbar" + i));
 					return S_OK;
 				}
 				var hr = Exec(external, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect);
 				if (hr == S_OK && pdwEffect.x) {
-					MouseOver(document.getElementById("Link" + i));
+					MouseOver(document.getElementById("_linkbar" + i));
 				}
 				return S_OK;
 			}
@@ -195,8 +241,9 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Dragleave", function (Ctrl)
+	AddEvent("DragLeave", function (Ctrl)
 	{
 		MouseOut();
+		return S_OK
 	});
 }
