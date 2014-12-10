@@ -132,7 +132,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Dragleave", function (Ctrl)
+	AddEvent("DragLeave", function (Ctrl)
 	{
 		clearTimeout(Addons.Tabs.tid);
 		Addons.Tabs.tid = null;
@@ -163,9 +163,6 @@ if (window.Addon == 1) {
 
 	AddEventEx(window, "beforeunload", function ()
 	{
-		if (Addons.Tabs.hFont) {
-			api.DeleteObject(Addons.Tabs.hFont);
-		}
 		if (Addons.Tabs.himl) {
 			api.ImageList_Destroy(Addons.Tabs.himl);
 			Addons.Tabs.himl = null;
@@ -174,7 +171,7 @@ if (window.Addon == 1) {
 
 	var LogFont = api.Memory("LOGFONT");
 	api.SystemParametersInfo(SPI_GETICONTITLELOGFONT, LogFont.Size, LogFont, 0);
-	Addons.Tabs.hFont = api.CreateFontIndirect(LogFont);
+	Addons.Tabs.hFont = CreateFont(LogFont);
 	var hModule = api.GetModuleHandle(fso.BuildPath(system32, "ieframe.dll"), 0, LOAD_LIBRARY_AS_DATAFILE) || api.GetModuleHandle(fso.BuildPath(system32, "browseui.dll"), 0, LOAD_LIBRARY_AS_DATAFILE);
 	if (hModule) {
 		Addons.Tabs.himl = api.ImageList_LoadImage(hModule, 545, 13, 0, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION);
