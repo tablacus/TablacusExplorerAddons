@@ -15,60 +15,60 @@ if (window.Addon == 1) {
 		Arrange: function (Ctrl, nDog)
 		{
 			delete Addons.Stripes.tid[Ctrl.hwnd];
-			var hWnd = Ctrl.hwndList;
-			var R = api.Memory("RECT");
-			api.SendMessage(hWnd, LVM_GETITEMRECT, 0, R);
-			var nHeight = R.Bottom - R.Top;
-			if (nHeight > 0) {
+			var hwnd = Ctrl.hwndList;
+			if (hwnd) {
 				var lvbk = api.Memory("LVBKIMAGE");
-				if (Ctrl.CurrentViewMode == FVM_DETAILS && !api.SendMessage(hWnd, LVM_GETGROUPCOUNT, 0, 0) && !api.SendMessage(hWnd, LVM_HASGROUP, 9425, 0)) {
-					var pszImage = api.Memory("WCHAR", 1024);
-					lvbk.pszImage = pszImage;
-					lvbk.cchImageMax = pszImage.Size;
-					lvbk.ulFlags = LVBKIF_SOURCE_URL;
-					api.SendMessage(hWnd, LVM_GETBKIMAGE, 0, lvbk);
-					if (pszImage[0] == 0) {
-						var hdc = api.GetDC(hWnd);
-						var hMemDC = api.CreateCompatibleDC(hdc);
-						var hBitmap = api.CreateCompatibleBitmap(hdc, 1, nHeight * 2);
-						api.ReleaseDC(hWnd, hdc);
-						api.SelectObject(hMemDC, hBitmap);
-						api.MoveToEx(hMemDC, 0, 0, null);
-						var pen1 = api.CreatePen(PS_SOLID, 1, api.SendMessage(hWnd, LVM_GETBKCOLOR, 0, 0));
-						var hOld = api.SelectObject(hMemDC, pen1);
-						api.LineTo(hMemDC, 0, nHeight);
-						api.DeleteObject(pen1);
-						pen1 = api.CreatePen(PS_SOLID, 1, Addons.Stripes.Color);
-						api.SelectObject(hMemDC, pen1);
-						api.LineTo(hMemDC, 0, nHeight * 2);
-						api.SelectObject(hMemDC, hOld);
+				if (Ctrl.CurrentViewMode == FVM_DETAILS && !api.SendMessage(hwnd, LVM_GETGROUPCOUNT, 0, 0) && !api.SendMessage(hwnd, LVM_HASGROUP, 9425, 0)) {
+					var R = api.Memory("RECT");
+					api.SendMessage(hwnd, LVM_GETITEMRECT, 0, R);
+					var nHeight = R.Bottom - R.Top;
+					if (nHeight > 0) {
+						var pszImage = api.Memory("WCHAR", 1024);
+						lvbk.pszImage = pszImage;
+						lvbk.cchImageMax = pszImage.Size;
+						lvbk.ulFlags = LVBKIF_SOURCE_URL;
+						api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk);
+						if (pszImage[0] == 0) {
+							var hdc = api.GetDC(hwnd);
+							var hMemDC = api.CreateCompatibleDC(hdc);
+							var hBitmap = api.CreateCompatibleBitmap(hdc, 1, nHeight * 2);
+							api.ReleaseDC(hwnd, hdc);
+							api.SelectObject(hMemDC, hBitmap);
+							api.MoveToEx(hMemDC, 0, 0, null);
+							var pen1 = api.CreatePen(PS_SOLID, 1, api.SendMessage(hwnd, LVM_GETBKCOLOR, 0, 0));
+							var hOld = api.SelectObject(hMemDC, pen1);
+							api.LineTo(hMemDC, 0, nHeight);
+							api.DeleteObject(pen1);
+							pen1 = api.CreatePen(PS_SOLID, 1, Addons.Stripes.Color);
+							api.SelectObject(hMemDC, pen1);
+							api.LineTo(hMemDC, 0, nHeight * 2);
+							api.SelectObject(hMemDC, hOld);
 
-						var image = te.GdiplusBitmap();
-						image.FromHBITMAP(hBitmap);
+							var image = te.GdiplusBitmap();
+							image.FromHBITMAP(hBitmap);
 
-						lvbk.pszImage = image.DataURI("image/png");
-						lvbk.ulFlags = LVBKIF_SOURCE_URL | LVBKIF_FLAG_TILEOFFSET | LVBKIF_STYLE_TILE;
-						lvbk.yOffsetPercent = osInfo.dwMajorVersion >= 6 ? nHeight * 2 - R.Top : 0;
-						api.SendMessage(hWnd, LVM_SETBKIMAGE, 0, lvbk);
-						api.DeleteObject(hBitmap);
-						api.DeleteObject(hMemDC);
+							lvbk.pszImage = image.DataURI("image/png");
+							lvbk.ulFlags = LVBKIF_SOURCE_URL | LVBKIF_FLAG_TILEOFFSET | LVBKIF_STYLE_TILE;
+							lvbk.yOffsetPercent = osInfo.dwMajorVersion >= 6 ? nHeight * 2 - R.Top : 0;
+							api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
+							api.DeleteObject(hBitmap);
+							api.DeleteObject(hMemDC);
+						}
+						if (Addons.Stripes.NoEm) {
+							api.SendMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
+						}
 					}
-					if (Addons.Stripes.NoEm) {
-						api.SendMessage(hWnd, LVM_SETSELECTEDCOLUMN, -1, 0);
+					else {
+						Addons.Stripes.Retry(Ctrl, nDog);
 					}
 				}
 				else {
 					lvbk.ulFlags = LVBKIF_SOURCE_NONE ;
-					api.SendMessage(hWnd, LVM_SETBKIMAGE, 0, lvbk);
+					api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 				}
 			}
 			else {
-				nDog = api.LowPart(nDog) + 1;
-				if (nDog < 9) {
-					Addons.Stripes.tid[Ctrl.hwnd] = setTimeout(function () {
-						Addons.Stripes.Arrange(Ctrl, nDog)
-					}, nDog * 100);
-				}
+				Addons.Stripes.Retry(Ctrl, nDog);
 			}
 		},
 
@@ -91,6 +91,16 @@ if (window.Addon == 1) {
 					}
 				}
 			}
+		},
+
+		Retry: function (Ctrl, nDog)
+		{
+			nDog = (nDog || 0) + 1;
+			if (nDog < 9) {
+				Addons.Stripes.tid[Ctrl.hwnd] = setTimeout(function () {
+					Addons.Stripes.Arrange(Ctrl, nDog);
+				}, nDog * 100);
+			}
 		}
 	}
 
@@ -112,9 +122,9 @@ if (window.Addon == 1) {
 		{
 			if (Ctrl.Type <= CTRL_EB) {
 				if (msg == WM_NOTIFY) {
-					var hWnd = Ctrl.hwndList;
-					if (api.SendMessage(hWnd, LVM_GETSELECTEDCOLUMN, 0, 0) >= 0) {
-						api.PostMessage(hWnd, LVM_SETSELECTEDCOLUMN, -1, 0);
+					var hwnd = Ctrl.hwndList;
+					if (api.SendMessage(hwnd, LVM_GETSELECTEDCOLUMN, 0, 0) >= 0) {
+						api.PostMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
 						Addons.Stripes.Arrange2(Ctrl);
 					}
 				}
@@ -131,9 +141,9 @@ if (window.Addon == 1) {
 				var lvbk = api.Memory("LVBKIMAGE");
 				lvbk.ulFlags = LVBKIF_SOURCE_NONE ;
 				for (var i in cFV) {
-					var hWnd = cFV[i].hwndList;
-					if (hWnd) {
-						api.SendMessage(hWnd, LVM_SETBKIMAGE, 0, lvbk);
+					var hwnd = cFV[i].hwndList;
+					if (hwnd) {
+						api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 					}
 				}
 			});
@@ -144,9 +154,9 @@ if (window.Addon == 1) {
 	var lvbk = api.Memory("LVBKIMAGE");
 	lvbk.ulFlags = LVBKIF_SOURCE_NONE ;
 	for (var i in cFV) {
-		var hWnd = cFV[i].hwndList;
-		if (hWnd) {
-			api.SendMessage(hWnd, LVM_SETBKIMAGE, 0, lvbk);
+		var hwnd = cFV[i].hwndList;
+		if (hwnd) {
+			api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 			Addons.Stripes.Arrange2(cFV[i]);
 		}
 	}

@@ -120,8 +120,12 @@ if (window.Addon == 1) {
 		{
 			var FV = TC.Item(i);
 			if (FV) {
+				s.push('<button ');
 				var bActive = (i == TC.SelectedIndex);
-				s.push('<button draggable="true" ondragstart="Addons.TabPlus.Start5(this)" ondragend="Addons.TabPlus.End5(this)" style="');
+				if (bActive) {
+					s.push('draggable="true" ondragstart="return Addons.TabPlus.Start5(this)"');
+				}
+				s.push('ondragend="Addons.TabPlus.End5(this)" style="');
 				var cl = RunEvent4("GetTabColor", FV);
 				if (cl) {
 					if (bActive) {
@@ -225,7 +229,7 @@ if (window.Addon == 1) {
 				var pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
 				if (this.Button[Id] && this.Button[Id].match(/3/)) {
-					GestureExec(TC, "Tabs", GetGestureKey() + this.Button[Id], pt);
+					Addons.TabPlus.GestureExec(TC, Id, this.Button[Id], pt);
 					return false;
 				}
 				var nDrop = this.FromPt(Id, pt);
@@ -282,9 +286,23 @@ if (window.Addon == 1) {
 			}
 		},
 
+		GestureExec: function (TC, Id, s, pt)
+		{
+			if (TC) {
+				if (TC.HitTest(pt, TCHT_ONITEM) < 0) {
+					if (GestureExec(TC, "Tabs_Background", GetGestureKey() + s, pt) === S_OK) {;
+						return;
+					}
+				}
+				GestureExec(TC, "Tabs", GetGestureKey() + s, pt);
+			}
+		},
+
 		DblClick: function (Id)
 		{
-			GestureExec(te.Ctrl(CTRL_TC, Id), "Tabs", GetGestureKey() + this.Button[Id] + this.Button[Id]);
+			api.GetCursorPos(pt);
+			var TC = te.Ctrl(CTRL_TC, Id);
+			Addons.TabPlus.GestureExec(TC, Id, this.Button[Id] + this.Button[Id], pt);
 		},
 
 		Over: function (Id)
@@ -301,9 +319,13 @@ if (window.Addon == 1) {
 
 		Start5: function (o)
 		{
-			event.dataTransfer.effectAllowed = 'move';
-			event.dataTransfer.setData("text", o.title);
-			this.Drag5 = o.id;
+			if (api.GetKeyState(VK_LBUTTON) < 0) {
+				event.dataTransfer.effectAllowed = 'move';
+				event.dataTransfer.setData("text", o.title);
+				this.Drag5 = o.id;
+				return true;
+			}
+			return false;
 		},
 
 		End5: function (o)
