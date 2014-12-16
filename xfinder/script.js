@@ -7,6 +7,11 @@ if (window.Addon == 1) {
 		{
 			newtab: function (Ctrl, hwnd, pt, line)
 			{
+				var p = ExtractMacro(Ctrl, line);
+				if (p) {
+					Navigate(line, SBSP_NEWBROWSER);
+					return S_OK;
+				}
 				return Exec(Ctrl, "New Tab", "Tabs", hwnd, pt);
 			},
 			
@@ -324,7 +329,7 @@ if (window.Addon == 1) {
 
 			confirm: function (Ctrl, hwnd, pt, line)
 			{
-				var ar = Addons.XFinder.SetCommaText(ExtractMacro(Ctrl, line));
+				var ar = WScript.Col(ExtractMacro(Ctrl, line));
 				return wsh.Popup(ar[1], 0, ar[0], MB_YESNO | MB_ICONQUESTION | MB_SYSTEMMODAL) != IDNO ? S_OK : E_ABORT;
 			},
 
@@ -367,7 +372,7 @@ if (window.Addon == 1) {
 
 			input: function (Ctrl, hwnd, pt, line)
 			{
-				var ar = Addons.XFinder.SetCommaText(ExtractMacro(Ctrl, line));
+				var ar = WScript.Col(ExtractMacro(Ctrl, line));
 				te.Data.XFEnv.inputdata = InputDialog([ar[1], ar[2]].join("\n"), ar[3], ar[0]);
 				if (api.strcmpi(typeof(te.Data.XFEnv.inputdata), "string")) {
 					te.Data.XFEnv.inputdata = "";
@@ -469,7 +474,7 @@ if (window.Addon == 1) {
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV) {
 					var Selected = FV.Items(SVGIO_SELECTION | SVGIO_FLAG_VIEWORDER);
-					var ar = Addons.XFinder.SetCommaText(ExtractMacro(Ctrl, line));
+					var ar = WScript.Col(ExtractMacro(Ctrl, line));
 					if (ar.length) {
 						if (!/\/|\\/.test(ar[0])) {
 							FileList = [];
@@ -573,7 +578,7 @@ if (window.Addon == 1) {
 
 			timestamp: function (Ctrl, hwnd, pt, s)
 			{
-				var ar = Addons.XFinder.SetCommaText(s);
+				var ar = WScript.Col(s);
 				for (var i = 1; i < ar.length; i++) {
 					api.SetFileTime(ar[i], ar[0], null, null);
 				}
@@ -595,7 +600,7 @@ if (window.Addon == 1) {
 				if (Addons.TabColor) {
 					var FV = GetFolderView(Ctrl, pt);
 					if (FV) {
-						var ar = Addons.XFinder.SetCommaText(s);
+						var ar = WScript.Col(s);
 						Addons.TabColor.Set(FV, ar[0])
 					}
 				}
@@ -650,6 +655,9 @@ if (window.Addon == 1) {
 				case 4:
 					ShellExecute(ExtractMacro(Ctrl, line + " %Selected%"), null, this.SW);
 					break;
+				case 5:
+					MessageBox("Reserved future");
+					break;
 			}
 			return S_OK;
 		},
@@ -676,11 +684,6 @@ if (window.Addon == 1) {
 			api.DestroyMenu(hMenu);
 		},
 
-		SetCommaText: function (s)
-		{
-			return api.CommandLineToArgv(s.replace(/,/g, " "));
-		},
-
 		Run: function (Item, FV, s)
 		{
 			var hMenu = api.CreatePopupMenu();
@@ -694,6 +697,35 @@ if (window.Addon == 1) {
 				ContextMenu.InvokeCommand(0, te.hwnd, s, null, null, SW_SHOWNORMAL, 0, 0);
 			}
 			api.DestroyMenu(hMenu);
+		},
+		
+		ExecEx: function (s, nMode, Ctrl, hwnd, pt)
+		{
+			if (!Ctrl) {
+				Ctrl = te.Ctrl(CTRL_FV);
+			}
+			if (!hwnd) {
+				hwnd = Ctrl.hwnd;
+			}
+			if (!pt) {
+				pt = api.Memory("POINT");
+				api.GetCursorPos(pt);
+			}
+			var hr = S_OK;
+			var lines = s.split(/\n/);
+			Addons.XFinder.nMode = nMode || 0;
+			if (/Script:(.+)/i.test(s)) {
+				var type = RegExp.$1.trim();
+				lines.shift();
+				return ExecScriptEx(Ctrl, lines.join("\n"), type, hwnd, pt);
+			}
+			for (var i in lines) {
+				hr = Addons.XFinder.Exec(Ctrl, hwnd, pt, lines[i]);
+				if (hr != S_OK) {
+					break;
+				}
+			}
+			return hr;
 		}
 	};
 
@@ -882,13 +914,7 @@ if (window.Addon == 1) {
 	{
 		Exec: function (Ctrl, s, type, hwnd, pt)
 		{
-			Addons.XFinder.nMode = 1;
-			var lines = s.split(/\n/);
-			for (var i in lines) {
-				if (Addons.XFinder.Exec(Ctrl, hwnd, pt, lines[i]) != S_OK) {
-					break;
-				}
-			}
+			return Addons.XFinder.ExecEx(s, 1, Ctrl, hwnd, pt)
 		},
 
 		Ref: function (s, pt)
@@ -905,5 +931,68 @@ if (window.Addon == 1) {
 
 	if (!te.Data.XFEnv) {
 		te.Data.XFEnv = {};
+	}
+	
+	if (!window.WScript) {
+		WScript = {};
+	}
+
+	WScript.CreateObject = function (strProgID)
+	{
+		return te.CreateObject(strProgID);
+	}
+
+	WScript.GetObject = function (strProgID)
+	{
+		return te.GetObject(strProgID);
+	}
+
+	WScript.Echo = function (s)
+	{
+		return MessageBox(s);
+	}
+
+	WScript.Sleep = function (intTime)
+	{
+		return api.Sleep(intTime);
+	}
+
+	WScript.Open = function (path, bNew)
+	{
+		return Navigate(path, bNew ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
+	}
+
+	WScript.Exec = function (s, nMode)
+	{
+		return Addons.XFinder.ExecEx(s, nMode !== undefined ? nMode : 1) == S_OK;
+	}
+
+	WScript.Env = function (s, strNew)
+	{
+		if (strNew === undefined) {
+			if (/%/.test(s)) {
+				return ExtractMacro(te, s);
+			}
+			return ExtractMacro(te, '%' + s + '%');
+		}
+		return Addons.XFinder.set(te, te.hwnd, pt, [s, strNew].join("="));
+	}
+
+	WScript.Col = function (s)
+	{
+		var ar = api.CommandLineToArgv(s.replace(/,/g, " "));
+		ar.Count = ar.length;
+		ar.Item = function (i)
+		{
+			return this[i];
+		}
+		return ar;
+	}
+
+	WScript.DoDragDrop = function (Items)
+	{
+		var pdwEffect = api.Memory("DWORD");
+		pdwEffect[0] = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
+		return api.DoDragDrop(Items, pdwEffect[0], pdwEffect);
 	}
 }

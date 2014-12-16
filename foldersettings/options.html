@@ -17,17 +17,14 @@
     </script>
     <script type="text/javascript" charset="utf-8" src="script.js">
     </script>
-    <script type="text/javascript" charset="utf-8" src="options.js">
-    </script>
   </head>
-  <body onload="InitOptions();">
-
+  <body>
     <form name="F" style="display: inline;">
       <div class="panel" style="display: block;">
         <table width="97%">
           <tr>
             <td width="150px" valign="top">
-              <select name="List" size="19" style="width: 150px; height: 400px" ondblclick="EditX()">
+              <select name="List" size="19" style="width: 150px; height: 400px" ondblclick="EditFS()">
               </select>
             </td>
             <td valign="top">
@@ -36,8 +33,7 @@
               <input type="text" name="Filter" style="width: 100%" />
               <label>Path</label>
               <br />
-              <textarea name="Path" style="width: 100%; height: 270px">
-              </textarea>
+              <textarea name="Path" style="width: 100%; height: 270px"></textarea>
               <label>Type</label>
               <br />
               <select name="Type" style="width: 100%">
@@ -48,15 +44,15 @@
         <table width="97%">
           <tr>
             <td>
-              <input type="button" value="Remove" onclick="RemoveX()" />
-              <input type="button" value="Up" onclick="MoveX(-1)" />
-              <input type="button" value="Down" onclick="MoveX(1)" />
-              <input type="button" value="Edit" onclick="EditX()" />
+              <input type="button" value="Remove" onclick="RemoveX('List')" />
+              <input type="button" value="Up" onclick="MoveX('List', -1)" />
+              <input type="button" value="Down" onclick="MoveX('List', 1)" />
+              <input type="button" value="Edit" onclick="EditFS()" />
               <input type="button" value="Get the current folder view" onclick="GetCurrentSetting()" />
             </td>
             <td align="right">
-              <input type="button" value="Add" onclick="AddX()" />
-              <input type="button" value="Replace" onclick="ReplaceX()" />
+              <input type="button" value="Add" onclick="AddX('List', ReplaceFS)" />
+              <input type="button" value="Replace" onclick="ReplaceFS()" />
             </td>
           </tr>
         </table>
@@ -72,4 +68,6 @@
       </table>
     </form>
   </body>
+  <script type="text/javascript" charset="utf-8" src="options.js">
+  </script>
 </html>
