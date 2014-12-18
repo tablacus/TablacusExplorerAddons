@@ -20,6 +20,10 @@
 	{
 		var item = Addons.FolderSettings.Get(Ctrl);
 		if (item) {
+			if (item.text.match(/CurrentViewMode\(\s*(\d+)\s*,\s*(\d+)/i)) {
+				fs.ViewMode = RegExp.$1;
+				fs.ImageSize = RegExp.$2;
+			}
 			if (item.text.match(/CurrentViewMode\s*=\s*(\d+)/i)) {
 				fs.ViewMode = RegExp.$1;
 			}
@@ -32,7 +36,7 @@
 	AddEvent("ListViewCreated", function (Ctrl)
 	{
 		var item = Addons.FolderSettings.Get(Ctrl);
-		if (item) {
+		if (item && item.text) {
 			Exec(Ctrl, item.text, item.getAttribute("Type"), null);
 		}
 	});
@@ -41,7 +45,7 @@
 	{
 		ExtraMenuCommand[28722] = function (Ctrl)
 		{
-			showModelessDialog("../addons/foldersettings/options.html", window, "dialogWidth: 640px; dialogHeight: 480px; resizable: yes; status: 0");
+			ShowDialog("../addons/foldersettings/options.html", {MainWindow: window, te: te, width: 640, height: 480, GetCurrent: true});
 		}
 		return nPos;
 	});

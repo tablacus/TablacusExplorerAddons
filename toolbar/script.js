@@ -1,5 +1,6 @@
 var Addon_Id = "toolbar";
 var Default = "ToolBar2Left";
+var AddonName = "ToolBar";
 
 if (window.Addon == 1) {
 	Addons.ToolBar =

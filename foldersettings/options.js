@@ -3,27 +3,29 @@
 var AddonName = "FolderSettings";
 var g_Chg = {List: false};
 
-function GetCurrentSetting()
+GetCurrentSetting = function (bForce)
 {
 	var FV = te.Ctrl(CTRL_FV);
 	var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
 
-	var s = ["Ctrl.CurrentViewMode=", FV.CurrentViewMode, ";\n"];
-	s.push("Ctrl.IconSize=", FV.IconSize, ";\n");
+	var s = ["Ctrl.CurrentViewMode(", FV.CurrentViewMode, ",", FV.IconSize, ");\n"];
 	s.push("Ctrl.Columns='", FV.Columns, "';\n");
 	s.push("Ctrl.SortColumn='", FV.SortColumn, "';\n");
 	s = s.join("");
-	if (confirmOk([path, s].join("\n"))) {
+	if (bForce || confirmOk([path, s].join("\n"))) {
 		document.F.Filter.value = path;
 		document.F.Path.value = s;
 		SetType(document.F.Type, "JScript");
 	}
+	ChangeX("List");
 }
 
-function SetOptions()
+function SetOptionsFS()
 {
-	SaveFS();
-	window.close();
+	if (ConfirmX(true, ReplaceFS)) {
+		SaveFS();
+		window.close();
+	}
 }
 
 function LoadFS()
@@ -80,46 +82,47 @@ function SaveFS()
 	}
 }
 
-function SetData(sel, a)
-{
-	if (!a[0]) {
-		return;
-	}
-	sel.value = PackData(a);
-	sel.text = a[0];
-}
-
-function PackData(a)
-{
-	var i = a.length;
-	while (--i >= 0) {
-		a[i] = a[i].replace(g_sep, "`  ~");
-	}
-	return a.join(g_sep);
-}
-
 function EditFS()
 {
 	if (g_x.List.selectedIndex < 0) {
 		return;
 	}
 	var a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
-	document.F.elements["Filter"].value = a[0];
-	document.F.elements["Path"].value = a[1];
+	document.F.Filter.value = a[0];
+	document.F.Path.value = a[1];
 	SetType(document.F.Type, a[2]);
 }
 
 function ReplaceFS()
 {
+	ClearX();
 	if (g_x.List.selectedIndex < 0) {
-		return;
+		g_x.List.selectedIndex = ++g_x.List.length - 1;
+		EnableSelectTag(g_x.List);
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
-	o = document.F.elements["Type"];
-	SetData(sel, new Array(document.F.elements["Filter"].value, document.F.elements["Path"].value, o[o.selectedIndex].value));
+	o = document.F.Type;
+	SetData(sel, [document.F.Filter.value, document.F.Path.value, o[o.selectedIndex].value]);
 	g_Chg.List = true;
 }
 
 ApplyLang(document);
 document.title = GetText(AddonName);
 LoadFS();
+if (dialogArguments.GetCurrent) {
+	var bNew = true;
+	var FV = te.Ctrl(CTRL_FV);
+	var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
+	for (var i = g_x.List.length; i-- > 0;) {
+		var a = g_x.List[i].value.split(g_sep);
+		if (api.strcmpi(path, a[0]) == 0) {
+			g_x.List.selectedIndex = i;
+			EditFS();
+			bNew = false;
+			break;
+		}
+	}
+	if (bNew) {
+		GetCurrentSetting(true);
+	}
+}

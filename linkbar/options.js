@@ -1,4 +1,3 @@
-﻿var AddonName = "LinkBar";
 var nTabIndex = 0;
 var nTabMax = 0;
 
@@ -14,7 +13,7 @@ function InitToolOptions()
 
 function SetToolOptions()
 {
-	if (ConfirmX(false, ReplaceTB)) {
+	if (ConfirmX(true, ReplaceTB)) {
 		SaveTB("List");
 		TEOk();
 		window.close();
@@ -83,7 +82,8 @@ function ReplaceTB(mode)
 {
 	ClearX();
 	if (g_x.List.selectedIndex < 0) {
-		return;
+		g_x.List.selectedIndex = ++g_x.List.length - 1;
+		EnableSelectTag(g_x.List);
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
 	var o = document.F.Type;
@@ -92,3 +92,5 @@ function ReplaceTB(mode)
 	SetData(sel, [document.F.Name.value, p.s, o[o.selectedIndex].value, document.F.Icon.value, document.F.Height.value]);
 	g_Chg[mode] = true;
 }
+
+InitToolOptions();
