@@ -150,7 +150,7 @@ if (window.Addon == 1) {
 				Addons.AddressBar.Item = o;
 				var pt = GetPos(o, true);
 				MouseOver(o);
-				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n), pt.x, pt.y + o.offsetHeight));
+				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n), pt.x, pt.y + o.offsetHeight * screen.deviceXDPI / 96));
 			}
 		},
 
@@ -202,7 +202,7 @@ if (window.Addon == 1) {
 
 				var pt = GetPos(o, true);
 				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x + o.offsetWidth, pt.y + o.offsetHeight, te.hwnd, null, null);
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x + o.offsetWidth * screen.deviceXDPI / 96, pt.y + o.offsetHeight * screen.deviceYDPI / 96, te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				FolderItem = null;
 				if (nVerb) {
@@ -331,6 +331,6 @@ if (window.Addon == 1) {
 	Addons.AddressBar.Resize();
 }
 else {
-	document.getElementById("tab0").value = "General";
-	document.getElementById("panel0").innerHTML = '<table style="width: 100%"><tr><td><input type="checkbox" id="XP" /><label for="XP">XP ' + GetText("Style").toLowerCase() + '</label></td></tr><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Auto" onclick="document.F.Width.value=\'\'" /></td></tr></table>';
+	document.getElementById("tab0").value = GetText("General");
+	document.getElementById("panel0").innerHTML = ['<table style="width: 100%"><tr><td><input type="checkbox" id="XP" /><label for="XP">XP ', GetText("Style").toLowerCase(), '</label></td></tr><tr><td><label>', GetText("Width"), '</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="', GetText("Auto"), '" onclick="document.F.Width.value=\'\'" /></td></tr></table>'].join("");
 }

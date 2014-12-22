@@ -11,26 +11,10 @@
     </script>
     <script type="text/javascript" charset="utf-8" src="../../script/options.js">
     </script>
-    <script type="text/javascript">
-      var Addon_Id = 'startup';
-      AddEventEx(window, "load", function ()
-      {
-		var arFunc = [];
-		for (var i in MainWindow.eventTE.AddType) {
-			MainWindow.eventTE.AddType[i](arFunc);
-		}
-		var oa = document.F.Type;
-		for (var i = 0; i < arFunc.length; i++) {
-			var o = oa[++oa.length - 1];
-			o.value = arFunc[i];
-			o.innerText = GetText(arFunc[i]);
-		}
-	});
-    </script>
     <script type="text/javascript" charset="utf-8" src="options.js">
     </script>
   </head>
-  <body onload="InitAddonOptions();">
+  <body>
 
     <form name="F">
       <div class="panel" style="display: block;">
@@ -60,5 +44,22 @@
         </tr>
       </table>
     </form>
+    <script type="text/javascript">
+      var Addon_Id = 'startup';
+      AddEventEx(window, "load", function ()
+      {
+        var arFunc = [];
+        for (var i in MainWindow.eventTE.AddType) {
+            MainWindow.eventTE.AddType[i](arFunc);
+        }
+        var oa = document.F.Type;
+        for (var i = 0; i < arFunc.length; i++) {
+            var o = oa[++oa.length - 1];
+            o.value = arFunc[i];
+            o.innerText = GetText(arFunc[i]);
+        }
+        InitAddonOptions();
+    });
+    </script>
   </body>
 </html>

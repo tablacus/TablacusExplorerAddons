@@ -33,7 +33,7 @@ if (window.Addon == 1) {
 						clearTimeout(Addons.MainMenu.tid2);
 						Addons.MainMenu.tid2 = setTimeout("Addons.MainMenu.bClose = false;", 500);
 					})
-					ExecMenu2(o.id.replace(/^Menu/, ""), p.x, p.y + o.offsetHeight);
+					ExecMenu2(o.id.replace(/^Menu/, ""), p.x, p.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI);
 					MouseOut();
 				}, 100);
 			}
@@ -73,7 +73,7 @@ if (window.Addon == 1) {
 				SetKeyExec("All", "Alt+" + c, 'Addons.MainMenu.Popup("' + s1 + '");', "JScript");
 			}
 		}
-		s.push('<label class="menu" id="Menu' + s1 + '" onmousedown="Addons.MainMenu.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + strMenu + '</label>');
+		s.push('<label class="menu" id="Menu', s1, '" onmousedown="Addons.MainMenu.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', strMenu, '</label>');
 	}
 	SetAddon(Addon_Id, Default, s);
 	for (var i = strMenus.length; i--;) {

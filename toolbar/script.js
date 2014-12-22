@@ -21,7 +21,7 @@ if (window.Addon == 1) {
 					}
 					var o = document.getElementById("_toolbar" + i);
 					var pt = GetPos(o, true);
-					pt.y += o.offsetHeight;
+					pt.y += o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
 					MakeMenus(hMenu, null, arMenu, items, te, pt);
 					AdjustMenuBreak(hMenu);
 					AddEvent("ExitMenuLoop", function () {
