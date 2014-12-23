@@ -5,6 +5,16 @@ var AddonName = "LinkBar";
 if (window.Addon == 1) {
 	Addons.LinkBar =
 	{
+		Click: function (i)
+		{
+			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
+			var item = items[i];
+			if (item) {
+				Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
+			}
+			return S_OK;
+		},
+
 		Open: function (i)
 		{
 			if (Addons.LinkBar.bClose) {
@@ -13,26 +23,25 @@ if (window.Addon == 1) {
 			if (api.GetKeyState(VK_LBUTTON) < 0) {
 				var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
 				var item = items[i];
-				if (api.PathMatchSpec(item.getAttribute("Type"), "Menus") && api.PathMatchSpec(item.text, "Open")) {
-					var hMenu = api.CreatePopupMenu();
-					var arMenu = [];
-					for (var j = items.length; --j > i;) {
-						arMenu.unshift(j);
-					}
-					var o = document.getElementById("_linkbar" + i);
-					var pt = GetPos(o, true);
-					pt.y += o.offsetHeight;
-					MakeMenus(hMenu, null, arMenu, items, te, pt);
-					AdjustMenuBreak(hMenu);
-					AddEvent("ExitMenuLoop", function () {
-						Addons.LinkBar.bClose = true;
-						setTimeout("Addons.LinkBar.bClose = false;", 100);
-					});
-					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
-					api.DestroyMenu(hMenu);
-					item = nVerb > 0 ? items[nVerb - 1] : null;
+				var hMenu = api.CreatePopupMenu();
+				var arMenu = [];
+				for (var j = items.length; --j > i;) {
+					arMenu.unshift(j);
 				}
-				if (item) {
+				var o = document.getElementById("_linkbar" + i);
+				var pt = GetPos(o, true);
+				pt.y += o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
+				MakeMenus(hMenu, null, arMenu, items, te, pt);
+				AdjustMenuBreak(hMenu);
+				AddEvent("ExitMenuLoop", function () {
+					Addons.LinkBar.bClose = true;
+					setTimeout("Addons.LinkBar.bClose = false;", 100);
+				});
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
+				api.DestroyMenu(hMenu);
+				item = nVerb > 0 ? items[nVerb - 1] : null;
+				if (nVerb > 0) {
+					item = items[nVerb - 1];
 					Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
 				}
 				return S_OK;
@@ -126,7 +135,7 @@ if (window.Addon == 1) {
 						if (pidl) {
 							api.ShGetFileInfo(pidl, 0, info, info.Size, SHGFI_PIDL | SHGFI_ICON | SHGFI_SMALLICON);
 							image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
-							img = '<img src="data:image/png;base64,' + image.Base64("image/png" , info.hIcon) + '" /> ';
+							img = '<img src="' + image.DataURI("image/png" , info.hIcon) + '" /> ';
 							api.DestroyIcon(info.hIcon);
 						}
 					}
@@ -134,7 +143,8 @@ if (window.Addon == 1) {
 						img = '<img src="icon:shell32.dll,3,16" /> ';
 					}
 				}
-				s.push('<span id="_linkbar', i, '" onmousedown="Addons.LinkBar.Open(', i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, ' ', items[i].getAttribute("Name"), '</span> ');
+				s.push('<span id="_linkbar', i, '" ', api.strcmpi(item.getAttribute("Type"), "Menus") || api.strcmpi(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' : 'onmousedown="Addons.LinkBar.Open(');
+				s.push(i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, ' ', items[i].getAttribute("Name"), '</span> ');
 			}
 			s.push('<label id="Link', items.length, '" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
 			s.push('&nbsp;</label>');

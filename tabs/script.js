@@ -153,10 +153,15 @@ if (window.Addon == 1) {
 		Resize();
 	});
 
+	AddEvent("FontChanged", function ()
+	{
+		Addons.Tabs.hFont = CreateFont(DefaultFont);
+	});
+
 	AddEventEx(window, "load", function ()
 	{
 		var cTC = te.Ctrls(CTRL_TC);
-		for (var i = cTC.Count; i--;) {
+		for (var i = cTC.Count; i-- > 0;) {
 			Addons.Tabs.Init(cTC[i]);
 		}
 	});
@@ -169,11 +174,9 @@ if (window.Addon == 1) {
 		}
 	});
 
-	var LogFont = api.Memory("LOGFONT");
-	api.SystemParametersInfo(SPI_GETICONTITLELOGFONT, LogFont.Size, LogFont, 0);
-	Addons.Tabs.hFont = CreateFont(LogFont);
 	var hModule = api.GetModuleHandle(fso.BuildPath(system32, "ieframe.dll"), 0, LOAD_LIBRARY_AS_DATAFILE) || api.GetModuleHandle(fso.BuildPath(system32, "browseui.dll"), 0, LOAD_LIBRARY_AS_DATAFILE);
 	if (hModule) {
 		Addons.Tabs.himl = api.ImageList_LoadImage(hModule, 545, 13, 0, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION);
 	}
+	Addons.Tabs.hFont = CreateFont(DefaultFont);
 }

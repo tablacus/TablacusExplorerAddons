@@ -5,6 +5,16 @@ var AddonName = "ToolBar";
 if (window.Addon == 1) {
 	Addons.ToolBar =
 	{
+		Click: function (i)
+		{
+			var items = te.Data.xmlToolBar.getElementsByTagName("Item");
+			var item = items[i];
+			if (item) {
+				Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
+			}
+			return S_OK;
+		},
+
 		Open: function (i)
 		{
 			if (Addons.ToolBar.bClose) {
@@ -13,26 +23,24 @@ if (window.Addon == 1) {
 			if (api.GetKeyState(VK_LBUTTON) < 0) {
 				var items = te.Data.xmlToolBar.getElementsByTagName("Item");
 				var item = items[i];
-				if (api.PathMatchSpec(item.getAttribute("Type"), "Menus") && api.PathMatchSpec(item.text, "Open")) {
-					var hMenu = api.CreatePopupMenu();
-					var arMenu = [];
-					for (var j = items.length; --j > i;) {
-						arMenu.unshift(j);
-					}
-					var o = document.getElementById("_toolbar" + i);
-					var pt = GetPos(o, true);
-					pt.y += o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
-					MakeMenus(hMenu, null, arMenu, items, te, pt);
-					AdjustMenuBreak(hMenu);
-					AddEvent("ExitMenuLoop", function () {
-						Addons.ToolBar.bClose = true;
-						setTimeout("Addons.ToolBar.bClose = false;", 100);
-					});
-					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
-					api.DestroyMenu(hMenu);
-					item = nVerb > 0 ? items[nVerb - 1] : null;
+				var hMenu = api.CreatePopupMenu();
+				var arMenu = [];
+				for (var j = items.length; --j > i;) {
+					arMenu.unshift(j);
 				}
-				if (item) {
+				var o = document.getElementById("_toolbar" + i);
+				var pt = GetPos(o, true);
+				pt.y += o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
+				MakeMenus(hMenu, null, arMenu, items, te, pt);
+				AdjustMenuBreak(hMenu);
+				AddEvent("ExitMenuLoop", function () {
+					Addons.ToolBar.bClose = true;
+					setTimeout("Addons.ToolBar.bClose = false;", 100);
+				});
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
+				api.DestroyMenu(hMenu);
+				if (nVerb > 0) {
+					item = items[nVerb - 1];
 					Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
 				}
 				return S_OK;
@@ -150,11 +158,12 @@ if (window.Addon == 1) {
 						h -= 0;
 						img = '<img src="' + icon.replace(/"/g, "") + '"' + sh + '>';
 					}
-					s.push('<span id="_toolbar' + i + '" onmousedown="Addons.ToolBar.Open(' + i + ')" oncontextmenu="Addons.ToolBar.Popup(' + i + '); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="' + GetText(item.getAttribute("Name").replace(/"/g, "&quot;")) + '">' + img + '</span>');
+					s.push('<span id="_toolbar', i, '" ', api.strcmpi(item.getAttribute("Type"), "Menus") || api.strcmpi(item.text, "Open") ? 'onclick="Addons.ToolBar.Click(' : 'onmousedown="Addons.ToolBar.Open(');
+					s.push(i, ')" oncontextmenu="Addons.ToolBar.Popup(', i, '); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', GetText(item.getAttribute("Name").replace(/"/g, "&quot;")), '">', img, '</span>');
 				}
 			}
 			if (items.length == 0) {
-				s.push('<label id="_toolbar' + items.length + '" title="Edit" onclick="Addons.ToolBar.ShowOptions()" oncontextmenu="Addons.ToolBar.ShowOptions(); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">+</label>');
+				s.push('<label id="_toolbar', items.length, '" title="Edit" onclick="Addons.ToolBar.ShowOptions()" oncontextmenu="Addons.ToolBar.ShowOptions(); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">+</label>');
 			}
 			document.getElementById('_toolbar').innerHTML = s.join("");
 			Resize();

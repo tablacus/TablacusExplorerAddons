@@ -71,6 +71,7 @@ if (window.Addon == 1) {
 						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 					}
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("&Edit"));
+					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Add"));
 					var pt = api.Memory("POINT");
 					api.GetCursorPos(pt);
 					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, ContextMenu);
@@ -80,11 +81,14 @@ if (window.Addon == 1) {
 							ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
 						}
 						else {
-							ShowOptions("Tab=Menus&Menus=Favorites");
+							this.ShowOptions();
 						}
 					}
 					if (nVerb == 1) {
-						ShowOptions("Tab=Menus&Menus=Favorites");
+						this.ShowOptions(i);
+					}
+					if (nVerb == 2) {
+						this.ShowOptions();
 					}
 					api.DestroyMenu(hMenu);
 				}
@@ -157,6 +161,11 @@ if (window.Addon == 1) {
 				}
 			}
 			document.getElementById("favoritesbar").innerHTML = s.join("");
+		},
+
+		ShowOptions: function (i)
+		{
+			ShowOptions("Tab=Menus&Menus=Favorites" + (isFinite(i) ? "," + i : ""));
 		},
 
 		GetPath: function (items, i)
