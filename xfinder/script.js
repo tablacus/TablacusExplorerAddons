@@ -330,21 +330,22 @@ if (window.Addon == 1) {
 			confirm: function (Ctrl, hwnd, pt, line)
 			{
 				var ar = WScript.Col(ExtractMacro(Ctrl, line));
-				return wsh.Popup(ar[1], 0, ar[0], MB_YESNO | MB_ICONQUESTION | MB_SYSTEMMODAL) != IDNO ? S_OK : E_ABORT;
+				return wsh.Popup(ar[1], 0, ar[0], MB_OKCANCEL | MB_ICONQUESTION | MB_SYSTEMMODAL) != IDCANCEL ? S_OK : E_ABORT;
 			},
 
 			columns: function (Ctrl, hwnd, pt, line)
 			{
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV) {
-					FV.Columns = ExtractMacro(FV, line.trim()).replace(/,/g, " ");
+					FV.Columns = ExtractMacro(FV, line.replace(/^\s+|\s+$/, "")).replace(/,/g, " ");
 				}
 			 	return S_OK;
 			},
 
 			sendkeys: function (Ctrl, hwnd, pt, line)
 			{
-				wsh.SendKeys(ExtractMacro(Ctrl, line.trim()));
+				api.SetFocus(Ctrl.hwnd);
+				wsh.SendKeys(ExtractMacro(Ctrl, line.replace(/^\s+|\s+$/, "")));
 			 	return S_OK;
 			},
 
@@ -715,7 +716,7 @@ if (window.Addon == 1) {
 			var lines = s.split(/\n/);
 			Addons.XFinder.nMode = nMode || 0;
 			if (/Script:(.+)/i.test(s)) {
-				var type = RegExp.$1.trim();
+				var type = RegExp.$1.replace(/^\s+|\s+$/, "");
 				lines.shift();
 				return ExecScriptEx(Ctrl, lines.join("\n"), type, hwnd, pt);
 			}
