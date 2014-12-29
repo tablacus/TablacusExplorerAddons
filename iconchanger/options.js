@@ -1,54 +1,5 @@
-var AddonName = "Icon Changer";
-var nTabIndex = 0;
-var nTabMax = 0;
 var arIndex = ["Type", "Large", "Small", "ExtraLarge", "SysSmall"];
 var fnConfig = fso.BuildPath(te.Data.DataFolder, "config\\iconchanger.tsv");
-
-function InitToolOptions()
-{
-	ApplyLang(document);
-	document.title = GetText(AddonName);
-	g_x.List = document.F.List;
-
-	var size = api.Memory("SIZE");
-	for (var j = SHIL_JUMBO; j--;) {
-		himl = api.SHGetImageList(j);
-		if (himl) {
-			api.ImageList_GetIconSize(himl, size);
-			document.getElementById("size" + j).innerHTML = size.cx + "x" + size.cy;
-		}
-	}
-	setTimeout(function ()
-	{
-		var ar = [];
-		try {
-			var f = fso.OpenTextFile(fnConfig, 1, false, -1);
-			while (!f.AtEndOfStream) {
-				ar.push(f.ReadLine());
-			}
-			f.Close();
-		}
-		catch (e) {
-		}
-
-		if (!ar.length) {
-			ar = ["Folder closed", "Folder opened", "Undefined", "Shortcut", "Share"];
-		}
-		g_x.List.length = ar.length;
-		for (var i = 0; i < ar.length; i++) {
-			SetData(g_x.List[i], ar[i].split(/\t/));
-		}
-	}, 100);
-}
-
-function SetToolOptions()
-{
-	if (ConfirmX(true, ReplaceIC)) {
-		SaveIC("List");
-		TEOk();
-		window.close();
-	}
-}
 
 function SaveIC(mode)
 {
@@ -88,3 +39,50 @@ function ReplaceIC(mode)
 	SetData(g_x.List[g_x.List.selectedIndex], a);
 	g_Chg[mode] = true;
 }
+
+ApplyLang(document);
+var info = GetAddonInfo(Addon_Id);
+document.title = info.Name;
+g_x.List = document.F.List;
+
+var size = api.Memory("SIZE");
+for (var j = SHIL_JUMBO; j--;) {
+	himl = api.SHGetImageList(j);
+	if (himl) {
+		api.ImageList_GetIconSize(himl, size);
+		document.getElementById("size" + j).innerHTML = size.cx + "x" + size.cy;
+	}
+}
+var ar = [];
+try {
+	var f = fso.OpenTextFile(fnConfig, 1, false, -1);
+	while (!f.AtEndOfStream) {
+		ar.push(f.ReadLine());
+	}
+	f.Close();
+}
+catch (e) {
+}
+
+if (!ar.length) {
+	ar = ["Folder closed", "Folder opened", "Undefined", "Shortcut", "Share"];
+}
+g_x.List.length = ar.length;
+for (var i = 0; i < ar.length; i++) {
+	SetData(g_x.List[i], ar[i].split("\t"));
+}
+EnableSelectTag(g_x.List);
+
+g_nResult = 3;
+AddEventEx(window, "beforeunload", function ()
+{
+	if (g_nResult == 2) {
+		return;
+	}
+	if (ConfirmX(true, ReplaceIC)) {
+		SaveIC("List");
+		TEOk();
+		return;
+	}
+	event.returnValue = GetText('Close');
+});

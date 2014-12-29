@@ -21,9 +21,9 @@ if (window.Addon == 1) {
 		var info = api.Memory("SHFILEINFO");
 		api.ShGetFileInfo("*", 0, info, info.Size, SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES);
 		var iUndef = info.iIcon;
-		var image = te.GdiplusBitmap();
 
 		for (var i = ar.length; i--;) {
+			var image = te.GdiplusBitmap();
 			var a = ar[i].split(/\t/);
 			var type = a.shift();
 			var iIcon = -1;
@@ -60,13 +60,15 @@ if (window.Addon == 1) {
 							api.ShGetFileInfo(fn, 0, info, info.Size, SHGFI_SYSICONINDEX);
 							hIcon = api.ImageList_GetIcon(arHiml[j], info.iIcon, ILD_NORMAL);
 						}
-						else {
+						else if (image) {
 							image.FromFile(fn);
 							api.ImageList_GetIconSize(arHiml[j], size);
 							if (image.GetWidth() != size.cx || image.GetHeight() != size.cy) {
 								image = image.GetThumbnailImage(size.cx, size.cy);
 							}
-							hIcon = image.GetHICON();
+							if (image) {
+								hIcon = image.GetHICON();
+							}
 						}
 						if (hIcon) {
 							api.ImageList_ReplaceIcon(arHiml[j], iIcon, hIcon);

@@ -30,14 +30,14 @@ if (window.Addon == 1) {
 					hwnd = Ctrl.TreeView.hwndTree;
 					if (hwnd) {
 						api.SendMessage(hwnd, WM_SETFONT, Addons.Font.hFont, 1);
-						api.SendMessage(hwnd, 0x111b, Addons.Font.nTreeHeight, 0);
+						api.SendMessage(hwnd, TVM_SETITEMHEIGHT, -1, 0);
 					}
 				}
 				if (Ctrl.Type == CTRL_EB) {
 					hwnd = FindChildByClass(Ctrl.hwnd, WC_TREEVIEW);
 					if (hwnd) {
 						api.SendMessage(hwnd, WM_SETFONT, Addons.Font.hFont, 1);
-						api.SendMessage(hwnd, 0x111b, Addons.Font.nTreeHeight, 0);
+						api.SendMessage(hwnd, TVM_SETITEMHEIGHT, -1, 0);
 					}
 				}
 			}
@@ -75,12 +75,6 @@ if (window.Addon == 1) {
 		DefaultFont.lfCharSet = 1;
 		document.body.style.fontFamily = DefaultFont.lfFaceName;
 		document.body.style.fontSize = Math.abs(DefaultFont.lfHeight) + "px";
-		var o = document.getElementById("Size");
-		if (o) {
-			o.style.fontSize = 1;
-			o.innerHTML = "A";
-			Addons.Font.nTreeHeight = o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI + 6, 0;
-		}
 		Addons.Font.Init();
 		FontChanged();
 	}
@@ -104,5 +98,6 @@ else {
 			document.F.Name.value = lf.lfFaceName;
 			document.F.Size.value = Math.abs(Math.round(lf.lfHeight * 72 / screen.logicalYDPI));
 		}
+		g_bChanged = true;
 	}
 }

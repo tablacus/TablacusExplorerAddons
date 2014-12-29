@@ -13,10 +13,8 @@
     </script>
     <script type="text/javascript" charset="utf-8" src="script.js">
     </script>
-    <script type="text/javascript" charset="utf-8" src="options.js">
-    </script>
   </head>
-  <body onload="InitMouseOptions();">
+  <body>
     <form name="F" style="display: inline;">
       <div class="panel" id="panel0" style="display: block;">
         <table width="100%">
@@ -145,11 +143,13 @@
             <input type="button" value="Location" onclick="ShowLocation();"/>
           </td>
           <td align="right">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetMouseOptions(); return true;"/>
-            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close(); return true;" />
+            <input type="button" value="OK" style="width: 96px;" onclick="SetResult(1)"/>
+            <input type="button" value="Cancel" style="width: 96px;" onclick="SetResult(2)" />
           </td>
         </tr>
       </table>
     </form>
+    <script type="text/javascript" charset="utf-8" src="options.js">
+    </script>
   </body>
 </html>

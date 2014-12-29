@@ -11,10 +11,8 @@
     </script>
     <script type="text/javascript" charset="utf-8" src="../../script/options.js">
     </script>
-    <script type="text/javascript" charset="utf-8" src="options.js">
-    </script>
   </head>
-  <body onload="InitKeyOptions();">
+  <body>
     <form name="F" style="display: inline;">
       <div class="panel" style="display: block;">
         <table width="99%">
@@ -76,11 +74,13 @@
       <table width="97%">
         <tr>
           <td align="right">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetKeyOptions();" />
-            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+            <input type="button" value="OK" style="width: 96px;" onclick="SetResult(1)" />
+            <input type="button" value="Cancel" style="width: 96px;" onclick="SetResult(2)" />
           </td>
         </tr>
       </table>
     </form>
+    <script type="text/javascript" charset="utf-8" src="options.js">
+    </script>
   </body>
 </html>

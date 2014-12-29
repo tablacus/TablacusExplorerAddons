@@ -1,24 +1,5 @@
-var nTabIndex = 0;
-var nTabMax = 0;
-
-function InitToolOptions()
-{
-	ApplyLang(document);
-	document.title = GetText(AddonName);
-	LoadX("List", dialogArguments.Data.nEdit ? function () {
-		document.F.List.selectedIndex = dialogArguments.Data.nEdit - 1;
-		EditTB();
-	} : null);
-}
-
-function SetToolOptions()
-{
-	if (ConfirmX(true, ReplaceTB)) {
-		SaveTB("List");
-		TEOk();
-		window.close();
-	}
-}
+g_nResult = 3;
+g_bChanged = false;
 
 function ShowLocation()
 {
@@ -93,4 +74,29 @@ function ReplaceTB(mode)
 	g_Chg[mode] = true;
 }
 
-InitToolOptions();
+function SetToolOptions(n)
+{
+	g_bChanged |= g_Chg.List;
+	if (n === 1) {
+		g_nResult = 1;
+	}
+	if (SetOptions(function () {
+		SetChanged(ReplaceTB);
+		SaveTB("List");
+		TEOk();
+	}, null, n === 1 ? 2 : 0)) {
+		if (n === 1) {
+			window.close();
+		}
+	}
+}
+
+ApplyLang(document);
+var info = GetAddonInfo(Addon_Id);
+document.title = info.Name;
+LoadX("List", dialogArguments.Data.nEdit ? function () {
+	document.F.List.selectedIndex = dialogArguments.Data.nEdit - 1;
+	EditTB();
+} : null);
+
+AddEventEx(window, "beforeunload", SetToolOptions);
