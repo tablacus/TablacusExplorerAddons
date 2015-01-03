@@ -1,4 +1,4 @@
-﻿var Addon_Id = "restart";
+var Addon_Id = "restart";
 var Default = "None";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
@@ -19,15 +19,8 @@ if (window.Addon == 1) {
 
 		Exec: function ()
 		{
-			AddEvent("SystemMessage", function (Ctrl, hwnd, msg, wParam, lParam)
-			{
-				if (msg == WM_COPYDATA) {
-					return E_NOTIMPL;
-				}
-			});
 			SaveConfig();
-			wsh.Run(api.PathQuoteSpaces(api.GetModuleFileName(null)), SW_SHOWNORMAL, false);
-			api.PostMessage(te.hwnd, WM_CLOSE, 0, 0);
+			te.Reload(true);
 			return S_OK;
 		},
 
