@@ -20,7 +20,7 @@ if (window.Addon == 1) {
 		Item: null,
 		nLoopId: 0,
 		nLevel: 0,
-		tid2: [],
+		tid2: false,
 		path2: [],
 		bClose: false,
 		nPos: 0,
@@ -32,7 +32,7 @@ if (window.Addon == 1) {
 				var p = GetPos(o);
 				var pt = api.Memory("POINT");
 				pt.x = screenLeft + p.x;
-				pt.y = screenTop + p.y + o.offsetHeight;
+				pt.y = screenTop + p.y + o.offsetHeight * screen.deviceYDPI / 96;
 				window.Input = o.value;
 				if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
 					FV = GetInnerFV(Id);
@@ -100,8 +100,23 @@ if (window.Addon == 1) {
 			}
 		},
 
+		Activate: function (o, Id)
+		{
+			var TC = te.Ctrl(CTRL_TC);
+			var FV = GetInnerFV(Id);
+			if (TC && FV) {
+				if (TC.Id != FV.Parent.Id) {
+					FV.Focus();
+					if (o) {
+						o.focus();
+					}
+				}
+			}
+		},
+
 		Focus: function (o, Id)
 		{
+			Addons.InnerBreadcrumbsAddressBar.Activate(o, Id);
 			o.select();
 			o.style.color = "windowtext";
 			document.getElementById("breadcrumbsbuttons_" + Id).style.display = "none";
@@ -134,21 +149,11 @@ if (window.Addon == 1) {
 
 		Popup: function (o, n, Id)
 		{
-			if (!Addons.InnerBreadcrumbsAddressBar.bClose) {
+			if (Addons.InnerBreadcrumbsAddressBar.CanPopup(o, Id)) {
 				Addons.InnerBreadcrumbsAddressBar.Item = o;
 				var pt = GetPos(o, true);
-				Addons.InnerBreadcrumbsAddressBar.nLoopId = Id;
-				AddEvent("ExitMenuLoop", function () {
-					Addons.InnerBreadcrumbsAddressBar.nLoopId = 0;
-					Addons.InnerBreadcrumbsAddressBar.bClose = true;
-					clearTimeout(Addons.InnerBreadcrumbsAddressBar.tid2);
-					Addons.InnerBreadcrumbsAddressBar.tid2 = setTimeout("Addons.InnerBreadcrumbsAddressBar.bClose = false;", 500);
-
-				});
 				MouseOver(o);
-				var FV = GetInnerFV(Id);
-				FV.Focus();
-				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n, Id), pt.x, pt.y + o.offsetHeight));
+				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n, Id), pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / 96));
 			}
 		},
 
@@ -171,7 +176,7 @@ if (window.Addon == 1) {
 				MouseOver(o);
 				var pt = GetPos(o, true);
 				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight, te.hwnd, null, null);
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / 96, te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				FolderItem = null;
 				if (nVerb) {
@@ -186,36 +191,65 @@ if (window.Addon == 1) {
 
 		Popup3: function (o, Id)
 		{
-			var FV = GetInnerFV(Id);
-			if (FV) {
-				FV.Focus();
-				FolderMenu.Clear();
-				var hMenu = api.CreatePopupMenu();
-				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDESKTOP));
-				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDRIVES), api.GetDisplayNameOf(ssfDRIVES, SHGDN_INFOLDER), true);
-				var Items = sha.NameSpace(ssfDRIVES).Items();
-				for (var i = 0; i < Items.Count; i++) {
-					var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-					if (path) {
-						FolderMenu.AddMenuItem(hMenu, Items.Item(i));
+			if (Addons.InnerBreadcrumbsAddressBar.CanPopup(o, Id)) {
+				var FV = GetInnerFV(Id);
+				if (FV) {
+					FolderMenu.Clear();
+					var hMenu = api.CreatePopupMenu();
+					FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDESKTOP));
+					FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDRIVES), api.GetDisplayNameOf(ssfDRIVES, SHGDN_INFOLDER), true);
+					var Items = sha.NameSpace(ssfDRIVES).Items();
+					for (var i = 0; i < Items.Count; i++) {
+						var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+						if (path) {
+							FolderMenu.AddMenuItem(hMenu, Items.Item(i));
+						}
 					}
-				}
-				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfBITBUCKET), api.GetDisplayNameOf(ssfBITBUCKET, SHGDN_INFOLDER), true);
+					FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfBITBUCKET), api.GetDisplayNameOf(ssfBITBUCKET, SHGDN_INFOLDER), true);
 
-				var pt = GetPos(o, true);
-				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight, external.hwnd, null, null);
-				api.DestroyMenu(hMenu);
-				FolderItem = null;
-				if (nVerb) {
-					FolderItem = FolderMenu.Items[nVerb - 1];
+					var pt = GetPos(o, true);
+					window.g_menu_click = true;
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x + o.offsetWidth * screen.deviceXDPI / 96, pt.y + o.offsetHeight * screen.deviceYDPI / 96, te.hwnd, null, null);
+					api.DestroyMenu(hMenu);
+					FolderItem = null;
+					if (nVerb) {
+						FolderItem = FolderMenu.Items[nVerb - 1];
+					}
+					FolderMenu.Clear();
+					FolderMenu.Invoke(FolderItem);
 				}
-				FolderMenu.Clear();
-				FolderMenu.Invoke(FolderItem);
 			}
 		},
 
-		Exec: function (Id)
+		CanPopup: function (o, Id)
+		{
+			if (!Addons.InnerBreadcrumbsAddressBar.bClose) {
+				Addons.InnerBreadcrumbsAddressBar.nLoopId = Id;
+				Addons.InnerBreadcrumbsAddressBar.bLoop = true;
+				AddEvent("ExitMenuLoop", function () {
+					Addons.InnerBreadcrumbsAddressBar.nLoopId = 0;
+					Addons.InnerBreadcrumbsAddressBar.bLoop = false;
+					Addons.InnerBreadcrumbsAddressBar.bClose = true;
+					clearTimeout(Addons.InnerBreadcrumbsAddressBar.tid2);
+					Addons.InnerBreadcrumbsAddressBar.tid2 = setTimeout("Addons.InnerBreadcrumbsAddressBar.bClose = false;", 500);
+
+				});
+				Addons.InnerBreadcrumbsAddressBar.Activate(o, Id);
+				return true;
+			}
+			return false;
+		},
+
+		Exec: function ()
+		{
+			var TC = te.Ctrl(CTRL_TC);
+			if (TC) {
+				Addons.InnerBreadcrumbsAddressBar.ExecEx(TC.Id);
+			}
+			return S_OK;
+		},
+
+		ExecEx: function (Id)
 		{
 			if (isNaN(Id)) {
 				var TC = te.Ctrl(CTRL_TC);
@@ -246,7 +280,7 @@ if (window.Addon == 1) {
 				o = document.getElementById("breadcrumbsaddr_img_" + Id);
 				if (o) {
 					var info = api.Memory("SHFILEINFO");
-					api.ShGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
+					api.SHGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
 					var image = te.GdiplusBitmap();
 					image.FromHICON(info.hIcon, api.GetSysColor(COLOR_WINDOW));
 					api.DestroyIcon(info.hIcon);
@@ -269,7 +303,7 @@ if (window.Addon == 1) {
 							(function (o, Id) { setTimeout(function () {
 								Addons.InnerBreadcrumbsAddressBar.bClose = false;
 								o.click();
-							}, 100);}) (o);
+							}, 99);}) (o);
 						}
 					}
 				}

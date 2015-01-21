@@ -5,6 +5,7 @@
 		{
 			var FV = GetInnerFV(Id);
 			if (FV) {
+				FV.Focus();
 				FV.Navigate(null, SBSP_NAVIGATEBACK | SBSP_SAMEBROWSER);
 			}
 			return false;
@@ -14,6 +15,7 @@
 		{
 			var FV = GetInnerFV(id);
 			if (FV) {
+				FV.Focus();
 				var Log = FV.History;
 				var hMenu = api.CreatePopupMenu();
 				var mii = api.Memory("MENUITEMINFO");

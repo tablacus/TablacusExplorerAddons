@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
-    <MinVersion>2014.3.16</MinVersion>
-    <pubDate>Sun, 16 Mar 2014 00:00:00 UTC</pubDate>
+    <Version>1.04</Version>
+    <MinVersion>2015.1.21</MinVersion>
+    <pubDate>Wed, 21 Jan 2015 00:00:00 UTC</pubDate>
     <Options>Common:5:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
@@ -11,10 +11,10 @@
   </General>
   <en>
     <Name>Inner Back</Name>
-    <Description>Inner Back</Description>
+    <Description>Back button of every pane</Description>
   </en>
   <ja>
     <Name>Inner 戻る</Name>
-    <Description>Inner 戻る</Description>
+    <Description>ペイン毎の 戻る ボタン</Description>
   </ja>
 </TablacusExplorer>

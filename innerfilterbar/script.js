@@ -31,6 +31,7 @@
 
 		Focus: function (o, Id)
 		{
+			Activate(o, Id);
 			o.select();
 			if (this.iCaret[Id] >= 0) {
 				var range = o.createTextRange();
@@ -49,6 +50,7 @@
 				var FV =  GetInnerFV(Id);
 				FV.FilterView = null;
 				FV.Refresh();
+				FV.Focus();
 			}
 		},
 
@@ -64,8 +66,9 @@
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var s = '<input type="text" name="filter_$" placeholder="Filter" onkeydown="Addons.InnerFilterBar.KeyDown(this, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this, $)" onfocus="Addons.InnerFilterBar.Focus(this, $)" style="width: 176px; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="../addons/innerfilterbar/filter.png" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -18px; top: -7px"><input type="image" id="ButtonFilterClear_$" src="bitmap:ieframe.dll,545,13,1" hidefocus="true" style="display: none; position: absolute; left: -17px; top: -4px" onclick="Addons.InnerFilterBar.Clear(true, $)"></span>';
-		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.replace(/\$/g, Ctrl.Id));
+		var s = GetAddonOption("innerfilterbar", "Icon") || '../addons/innerfilterbar/filter.png';
+		var s = ['<input type="text" name="filter_$" placeholder="Filter" onkeydown="Addons.InnerFilterBar.KeyDown(this, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this, $)" onfocus="Addons.InnerFilterBar.Focus(this, $)" style="width: 176px; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', s, '" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -18px; top: -7px" width="16px" height="16px"><input type="image" id="ButtonFilterClear_$" src="bitmap:ieframe.dll,545,13,1" hidefocus="true" style="display: none; position: absolute; left: -17px; top: -4px" onclick="Addons.InnerFilterBar.Clear(true, $)"></span>'];
+		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
 	AddEvent("ChangeView", function (Ctrl)
