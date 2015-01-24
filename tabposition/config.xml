@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2014.5.4</MinVersion>
-    <pubDate>Wed, 21 May 2014 00:00:00 UTC</pubDate>
-    <Options>dialogWidth: 320px; dialogHeight: 130px; resizable: yes; status: 0</Options>
+    <Version>1.01</Version>
+    <MinVersion>2015.1.22</MinVersion>
+    <pubDate>Sat, 24 Jan 2015 00:00:00 UTC</pubDate>
+    <Options>dialogWidth: 320px; dialogHeight: 180px; resizable: yes; status: 0</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Tab Position</Name>
-    <Description>Tab Position</Description>
+    <Name>Tab position</Name>
+    <Description>Tab position of new tab and Active tab after tab closing.</Description>
   </en>
   <ja>
     <Name>タブの配置</Name>
-    <Description>タブを閉じた際にアクティブにするタブを指定します。</Description>
+    <Description>新しいタブやタブを閉じた際にアクティブにするタブを指定します。</Description>
   </ja>
 </TablacusExplorer>

@@ -64,7 +64,15 @@ if (window.Addon == 1) {
 			for (var i = Ctrl.Count; i-- > 0;) {
 				FV = Ctrl[i];
 				if (FV && FV.Data) {
-					FV.Data.nActive = api.QuadPart(FV.Data.nActive) + 1;
+					FV.Data.nActive = (FV.Data.nActive || 0) + 1;
+					if (FV.Data.Created) {
+						if  (new Date().getTime() - FV.Data.Created < 9999) {
+							if (Addons.TabPositon.nNew) {
+								Ctrl.Move(i, Ctrl.Count - 1);
+							}
+						}
+						delete FV.Data.Created;
+					}
 				}
 			}
 			var FV = Ctrl.Selected;
@@ -73,4 +81,12 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+
+	AddEvent("Create", function (Ctrl)
+	{
+		if (Ctrl.Type <= CTRL_EB) {
+			Ctrl.Data.Created = new Date().getTime();
+		}
+	});
 }
+

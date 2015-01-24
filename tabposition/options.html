@@ -11,13 +11,20 @@
     </script>
     <script type="text/javascript" charset="utf-8" src="../../script/options.js">
     </script>
-    <script type="text/javascript">
-      var Addon_Id = 'tabposition';
-    </script>
   </head>
-  <body onload="InitAddonOptions();">
+  <body>
 
     <form name="F">
+      <div class="panel" style="display: block;">
+        <div>
+          <label>New Tab</label>
+        </div>
+        <input type="hidden" name="NewTab" />
+        <input type="radio" name="_NewTab" id="NewTab=1" onclick="SetRadio(this)" />
+        <label for="NewTab=1">Last</label>
+        <input type="radio" name="_NewTab" id="NewTab=0" onclick="SetRadio(this)" />
+        <label for="NewTab=0">Right</label><br />
+      </div>
       <div class="panel" style="display: block;">
         <div>
           <label>Active Tab After Tab Closing</label>
@@ -39,11 +46,15 @@
       <table width="95%">
         <tr>
           <td align="right">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetAddonOptions();" />
-            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)"  />
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />
           </td>
         </tr>
       </table>
     </form>
+    <script type="text/javascript">
+      Addon_Id = 'tabposition';
+      InitAddonOptions();
+    </script>
   </body>
 </html>
