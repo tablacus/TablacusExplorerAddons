@@ -65,11 +65,16 @@
       <table width="97%">
         <tr>
           <td>
+            <select name="Format">
+              <option value="0">Normal</option>
+              <option value="1">Path</option>
+              <option value="2">Key</option>
+            </select>
             <input type="button" value="Get the current folder view" onclick="GetCurrentSetting()" />
           </td>
           <td align="right">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetOptionsFS();" />
-            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />
           </td>
         </tr>
       </table>

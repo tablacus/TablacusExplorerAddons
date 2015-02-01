@@ -12,13 +12,17 @@ if (window.Addon == 1) {
 	{
 		db: {},
 		ID: ["Time", "ViewMode", "IconSize", "Columns", "SortColumn", "Path"],
+		nFormat: api.QuadPart(GetAddonOption(Addon_Id, "Format")),
 
 		RememberFolder: function (FV)
 		{
 			if (FV && FV.FolderItem) {
-				if (api.ILisEqual(FV.FolderItem, FV.Data.Remember)) {
-					var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-					Addons.Remember.db[path] = [new Date().getTime(), FV.CurrentViewMode, FV.IconSize, FV.Columns, FV.SortColumn];
+				if (api.ILIsEqual(FV.FolderItem, FV.Data.Remember)) {
+					var col = FV.Columns(Addons.Remember.nFormat);
+					if (col) {
+						var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+						Addons.Remember.db[path] = [new Date().getTime(), FV.CurrentViewMode, FV.IconSize, col, FV.SortColumn(Addons.Remember.nFormat)];
+					}
 				}
 			}
 		}
@@ -29,9 +33,8 @@ if (window.Addon == 1) {
 		var items = xml.getElementsByTagName('Item');
 		for (var i = items.length; i-- > 0;) {
 			var item = items[i];
-			var j = Addons.Remember.ID.length;
-			var ar = new Array(j);
-			while (j--) {
+			var ar = [];
+			for (var j in Addons.Remember.ID) {
 				ar[j] = item.getAttribute(Addons.Remember.ID[j]);
 			}
 			if (ar[1]) {
@@ -114,13 +117,12 @@ if (window.Addon == 1) {
 		while (arFV.length) {
 			var ar = arFV.shift();
 			var item = xml.createElement("Item");
-			for (var j = Addons.Remember.ID.length; j--;) {
+			for (var j in Addons.Remember.ID) {
 				item.setAttribute(Addons.Remember.ID[j], ar[j]);
 			}
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
 		SaveXmlEx("remember.xml", xml, true);
-		xml = null;
 	});
 }

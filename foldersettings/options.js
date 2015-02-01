@@ -9,8 +9,8 @@ GetCurrentSetting = function (bForce)
 	var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
 
 	var s = ["Ctrl.CurrentViewMode(", FV.CurrentViewMode, ",", FV.IconSize, ");\n"];
-	s.push("Ctrl.Columns='", FV.Columns, "';\n");
-	s.push("Ctrl.SortColumn='", FV.SortColumn, "';\n");
+	s.push("Ctrl.Columns='", FV.Columns(document.F.Format.value - 0), "';\n");
+	s.push("Ctrl.SortColumn='", FV.SortColumn(document.F.Format.value - 0), "';\n");
 	s = s.join("");
 	if (bForce || confirmOk([path, s].join("\n"))) {
 		document.F.Filter.value = path;
@@ -18,14 +18,6 @@ GetCurrentSetting = function (bForce)
 		SetType(document.F.Type, "JScript");
 	}
 	ChangeX("List");
-}
-
-function SetOptionsFS()
-{
-	if (ConfirmX(true, ReplaceFS)) {
-		SaveFS();
-		window.close();
-	}
 }
 
 function LoadFS()
@@ -126,3 +118,8 @@ if (dialogArguments.GetCurrent) {
 		GetCurrentSetting(true);
 	}
 }
+SetOnChangeHandler();
+AddEventEx(window, "beforeunload", function ()
+{
+	SetOptions(SaveFS);
+});
