@@ -117,11 +117,14 @@ if (window.Addon == 1) {
 				Ctrl.SelectedIndex = nIndex;
 			}
 			else if (nIndex >= 0) {
-				Ctrl.SelectedIndex = nIndex;
+				var hr = S_FALSE;
 				var DropTarget = Ctrl.Item(nIndex).DropTarget;
 				if (DropTarget) {
-					return DropTarget.Drop(dataObj, grfKeyState, pt, pdwEffect);
+					clearTimeout(Addons.Tabs.tid);
+					hr = DropTarget.Drop(dataObj, grfKeyState, pt, pdwEffect);
+					Ctrl.SelectedIndex = nIndex;
 				}
+				return hr;
 			}
 			else if (dataObj.Count) {
 				for (var i = 0; i < dataObj.Count; i++) {
@@ -161,7 +164,7 @@ if (window.Addon == 1) {
 	AddEventEx(window, "load", function ()
 	{
 		var cTC = te.Ctrls(CTRL_TC);
-		for (var i = cTC.Count; i-- > 0;) {
+		for (var i = cTC.length; i-- > 0;) {
 			Addons.Tabs.Init(cTC[i]);
 		}
 	});

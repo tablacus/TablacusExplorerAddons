@@ -40,7 +40,7 @@ if (window.Addon == 1) {
 						this.Tab(s, TC, i);
 					}
 					if (this.opt.New) {
-						s.push('<button class="tab" onclick="Addons.TabPlus.New(', Id, ');return false" hidefocus="true" title="', GetText("New Tab"), '" style="font-family: ', document.body.style.fontFamily, ';">+</button>');
+						s.push('<button class="tab" onclick="Addons.TabPlus.New(', Id, ');return false" hidefocus="true" title="', GetText("New Tab"), '" style="font-family: ', document.body.style.fontFamily, '; cursor: default">+</button>');
 					}
 					try {
 						var FocusedId = te.Ctrl(CTRL_TC).Id;
@@ -139,7 +139,7 @@ if (window.Addon == 1) {
 					}
 				}
 				var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-				s.push('font-family: ', document.body.style.fontFamily, '; margin: 0px; white-space: nowrap;');
+				s.push('font-family: ', document.body.style.fontFamily, '; margin: 0px; white-space: nowrap; cursor: default');
 				s.push('" id="tabplus_$_', i,'" title="', path,'" onmousemove="Addons.TabPlus.Move(this, $)" class="');
 				s.push(bActive ? 'activetab' : 'tab');
 				s.push('" hidefocus="true"><table><tr>');
@@ -156,7 +156,7 @@ if (window.Addon == 1) {
 						}
 						else {
 							var info = api.Memory("SHFILEINFO");
-							api.ShGetFileInfo(FV, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
+							api.SHGetFileInfo(FV, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
 							var image = te.GdiplusBitmap;
 							image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
 							api.DestroyIcon(info.hIcon);
@@ -270,7 +270,7 @@ if (window.Addon == 1) {
 		Cursor: function (s)
 		{
 			var cTC = te.Ctrls(CTRL_TC);
-			for (var j = cTC.Count; j-- > 0;) {
+			for (var j in cTC) {
 				SetCursor(document.getElementById('tabplus_' + cTC[j].Id), s);
 			}
 		},
@@ -390,8 +390,8 @@ if (window.Addon == 1) {
 		TCFromPt: function (pt)
 		{
 			var cTC = te.Ctrls(CTRL_TC);
-			for (var n = cTC.Count; n-- > 0;) {
-				var TC = cTC.Item(n);
+			for (var n in cTC) {
+				var TC = cTC[n];
 				if (TC.Visible) {
 					if (HitTest(document.getElementById("tabplus_" + TC.Id), pt)) {
 						return TC;
@@ -477,11 +477,14 @@ if (window.Addon == 1) {
 			if (TC) {
 				var nIndex = Addons.TabPlus.FromPt(TC.Id, pt);
 				if (nIndex >= 0) {
-					TC.SelectedIndex = nIndex;
+					var hr = S_FALSE;
 					var DropTarget = TC.Item(nIndex).DropTarget;
 					if (DropTarget) {
-						return DropTarget.Drop(dataObj, grfKeyState, pt, pdwEffect);
+						clearTimeout(Addons.TabPlus.tid);
+						hr = DropTarget.Drop(dataObj, grfKeyState, pt, pdwEffect);
+						TC.SelectedIndex = nIndex;
 					}
+					return hr;
 				}
 				else if (dataObj.Count) {
 					for (var i = 0; i < dataObj.Count; i++) {

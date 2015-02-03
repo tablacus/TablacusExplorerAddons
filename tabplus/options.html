@@ -13,12 +13,8 @@
     </script>
     <script type="text/javascript" charset="utf-8" src="script.js">
     </script>
-    <script type="text/javascript">
-      var Addon_Id = 'tabplus';
-    </script>
   </head>
-  <body onload="InitAddonOptions();">
-
+  <body>
     <form name="F">
       <div class="panel" style="display: block;">
         <label>View</label>
@@ -58,11 +54,15 @@
       <table width="100%">
         <tr>
           <td align="center">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetAddonOptions();" />
-            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+            <input type="button" value="OK" class="ok" onclick="SetAddonOptions();" />
+            <input type="button" value="Cancel" class="cancel" onclick="window.close();" />
           </td>
         </tr>
       </table>
     </form>
+    <script type="text/javascript">
+      var Addon_Id = 'tabplus';
+      InitAddonOptions();
+    </script>
   </body>
 </html>
