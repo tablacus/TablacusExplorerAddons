@@ -2,7 +2,6 @@ if (window.Addon == 1) {
 	Addons.XFinder =
 	{
 		SW: SW_SHOWNORMAL,
-	
 		Command:
 		{
 			newtab: function (Ctrl, hwnd, pt, line)
@@ -35,7 +34,7 @@ if (window.Addon == 1) {
 					var FV = GetFolderView(Ctrl, pt);
 					if (FV) {
 						var TC = FV.Parent;
-						for (var i = TC.Count; i--;) {
+						for (var i = TC.length; i--;) {
 							if (PathMatchEx(api.GetDisplayNameOf(TC[i], SHGDN_FORADDRESSBAR | SHGDN_FORPARSINGEX | SHGDN_FORPARSING) + "", p)) {
 								TC[i].Close();
 							}
@@ -52,9 +51,9 @@ if (window.Addon == 1) {
 						var FV = GetFolderView(Ctrl, pt);
 						if (FV) {
 							var TC = FV.Parent;
-							for (var i = TC.Count; i--;) {
+							for (var i = TC.length; i--;) {
 								FV = TC[i];
-								for (var j = TC.Count; j--;) {
+								for (var j = TC.length; j--;) {
 									if (i != j && api.ILIsEqual(FV, TC[j])) {
 										TC[i].Close();
 										break;
@@ -67,7 +66,7 @@ if (window.Addon == 1) {
 						var FV = GetFolderView(Ctrl, pt);
 						if (FV) {
 							var TC = FV.Parent;
-							for (var i = TC.Count; i--;) {
+							for (var i = TC.length; i--;) {
 								TC[i].Close();
 							}
 						}
@@ -260,7 +259,7 @@ if (window.Addon == 1) {
 				}
 				var a = [];
 				for (var i = 0; i < Items.Count; i++) {
-					var s = Items[i].Path;
+					var s = Items.Item(i).Path;
 					if (p & 1) {
 						s = s.replace(/\..+$/, "");
 					}
@@ -533,17 +532,116 @@ if (window.Addon == 1) {
 									DoRename(0);
 								}
 								if (arFrom.length) {
-									api.SHFileOperation(FO_MOVE, arFrom.join("\0") + "\0\0", arTo.join("\0") + "\0\0", FOF_ALLOWUNDO | FOF_MULTIDESTFILES, false);
+									api.SHFileOperation(FO_MOVE, arFrom.join("\0"), arTo.join("\0"), FOF_ALLOWUNDO | FOF_MULTIDESTFILES, false);
 								}
 							}
 						}
 					}
 				}
+			},
+
+			delete: function (Ctrl, hwnd, pt, line)
+			{
+				Addons.XFinder.FileOperation(Ctrl, hwnd, FO_DELETE, line);
+			},
+
+			copy: function (Ctrl, hwnd, pt, line)
+			{
+				Addons.XFinder.FileOperation(Ctrl, hwnd, FO_COPY, line);
+			},
+
+			move: function (Ctrl, hwnd, pt, line)
+			{
+				Addons.XFinder.FileOperation(Ctrl, hwnd, FO_MOVE, line);
+			},
+
+			unlock: function (Ctrl, hwnd, pt, line)
+			{
+				var ar = WScript.Col(ExtractMacro(Ctrl, line));
+				for (var i in ar) {
+					ChangeNotifyFV(SHCNE_RMDIR, ar[i]);
+				}
+				try {
+					wsh.CurrentDirectory = fso.GetSpecialFolder(2).Path;
+				} catch (e) {
+				}
 			}
 /*
 			: function (Ctrl, hwnd, pt, line)
 			{
-*/		},
+			}
+*/
+		},
+
+		FileOperation: function (Ctrl, hwnd, wFunc, line)
+		{
+			var fFlags = 0;
+			var bTo = false;
+			var bBG = false;
+			var bSame = false;
+			var pFrom = [];
+			var pTo = [];
+			var ar = WScript.Col(ExtractMacro(Ctrl, line));
+			for (var i = 0; i < ar.length; i++) {
+				var s = ar[i].toLowerCase();
+				if (api.PathMatchSpec(s, '/*')) {
+					if (s == '/b') {
+						bBG = true;
+					}
+					if (s == '/e') {
+						bSame = true;
+					}
+					if (s == '/t') {
+					 	bTo = true;
+					}
+					if (s == '/f') {
+						fFlags |= FOF_FILESONLY;
+					}
+					if (s == '/m') {
+						fFlags |= FOF_MULTIDESTFILES;
+					}
+					if (s == '/r') {
+						fFlags |= FOF_RENAMEONCOLLISION;
+					}
+					if (s == '/s') {
+						fFlags |= FOF_SILENT;
+					}
+					if (s == '/y') {
+						fFlags |= FOF_NOCONFIRMATION;
+					}
+					if (s == '/u' || (s == '/a' && api.GetKeyState(VK_SHIFT) >= 0)) {
+						fFlags |= FOF_ALLOWUNDO;
+					}
+				}
+				else {
+					(bTo ? pTo : pFrom).push(api.PathQuoteSpaces(ar[i]));
+				}
+			}
+			if (pFrom.length && (wFunc == FO_DELETE || pTo.length)) {
+				if (bSame && pTo.length == 1) {
+					if (api.ILIsEqual(fso.GetParentFolderName(pFrom[0]), slTo[0])) {
+						fFlags |= FOF_RENAMEONCOLLISION;
+					}
+				}
+				if (wFunc == FO_DELETE) {
+					if (api.strcmpi(pFrom[0], 'shell:RecycleBinFolder') == 0) {
+						var dwFlags = 0;
+						if (fFlags & FOF_SILENT) {
+							dwFlags |= SHERB_NOPROGRESSUI;
+						}
+						if (fFlags & FOF_NOCONFIRMATION) {
+							dwFlags |= SHERB_NOCONFIRMATION;
+						}
+						api.SHEmptyRecycleBin(te.hwnd, pTo.join("\0"), dwFlags);
+						return;
+					}
+					for (var i in pFrom) {
+						ChangeNotifyFV(SHCNE_RMDIR, pFrom[i]);
+					}
+				}
+				api.SHFileOperation(wFunc, pFrom.join("\0"), pTo.join("\0"), fFlags, bBG);
+			}
+		},
 
 		Env:
 		{
@@ -727,6 +825,26 @@ if (window.Addon == 1) {
 				}
 			}
 			return hr;
+		},
+
+		FormatDateTime: function (fmt, dt)
+		{
+			var ar =
+			[
+				["dddddd", LOCALE_SLONGDATE],
+				["ddddd", LOCALE_SSHORTDATE],
+				["tt", LOCALE_STIMEFORMAT]
+			];
+			var s = fmt.split("'");
+			for (var j = 0; j < s.length; j += 2) {
+				for (var i in ar) {
+					var re = new RegExp(ar[i][0], "");
+					if (re.test(s[j])) {
+						s[j] = s[j].replace(re, api.GetLocaleInfo(LOCALE_USER_DEFAULT, ar[i][1]));
+					}
+				}
+			}
+			return api.GetDateFormat(LOCALE_USER_DEFAULT, 0, dt, api.GetTimeFormat(LOCALE_USER_DEFAULT, 0, dt, s.join("'")));
 		}
 	};
 
@@ -785,7 +903,7 @@ if (window.Addon == 1) {
 	{
 		var TC = te.Ctrl(CTRL_TC);
 		var cTC = te.Ctrls(CTRL_TC);
-		for (var i = cTC.Count; i--;) {
+		for (var i = cTC.length; i--;) {
 			if (cTC[i].Visible && cTC[i].Id != TC.Id) {
 				return api.PathQuoteSpaces(api.GetDisplayNameOf(cTC[i].Selected, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			}
@@ -877,28 +995,16 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ReplaceMacro", [/%DateTime:([^%]*%)/ig, function (Ctrl)
+	AddEvent("ReplaceMacro", [/%DateTime:([^%]*)%/ig, function (Ctrl)
 	{
-		try {
-			var vb = api.GetScriptDispatch('Function fn()\n fn = CStr(Now())\nEnd Function', "VBScript");
-			return vb.fn();
-		}
-		catch (e) {
-			return new Date().toLocaleString();
-		}
+		return Addons.XFinder.FormatDateTime(RegExp.$1, new Date());
 	}]);
 
 	AddEvent("ReplaceMacro", [/%TimeStamp:([^%]*)%/ig, function (Ctrl, re)
 	{
 		var FV = GetFolderView(Ctrl, pt);
 		if (FV) {
-			try {
-				var vb = api.GetScriptDispatch('Function fn(s)\n fn = FormatDateTime(s)\nEnd Function', "VBScript");
-				return vb.fn(FV.FocusedItem.ModifyDate);
-			}
-			catch (e) {
-				return new Date().toLocaleString();
-			}
+			return Addons.XFinder.FormatDateTime(RegExp.$1, FV.FocusedItem.ModifyDate);
 		}
 	}]);
 
@@ -981,13 +1087,7 @@ if (window.Addon == 1) {
 
 	WScript.Col = function (s)
 	{
-		var ar = api.CommandLineToArgv(s.replace(/,/g, " "));
-		ar.Count = ar.length;
-		ar.Item = function (i)
-		{
-			return this[i];
-		}
-		return ar;
+		return api.CommandLineToArgv(s.replace(/,/g, " "));
 	}
 
 	WScript.DoDragDrop = function (Items)
