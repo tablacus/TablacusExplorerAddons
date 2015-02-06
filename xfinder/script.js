@@ -540,7 +540,7 @@ if (window.Addon == 1) {
 				}
 			},
 
-			delete: function (Ctrl, hwnd, pt, line)
+			"delete": function (Ctrl, hwnd, pt, line)
 			{
 				Addons.XFinder.FileOperation(Ctrl, hwnd, FO_DELETE, line);
 			},
