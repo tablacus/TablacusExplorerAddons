@@ -75,23 +75,9 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Activate: function (o, Id)
-		{
-			var TC = te.Ctrl(CTRL_TC);
-			var FV = GetInnerFV(Id);
-			if (TC && FV) {
-				if (TC.Id != FV.Parent.Id) {
-					FV.Focus();
-					if (o) {
-						o.focus();
-					}
-				}
-			}
-		},
-
 		Focus: function (o, Id)
 		{
-			Addons.InnerAddressBar.Activate(o, Id);
+			Activate(o, Id);
 			o.select();
 			o.style.color = "windowtext";
 		},
@@ -207,7 +193,7 @@ if (window.Addon == 1) {
 					Addons.InnerAddressBar.tid2 = setTimeout("Addons.InnerAddressBar.bClose = false;", 500);
 
 				});
-				Addons.InnerAddressBar.Activate(o, Id);
+				Activate(o, Id);
 				return true;
 			}
 			return false;
@@ -249,37 +235,9 @@ if (window.Addon == 1) {
 				o.value = path;
 			}
 			Addons.InnerAddressBar.Arrange(Ctrl.FolderItem, Id);
-			if (document.documentMode) {
-				o = document.getElementById("inneraddr_img_" + Id);
-				if (o) {
-					var info = api.Memory("SHFILEINFO");
-					api.SHGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
-					var image = te.GdiplusBitmap();
-					image.FromHICON(info.hIcon, api.GetSysColor(COLOR_WINDOW));
-					api.DestroyIcon(info.hIcon);
-					o.src = image.DataURI("image/png");
-				}
-			}
-		}
-	});
-
-	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo)
-	{
-		if (msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_TE && Addons.InnerAddressBar.nLoopId) {
-			var Ctrl2 = te.CtrlFromPoint(pt);
-			if (Ctrl2 && Ctrl2.Type == CTRL_WB && !HitTest(Addons.InnerAddressBar.Item, pt)) {
-				for (var i = Addons.InnerAddressBar.nLevel; i >= 0; i--) {
-					var o = document.getElementById("inneraddressbar_" + Addons.InnerAddressBar.nLoopId + "_" + i);
-					if (o) {
-						if (HitTest(o, pt)) {
-							wsh.SendKeys("{Esc}");
-							(function (o, Id) { setTimeout(function () {
-								Addons.InnerAddressBar.bClose = false;
-								o.click();
-							}, 99);}) (o);
-						}
-					}
-				}
+			o = document.getElementById("inneraddr_img_" + Id);
+			if (o) {
+				o.src = GetIconImage(Ctrl, api.GetSysColor(COLOR_WINDOW));
 			}
 		}
 	});

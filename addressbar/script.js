@@ -236,14 +236,7 @@ if (window.Addon == 1) {
 		if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
 			document.F.addressbar.value = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			Addons.AddressBar.Arrange(Ctrl.FolderItem);
-			if (document.documentMode) {
-				var info = api.Memory("SHFILEINFO");
-				api.ShGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
-				var image = te.GdiplusBitmap();
-				image.FromHICON(info.hIcon, api.GetSysColor(COLOR_WINDOW));
-				api.DestroyIcon(info.hIcon);
-				document.getElementById("addr_img").src = image.DataURI("image/png");
-			}
+			document.getElementById("addr_img").src = GetIconImage(Ctrl, api.GetSysColor(COLOR_WINDOW));
 		}
 	});
 
@@ -265,7 +258,7 @@ if (window.Addon == 1) {
 							(function (o) { setTimeout(function () {
 								Addons.AddressBar.bClose = false;
 								o.click();
-							}, 100);}) (o);
+							}, 99);}) (o);
 						}
 					}
 				}
