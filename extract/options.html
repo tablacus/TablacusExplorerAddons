@@ -11,33 +11,57 @@
     </script>
     <script type="text/javascript" charset="utf-8" src="../../script/options.js">
     </script>
-    <script type="text/javascript" charset="utf-8" src="options.js">
-    </script>
   </head>
-  <body onload="InitOptions();">
-
+  <body>
     <form name="F" style="display: inline;">
       <div class="panel" style="display: block;">
         <input type="text" id="Path" style="width: 100%" />
-        <input type="button" value="..." onclick="Ref()" />
-        <input type="button" value="Default" title="" onclick="SetExtract(this)" />
-        <input type="button" value="Portable" onclick="PortableX('Path')" />
-        <script type="text/javascript">
-          AddButtons();
-        </script>
+        <table>
+          <tr>
+            <td>
+              <input type="button" value="Reference..." onclick="RefX('Path', false, this)" />
+            </td>
+            <td>
+              <input type="button" value="Default" title="" onclick="SetExtract(this)" />
+            </td>
+            <td>
+              <input type="button" value="Portable" onclick="PortableX('Path')" />
+            </td>
+            <td id="_7zip"></td>
+            <td id="_lhaz"></td>
+          </tr>
+        </table>
       </div>
-      <table width="99%">
+      <table width="100%">
         <tr>
           <td>
-            <input type="button" value="Get 7-Zip..." title="http://www.7-zip.org/" onclick="wsh.Run(this.title)" />
-            <input type="button" value="Get Lhaz..." title="http://chitora.com/lhaz.html" onclick="wsh.Run(this.title)" />
+            <table>
+              <tr>
+                <td>
+                  &nbsp;<input type="button" value="Get 7-Zip..." title="http://www.7-zip.org/" onclick="wsh.Run(this.title)" />
+                </td>
+                <td>
+                  &nbsp;<input type="button" value="Get Lhaz..." title="http://chitora.com/lhaz.html" onclick="wsh.Run(this.title)" />
+                </td>
+              </tr>
+            </table>
           </td>
           <td align="right">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetOptions();" />
-            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+            <table>
+              <tr>
+                <td>
+                  <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+                </td>
+                <td>
+                  <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
       </table>
     </form>
+    <script type="text/javascript" charset="utf-8" src="script.js">
+    </script>
   </body>
 </html>
