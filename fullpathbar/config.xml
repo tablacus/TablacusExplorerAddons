@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
+    <Version>1.00</Version>
     <MinVersion>2015.2.14</MinVersion>
     <pubDate>Sun, 15 Feb 2015 00:00:00 UTC</pubDate>
     <Options>Common:0,6:6</Options>
@@ -10,11 +10,11 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Status Bar</Name>
-    <Description>Status Bar</Description>
+    <Name>Full path bar</Name>
+    <Description>Show full path.</Description>
   </en>
   <ja>
-    <Name>ステータス バー</Name>
-    <Description>ステータス バー</Description>
+    <Name>フルパス バー</Name>
+    <Description>バーにフルパスを表示します。</Description>
   </ja>
 </TablacusExplorer>

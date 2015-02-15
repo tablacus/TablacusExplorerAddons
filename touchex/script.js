@@ -20,19 +20,7 @@ if (window.Addon == 1) {
 		{
 			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
 			if (Selected && Selected.Count) {
-				try {
-					Addons.TouchEx.Selected = Selected;
-					var s = showModalDialog("../addons/touchex/dialog.html", window, "dialogWidth: 320px; dialogHeight: 280px; resizable: yes; status: 0");
-					if (s) {
-						s = s.split("#:-D`");
-						for (var i = Selected.Count; i-- > 0;) {
-							api.SetFileTime(Selected.Item(i), s[0], s[1], s[2]);
-						}
-					}
-				}
-				catch (e) {
-					wsh.Popup(e.description + "\n" + s, 0, TITLE, MB_ICONEXCLAMATION);
-				}
+				ShowDialog("../addons/touchex/dialog.html", { MainWindow: MainWindow, Selected: Selected, width: 320, height: 280 });
 			}
 		}
 	}
@@ -69,7 +57,9 @@ if (window.Addon == 1) {
 if (window.Addon == 2) {
 	window.SetTimeStamp = function ()
 	{
-		returnValue = [document.F.Creation.value, document.F.LastAccess.value, document.F.LastWrite.value].join("#:-D`");
+		for (var i = dialogArguments.Selected.Count; i-- > 0;) {
+			api.SetFileTime(dialogArguments.Selected.Item(i), document.F.dt_1.value, document.F.dt_2.value, document.F.dt_0.value);
+		}
 		window.close();
 		return true;
 	};
@@ -81,6 +71,9 @@ if (window.Addon == 2) {
 
 	document.onkeydown = function ()
 	{
+		if (event.keyCode == VK_ESCAPE) {
+			window.close();
+		}
 		if (event.keyCode == VK_RETURN) {
 			SetTimeStamp();
 		}
@@ -90,25 +83,25 @@ if (window.Addon == 2) {
 	AddEventEx(window, "load", function ()
 	{
 		ApplyLang(document);
-		var item = dialogArguments.Addons.TouchEx.Selected.Item(0);
+		var item = dialogArguments.Selected.Item(0);
 		var s = item.Path;
-		var FindData = api.Memory("WIN32_FIND_DATA");
-		var hFind = api.FindFirstFile(s, FindData);
-		var n = dialogArguments.Addons.TouchEx.Selected.Count;
+		var wfd = api.Memory("WIN32_FIND_DATA");
+		var hFind = api.FindFirstFile(s, wfd);
+		if (hFind == INVALID_HANDLE_VALUE) {
+			window.close();
+		}
+		var n = dialogArguments.Selected.Count;
 		document.getElementById("Path").innerHTML = (n > 1) ? s += " : " + n : s;
-		if (hFind != INVALID_HANDLE_VALUE) {
-			s = FormatDateTime(FindData.ftCreationTime);
-			document.getElementById("lCreation").innerHTML = s;
-			document.F.Creation.value = s;
 
-			s = FormatDateTime(FindData.ftLastAccessTime);
-			document.getElementById("lLastAccess").innerHTML = s;
-			document.F.LastAccess.value = s;
-
-			s = FormatDateTime(FindData.ftLastWriteTime);
-			document.getElementById("lLastWrite").innerHTML = s;
-			document.F.LastWrite.value = s;
+		var ar = [wfd.ftLastWriteTime, wfd.ftCreationTime, wfd.ftLastAccessTime];
+		for (var i = 3; i--;) {
+			document.getElementById("label_" + i).innerHTML = api.PSGetDisplayName("{B725F130-47EF-101A-A5F1-02608C9EEBAC} " + (i + 14));
+			s = FormatDateTime(ar[i]);
+			document.F.elements["dt_" + i].value = s;
+			document.getElementById("od_"+ i).innerHTML = s;
 		}
 		api.FindClose(hFind);
+		document.F.dt_0.select();
+		document.F.dt_0.focus();
 	});
 }
