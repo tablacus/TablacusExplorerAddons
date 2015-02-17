@@ -34,7 +34,8 @@
 				pt: pt,
 				dwEffect: dwEffect
 			};
-			wsh.Run([api.PathQuoteSpaces(api.GetModuleFileName(null)), '/run', "addons\\multiprocess\\worker.js", uid].join(" "));
+			var oExec = wsh.Exec([api.PathQuoteSpaces(api.GetModuleFileName(null)), '/run', "addons\\multiprocess\\worker.js", uid].join(" "));
+			wsh.AppActivate(oExec.ProcessID);
 			return true;
 		}
 	};
