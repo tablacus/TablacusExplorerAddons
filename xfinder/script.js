@@ -385,7 +385,8 @@ if (window.Addon == 1) {
 			{
 				var pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
-				var FolderItem = FolderMenu.Open(ExtractMacro(Ctrl, line), pt.x, pt.y);
+				var ar = WScript.Col(ExtractMacro(Ctrl, line));
+				var FolderItem = FolderMenu.Open(ar[0], pt.x, pt.y, ar[1]);
 				if (FolderItem) {
 					te.Data.XFEnv.inputdata = api.GetDisplayNameOf(FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 				 	return S_OK;

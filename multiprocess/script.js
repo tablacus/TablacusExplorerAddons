@@ -11,16 +11,22 @@
 				if (api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
 					return false;
 				}
+				if (/^::{/.test(api.GetDisplayNameOf(Dest, SHGDN_FORPARSING))) {
+					return false;
+				}
 				if (bOver) {
 					var DropTarget = api.DropTarget(Dest);
 					DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 				}
 			}
+			else if (/^::{/.test(api.GetDisplayNameOf(Items.Item(-1), SHGDN_FORPARSING))) {
+				return false;
+			}
 			var uid;
 			do {
 				uid = String(Math.random()).replace(/^0?\./, "");
 			} while (Exchange[uid]);
-			Exchange[uid] =
+			Exchange[uid] = 
 			{
 				Items: Items,
 				Dest: Dest,
@@ -28,8 +34,7 @@
 				pt: pt,
 				dwEffect: dwEffect
 			};
-			var oExec = wsh.Exec([api.PathQuoteSpaces(api.GetModuleFileName(null)), '/run', "addons\\multiprocess\\worker.js", uid].join(" "));
-			wsh.AppActivate(oExec.ProcessID);
+			wsh.Run([api.PathQuoteSpaces(api.GetModuleFileName(null)), '/run', "addons\\multiprocess\\worker.js", uid].join(" "));
 			return true;
 		}
 	};
