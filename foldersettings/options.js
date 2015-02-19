@@ -5,12 +5,12 @@ var g_Chg = {List: false};
 
 GetCurrentSetting = function (bForce)
 {
+	var nFormat = api.LowPart(document.F.Format.value);
 	var FV = te.Ctrl(CTRL_FV);
-	var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
-
+	var path = api.GetDisplayNameOf(FV.FolderItem, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 	var s = ["Ctrl.CurrentViewMode(", FV.CurrentViewMode, ",", FV.IconSize, ");\n"];
-	s.push("Ctrl.Columns='", FV.Columns(document.F.Format.value - 0), "';\n");
-	s.push("Ctrl.SortColumn='", FV.SortColumn(document.F.Format.value - 0), "';\n");
+	s.push("Ctrl.Columns='", FV.Columns(nFormat), "';\n");
+	s.push("Ctrl.SortColumn='", FV.SortColumn(nFormat), "';\n");
 	s = s.join("");
 	if (bForce || confirmOk([path, s].join("\n"))) {
 		document.F.Filter.value = path;
@@ -104,10 +104,14 @@ LoadFS();
 if (dialogArguments.GetCurrent) {
 	var bNew = true;
 	var FV = te.Ctrl(CTRL_FV);
-	var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
+	var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+	var path2 = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+	if (path != path2) {
+		path += ";" + path2;
+	}
 	for (var i = g_x.List.length; i-- > 0;) {
 		var a = g_x.List[i].value.split(g_sep);
-		if (api.strcmpi(path, a[0]) == 0) {
+		if (api.PathMatchSpec(a[0], path)) {
 			g_x.List.selectedIndex = i;
 			EditFS();
 			bNew = false;
