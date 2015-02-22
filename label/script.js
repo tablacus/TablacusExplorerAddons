@@ -28,14 +28,14 @@ if (window.Addon == 1) {
 			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
 			if (Selected && Selected.Count) {
 				try {
-					var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING);
+					var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 					if (path) {
 						var Label = String(te.Labels[path] || "");
 						var s = InputDialog(path + (Selected.Count > 1 ? " : " + Selected.Count : "") + "\nlabel:" + Label, Label);
 						if (typeof(s) == "string") {
 							var notify = {};
 							for (var i = Selected.Count; i-- > 0;) {
-								Addons.Label.Set(api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING), s);
+								Addons.Label.Set(api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), s);
 							}
 						}
 					}
@@ -44,6 +44,11 @@ if (window.Addon == 1) {
 					wsh.Popup(e.description + "\n" + s, 0, TITLE, MB_ICONSTOP);
 				}
 			}
+		},
+
+		Details: function (Ctrl, pt)
+		{
+			Ctrl.Columns = Ctrl.Columns + ' "System.Contact.Label" -1';
 		},
 
 		ExecRemoveItems: function (Ctrl, pt)
@@ -63,7 +68,7 @@ if (window.Addon == 1) {
 
 		LabelPath: function (Ctrl)
 		{
-			if (Addons.Label.RE.test(api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSING))) {
+			if (Addons.Label.RE.test(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
 				return RegExp.$1;
 			}
 		},
@@ -115,7 +120,7 @@ if (window.Addon == 1) {
 
 		Append: function (Item, Label)
 		{
-			var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
+			var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			if (path) {
 				var ar = String(te.Labels[path] || "").split(/\s*;\s*/);
 				var o = {};
@@ -156,7 +161,7 @@ if (window.Addon == 1) {
 		Remove: function (Item, Label)
 		{
 			var s = "";
-			var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
+			var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			if (path) {
 				s = te.Labels[path];
 				var arNew = [];
@@ -222,7 +227,7 @@ if (window.Addon == 1) {
 			for (var i in cFV) {
 				var FV = cFV[i];
 				if (FV.hwnd) {
-					var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING);
+					var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 					if (Addons.Label.Redraw[path]) {
 						api.InvalidateRect(FV.hwndList || FV.hwndView || FV.hwnd, null, false);
 					}
@@ -457,6 +462,12 @@ if (window.Addon == 1) {
 					mii.dwTypeData = Addons.Label.strName;
 					api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, ++nPos, GetText("&Edit"));
 					ExtraMenuCommand[nPos] = Addons.Label.Edit;
+					if (Ctrl.CurrentViewMode == FVM_DETAILS) {
+						if (!/"System\.Contact\.Label"/.test(Ctrl.Columns(1))) {
+							api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Details"));
+							ExtraMenuCommand[nPos] = Addons.Label.Details;
+						}
+					}
 					var mii2 = api.Memory("MENUITEMINFO");
 					mii2.cbSize = mii.Size;
 					mii2.fMask = MIIM_STRING | MIIM_SUBMENU;
@@ -471,7 +482,7 @@ if (window.Addon == 1) {
 					mii2.dwTypeData = GetText("Remove");
 					var o = {};
 					for (var i = Selected.Count; i-- > 0;) {
-						var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING);
+						var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 						if (path) {
 							var ar = String(te.Labels[path] || "").split(/\s*;\s*/);
 							for (var j in ar) {

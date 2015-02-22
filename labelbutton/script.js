@@ -62,7 +62,7 @@ if (window.Addon == 1) {
 					mii2.dwTypeData = GetText("Remove");
 					var oExists = {};
 					for (var i = Selected.Count; i-- > 0;) {
-						var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING);
+						var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 						if (path) {
 							var ar = String(te.Labels[path] || "").split(/\s*;\s*/);
 							for (var j in ar) {
