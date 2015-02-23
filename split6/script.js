@@ -1,8 +1,8 @@
-﻿var Addon_Id = "split";
+﻿var Addon_Id = "split6";
 var Default = "ToolBar1Right";
 
 if (window.Addon == 1) {
-	Addons.Split = 
+	Addons.Split6 = 
 	{
 		Exec: function (nMax, nMode)
 		{
@@ -62,46 +62,64 @@ if (window.Addon == 1) {
 				case 1:
 					TC[0].Left = 0;
 					TC[0].Top = 0;
-					TC[0].Width = "100%";
-					TC[0].Height = "100%";
+					TC[0].Width = "33.33%";
+					TC[0].Height = "50%";
+
+					TC[1].Left = "33.33%";
+					TC[1].Top = 0;
+					TC[1].Width = "33.33%";
+					TC[1].Height = "50%";
+
+					TC[2].Left = "66.66%";
+					TC[2].Top = 0;
+					TC[2].Width = "33.33%";
+					TC[2].Height = "50%";
+
+					TC[3].Left = 0;
+					TC[3].Top = "50%";
+					TC[3].Width = "33.33%";
+					TC[3].Height = "50%";
+
+					TC[4].Left = "33.33%";
+					TC[4].Top = "50%";
+					TC[4].Width = "33.33%";
+					TC[4].Height = "50%";
+
+					TC[5].Left = "66.66%";
+					TC[5].Top = "50%";
+					TC[5].Width = "33.33%";
+					TC[5].Height = "50%";
 					break;
 				case 2:
 					TC[0].Left = 0;
 					TC[0].Top = 0;
-					TC[0].Width = "100%";
-					TC[0].Height = "50%";
-					TC[1].Left = 0;
-					TC[1].Top = "50%";
-					TC[1].Width = "100%";
-					TC[1].Height = "50%";
-					break;
-				case 3:
-					TC[0].Left = 0;
-					TC[0].Top = 0;
 					TC[0].Width = "50%";
-					TC[0].Height = "100%";
+					TC[0].Height = "33.33%";
+
 					TC[1].Left = "50%";
 					TC[1].Top = 0;
 					TC[1].Width = "50%";
-					TC[1].Height = "100%";
-					break;
-				case 4:
-					TC[0].Left = 0;
-					TC[0].Top = 0;
-					TC[0].Width = "50%";
-					TC[0].Height = "50%";
-					TC[1].Left = "50%";
-					TC[1].Top = 0;
-					TC[1].Width = "50%";
-					TC[1].Height = "50%";
+					TC[1].Height = "33.33%";
+
 					TC[2].Left = 0;
-					TC[2].Top = "50%";
+					TC[2].Top = "33.33%";
 					TC[2].Width = "50%";
-					TC[2].Height = "50%";
+					TC[2].Height = "33.33%";
+
 					TC[3].Left = "50%";
-					TC[3].Top = "50%";
+					TC[3].Top = "33.33%";
 					TC[3].Width = "50%";
-					TC[3].Height = "50%";
+					TC[3].Height = "33.33%";
+
+					TC[4].Left = 0;
+					TC[4].Top = "66.66%";
+					TC[4].Width = "50%";
+					TC[4].Height = "33.33%";
+
+					TC[5].Left = "50%";
+					TC[5].Top = "66.66%";
+					TC[5].Width = "50%";
+					TC[5].Height = "33.33%";
 					break;
 			}
 			TC[0].Selected.Focus();
@@ -129,10 +147,6 @@ if (window.Addon == 1) {
 		}
 	};
 
-	var s = ['<span class="button" onclick="Addons.Split.Exec(1, 1)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="1x1" src="../addons/split/1tab.png"></span>'];
-	s.push('<span class="button" onclick="Addons.Split.Exec(2, 2)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="1x2" src="../addons/split/h2tabs.png"></span>');
-	s.push('<span class="button" onclick="Addons.Split.Exec(2, 3)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="2x1" src="../addons/split/v2tabs.png"></span>');
-	s.push('<span class="button" onclick="Addons.Split.Exec(4, 4)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="2x2" src="../addons/split/4tabs.png"></span>');
-	SetAddon(Addon_Id, Default, s.join(""));
+	SetAddon(Addon_Id, Default, '<span class="button" onclick="Addons.Split6.Exec(6, 1)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="3x2" src="../addons/split6/3x2.png"></span><span class="button" onclick="Addons.Split6.Exec(6, 2)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="2x3" src="../addons/split6/2x3.png"></span>');
 }
 

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
+    <Version>1.00</Version>
     <MinVersion>2015.2.22</MinVersion>
     <pubDate>Mon, 23 Feb 2015 00:00:00 UTC</pubDate>
     <Options>Location</Options>
@@ -10,11 +10,11 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Split</Name>
-    <Description>Split window</Description>
+    <Name>Split6</Name>
+    <Description>Split a window into 6 frames.</Description>
   </en>
   <ja>
-    <Name>分割</Name>
-    <Description>画面の分割</Description>
+    <Name>6分割</Name>
+    <Description>画面の6分割</Description>
   </ja>
 </TablacusExplorer>

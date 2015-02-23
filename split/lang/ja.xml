@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<resources>
-	<text s="1-Tab">1画面</text>
-	<text s="2-Tabs (Tile Horizontally)">上下2画面</text>
-	<text s="2-Tabs (Tile Vertically)">左右2画面</text>
-	<text s="4-Tabs (Tile Cross)">十字4画面</text>
-</resources>

@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
+    <Version>1.00</Version>
     <MinVersion>2015.2.22</MinVersion>
     <pubDate>Mon, 23 Feb 2015 00:00:00 UTC</pubDate>
-    <Options>Location</Options>
+    <Options>Common:0,6:6</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Split</Name>
-    <Description>Split window</Description>
+    <Name>Count bar</Name>
+    <Description>Show count.</Description>
   </en>
   <ja>
-    <Name>分割</Name>
-    <Description>画面の分割</Description>
+    <Name>カウント バー</Name>
+    <Description>項目数を表示します。</Description>
   </ja>
 </TablacusExplorer>
