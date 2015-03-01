@@ -75,7 +75,7 @@ if (window.Addon == 1) {
 					var n = 0;
 					do {
 						if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
-							s.unshift('<span id="addressbar' + n + '" class="button" style="font-family: webdings; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.AddressBar.Popup(this,' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">4</span>');
+							s.unshift('<span id="addressbar' + n + '" class="button" style="font-family: Marlett !important; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.AddressBar.Popup(this,' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">4</span>');
 						}
 						s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Go(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
 						FolderItem = api.ILRemoveLastID(FolderItem);
@@ -89,7 +89,7 @@ if (window.Addon == 1) {
 					} while (!api.ILIsEmpty(FolderItem));
 					if (api.ILIsEmpty(FolderItem)) {
 						if (!bRoot) {
-							o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="font-family: webdings; line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup(this, ' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
+							o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="font-family: Marlett !important; line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup(this, ' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
 						}
 					}
 					else {
@@ -310,7 +310,7 @@ if (window.Addon == 1) {
 	else {
 		s = "100%";
 	}
-	s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbbuttons" style="margin 2px; background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 2px; padding-left: 20px"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus(this)" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="addressbarselect" class="button" style="position: absolute; font-family: webdings; top: 2px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">6</span></div>'];
+	s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbbuttons" style="margin 2px; background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 2px; padding-left: 20px"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus(this)" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="addressbarselect" class="button" style="position: absolute; font-family: Marlett !important; top: 2px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">6</span></div>'];
 	
 	s.push('<img id="addr_img" src="icon:shell32.dll,3,16"');
 	s.push(' onclick="return Addons.AddressBar.Exec();"');
