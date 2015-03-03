@@ -11,7 +11,8 @@
 				if (api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
 					return false;
 				}
-				if (/^::{/.test(api.GetDisplayNameOf(Dest, SHGDN_FORPARSING))) {
+				var path = api.GetDisplayNameOf(Dest, SHGDN_FORPARSING);
+				if (/^::{/.test(path) || (/^[A-Z]:\\|^\\/i.test(path) && !fso.FolderExists(path))) {
 					return false;
 				}
 				if (bOver) {
