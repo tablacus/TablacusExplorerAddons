@@ -20,7 +20,7 @@
         <table width="99%">
           <tr>
             <td width="150px" valign="top">
-              <select name="List" size="19" style="width: 150px; height: 380px" ondblclick="EditIC()" oncontextmenu="CancelX('List')">
+              <select name="List" size="19" style="width: 150px; height: 380px" onclick="EditXEx(EditIC, 'List')" ondblclick="EditIC('List')" oncontextmenu="CancelX('List')">
               </select>
             </td>
             <td valign="top">
@@ -80,7 +80,7 @@
               <input type="button" value="Remove" onclick="RemoveX('List')" />
               <input type="button" value="Up" onclick="MoveX('List',-1)" />
               <input type="button" value="Down" onclick="MoveX('List',1)" />
-              <input type="button" value="Edit" onclick="EditIC('List')" />
+              <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
             </td>
             <td align="right">
               <input type="button" value="Add" onclick="AddX('List', ReplaceIC)" />
@@ -90,11 +90,15 @@
         </table>
       </div>
       <!--panel_end-->
-      <table id="buttons" width="97%">
+      <table width="100%">
         <tr>
-          <td align="right">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetResult(1)" />
-            <input type="button" value="Cancel" style="width: 96px;" onclick="SetResult(2)" />
+          <td style="width: 100%; white-space: nowrap">
+          </td>
+          <td style="width: 100px; white-space: nowrap">
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+          </td>
+          <td style="width: 100px; white-space: nowrap">
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
           </td>
         </tr>
       </table>

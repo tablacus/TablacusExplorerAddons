@@ -23,7 +23,7 @@
         <table width="100%">
           <tr>
             <td width="150px" valign="top">
-              <select name="List" size="19" style="width: 150px; height: 390px" ondblclick="EditFS()">
+              <select name="List" size="19" style="width: 150px; height: 390px" onclick="EditXEx(EditFS)" ondblclick="EditFS()">
               </select>
             </td>
             <td valign="top">
@@ -52,7 +52,7 @@
               <input type="button" value="Remove" onclick="RemoveX('List')" />
               <input type="button" value="Up" onclick="MoveX('List', -1)" />
               <input type="button" value="Down" onclick="MoveX('List', 1)" />
-              <input type="button" value="Edit" onclick="EditFS()" />
+              <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
             </td>
             <td align="right">
               <input type="button" value="Add" onclick="AddX('List', ReplaceFS)" />

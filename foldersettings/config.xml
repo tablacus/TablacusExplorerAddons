@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.07</Version>
-    <MinVersion>2015.2.16</MinVersion>
-    <pubDate>Thu, 19 Feb 2015 00:00:00 UTC</pubDate>
-    <Options>dialogWidth: 640px; dialogHeight: 480px; resizable: yes; status: 0</Options>
+    <Version>1.08</Version>
+    <MinVersion>2014.3.4</MinVersion>
+    <pubDate>Wed, 4 Mar 2015 00:00:00 UTC</pubDate>
+    <Options>Default</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
     <License>MIT License</License>

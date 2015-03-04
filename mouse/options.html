@@ -23,19 +23,19 @@
               <select name="Mouse" style="width: 150px" onchange="SwitchX('Mouse', this)">
               </select>
               <br />
-              <select name="MouseAll" size="18" style="width: 150px; height: 360px" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseAll" size="18" style="width: 150px; height: 360px" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseList" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseList" size="18" style="width: 150px; height: 360px; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseList_Background" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseList_Background" size="18" style="width: 150px; height: 360px; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseTree" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseTree" size="18" style="width: 150px; height: 360px; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseTabs" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseTabs" size="18" style="width: 150px; height: 360px; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseTabs_Background" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseTabs_Background" size="18" style="width: 150px; height: 360px; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseBrowser" size="18" style="width: 150px; height: 360px; display: none" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseBrowser" size="18" style="width: 150px; height: 360px; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
             </td>
             <td valign="top">
@@ -50,13 +50,7 @@
                         <td>
                           <input type="button" value="Input" onclick="InputMouse();ChangeX('Mouse');" />
                         </td>
-                        <td align="right">
-                          <script type="text/javascript">
-                            var s = "CSA";
-                            for (var i = 0; i < s.length; i++) {
-	                            document.write('<input type="button" value="' + MainWindow.g_KeyState[i][0] + '" title="' + s.charAt(i) + '" onclick="AddMouse(this)" />');
-                            }
-                          </script>
+                        <td align="right" id="__MOUSEDATA">
                         </td>
                       </tr>
                     </table>
@@ -127,7 +121,7 @@
               <input type="button" value="Remove" onclick="RemoveX('Mouse')" />
               <input type="button" value="Up" onclick="MoveX('Mouse', -1)" />
               <input type="button" value="Down" onclick="MoveX('Mouse', 1)" />
-              <input type="button" value="Edit" onclick="EditX('Mouse')" />
+              <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
             </td>
             <td align="right">
               <input type="button" value="Add" onclick="AddX('Mouse')" />
@@ -137,14 +131,16 @@
         </table>
       </div>
       <!--panel_end-->
-      <table width="97%">
+      <table width="100%">
         <tr>
-          <td>
+          <td style="width: 100%; white-space: nowrap">
             <input type="button" value="Location" onclick="ShowLocation();"/>
           </td>
-          <td align="right">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetResult(1)"/>
-            <input type="button" value="Cancel" style="width: 96px;" onclick="SetResult(2)" />
+          <td style="width: 100px; white-space: nowrap">
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+          </td>
+          <td style="width: 100px; white-space: nowrap">
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
           </td>
         </tr>
       </table>

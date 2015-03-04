@@ -53,31 +53,11 @@ if (window.Addon == 1) {
 			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
 			if (i >= 0) {
 				var hMenu = api.CreatePopupMenu();
-				var ContextMenu = null;
-				if (i < items.length) {
-					var path = this.GetPath(items, i);
-					if (path != "") {
-						ContextMenu = api.ContextMenu(path);
-					}
-				}
-				if (ContextMenu) {
-					ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_NORMAL);
-					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-				}
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("&Edit"));
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Add"));
 				var pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, ContextMenu);
-				if (nVerb >= 0x1001) {
-					var s = ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
-					if (api.strcmpi(s, "delete")) {
-						ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
-					}
-					else {
-						this.ShowOptions();
-					}
-				}
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
 				if (nVerb == 1) {
 					this.ShowOptions(i + 1);
 				}
