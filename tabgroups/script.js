@@ -17,13 +17,15 @@ if (window.Addon == 1) {
 		{
 			var s = []
 			s.push('<span id="tabgroups">tabgroups</span>');
-			s.push('<input type="button" class="tab" value="+" title="' + GetText("New Tab") + '" onclick="return Addons.Tabgroups.Add()" hidefocus="true">');
+			s.push('<input type="button" class="tab2" value="+" title="' + GetText("New Tab") + '" onclick="return Addons.Tabgroups.Add()" hidefocus="true">');
 			SetAddon(Addon_Id, Default, s.join(""));
 			this.Name = [''];
+			this.Color = [''];
 			xml = OpenXml("tabgroups.xml", true, true);
 			var items = xml.getElementsByTagName('Item');
 			for (i = 0; i < items.length; i++) {
 				this.Name.push(items[i].getAttribute("Name"));
+				this.Color.push(items[i].getAttribute("Color"));
 			}
 			items = xml.getElementsByTagName('Index');
 			if (items.length) {
@@ -39,6 +41,7 @@ if (window.Addon == 1) {
 			for (var i = 1; i < Addons.Tabgroups.Name.length; i++) {
 				var item = xml.createElement("Item");
 				item.setAttribute("Name", Addons.Tabgroups.Name[i]);
+				item.setAttribute("Color", Addons.Tabgroups.Color[i] || "");
 				root.appendChild(item);
 			}
 			var item = xml.createElement("Index");
@@ -61,16 +64,31 @@ if (window.Addon == 1) {
 
 		Tab: function (s, i)
 		{
-			s.push('<input type="button" style="border: 1px solid #898C95; ');
-			s.push('font-family: ' + document.body.style.fontFamily + '; margin: 0px;" value="' + this.Name[i]);
+			s.push('<input type="button" style="');
+			var cl = this.Color[i];
+			if (cl) {
+				if (i == this.Index) {
+					s.push("background-color:", cl, ";");
+				}
+				else if (document.documentMode >= 10) {
+					s.push('background: linear-gradient(to bottom, #ffffff,', cl, ' 70%);');
+				}
+				else {
+					s.push('filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=#ffffff,endcolorstr=', cl, ');');
+				}
+				cl = api.sscanf(cl, "#%06x") 
+				cl = (cl & 0xff0000) * .0045623779296875 + (cl & 0xff00) * 2.29296875 + (cl & 0xff) * 114;
+				s.push(cl > 127000 ? "color: black;" : "color: white;");
+			}
+			s.push('font-family: ' + document.body.style.fontFamily + '" value="' + this.Name[i]);
 			s.push('" id="tabgroups' + i);
 			s.push('" onmousedown="return Addons.Tabgroups.Down(this)" onmouseup="return Addons.Tabgroups.Up(this)"');
 			s.push(' onmousemove="Addons.Tabgroups.Move(this)"');
 			s.push(' oncontextmenu="return Addons.Tabgroups.Popup(this)" onmousewheel="Addons.Tabgroups.Wheel()"');
 			s.push(' ondblclick="return Addons.Tabgroups.Edit(this)"');
-			s.push(' draggable="true" ondragstart="Addons.Tabgroups.Start5(this)" ondragover="Addons.Tabgroups.Over5(this)" ondrop="Addons.Tabgroups.Drop5(this)" ondragend="Addons.Tabgroups.End5(this)"');
+			s.push(' draggable="true" ondragstart="return Addons.Tabgroups.Start5(this)" ondragover="Addons.Tabgroups.Over5(this)" ondrop="Addons.Tabgroups.Drop5(this)" ondragend="Addons.Tabgroups.End5(this)"');
 			s.push('class="');
-			s.push(i == this.Index ? 'activetab' : 'tab');
+			s.push(i == this.Index ? 'activetab' : i < this.Index ? 'tab' : 'tab2');
 			s.push('"  hidefocus="true">');
 		},
 
@@ -98,23 +116,15 @@ if (window.Addon == 1) {
 			this.Fix();
 			var nOld = this.Index;
 			if (this.Click != this.Index) {
-				var o = document.getElementById("tabgroups" + this.Click);
-				if (o) {
-					var pre = document.getElementById("tabgroups" + this.Index);
-					if (pre) {
-						pre.className = "tab";
-					}
-					this.Fix();
-					this.Index = this.Click;
-					o.className = "activetab";
-				}
+				this.Index = this.Click;
+				this.Arrange();
 			}
 			var bDisp = false;
 			var freeTC = [];
 			var preTC = [];
-			var Tabs = te.Ctrls(CTRL_TC);
-			for (var i = 0; i < Tabs.Count; i++) {
-				var TC = Tabs.Item(i);
+			var cTC = te.Ctrls(CTRL_TC);
+			for (var i = 0; i < cTC.length; i++) {
+				var TC = cTC[i];
 				if (TC.Visible) {
 					preTC.push(TC);
 				}
@@ -174,11 +184,11 @@ if (window.Addon == 1) {
 
 		Close: function (nPos)
 		{
-			var Tabs = te.Ctrls(CTRL_TC);
-			var i = Tabs.Count - 1;
-			if (i > 0) {
-				for (; i >= 0; i--) {
-					var TC = Tabs.Item(i);
+			var cTC = te.Ctrls(CTRL_TC);
+			var i = cTC.length;
+			if (i > 1) {
+				while (i-- > 0) {
+					var TC = cTC[i];
 					if (TC.Data.Group == nPos) {
 						TC.Close();
 					}
@@ -196,11 +206,11 @@ if (window.Addon == 1) {
 
 		CloseOther: function (nPos)
 		{
-			var Tabs = te.Ctrls(CTRL_TC);
-			var i = Tabs.Count - 1;
-			if (i > 0) {
-				for (; i >= 0; i--) {
-					var TC = Tabs.Item(i);
+			var cTC = te.Ctrls(CTRL_TC);
+			var i = cTC.length;
+			if (i > 1) {
+				while (i-- > 0) {
+					var TC = cTC[i];
 					if (TC.Data.Group != nPos) {
 						TC.Close();
 					}
@@ -252,9 +262,9 @@ if (window.Addon == 1) {
 						this.Name[ar[i]] = document.getElementById("tabgroups" + i).value;
 					}
 
-					var Tabs = te.Ctrls(CTRL_TC);
-					for (var i = Tabs.Count - 1; i >= 0; i--) {
-						var TC = Tabs.Item(i);
+					var cTC = te.Ctrls(CTRL_TC);
+					for (var i in cTC) {
+						var TC = cTC[i];
 						if (TC.Data.Group >= ar.length) {
 							TC.Close();
 						}
@@ -273,7 +283,7 @@ if (window.Addon == 1) {
 		{
 			this.Click = o.id.replace(/\D/g, '') - 0;
 			var hMenu = api.CreatePopupMenu();
-			var sMenu = [1, "&Edit", 2, "&Close Tab", 3, "Cl&amp;ose Other Tabs", 4, "&New Tab"];
+			var sMenu = [1, "&Edit", 5, "Color", 2, "&Close Tab", 3, "Cl&amp;ose Other Tabs", 4, "&New Tab"];
 			for (var i = 0; i < sMenu.length; i += 2) {
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, sMenu[i], GetText(sMenu[i + 1]));
 			}
@@ -293,6 +303,9 @@ if (window.Addon == 1) {
 				case 4:
 					this.Add();
 					break
+				case 5:
+					this.SetColor(o);
+					break
 			}
 			return false;
 		},
@@ -305,11 +318,17 @@ if (window.Addon == 1) {
 			}
 		},
 
+		SetColor: function (o)
+		{
+			this.Color[this.Click] = ChooseWebColor(this.Color[this.Click]);;
+			this.Arrange();
+		},
+
 		Fix: function ()
 		{
-			var Tabs = te.Ctrls(CTRL_TC);
-			for (var i = Tabs.Count - 1; i >= 0 ; i--) {
-				var TC = Tabs.Item(i);
+			var cTC = te.Ctrls(CTRL_TC);
+			for (var i in cTC) {
+				var TC = cTC[i];
 				if (!TC.Data.Group && TC.Visible) {
 					TC.Data.Group = this.Index;
 				}
@@ -337,8 +356,11 @@ if (window.Addon == 1) {
 
 		Cursor: function (s)
 		{
-			for (var i = this.Name.length - 1; i > 0; i--) {
-				document.getElementById('tabgroups' + i).style.cursor = s;
+			for (var i = this.Name.length; i-- > 0;) {
+				var o = document.getElementById('tabgroups' + i);
+				if (o) {
+					o.style.cursor = s;
+				}
 			}
 		},
 
@@ -357,6 +379,7 @@ if (window.Addon == 1) {
 		{
 			event.dataTransfer.effectAllowed = 'move';
 			this.Drag5 = o.id;
+			return api.GetKeyState(VK_LBUTTON) < 0;
 		},
 
 		End5: function (o)
@@ -396,8 +419,7 @@ if (window.Addon == 1) {
 
 		FromPt: function (pt)
 		{
-			var n = this.Name.length;
-			while (--n >= 0) {
+			for (var n = this.Name.length; n-- > 0;) {
 				if (HitTest(document.getElementById("tabgroups" + n), pt)) {
 					return n;
 				}
