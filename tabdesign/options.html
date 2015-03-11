@@ -1,0 +1,82 @@
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="MSThemeCompatible" content="Yes" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Tablcus Add-ons</title>
+    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
+    </script>
+    <script type="text/javascript">
+      function SetTabs()
+      {
+         if (confirmOk("Are you sure?")) {
+           var s = "border-radius: 9px 9px 0px 0px";
+           document.F.activetab.value = s;
+           document.F.tab.value = s;
+           document.F.tab2.value = s;
+         }
+      }
+      function SetButtons()
+      {
+         if (confirmOk("Are you sure?")) {
+           document.F.activetab.value = "border-radius: 9px; height: 2em; margin-right: 1px";
+           document.F.tab.value = "border-radius: 9px; margin-right: 1px";
+           document.F.tab2.value = document.F.tab.value;
+         }
+      }
+      function SetFlatButtons()
+      {
+         if (confirmOk("Are you sure?")) {
+           document.F.activetab.value = "border-radius: 9px; height: 2em;";
+           document.F.tab.value = "border-radius: 9px; border: 0px; margin: 1px";
+           document.F.tab2.value = document.F.tab.value;
+         }
+      }
+    </script>
+  </head>
+  <body>
+    <form name="F">
+      <div class="panel" style="display: block;">
+        <label>Selected Items</label><br />
+        <textarea name="activetab" style="width: 100%; height: 120px"></textarea>
+        <label>Left</label><br />
+        <textarea name="tab" style="width: 100%; height: 120px"></textarea>
+        <label>Right</label><br />
+        <textarea name="tab2" style="width: 100%; height: 120px"></textarea>
+      </div>
+      <table width="100%">
+        <tr>
+          <td style="width: 100%; white-space: nowrap">
+            <table>
+              <tr>
+                <td>
+                  <input type="button" value="Tabs" onclick="SetTabs()"/>
+                </td>
+                <td>
+                  <input type="button" value="Buttons" onclick="SetButtons()"/>
+                </td>
+                <td>
+                  <input type="button" value="Flat buttons" onclick="SetFlatButtons()"/>
+                </td>
+            </table>
+          </td>
+          <td style="width: 100px; white-space: nowrap">
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+          </td>
+          <td style="width: 100px; white-space: nowrap">
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
+          </td>
+        </tr>
+      </table>
+    </form>
+    <script type="text/javascript">
+      var Addon_Id = 'tabdesign';
+      InitAddonOptions();
+    </script>
+  </body>
+</html>

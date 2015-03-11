@@ -7,7 +7,6 @@ if (items.length) {
 		item.setAttribute("MenuExec", 1);
 		item.setAttribute("Menu", "Tabs");
 		item.setAttribute("MenuPos", 0);
-		item.setAttribute("MenuName", "Change tab color...");
 
 		item.setAttribute("KeyOn", "List");
 		item.setAttribute("Key", "");
@@ -26,25 +25,30 @@ if (window.Addon == 1) {
 		{
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
-				var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
-				s = ChooseWebColor(Addons.TabColor.db[path]);
-				if (s) {
-					Addons.TabColor.db[path] = s;
-				}
-				else {
-					delete Addons.TabColor.db[path];
-				}
-				Addons.TabColor.db[true] = true;
-				ChangeView(FV);
+				Addons.TabColor.Set(FV, ChooseWebColor(RunEvent4("GetTabColor", FV)));
 			}
+			return S_OK;
+		},
+
+		Set: function (FV, s)
+		{
+			var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
+			if (s) {
+				Addons.TabColor.db[path] = s;
+			}
+			else {
+				delete Addons.TabColor.db[path];
+			}
+			Addons.TabColor.db[true] = true;
+			ChangeView(FV);
 			return S_OK;
 		}
 	};
 	var xml = OpenXml("tabcolor.xml", true, false);
 	if (xml) {
-		var items = xml.getElementsByTagName('Item');
-		for (i = items.length; i-- > 0;) {
-			Addons.TabColor.db[items[i].getAttribute("Path")] = items[i].text;
+		var xmlitems = xml.getElementsByTagName('Item');
+		for (i = xmlitems.length; i-- > 0;) {
+			Addons.TabColor.db[xmlitems[i].getAttribute("Path")] = xmlitems[i].text;
 		}
 	}
 

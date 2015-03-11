@@ -1,11 +1,12 @@
 ﻿if (window.Addon == 1) {
+	Addons.TabDriveName = { Pos: api.LowPart(GetAddonOption("tabdrivename", "Pos")) };
 	AddEvent("GetTabName", function (Ctrl)
 	{
-		var s = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-		if (isNaN(s) && s.charAt(0) != ":") {
+		if (/^(\w):/.test(api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX))) {
+			var s = RegExp.$1;
 			var s2 = Ctrl.FolderItem.Name;
-			if (!s2.match(":")) {
-				return [s2, ' (', fso.GetDriveName(s), ')'].join("");
+			if (!/:/.test(s2)) {
+				return Addons.TabDriveName.Pos ? [s, ')', s2].join("") : [s2, '(', s, ')'].join("");
 			}
 		}
 	});
