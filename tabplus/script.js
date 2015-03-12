@@ -40,7 +40,7 @@ if (window.Addon == 1) {
 						this.Tab(s, TC, i);
 					}
 					if (this.opt.New) {
-						s.push('<button class="tab" onclick="Addons.TabPlus.New(', Id, ');return false" hidefocus="true" title="', GetText("New Tab"), '" style="font-family: ', document.body.style.fontFamily, '; cursor: default">+</button>');
+						s.push('<button class="tab2" onclick="Addons.TabPlus.New(', Id, ');return false" hidefocus="true" title="', GetText("New Tab"), '" style="font-family: ', document.body.style.fontFamily, '; cursor: default">+</button>');
 					}
 					try {
 						var FocusedId = te.Ctrl(CTRL_TC).Id;
@@ -77,16 +77,8 @@ if (window.Addon == 1) {
 				o.outerHTML = s.join("").replace(/\$/g, TC.Id);
 				this.nIndex[Id] = i;
 			}
-			for (i = TC.Count; i--;) {
-				o = document.getElementById("tabplus_" + Id + "_" + i);
-				if (!o || api.strcmpi(api.GetDisplayNameOf(TC[i].FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), o.title)) {
-					if (!Addons.TabPlus.tids[Id]) {
-						Addons.TabPlus.Arrange(Id);
-					}
-					break;
-				}
-			}
 			this.SetActiveColor(Id);
+			Addons.TabPlus.Arrange(Id);
 		},
 		
 		SetActiveColor: function (Id, s)
@@ -137,11 +129,14 @@ if (window.Addon == 1) {
 					else {
 						s.push('filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=#ffffff,endcolorstr=', cl, ');');
 					}
+					cl = api.sscanf(cl, "#%06x") 
+					cl = (cl & 0xff0000) * .0045623779296875 + (cl & 0xff00) * 2.29296875 + (cl & 0xff) * 114;
+					s.push(cl > 127000 ? "color: black;" : "color: white;");
 				}
 				var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-				s.push('font-family: ', document.body.style.fontFamily, '; margin: 0px; white-space: nowrap; cursor: default');
+				s.push('font-family: ', document.body.style.fontFamily, '; white-space: nowrap; cursor: default');
 				s.push('" id="tabplus_$_', i,'" title="', path,'" onmousemove="Addons.TabPlus.Move(this, $)" class="');
-				s.push(bActive ? 'activetab' : 'tab');
+				s.push(bActive ? 'activetab' : i < TC.SelectedIndex ? 'tab' : 'tab2');
 				s.push('" hidefocus="true"><table><tr>');
 				try {
 					if (FV.Data.Lock) {
@@ -338,7 +333,12 @@ if (window.Addon == 1) {
 		Over5: function (o)
 		{
 			if (this.Drag5) {
-				event.preventDefault();
+				if (event.preventDefault) {
+					event.preventDefault();
+				}
+				else {
+		 			event.returnValue = false;
+				}
 			}
 		},
 

@@ -390,7 +390,12 @@ if (window.Addon == 1) {
 		Over5: function (o)
 		{
 			if (this.Drag5) {
-				event.preventDefault();
+				if (event.preventDefault) {
+					event.preventDefault();
+				}
+				else {
+		 			event.returnValue = false;
+				}
 			}
 		},
 
