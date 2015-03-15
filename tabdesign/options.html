@@ -12,29 +12,12 @@
     <script type="text/javascript" charset="utf-8" src="../../script/options.js">
     </script>
     <script type="text/javascript">
-      function SetTabs()
+      function SetCss(a, b, c)
       {
          if (confirmOk("Are you sure?")) {
-           var s = "border-radius: 9px 9px 0px 0px";
-           document.F.activetab.value = s;
-           document.F.tab.value = s;
-           document.F.tab2.value = s;
-         }
-      }
-      function SetButtons()
-      {
-         if (confirmOk("Are you sure?")) {
-           document.F.activetab.value = "border-radius: 9px; height: 2em; margin-right: 1px";
-           document.F.tab.value = "border-radius: 9px; margin-right: 1px";
-           document.F.tab2.value = document.F.tab.value;
-         }
-      }
-      function SetFlatButtons()
-      {
-         if (confirmOk("Are you sure?")) {
-           document.F.activetab.value = "border-radius: 9px; height: 2em;";
-           document.F.tab.value = "border-radius: 9px; border: 0px; margin: 1px";
-           document.F.tab2.value = document.F.tab.value;
+           document.F.activetab.value = a;
+           document.F.tab.value = b || a;
+           document.F.tab2.value = c || b || a;
          }
       }
     </script>
@@ -55,13 +38,16 @@
             <table>
               <tr>
                 <td>
-                  <input type="button" value="Tabs" onclick="SetTabs()"/>
+                  <input type="button" value="Tabs" onclick="SetCss('border-radius: 9px 9px 0px 0px; border-bottom: 0px', 'border-radius: 9px 9px 0px 0px')"/>
                 </td>
                 <td>
-                  <input type="button" value="Buttons" onclick="SetButtons()"/>
+                  <input type="button" value="XP" onclick="SetCss('border-radius: 4px 4px 0px 0px; border: 0px; border-top: 3px solid #ff8000; padding: 0px 9px', 'border-radius: 3px 3px 0px 0px; margin-right: 1px;', 'border-radius: 3px 3px 0px 0px; margin-left: 1px;')"/>
                 </td>
                 <td>
-                  <input type="button" value="Flat buttons" onclick="SetFlatButtons()"/>
+                  <input type="button" value="Buttons" onclick="SetCss('border-radius: 9px; height: 2em; margin-right: 1px; box-shadow: 0px 0px 0px 1px #898C95 inset', 'border-radius: 9px; margin-right: 1px')"/>
+                </td>
+                <td>
+                  <input type="button" value="Flat buttons" onclick="SetCss('border-radius: 9px; height: 2em;', 'border-radius: 9px; border: 0px; margin: 1px')"/>
                 </td>
             </table>
           </td>
