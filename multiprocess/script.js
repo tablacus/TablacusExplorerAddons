@@ -78,8 +78,8 @@
 		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
 			switch ((wParam & 0xfff) + 1) {
 				case CommandID_PASTE:
-					var Items = api.OleGetClipboard()
-					if (Addons.MultiProcess.FO(null, Items, Ctrl.FolderItem, MK_LBUTTON, null, Items.pdwEffect, false)) {
+					var Items = api.OleGetClipboard();
+					if (!api.ILIsEmpty(Items.Item(-1)) && Addons.MultiProcess.FO(null, Items, Ctrl.FolderItem, MK_LBUTTON, null, Items.pdwEffect, false)) {
 						return S_OK;
 					}
 					break;

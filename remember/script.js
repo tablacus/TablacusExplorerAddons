@@ -11,17 +11,18 @@ if (window.Addon == 1) {
 	Addons.Remember =
 	{
 		db: {},
-		ID: ["Time", "ViewMode", "IconSize", "Columns", "SortColumn", "Path"],
+		ID: ["Time", "ViewMode", "IconSize", "Columns", "SortColumn", "Group", "Path"],
 		nFormat: api.QuadPart(GetAddonOption(Addon_Id, "Format")),
 
 		RememberFolder: function (FV)
 		{
 			if (FV && FV.FolderItem) {
+				var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 				if (api.ILIsEqual(FV.FolderItem, FV.Data.Remember)) {
 					var col = FV.Columns(Addons.Remember.nFormat);
 					if (col) {
 						var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-						Addons.Remember.db[path] = [new Date().getTime(), FV.CurrentViewMode, FV.IconSize, col, FV.SortColumn(Addons.Remember.nFormat)];
+						Addons.Remember.db[path] = [new Date().getTime(), FV.CurrentViewMode, FV.IconSize, col, FV.SortColumn(Addons.Remember.nFormat), FV.GroupBy];
 					}
 				}
 			}
@@ -49,7 +50,7 @@ if (window.Addon == 1) {
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Prev) {
 				var path = api.GetDisplayNameOf(Prev, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-				Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, Ctrl.Columns, Ctrl.SortColumn];
+				Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, Ctrl.Columns, Ctrl.SortColumn, Ctrl.GroupBy];
 			}
 			var path = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 
@@ -73,7 +74,9 @@ if (window.Addon == 1) {
 			Ctrl.CurrentViewMode(ar[1], ar[2]);
 			Ctrl.Columns = ar[3];
 			Ctrl.SortColumn = ar[4];
-
+			if (Ctrl.GroupBy && ar[5]) {
+				Ctrl.GroupBy = ar[5];
+			}
 			ar[0] = new Date().getTime();
 		}
 	});
@@ -118,7 +121,7 @@ if (window.Addon == 1) {
 			var ar = arFV.shift();
 			var item = xml.createElement("Item");
 			for (var j in Addons.Remember.ID) {
-				item.setAttribute(Addons.Remember.ID[j], ar[j]);
+				item.setAttribute(Addons.Remember.ID[j], ar[j] || "");
 			}
 			root.appendChild(item);
 		}
