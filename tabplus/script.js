@@ -22,7 +22,6 @@ if (window.Addon == 1) {
 		tids: [],
 		ImgLock: MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13),
 		ImgClose: MakeImgSrc("bitmap:ieframe.dll,545,13,1", 0, false, 13),
-		ImgFolder: document.documentMode ? null : MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16),
 		ImgNet: MakeImgSrc("icon:shell32.dll,9,16", 0, false, 16),
 
 		Arrange: function (Id)
@@ -35,13 +34,18 @@ if (window.Addon == 1) {
 					Addons.TabPlus.tids[Id] = null;
 					this.nIndex[Id] = TC.SelectedIndex;
 					this.nCount[Id] = TC.Count;
-					var s = ['<button style="width: 0px; border 0px; padding: 0px; margin: 0px; outline: 0px; position: absolute; left: -99999px"></button>'];
-					for (var i = 0; i < this.nCount[Id]; i++) {
-						this.Tab(s, TC, i);
+					var tabs = o.getElementsByTagName("button");
+					if (TC.Count + (this.opt.New ? 2 : 1) != tabs.length) {
+						var s = ['<button style="width: 0px; border 0px; padding: 0px; margin: 0px; outline: 0px; position: absolute; left: -99999px"></button>'];
+						for (var i = 0; i < this.nCount[Id]; i++) {
+							this.Tab(s, TC, i);
+						}
+						if (this.opt.New) {
+							s.push('<button class="tab2" onclick="Addons.TabPlus.New(', Id, ');return false" hidefocus="true" title="', GetText("New Tab"), '" style="font-family: ', document.body.style.fontFamily, '" />+</button>');
+						}
+						o.innerHTML = s.join("").replace(/\$/g, Id);
 					}
-					if (this.opt.New) {
-						s.push('<button class="tab2" onclick="Addons.TabPlus.New(', Id, ');return false" hidefocus="true" title="', GetText("New Tab"), '" style="font-family: ', document.body.style.fontFamily, '; cursor: default">+</button>');
-					}
+					this.Style(TC, i);
 					try {
 						var FocusedId = te.Ctrl(CTRL_TC).Id;
 						if (Id == FocusedId) {
@@ -50,7 +54,9 @@ if (window.Addon == 1) {
 					}
 					catch (e) {
 					}
-					o.innerHTML = s.join("").replace(/\$/g, Id);
+					for (var i = 0; i < this.nCount[Id]; i++) {
+						this.Style(TC, i);
+					}
 					if (this.Drag.length) {
 						if (api.GetKeyState(VK_LBUTTON) < 0) {
 							this.Cursor("move");
@@ -69,16 +75,24 @@ if (window.Addon == 1) {
 
 		SelectionChanged: function (TC, Id)
 		{
+			this.Style(TC, i)
 			var i = TC.SelectedIndex;
 			var o = document.getElementById("tabplus_" + Id + "_" + i);
 			if  (o) {
-				var s = [];
-				Addons.TabPlus.Tab(s, TC, i)
-				o.outerHTML = s.join("").replace(/\$/g, TC.Id);
 				this.nIndex[Id] = i;
+				this.Style(TC, i)
+				this.SetActiveColor(Id);
 			}
-			this.SetActiveColor(Id);
-			Addons.TabPlus.Arrange(Id);
+			else if (!Addons.TabPlus.tids[TC.Id] && TC.Visible) {
+				if (Addons.TabPlus.tids[TC.Id] === null) {
+					Addons.TabPlus.tids[TC.Id] = setTimeout(function () {
+						Addons.TabPlus.Arrange(TC.Id);
+					}, 99);
+				}
+				else {
+					Addons.TabPlus.Arrange(TC.Id);
+				}
+			}
 		},
 		
 		SetActiveColor: function (Id, s)
@@ -112,32 +126,20 @@ if (window.Addon == 1) {
 		{
 			var FV = TC.Item(i);
 			if (FV) {
-				s.push('<button ');
-				var bActive = (i == TC.SelectedIndex);
-				if (bActive) {
-					s.push('draggable="true" ondragstart="return Addons.TabPlus.Start5(this)"');
-				}
-				s.push('ondragend="Addons.TabPlus.End5(this)" style="');
-				var cl = RunEvent4("GetTabColor", FV);
-				if (cl) {
-					if (bActive) {
-						s.push("background-color:", cl, ";");
-					}
-					else if (document.documentMode >= 10) {
-						s.push('background: linear-gradient(to bottom, #ffffff,', cl, ' 70%);');
-					}
-					else {
-						s.push('filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=#ffffff,endcolorstr=', cl, ');');
-					}
-					cl = api.sscanf(cl, "#%06x") 
-					cl = (cl & 0xff0000) * .0045623779296875 + (cl & 0xff00) * 2.29296875 + (cl & 0xff) * 114;
-					s.push(cl > 127000 ? "color: black;" : "color: white;");
-				}
+				s.push('<button id="tabplus_$_', i,'"  style="font-family: ', document.body.style.fontFamily, '" ');
+				s.push('draggable="true" ondragstart="return Addons.TabPlus.Start5(this)" ondragend="Addons.TabPlus.End5(this)" onfocus="this.blur()" onmousemove="Addons.TabPlus.Move(this, $)"');
+				s.push(' hidefocus="true"></button>');
+			}
+		},
+
+		Style: function (TC, i)
+		{
+			var FV = TC.Item(i);
+			var o = document.getElementById("tabplus_" + TC.Id + "_" + i);
+			if (FV && o) {
 				var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-				s.push('font-family: ', document.body.style.fontFamily, '; white-space: nowrap; cursor: default');
-				s.push('" id="tabplus_$_', i,'" title="', path,'" onmousemove="Addons.TabPlus.Move(this, $)" class="');
-				s.push(bActive ? 'activetab' : i < TC.SelectedIndex ? 'tab' : 'tab2');
-				s.push('" hidefocus="true"><table><tr>');
+				o.title = path;
+				var s = ['<table><tr>'];
 				try {
 					if (FV.Data.Lock) {
 						s.push('<td style="padding-right: 2px; vertical-align: middle"><img src="', this.ImgLock, '"></td>');
@@ -146,22 +148,12 @@ if (window.Addon == 1) {
 						if (api.PathIsNetworkPath(path)) {
 							path = this.ImgNet;
 						}
-						if (this.ImgFolder) {
-							path = this.ImgFolder;
-						}
-						else {
-							var info = api.Memory("SHFILEINFO");
-							api.SHGetFileInfo(FV, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
-							var image = te.GdiplusBitmap;
-							image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
-							api.DestroyIcon(info.hIcon);
-							path = image.DataURI("image/png");
-						}
+						path = GetIconImage(FV, api.GetSysColor(COLOR_BTNFACE));
 						if (path) {
 							s.push('<td style="padding-right: 3px; vertical-align: middle;"><img src="', path, '"></td>');
 						}
 					}
-					s.push('<td style="vertical-align: middle;"><div style="overflow: hidden;');
+					s.push('<td style="vertical-align: middle;"><div style="overflow: hidden; white-space: nowrap; ');
 					s.push(this.opt.Fix ? 'width: ' + this.opt.Width + 'px">' : '">');
 					if (FV.FolderItem) {
 						s.push(GetTabName(FV).replace(/</g, "&lt;"));
@@ -172,7 +164,41 @@ if (window.Addon == 1) {
 					}
 				} catch (e) {
 				}
-				s.push('</tr></table></button>');
+				s.push('</tr></table>');
+				o.innerHTML = s.join("");
+				var style = o.style;
+				var cl = RunEvent4("GetTabColor", FV);
+				if (cl) {
+					if (i == TC.SelectedIndex) {
+						if (document.documentMode >= 10) {
+							style.background = "";
+						}
+						else {
+							style.filter = "";
+						}
+						style.backgroundColor = cl;
+					}
+					else if (document.documentMode >= 10) {
+						style.background = "linear-gradient(to bottom, #ffffff," + cl + " 70%)";
+					}
+					else {
+						style.filter = 'progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=#ffffff,endcolorstr=' + cl + ')';
+					}
+					cl = api.sscanf(cl, "#%06x") 
+					cl = (cl & 0xff0000) * .0045623779296875 + (cl & 0xff00) * 2.29296875 + (cl & 0xff) * 114;
+					style.color = cl > 127000 ? "black" : "white";
+				}
+				else {
+					if (document.documentMode >= 10) {
+						style.background = "";
+					}
+					else if (style.filter) {
+						style.filter = "";
+					}
+					style.color = "";
+					style.backgroundColor = "";
+				}
+				o.className = i == TC.SelectedIndex ? 'activetab' : i < TC.SelectedIndex ? 'tab' : 'tab2';
 			}
 		},
 
@@ -420,15 +446,7 @@ if (window.Addon == 1) {
 
 	AddEvent("Lock", function (Ctrl, i, bLock)
 	{
-		var FV = Ctrl.Selected;
-		if (FV) {
-			var o = document.getElementById('tabplus_' + Ctrl.Id + '_' + i);
-			if (o) {
-				var s = [];
-				Addons.TabPlus.Tab(s, Ctrl, i)
-				o.outerHTML = s.join("").replace(/\$/g, Ctrl.Id);
-			}
-		}
+		Addons.TabPlus.Style(Ctrl, i)
 	});
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
@@ -526,19 +544,17 @@ if (window.Addon == 1) {
 			var i = Addons.TabPlus.nIndex[TC.Id];
 			var o = document.getElementById("tabplus_" + TC.Id + "_" + i);
 			if  (o) {
-				var s = [];
-				Addons.TabPlus.Tab(s, TC, i)
-				o.outerHTML = s.join("").replace(/\$/g, TC.Id);
+				Addons.TabPlus.Style(TC, i)
+				var o = document.getElementById("tabplus_" + TC.Id);
+				if (o) {
+					var tabs = o.getElementsByTagName("button");
+					if (TC.Count + (Addons.TabPlus.opt.New ? 2 : 1) != tabs.length) {
+						o = null;
+					}
+				}
 			}
-			else if (!Addons.TabPlus.tids[TC.Id] && TC.Visible) {
-				if (Addons.TabPlus.tids[TC.Id] === null) {
-					Addons.TabPlus.tids[TC.Id] = setTimeout(function () {
-						Addons.TabPlus.Arrange(TC.Id);
-					}, 500);
-				}
-				else {
-					Addons.TabPlus.Arrange(TC.Id);
-				}
+			if (!o) {
+				Addons.TabPlus.Arrange(TC.Id);
 			}
 		}
 	});
@@ -549,7 +565,7 @@ if (window.Addon == 1) {
 			if (!Addons.TabPlus.tids[Ctrl.Id]) {
 				Addons.TabPlus.tids[Ctrl.Id] = setTimeout(function () {
 					Addons.TabPlus.Arrange(Ctrl.Id);
-				}, 500);
+				}, 99);
 			}
 		}
 	});
@@ -561,7 +577,7 @@ if (window.Addon == 1) {
 			if (!Addons.TabPlus.tids[TC.Id]) {
 				Addons.TabPlus.tids[TC.Id] = setTimeout(function () {
 					Addons.TabPlus.Arrange(TC.Id);
-				}, 500);
+				}, 99);
 			}
 		}
 	});

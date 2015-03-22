@@ -16,8 +16,8 @@ if (window.Addon == 1) {
 		Init: function ()
 		{
 			var s = []
-			s.push('<span id="tabgroups">tabgroups</span>');
-			s.push('<input type="button" class="tab2" value="+" title="' + GetText("New Tab") + '" onclick="return Addons.Tabgroups.Add()" hidefocus="true">');
+			s.push('<span id="tabgroups"></span>');
+			s.push('<button class="tab2" title="', GetText("New Tab"), '" onclick="return Addons.Tabgroups.Add()" hidefocus="true">+</button>');
 			SetAddon(Addon_Id, Default, s.join(""));
 			this.Name = [''];
 			this.Color = [''];
@@ -55,41 +55,70 @@ if (window.Addon == 1) {
 		{
 			this.Fix();
 			var s = [];
-			for (var i = 1; i < this.Name.length; i++) {
-				this.Tab(s, i);
+			var o = document.getElementById("tabgroups");
+			var tabs = o.getElementsByTagName("button");
+			if (tabs.length != this.Name.length - 1) {
+				for (var i = 1; i < this.Name.length; i++) {
+					this.Tab(s, i);
+				}
+				o.innerHTML = s.join("");
 			}
-			document.getElementById("tabgroups").innerHTML = s.join("");
+			for (var i = 1; i < this.Name.length; i++) {
+				this.Style(tabs, i);
+			}
 			this.Change();
 		},
 
 		Tab: function (s, i)
 		{
-			s.push('<input type="button" style="');
+			s.push('<button id="tabgroups', i, '" style="font-family:', document.body.style.fontFamily, '"');
+			s.push(' onmousedown="return Addons.Tabgroups.Down(this)" onmouseup="return Addons.Tabgroups.Up(this)"');
+			s.push(' oncontextmenu="return Addons.Tabgroups.Popup(this)" onmousewheel="Addons.Tabgroups.Wheel()"');
+			s.push(' onmousemove="Addons.Tabgroups.Move(this)" ondblclick="return Addons.Tabgroups.Edit(this)" onfocus="this.blur()"');
+			s.push(' draggable="true" ondragstart="return Addons.Tabgroups.Start5(this)" ondragover="Addons.Tabgroups.Over5(this)" ondrop="Addons.Tabgroups.Drop5(this)" ondragend="Addons.Tabgroups.End5(this)"');
+			s.push(' hidefocus="true"></button>');
+		},
+
+		Style: function (tabs, i)
+		{
+			var o = tabs[i - 1];
+			if (!o) {
+				return;
+			}
+			o.innerHTML = this.Name[i];
+			var style = o.style;
 			var cl = this.Color[i];
 			if (cl) {
 				if (i == this.Index) {
-					s.push("background-color:", cl, ";");
+					if (document.documentMode >= 10) {
+						style.background = "";
+					}
+					else {
+						style.filter = "";
+					}
+					style.backgroundColor = cl;
 				}
 				else if (document.documentMode >= 10) {
-					s.push('background: linear-gradient(to bottom, #ffffff,', cl, ' 70%);');
+					style.background = "linear-gradient(to bottom, #ffffff," + cl + " 70%)";
 				}
 				else {
-					s.push('filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=#ffffff,endcolorstr=', cl, ');');
+					style.filter = 'progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=#ffffff,endcolorstr=' + cl + ')';
 				}
 				cl = api.sscanf(cl, "#%06x") 
 				cl = (cl & 0xff0000) * .0045623779296875 + (cl & 0xff00) * 2.29296875 + (cl & 0xff) * 114;
-				s.push(cl > 127000 ? "color: black;" : "color: white;");
+				style.color = cl > 127000 ? "black" : "white";
 			}
-			s.push('font-family: ' + document.body.style.fontFamily + '" value="' + this.Name[i]);
-			s.push('" id="tabgroups' + i);
-			s.push('" onmousedown="return Addons.Tabgroups.Down(this)" onmouseup="return Addons.Tabgroups.Up(this)"');
-			s.push(' onmousemove="Addons.Tabgroups.Move(this)"');
-			s.push(' oncontextmenu="return Addons.Tabgroups.Popup(this)" onmousewheel="Addons.Tabgroups.Wheel()"');
-			s.push(' ondblclick="return Addons.Tabgroups.Edit(this)"');
-			s.push(' draggable="true" ondragstart="return Addons.Tabgroups.Start5(this)" ondragover="Addons.Tabgroups.Over5(this)" ondrop="Addons.Tabgroups.Drop5(this)" ondragend="Addons.Tabgroups.End5(this)"');
-			s.push('class="');
-			s.push(i == this.Index ? 'activetab' : i < this.Index ? 'tab' : 'tab2');
-			s.push('"  hidefocus="true">');
+			else {
+				if (document.documentMode >= 10) {
+					style.background = "";
+				}
+				else if (style.filter) {
+					style.filter = "";
+				}
+				style.color = "";
+				style.backgroundColor = "";
+			}
+			o.className = i == this.Index ? 'activetab' : i < this.Index ? 'tab' : 'tab2';
 		},
 
 		Add: function ()
@@ -104,18 +133,21 @@ if (window.Addon == 1) {
 			}
 			var s = [];
 			this.Tab(s, this.Name.length - 1);
-			document.getElementById("tabgroups").insertAdjacentHTML("BeforeEnd", s.join(""));
+			var o = document.getElementById("tabgroups");
+			o.insertAdjacentHTML("BeforeEnd", s.join(""));
+			this.Style(o.getElementsByTagName("button"), this.Name.length - 1);
 			this.Fix();
 		},
 
 		Change: function (n)
 		{
+			var oShow = {};
 			if (n > 0) {
 				this.Click = n;
 			}
 			this.Fix();
 			var nOld = this.Index;
-			if (this.Click != this.Index) {
+			if (this.Click != this.Index && this.Click < this.Name.length) {
 				this.Index = this.Click;
 				this.Arrange();
 			}
@@ -132,6 +164,16 @@ if (window.Addon == 1) {
 					freeTC.push(TC);
 				}
 				var b = TC.Data.Group == this.Index;
+				if (b) {
+					var s = [TC.Left, TC.Top, TC.Width, TC.Height].join(",");
+					if (oShow[s]) {
+						b = false;
+						delete TC.Data.Group;
+					}
+					else {
+						oShow[s] = true;
+					}
+				}
 				TC.Visible = b;
 				bDisp |= b;
 			}
@@ -198,6 +240,7 @@ if (window.Addon == 1) {
 				}
 			}
 			this.Name.splice(nPos, 1);
+			this.Color.splice(nPos, 1);
 			if (this.Index >= this.Name.length && this.Index > 1) {
 				this.Index--;
 			}
@@ -220,6 +263,7 @@ if (window.Addon == 1) {
 				}
 			}
 			this.Name = ["", this.Name[nPos]];
+			this.Color = ["", this.Color[nPos]];
 			this.Index = 1;
 			this.Arrange();
 		},
@@ -251,6 +295,8 @@ if (window.Addon == 1) {
 				if (nDrop == this.nDrop) {
 					this.nDrop = 0;
 					var ar = new Array(this.Name.length);
+					var Name = this.Name.concat();
+					var Color = this.Color.concat();
 					var j = 0;
 					for (var i = 0; i < this.Name.length; i++) {
 						if (j == nDrop) {
@@ -259,9 +305,9 @@ if (window.Addon == 1) {
 						ar[i] = (i == this.nDrag) ? nDrop : j++;
 					}
 					for (var i = 1; i < this.Name.length; i++) {
-						this.Name[ar[i]] = document.getElementById("tabgroups" + i).value;
+						this.Name[ar[i]] = Name[i];
+						this.Color[ar[i]] = Color[i];
 					}
-
 					var cTC = te.Ctrls(CTRL_TC);
 					for (var i in cTC) {
 						var TC = cTC[i];
