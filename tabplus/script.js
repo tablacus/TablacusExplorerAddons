@@ -45,7 +45,6 @@ if (window.Addon == 1) {
 						}
 						o.innerHTML = s.join("").replace(/\$/g, Id);
 					}
-					this.Style(TC, i);
 					try {
 						var FocusedId = te.Ctrl(CTRL_TC).Id;
 						if (Id == FocusedId) {
@@ -54,7 +53,7 @@ if (window.Addon == 1) {
 					}
 					catch (e) {
 					}
-					for (var i = 0; i < this.nCount[Id]; i++) {
+					for (var i = this.nCount[Id]; i--;) {
 						this.Style(TC, i);
 					}
 					if (this.Drag.length) {
@@ -75,23 +74,10 @@ if (window.Addon == 1) {
 
 		SelectionChanged: function (TC, Id)
 		{
-			this.Style(TC, i)
-			var i = TC.SelectedIndex;
-			var o = document.getElementById("tabplus_" + Id + "_" + i);
-			if  (o) {
-				this.nIndex[Id] = i;
-				this.Style(TC, i)
-				this.SetActiveColor(Id);
-			}
-			else if (!Addons.TabPlus.tids[TC.Id] && TC.Visible) {
-				if (Addons.TabPlus.tids[TC.Id] === null) {
-					Addons.TabPlus.tids[TC.Id] = setTimeout(function () {
-						Addons.TabPlus.Arrange(TC.Id);
-					}, 99);
-				}
-				else {
+			if (TC.Type = CTRL_TC && TC.Visible && !Addons.TabPlus.tids[TC.Id]) {
+				Addons.TabPlus.tids[TC.Id] = setTimeout(function () {
 					Addons.TabPlus.Arrange(TC.Id);
-				}
+				}, 99);
 			}
 		},
 		
@@ -290,9 +276,11 @@ if (window.Addon == 1) {
 
 		Cursor: function (s)
 		{
-			var cTC = te.Ctrls(CTRL_TC);
-			for (var j in cTC) {
-				SetCursor(document.getElementById('tabplus_' + cTC[j].Id), s);
+			if (api.LowPart(document.documentMode) < 10) {
+				var cTC = te.Ctrls(CTRL_TC);
+				for (var j in cTC) {
+					SetCursor(document.getElementById('tabplus_' + cTC[j].Id), s);
+				}
 			}
 		},
 
@@ -533,7 +521,7 @@ if (window.Addon == 1) {
 	AddEvent("SelectionChanged", function (Ctrl)
 	{
 		if (Ctrl.Type == CTRL_TC) {
-			Addons.TabPlus.SelectionChanged(Ctrl, Ctrl.Id);
+			Addons.TabPlus.Arrange(Ctrl.Id);
 		}
 	});
 
@@ -554,31 +542,21 @@ if (window.Addon == 1) {
 				}
 			}
 			if (!o) {
-				Addons.TabPlus.Arrange(TC.Id);
+				Addons.TabPlus.SelectionChanged(TC, TC.Id);
 			}
 		}
 	});
 
 	AddEvent("Create", function (Ctrl)
 	{
-		if (Ctrl.Type == CTRL_TC) {
-			if (!Addons.TabPlus.tids[Ctrl.Id]) {
-				Addons.TabPlus.tids[Ctrl.Id] = setTimeout(function () {
-					Addons.TabPlus.Arrange(Ctrl.Id);
-				}, 99);
-			}
-		}
+		Addons.TabPlus.SelectionChanged(Ctrl, Ctrl.Id);
 	});
 
 	AddEvent("CloseView", function (Ctrl)
 	{
 		var TC = Ctrl.Parent;
 		if (TC) {
-			if (!Addons.TabPlus.tids[TC.Id]) {
-				Addons.TabPlus.tids[TC.Id] = setTimeout(function () {
-					Addons.TabPlus.Arrange(TC.Id);
-				}, 99);
-			}
+			Addons.TabPlus.SelectionChanged(TC, TC.Id);
 		}
 	});
 
