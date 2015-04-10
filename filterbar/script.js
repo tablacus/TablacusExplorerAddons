@@ -6,6 +6,10 @@ if (items.length) {
 	var item = items[0];
 	if (!item.getAttribute("Set")) {
 		item.setAttribute("MenuPos", -1);
+
+		item.setAttribute("KeyExec", 1);
+		item.setAttribute("KeyOn", "All");
+		item.setAttribute("Key", "Ctrl+E");
 	}
 }
 
@@ -29,10 +33,8 @@ if (window.Addon == 1) {
 			Addons.FilterBar.ShowButton();
 			var FV = te.Ctrl(CTRL_FV);
 			s = document.F.filter.value;
-			if (s) {
-				if (!s.match(/\*/)) {
-					s = "*" + s + "*";
-				}
+			if (s && !/\*/.test(s)) {
+				s = "*" + s + "*";
 			}
 			if (api.strcmpi(s, FV.FilterView)) {
 				FV.FilterView = s ? s : null;
@@ -64,7 +66,7 @@ if (window.Addon == 1) {
 
 		ShowButton: function ()
 		{
-			if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602) {
+			if (WINVER < 0x602) {
 				document.getElementById("ButtonFilter").style.display = document.F.filter.value.length ? "none" : "inline";
 				document.getElementById("ButtonFilterClear").style.display = document.F.filter.value.length ? "inline" : "none";
 			}
@@ -81,7 +83,7 @@ if (window.Addon == 1) {
 	{
 		clearTimeout(Addons.FilterBar.tid);
 		var s = String(Ctrl.FilterView);
-		if (s.match(/^\*(.*)\*$/)) {
+		if (/^\*(.*)\*$/.test(s)) {
 			s = RegExp.$1;
 		}
 		else if (api.strcmpi(s, "*") == 0) {
