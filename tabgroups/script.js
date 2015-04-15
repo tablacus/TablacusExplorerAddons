@@ -31,7 +31,6 @@ if (window.Addon == 1) {
 			if (items.length) {
 				this.Click = items[0].text;
 			}
-			this.Arrange();
 		},
 
 		Save: function ()
@@ -484,7 +483,7 @@ if (window.Addon == 1) {
 
 	AddEventEx(window, "load", function ()
 	{
-		setTimeout("Addons.Tabgroups.Change();", 500);
+		setTimeout("Addons.Tabgroups.Arrange();", 500);
 	});
 
 	AddEvent("Finalize", Addons.Tabgroups.Save);
@@ -529,7 +528,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Dragleave", function (Ctrl)
+	AddEvent("DragLeave", function (Ctrl)
 	{
 		clearTimeout(Addons.Tabgroups.tid);
 		Addons.Tabgroups.tid = null;
