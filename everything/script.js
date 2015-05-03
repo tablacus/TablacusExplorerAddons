@@ -29,7 +29,7 @@ if (window.Addon == 1) {
 			var FV = te.Ctrl(CTRL_FV);
 			var s = document.F.everythingsearch.value;
 			if (s.length) {
-				FV.Navigate(Addons.Everything.PATH + s);
+				FV.Navigate(Addons.Everything.PATH + s, Addons.Everything.NewTab ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
 			}
 		},
 
@@ -197,10 +197,11 @@ if (window.Addon == 1) {
 		if (item.getAttribute("MouseExec")) {
 			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Everything.Exec, "Func");
 		}
+		Addons.Everything.NewTab = api.QuadPart(item.getAttribute("NewTab"));
 		AddTypeEx("Add-ons", "Everything", Addons.Everything.Exec);
 	}
 
-	var s = ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', width, '; padding-right:', osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602 ? "32": "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', icon, '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'];
+	var s = ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', width, '; padding-right:', WINVER < 0x602 ? "32" : "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', icon, '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'];
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
 
 	if (o.style.verticalAlign.length == 0) {
@@ -209,5 +210,9 @@ if (window.Addon == 1) {
 }
 else {
 	document.getElementById("tab0").value = "General";
-	document.getElementById("panel0").innerHTML = '<input type="button" value="Get Everything..." title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">';
+	var s = ['<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr>'];
+	s.push('<tr><td><label>Action</label></td></tr>');
+	s.push('<tr><td><input type="checkbox" name="NewTab" id="NewTab"><label for="NewTab">Open in New Tab</label></td></tr></table>');
+	s.push('<br /><br /><input type="button" value="Get Everything..." title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">');
+	document.getElementById("panel0").innerHTML = s.join("");
 }
