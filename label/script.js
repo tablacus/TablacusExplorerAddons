@@ -252,15 +252,22 @@ if (window.Addon == 1) {
 
 		List: function (list)
 		{
+			var ix = [];
 			for (var path in te.Labels) {
 				var s = te.Labels[path];
 				var ar = s.split(/\s*;\s*/);
 				for (var i in ar) {
 					var s = ar[i];
 					if (s) {
-						list[s] = true;
+						ix.push(s);
 					}
 				}
+			}
+			var ix = ix.sort(function (a, b) {
+				return api.StrCmpLogical(b, a)
+			});
+			for (var i = ix.length; i--;) {
+				list[ix[i]] = true;
 			}
 		}
 
