@@ -49,7 +49,8 @@ if (window.Addon == 1) {
 					for (var i = Addons.MainMenu.Menu.length; i--;) {
 						if (HitTest(Addons.MainMenu.Menu[i], pt)) {
 							Addons.MainMenu.bClose = false;
-							wsh.SendKeys("{Esc}");
+							api.PostMessage(hwnd, WM_KEYDOWN, VK_ESCAPE, 0);
+							api.PostMessage(hwnd, WM_KEYUP, VK_ESCAPE, 0);
 							Addons.MainMenu.Popup(Addons.MainMenu.Menu[i]);
 							break;
 						}
