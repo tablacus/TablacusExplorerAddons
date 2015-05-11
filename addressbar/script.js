@@ -254,7 +254,7 @@ if (window.Addon == 1) {
 					var o = document.getElementById("addressbar" + i);
 					if (o) {
 						if (HitTest(o, pt)) {
-							wsh.SendKeys("{Esc}");
+							api.PostMessage(hwnd, WM_KEYDOWN, VK_ESCAPE, 0);
 							(function (o) { setTimeout(function () {
 								Addons.AddressBar.bClose = false;
 								o.click();

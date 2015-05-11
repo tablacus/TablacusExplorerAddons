@@ -278,7 +278,7 @@ if (window.Addon == 1) {
 					var o = document.getElementById("breadcrumbsaddressbar_" + Addons.InnerBreadcrumbsAddressBar.nLoopId + "_" + i);
 					if (o) {
 						if (HitTest(o, pt)) {
-							wsh.SendKeys("{Esc}");
+							api.PostMessage(hwnd, WM_KEYDOWN, VK_ESCAPE, 0);
 							(function (o, Id) { setTimeout(function () {
 								Addons.InnerBreadcrumbsAddressBar.bClose = false;
 								o.click();

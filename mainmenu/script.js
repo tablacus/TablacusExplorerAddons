@@ -50,7 +50,6 @@ if (window.Addon == 1) {
 						if (HitTest(Addons.MainMenu.Menu[i], pt)) {
 							Addons.MainMenu.bClose = false;
 							api.PostMessage(hwnd, WM_KEYDOWN, VK_ESCAPE, 0);
-							api.PostMessage(hwnd, WM_KEYUP, VK_ESCAPE, 0);
 							Addons.MainMenu.Popup(Addons.MainMenu.Menu[i]);
 							break;
 						}
