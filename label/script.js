@@ -1,4 +1,4 @@
-﻿var Addon_Id = "label";
+﻿Addon_Id = "label";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -308,11 +308,36 @@ if (window.Addon == 1) {
 		var Label = Addons.Label.LabelPath(Ctrl);
 		if (Label) {
 			setTimeout(function () {
+				var b, ar;
+				var bWC = /[\*\?]/.test(Label);
 				for (var path in te.Labels) {
 					var s = te.Labels[path];
-					var b = api.PathMatchSpec(Label, s);
-					if (!b) {
-						var ar = s.split(/\s*;\s*/);
+					if (bWC || (Label.indexOf(" ") >= 0 && Label.indexOf(";") < 0)) {
+						b = true;
+						ar = null;
+						var ar2 = Label.split(/\s+/);
+						for (var j in ar2) {
+							var s2 = ar2[j];
+							if (!api.PathMatchSpec(s2, s)) {
+								b = false;
+								if (bWC) {
+									ar = s.split(/\s*;\s*/);
+									for (var i in ar) {
+										if (api.PathMatchSpec(ar[i], s2)) {
+											b = true;
+											break;
+										}
+									}
+								}
+								break;
+							}
+						}
+					}
+					else {
+						b = api.PathMatchSpec(Label, s);
+					}
+					if (!b && bWC) {
+						ar = ar || s.split(/\s*;\s*/);
 						for (var i in ar) {
 							if (api.PathMatchSpec(ar[i], Label)) {
 								b = true;
@@ -325,7 +350,7 @@ if (window.Addon == 1) {
 					}
 				}
 				Ctrl.SortColumn = "";
-			}, 99);
+			}, 200);
 		}
 	});
 

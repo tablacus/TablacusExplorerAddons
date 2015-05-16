@@ -1,6 +1,6 @@
-var Addon_Id = "toolbar";
-var Default = "ToolBar2Left";
-var AddonName = "ToolBar";
+Addon_Id = "toolbar";
+Default = "ToolBar2Left";
+AddonName = "ToolBar";
 
 if (window.Addon == 1) {
 	Addons.ToolBar =
@@ -103,7 +103,6 @@ if (window.Addon == 1) {
 			var s = [];
 			var items = te.Data.xmlToolBar.getElementsByTagName("Item");
 			var menus = 0;
-			var image = te.GdiplusBitmap;
 			for (var i = 0; i < items.length; i++) {
 				var item = items[i];
 				var strFlag = api.strcmpi(item.getAttribute("Type"), "Menus") ? "" : item.text;
@@ -133,6 +132,7 @@ if (window.Addon == 1) {
 				else {
 					var icon = item.getAttribute("Icon");
 					if (icon != "") {
+						icon = ExtractMacro(te, icon);
 						var h = item.getAttribute("Height").replace(/"/g, "");
 						var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
 						h -= 0;
