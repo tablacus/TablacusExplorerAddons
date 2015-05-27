@@ -122,7 +122,6 @@ if (window.Addon == 1) {
 				if (DropTarget) {
 					clearTimeout(Addons.Tabs.tid);
 					hr = DropTarget.Drop(dataObj, grfKeyState, pt, pdwEffect);
-					Ctrl.SelectedIndex = nIndex;
 				}
 				return hr;
 			}
@@ -152,7 +151,7 @@ if (window.Addon == 1) {
 		var tcItem = api.Memory("TCITEM");
 		tcItem.mask = TCIF_IMAGE;
 		tcItem.iImage = bLock ? 2 : -1;
-		api.SendMessage(Ctrl.hwnd, TCM_SETITEM, i, tcItem.P);
+		api.SendMessage(Ctrl.hwnd, TCM_SETITEM, i, tcItem);
 		Resize();
 	});
 

@@ -488,7 +488,6 @@ if (window.Addon == 1) {
 					if (DropTarget) {
 						clearTimeout(Addons.TabPlus.tid);
 						hr = DropTarget.Drop(dataObj, grfKeyState, pt, pdwEffect);
-						TC.SelectedIndex = nIndex;
 					}
 					return hr;
 				}
