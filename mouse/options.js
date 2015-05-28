@@ -16,11 +16,6 @@ function SetRadio(o)
 	document.F.elements[ar[0]].value = ar[1];
 }
 
-function ShowLocation()
-{
-	ShowLocationEx({id: "mouse", show: "6", index: "6"});
-}
-
 function SetMouseOptions()
 {
 	SetOptions(function () {
