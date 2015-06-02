@@ -1,4 +1,4 @@
-var Addon_Id = "remember";
+Addon_Id = "remember";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -66,7 +66,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ListViewCreated", function (Ctrl)
+	AddEvent("NavigateComplete", function (Ctrl)
 	{
 		Ctrl.Data.Remember = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 		var ar = Addons.Remember.db[Ctrl.Data.Remember];

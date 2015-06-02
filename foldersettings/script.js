@@ -44,7 +44,7 @@
 		}
 	});
 
-	AddEvent("ListViewCreated", function (Ctrl)
+	AddEvent("NavigateComplete", function (Ctrl)
 	{
 		var item = Addons.FolderSettings.Get(Ctrl);
 		if (item && item.text) {
