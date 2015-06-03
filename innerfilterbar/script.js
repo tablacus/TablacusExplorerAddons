@@ -56,12 +56,31 @@
 
 		ShowButton: function (Id, oFilter)
 		{
-			if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602) {
+			if (WINVER < 0x602) {
 				document.getElementById("ButtonFilter_" + Id).style.display = oFilter.value.length ? "none" : "inline";
 				document.getElementById("ButtonFilterClear_" + Id).style.display = oFilter.value.length ? "inline" : "none";
 			}
-		}
+		},
 
+		GetFilter: function (Ctrl)
+		{
+			if (Ctrl.Type <= CTRL_EB) {
+				var Id = Ctrl.Parent.Id;
+				var o = document.F.elements["filter_" + Id];
+				if (o) {
+					clearTimeout(Addons.InnerFilterBar.tid[Id]);
+					var s = Ctrl.FilterView;
+					if (s.match(/^\*(.*)\*$/)) {
+						s = RegExp.$1;
+					}
+					else if (s == "*") {
+						s = "";
+					}
+					o.value = s;
+					Addons.InnerFilterBar.ShowButton(Id, o);
+				}
+			}
+		}
 	};
 
 	AddEvent("PanelCreated", function (Ctrl)
@@ -71,21 +90,6 @@
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
-	AddEvent("ChangeView", function (Ctrl)
-	{
-		var Id = Ctrl.Parent.Id;
-		var o = document.F.elements["filter_" + Id];
-		if (o) {
-			clearTimeout(Addons.InnerFilterBar.tid[Id]);
-			var s = Ctrl.FilterView;
-			if (s.match(/^\*(.*)\*$/)) {
-				s = RegExp.$1;
-			}
-			else if (api.strcmpi(s, "*") == 0) {
-				s = "";
-			}
-			o.value = s;
-			Addons.InnerFilterBar.ShowButton(Id, o);
-		}
-	});
+	AddEvent("ChangeView", Addons.InnerFilterBar.GetFilter);
+	AddEvent("Command", Addons.InnerFilterBar.GetFilter);
 }

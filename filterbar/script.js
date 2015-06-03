@@ -76,22 +76,27 @@ if (window.Addon == 1) {
 		{
 			document.F.filter.focus();
 			return S_OK;
+		},
+
+		GetFilter: function (Ctrl)
+		{
+			clearTimeout(Addons.FilterBar.tid);
+			var s = String(Ctrl.FilterView);
+			if (/^\*(.*)\*$/.test(s)) {
+				s = RegExp.$1;
+			}
+			else if (s == "*") {
+				s = "";
+			}
+			document.F.filter.value = s;
+			Addons.FilterBar.ShowButton();
 		}
+
 	};
 
-	AddEvent("ChangeView", function (Ctrl)
-	{
-		clearTimeout(Addons.FilterBar.tid);
-		var s = String(Ctrl.FilterView);
-		if (/^\*(.*)\*$/.test(s)) {
-			s = RegExp.$1;
-		}
-		else if (api.strcmpi(s, "*") == 0) {
-			s = "";
-		}
-		document.F.filter.value = s;
-		Addons.FilterBar.ShowButton();
-	});
+	AddEvent("ChangeView", Addons.FilterBar.GetFilter);
+	AddEvent("Command", Addons.FilterBar.GetFilter);
+
 	var width = "176px";
 	var icon = "../addons/filterbar/filter.png";
 
