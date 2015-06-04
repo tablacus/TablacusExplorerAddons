@@ -17,11 +17,10 @@ if (window.Addon == 1) {
 		RememberFolder: function (FV)
 		{
 			if (FV && FV.FolderItem) {
-				var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-				if (api.ILIsEqual(FV.FolderItem, FV.Data.Remember)) {
+				var path = String(api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
+				if (path == FV.Data.Remember) {
 					var col = FV.Columns(Addons.Remember.nFormat);
 					if (col) {
-						var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 						Addons.Remember.db[path] = [new Date().getTime(), FV.CurrentViewMode, FV.IconSize, col, FV.SortColumn(Addons.Remember.nFormat), FV.GroupBy];
 					}
 				}
@@ -39,7 +38,7 @@ if (window.Addon == 1) {
 				ar[j] = item.getAttribute(Addons.Remember.ID[j]);
 			}
 			if (ar[1]) {
-				Addons.Remember.db[ar.pop()] = ar;
+				Addons.Remember.db[String(ar.pop()).toLowerCase()] = ar;
 			}
 		}
 		xml = null;
@@ -49,11 +48,10 @@ if (window.Addon == 1) {
 	{
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Prev) {
-				var path = api.GetDisplayNameOf(Prev, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+				var path = String(api.GetDisplayNameOf(Prev, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
 				Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, Ctrl.Columns, Ctrl.SortColumn, Ctrl.GroupBy];
 			}
-			var path = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-
+			var path = String(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
 			var ar = Addons.Remember.db[path];
 			if (ar) {
 				fs.ViewMode = ar[1];
@@ -68,7 +66,7 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		Ctrl.Data.Remember = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+		Ctrl.Data.Remember = String(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
 		var ar = Addons.Remember.db[Ctrl.Data.Remember];
 		if (ar) {
 			Ctrl.CurrentViewMode(ar[1], ar[2]);
