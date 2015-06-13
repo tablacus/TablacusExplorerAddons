@@ -560,7 +560,7 @@ if (window.Addon == 1) {
 			{
 				var ar = WScript.Col(ExtractMacro(Ctrl, line));
 				for (var i in ar) {
-					ChangeNotifyFV(SHCNE_RMDIR, ar[i]);
+					UnlockFV(api.ILCreateFromPath(ar[i]));
 				}
 				try {
 					wsh.CurrentDirectory = fso.GetSpecialFolder(2).Path;
@@ -817,7 +817,7 @@ if (window.Addon == 1) {
 			if (/Script:(.+)/i.test(s)) {
 				var type = RegExp.$1.replace(/^\s+|\s+$/, "");
 				lines.shift();
-				return ExecScriptEx(Ctrl, lines.join("\n"), type, hwnd, pt);
+				return ExecScriptEx(Ctrl, lines.join("\n"), type, hwnd, pt, undefined, undefined, undefined, undefined, GetFolderView(Ctrl, pt));
 			}
 			for (var i in lines) {
 				hr = Addons.XFinder.Exec(Ctrl, hwnd, pt, lines[i]);

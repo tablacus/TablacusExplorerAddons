@@ -8,9 +8,9 @@ GetCurrentSetting = function (bForce)
 	var nFormat = api.LowPart(document.F.Format.value);
 	var FV = te.Ctrl(CTRL_FV);
 	var path = api.GetDisplayNameOf(FV.FolderItem, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-	var s = ["Ctrl.CurrentViewMode(", FV.CurrentViewMode, ",", FV.IconSize, ");\n"];
-	s.push("Ctrl.Columns='", FV.Columns(nFormat), "';\n");
-	s.push("Ctrl.SortColumn='", FV.SortColumn(nFormat), "';\n");
+	var s = ["FV.CurrentViewMode(", FV.CurrentViewMode, ",", FV.IconSize, ");\n"];
+	s.push("FV.Columns='", FV.Columns(nFormat), "';\n");
+	s.push("FV.SortColumn='", FV.SortColumn(nFormat), "';\n");
 	s = s.join("");
 	if (bForce || confirmOk([path, s].join("\n"))) {
 		document.F.Filter.value = path;

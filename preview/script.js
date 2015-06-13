@@ -26,25 +26,32 @@ if (window.Addon == 1) {
 					}
 				}
 				var nWidth = 0, nHeight = 0;
-				var s1 = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 13");
-				if (s1) {
-					info.push(' (' + s1 + ')');
-					nWidth = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 3");
-					nHeight = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 4");
+				if (document.documentMode >= 11 && api.PathMatchSpec(Item.Path, "*.mp3;*.m4a;*.webm;*.mp4")) {
+					s.splice(s.length, 0, '<video controls width="' + this.Width + '" height="' + this.Width + '"><source src="' + Item.Path + '"></video>');
 				}
-				var style;
-				if (nWidth  > nHeight) {
-					style = ["width: ", this.Width, "px; height: ", this.Width * nHeight / nWidth, "px"];
-				} else {
-					style = ["width: ", this.Width * nWidth / nHeight, "px; height: ", this.Width, "px"];
+				else if (api.PathMatchSpec(Item.Path, "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf")) {
+					s.splice(s.length, 0, '<embed width="' + this.Width + '" height="' + this.Width + '" src="' + Item.Path + '" autoplay="false"></embed>');
 				}
-				if (nWidth && nHeight) {
-					s.splice(s.length, 0, '<img src="', Item.Path, '" title="', Folder.GetDetailsOf(Item, 0), "\n", Folder.GetDetailsOf(Item, -1), '" style="display: block;', style.join(""), '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false">');
+				else {
+					var s1 = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 13");
+					if (s1) {
+						info.push(' (' + s1 + ')');
+						nWidth = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 3");
+						nHeight = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 4");
+					}
+					var style;
+					if (nWidth  > nHeight) {
+						style = ["width: ", this.Width, "px; height: ", this.Width * nHeight / nWidth, "px"];
+					} else {
+						style = ["width: ", this.Width * nWidth / nHeight, "px; height: ", this.Width, "px"];
+					}
+					if (nWidth && nHeight) {
+						s.splice(s.length, 0, '<img src="', Item.Path, '" title="', Folder.GetDetailsOf(Item, 0), "\n", Folder.GetDetailsOf(Item, -1), '" style="display: block;', style.join(""), '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false">');
+					}
+					else {
+						s.push('<div style="font-size: 10px; margin-left: 4px">', Item.Path, '</div>');
+					}
 				}
-				s.splice(s.length, 0, '<div style="font-size: 10px; margin: 0px 4px">', info.join(""), '</div>');
-			}
-			else {
-				s.push('<div style="font-size: 10px; margin-left: 4px">Preview</div>');
 			}
 			o.innerHTML = s.join("");
 			Resize2();
@@ -84,7 +91,7 @@ if (window.Addon == 1) {
 			}
 			var s = '<div id="PreviewBar" style="width: 100%; height: 100%; background-color: window; border: 1px solid WindowFrame; overflow-x: hidden; overflow-y: hidden;"></div>';
 			SetAddon(Addon_Id, this.Align + "Bar3", s);
-			this.Arrange();
+			setTimeout("Addons.Preview.Arrange();", 99);
 		}
 	}
 
