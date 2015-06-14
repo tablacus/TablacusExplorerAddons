@@ -23,9 +23,18 @@ if (window.Addon == 1) {
 
 		KeyDown: function (o)
 		{
-			this.filter = o.value;
-			clearTimeout(this.tid);
-			this.tid = setTimeout(this.Change, 500);
+			if (window.event.keyCode != VK_PROCESSKEY) {
+				this.filter = o.value;
+				clearTimeout(this.tid);
+				this.tid = setTimeout(this.Change, 500);
+			}
+		},
+
+		KeyUp: function (o)
+		{
+			if (window.event.keyCode == VK_RETURN) {
+				this.KeyDown(o);
+			}
 		},
 
 		Change: function ()
@@ -133,7 +142,7 @@ if (window.Addon == 1) {
 		}
 		AddTypeEx("Add-ons", "Filter Bar", Addons.FilterBar.Exec);
 	}
-	var s = ['<input type="text" name="filter" placeholder="Filter" onkeydown="Addons.FilterBar.KeyDown(this)" onfocus="Addons.FilterBar.Focus(this)" onmouseup="Addons.FilterBar.KeyDown(this)" style="width:', width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', icon, '" id="ButtonFilter" hidefocus="true" style="position: absolute; left: -18px; top: -7px"><input type="image" id="ButtonFilterClear" src="bitmap:ieframe.dll,545,13,1" style="display: none; position: absolute; left: -17px; top: -5px" hidefocus="true" onclick="Addons.FilterBar.Clear(true)"></span>'];
+	var s = ['<input type="text" name="filter" placeholder="Filter" onkeydown="Addons.FilterBar.KeyDown(this)" onkeyup="Addons.FilterBar.KeyUp(this)" onfocus="Addons.FilterBar.Focus(this)" onmouseup="Addons.FilterBar.KeyDown(this)" style="width:', width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', icon, '" id="ButtonFilter" hidefocus="true" style="position: absolute; left: -18px; top: -7px"><input type="image" id="ButtonFilterClear" src="bitmap:ieframe.dll,545,13,1" style="display: none; position: absolute; left: -17px; top: -5px" hidefocus="true" onclick="Addons.FilterBar.Clear(true)"></span>'];
 
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
 
