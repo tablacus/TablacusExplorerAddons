@@ -12,6 +12,7 @@ if (window.Addon == 1) {
 		WheelButton: 0,
 		tid: null,
 		pt: api.Memory("POINT"),
+		ImgLock: MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13),
 
 		Init: function ()
 		{
@@ -19,13 +20,12 @@ if (window.Addon == 1) {
 			s.push('<span id="tabgroups"></span>');
 			s.push('<button class="tab2" title="', GetText("New Tab"), '" onclick="return Addons.Tabgroups.Add()" hidefocus="true">+</button>');
 			SetAddon(Addon_Id, Default, s.join(""));
-			this.Name = [''];
-			this.Color = [''];
+			this.Data = [];
+			this.New();
 			xml = OpenXml("tabgroups.xml", true, true);
 			var items = xml.getElementsByTagName('Item');
 			for (i = 0; i < items.length; i++) {
-				this.Name.push(items[i].getAttribute("Name"));
-				this.Color.push(items[i].getAttribute("Color"));
+				this.New(items[i].getAttribute("Name"), items[i].getAttribute("Color"), items[i].getAttribute("Lock"));
 			}
 			items = xml.getElementsByTagName('Index');
 			if (items.length) {
@@ -37,10 +37,12 @@ if (window.Addon == 1) {
 		{
 			var xml = CreateXml();
 			var root = xml.createElement("TablacusExplorer");
-			for (var i = 1; i < Addons.Tabgroups.Name.length; i++) {
+			for (var i = 1; i < Addons.Tabgroups.Data.length; i++) {
 				var item = xml.createElement("Item");
-				item.setAttribute("Name", Addons.Tabgroups.Name[i]);
-				item.setAttribute("Color", Addons.Tabgroups.Color[i] || "");
+				var o = Addons.Tabgroups.Data[i];
+				item.setAttribute("Name", o.Name);
+				item.setAttribute("Color", o.Color);
+				item.setAttribute("Lock", o.Lock);
 				root.appendChild(item);
 			}
 			var item = xml.createElement("Index");
@@ -56,13 +58,13 @@ if (window.Addon == 1) {
 			var s = [];
 			var o = document.getElementById("tabgroups");
 			var tabs = o.getElementsByTagName("button");
-			if (tabs.length != this.Name.length - 1) {
-				for (var i = 1; i < this.Name.length; i++) {
+			if (tabs.length != this.Data.length - 1) {
+				for (var i = 1; i < this.Data.length; i++) {
 					this.Tab(s, i);
 				}
 				o.innerHTML = s.join("");
 			}
-			for (var i = 1; i < this.Name.length; i++) {
+			for (var i = 1; i < this.Data.length; i++) {
 				this.Style(tabs, i);
 			}
 			this.Change();
@@ -84,9 +86,13 @@ if (window.Addon == 1) {
 			if (!o) {
 				return;
 			}
-			o.innerHTML = this.Name[i];
+			var s = [this.Data[i].Name];
+			if (this.Data[i].Lock) {
+				s.unshift('<img src="', this.ImgLock, '" style="padding-right: 2px">');
+			}
+			o.innerHTML = s.join("");
 			var style = o.style;
-			var cl = this.Color[i];
+			var cl = this.Data[i].Color;
 			if (cl) {
 				if (i == this.Index) {
 					if (document.documentMode >= 10) {
@@ -122,31 +128,42 @@ if (window.Addon == 1) {
 
 		Add: function ()
 		{
-			var avail = this.Name.join("\0") + "\0";
-			for (var i = 1; i <= this.Name.length + 1; i++) {
-				var s = GetText("Group") + i;
-				if (!avail.match(s + "\0")) {
-					this.Name.push(s);
+			var s;
+			var Name = [];
+			for (var i = this.Data.length; i--;) {
+				Name[this.Data[i].Name] = true;
+			}
+			for (var i = 1; i <= this.Data.length + 1; i++) {
+				s = GetText("Group") + i;
+				if (!Name[s]) {
+					this.New(s);
 					break;
 				}
 			}
 			var s = [];
-			this.Tab(s, this.Name.length - 1);
+			this.Tab(s, this.Data.length - 1);
 			var o = document.getElementById("tabgroups");
 			o.insertAdjacentHTML("BeforeEnd", s.join(""));
-			this.Style(o.getElementsByTagName("button"), this.Name.length - 1);
+			this.Style(o.getElementsByTagName("button"), this.Data.length - 1);
 			this.Fix();
+		},
+
+		New: function (a1, a2, a3)
+		{
+			this.Data.push({Name: a1 || "", Color: a2 || "", Lock: api.LowPart(a3) & 1});
 		},
 
 		Change: function (n)
 		{
+			te.LockUpdate();
+			setTimeout("te.UnlockUpdate();", 200);
 			var oShow = {};
 			if (n > 0) {
 				this.Click = n;
 			}
 			this.Fix();
 			var nOld = this.Index;
-			if (this.Click != this.Index && this.Click < this.Name.length) {
+			if (this.Click != this.Index && this.Click < this.Data.length) {
 				this.Index = this.Click;
 				this.Arrange();
 			}
@@ -224,8 +241,11 @@ if (window.Addon == 1) {
 			return TC;
 		},
 
-		Close: function (nPos)
+		Close: function (nPos, bNotUpdate)
 		{
+			if (this.Data[nPos].Lock) {
+				return;
+			}
 			var cTC = te.Ctrls(CTRL_TC);
 			var i = cTC.length;
 			if (i > 1) {
@@ -239,32 +259,22 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			this.Name.splice(nPos, 1);
-			this.Color.splice(nPos, 1);
-			if (this.Index >= this.Name.length && this.Index > 1) {
+			this.Data.splice(nPos, 1);
+			if (this.Index >= this.Data.length && this.Index > 1) {
 				this.Index--;
 			}
-			this.Arrange();
+			if (!bNotUpdate) {
+				this.Arrange();
+			}
 		},
 
 		CloseOther: function (nPos)
 		{
-			var cTC = te.Ctrls(CTRL_TC);
-			var i = cTC.length;
-			if (i > 1) {
-				while (i-- > 0) {
-					var TC = cTC[i];
-					if (TC.Data.Group != nPos) {
-						TC.Close();
-					}
-					else {
-						TC.Data.Group = 1;
-					}
+			for (var i = this.Data.length; i-- > 1;) {
+				if (i != nPos) {
+					this.Close(i, true);
 				}
 			}
-			this.Name = ["", this.Name[nPos]];
-			this.Color = ["", this.Color[nPos]];
-			this.Index = 1;
 			this.Arrange();
 		},
 
@@ -294,19 +304,17 @@ if (window.Addon == 1) {
 				var nDrop = o.id.replace(/\D/g, '');
 				if (nDrop == this.nDrop) {
 					this.nDrop = 0;
-					var ar = new Array(this.Name.length);
-					var Name = this.Name.concat();
-					var Color = this.Color.concat();
+					var ar = new Array(this.Data.length);
+					var Data = this.Data.concat();
 					var j = 0;
-					for (var i = 0; i < this.Name.length; i++) {
+					for (var i = 0; i < this.Data.length; i++) {
 						if (j == nDrop) {
 							j++;
 						}
 						ar[i] = (i == this.nDrag) ? nDrop : j++;
 					}
-					for (var i = 1; i < this.Name.length; i++) {
-						this.Name[ar[i]] = Name[i];
-						this.Color[ar[i]] = Color[i];
+					for (var i = 1; i < this.Data.length; i++) {
+						this.Data[ar[i]] = Data[i];
 					}
 					var cTC = te.Ctrls(CTRL_TC);
 					for (var i in cTC) {
@@ -329,9 +337,19 @@ if (window.Addon == 1) {
 		{
 			this.Click = o.id.replace(/\D/g, '') - 0;
 			var hMenu = api.CreatePopupMenu();
-			var sMenu = [1, "&Edit", 5, "Color", 2, "&Close Tab", 3, "Cl&amp;ose Other Tabs", 4, "&New Tab"];
-			for (var i = 0; i < sMenu.length; i += 2) {
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, sMenu[i], GetText(sMenu[i + 1]));
+			var sMenu = [1, "&Edit", 5, "Color", 2, "&Close Tab", 3, "Cl&amp;ose Other Tabs", 4, "&New Tab", 6, "&Lock"];
+			for (var i = sMenu.length / 2; i--;) {
+				var uId = sMenu[i * 2];
+				var uFlags = MF_BYPOSITION | MF_STRING;
+				if (this.Data[this.Click].Lock) {
+					if (uId == 2) {
+						uFlags |= MF_DISABLED;
+					}
+					if (uId == 6) {
+						uFlags |= MF_CHECKED;
+					}
+				}
+				api.InsertMenu(hMenu, 0, uFlags, uId, GetText(sMenu[i * 2 + 1]));
 			}
 			api.GetCursorPos(this.pt);
 			var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, this.pt.x, this.pt.y, te.hwnd, null, null);
@@ -350,7 +368,10 @@ if (window.Addon == 1) {
 					this.Add();
 					break
 				case 5:
-					this.SetColor(o);
+					this.SetColor();
+					break
+				case 6:
+					this.Lock();
 					break
 			}
 			return false;
@@ -358,15 +379,22 @@ if (window.Addon == 1) {
 
 		Edit: function (o)
 		{
-			var s = InputDialog(GetText("Name"), this.Name[this.Click]);
+			var s = InputDialog(GetText("Name"), this.Data[this.Click].Name);
 			if (s) {
-				o.value = this.Name[this.Click] = s;
+				o.value = this.Data[this.Click].Name = s;
+				this.Arrange();
 			}
 		},
 
-		SetColor: function (o)
+		SetColor: function ()
 		{
-			this.Color[this.Click] = ChooseWebColor(this.Color[this.Click]);;
+			this.Data[this.Click].Color = ChooseWebColor(this.Data[this.Click].Color);
+			this.Arrange();
+		},
+
+		Lock: function ()
+		{
+			this.Data[this.Click].Lock ^= 1;
 			this.Arrange();
 		},
 
@@ -402,7 +430,7 @@ if (window.Addon == 1) {
 
 		Cursor: function (s)
 		{
-			for (var i = this.Name.length; i-- > 0;) {
+			for (var i = this.Data.length; i-- > 0;) {
 				var o = document.getElementById('tabgroups' + i);
 				if (o) {
 					o.style.cursor = s;
@@ -460,9 +488,9 @@ if (window.Addon == 1) {
 		{
 			this.Click = this.Click - event.wheelDelta / 120
 			if (this.Click < 1) {
-				this.Click = this.Name.length - 1;
+				this.Click = this.Data.length - 1;
 			}
-			if (this.Click >= this.Name.length) {
+			if (this.Click >= this.Data.length) {
 				this.Click = 1;
 			}
 			this.Change();
@@ -470,7 +498,7 @@ if (window.Addon == 1) {
 
 		FromPt: function (pt)
 		{
-			for (var n = this.Name.length; n-- > 0;) {
+			for (var n = this.Data.length; n-- > 0;) {
 				if (HitTest(document.getElementById("tabgroups" + n), pt)) {
 					return n;
 				}

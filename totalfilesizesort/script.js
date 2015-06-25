@@ -16,7 +16,15 @@ if (window.Addon == 1) {
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
-			if (!FV) {
+			if (FV) {
+				Addons.TotalFileSizeSort.Exec2(FV, FV.FolderItem);
+			}
+			return S_OK;
+		},
+		
+		Exec2: function (FV, FolderItem)
+		{
+			if (!api.ILIsEqual(FV.FolderItem, FolderItem)) {
 				return S_OK;
 			}
 			var col = FV.Columns(1);
@@ -45,9 +53,9 @@ if (window.Addon == 1) {
 			}
 			if (bYet) {
 				if (FV.hwndList) {
-					(function (FV) { setTimeout(function () {
-						Addons.TotalFileSizeSort.Exec(FV);
-					}, 999);}) (FV);
+					(function (FV, FolderItem) { setTimeout(function () {
+						Addons.TotalFileSizeSort.Exec2(FV, FolderItem);
+					}, 999);}) (FV, FolderItem);
 				}
 				return S_OK;
 			}
@@ -63,19 +71,23 @@ if (window.Addon == 1) {
 			{
 				return a[1] - b[1];
 			});
-			var args = { FV: FV, Items: Items, List: List};
-			args.ViewMode = FV.CurrentViewMode;
-			if (args.ViewMode == FVM_DETAILS || args.ViewMode == FVM_LIST) {
-				FV.CurrentViewMode = FVM_TILE;
+			FV.Parent.LockUpdate();
+			try {
+				var args = { FV: FV, Items: Items, List: List};
+				args.ViewMode = FV.CurrentViewMode;
+				if (args.ViewMode == FVM_DETAILS || args.ViewMode == FVM_LIST) {
+					FV.CurrentViewMode = FVM_TILE;
+				}
+				args.FolderFlags = FV.FolderFlags;
+				FV.FolderFlags = args.FolderFlags | FWF_AUTOARRANGE;
+				FV.GroupBy = "System.Null";
+				var f = ((2 ^ FV.CurrentViewMode) | (2 ^ args.ViewMode)) * 2;
+				if (te.Layout & f) {
+					te.Layout &= ~f;
+					FV.Suspend();
+				}
 			}
-			args.FolderFlags = FV.FolderFlags;
-			FV.FolderFlags = args.FolderFlags | FWF_AUTOARRANGE;
-			FV.GroupBy = "System.Null";
-			var f = ((2 ^ FV.CurrentViewMode) | (2 ^ args.ViewMode)) * 2;
-			if (te.Layout & f) {
-				te.Layout &= ~f;
-				FV.Suspend();
-			}
+			catch (e) {}
 			(function (args) { setTimeout(function () {
 				Addons.TotalFileSizeSort.Order(args);
 			}, 99);}) (args);
@@ -83,20 +95,26 @@ if (window.Addon == 1) {
 
 		Order: function (args)
 		{
-			var pt = api.Memory("POINT");
-			for (var i in args.List) {
-				args.FV.SelectAndPositionItem(args.Items.Item(args.List[i][0]), 0, pt);
+			try  {
+				var pt = api.Memory("POINT");
+				args.FV.GetItemPosition(args.Items.Item(0), pt);
+				for (var i in args.List) {
+					args.FV.SelectAndPositionItem(args.Items.Item(args.List[i][0]), 0, pt);
+				}
+				args.FV.CurrentViewMode = args.ViewMode;
+				args.FV.FolderFlags = args.FolderFlags;
+				te.Layout = te.Data.Conf_Layout;
 			}
-			args.FV.CurrentViewMode = args.ViewMode;
-			args.FV.FolderFlags = args.FolderFlags;
-			te.Layout = te.Data.Conf_Layout;
+			catch (e) {}
+			args.FV.Parent.UnlockUpdate(true);
 		}
 	};
 
 	AddEvent("ColumnClick", function (Ctrl, iItem)
 	{
 		var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
-		if (cColumns[iItem * 2] == "System.TotalFileSize") {
+		var s = cColumns[iItem * 2];
+		if (s == "System.TotalFileSize" || (s == "System.Size" && api.GetKeyState(VK_SHIFT) < 0)) {
 			(function (FV) { setTimeout(function () {
 				Addons.TotalFileSizeSort.Exec(FV);
 			}, 99);}) (Ctrl);

@@ -1,5 +1,13 @@
 ﻿var Addon_Id = "inactivepane";
 
+var items = te.Data.Addons.getElementsByTagName(Addon_Id);
+if (items.length) {
+	var item = items[0];
+	if (!item.getAttribute("Color")) {
+		item.setAttribute("Color", GetWebColor(GetSysColor(COLOR_APPWORKSPACE)));
+	}
+}
+
 if (window.Addon == 1) {
 	Addons.InactivePane =
 	{
@@ -16,7 +24,6 @@ if (window.Addon == 1) {
 						return Addons.InactivePane.Active(Ctrl);
 					}
 					Addons.InactivePane.SetBKColor(Ctrl, hwnd, Addons.InactivePane.Color);
-					api.SendMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
 					api.InvalidateRect(hwnd, null, true);
 				}
 			}
@@ -45,11 +52,9 @@ if (window.Addon == 1) {
 
 		SetBKColor: function (FV, hwnd, color)
 		{
-			var proc = api.GetWindowLongPtr(hwnd, GWLP_WNDPROC);
-			if (proc) {
-				api.CallWindowProc(proc, hwnd, LVM_SETBKCOLOR, 0, color);
-				api.CallWindowProc(proc, hwnd, LVM_SETTEXTBKCOLOR, 0, color);
-			}
+			api.SendMessage(hwnd, LVM_SETBKCOLOR, 0, color);
+			api.SendMessage(hwnd, LVM_SETTEXTBKCOLOR, 0, color);
+			api.SendMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
 			var TV = FV.TreeView;
 			hwnd = TV.hwndTree;
 			if (hwnd) {
@@ -57,7 +62,9 @@ if (window.Addon == 1) {
 			}
 			if (FV.Type == CTRL_EB) {
 				hwnd = FindChildByClass(FV.hwnd, WC_TREEVIEW);
-				api.SendMessage(hwnd, TVM_SETBKCOLOR, 0, color);
+				if (hwnd) {
+					api.SendMessage(hwnd, TVM_SETBKCOLOR, 0, color);
+				}
 			}
 		},
 
@@ -66,20 +73,6 @@ if (window.Addon == 1) {
 			var hwnd = FV.hwndList;
 			if (hwnd) {
 				Addons.InactivePane.SetBKColor(FV, hwnd, GetSysColor(COLOR_WINDOW));
-/*				if (FV.CurrentViewMode == FVM_DETAILS && api.SendMessage(hwnd, LVM_GETSELECTEDCOLUMN, 0, 0) < 0) {
-					var hHeader = api.SendMessage(hwnd, LVM_GETHEADER, 0, 0);
-					if (hHeader) {
-						for (var i = api.SendMessage(hHeader, HDM_GETITEMCOUNT, 0, 0); i-- > 0;) {
-							var hdi = api.Memory("HDITEM");
-							hdi.mask = HDI_FORMAT;
-							api.SendMessage(hHeader, HDM_GETITEM, i, hdi);
-							if (hdi.fmt & (HDF_SORTUP | HDF_SORTDOWN)) {
-								api.SendMessage(hwnd, LVM_SETSELECTEDCOLUMN, i, 0);
-								break;
-							}
-						}
-					}
-				}*/
 				api.InvalidateRect(hwnd, null, true);
 			}
 		},
@@ -116,11 +109,11 @@ if (window.Addon == 1) {
 				}
 			}
 		}
-	}, true);
+	});
 
 	AddEvent("AddonDisabled", function(Id)
 	{
-		if (api.strcmpi(Id, "activepane") == 0) {
+		if (api.strcmpi(Id, "inactivepane") == 0) {
 			AddEventEx(window, "beforeunload", function ()
 			{
 				var cTC = te.Ctrls(CTRL_TC);
@@ -135,24 +128,15 @@ if (window.Addon == 1) {
 		}
 	});
 
-	var color = GetAddonOption(Addon_Id, "Color");
-	Addons.InactivePane.Color = (api.QuadPart(color) || color === 0) ? color : GetSysColor(COLOR_APPWORKSPACE);
+	if (item) {
+		Addons.InactivePane.Color = GetWinColor(item.getAttribute("Color"));
+	}
 	var cTC = te.Ctrls(CTRL_TC);
 	for (var i in cTC) {
 		var TC = cTC[i];
 		if (TC) {
 			var FV = TC.Selected;
 			Addons.InactivePane.Arrange2(FV);
-		}
-	}
-}
-else {
-	var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-	if (items.length) {
-		var item = items[0];
-		var color = item.getAttribute("Color");
-		if (!(api.QuadPart(color) || color === 0)) {
-			item.setAttribute("Color", GetSysColor(COLOR_APPWORKSPACE));
 		}
 	}
 }

@@ -18,18 +18,18 @@
     </script>
   </head>
   <body onload="InitAddonOptions();">
-    <form name="F"><br />
+    <form name="F">
       <div class="panel" style="display: block;">
-        <label>Color</label>
-        <input id="Color_Color" type="button" value=" " class="color" onclick="ChooseColor1(this)" />
-        <input type="text" id="Color" style="display: none" />
+        <label>Color</label><br />
+        <input type="text" id="Color" style="width: 7em" onchange="ChangeColor1(this)" />
+        <input id="Color_Color" type="button" value=" " class="color" onclick="ChooseColor2(this)" />
         <!-- -->
       </div>
       <table width="95%">
         <tr>
           <td align="right">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetAddonOptions();" />
-            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />
           </td>
         </tr>
       </table>

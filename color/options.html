@@ -14,19 +14,18 @@
     <script type="text/javascript" charset="utf-8" src="script.js">
     </script>
     <script type="text/javascript">
-      var Addon_Id = 'stripes';
+      var Addon_Id = 'color';
     </script>
   </head>
   <body onload="InitAddonOptions();">
     <form name="F">
       <div class="panel" style="display: block;">
-        <label>Color</label><br />
-        <input type="text" id="Color2" style="width: 7em" onchange="ChangeColor1(this)" />
-        <input id="Color_Color2" type="button" value=" " class="color" onclick="ChooseColor2(this)" />
-        <br />
-        <input type="checkbox" id="Em" />
-        <label for="Em">Emphasis of the selected column</label>
-        <input type="hidden" id="Set" value="1" />
+        <label>Default</label><br />
+        <input type="text" id="Default" style="width: 7em" onchange="ChangeColor1(this)" />
+        <input id="Color_Default" type="button" value=" " class="color" onclick="ChooseColor2(this)" /><br />
+        <label>Background</label><br />
+        <input type="text" id="Background" style="width: 7em" onchange="ChangeColor1(this)" />
+        <input id="Color_Background" type="button" value=" " class="color" onclick="ChooseColor2(this)" />
         <!-- -->
       </div>
       <table width="95%">

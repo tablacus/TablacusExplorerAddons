@@ -77,19 +77,23 @@ if (window.Addon == 1) {
 			else {
 				List = List.reverse();
 			}
-			var args = { FV: FV, Items: Items, List: List};
-			args.ViewMode = FV.CurrentViewMode;
-			if (args.ViewMode == FVM_DETAILS || args.ViewMode == FVM_LIST) {
-				FV.CurrentViewMode = FVM_TILE;
+			FV.Parent.LockUpdate();
+			try {
+				var args = { FV: FV, Items: Items, List: List};
+				args.ViewMode = FV.CurrentViewMode;
+				if (args.ViewMode == FVM_DETAILS || args.ViewMode == FVM_LIST) {
+					FV.CurrentViewMode = FVM_TILE;
+				}
+				args.FolderFlags = FV.FolderFlags;
+				FV.FolderFlags = args.FolderFlags | FWF_AUTOARRANGE;
+				FV.GroupBy = "System.Null";
+				var f = ((2 ^ FV.CurrentViewMode) | (2 ^ args.ViewMode)) * 2;
+				if (te.Layout & f) {
+					te.Layout &= ~f;
+					FV.Suspend();
+				}
 			}
-			args.FolderFlags = FV.FolderFlags;
-			FV.FolderFlags = args.FolderFlags | FWF_AUTOARRANGE;
-			FV.GroupBy = "System.Null";
-			var f = ((2 ^ FV.CurrentViewMode) | (2 ^ args.ViewMode)) * 2;
-			if (te.Layout & f) {
-				te.Layout &= ~f;
-				FV.Suspend();
-			}
+			catch (e) {}
 			(function (args) { setTimeout(function () {
 				Addons.MixedSort.Order(args);
 			}, 99);}) (args);
@@ -97,15 +101,40 @@ if (window.Addon == 1) {
 
 		Order: function (args)
 		{
-			var pt = api.Memory("POINT");
-			for (var i in args.List) {
-				args.FV.SelectAndPositionItem(args.Items.Item(args.List[i][0]), 0, pt);
+			try  {
+				var pt = api.Memory("POINT");
+				args.FV.GetItemPosition(args.Items.Item(0), pt);
+				for (var i in args.List) {
+					args.FV.SelectAndPositionItem(args.Items.Item(args.List[i][0]), 0, pt);
+				}
+				args.FV.CurrentViewMode = args.ViewMode;
+				args.FV.FolderFlags = args.FolderFlags;
+				te.Layout = te.Data.Conf_Layout;
 			}
-			args.FV.CurrentViewMode = args.ViewMode;
-			args.FV.FolderFlags = args.FolderFlags;
-			te.Layout = te.Data.Conf_Layout;
+			catch (e) {}
+			args.FV.Parent.UnlockUpdate(true);
 		}
 	};
+
+	AddEvent("ColumnClick", function (Ctrl, iItem)
+	{
+		if (api.GetKeyState(VK_SHIFT) < 0) {
+			var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
+			var s = cColumns[iItem * 2];
+			if (s == "System.ItemNameDisplay") {
+				(function (FV) { setTimeout(function () {
+					Addons.MixedSort.CalcSort(FV, null, 0);
+				}, 99);}) (Ctrl);
+				return S_OK;
+			}
+			if (s == "System.DateModified") {
+				(function (FV) { setTimeout(function () {
+					Addons.MixedSort.CalcSort(FV, null, 1);
+				}, 99);}) (Ctrl);
+				return S_OK;
+			}
+		}
+	});
 
 	if (item) {
 		//Menu

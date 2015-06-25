@@ -4,7 +4,7 @@ var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
 	var item = items[0];
 	if (!item.getAttribute("Set")) {
-		item.setAttribute("Color2", api.sscanf("ececec", "%x"));
+		item.setAttribute("Color2", "#ececec");
 	}
 }
 if (window.Addon == 1) {
@@ -55,19 +55,16 @@ if (window.Addon == 1) {
 							api.DeleteObject(hMemDC);
 						}
 						if (Addons.Stripes.NoEm) {
-							api.SendMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
+							Ctrl.ViewFlags |= 8;
 						}
-					}
-					else {
+					} else {
 						Addons.Stripes.Retry(Ctrl, nDog);
 					}
-				}
-				else {
+				} else {
 					lvbk.ulFlags = LVBKIF_SOURCE_NONE ;
 					api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 				}
-			}
-			else {
+			} else {
 				Addons.Stripes.Retry(Ctrl, nDog);
 			}
 		},
@@ -101,11 +98,25 @@ if (window.Addon == 1) {
 					Addons.Stripes.Arrange(Ctrl, nDog);
 				}, nDog * 100);
 			}
+		},
+
+		HideEm: function (Ctrl)
+		{
+			setTimeout(function ()
+			{
+				var hwnd = Ctrl.hwndList;
+				if (hwnd) {
+					if (api.SendMessage(hwnd, LVM_GETSELECTEDCOLUMN, 0, 0) >= 0) {
+						api.PostMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
+						Addons.Stripes.Arrange2(Ctrl);
+					}
+				}
+			}, 99);
 		}
 	}
 
 	if (item) {
-		Addons.Stripes.Color = item.getAttribute("Color2");
+		Addons.Stripes.Color = GetWinColor(item.getAttribute("Color2"));
 		Addons.Stripes.NoEm = !api.LowPart(item.getAttribute("Em"));
 	}
 
@@ -117,24 +128,9 @@ if (window.Addon == 1) {
 		Addons.Stripes.Arrange2(te.CtrlFromWindow(hwnd));
 	});
 
-	if (Addons.Stripes.NoEm) {
-		AddEvent("SystemMessage", function (Ctrl, hwnd, msg, wParam, lParam)
-		{
-			if (Ctrl.Type <= CTRL_EB) {
-				if (msg == WM_NOTIFY) {
-					var hwnd = Ctrl.hwndList;
-					if (api.SendMessage(hwnd, LVM_GETSELECTEDCOLUMN, 0, 0) >= 0) {
-						api.PostMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
-						Addons.Stripes.Arrange2(Ctrl);
-					}
-				}
-			}
-		});
-	}
-
 	AddEvent("AddonDisabled", function(Id)
 	{
-		if (api.strcmpi(Id, "stripes") == 0) {
+		if (String(Id).toLowerCase() == "stripes") {
 			AddEventEx(window, "beforeunload", function ()
 			{
 				var cFV = te.Ctrls(CTRL_FV);
@@ -144,6 +140,7 @@ if (window.Addon == 1) {
 					var hwnd = cFV[i].hwndList;
 					if (hwnd) {
 						api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
+						cFV[i].ViewFlags &= ~8;
 					}
 				}
 			});
