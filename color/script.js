@@ -1,4 +1,4 @@
-﻿var Addon_Id = "color";
+﻿Addon_Id = "color";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -61,12 +61,8 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("ViewCreated", Addons.Color.Arrange);
-	AddEvent("NavigateComplete", function (Ctrl)
-	{
-		if (Ctrl.Type == CTRL_EB) {
-			Addons.Color.Arrange(Ctrl);
-		}
-	});
+
+	AddEvent("NavigateComplete", Addons.Color.Arrange);
 
 	AddEvent("Create", function (Ctrl)
 	{
