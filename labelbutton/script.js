@@ -14,10 +14,13 @@ if (window.Addon == 1) {
 					Addons.Label.List(oList);
 					var hMenu = api.CreatePopupMenu();
 					var arList = [];
+					var oListPos = {};
+					var i = 0;
 					for (var s in oList) {
 						arList.push(s);
+						oListPos[s] = ++i;
 					}
-					if (Addons.LabelButton.Add(hMenu, oList) && !mode && arList.length) {
+					if (Addons.LabelButton.Add(hMenu, oList, arList, oListPos) && !mode && arList.length) {
 						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 					}
 					if (mode) {
@@ -28,9 +31,19 @@ if (window.Addon == 1) {
 						pt = GetPos(o);
 						pt.x += screenLeft;
 						pt.y += screenTop + o.offsetHeight;
-						var i = 0;
+						var FV = te.Ctrl(CTRL_FV);
+						if (FV && FV.CurrentViewMode == FVM_DETAILS) {
+							if (!/"System\.Contact\.Label"/.test(FV.Columns(1))) {
+								api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Details"));
+							}
+						}
+						var nRes = Addons.LabelButton.LabelGroup(hMenu, oList, arList, oListPos, 10000);
 						for (var s in oList) {
-							api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, (++i) + 10000, s);
+							if (nRes) {
+								api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+								nRes = 0;
+							}
+							api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, oListPos[s] + 10000, s);
 						}
 					}
 					Addons.LabelButton.Popup(hMenu, arList, pt)
@@ -39,7 +52,7 @@ if (window.Addon == 1) {
 			return false;
 		},
 
-		Add: function (hMenu, oList)
+		Add: function (hMenu, oList, arList, oListPos)
 		{
 			var FV = te.Ctrl(CTRL_FV);
 			if (FV) {
@@ -70,14 +83,24 @@ if (window.Addon == 1) {
 							}
 						}
 					}
-					i = 0;
 					for (var s in oList) {
-						api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++i + 20000, s);
-						mii.fState = MFS_ENABLED;
+						i = oListPos[s];
 						if (oExists[s]) {
 							api.InsertMenu(mii2.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, i + 30000, s);
 							mii2.fState = MFS_ENABLED;
 						}
+					}
+					var nRes = Addons.LabelButton.LabelGroup(mii.hSubMenu, oList, arList, oListPos, 20000);
+					if (nRes) {
+						mii.fState = MFS_ENABLED;
+					}
+					for (var s in oList) {
+						if (nRes) {
+							api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+							nRes = 0;
+						}
+						api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, oListPos[s] + 20000, s);
+						mii.fState = MFS_ENABLED;
 					}
 					api.InsertMenuItem(hMenu, MAXINT, false, mii);
 					api.InsertMenuItem(hMenu, MAXINT, false, mii2);
@@ -93,6 +116,10 @@ if (window.Addon == 1) {
 			if (nVerb == 1) {
 				Addons.Label.Edit(te.Ctrl(CTRL_FV), pt);
 			}
+			if (nVerb == 2) {
+				var FV = te.Ctrl(CTRL_FV);
+				FV.Columns = FV.Columns + ' "System.Contact.Label" -1';
+			}
 			if (nVerb > 30000) {
 				if (confirmOk("Are you sure?")) {
 					Addons.Label.RemoveItems(Selected, arList[nVerb - 30001]);
@@ -107,6 +134,34 @@ if (window.Addon == 1) {
 				Navigate("label:" + arList[nVerb - 10001], window.g_menu_button == 3 ? SBSP_NEWBROWSER : OpenMode);
 			}
 			api.DestroyMenu(hMenu);
+		},
+
+		LabelGroup: function (hMenu, oList, arList, oListPos, nOffset)
+		{
+			var nRes = 0;
+			if (Addons.LabelGroups) {
+				var mii = api.Memory("MENUITEMINFO");
+				mii.cbSize = mii.Size;
+				mii.fMask = MIIM_STRING | MIIM_SUBMENU;
+				var db = Addons.LabelGroups.db;
+				for (var s in db) {
+					mii.hSubMenu = api.CreatePopupMenu();
+					mii.dwTypeData = s;
+					var ar = db[s];
+					for (var j in ar) {
+						nRes++;
+						var s1 = ar[j];
+						if (!oListPos[s1]) {
+							arList.push(s1);
+							oListPos[s1] = arList.length;
+						}
+						api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, oListPos[s1] + nOffset, s1);
+						delete oList[s1];
+					}
+					api.InsertMenuItem(hMenu, MAXINT, true, mii);
+				}
+			}
+			return nRes;
 		}
 	};
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;

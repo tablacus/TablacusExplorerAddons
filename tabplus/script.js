@@ -22,7 +22,6 @@ if (window.Addon == 1) {
 		tids: [],
 		ImgLock: MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13),
 		ImgClose: MakeImgSrc("bitmap:ieframe.dll,545,13,1", 0, false, 13),
-		ImgNet: MakeImgSrc("icon:shell32.dll,9,16", 0, false, 16),
 
 		Arrange: function (Id)
 		{
@@ -131,9 +130,6 @@ if (window.Addon == 1) {
 						s.push('<td style="padding-right: 2px; vertical-align: middle"><img src="', this.ImgLock, '"></td>');
 					}
 					if (this.opt.Icon) {
-						if (api.PathIsNetworkPath(path)) {
-							path = this.ImgNet;
-						}
 						path = GetIconImage(FV, api.GetSysColor(COLOR_BTNFACE));
 						if (path) {
 							s.push('<td style="padding-right: 3px; vertical-align: middle;"><img src="', path, '"></td>');
@@ -568,4 +564,5 @@ if (window.Addon == 1) {
 		}
 	}
 	window.OpenMode = Addons.TabPlus.opt.NewTab ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER;
+	setTimeout("Resize()", 999);
 }

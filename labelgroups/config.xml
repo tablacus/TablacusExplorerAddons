@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
+    <Version>1.00</Version>
     <MinVersion>2015.6.28</MinVersion>
     <pubDate>Mon, 29 Jun 2015 00:00:00 UTC</pubDate>
+    <Options>Common:4:4</Options>
     <Creator>Gaku</Creator>
-    <Options>Location</Options>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Label button</Name>
-    <Description>Label button *Require "Label"</Description>
+    <Name>Label groups</Name>
+    <Description>Group management of the label. * Require "Label"</Description>
   </en>
   <ja>
-    <Name>ラベル ボタン</Name>
-    <Description>ラベル ボタン ※"ラベル"が必要</Description>
+    <Name>ラベル グループ</Name>
+    <Description>ラベルのグループ管理 ※"ラベル"が必要</Description>
   </ja>
 </TablacusExplorer>

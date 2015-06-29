@@ -21,6 +21,8 @@ if (window.Addon == 1) {
 		bSave: false,
 		Changed: {},
 		Redraw: {},
+		nPosAdd: 0,
+		nPosDel: 0,
 		tid: null,
 
 		Edit: function (Ctrl, pt)
@@ -79,7 +81,32 @@ if (window.Addon == 1) {
 			var oList = {};
 			Addons.Label.List(oList);
 			var nPos = g_nPos;
+			var nRes = 0;
+			if (Addons.LabelGroups) {
+				var mii = api.Memory("MENUITEMINFO");
+				mii.cbSize = mii.Size;
+				mii.fMask = MIIM_STRING | MIIM_SUBMENU;
+				var db = Addons.LabelGroups.db;
+				for (var s in db) {
+					mii.hSubMenu = api.CreatePopupMenu();
+					mii.dwTypeData = s;
+					var ar = db[s];
+					for (var i in ar) {
+						nRes++;
+						api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++g_nPos, ar[i]);
+						ExtraMenuData[g_nPos] = ar[i];
+						ExtraMenuCommand[g_nPos] = Addons.Label.ExecAdd;
+						delete oList[ar[i]];
+					}
+					api.InsertMenuItem(hMenu, MAXINT, true, mii);
+				}
+			}
+
 			for (var s in oList) {
+				if (nRes) {
+					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+					nRes = 0;
+				}
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++g_nPos, s);
 				ExtraMenuData[g_nPos] = s;
 				ExtraMenuCommand[g_nPos] = Addons.Label.ExecAdd;
@@ -506,7 +533,7 @@ if (window.Addon == 1) {
 					mii2.hSubMenu = api.CreatePopupMenu();
 					mii2.dwTypeData = GetText("Add");
 					api.InsertMenu(mii2.hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, api.sprintf(99, '\tJScript\tAddons.Label.AddMenu("%llx", "%llx", %d)', mii2.hSubMenu, mii.hSubMenu, 1));
-					api.InsertMenuItem(mii.hSubMenu, 1, true, mii2);
+					api.InsertMenuItem(mii.hSubMenu, MAXINT, true, mii2);
 
 					mii2.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_STATE;
 					mii2.fState = MFS_DISABLED;
@@ -530,7 +557,7 @@ if (window.Addon == 1) {
 						ExtraMenuData[nPos] = s;
 						ExtraMenuCommand[nPos] = Addons.Label.ExecRemove;
 					}
-					api.InsertMenuItem(mii.hSubMenu, 2, true, mii2);
+					api.InsertMenuItem(mii.hSubMenu, MAXINT, true, mii2);
 
 					api.InsertMenuItem(hMenu, Addons.Label.nPos, true, mii);
 				}
