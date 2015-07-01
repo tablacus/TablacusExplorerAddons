@@ -69,7 +69,7 @@ if (window.Addon == 1) {
 			}
 			List.sort(function (a, b)
 			{
-				return a[1] - b[1];
+				return api.UQuadCmp(a[1], b[1]);
 			});
 			FV.Parent.LockUpdate();
 			try {
@@ -158,4 +158,7 @@ if (window.Addon == 1) {
 
 	var s = ['<span class="button" onclick="return Addons.TotalFileSizeSort.Exec(this);" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.TotalFileSizeSort.strName.replace(/"/g, ""), '" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="' + h, 'px"></span>'];
 	SetAddon(Addon_Id, Default, s);
+}
+else {
+	EnableInner();
 }

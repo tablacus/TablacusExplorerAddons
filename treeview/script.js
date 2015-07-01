@@ -1,5 +1,5 @@
-var Addon_Id = "treeview";
-var Default = "ToolBar2Left";
+Addon_Id = "treeview";
+Default = "ToolBar2Left";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -14,14 +14,18 @@ if (window.Addon == 1) {
 	{
 		strName: "Tree",
 		nPos: 0,
+		WM: TWM_APP++,
 
 		Exec: function (Ctrl, pt)
 		{
-			TV = te.Ctrl(CTRL_TV);
-			if (TV) {
-				TV.Visible = !TV.Visible;
-				if (TV.Width == 0 && TV.Visible) {
-					TV.Width = 200;
+			var FV = GetFolderView(Ctrl, pt);
+			if (FV) {
+				var TV = FV.TreeView;
+				if (TV) {
+					TV.Visible = !TV.Visible;
+					if (TV.Width == 0 && TV.Visible) {
+						TV.Width = 200;
+					}
 				}
 			}
 			return S_OK;
@@ -78,7 +82,7 @@ if (window.Addon == 1) {
 	}
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
 	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,43" : "bitmap:ieframe.dll,214,24,43");
-	var s = ['<span id="TreeViewButton" class="button" onclick="Addons.TreeView.Exec()" oncontextmenu="Addons.TreeView.Popup(); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Tree" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
+	var s = ['<span class="button" onclick="Addons.TreeView.Exec(this)" oncontextmenu="Addons.TreeView.Popup(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Tree" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
 	SetAddon(Addon_Id, Default, s);
 
 	SetGestureExec("Tree", "1", function ()
@@ -115,4 +119,29 @@ if (window.Addon == 1) {
 	}, "Func", true);
 
 	AddTypeEx("Add-ons", Addons.TreeView.strName, Addons.TreeView.Exec);
+
+	if (WINVER >= 0x600) {
+		AddEvent("AppMessage", function (Ctrl, hwnd, msg, wParam, lParam)
+		{
+			if (msg == Addons.TreeView.WM) {
+				var pidls = {};
+				var hLock = api.SHChangeNotification_Lock(wParam, lParam, pidls);
+				if (hLock) {
+					api.SHChangeNotify(pidls.lEvent, SHCNF_IDLIST, pidls[0], pidls[1]);
+					api.SHChangeNotification_Unlock(hLock);
+				}
+				return S_OK;
+			}
+		});
+
+		AddEvent("Finalize", function ()
+		{
+			api.SHChangeNotifyDeregister(Addons.TreeView.uRegisterId);
+		});
+
+		Addons.TreeView.uRegisterId = api.SHChangeNotifyRegister(te.hwnd, SHCNRF_InterruptLevel | SHCNRF_NewDelivery, SHCNE_MKDIR | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RENAMEFOLDER | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT | SHCNE_UPDATEDIR, Addons.TreeView.WM, ssfDESKTOP, true);
+	}
+}
+else {
+	EnableInner();
 }

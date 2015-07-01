@@ -1,5 +1,5 @@
-﻿var Addon_Id = "sizestatus";
-var Default = "BottomBar3Right";
+﻿Addon_Id = "sizestatus";
+Default = "BottomBar3Right";
 
 Addons.SizeStatus = {
 	Cache: null
@@ -24,11 +24,11 @@ if (window.Addon == 1) {
 				}
 				Addons.SizeStatus.Cahce = Cache;
 				for (var i = nCount; i--;) {
-					nSize = api.Add(nSize, Selected.Item(i).ExtendedProperty("Size"));
+					nSize = api.UQuadAdd(nSize, Selected.Item(i).ExtendedProperty("Size"));
 				}
 				s = api.StrFormatByteSize(nSize);
 			}
-			if (nSize == 0) {
+			if (api.UQuadCmp(nSize, 0) == 0) {
 				var strDrive = fso.GetDriveName(path);
 				if (strDrive == Addons.SizeStatus.Cahce) {
 					return;
