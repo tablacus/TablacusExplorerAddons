@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.12</Version>
-    <MinVersion>2015.6.16</MinVersion>
-    <pubDate>Tue, 16 Jun 2015 00:00:00 UTC</pubDate>
+    <Version>1.13</Version>
+    <MinVersion>2015.7.7</MinVersion>
+    <pubDate>Tue, 7 Jul 2015 00:00:00 UTC</pubDate>
     <Options>Location</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
@@ -14,7 +14,7 @@
     <Description>Tab groups</Description>
   </en>
   <ja>
-    <Name>タブグループ</Name>
-    <Description>タブグループ</Description>
+    <Name>タブ グループ</Name>
+    <Description>タブのグループ管理</Description>
   </ja>
 </TablacusExplorer>

@@ -12,13 +12,11 @@ if (window.Addon == 1) {
 		WheelButton: 0,
 		tid: null,
 		pt: api.Memory("POINT"),
-		ImgLock: MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13),
 
 		Init: function ()
 		{
 			var s = []
-			s.push('<span id="tabgroups"></span>');
-			s.push('<button class="tab2" title="', GetText("New Tab"), '" onclick="return Addons.Tabgroups.Add()" hidefocus="true">+</button>');
+			s.push('<ul class="tab0" id="tabgroups"><li class="activetab"> </li></ul>');
 			SetAddon(Addon_Id, Default, s.join(""));
 			this.Data = [];
 			this.New();
@@ -52,16 +50,17 @@ if (window.Addon == 1) {
 			SaveXmlEx("tabgroups.xml", xml, true);
 		},
 
-		Arrange: function ()
+		Arrange: function (bForce)
 		{
 			this.Fix();
 			var s = [];
 			var o = document.getElementById("tabgroups");
-			var tabs = o.getElementsByTagName("button");
-			if (tabs.length != this.Data.length - 1) {
+			var tabs = o.getElementsByTagName("li");
+			if (bForce || tabs.length != this.Data.length - 1) {
 				for (var i = 1; i < this.Data.length; i++) {
 					this.Tab(s, i);
 				}
+				s.push('<li class="tab3" title="', GetText("New Tab"), '" onclick="return Addons.Tabgroups.Add()">+</li>');
 				o.innerHTML = s.join("");
 			}
 			for (var i = 1; i < this.Data.length; i++) {
@@ -72,12 +71,12 @@ if (window.Addon == 1) {
 
 		Tab: function (s, i)
 		{
-			s.push('<button id="tabgroups', i, '" style="font-family:', document.body.style.fontFamily, '"');
+			s.push('<li id="tabgroups', i, '" style="font-family:', document.body.style.fontFamily, '"');
 			s.push(' onmousedown="return Addons.Tabgroups.Down(this)" onmouseup="return Addons.Tabgroups.Up(this)"');
 			s.push(' oncontextmenu="return Addons.Tabgroups.Popup(this)" onmousewheel="Addons.Tabgroups.Wheel()"');
 			s.push(' onmousemove="Addons.Tabgroups.Move(this)" ondblclick="return Addons.Tabgroups.Edit(this)" onfocus="this.blur()"');
 			s.push(' draggable="true" ondragstart="return Addons.Tabgroups.Start5(this)" ondragover="Addons.Tabgroups.Over5(this)" ondrop="Addons.Tabgroups.Drop5(this)" ondragend="Addons.Tabgroups.End5(this)"');
-			s.push(' hidefocus="true"></button>');
+			s.push('></li>');
 		},
 
 		Style: function (tabs, i)
@@ -88,7 +87,7 @@ if (window.Addon == 1) {
 			}
 			var s = [this.Data[i].Name];
 			if (this.Data[i].Lock) {
-				s.unshift('<img src="', this.ImgLock, '" style="padding-right: 2px">');
+				s.unshift('<img src="', Addons.TabPlus ? Addons.TabPlus.ImgLock : MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13), '" style="width: 13px; height: 13px">');
 			}
 			o.innerHTML = s.join("");
 			var style = o.style;
@@ -123,13 +122,20 @@ if (window.Addon == 1) {
 				style.color = "";
 				style.backgroundColor = "";
 			}
-			o.className = i == this.Index ? 'activetab' : i < this.Index ? 'tab' : 'tab2';
+			if (i == this.Index) {
+				o.className = 'activetab';
+				style.zIndex = tabs.length;
+			}
+			else {
+				o.className = i < this.Index ? 'tab' : 'tab2';
+				style.zIndex = tabs.length - i;
+			}
 		},
 
 		Add: function ()
 		{
 			var s;
-			var Name = [];
+			var Name = {};
 			for (var i = this.Data.length; i--;) {
 				Name[this.Data[i].Name] = true;
 			}
@@ -140,12 +146,7 @@ if (window.Addon == 1) {
 					break;
 				}
 			}
-			var s = [];
-			this.Tab(s, this.Data.length - 1);
-			var o = document.getElementById("tabgroups");
-			o.insertAdjacentHTML("BeforeEnd", s.join(""));
-			this.Style(o.getElementsByTagName("button"), this.Data.length - 1);
-			this.Fix();
+			this.Arrange(true);
 		},
 
 		New: function (a1, a2, a3)
@@ -423,19 +424,14 @@ if (window.Addon == 1) {
 				}
 			}
 			else if (this.nDrag) {
-				this.Cursor("auto");
+				this.Cursor("default");
 				this.nDrag = 0;
 			}
 		},
 
 		Cursor: function (s)
 		{
-			for (var i = this.Data.length; i-- > 0;) {
-				var o = document.getElementById('tabgroups' + i);
-				if (o) {
-					o.style.cursor = s;
-				}
-			}
+			document.getElementById('tabgroups').style.cursor = s;
 		},
 
 		Over: function ()

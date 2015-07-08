@@ -12,25 +12,89 @@
     <script type="text/javascript" charset="utf-8" src="../../script/options.js">
     </script>
     <script type="text/javascript">
-      function SetCss(a, b, c)
+      var g_nPanel = 0;
+      function SetCss(a, b, c, d)
       {
          if (confirmOk("Are you sure?")) {
            document.F.activetab.value = a;
-           document.F.tab.value = b || a;
-           document.F.tab2.value = c || b || a;
+           document.F.default.value = b;
+           document.F.tab.value = "";
+           document.F.tab2.value = "";
+           document.F.tab3.value = "";
+         }
+      }
+      function ChangeTab(o)
+      {
+         if (/(\d+)/.test(o.id)) {
+           var nIndex = RegExp.$1;
+           if (nIndex != g_nPanel) {
+	           document.getElementById("sel" + g_nPanel).className = "tab";
+	           document.getElementById("panel" + g_nPanel).style.display = "none";
+	           o.className = "activetab";
+	           document.getElementById("panel" + nIndex).style.display = "block";
+	           g_nPanel = nIndex;
+	         }
          }
       }
     </script>
   </head>
   <body>
     <form name="F">
-      <div class="panel" style="display: block;">
-        <label>Selected Items</label><br />
-        <textarea name="activetab" style="width: 100%; height: 120px"></textarea>
-        <label>Left</label><br />
-        <textarea name="tab" style="width: 100%; height: 120px"></textarea>
-        <label>Right</label><br />
-        <textarea name="tab2" style="width: 100%; height: 120px"></textarea>
+      <ul class="tab0"><!--
+      --><li id="sel0" class="activetab" onclick="ChangeTab(this)">Default</li><!--
+      --><li id="sel1" class="tab" onclick="ChangeTab(this)">Selected Items</li><!--
+      --><li id="sel2" class="tab" onclick="ChangeTab(this)">Left</li><!--
+      --><li id="sel3" class="tab" onclick="ChangeTab(this)">Right</li><!--
+      --><li id="sel4" class="tab" onclick="ChangeTab(this)">New Tab</li><!--
+      --><li id="sel5" class="tab" onclick="ChangeTab(this)">Base</li><!--
+      --></ul>
+      <div id="panel0" class="panel" style="display: block; overflow: auto; height: 420px">
+        <label>Default</label>
+        <textarea name="default" style="width: 100%; height: 110px"></textarea>
+        <label>Add before</label><br />
+        <textarea name="default_before" style="width: 100%; height: 110px"></textarea>
+        <label>Add after</label><br />
+        <textarea name="default_after" style="width: 100%; height: 110px"></textarea>
+      </div>
+      <div id="panel1" class="panel" style="display: none; overflow: auto; height: 420px">
+        <label>Selected Items</label>
+        <textarea name="activetab" style="width: 100%; height: 110px"></textarea>
+        <label>Add before</label><br />
+        <textarea name="activetab_before" style="width: 100%; height: 110px"></textarea>
+        <label>Add after</label><br />
+        <textarea name="activetab_after" style="width: 100%; height: 110px"></textarea>
+      </div>
+      <div id="panel2" class="panel" style="display: none; overflow: auto; height: 420px">
+        <label>Left</label>
+        <textarea name="tab" style="width: 100%; height: 110px"></textarea>
+        <label>Add before</label><br />
+        <textarea name="tab_before" style="width: 100%; height: 110px"></textarea>
+        <label>Add after</label><br />
+        <textarea name="tab_after" style="width: 100%; height: 110px"></textarea>
+      </div>
+      <div id="panel3" class="panel" style="display: none; overflow: auto; height: 420px">
+        <label>Right</label>
+        <textarea name="tab2" style="width: 100%; height: 110px"></textarea>
+        <label>Add before</label><br />
+        <textarea name="tab2_before" style="width: 100%; height: 110px"></textarea>
+        <label>Add after</label><br />
+        <textarea name="tab2_after" style="width: 100%; height: 110px"></textarea>
+      </div>
+      <div id="panel4" class="panel" style="display: none; overflow: auto; height: 420px">
+        <label>New Tab</label>
+        <textarea name="tab3" style="width: 100%; height: 110px"></textarea>
+        <label>Add before</label><br />
+        <textarea name="tab3_before" style="width: 100%; height: 110px"></textarea>
+        <label>Add after</label><br />
+        <textarea name="tab3_after" style="width: 100%; height: 110px"></textarea>
+      </div>
+      <div id="panel5" class="panel" style="display: none; overflow: auto; height: 420px">
+        <label>Base</label>
+        <textarea name="tab0" style="width: 100%; height: 110px"></textarea>
+        <label>Add before</label><br />
+        <textarea name="tab0_before" style="width: 100%; height: 110px"></textarea>
+        <label>Add after</label><br />
+        <textarea name="tab0_after" style="width: 100%; height: 110px"></textarea>
       </div>
       <table width="100%">
         <tr>
@@ -38,16 +102,16 @@
             <table>
               <tr>
                 <td>
-                  <input type="button" value="Tabs" onclick="SetCss('border-radius: 9px 9px 0px 0px; border-bottom: 0px', 'border-radius: 9px 9px 0px 0px')"/>
+                  <input type="button" value="Tabs" onclick="SetCss('border-radius: 9px 9px 0 0; border-bottom: 0', 'border-radius: 9px 9px 0 0')"/>
                 </td>
                 <td>
-                  <input type="button" value="XP" onclick="SetCss('border-radius: 4px 4px 0px 0px; border: 0px; border-top: 3px solid #ff8000; padding: 0px 9px', 'border-radius: 3px 3px 0px 0px; margin-right: 1px;', 'border-radius: 3px 3px 0px 0px; margin-left: 1px;')"/>
+                  <input type="button" value="XP" onclick="SetCss('border-radius: 4px 4px 0 0; border: 0; border-top: 3px solid #ff8000; padding: 0 9px', 'border-radius: 3px 3px 0 0; margin-right: 1px;', 'border-radius: 3px 3px 0 0; margin-left: 1px;')"/>
                 </td>
                 <td>
-                  <input type="button" value="Buttons" onclick="SetCss('border-radius: 9px; height: 2em; margin-right: 1px; box-shadow: 0px 0px 0px 1px #898C95 inset', 'border-radius: 9px; margin-right: 1px')"/>
+                  <input type="button" value="Buttons" onclick="SetCss('border-radius: 9px; height: 2em; margin-right: 1px; box-shadow: 0 0 0 1px #898C95 inset', 'border-radius: 9px; margin-right: 1px')"/>
                 </td>
                 <td>
-                  <input type="button" value="Flat buttons" onclick="SetCss('border-radius: 9px; height: 2em;', 'border-radius: 9px; border: 0px; margin: 1px')"/>
+                  <input type="button" value="Flat buttons" onclick="SetCss('border-radius: 9px; height: 2em; border: 1px solid #898C95; padding: 0 8px', 'border-radius: 9px; border: 0; margin: 1px')"/>
                 </td>
             </table>
           </td>

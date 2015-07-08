@@ -42,7 +42,36 @@
           <option value="" />
           Top
           <option value="1" />Bottom
+          <option value="2" />Left
+          <option value="3" />Right
         </select>
+        <br />
+      </div>
+      <div class="panel" style="display: block;">
+        <label>Icon</label> (13px)
+        <br />
+        <label>Lock</label>
+        <table style="width: 100%">
+          <tr>
+            <td style="width: 100%">
+              <input type="text" name="IconLock" onchange="SetImage();" style="width: 100%" />
+            </td>
+            <td style="white-space: nowrap">
+              <input type="button" value="Reference..." onclick="RefX('IconLock');" />
+            </td>
+          </tr>
+        </table>
+        <label>Close</label>
+        <table style="width: 100%">
+          <tr>
+            <td style="width: 100%">
+              <input type="text" name="IconClose" onchange="SetImage();" style="width: 100%" />
+            </td>
+            <td style="white-space: nowrap">
+              <input type="button" value="Reference..." onclick="RefX('IconClose');" />
+            </td>
+          </tr>
+        </table>
       </div>
       <div class="panel" style="display: block;">
         <label>Action</label>
