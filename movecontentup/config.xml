@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2015.7.23</MinVersion>
+    <pubDate>Thu, 23 Jul 2015 00:00:00 UTC</pubDate>
+    <Options>Common:7,8,9:7</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Move content up</Name>
+    <Description>Move all items in the selected folder to the current folder.</Description>
+  </en>
+  <ja>
+    <Name>現在のフォルダへ引き上げる</Name>
+    <Description>選択したフォルダ内の項目すべてを現在のフォルダへ移動させる。</Description>
+  </ja>
+</TablacusExplorer>
