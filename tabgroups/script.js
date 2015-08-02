@@ -56,7 +56,7 @@ if (window.Addon == 1) {
 			var s = [];
 			var o = document.getElementById("tabgroups");
 			var tabs = o.getElementsByTagName("li");
-			if (bForce || tabs.length != this.Data.length - 1) {
+			if (bForce || tabs.length != this.Data.length) {
 				for (var i = 1; i < this.Data.length; i++) {
 					this.Tab(s, i);
 				}
