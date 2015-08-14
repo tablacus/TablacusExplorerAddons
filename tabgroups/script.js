@@ -22,8 +22,16 @@ if (window.Addon == 1) {
 			this.New();
 			xml = OpenXml("tabgroups.xml", true, true);
 			var items = xml.getElementsByTagName('Item');
-			for (i = 0; i < items.length; i++) {
-				this.New(items[i].getAttribute("Name"), items[i].getAttribute("Color"), items[i].getAttribute("Lock"));
+			if (items.length) {
+				for (i = 0; i < items.length; i++) {
+					this.New(items[i].getAttribute("Name"), items[i].getAttribute("Color"), items[i].getAttribute("Lock"));
+				}
+			} else {
+				this.Click = 1;
+				setTimeout(function ()
+				{
+					Addons.Tabgroups.Add();
+				}, 99);
 			}
 			items = xml.getElementsByTagName('Index');
 			if (items.length) {
