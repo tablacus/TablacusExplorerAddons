@@ -38,17 +38,24 @@
                 <input type="button" value="Input" onclick="InputKey();ChangeX('Key');" />
               </div>
               <label>Type</label>
-              <br />
-              <select name="KeyType" style="width: 100%" onchange="ChangeX('Key')">
-              </select>
+              <table class="layout">
+                <tr>
+                  <td valign="bottom">
+                    <select name="KeyType" onchange="ChangeX('Key')">
+                    </select>
+                  </td>
+                  <td align="right">
+                    <input type="button" value="Portable" onclick="PortableX('KeyPath')" title="Options" />
+                  </td>
+                </tr>
+              </table>
               <table class="layout">
                 <tr>
                   <td>
                     <label>Options</label>
                   </td>
                   <td align="right">
-                    <input type="button" value="Portable" onclick="PortableX('KeyPath')" />
-                    <input type="button" value="Reference..." onclick="RefX('KeyPath', true, this)" style="width: 224px" />
+                    <input type="button" value="Reference..." onclick="RefX('KeyPath', true, this)"  style="min-width: 200px"  title="Options" />
                   </td>
                 </tr>
               </table>

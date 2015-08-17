@@ -99,15 +99,24 @@
                   </td>
                 </tr>
               </table>
-              <select name="MouseType" style="width: 100%" onchange="ChangeX('Mouse')"></select>
+              <table class="layout">
+                <tr>
+                  <td valign="bottom">
+                    <select name="MouseType" onchange="ChangeX('Mouse')">
+                    </select>
+                  </td>
+                  <td align="right">
+                    <input type="button" value="Portable" onclick="PortableX('MousePath')" title="Options" />
+                  </td>
+                </tr>
+              </table>
               <table class="layout">
                 <tr>
                   <td>
                     <label>Options</label>
                   </td>
                   <td align="right">
-                    <input type="button" value="Portable" onclick="PortableX('MousePath')" />
-                    <input type="button" value="Reference..." onclick="RefX('MousePath', true, this)" style="width: 224px" />
+                    <input type="button" value="Reference..." onclick="RefX('MousePath', true, this)" style="min-width: 200px" title="Options" />
                   </td>
                 </tr>
               </table>
