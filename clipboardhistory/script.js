@@ -23,6 +23,7 @@ if (window.Addon == 1) {
 
 		Exec: function (Ctrl, pt)
 		{
+			Addons.ClipboardHistory.nCommand = 1;
 			var hMenu = Addons.ClipboardHistory.CreateMenu();
 			Addons.ClipboardHistory.MenuCommand(Ctrl, pt, "", api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null), hMenu);
 			api.DestroyMenu(hMenu);
@@ -70,7 +71,7 @@ if (window.Addon == 1) {
 
 		Add: function (Items)
 		{
-			if (!Items.Count) {
+			if (!Items || !Items.Count) {
 				return;
 			}
 			if (te.Data.ClipboardHistory.length) {
@@ -106,6 +107,7 @@ if (window.Addon == 1) {
 			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
 			{
 				if (te.Data.ClipboardHistory.length) {
+					Addons.ClipboardHistory.nCommand = nPos + 1;
 					var mii = api.Memory("MENUITEMINFO");
 					mii.cbSize = mii.Size;
 					mii.fMask = MIIM_STRING | MIIM_SUBMENU;
