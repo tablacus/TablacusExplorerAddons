@@ -17,14 +17,14 @@ if (window.Addon == 1) {
 			close: function (Ctrl, hwnd, pt, line)
 			{
 				var p = ExtractMacro(Ctrl, line);
-				if (api.strcmpi(p, "Window") == 0) {
+				if (api.StrCmpI(p, "Window") == 0) {
 					return Exec(Ctrl, "Close Application", "Tools", hwnd, pt);
 				}
-				if (api.strcmpi(p, "Minimize") == 0) {
+				if (api.StrCmpI(p, "Minimize") == 0) {
 					api.ShowWindow(te.hwnd, SW_SHOWMINIMIZED);
 					return S_OK;
 				}
-				if (api.strcmpi(p, "ToTray") == 0) {
+				if (api.StrCmpI(p, "ToTray") == 0) {
 					if (Addons.TaskTray) {
 						Addons.TaskTray.CreateIcon(true);
 					}
@@ -100,14 +100,12 @@ if (window.Addon == 1) {
 								if (api.PathIsNetworkPath(s)) {
 									MenusIcon(mii, 'icon:dsuiext.dll,25,16');
 									s = fso.GetFileName(s) || s;
-								}
-								else {
+								} else {
 									s = api.ILCreateFromPath(s);
 									AddMenuIconFolderItem(mii, s);
 									s = api.GetDisplayNameOf(s, SHGDN_INFOLDER);
 								}
-							}
-							else {
+							} else {
 								s = s.Item(s.Index);
 								AddMenuIconFolderItem(mii, s);
 								s = api.GetDisplayNameOf(s, SHGDN_INFOLDER);
@@ -150,8 +148,7 @@ if (window.Addon == 1) {
 				setTimeout(function () {
 					if (FV) {
 						FV.SelectItem(FV.FocusedItem, SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_EDIT);
-					}
-					else {
+					} else {
 						wsh.SendKeys("{F2}");
 					}
 				}, 100);
@@ -188,7 +185,7 @@ if (window.Addon == 1) {
 			{
 				var p = ExtractMacro(Ctrl, line);
 				if (p.length) {
-					if (api.strcmpi(p, "Find") == 0) {
+					if (api.StrCmpI(p, "Find") == 0) {
 						sha.FindFiles()
 						return S_OK;
 					}
@@ -227,7 +224,7 @@ if (window.Addon == 1) {
 				if (line.length) {
 					var FV = GetFolderView(Ctrl, pt);
 					if (FV) {
-						if (api.strcmpi(line, "Undo") == 0) {
+						if (api.StrCmpI(line, "Undo") == 0) {
 							api.SendMessage(FV.hwndView, WM_COMMAND, 28700 - 1, 0);
 							return S_OK;
 						}
@@ -251,8 +248,7 @@ if (window.Addon == 1) {
 					var Items;
 					if (p >= 0x10) {
 						Items = FV.SelectedItems();
-					}
-					else {
+					} else {
 						Items = te.FolderItems();
 						Items.AddItem(FV.FocusedItem);
 					}
@@ -284,7 +280,7 @@ if (window.Addon == 1) {
 			{
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV) {
-					if (api.strcmpi(line, "Menu") == 0) {
+					if (api.StrCmpI(line, "Menu") == 0) {
 						Addons.XFinder.Popup(FV, /&V/);
 						return S_OK;
 					}
@@ -374,7 +370,7 @@ if (window.Addon == 1) {
 			{
 				var ar = WScript.Col(ExtractMacro(Ctrl, line));
 				te.Data.XFEnv.inputdata = InputDialog([ar[1], ar[2]].join("\n"), ar[3], ar[0]);
-				if (api.strcmpi(typeof(te.Data.XFEnv.inputdata), "string")) {
+				if (api.StrCmpI(typeof(te.Data.XFEnv.inputdata), "string")) {
 					te.Data.XFEnv.inputdata = "";
 					return E_ABORT;
 				}
@@ -455,7 +451,7 @@ if (window.Addon == 1) {
 								break;
 						}
 						wsPath = fso.BuildPath(fso.GetParentFolderName(strPath), wsPath.replace(wsSrc, wsDist));
-						if (api.strcmpi(wsPath, FileList[n])) {
+						if (api.StrCmpI(wsPath, FileList[n])) {
 							nSame = FileList.indexOf(wsPath);
 							if (nSame >= 0) {
 								DoRename(nSame);
@@ -466,8 +462,7 @@ if (window.Addon == 1) {
 							arFrom.push(FileList[n]);
 							arTo.push(wsPath);
 						}
-					} catch (e) {
-					}
+					} catch (e) {}
 					FileList.splice(n, 1);
 					FileIndex.splice(n, 1);
 				}
@@ -506,18 +501,15 @@ if (window.Addon == 1) {
 									while (i < ar[0].length && ar[0].charAt(i) < 'A') {
 										i++;
 									}
-									if (api.strcmpi(ar[0].charAt(i), 's') == 0) {
+									if (api.StrCmpI(ar[0].charAt(i), 's') == 0) {
 										if (nMode == 0) {
 											nMode = 1;
-										}
-										else if (nMode == 4) {
+										} else if (nMode == 4) {
 											nMode = 3;
 										}
-									}
-									else if (nMode == 0) {
+									} else if (nMode == 0) {
 										nMode = 4;
-									}
-									else if (nMode == 1) {
+									} else if (nMode == 1) {
 										nMode = 2;
 									}
 								}
@@ -564,8 +556,7 @@ if (window.Addon == 1) {
 				}
 				try {
 					wsh.CurrentDirectory = fso.GetSpecialFolder(2).Path;
-				} catch (e) {
-				}
+				} catch (e) {}
 			}
 /*
 			: function (Ctrl, hwnd, pt, line)
@@ -613,8 +604,7 @@ if (window.Addon == 1) {
 					if (s == '/u' || (s == '/a' && api.GetKeyState(VK_SHIFT) >= 0)) {
 						fFlags |= FOF_ALLOWUNDO;
 					}
-				}
-				else {
+				} else {
 					(bTo ? pTo : pFrom).push(api.PathQuoteSpaces(ar[i]));
 				}
 			}
@@ -625,7 +615,7 @@ if (window.Addon == 1) {
 					}
 				}
 				if (wFunc == FO_DELETE) {
-					if (api.strcmpi(pFrom[0], 'shell:RecycleBinFolder') == 0) {
+					if (api.StrCmpI(pFrom[0], 'shell:RecycleBinFolder') == 0) {
 						var dwFlags = 0;
 						if (fFlags & FOF_SILENT) {
 							dwFlags |= SHERB_NOPROGRESSUI;
@@ -660,10 +650,14 @@ if (window.Addon == 1) {
 
 			windowposition: function (Ctrl, hwnd, pt, s)
 			{
-				var rc = api.Memory("RECT");
-				api.GetWindowRect(te.hwnd, rc);
 				var pt = s.split(/,/);
-				api.MoveWindow(te.hwnd, pt[0], pt[1], rc.right - rc.left, rc.bottom - rc.top, 0);
+				if (pt.length < 4) {
+					var rc = api.Memory("RECT");
+					api.GetWindowRect(te.hwnd, rc);
+					api.MoveWindow(te.hwnd, pt[0], pt[1], rc.right - rc.left, rc.bottom - rc.top, 1);
+				} else {
+					api.MoveWindow(te.hwnd, pt[0], pt[1], pt[2], pt[3], 1);
+				}
 			 	return S_OK;
 			},
 
@@ -672,7 +666,7 @@ if (window.Addon == 1) {
 				var rc = api.Memory("RECT");
 				api.GetWindowRect(te.hwnd, rc);
 				var size = s.split(/,/);
-				api.MoveWindow(te.hwnd, rc.left, rc.top, size[0], size[1], 0);
+				api.MoveWindow(te.hwnd, rc.left, rc.top, size[0], size[1], 1);
 			 	return S_OK;
 			},
 
@@ -791,7 +785,7 @@ if (window.Addon == 1) {
 			if (ContextMenu) {
 				ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_DEFAULTONLY);
 				s = ExtractMacro(FV, s);
-				if (api.strcmpi(s, Default) == 0) {
+				if (api.StrCmpI(s, Default) == 0) {
 					s = null;
 				}
 				ContextMenu.InvokeCommand(0, te.hwnd, s, null, null, SW_SHOWNORMAL, 0, 0);
@@ -929,8 +923,7 @@ if (window.Addon == 1) {
 						s = ts.ReadAll();
 					}
 					ts.Close();
-				}
-				catch (e) {
+				} catch (e) {
 					wsh.Echo(Focused.Path);
 				}
 			}
