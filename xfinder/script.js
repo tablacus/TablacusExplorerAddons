@@ -989,9 +989,9 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ReplaceMacro", [/%DateTime:([^%]*)%/ig, function (Ctrl)
+	AddEvent("ReplaceMacroEx", [/%DateTime:([^%]*)%/ig, function (strMatch, ref1)
 	{
-		return Addons.XFinder.FormatDateTime(RegExp.$1, new Date());
+		return Addons.XFinder.FormatDateTime(ref1, new Date());
 	}]);
 
 	AddEvent("ReplaceMacro", [/%TimeStamp:([^%]*)%/ig, function (Ctrl, re)
@@ -1002,13 +1002,10 @@ if (window.Addon == 1) {
 		}
 	}]);
 
-	AddEvent("ExtractMacro", [/%([^%]+)%/, function (Ctrl, s, re)
+	AddEvent("ReplaceMacroEx", [/%(\w+)%/g, function (strMatch, ref1)
 	{
-		var s1 = te.Data.XFEnv[RegExp.$1.toLowerCase()];
-		if (s1 !== undefined) {
-			return s.replace("%" + RegExp.$1 + "%", s1);
-		}
-		return s;
+		var s1 = te.Data.XFEnv[ref1.toLowerCase()];
+		return s1 !== undefined ? s1 : strMatch;
 	}]);
 
 	AddType("X-Finder",
