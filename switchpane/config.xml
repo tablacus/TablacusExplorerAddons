@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2015.9.11</MinVersion>
+    <pubDate>Fri, 11 Sep 2015 00:00:00 UTC</pubDate>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Switch to next pane</Name>
+    <Description>Command: "Switch to next pane", Environment: "%other%".</Description>
+  </en>
+  <ja>
+    <Name>次のペインに切り替える</Name>
+    <Description>次のペインに切り替えるコマンドと、次のペインを現す環境変数「%other%」を追加します。</Description>
+  </ja>
+</TablacusExplorer>

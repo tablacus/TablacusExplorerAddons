@@ -898,9 +898,17 @@ if (window.Addon == 1) {
 	{
 		var TC = te.Ctrl(CTRL_TC);
 		var cTC = te.Ctrls(CTRL_TC);
-		for (var i = cTC.length; i--;) {
-			if (cTC[i].Visible && cTC[i].Id != TC.Id) {
-				return api.PathQuoteSpaces(api.GetDisplayNameOf(cTC[i].Selected, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+		var nId = TC.Id;
+		var nLen = cTC.length;
+		for (var i = nLen; i--;) {
+			if (cTC[i].Id == nId) {
+				nId = i;
+				break;
+			}
+		}
+		for (var i = (nId + 1) % nLen; i != nId; i = (i + 1) % nLen) {
+			if (cTC[i].Visible) {
+				return api.PathQuoteSpaces(api.GetDisplayNameOf(cTC[i].Selected, SHGDN_FORPARSING));
 			}
 		}
 	});
@@ -1002,7 +1010,7 @@ if (window.Addon == 1) {
 		}
 	}]);
 
-	AddEvent("ReplaceMacroEx", [/%(\w+)%/g, function (strMatch, ref1)
+	AddEvent("ReplaceMacroEx", [/%([\w\-_]+)%/g, function (strMatch, ref1)
 	{
 		var s1 = te.Data.XFEnv[ref1.toLowerCase()];
 		return s1 !== undefined ? s1 : strMatch;
@@ -1078,7 +1086,14 @@ if (window.Addon == 1) {
 
 	WScript.Col = function (s)
 	{
-		return api.CommandLineToArgv(s.replace(/,/g, " "));
+		var ar = [];
+		s = s.replace(/ *"([^"]*)"[, ]| *([^, ]*)[, ]/g, function (strMatch, ref1, ref2)
+		{
+			ar.push(ref1 || ref2);
+			return "";
+		});
+		ar.push(api.PathUnquoteSpaces(s));
+		return ar;
 	}
 
 	WScript.DoDragDrop = function (Items)

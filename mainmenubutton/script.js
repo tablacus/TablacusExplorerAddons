@@ -1,5 +1,5 @@
-﻿var Addon_Id = "mainmenubutton";
-var Default = "ToolBar1Left";
+﻿Addon_Id = "mainmenubutton";
+Default = "ToolBar1Left";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -12,6 +12,8 @@ if (items.length) {
 if (window.Addon == 1) {
 	Addons.MainMenuButton =
 	{
+		key: 0,
+
 		Popup: function (Ctrl, pt, o)
 		{
 			(function (Ctrl, pt, o) { setTimeout(function () {
@@ -48,7 +50,7 @@ if (window.Addon == 1) {
 				if (nVerb) {
 					ExecMenu(Ctrl || te, strMenus[nVerb - 1].replace("&", ""), pt);
 				}
-			}, 100);}) (Ctrl, pt, o);
+			}, 99);}) (Ctrl, pt, o);
 		},
 
 		Exec: function (Ctrl, pt)
@@ -60,7 +62,7 @@ if (window.Addon == 1) {
 
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
 	var s = GetAddonOption(Addon_Id, "Icon") || '../addons/mainmenubutton/menu.png';
-	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="Addons.MainMenuButton.Popup(null, null, this)" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img alt="Main Menu" src="', s.replace(/"/g, ""), '" height="', h, 'px" /></span> ']);
+	SetAddon(Addon_Id, Default, ['<span id="mainmenubutton1" class="button" onmousedown="Addons.MainMenuButton.Popup(null, null, this)" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Main Menu" src="', s.replace(/"/g, ""), '" height="', h, 'px" /></span> ']);
 
 	if (items.length) {
 		//Key
@@ -74,4 +76,15 @@ if (window.Addon == 1) {
 
 	}
 	AddTypeEx("Add-ons", "Main Menu", Addons.MainMenuButton.Exec);
+	
+	AddEvent("KeyMessage", function (Ctrl, hwnd, msg, key, keydata)
+	{
+		if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN) {
+			Addons.MainMenuButton.key = key;
+		}
+		else if (key == VK_MENU && msg == WM_SYSKEYUP && key == Addons.MainMenuButton.key) {
+			Addons.MainMenuButton.Popup(null, null, document.getElementById("mainmenubutton1"));
+			return S_OK;
+		}
+	});
 }
