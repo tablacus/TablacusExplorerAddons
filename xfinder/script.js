@@ -1087,13 +1087,14 @@ if (window.Addon == 1) {
 	WScript.Col = function (s)
 	{
 		var ar = [];
-		s = s.replace(/ *"([^"]*)"[, ]| *([^, ]*)[, ]/g, function (strMatch, ref1, ref2)
+		s = s.replace(/ *"([^"]*)"([, ]?)| *([^, ]*)([, ]?)/g, function (strMatch, r1, r2, r3, r4)
 		{
-			ar.push(ref1 || ref2);
+			if (r1 || r2 || r3 || r4) {
+				ar.push(r1 || r3);
+			}
 			return "";
 		});
-		ar.push(api.PathUnquoteSpaces(s));
-		return ar;
+		return api.CommandLineToArgv('"' + ar.join('" "') + '"');
 	}
 
 	WScript.DoDragDrop = function (Items)
