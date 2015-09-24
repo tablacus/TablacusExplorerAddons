@@ -19,17 +19,24 @@
     <form name="F">
       <div class="panel" style="display: block;">
           <label>Type</label>
-          <br />
-          <select name="Type" style="width: 100%">
-          </select>
+          <table class="layout">
+            <tr>
+              <td valign="bottom">
+                <select name="Type">
+                </select>
+              </td>
+              <td align="right">
+                <input type="button" value="Portable" onclick="PortableX('Path')" />
+              </td>
+            </tr>
+          </table>
           <table class="layout">
             <tr>
               <td>
                 <label>Options</label>
               </td>
               <td align="right">
-                <input type="button" value="Portable" onclick="PortableX('Path')" />
-                <input type="button" value="Reference..." onclick="RefX('Path', true, this)" style="width: 224px" />
+                <input type="button" value="Reference..." onclick="RefX('Path', true, this)" style="min-width: 160px" />
               </td>
             </tr>
           </table>
@@ -38,8 +45,8 @@
       <table width="95%">
         <tr>
           <td align="right">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetResult(1)" />
-            <input type="button" value="Cancel" style="width: 96px;" onclick="SetResult(2)" />
+            <input type="button" value="OK"  class="ok" onclick="SetResult(1)" />
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />
           </td>
         </tr>
       </table>
@@ -56,7 +63,7 @@
         for (var i = 0; i < arFunc.length; i++) {
             var o = oa[++oa.length - 1];
             o.value = arFunc[i];
-            o.innerText = GetText(arFunc[i]);
+			o.innerText = GetText(arFunc[i]).replace(/&|\.\.\.$/g, "").replace(/\(\w\)/, "");
         }
         InitAddonOptions();
     });

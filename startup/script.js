@@ -1,4 +1,4 @@
-var Addon_Id = "startup";
+Addon_Id = "startup";
 
 if (window.Addon == 1) {
 	AddEvent("Create", function (Ctrl)
