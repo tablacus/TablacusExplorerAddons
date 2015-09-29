@@ -17,7 +17,7 @@
       {
          if (confirmOk("Are you sure?")) {
            document.F.activetab.value = a;
-           document.F.default.value = b;
+           document.F.elements["default"].value = b;
            document.F.tab.value = "";
            document.F.tab2.value = "";
            document.F.tab3.value = "";
@@ -28,12 +28,12 @@
          if (/(\d+)/.test(o.id)) {
            var nIndex = RegExp.$1;
            if (nIndex != g_nPanel) {
-	           document.getElementById("sel" + g_nPanel).className = "tab";
-	           document.getElementById("panel" + g_nPanel).style.display = "none";
-	           o.className = "activetab";
-	           document.getElementById("panel" + nIndex).style.display = "block";
-	           g_nPanel = nIndex;
-	         }
+               document.getElementById("sel" + g_nPanel).className = "tab";
+               document.getElementById("panel" + g_nPanel).style.display = "none";
+               o.className = "activetab";
+               document.getElementById("panel" + nIndex).style.display = "block";
+               g_nPanel = nIndex;
+             }
          }
       }
     </script>
