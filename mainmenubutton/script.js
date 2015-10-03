@@ -13,19 +13,41 @@ if (window.Addon == 1) {
 	Addons.MainMenuButton =
 	{
 		key: 0,
+		strMenus: ["&File", "&Edit", "&View", "F&avorites", "&Tools", "&Help"],
 
 		Popup: function (Ctrl, pt, o)
 		{
-			(function (Ctrl, pt, o) { setTimeout(function () {
-				var strMenus = ["&File", "&Edit", "&View", "F&avorites", "&Tools", "&Help"];
+			if (Addons.MainMenuButton.bClose) {
+				return;
+			}
+			Addons.MainMenuButton.bLoop = true;
+			AddEvent("ExitMenuLoop", function () {
+				Addons.MainMenuButton.bLoop = false;
+				Addons.MainMenuButton.bClose = true;
+				clearTimeout(Addons.MainMenuButton.tid2);
+				Addons.MainMenuButton.tid2 = setTimeout("Addons.MainMenuButton.bClose = false;", 500);
+			});
+			setTimeout(function () {
+				g_nPos = 0;
 				var hMenu = api.CreatePopupMenu();
-				for (var i = strMenus.length; i--;) {
-					api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, i + 1, GetText(strMenus[i]));
+				for (var i = Addons.MainMenuButton.strMenus.length; i--;) {
+					var mii = api.Memory("MENUITEMINFO");
+					mii.cbSize = mii.Size;
+					mii.fMask = MIIM_STRING | MIIM_SUBMENU;
+					mii.dwTypeData = GetText(Addons.MainMenuButton.strMenus[i]);
+					mii.hSubMenu = api.CreatePopupMenu();
+					api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, api.sprintf(99, '\tJScript\tAddons.MainMenuButton.OpenSubMenu("%llx",%d,"%llx")', hMenu, i, mii.hSubMenu));
+					api.InsertMenuItem(hMenu, 0, true, mii);
 				}
-				var FV = Ctrl;
-				if (!FV || FV.Type > CTRL_EB) {
-					FV = te.Ctrl(CTRL_FV);
-				}
+				Ctrl = Ctrl || te;
+				var ar = GetSelectedArray(Ctrl, pt);
+				var Selected = ar.shift();
+				var SelItem = ar.shift();
+				var FV = ar.shift();
+				ExtraMenuCommand = [];
+				ExtraMenuData = [];
+				eventTE.MenuCommand = [];
+
 				if (!pt && o) {
 					pt = GetPos(o, true);
 					pt.y = pt.y + o.offsetHeight;
@@ -45,18 +67,78 @@ if (window.Addon == 1) {
 					}
 					api.ClientToScreen(FV.hwnd, pt);
 				}
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
+				Addons.MainMenuButton.Ctrl = Ctrl;
+				Addons.MainMenuButton.pt = pt;
+				Addons.MainMenuButton.FV = FV;
+				Addons.MainMenuButton.ContextMenu = [];
+				Addons.MainMenuButton.Selected = Selected;
+				Addons.MainMenuButton.SelItem = SelItem;
+				Addons.MainMenuButton.uCMF = Ctrl.Type != CTRL_TV ? CMF_NORMAL | CMF_CANRENAME : CMF_EXPLORE | CMF_CANRENAME;
+				Addons.MainMenuButton.arItem = {};
+				if (api.GetKeyState(VK_SHIFT) < 0) {
+					Addons.MainMenuButton.uCMF |= CMF_EXTENDEDVERBS;
+				}
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, Addons.MainMenuButton.ContextMenu);
+				var Name = Addons.MainMenuButton.strMenus[0].replace("&", "");
+				for (var i = Addons.MainMenuButton.strMenus.length; i--;) {
+					api.GetMenuItemInfo(hMenu, i, true, mii);
+					mii.fMask = MIIM_SUBMENU;
+					if (api.GetMenuString(mii.hSubMenu, nVerb, MF_BYCOMMAND)) {
+						Name = Addons.MainMenuButton.strMenus[i].replace("&", "");
+					}
+				}
 				api.DestroyMenu(hMenu);
 				if (nVerb) {
-					ExecMenu(Ctrl || te, strMenus[nVerb - 1].replace("&", ""), pt);
+					var mii = api.Memory("MENUITEMINFO");
+					mii.cbSize = mii.Size;
+					mii.fMask = MIIM_SUBMENU;
+					var hr = ExecMenu4(Ctrl, Name, pt, hMenu, Addons.MainMenuButton.ContextMenu, nVerb, Addons.MainMenuButton.FV);
+					if (isFinite(hr)) {
+						return hr;
+					}
+					var item = Addons.MainMenuButton.arItem[nVerb - 1];
+					if (item) {
+						var s = item.getAttribute("Type");
+						Exec(Ctrl, item.text, window.g_menu_button == 3 && s == "Open" ? "Open in New Tab" : s, Ctrl.hwnd, pt);
+						return S_OK;
+					}
 				}
-			}, 99);}) (Ctrl, pt, o);
+			}, 99);
 		},
 
 		Exec: function (Ctrl, pt)
 		{
 			Addons.MainMenuButton.Popup(Ctrl, pt)
 			return S_OK;
+		},
+
+		OpenSubMenu: function (hMenu, wID, hSubMenu)
+		{
+			hMenu = api.sscanf(hSubMenu, "%llx");
+			var Name = Addons.MainMenuButton.strMenus[wID].replace("&", "");
+			var items = null;
+			var menus = teMenuGetElementsByTagName(Name);
+			if (menus && menus.length) {
+				items = menus[0].getElementsByTagName("Item");
+				var nBase = api.QuadPart(menus[0].getAttribute("Base"));
+				Addons.MainMenuButton.ContextMenu.push(GetBaseMenuEx(hMenu, nBase, Addons.MainMenuButton.FV, Addons.MainMenuButton.Selected, Addons.MainMenuButton.uCMF, 0, Addons.MainMenuButton.SelItem, Addons.MainMenuButton.ContextMenu));
+				if (nBase < 5) {
+					var mii = api.Memory("MENUITEMINFO");
+					mii.cbSize = mii.Size;
+					mii.fMask = MIIM_FTYPE;
+					AdjustMenuBreak(hMenu);
+				}
+				var arMenu;
+				var item;
+				if (items) {
+					var x = g_nPos;
+					arMenu = OpenMenu(items, Addons.MainMenuButton.SelItem);
+					g_nPos = MakeMenus(hMenu, menus, arMenu, items, Ctrl, pt, g_nPos, Addons.MainMenuButton.arItem);
+					for (var i in eventTE[Name]) {
+						g_nPos = eventTE[Name][i](Addons.MainMenuButton.Ctrl, hMenu, g_nPos, Addons.MainMenuButton.Selected, Addons.MainMenuButton.SelItem, Addons.MainMenuButton.ContextMenu[0]);
+					}
+				}
+			}
 		}
 	};
 

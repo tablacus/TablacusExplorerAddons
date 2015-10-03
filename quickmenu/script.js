@@ -7,11 +7,11 @@
 			hMenu = api.sscanf(hMenu, "%llx");
 			Addons.QuickMenu.Items = sha.NameSpace(ssfSENDTO).Items();
 			for (var i = 0; i < Addons.QuickMenu.Items.Count; i++) {
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 0x6e00 + i, api.GetDisplayNameOf(Addons.QuickMenu.Items.Item(i), SHGDN_INFOLDER));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 0x4e00 + i, api.GetDisplayNameOf(Addons.QuickMenu.Items.Item(i), SHGDN_INFOLDER));
 			}
 			AddEvent("MenuCommand", function (Ctrl, pt, Name, nVerb)
 			{
-				nVerb -= 0x6e00;
+				nVerb -= 0x4e00;
 				if (nVerb >= 0 && nVerb < Addons.QuickMenu.Items.Count) {
 					var DropTarget = api.DropTarget(Addons.QuickMenu.Items.Item(nVerb));
 					pdwEffect = api.Memory("DWORD");
@@ -26,25 +26,26 @@
 		}
 	}
 
-	AddEvent("GetBaseMenu", function (nBase, FV, Selected, uCMF, Mode, SelItem)
+	AddEvent("GetBaseMenuEx", function (hMenu, nBase, FV, Selected, uCMF, Mode, SelItem, arContextMenu)
 	{
 		if ((Mode & 0x8000) || api.GetKeyState(VK_SHIFT) < 0) {
 			return;
 		}
-		var hMenu;
 		var nPos = 0;
-		var wID = 0x6f00;
-		var ContextMenu = null;
+		var wID = 0x4c00;
+		var ContextMenu;
 		switch (nBase) {
 			case 2:
 				var Items = Selected;
 				if (!Items || !Items.Count) {
 					Items = SelItem;
 				}
-				ContextMenu = api.ContextMenu(Items, FV);
+				ContextMenu = arContextMenu && arContextMenu[1] || api.ContextMenu(Items, FV);
 				if (ContextMenu) {
-					hMenu = api.CreatePopupMenu();
-					ContextMenu.QueryContextMenu(hMenu, 0, 0x3001, 0x6dff, CMF_DEFAULTONLY | CMF_CANRENAME);
+					if (arContextMenu) {
+						arContextMenu[1] = ContextMenu;
+					}
+					ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME);
 					if (SelItem) {
 						SetRenameMenu(ContextMenu.idCmdFirst);
 					}
@@ -72,13 +73,15 @@
 				};
 				api.InsertMenu(hMenu, 1, MF_BYPOSITION | MF_STRING, wID++, GetText("Default"));
 
-				return [hMenu, ContextMenu];
+				return ContextMenu;
 			case 3:
-				hMenu = api.CreatePopupMenu();
 				if (FV) {
-					ContextMenu = FV.ViewMenu();
+					ContextMenu = arContextMenu && arContextMenu[0] || FV.ViewMenu();
 					if (ContextMenu) {
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x3001, 0x6dff, CMF_DEFAULTONLY);
+						if (arContextMenu) {
+							arContextMenu[0] = ContextMenu;
+						}
+						ContextMenu.QueryContextMenu(hMenu, 0, 0x5001, 0x5fff, CMF_DEFAULTONLY);
 						ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
 						{
 							ExecMenu(Ctrl, Name, pt, 0x8000);
@@ -86,7 +89,7 @@
 						api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, wID++, GetText("Default"));
 					}
 				}
-				return [hMenu, ContextMenu];
+				return ContextMenu;
 			case 4:
 				var Items = Selected;
 				if (!Items || !Items.Count) {
@@ -94,18 +97,22 @@
 				}
 
 				if (Items && Items.Count) {
-					ContextMenu = api.ContextMenu(Items, FV);
+					ContextMenu = arContextMenu && arContextMenu[1] || api.ContextMenu(Items, FV);
 					if (ContextMenu) {
-						hMenu = api.CreatePopupMenu();
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x3001, 0x6dff, CMF_DEFAULTONLY | CMF_CANRENAME);
+						if (arContextMenu) {
+							arContextMenu[1] = ContextMenu;
+						}
+						ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME);
 						SetRenameMenu(ContextMenu.idCmdFirst);
 					}
 				}
 				else if (FV) {
-					hMenu = api.CreatePopupMenu();
-					ContextMenu = FV.ViewMenu();
+					ContextMenu = arContextMenu && arContextMenu[0] || FV.ViewMenu();
 					if (ContextMenu) {
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x3001, 0x6dff, CMF_DEFAULTONLY);
+						if (arContextMenu) {
+							arContextMenu[0] = ContextMenu;
+						}
+						ContextMenu.QueryContextMenu(hMenu, 0, 0x5001, 0x5fff, CMF_DEFAULTONLY);
 						var mii = api.Memory("MENUITEMINFO");
 						mii.cbSize = mii.Size;
 						mii.fMask = MIIM_FTYPE | MIIM_SUBMENU;
@@ -124,7 +131,7 @@
 					ExecMenu(Ctrl, Name, pt, 0x8000);
 				};
 				api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, wID++, GetText("Default"));
-				return [hMenu, ContextMenu];
+				return ContextMenu;
 		}
 	});
 }
