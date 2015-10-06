@@ -127,8 +127,16 @@ if (window.Addon == 1) {
 				var pidls = {};
 				var hLock = api.SHChangeNotification_Lock(wParam, lParam, pidls);
 				if (hLock) {
-					api.SHChangeNotify(pidls.lEvent, SHCNF_IDLIST, pidls[0], pidls[1]);
 					api.SHChangeNotification_Unlock(hLock);
+					var cTV = te.Ctrls(CTRL_TV);
+					for (var i in cTV) {
+						var TV = cTV[i];
+						if (pidls.lEvent & (SHCNE_MKDIR | SHCNE_MEDIAINSERTED | SHCNE_DRIVEADD | SHCNE_NETSHARE)) {
+							TV.Notify(pidls.lEvent, pidls[0], pidls[1]);
+						} else {
+							api.SendMessage(api.GetParent(TV.hwndTree), WM_USER + 1, wParam, lParam);
+						}
+					}
 				}
 				return S_OK;
 			}
@@ -139,7 +147,7 @@ if (window.Addon == 1) {
 			api.SHChangeNotifyDeregister(Addons.TreeView.uRegisterId);
 		});
 
-		Addons.TreeView.uRegisterId = api.SHChangeNotifyRegister(te.hwnd, SHCNRF_InterruptLevel | SHCNRF_NewDelivery, SHCNE_MKDIR | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RENAMEFOLDER | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT | SHCNE_UPDATEDIR, Addons.TreeView.WM, ssfDESKTOP, true);
+		Addons.TreeView.uRegisterId = api.SHChangeNotifyRegister(te.hwnd, SHCNRF_InterruptLevel | SHCNRF_NewDelivery, SHCNE_MKDIR | SHCNE_MEDIAINSERTED | SHCNE_DRIVEADD | SHCNE_NETSHARE | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RENAMEFOLDER | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT | SHCNE_UPDATEDIR, Addons.TreeView.WM, ssfDESKTOP, true);
 	}
 }
 else {
