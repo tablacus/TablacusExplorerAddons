@@ -49,9 +49,7 @@ if (window.Addon == 1) {
 		if (Ctrl.FolderItem) {
 			var TV = Ctrl.TreeView;
 			if (TV) {
-				if (!api.ILIsEqual(Ctrl.FolderItem, TV.SelectedItem)) {
-					TV.Expand(Ctrl.FolderItem, 1);
-				}
+				TV.Expand(Ctrl.FolderItem, 1);
 			}
 		}
 	});
@@ -60,10 +58,7 @@ if (window.Addon == 1) {
 		//Menu
 		if (item.getAttribute("MenuExec")) {
 			Addons.TreeView.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.TreeView.strName = s;
-			}
+			Addons.TreeView.strName = item.getAttribute("MenuName") || Addons.TreeView.strName;
 			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 			{
 				api.InsertMenu(hMenu, Addons.TreeView.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TreeView.strName));
