@@ -1,7 +1,7 @@
 ﻿var arItems = ["Path", "Copy", "Move", "Delete"];
-var arChecks = ["CopyStart", "MoveStart", "DeleteStart"];
+var arChecks = ["CopyStart", "MoveStart", "DeleteStart", "DiffDriveOnly"];
 
-function InitOptions()
+function InitOptionsZ()
 {
 	ApplyLang(document);
 
@@ -26,56 +26,45 @@ function InitOptions()
 			document.F.elements[arChecks[i]].checked = item.getAttribute(arChecks[i]);
 		}
 	}
-	if (api.strcmpi(te.Data.Conf_Lang, "ja") == 0) {
+	if (/ja/i.test(GetLangId())) {
 		document.getElementById("GetFastCopy").title = 'http://ipmsg.org/tools/fastcopy.html';
 	}
+	
+	SetOnChangeHandler();
+	AddEventEx(window, "beforeunload", function ()
+	{
+		SetOptions(function ()
+		{
+			var items = te.Data.Addons.getElementsByTagName("fastcopy");
+			if (items.length) {
+				var item = items[0];
+				for (i in arItems) {
+					var s = document.F.elements[arItems[i]].value;
+					if (s.length) {
+						item.setAttribute(arItems[i], s);
+					}
+					else {
+						item.removeAttribute(arItems[i]);
+					}
+				}
+				for (i in arChecks) {
+					if (document.F.elements[arChecks[i]].checked) {
+						item.setAttribute(arChecks[i], true);
+					}
+					else {
+						item.removeAttribute(arChecks[i]);
+					}
+				}
+				TEOk();
+			}
+			window.close();
+		});
+	});
 }
 
-function SetOptions()
-{
-	var items = te.Data.Addons.getElementsByTagName("fastcopy");
-	if (items.length) {
-		var item = items[0];
-		for (i in arItems) {
-			var s = document.F.elements[arItems[i]].value;
-			if (s.length) {
-				item.setAttribute(arItems[i], s);
-			}
-			else {
-				item.removeAttribute(arItems[i]);
-			}
-		}
-		for (i in arChecks) {
-			if (document.F.elements[arChecks[i]].checked) {
-				item.setAttribute(arChecks[i], true);
-			}
-			else {
-				item.removeAttribute(arChecks[i]);
-			}
-		}
-		TEOk();
-	}
-	window.close();
-}
-
-function SetData(o, s)
+function SetDataZ(o, s)
 {
 	if (confirmYN(GetText("Are you sure?"))) {
-		document.F.elements[s].value = o.title;
+		SetValue(document.F.elements[s], o.title);
 	}
-}
-
-function Ref()
-{
-	setTimeout(function ()
-	{
-		var commdlg = te.CommonDialog;
-		var arg = api.CommandLineToArgv(document.getElementById("Path").value);
-		commdlg.InitDir = fso.GetParentFolderName(arg[0]);
-		commdlg.Filter = "All Files|*.*";
-		commdlg.Flags = OFN_FILEMUSTEXIST;
-		if (commdlg.ShowOpen()) {
-			document.getElementById("Path").value = commdlg.FileName;
-		}
-	}, 100);
 }

@@ -9,28 +9,30 @@
     </script>
     <script type="text/javascript" charset="utf-8" src="../../script/common.js">
     </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
+    </script>
     <script type="text/javascript" charset="utf-8" src="options.js">
     </script>
   </head>
-  <body onload="InitOptions();">
+  <body onload="InitOptionsZ();">
 
     <form name="F" style="display: inline;">
       <div class="panel" style="display: block;">
         <label>Path</label>
         <input type="text" id="Path" style="width: 100%" />
-        <input type="button" value="..." onclick="Ref()" />
-        <input id="defalut_path" type="button" value="Auto" onclick="SetData(this, 'Path')" />
+        <input type="button" value="..." onclick="RefX('Path')" />
+        <input id="defalut_path" type="button" value="Auto" onclick="SetDataZ(this, 'Path')" />
         <input type="button" value="Portable" onclick="PortableX('Path')" />
       </div>
       <div class="panel" style="display: block;">
         <label>Copy</label>
         <input type="text" id="Copy" style="width: 100%" />
-        <input type="button" value="None" onclick="SetData(this, 'Copy')" />
-        <input type="button" value="Default" title='/cmd=diff /auto_close /to="%Dest%\"' onclick="SetData(this, 'Copy')" />
-        <input type="button" value="Overwrite all" title='/cmd=force_copy /auto_close /to="%Dest%\"' onclick="SetData(this, 'Copy')" />
-        <input type="button" value="No Overwrite" title='/cmd=noexist_only /auto_close /to="%Dest%\"' onclick="SetData(this, 'Copy')" />
-        <input type="button" value="Update" title='/cmd=update /auto_close /to="%Dest%\"' onclick="SetData(this, 'Copy')" />
-        <input type="button" value="Sync" title='/cmd=sync /auto_close /to="%Dest%\"' onclick="SetData(this, 'Copy')" />
+        <input type="button" value="None" onclick="SetDataZ(this, 'Copy')" />
+        <input type="button" value="Default" title='/cmd=diff /auto_close /to="%Dest%\"' onclick="SetDataZ(this, 'Copy')" />
+        <input type="button" value="Overwrite all" title='/cmd=force_copy /auto_close /to="%Dest%\"' onclick="SetDataZ(this, 'Copy')" />
+        <input type="button" value="No Overwrite" title='/cmd=noexist_only /auto_close /to="%Dest%\"' onclick="SetDataZ(this, 'Copy')" />
+        <input type="button" value="Update" title='/cmd=update /auto_close /to="%Dest%\"' onclick="SetDataZ(this, 'Copy')" />
+        <input type="button" value="Sync" title='/cmd=sync /auto_close /to="%Dest%\"' onclick="SetDataZ(this, 'Copy')" />
         <br />
         <input type="checkbox" id="CopyStart" />
         <label for="CopyStart">Automatically start</label>
@@ -38,8 +40,11 @@
       <div class="panel" style="display: block;">
         <label>Move</label>
         <input type="text" id="Move" style="width: 100%" />
-        <input type="button" value="None" onclick="SetData(this, 'Move')" />
-        <input type="button" value="Default" title='/cmd=move /auto_close /to="%Dest%\"' onclick="SetData(this, 'Move')" />
+        <input type="button" value="None" onclick="SetDataZ(this, 'Move')" />
+        <input type="button" value="Default" title='/cmd=move /auto_close /to="%Dest%\"' onclick="SetDataZ(this, 'Move')" />
+        <br />
+        <input type="checkbox" id="DiffDriveOnly" />
+        <label for="DiffDriveOnly">Different drive only</label>
         <br />
         <input type="checkbox" id="MoveStart" />
         <label for="MoveStart">Automatically start</label>
@@ -47,9 +52,9 @@
       <div class="panel" style="display: block;">
         <label>Delete</label>
         <input type="text" id="Delete" style="width: 100%" />
-        <input type="button" value="None" title="" onclick="SetData(this, 'Delete')" />
-        <input type="button" value="Default" title="/cmd=delete /auto_close" onclick="SetData(this, 'Delete')" />
-        <input type="button" value="No Confirm" title="/cmd=delete /auto_close /no_confirm_del" onclick="SetData(this, 'Delete')" />
+        <input type="button" value="None" title="" onclick="SetDataZ(this, 'Delete')" />
+        <input type="button" value="Default" title="/cmd=delete /auto_close" onclick="SetDataZ(this, 'Delete')" />
+        <input type="button" value="No Confirm" title="/cmd=delete /auto_close /no_confirm_del" onclick="SetDataZ(this, 'Delete')" />
         <br />
         <input type="checkbox" id="DeleteStart" />
         <label for="DeleteStart">Automatically start</label>
@@ -59,9 +64,11 @@
           <td>
             <input type="button" id="GetFastCopy" value="Get FastCopy..." title="http://ipmsg.org/tools/fastcopy.html.en" onclick="wsh.Run(this.title)" />
           </td>
-          <td align="right">
-            <input type="button" value="OK" style="width: 96px;" onclick="SetOptions();" />
-            <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+          <td style="width: 100px; white-space: nowrap">
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+          </td>
+          <td style="width: 100px; white-space: nowrap">
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
           </td>
         </tr>
       </table>

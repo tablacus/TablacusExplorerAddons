@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) { (function () {
+﻿if (window.Addon == 1) {
 	Addons.FastCopy =
 	{
 		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bDelete)
@@ -18,11 +18,11 @@
 			if (!bDelete && api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
 				return false;
 			}
-			if (Dest != "") {
+			if (Dest) {
 				try {
-					Dest = Dest.IsLink ? Dest.GetLink.Path : Dest.Path;
+					Dest = Dest.ExtendedProperty("linktarget") || Dest.Path;
 				} catch (e) {
-					return false;
+					Dest = Dest.Path;
 				}
 			}
 			if (bDelete || (Dest != "" && fso.FolderExists(Dest))) {
@@ -33,18 +33,16 @@
 					if (bDelete) {
 						strFunc = item.getAttribute("Delete");
 						bStart = item.getAttribute("DeleteStart");
-					}
-					else {
+					} else {
 						if (bOver) {
 							var DropTarget = api.DropTarget(Dest);
 							DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 						}
-						if (pdwEffect.x & DROPEFFECT_COPY) {
+						if (pdwEffect[0] & DROPEFFECT_COPY) {
 							strFunc = item.getAttribute("Copy");
 							bStart = item.getAttribute("CopyStart");
-						}
-						else if (pdwEffect.x & DROPEFFECT_MOVE) {
-							strFunc = item.getAttribute("Move");
+						} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
+							strFunc = item.getAttribute("DiffDriveOnly") && api.PathIsSameRoot(api.DragQueryFile(hDrop, 0), Dest) ? "" : item.getAttribute("Move");
 							bStart = item.getAttribute("MoveStart");
 						}
 					}
@@ -57,11 +55,10 @@
 								if (bStart) {
 									api.PostMessage(hwnd, WM_KEYDOWN, VK_RETURN, 0);
 									api.PostMessage(hwnd, WM_KEYUP, VK_RETURN, 0);
-								}
-								else {
+								} else {
 									wsh.AppActivate(oExec.ProcessID);
 								}
-							}, 100);
+							}, 99);
 						}, 1);
 						return true;
 					}
@@ -88,8 +85,7 @@
 						}
 						Dest = Ctrl.FolderItem;
 					}
-				}
-				else {
+				} else {
 					Dest = Ctrl.FolderItem;
 				}
 				if (Addons.FastCopy.FO(Ctrl, dataObj, Dest, grfKeyState, pt, pdwEffect, true)) {
@@ -147,4 +143,4 @@
 
 	te.HookDragDrop(CTRL_FV, true);
 	te.HookDragDrop(CTRL_TV, true);
-})();}
+}
