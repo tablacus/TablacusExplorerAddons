@@ -1,9 +1,10 @@
-﻿var Addon_Id = "favbar";
-var Default = "ToolBar4Center";
+﻿Addon_Id = "favbar";
+Default = "ToolBar4Center";
 
 if (window.Addon == 1) {
 	Addons.FavBar =
 	{
+		AddFavorite: window.AddFavorite,
 		Click: function (i)
 		{
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
@@ -11,7 +12,11 @@ if (window.Addon == 1) {
 				var items = menus[0].getElementsByTagName("Item");
 				var item = items[i];
 				if (item) {
-					Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
+					var type = item.getAttribute("Type");
+					if (type == "Open" && GetAddonOption("favbar", "NewTab")) {
+						type = "Open in New Tab";
+					}
+					Exec(te, item.text, type, te.hwnd, null);
 				}
 				return S_OK;
 			}
@@ -41,11 +46,20 @@ if (window.Addon == 1) {
 						Addons.FavBar.bClose = true;
 						setTimeout("Addons.FavBar.bClose = false;", 100);
 					});
+					window.g_menu_click = 2;
 					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
 					api.DestroyMenu(hMenu);
 					if (nVerb > 0) {
 						item = items[nVerb - 1];
-						Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
+						var strType = item.getAttribute("Type");
+						if (strType == "Open" && (window.g_menu_button == 3 || GetAddonOption("favbar", "NewTab"))) {
+							strType = "Open in New Tab";
+						}
+						if (window.g_menu_button == 2 && api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background")) {
+							PopupContextMenu(item.text);
+							return S_OK;
+						}
+						Exec(te, item.text, type, te.hwnd, null);
 					}
 					return S_OK;
 				}
@@ -67,7 +81,7 @@ if (window.Addon == 1) {
 						}
 					}
 					if (ContextMenu) {
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_NORMAL);
+						ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_DEFAULTONLY);
 						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 					}
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("&Edit"));
@@ -79,8 +93,7 @@ if (window.Addon == 1) {
 						var s = ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
 						if (api.strcmpi(s, "delete")) {
 							ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
-						}
-						else {
+						} else {
 							this.ShowOptions();
 						}
 					}
@@ -106,13 +119,14 @@ if (window.Addon == 1) {
 				var image = te.GdiplusBitmap;
 				for (var i = 0; i < items.length; i++) {
 					var item = items[i];
-					var strFlag = api.strcmpi(item.getAttribute("Type"), "Menus") ? "" : item.text;
-					if (api.PathMatchSpec(strFlag, "Close") && menus) {
+					var strType = item.getAttribute("Type").toLowerCase();
+					var strFlag = strType == "menus" ? item.text.toLowerCase() : "";
+					if (strFlag == "close" && menus) {
 						menus--;
 						continue;
 					}
 					var menus1 = menus;
-					if (api.PathMatchSpec(strFlag, "Open")) {
+					if (strFlag == "open") {
 						if (menus++) {
 							continue;
 						}
@@ -126,32 +140,22 @@ if (window.Addon == 1) {
 					var sh = (height ? ' style="height:' + height + 'px"' : '');
 					if (icon) {
 						img = '<img src="' + (icon || "").replace(/"/g, "") + '"' + sh + '>';
-					}
-					else if (/Open/i.test(item.getAttribute("Type"))) {
-						if (document.documentMode) { //IE8-
-							var info = api.Memory("SHFILEINFO");
-							var path = this.GetPath(items, i);
-							var pidl = api.ILCreateFromPath(path);
-							if (!pidl) {
-								if (path.match(/"([^"]*)"/)) {
-									pidl = api.ILCreateFromPath(RegExp.$1);
-								}
-								else if (path.match(/([^ ]*)/)) {
-									pidl = api.ILCreateFromPath(RegExp.$1);
-								}
+					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background")) {
+						var path = this.GetPath(items, i);
+						var pidl = api.ILCreateFromPath(path);
+						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
+							if (/"([^"]*)"/.test(path)) {
+								path = RegExp.$1;
+							} else if (/([^ ]*)/.test(path)) {
+								path = RegExp.$1;
 							}
-							if (pidl) {
-								api.ShGetFileInfo(pidl, 0, info, info.Size, SHGFI_PIDL | SHGFI_ICON | (height > 16 ? 0 : SHGFI_SMALLICON));
-								image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
-								img = '<img src="' + image.DataURI("image/png" , info.hIcon) + '" ' + sh + ' /> ';
-								api.DestroyIcon(info.hIcon);
-							}
+							pidl = api.ILCreateFromPath(path);
 						}
-						else {
-							img = height > 16 ? '<img src="icon:shell32.dll,3,32" />' : '<img src="icon:shell32.dll,3,16" /> ';
-						}
+						img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '">';
+					} else if (strFlag == "open") {
+						img = '<img src="' + MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16) + '">';
 					}
-					s.push('<span id="_favbar', i, '" ', api.strcmpi(item.getAttribute("Type"), "Menus") || api.strcmpi(item.text, "Open") ? 'onclick="Addons.FavBar.Click('
+					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.strcmpi(item.text, "Open") ? 'onclick="Addons.FavBar.Click('
  : 'onmousedown="Addons.FavBar.Open(');
 					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, GetText(item.getAttribute("Name")), '</span> ');
 				}
@@ -186,8 +190,63 @@ if (window.Addon == 1) {
 	};
 	SetAddon(Addon_Id, Default, '<span id="_favbar"></span>');
 	Addons.FavBar.Arrange();
-}
-else {
-	document.getElementById("tab0").value = GetText("Icon");
-	document.getElementById("panel0").innerHTML = ['<label>', GetText("Size"), '</label><br /><input type="text" name="Size" size="4" />px'].join("");
+	AddEvent("FavoriteChanged", Addons.FavBar.Arrange);
+
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
+	{
+		if (Ctrl.Type == CTRL_WB) {
+			return S_OK;
+		}
+	});
+
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
+	{
+		if (Ctrl.Type == CTRL_WB) {
+			var menus = te.Data["xmlMenus"].getElementsByTagName('Favorites');
+			if (menus && menus.length) {
+				var items = menus[0].getElementsByTagName("Item");
+				var i = Addons.FavBar.FromPt(items.length, pt);
+				if (i >= 0) {
+					hr = Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect);
+/*					if (hr == S_OK && pdwEffect[0]) {
+						MouseOver(document.getElementById("fav" + i));
+					}*/
+					return S_OK;
+				}
+			}
+			if (HitTest(document.getElementById('_favbar'), pt) && dataObj.Count) {
+				pdwEffect[0] = DROPEFFECT_LINK;
+				return S_OK;
+			}
+		}
+		MouseOut("_favbar");
+	});
+
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
+	{
+		MouseOut();
+		if (Ctrl.Type == CTRL_WB) {
+			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
+			if (menus && menus.length) {
+				var items = menus[0].getElementsByTagName("Item");
+				var i = Addons.FavBar.FromPt(items.length + 1, pt);
+				if (i >= 0) {
+					return Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
+				}
+			}
+			if (HitTest(document.getElementById("_favbar"), pt) && dataObj.Count) {
+				AddFavorite(dataObj.Item(0));
+				return S_OK;
+			}
+		}
+	});
+
+	AddEvent("DragLeave", function (Ctrl)
+	{
+		MouseOut();
+		return S_OK;
+	});
+} else {
+	document.getElementById("tab0").value = GetText("General");
+	document.getElementById("panel0").innerHTML = ['<input type="checkbox" id="NewTab" value="2" /><label for="NewTab">Open in New Tab</label><br /><label>Icon</label></label><br /><input type="text" name="Size" size="4" />px'].join("");
 }

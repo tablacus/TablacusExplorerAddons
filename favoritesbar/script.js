@@ -1,9 +1,8 @@
-var Addon_Id = "favoritesbar";
+Addon_Id = "favoritesbar";
 
 if (window.Addon == 1) {
 	Addons.FavoritesBar =
 	{
-		AddFavorite: window.AddFavorite,
 		Align: api.strcmpi(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
 		Width: 0,
 
@@ -33,11 +32,10 @@ if (window.Addon == 1) {
 				if (api.strcmpi(type, "Menus") == 0) {
 					var o = document.getElementById("fav" + i + "_button");
 					var oChild = document.getElementById("fav" + i + "_");
-					if (api.strcmpi(o.innerText, "-")) {
+					if (o.innerText != "-") {
 						o.innerText = "-";
 						oChild.style.display = "block";
-					}
-					else {
+					} else {
 						o.innerText = "+";
 						oChild.style.display = "none";
 					}
@@ -79,8 +77,7 @@ if (window.Addon == 1) {
 						var s = ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
 						if (api.strcmpi(s, "delete")) {
 							ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
-						}
-						else {
+						} else {
 							this.ShowOptions();
 						}
 					}
@@ -116,8 +113,7 @@ if (window.Addon == 1) {
 							s.push('</div>');
 							nLevel && nLevel--;
 							continue;
-						}
-						else {
+						} else {
 							strName = "-";
 						}
 					}
@@ -126,34 +122,22 @@ if (window.Addon == 1) {
 						continue;
 					}
 					path = this.GetPath(items, i);
+					var img = '';
 					if (nOpen) {
-						img = '<span id="fav' + i + '_button" class="treebutton">-</span>';
-					}
-					else {
-						var img = '';
+						img = '<span id="fav' + i + '_button" class="treebutton">-</span><img src="' + MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16) + '">';
+					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background")) {
 						var pidl = api.ILCreateFromPath(path);
-						if (!pidl) {
-							if (path.match(/"([^"]*)"/)) {
-								pidl = api.ILCreateFromPath(RegExp.$1);
+						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
+							if (/"([^"]*)"/.test(path)) {
+								path = RegExp.$1;
+							} else if (/([^ ]*)/.test(path)) {
+								path = RegExp.$1;
 							}
-							else if (path.match(/([^ ]*)/)) {
-								pidl = api.ILCreateFromPath(RegExp.$1);
-							}
+							pidl = api.ILCreateFromPath(path);
 						}
-						if (pidl) {
-							if (document.documentMode) { //IE8-
-								var info = api.Memory("SHFILEINFO");
-								api.ShGetFileInfo(pidl, 0, info, info.Size, SHGFI_PIDL | SHGFI_ICON | SHGFI_SMALLICON);
-								image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
-								img = '<img src="' + image.DataURI("image/png" , info.hIcon) + '">';
-								api.DestroyIcon(info.hIcon);
-							}
-							else if (pidl.IsFolder) {
-								img = '<img src="' + MakeImgSrc("", 0, false, 16, null, "shell32.dll,3,16") + '">';
-							}
-						}
+						img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '">';
 					}
-					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', items[i].text.replace(/"/g, "&quot;"), '" style="width: 100%">', new Array(nLevel + 1).join("&nbsp"), img, " ", strName.replace(/&/g, ""), '</div> ');
+					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', items[i].text.replace(/"/g, "&quot;"), '" style="width: 100%">', new Array(nLevel + 1).join('<span class="treespace">&emsp;</span>'), img, " ", strName.replace(/&/g, ""), '</div> ');
 					if (nOpen) {
 						s.push(api.sprintf(99, '<div id="fav%d_">', i));
 						nLevel++;
@@ -185,7 +169,6 @@ if (window.Addon == 1) {
 		}
 
 	};
-	Addons.FavoritesBar.Init();
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
@@ -203,14 +186,14 @@ if (window.Addon == 1) {
 				var i = Addons.FavoritesBar.FromPt(items.length, pt);
 				if (i >= 0) {
 					hr = Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect);
-					if (hr == S_OK && pdwEffect.x) {
+					if (hr == S_OK && pdwEffect[0]) {
 						MouseOver(document.getElementById("fav" + i));
 					}
 					return S_OK;
 				}
 			}
 			if (HitTest(document.getElementById("favoritesbar"), pt) && dataObj.Count) {
-				pdwEffect.x = DROPEFFECT_LINK;
+				pdwEffect[0] = DROPEFFECT_LINK;
 				return S_OK;
 			}
 		}
@@ -236,21 +219,12 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Dragleave", function (Ctrl)
+	AddEvent("DragLeave", function (Ctrl)
 	{
 		MouseOut();
 		return S_OK;
 	});
 
-	AddFavorite = function (o)
-	{
-		var r = false;
-		if (Addons.FavoritesBar.AddFavorite) {
-			r = Addons.FavoritesBar.AddFavorite(o);
-		}
-		if (r) {
-			Addons.FavoritesBar.Arrange();
-		}
-		return r;
-	}
+	AddEvent("FavoriteChanged", Addons.FavoritesBar.Arrange);
+	Addons.FavoritesBar.Init();
 }
