@@ -65,7 +65,8 @@ if (window.Addon == 1) {
 					var hMenu = api.CreatePopupMenu();
 					var ContextMenu = api.ContextMenu(this.GetPath(items, i));
 					if (ContextMenu) {
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_NORMAL);
+						ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_DEFAULTONLY);
+						RemoveCommand(hMenu, ContextMenu, "delete;rename");
 						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 					}
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("&Edit"));
@@ -121,7 +122,7 @@ if (window.Addon == 1) {
 						s.splice(s.length, 0, '<div style="width: ', this.Width - 8, 'px; height: 3px; background-color: ActiveBorder; border: 1px solid window; font-size: 1px"></div>');
 						continue;
 					}
-					path = this.GetPath(items, i);
+					path = Addons.FavoritesBar.GetPath(items, i);
 					var img = '';
 					if (nOpen) {
 						img = '<span id="fav' + i + '_button" class="treebutton">-</span><img src="' + MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16) + '">';

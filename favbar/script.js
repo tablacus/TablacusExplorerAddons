@@ -59,7 +59,7 @@ if (window.Addon == 1) {
 							PopupContextMenu(item.text);
 							return S_OK;
 						}
-						Exec(te, item.text, type, te.hwnd, null);
+						Exec(te, item.text, strType, te.hwnd, null);
 					}
 					return S_OK;
 				}
@@ -82,6 +82,7 @@ if (window.Addon == 1) {
 					}
 					if (ContextMenu) {
 						ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_DEFAULTONLY);
+						RemoveCommand(hMenu, ContextMenu, "delete;rename");
 						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 					}
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("&Edit"));
@@ -141,7 +142,7 @@ if (window.Addon == 1) {
 					if (icon) {
 						img = '<img src="' + (icon || "").replace(/"/g, "") + '"' + sh + '>';
 					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background")) {
-						var path = this.GetPath(items, i);
+						var path = Addons.FavBar.GetPath(items, i);
 						var pidl = api.ILCreateFromPath(path);
 						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
 							if (/"([^"]*)"/.test(path)) {
