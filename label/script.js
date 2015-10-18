@@ -25,6 +25,11 @@ if (window.Addon == 1) {
 		nPosDel: 0,
 		tid: null,
 
+		IsHandle: function (Ctrl)
+		{
+			return Addons.Label.RE.test(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+		},
+
 		Edit: function (Ctrl, pt)
 		{
 			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
@@ -41,8 +46,7 @@ if (window.Addon == 1) {
 							}
 						}
 					}
-				}
-				catch (e) {
+				} catch (e) {
 					wsh.Popup(e.description + "\n" + s, 0, TITLE, MB_ICONSTOP);
 				}
 			}
@@ -70,7 +74,7 @@ if (window.Addon == 1) {
 
 		LabelPath: function (Ctrl)
 		{
-			if (Addons.Label.RE.test(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
+			if (Addons.Label.IsHandle(Ctrl)) {
 				return RegExp.$1;
 			}
 		},
@@ -220,8 +224,7 @@ if (window.Addon == 1) {
 				s = s.replace(/[\\?\\*]/g, "");
 				if (s) {
 					te.Labels[path] = s;
-				}
-				else {
+				} else {
 					delete te.Labels[path];
 				}
 				var o = {};
@@ -311,22 +314,23 @@ if (window.Addon == 1) {
 		}
 		ado.Close();
 		delete te.Labels[""];
-	} catch (e) {
-	}
+	} catch (e) {}
 
 	AddEvent("SaveConfig", function ()
 	{
 		if (Addons.Label.bSave) {
-			var ado = te.CreateObject("Adodb.Stream");
-			ado.CharSet = "utf-8";
-			ado.Open();
-			delete te.Labels[""];
-			for (var i in te.Labels) {
-				ado.WriteText([i, te.Labels[i]].join("\t") + "\r\n");
-			}
-			ado.SaveToFile(Addons.Label.CONFIG, adSaveCreateOverWrite);
-			ado.Close();
-			Addons.Label.bSave = false;
+			try {
+				var ado = te.CreateObject("Adodb.Stream");
+				ado.CharSet = "utf-8";
+				ado.Open();
+				delete te.Labels[""];
+				for (var i in te.Labels) {
+					ado.WriteText([i, te.Labels[i]].join("\t") + "\r\n");
+				}
+				ado.SaveToFile(Addons.Label.CONFIG, adSaveCreateOverWrite);
+				ado.Close();
+				Addons.Label.bSave = false;
+			} catch (e) {}
 		}
 	});
 
@@ -359,8 +363,7 @@ if (window.Addon == 1) {
 								break;
 							}
 						}
-					}
-					else {
+					} else {
 						b = api.PathMatchSpec(Label, s);
 					}
 					if (!b && bWC) {
@@ -383,7 +386,7 @@ if (window.Addon == 1) {
 
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
-		if (Addons.Label.RE.test(Path)) {
+		if (Addons.Label.IsHandle(Path)) {
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
@@ -419,6 +422,16 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 		}
+		if (!Verb) {
+			if (ContextMenu.Items.Count >= 1) {
+				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+				if (Addons.Label.IsHandle(path)) {
+					var FV = te.Ctrl(CTRL_FV);
+					FV.Navigate(path, SBSP_SAMEBROWSER);
+					return S_OK;
+				}
+			}
+		}
 	});
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
@@ -437,7 +450,7 @@ if (window.Addon == 1) {
 			var Label = Addons.Label.LabelPath(Ctrl);
 			if (Label && !/[\?\*;]/.test(Label)) {
 				if (Ctrl.HitTest(pt, LVHT_ONITEM) < 0) {
-					pdwEffect.X = DROPEFFECT_LINK;
+					pdwEffect[0] = DROPEFFECT_LINK;
 					return S_OK;
 				}
 			}
@@ -445,7 +458,7 @@ if (window.Addon == 1) {
 		if (Ctrl.Type == CTRL_DT) {
 			var Label = Addons.Label.LabelPath(Ctrl);
 			if (Label && !/[\?\*;]/.test(Label)) {
-				pdwEffect.X = DROPEFFECT_LINK;
+				pdwEffect[0] = DROPEFFECT_LINK;
 				return S_OK;
 			}
 		}
@@ -458,8 +471,7 @@ if (window.Addon == 1) {
 			var nIndex = -1;
 			if (Ctrl.Type <= CTRL_EB) {
 				nIndex = Ctrl.HitTest(pt, LVHT_ONITEM);
-			}
-			else if (Ctrl.Type != CTRL_DT) {
+			} else if (Ctrl.Type != CTRL_DT) {
 				return S_OK;
 			}
 			if (nIndex < 0) {
@@ -488,18 +500,7 @@ if (window.Addon == 1) {
 	{
 		var Label = Addons.Label.LabelPath(Ctrl);
 		if (Label && !/[\?\*;]/.test(Label)) {
-			if (ContextMenu) {
-				var mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
-				mii.fMask = MIIM_STATE | MIIM_ID;
-				for (var i = api.GetMenuItemCount(hMenu); i--;) {
-					api.GetMenuItemInfo(hMenu, i, true, mii);
-					if (mii.wID == CommandID_DELETE + ContextMenu.idCmdFirst - 1) {
-						mii.fState = MFS_DISABLED;
-						api.SetMenuItemInfo(hMenu, i, true, mii);
-					}
-				}
-			}
+			RemoveCommand(hMenu, ContextMenu, "delete;rename");
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
 			ExtraMenuCommand[nPos] = Addons.Label.ExecRemoveItems;
 		}

@@ -1,5 +1,5 @@
-﻿var Addon_Id = "everything";
-var Default = "ToolBar2Right";
+﻿Addon_Id = "everything";
+Default = "ToolBar2Right";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 var item = items.length ? items[0] : null;
@@ -10,6 +10,13 @@ if (window.Addon == 1) {
 		PATH: "es:",
 		iCaret: -1,
 		strName: "Everything",
+		Items: {},
+		Max: 1000,
+
+		IsHandle: function (Ctrl)
+		{
+			return api.PathMatchSpec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), Addons.Everything.PATH + "*");
+		},
 
 		Change: function (o)
 		{
@@ -17,17 +24,17 @@ if (window.Addon == 1) {
 
 		KeyDown: function (o)
 		{
-			setTimeout(Addons.Everything.ShowButton, 100);
+			setTimeout(Addons.Everything.ShowButton, 99);
 			if (event.keyCode == VK_RETURN) {
 				Addons.Everything.Search();
 				return false;
 			}
 		},
 
-		Search: function ()
+		Search: function (s)
 		{
 			var FV = te.Ctrl(CTRL_FV);
-			var s = document.F.everythingsearch.value;
+			var s = s || document.F.everythingsearch.value;
 			if (s.length) {
 				FV.Navigate(Addons.Everything.PATH + s, Addons.Everything.NewTab ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
 			}
@@ -53,7 +60,7 @@ if (window.Addon == 1) {
 
 		ShowButton: function ()
 		{
-			if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602) {
+			if (WINVER < 0x602) {
 				document.getElementById("ButtonEverythingClear").style.display = document.F.everythingsearch.value.length ? "inline" : "none";
 			}
 		},
@@ -62,7 +69,7 @@ if (window.Addon == 1) {
 		{
 			if (Ctrl.FolderItem) {
 				var Path = Ctrl.FolderItem.Path;
-				if (api.PathMatchSpec(Path, Addons.Everything.PATH + "*")) {
+				if (Addons.Everything.IsHandle(Path)) {
 					return Path.replace(new RegExp("^" + Addons.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
 				}
 			}
@@ -73,12 +80,29 @@ if (window.Addon == 1) {
 		{
 			document.F.everythingsearch.focus();
 			return S_OK;
+		},
+
+		AddItems: function (Id)
+		{
+			var item;
+			try {
+				var FV = te.Ctrl(CTRL_FV, Id);
+				for (var i = 64; i-- && (item = Addons.Everything.Items[Id].shift());) {
+					FV.AddItem(item);
+					if (api.GetAsyncKeyState(VK_ESCAPE) < 0) {
+						Addons.Everything.Items[Id] = [];
+					}
+				}
+				if (Addons.Everything.Items[Id].length) {
+					setTimeout("Addons.Everything.AddItems(" + Id + ")", 99);
+				}
+			} catch (e) {}
 		}
 	};
 
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
-		if (api.PathMatchSpec(Path, Addons.Everything.PATH + "*")) {
+		if (Addons.Everything.IsHandle(Path)) {
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
@@ -129,7 +153,9 @@ if (window.Addon == 1) {
 			};
 			var list = new ApiStruct(EVERYTHING_IPC_LIST, 4, data);
 			var nItems = list.Read("totitems");
-
+			if (Addons.Everything.Max && nItems > Addons.Everything.Max) {
+				nItems = Addons.Everything.Max;
+			}
 			var EVERYTHING_IPC_ITEM =
 			{
 				flags: [VT_I4, api.sizeof("DWORD")],
@@ -140,12 +166,15 @@ if (window.Addon == 1) {
 			for (var i = Items.Count; i--;) {
 				Ctrl.RemoveItem(Items.Item(i));
 			}
+			Items = [];
 			var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4);
 			var itemSize = item.Size;
-			for (var i = 0; i < nItems; i++) {
+			for (var i = 0; i < nItems && api.GetAsyncKeyState(VK_ESCAPE) >= 0; i++) {
 				var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4, api.Memory("BYTE", itemSize, cd.lpData + list.Size + list.Read("offset") + itemSize * i));
-				Ctrl.AddItem(fso.BuildPath(data.Read(item.Read("path_offset"), VT_LPWSTR), data.Read(item.Read("filename_offset"), VT_LPWSTR)));
+				Items.push(fso.BuildPath(data.Read(item.Read("path_offset"), VT_LPWSTR), data.Read(item.Read("filename_offset"), VT_LPWSTR)));
 			}
+			Addons.Everything.Items[Ctrl.Id] = Items;
+			Addons.Everything.AddItems(Ctrl.Id);
 			return S_OK;
 		}
 	});
@@ -153,7 +182,7 @@ if (window.Addon == 1) {
 	AddEvent("GetTabName", function (Ctrl)
 	{
 		var Path = Ctrl.FolderItem.Path;
-		if (api.PathMatchSpec(Path, Addons.Everything.PATH + "*")) {
+		if (Addons.Everything.IsHandle(Path)) {
 			return Path.replace(Addons.Everything.PATH, "");
 		}
 	}, true);
@@ -164,9 +193,27 @@ if (window.Addon == 1) {
 		Addons.Everything.ShowButton();
 	});
 
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
+	{
+		if (!Verb) {
+			if (ContextMenu.Items.Count >= 1) {
+				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+				if (Addons.Everything.IsHandle(path)) {
+					var FV = te.Ctrl(CTRL_FV);
+					FV.Navigate(path, SBSP_SAMEBROWSER);
+					return S_OK;
+				}
+			}
+		}
+	});
+
 	var width = "176px";
 	var icon = "bitmap:ieframe.dll,216,16,17";
-	if (items.length) {
+	if (item) {
+		var s = item.getAttribute("Folders");
+		if (s) {
+			Addons.Everything.Max = api.QuadPart(s);
+		}
 		var s = item.getAttribute("Width");
 		if (s) {
 			width = (api.QuadPart(s) == s) ? (s + "px") : s;
@@ -207,12 +254,12 @@ if (window.Addon == 1) {
 	if (o.style.verticalAlign.length == 0) {
 		o.style.verticalAlign = "middle";
 	}
-}
-else {
+} else {
 	document.getElementById("tab0").value = "General";
 	var s = ['<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr>'];
 	s.push('<tr><td><label>Action</label></td></tr>');
-	s.push('<tr><td><input type="checkbox" name="NewTab" id="NewTab"><label for="NewTab">Open in New Tab</label></td></tr></table>');
+	s.push('<tr><td><input type="checkbox" name="NewTab" id="NewTab"><label for="NewTab">Open in New Tab</label></td></tr>');
+	s.push('<tr><td><label>Folders</label></td></tr><tr><td><input type="text" name="Folders" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Folders.value=1000" /></td></tr></table>');
 	s.push('<br /><br /><input type="button" value="Get Everything..." title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">');
 	document.getElementById("panel0").innerHTML = s.join("");
 }

@@ -11,7 +11,7 @@
 
 		IsHandle: function (Ctrl)
 		{
-			return api.PathMatchSpec(Ctrl.FolderItem.Path, Addons.SpeedDial.PATH);
+			return String(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)).toLowerCase() == Addons.SpeedDial.PATH;
 		},
 
 		IsDisp: function (path)
@@ -21,8 +21,7 @@
 					try {
 						var d = fso.GetDrive(fso.GetDriveName(path));
 						return d.DriveType == 2;
-					}
-					catch (e) {
+					} catch (e) {
 						return false;
 					}
 				}
@@ -39,8 +38,7 @@
 			Addons.SpeedDial.db.push(s.replace(/\t.*$/, ""));
 		}
 		f.Close();
-	}
-	catch (e) {
+	} catch (e) {
 		f && f.Close();
 	}
 
@@ -56,8 +54,7 @@
 					}
 				}
 				f.Close();
-			}
-			catch (e) {}
+			} catch (e) {}
 		}
 	});
 
@@ -71,8 +68,7 @@
 					var path = Addons.SpeedDial.db[i];
 					if (hash[path]) {
 						hash[path]++;
-					}
-					else {
+					} else {
 						hash[path] = 1;
 					}
 				}
@@ -95,9 +91,8 @@
 						}
 					}
 				}
-			}, 100);
-		}
-		else {
+			}, 99);
+		} else {
 			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 			if (path != "" && IsSavePath(path) && Addons.SpeedDial.IsDisp(path)) {
 				Addons.SpeedDial.db.unshift(path);
@@ -109,7 +104,7 @@
 
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
-		if (api.PathMatchSpec(Path, Addons.SpeedDial.PATH)) {
+		if (Addons.SpeedDial.IsHandle(Path)) {
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
@@ -120,6 +115,16 @@
 			return GetText("New Tab");
 		}
 	}, true);
+
+	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
+	{
+		if (Addons.SpeedDial.IsHandle(Ctrl)) {
+			RemoveCommand(hMenu, ContextMenu, "delete;rename");
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
+			ExtraMenuCommand[nPos] = Addons.History1.Remove;
+		}
+		return nPos;
+	});
 
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
 	{
@@ -138,6 +143,16 @@
 			var FV = ContextMenu.FolderView;
 			if (FV && Addons.SpeedDial.IsHandle(FV)) {
 				return S_OK;
+			}
+		}
+		if (!Verb) {
+			if (ContextMenu.Items.Count >= 1) {
+				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+				if (Addons.SpeedDial.IsHandle(path)) {
+					var FV = te.Ctrl(CTRL_FV);
+					FV.Navigate(path, SBSP_SAMEBROWSER);
+					return S_OK;
+				}
 			}
 		}
 	});

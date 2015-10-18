@@ -161,7 +161,7 @@ if (window.Addon == 1) {
 			var path = Ctrl.FolderItem.Path;
 			if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
 				if (Ctrl.HitTest(pt, LVHT_ONITEM) < 0) {
-					pdwEffect.X = DROPEFFECT_LINK;
+					pdwEffect[0] = DROPEFFECT_LINK;
 					return S_OK;
 				}
 			}
@@ -169,7 +169,7 @@ if (window.Addon == 1) {
 		if (Ctrl.Type == CTRL_DT) {
 			var path = Ctrl.FolderItem.Path;
 			if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
-				pdwEffect.X = DROPEFFECT_LINK;
+				pdwEffect[0] = DROPEFFECT_LINK;
 				return S_OK;
 			}
 		}
@@ -249,10 +249,11 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item)
+	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
 	{
 		var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 		if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+			RemoveCommand(hMenu, ContextMenu, "delete;rename");
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
 			ExtraMenuCommand[nPos] = Addons.ClipFolder.Remove;
 		}

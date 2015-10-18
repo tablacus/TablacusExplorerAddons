@@ -8,6 +8,9 @@
 			}
 			var dwEffect = pdwEffect[0];
 			if (Dest !== null) {
+				if (!(grfKeyState & MK_CONTROL) && api.ILIsEqual(Dest, Items.Item(-1))) {
+					return false;
+				}
 				if (api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
 					return false;
 				}
