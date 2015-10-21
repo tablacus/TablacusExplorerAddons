@@ -1,5 +1,5 @@
-﻿var Addon_Id = "filterbar";
-var Default = "ToolBar2Right";
+﻿Addon_Id = "filterbar";
+Default = "ToolBar2Right";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -20,6 +20,11 @@ if (window.Addon == 1) {
 		filter: null,
 		iCaret: -1,
 		strName: "Filter Bar",
+
+		IncludeObject: function (Ctrl, Path1, Path2)
+		{
+			return Ctrl.Data.RE.test(Path1) || (Path1 != Path2 && Ctrl.Data.RE.test(Path2)) ? S_OK : S_FALSE;
+		},
 
 		KeyDown: function (o)
 		{
@@ -42,11 +47,30 @@ if (window.Addon == 1) {
 			Addons.FilterBar.ShowButton();
 			var FV = te.Ctrl(CTRL_FV);
 			s = document.F.filter.value;
-			if (s && !/\*/.test(s)) {
+			if (Addons.FilterBar.RE) {
+				if (String(s).toLowerCase() != FV.FilterView.toLowerCase() || !FV.OnIncludeObject) {
+					if (s) {
+						FV.FilterView = s;
+						try {
+							FV.Data.RE = new RegExp((window.migemo && migemo.query(s)) || s, "i");
+							FV.OnIncludeObject = Addons.FilterBar.IncludeObject;
+						} catch (e) {
+							FV.OnIncludeObject = null;
+						}
+					} else {
+						FV.FilterView = null;
+						FV.OnIncludeObject = null;
+					}
+					FV.Refresh();
+				}
+				return;
+			}
+			if (s && !/[\*\?]/.test(s)) {
 				s = "*" + s + "*";
 			}
-			if (api.strcmpi(s, FV.FilterView)) {
+			if (String(s).toLowerCase() != FV.FilterView.toLowerCase()) {
 				FV.FilterView = s ? s : null;
+				FV.OnIncludeObject = null;
 				FV.Refresh();
 			}
 		},
@@ -69,6 +93,7 @@ if (window.Addon == 1) {
 			if (flag) {
 				var FV = te.Ctrl(CTRL_FV);
 				FV.FilterView = null;
+				FV.OnIncludeObject = null;
 				FV.Refresh();
 			}
 		},
@@ -90,15 +115,17 @@ if (window.Addon == 1) {
 		GetFilter: function (Ctrl)
 		{
 			clearTimeout(Addons.FilterBar.tid);
-			var s = String(Ctrl.FilterView);
+			var s = Ctrl.FilterView;
 			if (/^\*(.*)\*$/.test(s)) {
 				s = RegExp.$1;
-			}
-			else if (s == "*") {
+			} else if (s == "*") {
 				s = "";
 			}
 			document.F.filter.value = s;
 			Addons.FilterBar.ShowButton();
+			if (Addons.FilterBar.RE && s && !Ctrl.OnIncludeObject) {
+				Addons.FilterBar.Change();
+			}
 		}
 
 	};
@@ -109,7 +136,7 @@ if (window.Addon == 1) {
 	var width = "176px";
 	var icon = "../addons/filterbar/filter.png";
 
-	if (items.length) {
+	if (item) {
 		var s = item.getAttribute("Width");
 		if (s) {
 			width = (api.QuadPart(s) == s) ? (s + "px") : s;
@@ -118,6 +145,7 @@ if (window.Addon == 1) {
 		if (s) {
 			icon = s;
 		}
+		Addons.FilterBar.RE = item.getAttribute("RE");
 		//Menu
 		if (item.getAttribute("MenuExec")) {
 			Addons.FilterBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -149,9 +177,7 @@ if (window.Addon == 1) {
 	if (o.style.verticalAlign.length == 0) {
 		o.style.verticalAlign = "middle";
 	}
-}
-
-else {
-	document.getElementById("tab0").value = "View";
-	document.getElementById("panel0").innerHTML = '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr></table>';
+} else {
+	document.getElementById("tab0").value = "General";
+	document.getElementById("panel0").innerHTML = '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr><tr><td><label>Filter</label></td></tr><tr><td><input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr></table>';
 }
