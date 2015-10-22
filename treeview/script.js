@@ -49,7 +49,7 @@ if (window.Addon == 1) {
 		if (Ctrl.FolderItem) {
 			var TV = Ctrl.TreeView;
 			if (TV) {
-				TV.Expand(Ctrl.FolderItem, 1);
+				TV.Expand(Ctrl.FolderItem, 0);
 			}
 		}
 	});

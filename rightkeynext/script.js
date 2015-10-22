@@ -12,7 +12,7 @@ if (window.Addon == 1) {
 						if ((dwFlags & SVSI_SELECT) == 0 && api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nIndex, LVIS_SELECTED)) {
 							dwFlags |= SVSI_SELECT;
 						}
-						Ctrl.SelectItem(Items.Item(nIndex), dwFlags);
+						Ctrl.SelectItem(nIndex, dwFlags);
 					}
 					return S_OK;
 				}

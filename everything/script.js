@@ -12,6 +12,7 @@ if (window.Addon == 1) {
 		strName: "Everything",
 		Items: {},
 		Max: 1000,
+		RE: false,
 
 		IsHandle: function (Ctrl)
 		{
@@ -111,6 +112,9 @@ if (window.Addon == 1) {
 	{
 		setTimeout(function () {
 			var Path = Addons.Everything.GetSearchString(Ctrl);
+			if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
+				Path = 'regex:' + ((window.migemo && migemo.query(Path)) || Path);
+			}
 			if (Path) {
 				var hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
 				if (hwnd) {
@@ -222,6 +226,7 @@ if (window.Addon == 1) {
 		if (s) {
 			icon = s;
 		}
+		Addons.Everything.RE = api.LowPart(item.getAttribute("RE"));
 		//Menu
 		if (item.getAttribute("MenuExec")) {
 			Addons.Everything.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -258,8 +263,8 @@ if (window.Addon == 1) {
 	document.getElementById("tab0").value = "General";
 	var s = ['<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr>'];
 	s.push('<tr><td><label>Action</label></td></tr>');
-	s.push('<tr><td><input type="checkbox" name="NewTab" id="NewTab"><label for="NewTab">Open in New Tab</label></td></tr>');
-	s.push('<tr><td><label>Folders</label></td></tr><tr><td><input type="text" name="Folders" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Folders.value=1000" /></td></tr></table>');
+	s.push('<tr><td><input type="checkbox" name="NewTab" id="NewTab"><label for="NewTab">Open in New Tab</label>&emsp;<input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr>');
+	s.push('<tr><td style="width: 100%"><label>Folders</label></td></tr><tr><td><input type="text" name="Folders" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Folders.value=1000" /></td></tr></table>');
 	s.push('<br /><br /><input type="button" value="Get Everything..." title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">');
 	document.getElementById("panel0").innerHTML = s.join("");
 }
