@@ -160,19 +160,19 @@ if (window.Addon == 1) {
 		Addons.Tabs.hFont = CreateFont(DefaultFont);
 	});
 
+	AddEvent("Finalize", function ()
+	{
+		if (Addons.Tabs.himl) {
+			api.ImageList_Destroy(Addons.Tabs.himl);
+			Addons.Tabs.himl = null;
+		}
+	});
+
 	AddEventEx(window, "load", function ()
 	{
 		var cTC = te.Ctrls(CTRL_TC);
 		for (var i = cTC.length; i-- > 0;) {
 			Addons.Tabs.Init(cTC[i]);
-		}
-	});
-
-	AddEventEx(window, "beforeunload", function ()
-	{
-		if (Addons.Tabs.himl) {
-			api.ImageList_Destroy(Addons.Tabs.himl);
-			Addons.Tabs.himl = null;
 		}
 	});
 

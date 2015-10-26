@@ -110,10 +110,13 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
+		if (!Addons.Everything.IsHandle(Ctrl)) {
+			return;
+		}
 		setTimeout(function () {
 			var Path = Addons.Everything.GetSearchString(Ctrl);
 			if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
-				Path = 'regex:' + ((window.migemo && migemo.query(Path)) || Path);
+				Path = 'regex:' + ((window.migemo && (migemo.query(Path) + '|' + Path)) || Path);
 			}
 			if (Path) {
 				var hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
@@ -128,7 +131,7 @@ if (window.Addon == 1) {
 					}, 4);
 					query.Write("reply_hwnd", Ctrl.hwndView);
 					query.Write("reply_copydata_message", 2);
-					query.Write("max_results", 0xFFFFFFFF);
+					query.Write("max_results", Addons.Everything.Max);
 					query.Write("search_string", Path);
 
 					var cds = api.Memory("COPYDATASTRUCT");

@@ -52,12 +52,11 @@
 		}
 	});
 
-	AddEvent("View", function (Ctrl, hMenu, nPos)
+	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
 	{
-		ExtraMenuCommand[28722] = function (Ctrl)
-		{
+		if (wParam == 28722 && Ctrl.Type <= CTRL_EB) {
 			ShowDialog("../addons/foldersettings/options.html", {MainWindow: window, te: te, width: 640, height: 480, GetCurrent: true});
+			return S_OK;
 		}
-		return nPos;
 	});
 }

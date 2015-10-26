@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2015.10.21</MinVersion>
-    <pubDate>Wed, 21 Oct 2015 00:00:00 UTC</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2015.10.26</MinVersion>
+    <pubDate>Mon, 26 Oct 2015 00:00:00 UTC</pubDate>
     <Options>Common:4:4</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
@@ -11,10 +11,10 @@
   </General>
   <en>
     <Name>Migemo</Name>
-    <Description>Search by romanized Japanese.</Description>
+    <Description>Search by romanized Japanese. (JavaScript version)</Description>
   </en>
   <ja>
     <Name>Migemo</Name>
-    <Description>ローマ字で日本語検索</Description>
+    <Description>ローマ字で日本語検索 (JavaScript版)</Description>
   </ja>
 </TablacusExplorer>

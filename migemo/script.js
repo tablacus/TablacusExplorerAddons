@@ -20,10 +20,13 @@ Addons.Migemo =
 		if (window.migemo) {
 			migemo.initialize(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "lib\\migemo"));
 		}
+		return window.migemo;
 	}
 }
 if (window.Addon == 1) {
-	Addons.Migemo.Init();
+	if (!window.migemo) {
+		Addons.Migemo.Init();
+	}
 } else {
 	document.getElementById("tab4").value = "General";
 	var s = [''];
@@ -33,14 +36,13 @@ if (window.Addon == 1) {
 
 	KeyUp = function (o)
 	{
-		var m = MainWindow.migemo || window.migemo;
-		if (!m) {
-			Addons.Migemo.Init();
-		}
-		try {
-			document.getElementById("_Migemo").value = m.query(o.value) || o.value;
-		} catch (e) {
-			document.getElementById("_Migemo").value = o.value;
+		var m = window.migemo || (MainWindow.Addons.Migemo && MainWindow.migemo) || Addons.Migemo.Init();
+		if (m) {
+			try {
+				document.getElementById("_Migemo").value = m ? m.query(o.value) || o.value : o.value;
+			} catch (e) {
+				document.getElementById("_Migemo").value = e.description || e.toString();
+			}
 		}
 	}
 	s.push('<table style="width: 100%"><tr><td><label>Path</label></td></tr><tr><td style="width: 100%"><input type="text" readonly value="', fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "lib\\migemo\\migemo.js"), '"style="width: 100%" /></td><td><input type="button" value="Open" onclick="OpenLibrary()"></td></td></tr>');

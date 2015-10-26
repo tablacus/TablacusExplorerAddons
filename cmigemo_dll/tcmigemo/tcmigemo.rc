@@ -1,0 +1,39 @@
+#include <windows.h>
+#include "resource.h"
+
+//
+// Version Information resources
+//
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+1 VERSIONINFO
+    FILEVERSION     VER_Y,VER_M,VER_D,0
+    PRODUCTVERSION  VER_Y,VER_M,VER_D,0
+    FILEOS          VOS_NT_WINDOWS32
+    FILETYPE        VFT_APP
+    FILESUBTYPE     VFT2_UNKNOWN
+    FILEFLAGSMASK   0x00000000
+    FILEFLAGS       0x00000000
+{
+    BLOCK "StringFileInfo"
+    {
+        BLOCK "0400FDE9"
+        {
+            VALUE "CompanyName", "Tablacus\0"
+            VALUE "FileDescription", "Tablacus C/Migemo wrapper\0"
+            VALUE "FileVersion", STRING(VER_Y) "." STRING(VER_M) "." STRING(VER_D) "." STRING(VER_Z) "\0"
+            VALUE "InternalName", "tcmigemo\0"
+            VALUE "LegalCopyright", "(C) Gaku\0"
+#ifdef _WIN64
+            VALUE "OriginalFilename", "tcmigemo64.dll\0"
+#else
+            VALUE "OriginalFilename", "tcmigemo32.dll\0"
+#endif
+            VALUE "ProductName", "Tablacus C/Migemo wrapper\0"
+            VALUE "ProductVersion", STRING(VER_Y) "." STRING(VER_M) "." STRING(VER_D) "." STRING(VER_Z) "\0"
+        }
+    }
+    BLOCK "VarFileInfo"
+    {
+        VALUE "Translation", 0x0400, 0xFDE9
+    }
+}

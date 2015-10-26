@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
+    <Version>1.00</Version>
     <MinVersion>2015.10.26</MinVersion>
     <pubDate>Mon, 26 Oct 2015 00:00:00 UTC</pubDate>
     <Options>Common:0:0</Options>
@@ -10,11 +10,11 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Regular Expression/Migemo Incremental Search</Name>
-    <Description>Regular Expression/Migemo Incremental Search</Description>
+    <Name>C/Migemo</Name>
+    <Description>Search by romanized Japanese. (C/Migemo version)</Description>
   </en>
   <ja>
-    <Name>正規表現/Migemo インクリメンタルサーチ</Name>
-    <Description>正規表現/Migemoでインクリメンタルサーチします。</Description>
+    <Name>C/Migemo</Name>
+    <Description>ローマ字で日本語検索 (C/Migemo版)</Description>
   </ja>
 </TablacusExplorer>

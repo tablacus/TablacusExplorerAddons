@@ -106,16 +106,20 @@ if (window.Addon == 1) {
 			if (api.PathMatchSpec(strClass, [WC_LISTVIEW, "DirectUIHWND"].join(";"))) {
 				if (key == VK_ESCAPE) {
 					Addons.RegExpIncSearch.Clear();
-					return S_OK;
+					return;
+				}
+				var s = String.fromCharCode(key);
+				if (!/[0-9A-Z_]/i.test(s) && !Addons.RegExpIncSearch.str || api.GetKeyState(VK_CONTROL) < 0) {
+					return;
 				}
 				var time = new Date().getTime();
 				if (Addons.RegExpIncSearch.str && time - Addons.RegExpIncSearch.time > Addons.RegExpIncSearch.Timeout) {
-					if (String.fromCharCode(key) != Addons.RegExpIncSearch.str.charAt(Addons.RegExpIncSearch.str.length - 1)) {
+					if (s != Addons.RegExpIncSearch.str.charAt(Addons.RegExpIncSearch.str.length - 1)) {
 						Addons.RegExpIncSearch.Clear();
 					}
 				}
 				Addons.RegExpIncSearch.time = time;
-				Addons.RegExpIncSearch.str += String.fromCharCode(key);
+				Addons.RegExpIncSearch.str += s;
 				clearTimeout(Addons.RegExpIncSearch.tid);
 				Addons.RegExpIncSearch.tid = setTimeout(Addons.RegExpIncSearch.Search, 200);
 				ShowStatusText(Ctrl, Addons.RegExpIncSearch.str);

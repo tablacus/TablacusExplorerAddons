@@ -1,0 +1,4 @@
+LIBRARY	"tcmigemo64"
+
+EXPORTS
+	Migemo PRIVATE
