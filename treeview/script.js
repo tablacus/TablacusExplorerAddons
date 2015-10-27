@@ -15,6 +15,7 @@ if (window.Addon == 1) {
 		strName: "Tree",
 		nPos: 0,
 		WM: TWM_APP++,
+		Depth: item && api.LowPart(item.getAttribute("Depth")),
 
 		Exec: function (Ctrl, pt)
 		{
@@ -49,12 +50,12 @@ if (window.Addon == 1) {
 		if (Ctrl.FolderItem) {
 			var TV = Ctrl.TreeView;
 			if (TV) {
-				TV.Expand(Ctrl.FolderItem, 0);
+				TV.Expand(Ctrl.FolderItem, Addons.TreeView.Depth);
 			}
 		}
 	});
 
-	if (items.length) {
+	if (item) {
 		//Menu
 		if (item.getAttribute("MenuExec")) {
 			Addons.TreeView.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -75,8 +76,8 @@ if (window.Addon == 1) {
 			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TreeView.Exec, "Func");
 		}
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,43" : "bitmap:ieframe.dll,214,24,43");
+	var h = (item && item.getAttribute("IconSize")) || window.IconSize || 24;
+	var src = (item && item.getAttribute("Icon")) || (h <= 16 ? "bitmap:ieframe.dll,216,16,43" : "bitmap:ieframe.dll,214,24,43");
 	var s = ['<span class="button" onclick="Addons.TreeView.Exec(this)" oncontextmenu="Addons.TreeView.Popup(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Tree" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
 	SetAddon(Addon_Id, Default, s);
 
@@ -144,7 +145,8 @@ if (window.Addon == 1) {
 
 		Addons.TreeView.uRegisterId = api.SHChangeNotifyRegister(te.hwnd, SHCNRF_InterruptLevel | SHCNRF_NewDelivery, SHCNE_MKDIR | SHCNE_MEDIAINSERTED | SHCNE_DRIVEADD | SHCNE_NETSHARE | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RENAMEFOLDER | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT | SHCNE_UPDATEDIR, Addons.TreeView.WM, ssfDESKTOP, true);
 	}
-}
-else {
+} else {
 	EnableInner();
+	document.getElementById("tab0").value = "General";
+	document.getElementById("panel0").innerHTML = '<input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label>';
 }

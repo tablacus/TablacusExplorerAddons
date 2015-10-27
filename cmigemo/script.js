@@ -10,7 +10,7 @@ Addons.CMigemo =
 		var bit = String(api.sizeof("HANDLE") * 8);
 		migemo = api.GetProcObject(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\cmigemo\\tcmigemo" + bit + '.dll'), "Migemo");
 		if (migemo) {
-			migemo.open(ExtractMacro(te, item.getAttribute("dll" + bit)), ExtractMacro(te, item.getAttribute("dict")), item.getAttribute("CP"));
+			migemo.open(api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("dll" + bit))), api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("dict"))), item.getAttribute("CP"));
 		}
 		return migemo;
 	},
@@ -67,10 +67,10 @@ if (window.Addon == 1) {
 
 	for (var i = 32; i <= 64; i += 32) {
 		s.push('<div class="panel" style="width: 100%; display: block"><label>migemo.dll (', i, 'bit)</label><br /><input type="text" name="dll', i, '" style="width: 100%" /><br />');
-		s.push('<input type="button" value="Reference..." onclick="RefX(\'dll', i, '\')" /><input type="button" value="Portable" onclick="PortableX(\'dll', i, '\')" /></div>');
+		s.push('<input type="button" value="Reference..." onclick="RefX(\'dll', i, '\', 0, 0, 1)" /><input type="button" value="Portable" onclick="PortableX(\'dll', i, '\')" /></div>');
 	}
 	s.push('<div class="panel" style="width: 100%; display: block"><label>migemo-dict</label>&emsp;<label>CP</label><input type="text" name="CP" size="6" /><br /><input type="text" name="dict" style="width: 100%" /><br />');
-	s.push('<input type="button" value="Reference..." onclick="RefX(\'dict\')" /><input type="button" value="Portable" onclick="PortableX(\'dict\')" />');
+	s.push('<input type="button" value="Reference..." onclick="RefX(\'dict\', 0, 0, 1)" /><input type="button" value="Portable" onclick="PortableX(\'dict\')" />');
 	s.push('<input type="button" value="UTF-8(CP65001)" onclick="document.F.CP.value=65001" /><input type="button" value="SHIFT_JIS(CP932)" onclick="document.F.CP.value=932" /></div>');
 	s.push('<br /><input type="button" value="Get C/Migemo..." title="http://www.kaoriya.net/software/cmigemo/" onclick="wsh.Run(this.title)">');
 	document.getElementById("panel0").innerHTML = s.join("");
