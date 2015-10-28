@@ -42,7 +42,7 @@ if (window.Addon == 1) {
 			s = o.value;
 
 			if (Addons.InnerFilterBar.RE) {
-				if (String(s).toLowerCase() != FV.FilterView.toLowerCase() || !FV.OnIncludeObject) {
+				if (String(s).toLowerCase() != FV.FilterView.toLowerCase() || s && !FV.OnIncludeObject) {
 					if (s) {
 						FV.FilterView = s;
 						try {
@@ -184,4 +184,3 @@ if (window.Addon == 1) {
 	document.getElementById("tab0").value = "General";
 	document.getElementById("panel0").innerHTML = '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr><tr><td><label>Filter</label></td></tr><tr><td><input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr></table>';
 }
-
