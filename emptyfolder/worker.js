@@ -21,7 +21,7 @@ function SearchEmptyFolder(ex, path)
 	var hFind = api.FindFirstFile(fso.BuildPath(path, "*"), wfd);
 	var bFind = hFind != INVALID_HANDLE_VALUE;
 	while (bFind && ex.Do) {
-		if (!/^\.\.?/.test(wfd.cFileName)) {
+		if (!/^\.\.?$/.test(wfd.cFileName)) {
 			bAdd = false;
 			if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				SearchEmptyFolder(ex, fso.BuildPath(path, wfd.cFileName));
@@ -30,20 +30,14 @@ function SearchEmptyFolder(ex, path)
 		bFind = api.FindNextFile(hFind, wfd);
 	}
 	api.FindClose(hFind);
-	if (bAdd && ex.Do) {
-		try {
-			ex.FV.AddItem(api.ILCreateFromPath(path));
-		}
-		catch (e) {
-			return;
+	if (bAdd) {
+		var pidl = api.ILCreateFromPath(path);
+		if (ex.Do) {
+			try {
+				ex.FV.AddItem(pidl, ex.SessionId);
+			} catch (e) {
+				return;
+			}
 		}
 	}
-}
-
-function PathMatchEx(path, s)
-{
-	if (/^\/(.*)\/(.*)/.test(s)) {
-		return new RegExp(RegExp.$1, RegExp.$2).test(path);
-	}
-	return api.PathMatchSpec(path, s);
 }

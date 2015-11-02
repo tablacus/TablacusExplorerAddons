@@ -25,6 +25,7 @@ if (window.Addon == 1) {
 		bSave: false,
 		Prev: null,
 		strName: "",
+		tid: [],
 
 		IsHandle: function (Ctrl)
 		{
@@ -120,19 +121,16 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ListViewCreated", function (Ctrl)
+	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		if (Addons.History1.IsHandle(Ctrl)) {
-			setTimeout(function () {
+		if (Addons.History1.IsHandle(Ctrl) && !Addons.History1.tid[Ctrl.Id]) {
+			Ctrl.SortColumn = "";
+			Addons.History1.tid[Ctrl.Id] = setTimeout(function () {
+				delete Addons.History1.tid[Ctrl.Id];
+				Ctrl.RemoveAll();
 				var keys = [];
 				Addons.History1.GetList(keys);
-				var Items = Ctrl.Items();
-				for (var i = Items.Count; i--;) {
-					Ctrl.RemoveItem(Items.Item(i));
-				}
-				for (var i = 0; i < keys.length; i++) {
-					Ctrl.AddItem(keys[i]);
-				}
+				Ctrl.AddItems(keys);
 			}, 99);
 		} else {
 			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);

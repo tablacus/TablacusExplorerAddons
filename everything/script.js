@@ -10,9 +10,9 @@ if (window.Addon == 1) {
 		PATH: "es:",
 		iCaret: -1,
 		strName: "Everything",
-		Items: {},
 		Max: 1000,
 		RE: false,
+		tid: [],
 
 		IsHandle: function (Ctrl)
 		{
@@ -82,23 +82,6 @@ if (window.Addon == 1) {
 			document.F.everythingsearch.focus();
 			return S_OK;
 		},
-
-		AddItems: function (Id)
-		{
-			var item;
-			try {
-				var FV = te.Ctrl(CTRL_FV, Id);
-				for (var i = 64; i-- && (item = Addons.Everything.Items[Id].shift());) {
-					FV.AddItem(item);
-					if (api.GetAsyncKeyState(VK_ESCAPE) < 0) {
-						Addons.Everything.Items[Id] = [];
-					}
-				}
-				if (Addons.Everything.Items[Id].length) {
-					setTimeout("Addons.Everything.AddItems(" + Id + ")", 99);
-				}
-			} catch (e) {}
-		}
 	};
 
 	AddEvent("TranslatePath", function (Ctrl, Path)
@@ -110,10 +93,12 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		if (!Addons.Everything.IsHandle(Ctrl)) {
+		if (!Addons.Everything.IsHandle(Ctrl) || Addons.Everything.tid[Ctrl.Id]) {
 			return;
 		}
-		setTimeout(function () {
+		Ctrl.SortColumn = "";
+		Addons.Everything.tid[Ctrl.Id] = setTimeout(function () {
+			delete Addons.Everything.tid[Ctrl.Id];
 			var Path = Addons.Everything.GetSearchString(Ctrl);
 			if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
 				Path = 'regex:' + ((window.migemo && (migemo.query(Path) + '|' + Path)) || Path);
@@ -141,7 +126,7 @@ if (window.Addon == 1) {
 					api.SendMessage(hwnd, WM_COPYDATA, Ctrl.hwndView, cds);
 				}
 			}
-		}, 200);
+		}, 99);
 	});
 
 	AddEvent("CopyData", function (Ctrl, cd, wParam)
@@ -169,19 +154,15 @@ if (window.Addon == 1) {
 				filename_offset: [VT_I4, api.sizeof("DWORD")],
 				path_offset: [VT_I4, api.sizeof("DWORD")]
 			};
-			var Items = Ctrl.Items();
-			for (var i = Items.Count; i--;) {
-				Ctrl.RemoveItem(Items.Item(i));
-			}
-			Items = [];
+			var arItems = [];
 			var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4);
 			var itemSize = item.Size;
 			for (var i = 0; i < nItems && api.GetAsyncKeyState(VK_ESCAPE) >= 0; i++) {
 				var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4, api.Memory("BYTE", itemSize, cd.lpData + list.Size + list.Read("offset") + itemSize * i));
-				Items.push(fso.BuildPath(data.Read(item.Read("path_offset"), VT_LPWSTR), data.Read(item.Read("filename_offset"), VT_LPWSTR)));
+				arItems.push(fso.BuildPath(data.Read(item.Read("path_offset"), VT_LPWSTR), data.Read(item.Read("filename_offset"), VT_LPWSTR)));
 			}
-			Addons.Everything.Items[Ctrl.Id] = Items;
-			Addons.Everything.AddItems(Ctrl.Id);
+			Ctrl.RemoveAll();
+			Ctrl.AddItems(arItems);
 			return S_OK;
 		}
 	});

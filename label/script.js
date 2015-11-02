@@ -23,7 +23,8 @@ if (window.Addon == 1) {
 		Redraw: {},
 		nPosAdd: 0,
 		nPosDel: 0,
-		tid: null,
+		tid: [],
+		tid2: null,
 
 		IsHandle: function (Ctrl)
 		{
@@ -244,8 +245,8 @@ if (window.Addon == 1) {
 					}
 				}
 				if (bChanged) {
-					clearTimeout(Addons.Label.tid);
-					Addons.Label.tid = setTimeout(Addons.Label.Notify, 500);
+					clearTimeout(Addons.Label.tid2);
+					Addons.Label.tid2 = setTimeout(Addons.Label.Notify, 500);
 					Addons.Label.bSave = true;
 				}
 			}
@@ -334,12 +335,15 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ListViewCreated", function (Ctrl)
+	AddEvent("NavigateComplete", function (Ctrl)
 	{
 		var Label = Addons.Label.LabelPath(Ctrl);
-		if (Label) {
-			setTimeout(function () {
+		if (Label && !Addons.Label.tid[Ctrl.Id]) {
+			Ctrl.SortColumn = "";
+			Addons.Label.tid[Ctrl.Id] = setTimeout(function () {
+				delete Addons.Label.tid[Ctrl.Id];
 				var b, ar;
+				var arItems = [];
 				var bWC = /[\*\?]/.test(Label);
 				for (var path in te.Labels) {
 					var s = te.Labels[path];
@@ -376,11 +380,11 @@ if (window.Addon == 1) {
 						}
 					}
 					if (b) {
-						Ctrl.AddItem(path);
+						arItems.push(path);
 					}
 				}
-				Ctrl.SortColumn = "";
-			}, 200);
+				Ctrl.AddItems(arItems);
+			}, 99);
 		}
 	});
 

@@ -35,8 +35,7 @@ if (window.Addon == 1) {
 							ar.unshift(path);
 						}
 					}
-				}
-				else {
+				} else {
 					var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING);
 					if (/^[A-Z]:\\|^\\/i.test(path)) {
 						ar.push(path);
@@ -79,18 +78,13 @@ if (window.Addon == 1) {
 			if (ex) {
 				ex.Do = false;
 			}
-			var uid;
-			do {
-				uid = String(Math.random()).replace(/^0?\./, "");
-			} while (Exchange[uid]);
-			Exchange[uid] = 
+			OpenNewProcess("addons\\emptyfolder\\worker.js",
 			{
 				FV: Ctrl,
 				Path: Path,
-				Do: true
-			};
-			Addons.EmptyFolder.uid[Ctrl.Id] = uid;
-			wsh.Exec([api.PathQuoteSpaces(api.GetModuleFileName(null)), '/run', "addons\\emptyfolder\\worker.js", uid].join(" "));
+				Do: true,
+				SessionId: Ctrl.SessionId
+			});
 		}
 	});
 
@@ -108,6 +102,14 @@ if (window.Addon == 1) {
 		}
 		if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
 			Addons.EmptyFolder.Notify(pidls[0], pidls[1]);
+		}
+	});
+
+	AddEvent("ILGetParent", function (FolderItem)
+	{
+		var Path = Addons.EmptyFolder.GetSearchString(Ctrl);
+		if (Path) {
+			return Path;
 		}
 	});
 
@@ -138,8 +140,7 @@ if (window.Addon == 1) {
 	var s = GetAddonOption(Addon_Id, "Icon");
 	if (s) {
 		s = '<img title="' + Addons.EmptyFolder.strName.replace(/"/g, "") + '" src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px" />';
-	}
-	else {
+	} else {
 		s = Addons.EmptyFolder.strName;
 	}
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyFolder.Exec();" oncontextmenu="Addons.EmptyFolder.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);

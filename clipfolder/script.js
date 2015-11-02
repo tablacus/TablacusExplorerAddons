@@ -18,12 +18,14 @@ if (items.length) {
 if (window.Addon == 1) {
 	Addons.ClipFolder =
 	{
+		tid: [],
+
 		FindItemIndex: function (FV, Item)
 		{
 			var Items = FV.Items();
-			var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			var path = String(api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR));
 			for (var i = Items.Count; i-- > 0;) {
-				if (api.strcmpi(path, api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR)) == 0) {
+				if (path.toLowerCase() == String(api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR)).toLowerCase()) {
 					return i;
 				}
 			}
@@ -32,54 +34,98 @@ if (window.Addon == 1) {
 
 		Append: function (Ctrl, Items)
 		{
+			var db = {};
+			var bSave = false;
+			Addons.ClipFolder.Open(Ctrl, null, db);
 			var arFV = Addons.ClipFolder.SyncFV(Ctrl);
-			for (var i in arFV) {
-				for (var j = 0; j < Items.Count; j++) {
-					var Item = Items.Item(j);
+			for (var j = 0; j < Items.Count; j++) {
+				var Item = Items.Item(j);
+				for (var i in arFV) {
 					var nIndex = Addons.ClipFolder.FindItemIndex(arFV[i], Item);
-					Item = nIndex < 0 ? arFV[i].AddItem(Item) : arFV[i].Items.Item(nIndex);
-					arFV[i].SelectItem(Item, SVSI_SELECT | SVSI_FOCUSED | SVSI_ENSUREVISIBLE);
+					var Item1 = nIndex < 0 ? arFV[i].AddItem(Item) : arFV[i].Items.Item(nIndex);
+					arFV[i].SelectItem(Item1, SVSI_SELECT | SVSI_FOCUSED | SVSI_ENSUREVISIBLE);
+				}
+				var path = Item.Path;
+				if (!db[path]) {
+					db[path] = 1;
+					bSave = true;
 				}
 			}
-			Addons.ClipFolder.Save(Ctrl);
+			Addons.ClipFolder.Save(Ctrl, db);
 		},
 
 		Remove: function (Ctrl, pt)
 		{
+			if (!confirmOk("Are you sure?")) {
+				return;
+			}
 			var ar = GetSelectedArray(Ctrl, pt, true);
 			var Selected = ar[0];
 			var arFV = Addons.ClipFolder.SyncFV(ar[2]);
-			for (var i in arFV) {
-				for (var j = Selected.Count; j--;) {
+			var db = {};
+			var bSave = false;
+			Addons.ClipFolder.Open(ar[2], null, db);
+			for (var j = Selected.Count; j--;) {
+				for (var i in arFV) {
 					arFV[i].RemoveItem(Selected.Item(j));
 				}
+				var path = Selected.Item(j).Path;
+				if (db[path]) {
+					delete db[path];
+					bSave = true;
+				}
 			}
-			Addons.ClipFolder.Save(ar[2]);
+			if (bSave) {
+				Addons.ClipFolder.Save(ar[2], db);
+			}
 		},
 
 		SyncFV: function (Ctrl)
 		{
 			var arFV = [];
-			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			var path = Ctrl.FolderItem.Path;
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
-				var path2 = api.GetDisplayNameOf(cFV[i].FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-				if (api.strcmpi(path, path2) == 0) {
+				if (path.toLowerCase() == cFV[i].FolderItem.Path.toLowerCase()) {
 					arFV.push(cFV[i]);
 				}
 			}
 			return arFV;
 		},
-		
-		Save: function (Ctrl)
+
+		Open: function (Ctrl, ar, db)
 		{
-			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			var path = Ctrl.FolderItem.Path;
 			var ado = te.CreateObject("Adodb.Stream");
 			ado.CharSet = "utf-8";
 			ado.Open();
-			var Items = Ctrl.Items();
-			for (var i = 0; i < Items.Count; i++) {
-				ado.WriteText(api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR), adWriteLine);
+			ado.LoadFromFile(path);
+			var Items = [];
+			while (!ado.EOS) {
+				var s = ado.ReadText(adReadLine);
+				if (s && !/^\s*#/.test(s)) {
+					if (!/^[A-Z]:\\|^\\/i.test(s) && !/:/.test(s)) {
+						s = fso.BuildPath(fso.GetParentFolderName(path), s);
+					}
+					if (ar) {
+						ar.push(s);
+					}
+					if (db) {
+						db[s] = 1;
+					}
+				}
+			}
+			ado.Close();
+		},
+
+		Save: function (Ctrl, db)
+		{
+			var path = Ctrl.FolderItem.Path;
+			var ado = te.CreateObject("Adodb.Stream");
+			ado.CharSet = "utf-8";
+			ado.Open();
+			for (var i in db) {
+				ado.WriteText(i, adWriteLine);
 			}
 			ado.SaveToFile(path, adSaveCreateOverWrite);
 			ado.Close();
@@ -91,7 +137,12 @@ if (window.Addon == 1) {
 			var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 			if (/^[A-Z]:\\|^\\/i.test(path)) {
 				if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
-					Addons.ClipFolder.Save(FV);
+					var db = {};
+					var Items = FV.Items();
+					for (var i = 0; i < Items.Count; i++) {
+						db[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR)] = 1;
+					}
+					Addons.ClipFolder.Save(FV, db);
 				}
 				else {
 					var path2 = InputDialog(GetText("Create clip folder"), "");
@@ -114,34 +165,22 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("ListViewCreated", function (Ctrl)
+	AddEvent("NavigateComplete", function (Ctrl)
 	{
 		var path = Ctrl.FolderItem.Path;
 		if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
-			setTimeout(function ()
+			if (Addons.ClipFolder.tid[Ctrl.Id]) {
+				return;
+			}
+			Ctrl.SortColumn = "";
+			Addons.ClipFolder.tid[Ctrl.Id] = setTimeout(function ()
 			{
-				try {
-					var Items = Ctrl.Items;
-					for (var i = Items.Count; i--;) {
-						Ctrl.RemoveItem(Items.Item(i));
-					}
-					var ado = te.CreateObject("Adodb.Stream");
-					ado.CharSet = "utf-8";
-					ado.Open();
-					ado.LoadFromFile(path);
-					while (!ado.EOS) {
-						var s = ado.ReadText(adReadLine);
-						if (s && !/^\s*#/.test(s)) {
-							if (!/^[A-Z]:\\|^\\/i.test(s)) {
-								s = fso.BuildPath(fso.GetParentFolderName(path), s);
-							}
-							Ctrl.AddItem(s);
-						}
-					}
-					ado.Close();
-				} catch (e) {
-				}
-			}, 100);
+				delete Addons.ClipFolder.tid[Ctrl.Id];
+				Ctrl.RemoveAll();
+				var ar = [];
+				Addons.ClipFolder.Open(Ctrl, ar);
+				Ctrl.AddItems(ar);
+			}, 99);
 		}
 	});
 
@@ -243,7 +282,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ILGetParent", function (FolderItem)
 	{
-		var path = api.GetDisplayNameOf(FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+		var path = FolderItem.Path;
 		if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
 			return fso.GetParentFolderName(path);
 		}

@@ -8,6 +8,7 @@
 		db: [],
 		bSave: false,
 		Prev: null,
+		tid: [],
 
 		IsHandle: function (Ctrl)
 		{
@@ -58,10 +59,15 @@
 		}
 	});
 
-	AddEvent("ListViewCreated", function (Ctrl)
+	AddEvent("NavigateComplete", function (Ctrl)
 	{
 		if (Addons.SpeedDial.IsHandle(Ctrl)) {
-			setTimeout(function () {
+			if (Addons.SpeedDial.tid[Ctrl.Id]) {
+				return;
+			}
+			Ctrl.SortColumn = "";
+			Addons.SpeedDial.tid[Ctrl.Id] = setTimeout(function () {
+				delete Addons.SpeedDial.tid[Ctrl.Id];
 				var keys = [];
 				var hash = {};
 				for (var i in Addons.SpeedDial.db) {
@@ -78,19 +84,14 @@
 				keys.sort(function (a, b) {
 					return hash[b] - hash[a];
 				});
-				var Items = Ctrl.Items();
-				for (var i = Items.Count; i--;) {
-					Ctrl.RemoveItem(Items.Item(i));
-				}
 				var nDog = Addons.SpeedDial.DISP;
 				for (var i = 0; i < keys.length; i++) {
-					if (Addons.SpeedDial.IsDisp(keys[i])) {
-						Ctrl.AddItem(keys[i]);
-						if (!--nDog) {
-							break;
-						}
+					if (!Addons.SpeedDial.IsDisp(keys[i])) {
+						delete keys[i];
 					}
 				}
+				Ctrl.RemoveAll();
+				Ctrl.AddItems(keys.slice(0, Addons.SpeedDial.DISP));
 			}, 99);
 		} else {
 			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
