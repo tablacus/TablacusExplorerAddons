@@ -1,4 +1,4 @@
-var Addon_Id = "innerbreadcrumbsaddressbar";
+Addon_Id = "innerbreadcrumbsaddressbar";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -74,7 +74,7 @@ if (window.Addon == 1) {
 						s.unshift('<span id="breadcrumbsaddressbar_' + Id + "_"  + n + '" class="button" style="font-family: Marlett !important; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">4</span>');
 					}
 					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
-					FolderItem = api.ILRemoveLastID(FolderItem);
+					FolderItem = api.ILGetParent(FolderItem);
 					o.innerHTML = s.join("");
 					if (o.offsetWidth > width && n > 0) {
 						s.splice(0, 2);
@@ -82,7 +82,7 @@ if (window.Addon == 1) {
 						break;
 					}
 					n++;
-				} while (!api.ILIsEmpty(FolderItem));
+				} while (!api.ILIsEmpty(FolderItem) && n < 99);
 				if (api.ILIsEmpty(FolderItem)) {
 					if (!bRoot) {
 						o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="font-family: Marlett !important; line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
@@ -128,7 +128,7 @@ if (window.Addon == 1) {
 				FolderItem = FV.FolderItem;
 			}
 			while (n--) {
-				FolderItem = api.ILRemoveLastID(FolderItem);
+				FolderItem = api.ILGetParent(FolderItem);
 			}
 			return FolderItem;
 		},
@@ -150,8 +150,9 @@ if (window.Addon == 1) {
 				var FolderItem = FV.FolderItem;
 				FolderMenu.Clear();
 				var hMenu = api.CreatePopupMenu();
-				while (!api.ILIsEmpty(FolderItem)) {
-					FolderItem = api.ILRemoveLastID(FolderItem);
+				var n = 99;
+				while (!api.ILIsEmpty(FolderItem) && n--) {
+					FolderItem = api.ILGetParent(FolderItem);
 					FolderMenu.AddMenuItem(hMenu, FolderItem);
 				}
 				Addons.InnerBreadcrumbsAddressBar.Item = o;

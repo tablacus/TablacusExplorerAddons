@@ -78,7 +78,7 @@ if (window.Addon == 1) {
 							s.unshift('<span id="addressbar' + n + '" class="button" style="font-family: Marlett !important; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.AddressBar.Popup(this,' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">4</span>');
 						}
 						s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Go(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
-						FolderItem = api.ILRemoveLastID(FolderItem);
+						FolderItem = api.ILGetParent(FolderItem);
 						o.innerHTML = s.join("");
 						if (o.offsetWidth > width && n > 0) {
 							s.splice(0, 2);
@@ -86,7 +86,7 @@ if (window.Addon == 1) {
 							break;
 						}
 						n++;
-					} while (!api.ILIsEmpty(FolderItem));
+					} while (!api.ILIsEmpty(FolderItem) && n < 99);
 					if (api.ILIsEmpty(FolderItem)) {
 						if (!bRoot) {
 							o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="font-family: Marlett !important; line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup(this, ' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
@@ -139,7 +139,7 @@ if (window.Addon == 1) {
 				FolderItem = FV.FolderItem;
 			}
 			while (n--) {
-				FolderItem = api.ILRemoveLastID(FolderItem);
+				FolderItem = api.ILGetParent(FolderItem);
 			}
 			return FolderItem;
 		},
@@ -161,8 +161,9 @@ if (window.Addon == 1) {
 				var FolderItem = FV.FolderItem;
 				FolderMenu.Clear();
 				var hMenu = api.CreatePopupMenu();
-				while (!api.ILIsEmpty(FolderItem)) {
-					FolderItem = api.ILRemoveLastID(FolderItem);
+				var n = 99;
+				while (!api.ILIsEmpty(FolderItem) && n--) {
+					FolderItem = api.ILGetParent(FolderItem);
 					FolderMenu.AddMenuItem(hMenu, FolderItem);
 				}
 				Addons.AddressBar.Item = o;

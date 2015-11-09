@@ -14,10 +14,9 @@ if (window.Addon == 1) {
 
 		GetSearchString: function(Ctrl)
 		{
-			if (Ctrl.FolderItem) {
-				if (new RegExp("^" + Addons.EmptyFolder.PATH + "\\s*(.*)" , "i").test(Ctrl.FolderItem.Path)) {
-					return RegExp.$1;
-				}
+			var path = typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+			if (new RegExp("^" + Addons.EmptyFolder.PATH + "\\s*(.*)" , "i").test(path)) {
+				return RegExp.$1;
 			}
 			return "";
 		},
@@ -107,7 +106,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ILGetParent", function (FolderItem)
 	{
-		var Path = Addons.EmptyFolder.GetSearchString(Ctrl);
+		var Path = Addons.EmptyFolder.GetSearchString(FolderItem);
 		if (Path) {
 			return Path;
 		}
