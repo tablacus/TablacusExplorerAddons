@@ -32,6 +32,11 @@ if (window.Addon == 1) {
 			return -1;
 		},
 
+		IsHandle: function (Ctrl)
+		{
+			return api.PathMatchSpec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), Addons.ClipFolder.Spec);
+		},
+
 		Append: function (Ctrl, Items)
 		{
 			var db = {};
@@ -136,7 +141,7 @@ if (window.Addon == 1) {
 			var FV = GetFolderView(Ctrl, pt);
 			var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 			if (/^[A-Z]:\\|^\\/i.test(path)) {
-				if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+				if (Addons.ClipFolder.IsHandle(path)) {
 					var db = {};
 					var Items = FV.Items();
 					for (var i = 0; i < Items.Count; i++) {
@@ -155,20 +160,33 @@ if (window.Addon == 1) {
 				}
 			}
 			return S_OK;
+		},
+
+		Command: function (Ctrl, Verb)
+		{
+			if (Ctrl && Ctrl.Type <= CTRL_EB && Addons.ClipFolder.IsHandle(Ctrl)) {
+				switch (Verb + 1) {
+					case CommandID_PASTE:
+						Addons.ClipFolder.Append(Ctrl, api.OleGetClipboard());
+						return S_OK;
+					case CommandID_DELETE:
+						Addons.ClipFolder.Remove(Ctrl);
+						return S_OK;
+				}
+			}
 		}
 	};
 
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
-		if (api.PathMatchSpec(Path, Addons.ClipFolder.Spec)) {
+		if (Addons.ClipFolder.IsHandle(Path)) {
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		var path = Ctrl.FolderItem.Path;
-		if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+		if (Addons.ClipFolder.IsHandle(Ctrl)) {
 			if (Addons.ClipFolder.tid[Ctrl.Id]) {
 				return;
 			}
@@ -187,8 +205,7 @@ if (window.Addon == 1) {
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
-			var path = Ctrl.FolderItem.Path;
-			if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+			if (Addons.ClipFolder.IsHandle(Ctrl)) {
 				return S_OK;
 			}
 		}
@@ -197,8 +214,7 @@ if (window.Addon == 1) {
 	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		if (Ctrl.Type <= CTRL_EB) {
-			var path = Ctrl.FolderItem.Path;
-			if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+			if (Addons.ClipFolder.IsHandle(Ctrl)) {
 				if (Ctrl.HitTest(pt, LVHT_ONITEM) < 0) {
 					pdwEffect[0] = DROPEFFECT_LINK;
 					return S_OK;
@@ -206,8 +222,7 @@ if (window.Addon == 1) {
 			}
 		}
 		if (Ctrl.Type == CTRL_DT) {
-			var path = Ctrl.FolderItem.Path;
-			if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+			if (Addons.ClipFolder.IsHandle(Ctrl)) {
 				pdwEffect[0] = DROPEFFECT_LINK;
 				return S_OK;
 			}
@@ -216,15 +231,11 @@ if (window.Addon == 1) {
 
 	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
-		var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-		if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+		if (Addons.ClipFolder.IsHandle(Ctrl)) {
 			var nIndex = -1;
 			if (Ctrl.Type <= CTRL_EB) {
-				if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
-					nIndex = Ctrl.HitTest(pt, LVHT_ONITEM);
-				}
-			}
-			else if (Ctrl.Type != CTRL_DT) {
+				nIndex = Ctrl.HitTest(pt, LVHT_ONITEM);
+			} else if (Ctrl.Type != CTRL_DT) {
 				return S_OK;
 			}
 			if (nIndex < 0) {
@@ -234,38 +245,24 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Dragleave", function (Ctrl)
+	AddEvent("DragLeave", function (Ctrl)
 	{
 		return S_OK;
 	});
 
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
 	{
-		if (Ctrl.Type <= CTRL_EB) {
-			var path = api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-			if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
-				switch ((wParam & 0xfff) + 1) {
-					case CommandID_PASTE:
-						Addons.ClipFolder.Append(Ctrl, api.OleGetClipboard());
-						return S_OK;
-					case CommandID_DELETE:
-						return S_OK;
-				}
-			}
+		var hr = Addons.ClipFolder.Command(Ctrl, wParam & 0xfff);
+		if (isFinite(hr)) {
+			return hr;
 		}
-	});
+	}, true);
 
 	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
 	{
-		var path = api.GetDisplayNameOf(ContextMenu.FolderView, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-		if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
-			switch (Verb + 1) {
-				case CommandID_PASTE:
-					Addons.ClipFolder.Append(ContextMenu.FolderView, api.OleGetClipboard());
-					return S_OK;
-				case CommandID_DELETE:
-					return S_OK;
-			}
+		var hr = Addons.ClipFolder.Command(ContextMenu.FolderView, Verb);
+		if (isFinite(hr)) {
+			return hr;
 		}
 	}, true);
 
@@ -273,7 +270,7 @@ if (window.Addon == 1) {
 	{
 		if (Selected.Count == 1) {
 			var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-			if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+			if (Addons.ClipFolder.IsHandle(path)) {
 				Ctrl.Navigate(path);
 				return S_OK;
 			}
@@ -283,15 +280,14 @@ if (window.Addon == 1) {
 	AddEvent("ILGetParent", function (FolderItem)
 	{
 		var path = FolderItem.Path;
-		if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+		if (Addons.ClipFolder.IsHandle(path)) {
 			return fso.GetParentFolderName(path);
 		}
 	});
 
 	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
 	{
-		var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-		if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+		if (Addons.ClipFolder.IsHandle(Ctrl)) {
 			RemoveCommand(hMenu, ContextMenu, "delete;rename");
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
 			ExtraMenuCommand[nPos] = Addons.ClipFolder.Remove;
@@ -301,8 +297,7 @@ if (window.Addon == 1) {
 
 	AddEvent("Edit", function (Ctrl, hMenu, nPos, Selected, item)
 	{
-		var path = api.GetDisplayNameOf(item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-		if (api.PathMatchSpec(path, Addons.ClipFolder.Spec)) {
+		if (Addons.ClipFolder.IsHandle(Ctrl)) {
 			var Items = api.OleGetClipboard();
 			if (Items && Items.Count) {
 				for (var i = api.GetMenuItemCount(hMenu); i-- > 0;) {

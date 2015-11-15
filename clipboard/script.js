@@ -1,5 +1,5 @@
-﻿var Addon_Id = "clipboard";
-var Default = "ToolBar2Left";
+﻿Addon_Id = "clipboard";
+Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
 	Addons.ClipBoard =
@@ -7,8 +7,7 @@ if (window.Addon == 1) {
 		Init: function ()
 		{
 			var n = window.IconSize == 16 ? 16 : 24;
-			var s = '<img alt="Clipboard" src="../addons/clipboard/' + n + '.png">'
-			s = '<span id="Clipboard" class="button" onclick="Addons.ClipBoard.Click(this)" oncontextmenu="Addons.ClipBoard.Popup(this); return false;" ondrag="Addons.ClipBoard.Drag(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + s + '</span><span style="width: 1px"> </span>';
+			s = ['<span id="Clipboard" class="button" onclick="Addons.ClipBoard.Click(this)" oncontextmenu="Addons.ClipBoard.Popup(this); return false;" ondrag="Addons.ClipBoard.Drag(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()" draggable="true"><img alt="Clipboard" src="../addons/clipboard/', n, '.png"></span>'];
 			SetAddon(Addon_Id, Default, s);
 		},
 
@@ -52,16 +51,13 @@ if (window.Addon == 1) {
 				var mii = api.Memory("MENUITEMINFO");
 				mii.cbSize = mii.Size;
 				mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
-				var arBM = new Array();
+				var arBM = [];
 				for (var i = 0; i < Items.Count; i++) {
 					var FolderItem = Items.Item(i);
-					var s = ' ' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
-					var sz = api.Memory(s.length * 2 + 2);
-					sz.Write(0, VT_LPWSTR, s);
-					mii.dwTypeData = sz.P;
+					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
 					var image = te.GdiplusBitmap;
 					var info = api.Memory("SHFILEINFO");
-					api.ShGetFileInfo(FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
+					api.SHGetFileInfo(FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
 					var hIcon = info.hIcon;
 					var cl = api.GetSysColor(COLOR_BTNFACE);
 					image.FromHICON(hIcon, cl);
@@ -79,7 +75,7 @@ if (window.Addon == 1) {
 			if (FV && nVerb) {
 				api.SendMessage(FV.hwndView, WM_COMMAND, nVerb, 0);
 			}
-		}, 100);}) (o); },
+		}, 99);}) (o); },
 
 		Popup: function (o) { (function (o) { setTimeout(function () 
 		{
@@ -97,7 +93,7 @@ if (window.Addon == 1) {
 					ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
 				}
 			}
-		}, 100);}) (o); },
+		}, 99);}) (o); },
 
 		Drag: function (o)
 		{
@@ -122,7 +118,7 @@ if (window.Addon == 1) {
 		var o = document.getElementById("Clipboard");
 		if (HitTest(o, pt)) {
 			Addons.ClipBoard.grfKeyState = grfKeyState;
-			pdwEffect.x = (grfKeyState & MK_SHIFT) ? DROPEFFECT_MOVE : DROPEFFECT_COPY;
+			pdwEffect[0] = (grfKeyState & MK_SHIFT) ? DROPEFFECT_MOVE : DROPEFFECT_COPY;
 			MouseOver(o);
 			return S_OK;
 		}
@@ -139,7 +135,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Dragleave", function (Ctrl)
+	AddEvent("DragLeave", function (Ctrl)
 	{
 		MouseOut();
 	});

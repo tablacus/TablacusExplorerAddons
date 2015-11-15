@@ -28,7 +28,7 @@ if (window.Addon == 1) {
 				}
 				s = api.StrFormatByteSize(nSize);
 			}
-			if (api.UQuadCmp(nSize, 0) == 0) {
+			if (api.UQuadCmp(nSize, 0) == 0 && !FV.FolderItem.Unavailable) {
 				var strDrive = fso.GetDriveName(path);
 				if (strDrive == Addons.SizeStatus.Cahce) {
 					return;
