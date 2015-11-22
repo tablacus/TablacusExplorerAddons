@@ -1,4 +1,4 @@
-var Addon_Id = "movecontentup";
+Addon_Id = "movecontentup";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -49,7 +49,7 @@ if (window.Addon == 1) {
 						}
 					}
 					if (arItems.length) {
-						api.SHFileOperation(FO_DELETE, arItems.join("\0"), null, fFlags, true);
+						api.SHFileOperation(FO_DELETE, arItems.join("\0"), null, fFlags | FOF_NOCONFIRMATION, true);
 					}
 				}
 			} catch (e) {
