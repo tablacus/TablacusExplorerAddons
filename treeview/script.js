@@ -16,6 +16,7 @@ if (window.Addon == 1) {
 		nPos: 0,
 		WM: TWM_APP++,
 		Depth: item && api.LowPart(item.getAttribute("Depth")),
+		tid: {},
 
 		Exec: function (Ctrl, pt)
 		{
@@ -50,7 +51,16 @@ if (window.Addon == 1) {
 		if (Ctrl.FolderItem) {
 			var TV = Ctrl.TreeView;
 			if (TV) {
+				if (Addons.TreeView.tid[TV.Id]) {
+					clearTimeout(Addons.TreeView.tid[TV.Id]);
+					delete Addons.TreeView.tid[TV.Id];
+				}
 				TV.Expand(Ctrl.FolderItem, Addons.TreeView.Depth);
+				Addons.TreeView.tid[TV.Id] = setTimeout(function ()
+				{
+					delete Addons.TreeView.tid[TV.Id];
+					TV.Expand(Ctrl.FolderItem, 0);
+				}, 500);
 			}
 		}
 	});

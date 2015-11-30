@@ -7,11 +7,7 @@ function LoadFS()
 		g_x.List = document.F.List;
 		g_x.List.length = 0;
 		var nSelectSize = g_x.List.size;
-		var xml = te.Data["xml" + AddonName];
-		if (!xml) {
-			xml = OpenXml(AddonName + ".xml", false, false);
-			te.Data["xml" + AddonName] = xml;
-		}
+		xml = OpenXml(AddonName + ".xml", false, false);
 		if (xml) {
 			var items = xml.getElementsByTagName("Item");
 			var i = items.length;
@@ -44,7 +40,6 @@ function SaveFS()
 		}
 		xml.appendChild(root);
 		SaveXmlEx(AddonName.toLowerCase() + ".xml", xml);
-		te.Data["xml" + AddonName] = xml;
 	}
 }
 
