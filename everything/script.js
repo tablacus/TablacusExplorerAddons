@@ -181,6 +181,15 @@ if (window.Addon == 1) {
 		Addons.Everything.ShowButton();
 	});
 
+	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
+	{
+		if (Addons.Everything.IsHandle(Ctrl)) {
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
+			ExtraMenuCommand[nPos] = OpenContains;
+		}
+		return nPos;
+	});
+
 	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
 	{
 		if (!Verb) {

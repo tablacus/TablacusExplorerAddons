@@ -212,6 +212,9 @@ if (window.Addon == 1) {
 							arNew.push(i);
 						}
 					}
+					if (Label == "*") {
+						arNew = [];
+					}
 				}
 				Addons.Label.Set(path, arNew.join(";"));
 			}
@@ -402,7 +405,7 @@ if (window.Addon == 1) {
 
 	AddEvent("GetIconImage", function (Ctrl, BGColor)
 	{
-		if (Addons.Label.LabelPath(Ctrl)) {
+		if (Addons.Label.IsHandle(Ctrl)) {
 			return "../addons/label/label16.png";
 		}
 	});
@@ -410,19 +413,20 @@ if (window.Addon == 1) {
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
 	{
 		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
-			if (Addons.Label.LabelPath(Ctrl)) {
+			if (Addons.Label.IsHandle(Ctrl)) {
 				if ((wParam & 0xfff) == CommandID_DELETE - 1) {
+					Addons.Label.ExecRemoveItems(Ctrl);
 					return S_OK;
 				}
 			}
 		}
-	});
+	}, true);
 
 	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
 	{
 		if (Verb == CommandID_DELETE - 1) {
 			var FV = ContextMenu.FolderView;
-			if (FV && Addons.Label.LabelPath(FV)) {
+			if (FV && Addons.Label.IsHandle(FV)) {
 				return S_OK;
 			}
 		}
@@ -436,7 +440,7 @@ if (window.Addon == 1) {
 				}
 			}
 		}
-	});
+	}, true);
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
@@ -502,9 +506,10 @@ if (window.Addon == 1) {
 
 	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
 	{
-		var Label = Addons.Label.LabelPath(Ctrl);
-		if (Label && !/[\?\*;]/.test(Label)) {
+		if (Addons.Label.IsHandle(Ctrl)) {
 			RemoveCommand(hMenu, ContextMenu, "delete;rename");
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
+			ExtraMenuCommand[nPos] = OpenContains;
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
 			ExtraMenuCommand[nPos] = Addons.Label.ExecRemoveItems;
 		}

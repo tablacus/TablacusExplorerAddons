@@ -14,9 +14,10 @@ if (window.Addon == 1) {
 
 		GetSearchString: function(Ctrl)
 		{
-			var path = typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-			if (new RegExp("^" + Addons.EmptyFolder.PATH + "\\s*(.*)" , "i").test(path)) {
-				return RegExp.$1;
+			if (Ctrl) {
+				if (new RegExp("^" + Addons.EmptyFolder.PATH + "\\s*(.*)" , "i").test(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
+					return RegExp.$1;
+				}
 			}
 			return "";
 		},
@@ -110,6 +111,15 @@ if (window.Addon == 1) {
 		if (Path) {
 			return Path;
 		}
+	});
+
+	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
+	{
+		if (Addons.EmptyFolder.GetSearchString(Ctrl)) {
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
+			ExtraMenuCommand[nPos] = OpenContains;
+		}
+		return nPos;
 	});
 
 	if (item) {

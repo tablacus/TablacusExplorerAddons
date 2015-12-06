@@ -159,6 +159,8 @@ if (window.Addon == 1) {
 	{
 		if (Addons.History1.IsHandle(Ctrl)) {
 			RemoveCommand(hMenu, ContextMenu, "delete;rename");
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
+			ExtraMenuCommand[nPos] = OpenContains;
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
 			ExtraMenuCommand[nPos] = Addons.History1.Remove;
 		}
