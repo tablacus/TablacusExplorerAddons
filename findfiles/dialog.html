@@ -1,0 +1,42 @@
+﻿<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="MSThemeCompatible" content="Yes" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Find files</title>
+    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
+    </script>
+    <script type="text/javascript">
+      Addon = 2;
+      Addons = {};
+    </script>
+    <script type="text/javascript" charset="utf-8" src="script.js">
+    </script>
+  </head>
+  <body>
+    <div class="panel" id="panel0" style="border: 1px solid #898C95; overflow-y: auto; display: block">
+    <form name="F" style="width: 100%">
+      <label>Name</label><br />
+      <input type="text" name="name" style="width: 100%" />
+      <label>Content</label><br />
+      <input type="text" name="content" style="width: 100%" />
+      <label>Location</label><br />
+      <input type="text" name="location" style="width: 100%" />
+      <input id="newtab" type="checkbox" name="new" />
+      <label for="newtab">Open in New Tab</label><br />
+    </form>
+    </div>
+    <br />
+    <table id="R" style="width: 100%">
+      <tr>
+        <td align="center">
+          <input type="button" value="OK" class="ok" onclick="FindFiles(); return true;" />
+          <input type="button" value="Cancel" class="cancel" onclick="window.close(); return true;" />
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
