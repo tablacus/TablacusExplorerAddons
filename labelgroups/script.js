@@ -27,7 +27,7 @@ else {
 	{
 		s = ['<table style="width: 100%"><tr><td><input type="text" name="p', g_nLast, '" value="', strPath, '" style="width: 10em" onchange="FilterChanged(this)" placeholder="Name" title="Name" /></td>'];
 		s.push('<td style="width: 100%"><input type="text" name="c', g_nLast, '" value="', strLabel, '"  style="width: 100%" placeholder="Label" title="Label" onchange="FilterChanged()"  /></td>');
-		s.push('<td style="width: 1em"><input type="button" name="b', g_nLast, '" value="..."  onclick="AddLabel(this)" title="Reference" /></td>');
+		s.push('<td style="width: 1em"><input type="button" name="b', g_nLast, '" value="..."  onclick="AddLabel(this)" title="Browse" /></td>');
 		s.push('</tr></table>');
 		var o = document.getElementById("data1");
 		o.insertAdjacentHTML("BeforeEnd", s.join(""));

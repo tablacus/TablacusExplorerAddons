@@ -77,7 +77,7 @@ if (window.Addon == 1) {
 					for (var i = Selected.Count; i-- > 0;) {
 						var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 						if (path) {
-							var ar = String(te.Labels[path] || "").split(/\s*;\s*/);
+							var ar = Addons.Label.Get(path).split(/\s*;\s*/);
 							for (var j in ar) {
 								oExists[ar[j]] = 1;
 							}

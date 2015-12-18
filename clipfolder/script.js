@@ -197,7 +197,7 @@ if (window.Addon == 1) {
 				Ctrl.RemoveAll();
 				var ar = [];
 				Addons.ClipFolder.Open(Ctrl, ar);
-				Ctrl.AddItems(ar);
+				Ctrl.AddItems(ar, true);
 			}, 99);
 		}
 	});
