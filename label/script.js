@@ -25,6 +25,7 @@ if (window.Addon == 1) {
 		nPosDel: 0,
 		tid: [],
 		tid2: null,
+		Initd: false,
 
 		IsHandle: function (Ctrl)
 		{
@@ -33,7 +34,7 @@ if (window.Addon == 1) {
 
 		Get: function (path)
 		{
-			return te.Labels(path) || "";
+			return te.Labels[path] || "";
 		},
 
 		Edit: function (Ctrl, pt)
@@ -292,8 +293,8 @@ if (window.Addon == 1) {
 		List: function (list)
 		{
 			var ix = [];
-			for (var path in te.Labels) {
-				var s = Addons.Label.Get(path);
+			Addons.Label.ENumCB(function (path, s)
+			{
 				var ar = s.split(/\s*;\s*/);
 				for (var i in ar) {
 					var s = ar[i];
@@ -301,46 +302,61 @@ if (window.Addon == 1) {
 						ix.push(s);
 					}
 				}
-			}
+			});
 			var ix = ix.sort(function (a, b) {
 				return api.StrCmpLogical(b, a)
 			});
 			for (var i = ix.length; i--;) {
 				list[ix[i]] = true;
 			}
+		},
+
+		ENumCB: function (fncb)
+		{
+			for (var path in te.Labels) {
+				fncb(path, te.Labels[path]);
+			}
 		}
 
 	}
-	te.Labels = te.Object();
-	try {
-		var ado = te.CreateObject("Adodb.Stream");
-		ado.CharSet = "utf-8";
-		ado.Open();
-		ado.LoadFromFile(Addons.Label.CONFIG);
-		while (!ado.EOS) {
-			var ar = ado.ReadText(adReadLine).split("\t");
-			te.Labels[ar[0]] = ar[1];
-		}
-		ado.Close();
-		delete te.Labels[""];
-	} catch (e) {}
 
-	AddEvent("SaveConfig", function ()
+	AddEvent("Load", function ()
 	{
-		if (Addons.Label.bSave) {
-			try {
-				var ado = te.CreateObject("Adodb.Stream");
-				ado.CharSet = "utf-8";
-				ado.Open();
-				delete te.Labels[""];
-				for (var i in te.Labels) {
-					ado.WriteText([i, te.Labels[i]].join("\t") + "\r\n");
-				}
-				ado.SaveToFile(Addons.Label.CONFIG, adSaveCreateOverWrite);
-				ado.Close();
-				Addons.Label.bSave = false;
-			} catch (e) {}
+		if (Addons.Label.Initd) {
+			return;
 		}
+		te.Labels = te.Object();
+		try {
+			var ado = te.CreateObject("Adodb.Stream");
+			ado.CharSet = "utf-8";
+			ado.Open();
+			ado.LoadFromFile(Addons.Label.CONFIG);
+			while (!ado.EOS) {
+				var ar = ado.ReadText(adReadLine).split("\t");
+				te.Labels[ar[0]] = ar[1];
+			}
+			ado.Close();
+			delete te.Labels[""];
+		} catch (e) {}
+
+		AddEvent("SaveConfig", function ()
+		{
+			if (Addons.Label.bSave) {
+				try {
+					var ado = te.CreateObject("Adodb.Stream");
+					ado.CharSet = "utf-8";
+					ado.Open();
+					delete te.Labels[""];
+					Addons.Label.ENumCB(function (path, label)
+					{
+						ado.WriteText([path, label].join("\t") + "\r\n");
+					});
+					ado.SaveToFile(Addons.Label.CONFIG, adSaveCreateOverWrite);
+					ado.Close();
+					Addons.Label.bSave = false;
+				} catch (e) {}
+			}
+		});
 	});
 
 	AddEvent("NavigateComplete", function (Ctrl)
@@ -348,13 +364,14 @@ if (window.Addon == 1) {
 		var Label = Addons.Label.LabelPath(Ctrl);
 		if (Label && !Addons.Label.tid[Ctrl.Id]) {
 			Ctrl.SortColumn = "";
-			Addons.Label.tid[Ctrl.Id] = setTimeout(function () {
+			Addons.Label.tid[Ctrl.Id] = setTimeout(function ()
+			{
 				delete Addons.Label.tid[Ctrl.Id];
 				var b, ar;
 				var arItems = [];
 				var bWC = /[\*\?]/.test(Label);
-				for (var path in te.Labels) {
-					var s = te.Labels[path];
+				Addons.Label.ENumCB(function (path, s)
+				{
 					if (bWC || (Label.indexOf(" ") >= 0 && Label.indexOf(";") < 0)) {
 						b = true;
 						ar = null;
@@ -390,7 +407,7 @@ if (window.Addon == 1) {
 					if (b) {
 						arItems.push(path);
 					}
-				}
+				});
 				Ctrl.AddItems(arItems, true);
 			}, 99);
 		}
