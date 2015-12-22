@@ -11,10 +11,9 @@
 				return false;
 			}
 			if (Dest) {
-				if (Dest.ExtendedProperty) {
-					Dest = Dest.ExtendedProperty("linktarget");
-				}
-				if (Dest.Path) {
+				try {
+					Dest = Dest.ExtendedProperty("linktarget") || Dest.Path;
+				} catch (e) {
 					Dest = Dest.Path;
 				}
 			}
