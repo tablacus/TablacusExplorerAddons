@@ -10,12 +10,8 @@
 			if (!bDelete && api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Parent, false)) {
 				return false;
 			}
-			if (Dest) {
-				try {
-					Dest = Dest.ExtendedProperty("linktarget") || Dest.Path;
-				} catch (e) {
-					Dest = Dest.Path;
-				}
+			if (Dest && Dest.ExtendedProperty) {
+				Dest = Dest.ExtendedProperty("linktarget") || Dest.Path;
 			}
 			if (bDelete || (Dest != "" && fso.FolderExists(Dest))) {
 				var arFrom = [];
@@ -23,7 +19,8 @@
 					var Path = Items.Item(i).Path;
 					if (IsExists(Path)) {
 						arFrom.unshift(Path);
-					} else {
+					}
+					else {
 						pdwEffect[0] = DROPEFFECT_NONE;
 						break;
 					}
@@ -32,14 +29,16 @@
 					var wFunc = 0;
 					if (bDelete) {
 						wFunc = FO_DELETE;
-					} else {
+					}
+					else {
 						if (bOver) {
 							var DropTarget = api.DropTarget(Dest);
 							DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 						}
 						if (pdwEffect[0] & DROPEFFECT_COPY) {
 							wFunc = FO_COPY;
-						} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
+						}
+						else if (pdwEffect[0] & DROPEFFECT_MOVE) {
 							wFunc = FO_MOVE;
 						}
 					}
@@ -49,7 +48,8 @@
 							if (api.GetKeyState(VK_SHIFT) < 0) {
 								fFlags = 0;
 							}
-						} else if (api.ILIsEqual(Dest, Parent)) {
+						}
+						else if (api.ILIsEqual(Dest, Parent)) {
 							fFlags |= FOF_RENAMEONCOLLISION;
 						}
 						api.SHFileOperation(wFunc, arFrom.join("\0"), Dest, fFlags, true);
@@ -77,7 +77,8 @@
 						}
 						Dest = Ctrl.FolderItem;
 					}
-				} else {
+				}
+				else {
 					Dest = Ctrl.FolderItem;
 				}
 				if (Addons.MultiThread.FO(Ctrl, dataObj, Dest, grfKeyState, pt, pdwEffect, true)) {

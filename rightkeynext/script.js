@@ -30,6 +30,16 @@ if (window.Addon == 1) {
 			return Addons.RightKeyNext.Move(Ctrl, 1, SVSI_KEYBOARDSELECT | SVSI_DESELECTOTHERS | SVSI_ENSUREVISIBLE | SVSI_FOCUSED);
 		},
 
+		AddPrev: function (Ctrl) 
+		{ 
+			return Addons.RightKeyNext.Move(Ctrl, -1, SVSI_KEYBOARDSELECT | SVSI_ENSUREVISIBLE | SVSI_FOCUSED); 
+		}, 
+
+		AddNext: function (Ctrl) 
+		{ 
+			return Addons.RightKeyNext.Move(Ctrl, 1, SVSI_KEYBOARDSELECT | SVSI_ENSUREVISIBLE | SVSI_FOCUSED); 
+		},
+
 		FocusPrev: function (Ctrl)
 		{
 			return Addons.RightKeyNext.Move(Ctrl, -1, SVSI_ENSUREVISIBLE | SVSI_FOCUSED);
@@ -39,12 +49,16 @@ if (window.Addon == 1) {
 		{
 			return Addons.RightKeyNext.Move(Ctrl, 1, SVSI_ENSUREVISIBLE | SVSI_FOCUSED);
 		}
-	};
+ 	};
 
 	//Left
 	SetKeyExec("List", "$14b", Addons.RightKeyNext.SelectPrev, "Func");
 	//Right
 	SetKeyExec("List", "$14d", Addons.RightKeyNext.SelectNext, "Func");
+	//Shift+Left 
+	SetKeyExec("List", "$114b", Addons.RightKeyNext.AddPrev, "Func"); 
+	//Shift+Right 
+	SetKeyExec("List", "$114d", Addons.RightKeyNext.AddNext, "Func");
 	//Ctrl+Left
 	SetKeyExec("List", "$214b", Addons.RightKeyNext.FocusPrev, "Func");
 	//Ctrl+Right

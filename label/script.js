@@ -518,11 +518,13 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeNotify", function (Ctrl, pidls)
 	{
-		if (pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR)) {
-			Addons.Label.Remove(pidls[0]);
-		}
-		if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
-			Addons.Label.Append(pidls[1], Addons.Label.Remove(pidls[0]));
+		if (te.Labels) {
+			if (pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR)) {
+				Addons.Label.Remove(pidls[0]);
+			}
+			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
+				Addons.Label.Append(pidls[1], Addons.Label.Remove(pidls[0]));
+			}
 		}
 	});
 
@@ -551,8 +553,18 @@ if (window.Addon == 1) {
 					mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 					mii.hSubMenu = api.CreatePopupMenu();
 					mii.dwTypeData = Addons.Label.strName;
-					api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, ++nPos, GetText("&Edit"));
-					ExtraMenuCommand[nPos] = Addons.Label.Edit;
+					if (Selected && Selected.Count) {
+						var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+						if (path) {
+							var ar = [GetText("&Edit")];
+							var s = Addons.Label.Get(path);
+							if (s) {
+								ar.push(s);
+							}
+							api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, ++nPos, ar.join(' - '));
+							ExtraMenuCommand[nPos] = Addons.Label.Edit;
+						}
+					}
 					if (Ctrl.CurrentViewMode == FVM_DETAILS) {
 						if (!/"System\.Contact\.Label"/.test(Ctrl.Columns(1))) {
 							api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Details"));
