@@ -3,7 +3,7 @@ Addon_Id = "favoritesbar";
 if (window.Addon == 1) {
 	Addons.FavoritesBar =
 	{
-		Align: api.strcmpi(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
+		Align: api.StrCmpI(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
 		Width: 0,
 
 		Init: function ()
@@ -24,12 +24,12 @@ if (window.Addon == 1) {
 				var items = menus[0].getElementsByTagName("Item");
 				var item = items[i];
 				var type = item.getAttribute("Type");
-				if (api.strcmpi(type, "Open") == 0) {
+				if (api.StrCmpI(type, "Open") == 0) {
 					if (api.GetKeyState(VK_CONTROL) < 0 || GetAddonOption("favoritesbar", "NewTab")) {
 						type = "Open in New Tab";
 					}
 				}
-				if (api.strcmpi(type, "Menus") == 0) {
+				if (api.StrCmpI(type, "Menus") == 0) {
 					var o = document.getElementById("fav" + i + "_button");
 					var oChild = document.getElementById("fav" + i + "_");
 					if (o.innerText != "-") {
@@ -52,6 +52,7 @@ if (window.Addon == 1) {
 				if (menus && menus.length) {
 					var items = menus[0].getElementsByTagName("Item");
 					Exec(te, items[i].text, "Open in New Tab", te.hwnd);
+					return false;
 				}
 			}
 		},
@@ -76,7 +77,7 @@ if (window.Addon == 1) {
 					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, ContextMenu);
 					if (nVerb >= 0x1001) {
 						var s = ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
-						if (api.strcmpi(s, "delete")) {
+						if (api.StrCmpI(s, "delete")) {
 							ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
 						} else {
 							this.ShowOptions();
@@ -106,11 +107,10 @@ if (window.Addon == 1) {
 					var strType = items[i].getAttribute("Type");
 					var path = items[i].text;
 					var nOpen = 0;
-					if (api.strcmpi(strType, "Menus") == 0) {
-						if (api.strcmpi(path, "Open") == 0) {
+					if (api.StrCmpI(strType, "Menus") == 0) {
+						if (api.StrCmpI(path, "Open") == 0) {
 							nOpen = 1;
-						}
-						else if (api.strcmpi(path, "Close") == 0) {
+						} else if (api.StrCmpI(path, "Close") == 0) {
 							s.push('</div>');
 							nLevel && nLevel--;
 							continue;
@@ -126,19 +126,21 @@ if (window.Addon == 1) {
 					var img = '';
 					if (nOpen) {
 						img = '<span id="fav' + i + '_button" class="treebutton">-</span><img src="' + MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16) + '">';
-					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background")) {
+					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
 						var pidl = api.ILCreateFromPath(path);
 						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
-							if (/"([^"]*)"/.test(path)) {
-								path = RegExp.$1;
-							} else if (/([^ ]*)/.test(path)) {
-								path = RegExp.$1;
+							var res = /"([^"]*)"/.exec(path);
+							if (!res) {
+								res = /([^ ]*)/.exec(path);
+							}
+							if (res) {
+								path = res[1];
 							}
 							pidl = api.ILCreateFromPath(path);
 						}
 						img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '">';
 					}
-					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', items[i].text.replace(/"/g, "&quot;"), '" style="width: 100%">', new Array(nLevel + 1).join('<span class="treespace">&emsp;</span>'), img, " ", strName.replace(/&/g, ""), '</div> ');
+					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', items[i].text.replace(/"/g, "&quot;"), '" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">&emsp;</span>'), img, " ", strName.replace(/&/g, ""), '</div> ');
 					if (nOpen) {
 						s.push(api.sprintf(99, '<div id="fav%d_">', i));
 						nLevel++;

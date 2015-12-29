@@ -95,7 +95,7 @@ if (window.Addon == 1) {
 			}
 			var s = [this.Data[i].Name];
 			if (this.Data[i].Lock) {
-				s.unshift('<img src="', Addons.TabPlus ? Addons.TabPlus.ImgLock : MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13), '" style="width: 13px; height: 13px">');
+				s.unshift('<img src="', Addons.TabPlus ? Addons.TabPlus.ImgLock : MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13), '" style="width: 13px">');
 			}
 			o.innerHTML = s.join("");
 			var style = o.style;
@@ -104,27 +104,22 @@ if (window.Addon == 1) {
 				if (i == this.Index) {
 					if (document.documentMode >= 10) {
 						style.background = "";
-					}
-					else {
+					} else {
 						style.filter = "";
 					}
 					style.backgroundColor = cl;
-				}
-				else if (document.documentMode >= 10) {
+				} else if (document.documentMode >= 10) {
 					style.background = "linear-gradient(to bottom, #ffffff," + cl + " 70%)";
-				}
-				else {
+				} else {
 					style.filter = 'progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=#ffffff,endcolorstr=' + cl + ')';
 				}
 				cl = api.sscanf(cl, "#%06x") 
 				cl = (cl & 0xff0000) * .0045623779296875 + (cl & 0xff00) * 2.29296875 + (cl & 0xff) * 114;
 				style.color = cl > 127000 ? "black" : "white";
-			}
-			else {
+			} else {
 				if (document.documentMode >= 10) {
 					style.background = "";
-				}
-				else if (style.filter) {
+				} else if (style.filter) {
 					style.filter = "";
 				}
 				style.color = "";
@@ -133,8 +128,7 @@ if (window.Addon == 1) {
 			if (i == this.Index) {
 				o.className = 'activetab';
 				style.zIndex = tabs.length;
-			}
-			else {
+			} else {
 				o.className = i < this.Index ? 'tab' : 'tab2';
 				style.zIndex = tabs.length - i;
 			}
@@ -184,8 +178,7 @@ if (window.Addon == 1) {
 				var TC = cTC[i];
 				if (TC.Visible) {
 					preTC.push(TC);
-				}
-				else if (!TC.Data.Group) {
+				} else if (!TC.Data.Group) {
 					freeTC.push(TC);
 				}
 				var b = TC.Data.Group == this.Index;
@@ -194,8 +187,7 @@ if (window.Addon == 1) {
 					if (oShow[s]) {
 						b = false;
 						delete TC.Data.Group;
-					}
-					else {
+					} else {
 						oShow[s] = true;
 					}
 				}
@@ -212,15 +204,13 @@ if (window.Addon == 1) {
 							if (FV) {
 								var TV = FV.TreeView;
 								TC.Selected.Navigate2(FV.FolderItem, SBSP_NEWBROWSER, FV.Type, FV.CurrentViewMode, FV.fFlags, FV.Options, FV.ViewFlags, FV.IconSize, TV.Align, TV.Width, TV.Style, TV.EnumFlags, TV.RootStyle, TV.Root);
-							}
-							else {
+							} else {
 								TC.Selected.Navigate2(HOME_PATH, SBSP_NEWBROWSER, te.Data.View_Type, te.Data.View_ViewMode, te.Data.View_fFlags, te.Data.View_Options, te.Data.View_ViewFlags, te.Data.View_IconSize, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root);
 							}
 							TC.Visible = true;
 						}
 					}
-				}
-				else {
+				} else {
 					var TC = this.CreateTC(freeTC, 0, 0, "100%", "100%", te.Data.Tab_Style, te.Data.Tab_Align, te.Data.Tab_TabWidth, te.Data.Tab_TabHeight);
 					TC.Data.Group = this.Index;
 					TC.Selected.Navigate2(HOME_PATH, SBSP_NEWBROWSER, te.Data.View_Type, te.Data.View_ViewMode, te.Data.View_fFlags, te.Data.View_Options, te.Data.View_ViewFlags, te.Data.View_IconSize, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root);
@@ -242,8 +232,7 @@ if (window.Addon == 1) {
 				TC.TabWidth = TabWidth;
 				TC.TabHeight = TabHeight;
 				TC.Visible = true;
-			}
-			else {
+			} else {
 				TC = te.CreateCtrl(CTRL_TC, Left, Top, Width, Height, Style, Align, TabWidth, TabHeight);
 			}
 			TC.Data.Group = this.Index;
@@ -262,8 +251,7 @@ if (window.Addon == 1) {
 					var TC = cTC[i];
 					if (TC.Data.Group == nPos) {
 						TC.Close();
-					}
-					else if (TC.Data.Group > nPos) {
+					} else if (TC.Data.Group > nPos) {
 						TC.Data.Group--;
 					}
 				}
@@ -330,8 +318,7 @@ if (window.Addon == 1) {
 						var TC = cTC[i];
 						if (TC.Data.Group >= ar.length) {
 							TC.Close();
-						}
-						else {
+						} else {
 							TC.Data.Group = ar[TC.Data.Group];
 						}
 					}
@@ -430,8 +417,7 @@ if (window.Addon == 1) {
 						this.Cursor("move");
 					}
 				}
-			}
-			else if (this.nDrag) {
+			} else if (this.nDrag) {
 				this.Cursor("default");
 				this.nDrag = 0;
 			}
@@ -470,8 +456,7 @@ if (window.Addon == 1) {
 			if (this.Drag5) {
 				if (event.preventDefault) {
 					event.preventDefault();
-				}
-				else {
+				} else {
 		 			event.returnValue = false;
 				}
 			}
@@ -479,10 +464,12 @@ if (window.Addon == 1) {
 
 		Drop5: function (o)
 		{
-			if (/^tabgroups(\d+)/.test(o.id)) {
-				this.nDrop = RegExp.$1;
-				if (/^tabgroups(\d+)/.test(this.Drag5)) {
-					this.nDrag = RegExp.$1;
+			var res = /^tabgroups(\d+)/.exec(o.id);
+			if (res) {
+				this.nDrop = res[1];
+				res = /^tabgroups(\d+)/.exec(this.Drag5);
+				if (res) {
+					this.nDrag = res[1];
 					this.Swap(o);
 				}
 			}
@@ -541,7 +528,7 @@ if (window.Addon == 1) {
 					}
 				}
 				if (te.Data.DragTab) {
-					pdwEffect.x = DROPEFFECT_LINK;
+					pdwEffect[0] = DROPEFFECT_LINK;
 				}
 				return S_OK;
 			}

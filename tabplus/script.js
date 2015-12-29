@@ -123,7 +123,7 @@ if (window.Addon == 1) {
 				try {
 					var w = FV.Data.Lock || this.opt.Close ? -13 : 0;
 					if (FV.Data.Lock) {
-						s.push('<td style="padding-right: 2px; vertical-align: middle"><img src="', this.ImgLock, '" style="width: 13px; height: 13px"></td>');
+						s.push('<td style="padding-right: 2px; vertical-align: middle"><img src="', this.ImgLock, '" style="width: 13px"></td>');
 						w -= 2;
 					}
 					if (this.opt.Icon) {
@@ -147,7 +147,7 @@ if (window.Addon == 1) {
 					}
 					s.push('</div></td>');
 					if (this.opt.Close && !FV.Data.Lock) {
-						s.push('<td style="vertical-align: middle; width: 13px" align="right"><img class="button" src="', this.ImgClose, '" style="width: 13px; height: 13px" id="tabplus_', FV.Parent.Id, '_', i, 'x" title="', GetText("Close Tab"), '" onmouseover="MouseOver(this)" onmouseout="MouseOut()"></td>');
+						s.push('<td style="vertical-align: middle; width: 13px" align="right"><img class="button" src="', this.ImgClose, '" style="width: 13px" id="tabplus_', FV.Parent.Id, '_', i, 'x" title="', GetText("Close Tab"), '" onmouseover="MouseOver(this)" onmouseout="MouseOut()"></td>');
 					}
 				} catch (e) {}
 				s.push('</tr></table>');
@@ -365,8 +365,9 @@ if (window.Addon == 1) {
 
 		Drop5: function (o)
 		{
-			if (/^tabplus_(\d+)/.test(o.id)) {
-				var Id = RegExp.$1;
+			var res = /^tabplus_(\d+)/.exec(o.id);
+			if (res) {
+				var Id = res[1];
 				var TC = te.Ctrl(CTRL_TC, Id);
 				if (TC) {
 					var pt = api.Memory("POINT");
@@ -375,10 +376,10 @@ if (window.Addon == 1) {
 					if (nDrop < 0) {
 						nDrop = TC.Count;
 					}
-
-					if (/^tabplus_(\d+)_(\d+)/.test(Addons.TabPlus.Drag5)) {
-						if (RegExp.$1 != Id || RegExp.$2 != nDrop) {
-							te.Ctrl(CTRL_TC, RegExp.$1).Move(RegExp.$2, nDrop, TC);
+					res = /^tabplus_(\d+)_(\d+)/.exec(Addons.TabPlus.Drag5);
+					if (res) {
+						if (res[1] != Id || res[2] != nDrop) {
+							te.Ctrl(CTRL_TC, res[1]).Move(res[2], nDrop, TC);
 							this.Drop = [];
 						}
 					}
@@ -397,13 +398,16 @@ if (window.Addon == 1) {
 
 		FromPt: function (Id, pt)
 		{
-			var TC = te.Ctrl(CTRL_TC, Id);
-			if (TC) {
-				for (var n = TC.Count; n-- > 0;) {
-					if (HitTest(document.getElementById("tabplus_" + Id + "_" + n), pt)) {
-						return n;
-					}
+			var ptc = pt.Clone();
+			api.ScreenToClient(api.GetWindow(document), ptc);
+			var elem = document.elementFromPoint(ptc.x, ptc.y);
+			var re = new RegExp("tabplus_" + Id + "_(\\d+)", "");
+			while (elem && !/UL/i.test(elem.tagName)) {
+				var res = re.exec(elem.id);
+				if (res) {
+					return res[1];
 				}
+				elem = elem.parentElement;
 			}
 			return -1;
 		},

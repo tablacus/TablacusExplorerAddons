@@ -22,6 +22,18 @@ if (window.Addon == 1) {
 			}
 		},
 
+		Down: function (i)
+		{
+			if (api.GetKeyState(VK_MBUTTON) < 0) {
+				var menus = te.Data.xmlMenus.getElementsByTagName("Favorites");
+				if (menus && menus.length) {
+					var items = menus[0].getElementsByTagName("Item");
+					Exec(te, items[i].text, "Open in New Tab", te.hwnd);
+					return false;
+				}
+			}
+		},
+
 		Open: function (i)
 		{
 			if (Addons.FavBar.bClose) {
@@ -145,10 +157,12 @@ if (window.Addon == 1) {
 						var path = Addons.FavBar.GetPath(items, i);
 						var pidl = api.ILCreateFromPath(path);
 						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
-							if (/"([^"]*)"/.test(path)) {
-								path = RegExp.$1;
-							} else if (/([^ ]*)/.test(path)) {
-								path = RegExp.$1;
+							var res = /"([^"]*)"/.exec(path);
+							if (!res) {
+								res = /([^ ]*)/.exec(path);
+							}
+							if (res) {
+								path = res[1];
 							}
 							pidl = api.ILCreateFromPath(path);
 						}
@@ -156,7 +170,7 @@ if (window.Addon == 1) {
 					} else if (strFlag == "open") {
 						img = '<img src="' + MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16) + '">';
 					}
-					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.strcmpi(item.text, "Open") ? 'onclick="Addons.FavBar.Click('
+					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.strcmpi(item.text, "Open") ? 'onclick="Addons.FavBar.Click(' + i + ')" onmousedown="Addons.FavBar.Down('
  : 'onmousedown="Addons.FavBar.Open(');
 					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, GetText(item.getAttribute("Name")), '</span> ');
 				}
@@ -209,9 +223,6 @@ if (window.Addon == 1) {
 				var i = Addons.FavBar.FromPt(items.length, pt);
 				if (i >= 0) {
 					hr = Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect);
-/*					if (hr == S_OK && pdwEffect[0]) {
-						MouseOver(document.getElementById("fav" + i));
-					}*/
 					return S_OK;
 				}
 			}
