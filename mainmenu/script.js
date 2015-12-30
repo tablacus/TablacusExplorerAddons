@@ -1,5 +1,5 @@
-var Addon_Id = "mainmenu";
-var Default = "ToolBar1Left";
+Addon_Id = "mainmenu";
+Default = "ToolBar1Left";
 
 if (window.Addon == 1) {
 	Addons.MainMenu =
@@ -35,7 +35,7 @@ if (window.Addon == 1) {
 					})
 					ExecMenu2(o.id.replace(/^Menu/, ""), p.x, p.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI);
 					MouseOut();
-				}, 100);
+				}, 99);
 			}
 		}
 	}
@@ -66,8 +66,9 @@ if (window.Addon == 1) {
 	for (var i = 0; i < strMenus.length; i++) {
 		var s1 = strMenus[i].replace("&", "");
 		var strMenu = GetText(strMenus[i]);
-		if (strMenu.match(/&(.)/)) {
-			var c = RegExp.$1;
+		var res = /&(.)/.exec(strMenu);
+		if (res) {
+			var c = res[1];
 			if (!used[c]) {
 				used[c] = true;
 				SetKeyExec("All", "Alt+" + c, 'Addons.MainMenu.Popup("' + s1 + '");', "JScript");

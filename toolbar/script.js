@@ -15,6 +15,16 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
+		Down: function (i)
+		{
+			if (api.GetKeyState(VK_MBUTTON) < 0) {
+				var items = te.Data.xmlToolBar.getElementsByTagName("Item");
+				var item = items[i];
+				Exec(te, items[i].text, "Open in New Tab", te.hwnd);
+				return false;
+			}
+		},
+
 		Open: function (i)
 		{
 			if (Addons.ToolBar.bClose) {
@@ -105,7 +115,7 @@ if (window.Addon == 1) {
 			var menus = 0;
 			for (var i = 0; i < items.length; i++) {
 				var item = items[i];
-				var strFlag = api.strcmpi(item.getAttribute("Type"), "Menus") ? "" : item.text;
+				var strFlag = api.StrCmpI(item.getAttribute("Type"), "Menus") ? "" : item.text;
 				if (api.PathMatchSpec(strFlag, "Close") && menus) {
 					menus--;
 					continue;
@@ -115,21 +125,17 @@ if (window.Addon == 1) {
 					if (menus++) {
 						continue;
 					}
-				}
-				else if (menus) {
+				} else if (menus) {
 					continue;
 				}
 				var img = item.getAttribute("Name");
-				if (img == "/" || api.strcmpi(strFlag, "Break") == 0) {
+				if (img == "/" || api.StrCmpI(strFlag, "Break") == 0) {
 					s.push("<br />");
-				}
-				else if (img == "//" || api.strcmpi(strFlag, "BarBreak") == 0) {
+				} else if (img == "//" || api.StrCmpI(strFlag, "BarBreak") == 0) {
 					s.push('<hr />');
-				}
-				else if (img == "-" || api.strcmpi(strFlag, "Separator") == 0) {
+				} else if (img == "-" || api.StrCmpI(strFlag, "Separator") == 0) {
 					s.push('<span style="color: gray">|</span>');
-				}
-				else {
+				} else {
 					var icon = item.getAttribute("Icon");
 					if (icon != "") {
 						icon = ExtractMacro(te, icon);
@@ -138,7 +144,7 @@ if (window.Addon == 1) {
 						h -= 0;
 						img = '<img src="' + icon.replace(/"/g, "") + '"' + sh + '>';
 					}
-					s.push('<span id="_toolbar', i, '" ', api.strcmpi(item.getAttribute("Type"), "Menus") || api.strcmpi(item.text, "Open") ? 'onclick="Addons.ToolBar.Click(' : 'onmousedown="Addons.ToolBar.Open(');
+					s.push('<span id="_toolbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.ToolBar.Click(' + i + ')" onmousedown="Addons.ToolBar.Down(' : 'onmousedown="Addons.ToolBar.Open(');
 					s.push(i, ')" oncontextmenu="Addons.ToolBar.Popup(', i, '); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', GetText(item.getAttribute("Name").replace(/"/g, "&quot;")), '">', img, '</span>');
 				}
 			}
@@ -168,12 +174,12 @@ if (window.Addon == 1) {
 			var i = Addons.ToolBar.FromPt(items.length + 1, pt);
 			if (i >= 0) {
 				if (i == items.length) {
-					pdwEffect.x = DROPEFFECT_LINK;
+					pdwEffect[0] = DROPEFFECT_LINK;
 					MouseOver(document.getElementById("_toolbar" + i));
 					return S_OK;
 				}
 				hr = Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect);
-				if (hr == S_OK && pdwEffect.x) {
+				if (hr == S_OK && pdwEffect[0]) {
 					MouseOver(document.getElementById("_toolbar" + i));
 				}
 				return S_OK;
@@ -206,8 +212,7 @@ if (window.Addon == 1) {
 							if (fso.FileExists(item.text)) {
 								item.text = api.PathQuoteSpaces(item.text);
 								item.setAttribute("Type", "Exec");
-							}
-							else {
+							} else {
 								item.setAttribute("Type", "Open");
 							}
 							root.appendChild(item);

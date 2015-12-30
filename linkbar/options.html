@@ -28,17 +28,22 @@
               <br />
               <input type="text" name="Name" style="width: 100%" onchange="ChangeX('List')" />
               <label>Type</label>
-              <br />
-              <select name="Type" style="width: 100%" onchange="ChangeX('List')">
-              </select>
               <table class="layout">
+                <tr>
+                  <td>
+                    <select name="Type" onchange="ChangeX('List')">
+                    </select>
+                  </td>
+                  <td align="right">
+                    <input type="button" value="Portable" onclick="PortableX('Path')" />
+                  </td>
+                </tr>
                 <tr>
                   <td>
                     <label>Options</label>
                   </td>
                   <td align="right">
-                    <input type="button" value="Portable" onclick="PortableX('Path')" />
-                    <input type="button" value="Reference..." onclick="RefX('Path', true, this)" style="width: 224px" />
+                    <input type="button" value="Browse..." onclick="RefX('Path', true, this)" style="width: 224px" />
                   </td>
                 </tr>
               </table>
@@ -55,7 +60,7 @@
                     <label>Height</label>
                     <input type="text" name="Height" style="width: 64px" onchange="ChangeX('List'); SetImage();" />
                     <input type="button" value="File" onclick="RefX('Icon', false, null, 'ChangeX(\'List\');SetImage();'); SetImage();" />
-                    <input type="button" value="Reference..." onclick="ShowIcon();" />
+                    <input type="button" value="Browse..." onclick="ShowIcon();" />
                   </td>
                 </tr>
               </table>

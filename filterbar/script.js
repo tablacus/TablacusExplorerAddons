@@ -116,8 +116,9 @@ if (window.Addon == 1) {
 		{
 			clearTimeout(Addons.FilterBar.tid);
 			var s = Ctrl.FilterView;
-			if (/^\*(.*)\*$/.test(s)) {
-				s = RegExp.$1;
+			var res = /^\*(.*)\*$/.exec(s);
+			if (res) {
+				s = res[1];
 			} else if (s == "*") {
 				s = "";
 			}

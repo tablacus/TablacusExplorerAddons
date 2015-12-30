@@ -1,6 +1,6 @@
-﻿var Addon_Id = "linkbar";
-var Default = "ToolBar4Center";
-var AddonName = "LinkBar";
+﻿Addon_Id = "linkbar";
+Default = "ToolBar4Center";
+AddonName = "LinkBar";
 
 if (window.Addon == 1) {
 	Addons.LinkBar =
@@ -13,6 +13,16 @@ if (window.Addon == 1) {
 				Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
 			}
 			return S_OK;
+		},
+
+		Down: function (i)
+		{
+			if (api.GetKeyState(VK_MBUTTON) < 0) {
+				var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
+				var item = items[i];
+				Exec(te, items[i].text, "Open in New Tab", te.hwnd);
+				return false;
+			}
 		},
 
 		Open: function (i)
@@ -39,7 +49,6 @@ if (window.Addon == 1) {
 				});
 				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
 				api.DestroyMenu(hMenu);
-				item = nVerb > 0 ? items[nVerb - 1] : null;
 				if (nVerb > 0) {
 					item = items[nVerb - 1];
 					Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
@@ -77,7 +86,7 @@ if (window.Addon == 1) {
 			var image = te.GdiplusBitmap;
 			for (var i = 0; i < items.length; i++) {
 				var item = items[i];
-				var strFlag = api.strcmpi(item.getAttribute("Type"), "Menus") ? "" : item.text;
+				var strFlag = api.StrCmpI(item.getAttribute("Type"), "Menus") ? "" : item.text;
 				if (api.PathMatchSpec(strFlag, "Close") && menus) {
 					menus--;
 					continue;
@@ -87,8 +96,7 @@ if (window.Addon == 1) {
 					if (menus++) {
 						continue;
 					}
-				}
-				else if (menus) {
+				} else if (menus) {
 					continue;
 				}
 				var img = '';
@@ -98,32 +106,20 @@ if (window.Addon == 1) {
 					var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
 					h -= 0;
 					img = '<img src="' + (icon || "").replace(/"/g, "") + '"' + sh + '>';
-				}
-				else if (/Open/i.test(item.getAttribute("Type"))) {
-					if (document.documentMode) { //IE8-
-						var info = api.Memory("SHFILEINFO");
-						var path = this.GetPath(items, i);
-						var pidl = api.ILCreateFromPath(path);
-						if (!pidl) {
-							if (path.match(/"([^"]*)"/)) {
-								pidl = api.ILCreateFromPath(RegExp.$1);
-							}
-							else if (path.match(/([^ ]*)/)) {
-								pidl = api.ILCreateFromPath(RegExp.$1);
-							}
-						}
-						if (pidl) {
-							api.ShGetFileInfo(pidl, 0, info, info.Size, SHGFI_PIDL | SHGFI_ICON | SHGFI_SMALLICON);
-							image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
-							img = '<img src="' + image.DataURI("image/png" , info.hIcon) + '" /> ';
-							api.DestroyIcon(info.hIcon);
+				} else if (/Open|Exec/i.test(item.getAttribute("Type"))) {
+					var path = this.GetPath(items, i);
+					var pidl = api.ILCreateFromPath(path);
+					if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
+						var res = /"([^"]*)"/.exec(path) || /([^ ]*)/.exec(path);
+						if (res) {
+							pidl = api.ILCreateFromPath(res[1]);
 						}
 					}
-					else {
-						img = '<img src="icon:shell32.dll,3,16" /> ';
+					if (pidl) {
+						img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '">';
 					}
 				}
-				s.push('<span id="_linkbar', i, '" ', api.strcmpi(item.getAttribute("Type"), "Menus") || api.strcmpi(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' : 'onmousedown="Addons.LinkBar.Open(');
+				s.push('<span id="_linkbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' + i + ')" onmousedown="Addons.LinkBar.Down(' : 'onmousedown="Addons.LinkBar.Open(');
 				s.push(i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, ' ', items[i].getAttribute("Name"), '</span> ');
 			}
 			s.push('<label id="Link', items.length, '" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
@@ -166,7 +162,7 @@ if (window.Addon == 1) {
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		if (Ctrl.Type == CTRL_WB) {
-			hr = S_OK;
+			return S_OK;
 		}
 	});
 
@@ -177,12 +173,12 @@ if (window.Addon == 1) {
 			var i = Addons.LinkBar.FromPt(items.length + 1, pt);
 			if (i >= 0) {
 				if (i == items.length) {
-					pdwEffect.x = DROPEFFECT_LINK;
+					pdwEffect[0] = DROPEFFECT_LINK;
 					MouseOver(document.getElementById("_linkbar" + i));
 					return S_OK;
 				}
 				var hr = Exec(external, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect);
-				if (hr == S_OK && pdwEffect.x) {
+				if (hr == S_OK && pdwEffect[0]) {
 					MouseOver(document.getElementById("_linkbar" + i));
 				}
 				return S_OK;
@@ -215,8 +211,7 @@ if (window.Addon == 1) {
 							if (fso.FileExists(item.text)) {
 								item.text = api.PathQuoteSpaces(item.text);
 								item.setAttribute("Type", "Exec");
-							}
-							else {
+							} else {
 								item.setAttribute("Type", "Open");
 							}
 							root.appendChild(item);
@@ -235,6 +230,6 @@ if (window.Addon == 1) {
 	AddEvent("DragLeave", function (Ctrl)
 	{
 		MouseOut();
-		return S_OK
+		return S_OK;
 	});
 }
