@@ -40,7 +40,11 @@ if (window.Addon == 1) {
 							this.Tab(s, TC, i);
 						}
 						if (this.opt.New) {
-							s.push('<li class="tab3" onclick="Addons.TabPlus.New(', Id, ');return false" title="', GetText("New Tab"), '" style="font-family: ', document.body.style.fontFamily, '" />+</li>');
+							s.push('<li class="tab3" onclick="Addons.TabPlus.New(', Id, ');return false" title="', GetText("New Tab"), '" style="font-family: ', document.body.style.fontFamily);
+							if (this.opt.Align > 1 && this.opt.Width) {
+								s.push('; text-align: center; width: 100%');
+							}
+							s.push('" />+</li>');
 						}
 						o.innerHTML = s.join("").replace(/\$/g, Id);
 					}
@@ -133,19 +137,19 @@ if (window.Addon == 1) {
 							w -= 20;
 						}
 					}
-					s.push('<td style="vertical-align: middle;"><div style="overflow: hidden; white-space: nowrap;');
-					if (this.opt.Fix) {
-						w += Number(this.opt.Width) || 0;
-						if (w >= 0) {
-							s.push('width: ' + w + 'px');
+					s.push('<td style="vertical-align: middle;"><div style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;');
+					w += Number(this.opt.Width) || 0;
+					if (w >= 0) {
+						s.push((this.opt.Fix ? 'width: ' : 'max-width:'), w, 'px');
+					}
+					var n = "";
+					if (FV.FolderItem) {
+						n = GetTabName(FV).replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+						if (this.opt.Tooltips) {
+							s.push('" title="', FV.FolderItem.Path.replace(/"/g, "&quot;"));
 						}
 					}
-					s.push('">');
-
-					if (FV.FolderItem) {
-						s.push(GetTabName(FV).replace(/</g, "&lt;"));
-					}
-					s.push('</div></td>');
+					s.push('" >', n.replace(/</g, "&lt;"), '</div></td>');
 					if (this.opt.Close && !FV.Data.Lock) {
 						s.push('<td style="vertical-align: middle; width: 13px" align="right"><img class="button" src="', this.ImgClose, '" style="width: 13px" id="tabplus_', FV.Parent.Id, '_', i, 'x" title="', GetText("Close Tab"), '" onmouseover="MouseOver(this)" onmouseout="MouseOut()"></td>');
 					}
@@ -391,8 +395,11 @@ if (window.Addon == 1) {
 		{
 			var TC = te.Ctrl(CTRL_TC, Id);
 			if (TC) {
-				var i = TC.selectedIndex + (event.wheelDelta > 0 ? -1 : 1);
-				TC.selectedIndex = i < 0 ? TC.Count - 1 : i < TC.Count ? i : 0;
+				var o = document.getElementById("tabplus_" + Id);
+				if (o.clientWidth == o.offsetWidth) {
+					var i = TC.selectedIndex + (event.wheelDelta > 0 ? -1 : 1);
+					TC.selectedIndex = i < 0 ? TC.Count - 1 : i < TC.Count ? i : 0;
+				}
 			}
 		},
 
@@ -456,10 +463,13 @@ if (window.Addon == 1) {
 		var arAlign = ["InnerTop_", "InnerBottom_", "InnerLeft_", "InnerRight_"];
 		var o = document.getElementById(SetAddon(null, arAlign[n] + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id)));
 		if (n > 1) {
+			var h = o.innerHeight;
 			var w = (Number(Addons.TabPlus.opt.Width || 84) + 17) + "px";
 			o.style.width = w;
 			o = document.getElementById("tabplus_" + Ctrl.Id);
 			o.style.width = w;
+			o.style.height = "0";
+			o.style.overflow = "auto";
 		} else {
 			o.style.overflow = "hidden";
 		}
@@ -602,6 +612,24 @@ if (window.Addon == 1) {
 	AddEvent("Resize", function ()
 	{
 		Addons.TabPlus.Resize();
+	});
+
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo)
+	{
+		if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONUP) {
+			if (Ctrl.Type == CTRL_WB) {
+				var TC = Addons.TabPlus.TCFromPt(pt);
+				if (TC) {
+					if (msg == WM_MBUTTONDOWN) {
+						Addons.TabPlus.Down(TC.Id);
+						Addons.TabPlus.Button[TC.Id] = GetGestureKey().replace(/3/, "") + "3";
+					} else {
+						Addons.TabPlus.Up(TC.Id);
+					}
+					return S_OK;
+				}
+			}
+		}
 	});
 
 	//Init

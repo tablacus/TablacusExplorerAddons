@@ -29,7 +29,7 @@ if (window.Addon == 1) {
 
 		IsHandle: function (Ctrl)
 		{
-			return Addons.Label.RE.test(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+			return Addons.Label.RE.exec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 		},
 
 		Get: function (path)
@@ -81,8 +81,9 @@ if (window.Addon == 1) {
 
 		LabelPath: function (Ctrl)
 		{
-			if (Addons.Label.IsHandle(Ctrl)) {
-				return RegExp.$1;
+			var res = Addons.Label.IsHandle(Ctrl);
+			if (res) {
+				return res[1];
 			}
 		},
 
@@ -100,11 +101,11 @@ if (window.Addon == 1) {
 				var db = Addons.LabelGroups.db;
 				for (var s in db) {
 					mii.hSubMenu = api.CreatePopupMenu();
-					mii.dwTypeData = s;
+					mii.dwTypeData = s.replace(/&/g, "&&");
 					var ar = db[s];
 					for (var i in ar) {
 						nRes++;
-						api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++g_nPos, ar[i]);
+						api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++g_nPos, ar[i].replace(/&/g, "&&"));
 						ExtraMenuData[g_nPos] = ar[i];
 						ExtraMenuCommand[g_nPos] = Addons.Label.ExecAdd;
 						delete oList[ar[i]];
@@ -118,7 +119,7 @@ if (window.Addon == 1) {
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 					nRes = 0;
 				}
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++g_nPos, s);
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++g_nPos, s.replace(/&/g, "&&"));
 				ExtraMenuData[g_nPos] = s;
 				ExtraMenuCommand[g_nPos] = Addons.Label.ExecAdd;
 			}
@@ -559,7 +560,7 @@ if (window.Addon == 1) {
 							var ar = [GetText("&Edit")];
 							var s = Addons.Label.Get(path);
 							if (s) {
-								ar.push(s);
+								ar.push(s.replace(/&/g, "&&"));
 							}
 							api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, ++nPos, ar.join(' - '));
 							ExtraMenuCommand[nPos] = Addons.Label.Edit;
@@ -596,7 +597,7 @@ if (window.Addon == 1) {
 					var nPos2 = nPos;
 					delete o[""];
 					for (var s in o) {
-						api.InsertMenu(mii2.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, s);
+						api.InsertMenu(mii2.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, s.replace(/&/g, "&&"));
 						mii2.fState = MFS_ENABLED;
 						ExtraMenuData[nPos] = s;
 						ExtraMenuCommand[nPos] = Addons.Label.ExecRemove;
