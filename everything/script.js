@@ -82,6 +82,47 @@ if (window.Addon == 1) {
 			document.F.everythingsearch.focus();
 			return S_OK;
 		},
+
+		Delete: function (pidl)
+		{
+			var cFV = te.Ctrls(CTRL_FV);
+			for (var i in cFV) {
+				var FV = cFV[i];
+				if (FV.hwnd && this.IsHandle(FV)) {
+					FV.RemoveItem(pidl);
+				}
+			}
+		},
+
+		Rename: function (pidl, pidl2)
+		{
+			var fn = api.GetDisplayNameOf(pidl2, SHGDN_INFOLDER);
+			var cFV = te.Ctrls(CTRL_FV);
+			for (var i in cFV) {
+				var FV = cFV[i];
+				if (FV.hwnd && this.IsHandle(FV)) {
+					var Path = Addons.Everything.GetSearchString(FV);
+					if (Path) {
+						if (FV.RemoveItem(pidl) == S_OK) {
+							if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
+								Path = ((window.migemo && (migemo.query(Path) + '|' + Path)) || Path);
+								if (new RegExp(Path, "i").test(fn)) {
+									FV.AddItem(api.GetDisplayNameOf(pidl2, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+								}
+							} else {
+								if (!/[\*\?]/.test(Path)) {
+									Path = "*" + Path + "*";
+								}
+								if (api.PathMatchSpec(fn, Path)) {
+									FV.AddItem(api.GetDisplayNameOf(pidl2, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 	};
 
 	AddEvent("TranslatePath", function (Ctrl, Path)
@@ -201,6 +242,16 @@ if (window.Addon == 1) {
 					return S_OK;
 				}
 			}
+		}
+	});
+
+	AddEvent("ChangeNotify", function (Ctrl, pidls)
+	{
+		if (pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR)) {
+			Addons.Everything.Delete(pidls[0]);
+		}
+		if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
+			Addons.Everything.Rename(pidls[0], pidls[1]);
 		}
 	});
 

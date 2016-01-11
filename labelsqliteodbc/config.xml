@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.14</Version>
+    <Version>1.00</Version>
     <MinVersion>2016.1.11</MinVersion>
     <pubDate>Mon, 11 Jan 2016 00:00:00 UTC</pubDate>
-    <Options>Common:0,5,6,7,8,9:0</Options>
+    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Everything</Name>
-    <Description>Search on Everything Search Engine.</Description>
+    <Name>Label SQLite ODBC Driver</Name>
+    <Description>Label(SQLite odbc driver) * Require Label and SQLite ODBC Driver</Description>
   </en>
   <ja>
-    <Name>Everything</Name>
-    <Description>Everything Search Engineで検索を行います。</Description>
+    <Name>ラベル SQLite ODBC Driver</Name>
+    <Description>ラベル(SQLite odbc driver ※ラベルとSQLite ODBC Driverが必要</Description>
   </ja>
 </TablacusExplorer>
