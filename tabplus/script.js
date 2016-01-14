@@ -139,7 +139,7 @@ if (window.Addon == 1) {
 					}
 					s.push('<td style="vertical-align: middle;"><div style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;');
 					w += Number(this.opt.Width) || 0;
-					if (w >= 0) {
+					if (w > 0) {
 						s.push((this.opt.Fix ? 'width: ' : 'max-width:'), w, 'px');
 					}
 					var n = "";

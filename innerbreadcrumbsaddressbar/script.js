@@ -53,9 +53,9 @@ if (window.Addon == 1) {
 		{
 			this.tid[Id] = null;
 			if (!FolderItem) {
-				var FV = GetInnerFV(CTRL_FV);
-				if (FV && Id == FV.Parent.Id) {
-					FolderItem = FV.FolderItem;
+				var TC = te.Ctrl(CTRL_TC, Id);
+				if (TC && TC.Selected) {
+					FolderItem = TC.Selected.FolderItem;
 				}
 			}
 			if (FolderItem) {
@@ -296,8 +296,8 @@ if (window.Addon == 1) {
 		var s = (Addons.InnerBreadcrumbsAddressBar.path2[Ctrl.Id] || "").replace(/"/, "");
 		s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbsbuttons_$" style="margin 2px; background-color: window; white-space: nowrap; position: absolute; top: 2px; left: 2px; padding-left: 20px"></div><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(this, $)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(this, $)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="breadcrumbsselect_$" class="button" style="position: absolute; font-family: Marlett !important; top: 2px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, $)">6</span></div>'];
 		s.push('<img id="breadcrumbsaddr_img_$" src="icon:shell32.dll,3,16"');
-		s.push(' onclick="return Addons.InnerBreadcrumbsAddressBar.Exec($);"');
-		s.push(' oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec($); return false;"');
+		s.push(' onclick="return Addons.InnerBreadcrumbsAddressBar.ExecEx($);"');
+		s.push(' oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ExecEx($); return false;"');
 		s.push(' style="position: absolute; left: 4px; top: 2px; width: 16px; height: 16px; z-index: 3; border: 0px" /></div>');
 		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
