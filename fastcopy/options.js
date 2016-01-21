@@ -26,10 +26,11 @@ function InitOptionsZ()
 			document.F.elements[arChecks[i]].checked = item.getAttribute(arChecks[i]);
 		}
 	}
+	document.getElementById("GetFastCopy").value = api.sprintf(999, GetText("Get %s..."), "FastCopy");
 	if (/ja/i.test(GetLangId())) {
 		document.getElementById("GetFastCopy").title = 'http://ipmsg.org/tools/fastcopy.html';
 	}
-	
+
 	SetOnChangeHandler();
 	AddEventEx(window, "beforeunload", function ()
 	{

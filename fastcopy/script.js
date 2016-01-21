@@ -26,42 +26,45 @@
 				}
 			}
 			if (bDelete || (Dest != "" && fso.FolderExists(Dest))) {
+				for (i = Items.Count - 1; i >= 0; i--) {
+					if (!IsExists(Items.Item(i).Path)) {
+						return false;
+					}
+				}
 				var hDrop = Items.hDrop;
-				if (Items.Count == api.DragQueryFile(hDrop, -1)) {
-					var strFunc;
-					var bStart;
-					if (bDelete) {
-						strFunc = item.getAttribute("Delete");
-						bStart = item.getAttribute("DeleteStart");
-					} else {
-						if (bOver) {
-							var DropTarget = api.DropTarget(Dest);
-							DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
-						}
-						if (pdwEffect[0] & DROPEFFECT_COPY) {
-							strFunc = item.getAttribute("Copy");
-							bStart = item.getAttribute("CopyStart");
-						} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
-							strFunc = item.getAttribute("DiffDriveOnly") && api.PathIsSameRoot(api.DragQueryFile(hDrop, 0), Dest) ? "" : item.getAttribute("Move");
-							bStart = item.getAttribute("MoveStart");
-						}
+				var strFunc;
+				var bStart;
+				if (bDelete) {
+					strFunc = item.getAttribute("Delete");
+					bStart = item.getAttribute("DeleteStart");
+				} else {
+					if (bOver) {
+						var DropTarget = api.DropTarget(Dest);
+						DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 					}
-					if (strFunc) {
+					if (pdwEffect[0] & DROPEFFECT_COPY) {
+						strFunc = item.getAttribute("Copy");
+						bStart = item.getAttribute("CopyStart");
+					} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
+						strFunc = item.getAttribute("DiffDriveOnly") && api.PathIsSameRoot(api.DragQueryFile(hDrop, 0), Dest) ? "" : item.getAttribute("Move");
+						bStart = item.getAttribute("MoveStart");
+					}
+				}
+				if (strFunc) {
+					setTimeout(function () {
+						var oExec = wsh.Exec([api.PathQuoteSpaces(strCmd), strFunc.replace(/%dest%/i, Dest)].join(" "));
+						var hwnd = GethwndFromPid(oExec.ProcessID);
+						api.PostMessage(hwnd, WM_DROPFILES, hDrop, 0);
 						setTimeout(function () {
-							var oExec = wsh.Exec([api.PathQuoteSpaces(strCmd), strFunc.replace(/%dest%/i, Dest)].join(" "));
-							var hwnd = GethwndFromPid(oExec.ProcessID);
-							api.PostMessage(hwnd, WM_DROPFILES, hDrop, 0);
-							setTimeout(function () {
-								if (bStart) {
-									api.PostMessage(hwnd, WM_KEYDOWN, VK_RETURN, 0);
-									api.PostMessage(hwnd, WM_KEYUP, VK_RETURN, 0);
-								} else {
-									wsh.AppActivate(oExec.ProcessID);
-								}
-							}, 99);
-						}, 1);
-						return true;
-					}
+							if (bStart) {
+								api.PostMessage(hwnd, WM_KEYDOWN, VK_RETURN, 0);
+								api.PostMessage(hwnd, WM_KEYUP, VK_RETURN, 0);
+							} else {
+								wsh.AppActivate(oExec.ProcessID);
+							}
+						}, 99);
+					}, 1);
+					return true;
 				}
 				api.DragFinish(hDrop);
 			}
@@ -140,7 +143,4 @@
 				break;
 		}
 	});
-
-	te.HookDragDrop(CTRL_FV, true);
-	te.HookDragDrop(CTRL_TV, true);
 }
