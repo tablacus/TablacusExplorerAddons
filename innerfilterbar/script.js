@@ -29,8 +29,16 @@ if (window.Addon == 1) {
 
 		KeyUp: function (o, Id)
 		{
-			if (window.event.keyCode == VK_RETURN) {
-				this.KeyDown(o, Id);
+			var k = window.event.keyCode;
+			if (k == VK_RETURN || k == VK_UP || k == VK_DOWN) {
+				var TC = te.Ctrl(CTRL_TC, Id);
+				if (TC) {
+					var FV = TC.Selected;
+					if (FV) {
+						FV.Focus();
+						return false;
+					}
+				}
 			}
 		},
 
@@ -121,8 +129,9 @@ if (window.Addon == 1) {
 				if (o) {
 					clearTimeout(Addons.InnerFilterBar.tid[Id]);
 					var s = Ctrl.FilterView;
-					if (/^\*(.*)\*$/.test(s)) {
-						s = RegExp.$1;
+					var res = /^\*(.*)\*$/.exec(s);
+					if (res) {
+						s = res[1];
 					} else if (s == "*") {
 						s = "";
 					}

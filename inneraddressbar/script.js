@@ -1,4 +1,4 @@
-var Addon_Id = "inneraddressbar";
+Addon_Id = "inneraddressbar";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -32,7 +32,7 @@ if (window.Addon == 1) {
 				var p = GetPos(o);
 				var pt = api.Memory("POINT");
 				pt.x = screenLeft + p.x;
-				pt.y = screenTop + p.y + o.offsetHeight * screen.deviceYDPI / 96;
+				pt.y = screenTop + p.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
 				window.Input = o.value;
 				if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
 					FV = GetInnerFV(Id);
@@ -53,9 +53,9 @@ if (window.Addon == 1) {
 		{
 			this.tid[Id] = null;
 			if (!FolderItem) {
-				var FV = GetInnerFV(CTRL_FV);
-				if (FV && Id == FV.Parent.Id) {
-					FolderItem = FV.FolderItem;
+				var TC = te.Ctrl(CTRL_TC, Id);
+				if (TC && TC.Selected) {
+					FolderItem = TC.Selected.FolderItem;
 				}
 			}
 			if (FolderItem) {
@@ -65,10 +65,9 @@ if (window.Addon == 1) {
 				if (!oAddr) {
 					return;
 				}
-				var width = oAddr.offsetWidth - 32;
 				var height = oAddr.offsetHeight - 6;
 				var o = document.getElementById("inneraddrselect_" + Id);
-				o.style.left = (width + 16) + "px";
+				o.style.left = (oAddr.offsetWidth - (16 * screen.deviceXDPI / 96)) + "px";
 				o.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
 				var img = document.getElementById("inneraddr_img_" + Id);
 				img.style.top = Math.abs(oAddr.offsetHeight - 16) / 2 + "px";
@@ -112,7 +111,7 @@ if (window.Addon == 1) {
 				Addons.InnerAddressBar.Item = o;
 				var pt = GetPos(o, true);
 				MouseOver(o);
-				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n, Id), pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / 96));
+				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n, Id), pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI));
 			}
 		},
 
@@ -135,7 +134,7 @@ if (window.Addon == 1) {
 				MouseOver(o);
 				var pt = GetPos(o, true);
 				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / 96, te.hwnd, null, null);
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				FolderItem = null;
 				if (nVerb) {
@@ -168,7 +167,7 @@ if (window.Addon == 1) {
 
 					var pt = GetPos(o, true);
 					window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x + o.offsetWidth * screen.deviceXDPI / 96, pt.y + o.offsetHeight * screen.deviceYDPI / 96, te.hwnd, null, null);
+					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x + o.offsetWidth * screen.deviceXDPI / screen.logicalXDPI, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, te.hwnd, null, null);
 					api.DestroyMenu(hMenu);
 					FolderItem = null;
 					if (nVerb) {

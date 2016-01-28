@@ -1,5 +1,5 @@
-var Addon_Id = "addressbar";
-var Default = "ToolBar2Center";
+Addon_Id = "addressbar";
+Default = "ToolBar2Center";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -66,8 +66,8 @@ if (window.Addon == 1) {
 				var s = [];
 				var o = document.getElementById("breadcrumbbuttons");
 				var oAddr = document.F.addressbar;
-				var width = oAddr.offsetWidth - 32;
-				var height = oAddr.offsetHeight - 6;
+				var width = oAddr.offsetWidth - (32 * screen.deviceXDPI / 96);
+				var height = oAddr.offsetHeight - (6 * screen.deviceYDPI / 96);
 				if (Addons.AddressBar.bXP) {
 					oAddr.style.color = "windowtext";
 				}
@@ -98,7 +98,7 @@ if (window.Addon == 1) {
 					this.nLevel = n;
 				}
 				var o = document.getElementById("addressbarselect");
-				o.style.left = (width + 16) + "px";
+				o.style.left = (oAddr.offsetWidth - (16 * screen.deviceXDPI / 96)) + "px";
 				o.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
 				var img = document.getElementById("addr_img");
 				img.style.top = Math.abs(oAddr.offsetHeight - 16) / 2 + "px";
@@ -150,7 +150,7 @@ if (window.Addon == 1) {
 				Addons.AddressBar.Item = o;
 				var pt = GetPos(o, true);
 				MouseOver(o);
-				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n), pt.x, pt.y + o.offsetHeight * screen.deviceXDPI / 96));
+				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n), pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI));
 			}
 		},
 
@@ -203,7 +203,7 @@ if (window.Addon == 1) {
 
 				var pt = GetPos(o, true);
 				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x + o.offsetWidth * screen.deviceXDPI / 96, pt.y + o.offsetHeight * screen.deviceYDPI / 96, te.hwnd, null, null);
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x + o.offsetWidth * screen.deviceXDPI / screen.logicalXDPI, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				FolderItem = null;
 				if (nVerb) {
@@ -311,7 +311,7 @@ if (window.Addon == 1) {
 	else {
 		s = "100%";
 	}
-	s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbbuttons" style="margin 2px; background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 2px; padding-left: 20px"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus(this)" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="addressbarselect" class="button" style="position: absolute; font-family: Marlett !important; top: 2px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">6</span></div>'];
+	s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbbuttons" style="background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 1px; padding-left: 20px"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus(this)" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="addressbarselect" class="button" style="position: absolute; font-family: Marlett !important; top: 2px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">6</span></div>'];
 	
 	s.push('<img id="addr_img" src="icon:shell32.dll,3,16"');
 	s.push(' onclick="return Addons.AddressBar.Exec();"');

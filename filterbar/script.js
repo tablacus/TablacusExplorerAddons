@@ -37,8 +37,13 @@ if (window.Addon == 1) {
 
 		KeyUp: function (o)
 		{
-			if (window.event.keyCode == VK_RETURN) {
-				this.KeyDown(o);
+			var k = window.event.keyCode;
+			if (k == VK_RETURN || k == VK_UP || k == VK_DOWN) {
+				var FV = te.Ctrl(CTRL_FV);
+				if (FV) {
+					FV.Focus();
+					return false;
+				}
 			}
 		},
 
