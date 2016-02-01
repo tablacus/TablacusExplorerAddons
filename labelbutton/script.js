@@ -131,7 +131,7 @@ if (window.Addon == 1) {
 				}
 			}
 			else if (nVerb > 10000) {
-				Navigate("label:" + arList[nVerb - 10001], window.g_menu_button == 3 ? SBSP_NEWBROWSER : OpenMode);
+				Navigate("label:" + arList[nVerb - 10001], GetOpenMode());
 			}
 			api.DestroyMenu(hMenu);
 		},
