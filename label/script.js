@@ -47,10 +47,41 @@ if (window.Addon == 1) {
 						var Label = Addons.Label.Get(path);
 						var s = InputDialog(path + (Selected.Count > 1 ? " : " + Selected.Count : "") + "\nlabel:" + Label, Label);
 						if (typeof(s) == "string") {
-							var notify = {};
 							for (var i = Selected.Count; i-- > 0;) {
 								Addons.Label.Set(api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), s);
 							}
+						}
+					}
+				} catch (e) {
+					wsh.Popup(e.description + "\n" + s, 0, TITLE, MB_ICONSTOP);
+				}
+			}
+		},
+
+		EditPath: function (Ctrl, pt)
+		{
+			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
+			if (Selected && Selected.Count == 1) {
+				try {
+					var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					if (path) {
+						var Label = Addons.Label.Get(path);
+						var s = InputDialog("label:" + Label + "\n" + path, path);
+						if (typeof(s) == "string") {
+						 	api.SHParseDisplayName(function (pid, s, path, Label)
+						 	{
+								if (pid) {
+									s = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+								}
+								if (s != path) {
+									if (Addons.Label.Get(s)) {
+										wsh.Popup(api.LoadString(hShell32, 6327));
+									} else {
+										Addons.Label.Set(s, Label);
+										Addons.Label.Set(path, "");
+									}
+								}
+							}, 0, s, s, path, Label);
 						}
 					}
 				} catch (e) {
@@ -563,7 +594,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Dragleave", function (Ctrl)
+	AddEvent("DragLeave", function (Ctrl)
 	{
 		return S_OK;
 	});
@@ -571,9 +602,6 @@ if (window.Addon == 1) {
 	AddEvent("ChangeNotify", function (Ctrl, pidls)
 	{
 		if (te.Labels) {
-			if (pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR)) {
-				Addons.Label.Remove(pidls[0]);
-			}
 			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
 				Addons.Label.Append(pidls[1], Addons.Label.Remove(pidls[0]));
 			}
@@ -626,6 +654,11 @@ if (window.Addon == 1) {
 							}
 							api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, ++nPos, ar.join(' - '));
 							ExtraMenuCommand[nPos] = Addons.Label.Edit;
+
+							if (s && Selected.Count == 1) {
+								api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Path"));
+								ExtraMenuCommand[nPos] = Addons.Label.EditPath;
+							}
 						}
 					}
 					if (Ctrl.CurrentViewMode == FVM_DETAILS) {
