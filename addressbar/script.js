@@ -1,9 +1,8 @@
-Addon_Id = "addressbar";
-Default = "ToolBar2Center";
+var Addon_Id = "addressbar";
+var Default = "ToolBar2Center";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
+var item = GetAddonElement(Addon_Id);
+if (item) {
 	if (!item.getAttribute("Set")) {
 		item.setAttribute("Menu", "Edit");
 		item.setAttribute("MenuPos", -1);
@@ -70,8 +69,7 @@ if (window.Addon == 1) {
 				var height = oAddr.offsetHeight - (6 * screen.deviceYDPI / 96);
 				if (Addons.AddressBar.bXP) {
 					oAddr.style.color = "windowtext";
-				}
-				else {
+				} else {
 					var n = 0;
 					do {
 						if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
@@ -277,7 +275,7 @@ if (window.Addon == 1) {
 		return document.F.addressbar.value;
 	}
 
-	if (items.length) {
+	if (item) {
 		Addons.AddressBar.bXP = item.getAttribute("XP");
 		//Menu
 		if (item.getAttribute("MenuExec")) {
@@ -307,8 +305,7 @@ if (window.Addon == 1) {
 	var s = item.getAttribute("Width");
 	if (s) {
 		s = (api.QuadPart(s) == s) ? (s + "px") : s;
-	}
-	else {
+	} else {
 		s = "100%";
 	}
 	s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbbuttons" style="background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 1px; padding-left: 20px"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus(this)" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="addressbarselect" class="button" style="position: absolute; font-family: Marlett !important; top: 2px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">6</span></div>'];
@@ -323,8 +320,7 @@ if (window.Addon == 1) {
 		o.style.verticalAlign = "middle";
 	}
 	Addons.AddressBar.Resize();
-}
-else {
+} else {
 	document.getElementById("tab0").value = GetText("General");
 	document.getElementById("panel0").innerHTML = ['<table style="width: 100%"><tr><td><input type="checkbox" id="XP" /><label for="XP">XP ', GetText("Style").toLowerCase(), '</label></td></tr><tr><td><label>', GetText("Width"), '</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="', GetText("Auto"), '" onclick="document.F.Width.value=\'\'" /></td></tr></table>'].join("");
 }

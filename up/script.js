@@ -1,9 +1,8 @@
 ﻿var Addon_Id = "up";
 var Default = "ToolBar2Left";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
+var item = GetAddonElement(Addon_Id);
+if (item) {
 	if (!item.getAttribute("Set")) {
 		item.setAttribute("Menu", "View");
 		item.setAttribute("MenuPos", -1);
@@ -58,7 +57,7 @@ if (window.Addon == 1) {
 			}
 		}
 	};
-	if (items.length) {
+	if (item) {
 		//Menu
 		if (item.getAttribute("MenuExec")) {
 			Addons.Up.nPos = api.LowPart(item.getAttribute("MenuPos"));

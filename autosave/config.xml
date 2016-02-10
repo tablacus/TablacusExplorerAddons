@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.28</Version>
+    <Version>1.00</Version>
     <MinVersion>2016.2.10</MinVersion>
     <pubDate>Wed, 10 Feb 2016 00:00:00 UTC</pubDate>
-    <Options>Common:0,6,7,8,9:0</Options>
+    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Address Bar</Name>
-    <Description>Breadcrumbs or XP style is available.</Description>
+    <Name>Auto save</Name>
+    <Description>Save settings periodically.</Description>
   </en>
   <ja>
-    <Name>アドレス バー</Name>
-    <Description>パンくずリストかXPスタイルが選べます。</Description>
+    <Name>自動的に保存</Name>
+    <Description>定期的に設定を保存</Description>
   </ja>
 </TablacusExplorer>

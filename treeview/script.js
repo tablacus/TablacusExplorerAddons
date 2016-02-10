@@ -1,9 +1,8 @@
-Addon_Id = "treeview";
-Default = "ToolBar2Left";
+var Addon_Id = "treeview";
+var Default = "ToolBar2Left";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
+var item = GetAddonElement(Addon_Id);
+if (item) {
 	if (!item.getAttribute("Set")) {
 		item.setAttribute("MenuPos", -1);
 	}
