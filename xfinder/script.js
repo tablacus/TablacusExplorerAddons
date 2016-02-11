@@ -721,18 +721,21 @@ if (window.Addon == 1) {
 			if (/^\/\//.test(line)) {
 				return S_OK;
 			}
-			if (/^SW:(\d):(.*)/i.test(line)) {
-				this.SW = api.LowPart(RegExp.$1);
-				line = RegExp.$2;
+			var res = /^SW:(\d):(.*)/i.exec(line);
+			if (res) {
+				this.SW = api.QuadPart(res[1]);
+				line = res[2];
 			}
-			if (line.match(/^(\d):(.*)/)) {
-				this.nMode = api.LowPart(RegExp.$1);
-				line = RegExp.$2;
+			res = /^(\d):(.*)/.exec(line);
+			if (res) {
+				this.nMode = api.QuadPart(res[1]);
+				line = res[2];
 			}
-			if (line.match(/^(.+?):\s*(.*)\s*/)) {
-				var fn = this.Command[RegExp.$1.toLowerCase()];
+			res = /^(.+?):\s*(.*)\s*/.exec(line);
+			if (res) {
+				var fn = this.Command[res[1].toLowerCase()];
 				if (fn) {
-					return fn(Ctrl, hwnd, pt, RegExp.$2);
+					return fn(Ctrl, hwnd, pt, res[2]);
 				}
 			}
 			switch (this.nMode) {
@@ -808,8 +811,9 @@ if (window.Addon == 1) {
 			var hr = S_OK;
 			var lines = s.split(/\n/);
 			Addons.XFinder.nMode = nMode || 0;
-			if (/Script:(.+)/i.test(s)) {
-				var type = RegExp.$1.replace(/^\s+|\s+$/, "");
+			var res = /Script:(.+)/i.exec(s);
+			if (res) {
+				var type = res[1].replace(/^\s+|\s+$/, "");
 				lines.shift();
 				return ExecScriptEx(Ctrl, lines.join("\n"), type, hwnd, pt, undefined, undefined, undefined, undefined, GetFolderView(Ctrl, pt));
 			}
@@ -926,11 +930,9 @@ if (window.Addon == 1) {
 			var Focused = FV.FocusedItem;
 			if (Focused) {
 				try {
-					var ts = fso.OpenTextFile(Focused.Path, 1);
-					if (!ts.AtEndOfStream) {
-						s = ts.ReadAll();
-					}
-					ts.Close();
+					var ado = OpenAdodbFromTextFile(Focused.Path);
+					s = ado.ReadText();
+					ado.Close();
 				} catch (e) {
 					wsh.Echo(Focused.Path);
 				}
@@ -1002,11 +1004,11 @@ if (window.Addon == 1) {
 		return Addons.XFinder.FormatDateTime(ref1, new Date());
 	}]);
 
-	AddEvent("ReplaceMacro", [/%TimeStamp:([^%]*)%/ig, function (Ctrl, re)
+	AddEvent("ReplaceMacro", [/%TimeStamp:([^%]*)%/ig, function (Ctrl, re, res)
 	{
 		var FV = GetFolderView(Ctrl, pt);
 		if (FV) {
-			return Addons.XFinder.FormatDateTime(RegExp.$1, FV.FocusedItem.ModifyDate);
+			return Addons.XFinder.FormatDateTime(res[1], FV.FocusedItem.ModifyDate);
 		}
 	}]);
 
@@ -1020,7 +1022,7 @@ if (window.Addon == 1) {
 	{
 		Exec: function (Ctrl, s, type, hwnd, pt)
 		{
-			return Addons.XFinder.ExecEx(s, 1, Ctrl, hwnd, pt)
+			return Addons.XFinder.ExecEx(s, 1, Ctrl, hwnd, pt);
 		},
 
 		Ref: function (s, pt)
@@ -1101,6 +1103,11 @@ if (window.Addon == 1) {
 	{
 		var pdwEffect = api.Memory("DWORD");
 		pdwEffect[0] = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
-		return api.DoDragDrop(Items, pdwEffect[0], pdwEffect);
+		return api.SHDoDragDrop(null, Items, te, pdwEffect[0], pdwEffect);
+	}
+
+	WScript.Include = function (fn)
+	{
+		importScripts(fn);
 	}
 }
