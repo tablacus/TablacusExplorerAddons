@@ -65,7 +65,9 @@ if (window.Addon == 1) {
 				var s = [];
 				var o = document.getElementById("breadcrumbbuttons");
 				var oAddr = document.F.addressbar;
-				var width = oAddr.offsetWidth - (32 * screen.deviceXDPI / 96);
+				var oImg = document.getElementById("addr_img");
+				var oPopup = document.getElementById("addressbarselect");
+				var width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetHeight - 2;
 				var height = oAddr.offsetHeight - (6 * screen.deviceYDPI / 96);
 				if (Addons.AddressBar.bXP) {
 					oAddr.style.color = "windowtext";
@@ -73,9 +75,9 @@ if (window.Addon == 1) {
 					var n = 0;
 					do {
 						if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
-							s.unshift('<span id="addressbar' + n + '" class="button" style="font-family: Marlett !important; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.AddressBar.Popup(this,' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">4</span>');
+							s.unshift('<span id="addressbar' + n + '" class="button" style="line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.AddressBar.Popup(this,' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + BUTTONS.next + '</span>');
 						}
-						s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Go(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
+						s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Go(' + n + ')" onmousedown="Addons.AddressBar.GoNew(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
 						FolderItem = api.ILGetParent(FolderItem);
 						o.innerHTML = s.join("");
 						if (o.offsetWidth > width && n > 0) {
@@ -87,19 +89,17 @@ if (window.Addon == 1) {
 					} while (!api.ILIsEmpty(FolderItem) && n < 99);
 					if (api.ILIsEmpty(FolderItem)) {
 						if (!bRoot) {
-							o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="font-family: Marlett !important; line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup(this, ' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
+							o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup(this, ' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.next + '</span>');
 						}
 					}
 					else {
-						o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup2(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">&laquo;</span>');
+						o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup2(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.parent + '</span>');
 					}
 					this.nLevel = n;
 				}
-				var o = document.getElementById("addressbarselect");
-				o.style.left = (oAddr.offsetWidth - (16 * screen.deviceXDPI / 96)) + "px";
-				o.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
-				var img = document.getElementById("addr_img");
-				img.style.top = Math.abs(oAddr.offsetHeight - 16) / 2 + "px";
+				oPopup.style.left = (oAddr.offsetWidth - oPopup.offsetWidth - 1) + "px";
+				oPopup.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
+				oImg.style.top = Math.abs(oAddr.offsetHeight - oImg.offsetHeight) / 2 + "px";
 			}
 		},
 
@@ -118,10 +118,16 @@ if (window.Addon == 1) {
 
 		Blur: function (o)
 		{
-			o.value = o.value;
 			if (!Addons.AddressBar.bXP) {
 				o.style.color = "window";
 				document.getElementById("breadcrumbbuttons").style.display = "inline-block";
+			}
+		},
+
+		GoNew: function (n)
+		{
+			if (api.GetKeyState(VK_MBUTTON) < 0) {
+				Navigate(this.GetPath(n), SBSP_NEWBROWSER);
 			}
 		},
 
@@ -308,7 +314,7 @@ if (window.Addon == 1) {
 	} else {
 		s = "100%";
 	}
-	s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbbuttons" style="background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 1px; padding-left: 20px"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus(this)" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="addressbarselect" class="button" style="position: absolute; font-family: Marlett !important; top: 2px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">6</span></div>'];
+	s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbbuttons" style="background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 1px; padding-left: 20px"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus(this)" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="addressbarselect" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">', BUTTONS.dropdown,'</span></div>'];
 	
 	s.push('<img id="addr_img" src="icon:shell32.dll,3,16"');
 	s.push(' onclick="return Addons.AddressBar.Exec();"');

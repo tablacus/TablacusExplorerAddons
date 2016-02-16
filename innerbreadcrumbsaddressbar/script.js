@@ -66,14 +66,16 @@ if (window.Addon == 1) {
 				if (!oAddr) {
 					return;
 				}
-				var width = oAddr.offsetWidth - (32 * screen.deviceXDPI / 96);
+				var oPopup = document.getElementById("breadcrumbsselect_" + Id);
+				var oImg = document.getElementById("breadcrumbsaddr_img_" + Id);
+				var width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetHeight - 2;
 				var height = oAddr.offsetHeight - (6 * screen.deviceYDPI / 96);
 				var n = 0;
 				do {
 					if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
-						s.unshift('<span id="breadcrumbsaddressbar_' + Id + "_"  + n + '" class="button" style="font-family: Marlett !important; line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">4</span>');
+						s.unshift('<span id="breadcrumbsaddressbar_' + Id + "_"  + n + '" class="button" style="line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + BUTTONS.next + '</span>');
 					}
-					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
+					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(' + n + ', ' + Id + ')" onmousedown="Addons.InnerBreadcrumbsAddressBar.GoNew(' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
 					FolderItem = api.ILGetParent(FolderItem);
 					o.innerHTML = s.join("");
 					if (o.offsetWidth > width && n > 0) {
@@ -85,18 +87,16 @@ if (window.Addon == 1) {
 				} while (!api.ILIsEmpty(FolderItem) && n < 99);
 				if (api.ILIsEmpty(FolderItem)) {
 					if (!bRoot) {
-						o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="font-family: Marlett !important; line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">4</span>');
+						o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.next + '</span>');
 					}
 				}
 				else {
-					o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup2(this, '+ Id +')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">&laquo;</span>');
+					o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup2(this, ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.parent + '</span>');
 				}
 				this.nLevel = n;
-				var o = document.getElementById("breadcrumbsselect_" + Id);
-				o.style.left = (oAddr.offsetWidth - (16 * screen.deviceXDPI / 96)) + "px";
-				o.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
-				var img = document.getElementById("breadcrumbsaddr_img_" + Id);
-				img.style.top = Math.abs(oAddr.offsetHeight - 16) / 2 + "px";
+				oPopup.style.left = (oAddr.offsetWidth - oPopup.offsetWidth - 1) + "px";
+				oPopup.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
+				oImg.style.top = Math.abs(oAddr.offsetHeight - oImg.offsetHeight) / 2 + "px";
 			}
 		},
 
@@ -112,13 +112,19 @@ if (window.Addon == 1) {
 		{
 			o.style.color = "window";
 			document.getElementById("breadcrumbsbuttons_" + Id).style.display = "inline-block";
-			o.value = o.value;
+		},
+
+		GoNew: function (n, Id)
+		{
+			if (api.GetKeyState(VK_MBUTTON) < 0) {
+				Addons.InnerBreadcrumbsAddressBar.Go(n, Id);
+			}
 		},
 
 		Go: function (n, Id)
 		{
 			var FV = GetInnerFV(Id);
-			NavigateFV(FV, this.GetPath(n, Id), OpenMode);
+			NavigateFV(FV, this.GetPath(n, Id), GetNavigateFlags());
 		},
 
 		GetPath: function(n, Id)
@@ -294,7 +300,7 @@ if (window.Addon == 1) {
 	AddEvent("PanelCreated", function (Ctrl)
 	{
 		var s = (Addons.InnerBreadcrumbsAddressBar.path2[Ctrl.Id] || "").replace(/"/, "");
-		s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbsbuttons_$" style="background-color: window; white-space: nowrap; position: absolute; top: 1px; left: 2px; padding-left: 20px"></div><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(this, $)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(this, $)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="breadcrumbsselect_$" class="button" style="position: absolute; font-family: Marlett !important; top: 2px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, $)">6</span></div>'];
+		s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbsbuttons_$" style="background-color: window; white-space: nowrap; position: absolute; top: 1px; left: 2px; padding-left: 20px"></div><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(this, $)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(this, $)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="breadcrumbsselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</span></div>'];
 		s.push('<img id="breadcrumbsaddr_img_$" src="icon:shell32.dll,3,16"');
 		s.push(' onclick="return Addons.InnerBreadcrumbsAddressBar.ExecEx($);"');
 		s.push(' oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ExecEx($); return false;"');

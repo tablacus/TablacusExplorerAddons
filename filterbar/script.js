@@ -1,5 +1,5 @@
-﻿Addon_Id = "filterbar";
-Default = "ToolBar2Right";
+﻿var Addon_Id = "filterbar";
+var Default = "ToolBar2Right";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -89,6 +89,7 @@ if (window.Addon == 1) {
 				range.select();
 				this.iCaret = -1;
 			}
+			this.ShowButton();
 		},
 
 		Clear: function (flag)
@@ -105,10 +106,9 @@ if (window.Addon == 1) {
 
 		ShowButton: function ()
 		{
-			if (WINVER < 0x602) {
-				document.getElementById("ButtonFilter").style.display = document.F.filter.value.length ? "none" : "inline";
-				document.getElementById("ButtonFilterClear").style.display = document.F.filter.value.length ? "inline" : "none";
-			}
+			var f = (WINVER < 0x602 || document.F.filter != document.activeElement) && document.F.filter.value.length;
+			document.getElementById("ButtonFilter").style.display = f ? "none" : "inline";
+			document.getElementById("ButtonFilterClear").style.display = f ? "inline" : "none";
 		},
 
 		Exec: function ()
@@ -176,7 +176,7 @@ if (window.Addon == 1) {
 		}
 		AddTypeEx("Add-ons", "Filter Bar", Addons.FilterBar.Exec);
 	}
-	var s = ['<input type="text" name="filter" placeholder="Filter" onkeydown="Addons.FilterBar.KeyDown(this)" onkeyup="Addons.FilterBar.KeyUp(this)" onfocus="Addons.FilterBar.Focus(this)" onmouseup="Addons.FilterBar.KeyDown(this)" style="width:', width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', icon, '" id="ButtonFilter" hidefocus="true" style="position: absolute; left: -18px; top: -7px"><input type="image" id="ButtonFilterClear" src="bitmap:ieframe.dll,545,13,1" style="display: none; position: absolute; left: -17px; top: -5px" hidefocus="true" onclick="Addons.FilterBar.Clear(true)"></span>'];
+	var s = ['<input type="text" name="filter" placeholder="Filter" onkeydown="Addons.FilterBar.KeyDown(this)" onkeyup="Addons.FilterBar.KeyUp(this)" onfocus="Addons.FilterBar.Focus(this)" onblur="Addons.FilterBar.ShowButton()" onmouseup="Addons.FilterBar.KeyDown(this)" style="width:', width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', icon, '" id="ButtonFilter" hidefocus="true" style="position: absolute; left: -18px; top: -7px"><input type="image" id="ButtonFilterClear" src="bitmap:ieframe.dll,545,13,1" style="display: none; position: absolute; left: -17px; top: -5px" hidefocus="true" onclick="Addons.FilterBar.Clear(true)"></span>'];
 
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
 
