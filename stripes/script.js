@@ -12,7 +12,7 @@ if (window.Addon == 1) {
 	{
 		tid: {},
 
-		Arrange: function (Ctrl, nDog)
+		Arrange: function (Ctrl, nDog, bForce)
 		{
 			delete Addons.Stripes.tid[Ctrl.hwnd];
 			var hwnd = Ctrl.hwndList;
@@ -27,7 +27,9 @@ if (window.Addon == 1) {
 						lvbk.pszImage = pszImage;
 						lvbk.cchImageMax = pszImage.Size;
 						lvbk.ulFlags = LVBKIF_SOURCE_URL;
-						api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk);
+						if (!bForce) {
+							api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk);
+						}
 						if (pszImage[0] == 0) {
 							var hdc = api.GetDC(hwnd);
 							var hMemDC = api.CreateCompatibleDC(hdc);
@@ -49,7 +51,7 @@ if (window.Addon == 1) {
 
 							lvbk.pszImage = image.DataURI("image/png");
 							lvbk.ulFlags = LVBKIF_SOURCE_URL | LVBKIF_FLAG_TILEOFFSET | LVBKIF_STYLE_TILE;
-							lvbk.yOffsetPercent = osInfo.dwMajorVersion >= 6 ? nHeight * 2 - R.Top : 0;
+							lvbk.yOffsetPercent = WINVER >= 0x600 ? nHeight * 2 - R.Top : 0;
 							api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 							api.DeleteObject(hBitmap);
 							api.DeleteObject(hMemDC);
@@ -84,10 +86,15 @@ if (window.Addon == 1) {
 						Addons.Stripes.tid[Ctrl.hwnd] = setTimeout(function ()
 						{
 							Addons.Stripes.Arrange(Ctrl);
-						}, 100);
+						}, 99);
 					}
 				}
 			}
+		},
+
+		SizeChanged: function (Ctrl)
+		{
+			Addons.Stripes.Arrange(Ctrl, 0, true);
 		},
 
 		Retry: function (Ctrl, nDog)
@@ -122,6 +129,7 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", Addons.Stripes.Arrange);
 	AddEvent("Command", Addons.Stripes.Arrange2);
+	AddEvent("IconSizeChanged", Addons.Stripes.SizeChanged);
 
 	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
 	{
