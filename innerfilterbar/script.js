@@ -13,11 +13,6 @@ if (window.Addon == 1) {
 		Icon: '../addons/innerfilterbar/filter.png',
 		Width: '176px',
 
-		IncludeObject: function (Ctrl, Path1, Path2)
-		{
-			return Ctrl.Data.RE.test(Path1) || (Path1 != Path2 && Ctrl.Data.RE.test(Path2)) ? S_OK : S_FALSE;
-		},
-
 		KeyDown: function (o, Id)
 		{
 			if (window.event.keyCode != VK_PROCESSKEY) {
@@ -49,30 +44,15 @@ if (window.Addon == 1) {
 			var FV =  GetInnerFV(Id);
 			s = o.value;
 
-			if (Addons.InnerFilterBar.RE) {
-				if (String(s).toLowerCase() != FV.FilterView.toLowerCase() || s && !FV.OnIncludeObject) {
-					if (s) {
-						FV.FilterView = s;
-						try {
-							FV.Data.RE = new RegExp((window.migemo && migemo.query(s)) || s, "i");
-							FV.OnIncludeObject = Addons.InnerFilterBar.IncludeObject;
-						} catch (e) {
-							FV.OnIncludeObject = null;
-						}
-					} else {
-						FV.FilterView = null;
-						FV.OnIncludeObject = null;
-					}
-					FV.Refresh();
+			if (s) {
+				if (Addons.InnerFilterBar.RE && !/^\*|\//.test(s)) {
+					s = "/" + s + "/i";
+				} else if (!/[\*\?\/]/.test(s)) {
+					s = "*" + s + "*";
 				}
-				return;
-			}
-			if (s && !/[\*\?]/.test(s)) {
-				s = "*" + s + "*";
 			}
 			if (String(s).toLowerCase() != FV.FilterView.toLowerCase()) {
 				FV.FilterView = s ? s : null;
-				FV.OnIncludeObject = null;
 				FV.Refresh();
 			}
 		},
@@ -97,7 +77,6 @@ if (window.Addon == 1) {
 			if (flag) {
 				var FV =  GetInnerFV(Id);
 				FV.FilterView = null;
-				FV.OnIncludeObject = null;
 				FV.Refresh();
 				FV.Focus();
 			}
@@ -128,17 +107,12 @@ if (window.Addon == 1) {
 				if (o) {
 					clearTimeout(Addons.InnerFilterBar.tid[Id]);
 					var s = Ctrl.FilterView;
-					var res = /^\*(.*)\*$/.exec(s);
+					var res = (Addons.InnerFilterBar.RE ? /^\/(.*)\/i/ : /^\*(.*)\*$|^\*$/).exec(s);
 					if (res) {
-						s = res[1];
-					} else if (s == "*") {
-						s = "";
+						s = res[1] || "";
 					}
 					o.value = s;
 					Addons.InnerFilterBar.ShowButton(o, Id);
-					if (Addons.InnerFilterBar.RE && s && !Ctrl.OnIncludeObject) {
-						Addons.InnerFilterBar.Change(Id);
-					}
 				}
 			}
 		}
@@ -146,7 +120,7 @@ if (window.Addon == 1) {
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var s = ['<input type="text" name="filter_$" placeholder="Filter" onkeydown="Addons.InnerFilterBar.KeyDown(this, $)"  onkeyup="Addons.InnerFilterBar.KeyUp(this, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this, $)" onfocus="Addons.InnerFilterBar.Focus(this, $)" onblur="Addons.InnerFilterBar.ShowButton(this, $)" style="width: ', Addons.InnerFilterBar.Width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', Addons.InnerFilterBar.Icon, '" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -18px; top: -7px" width="16px" height="16px"><input type="image" id="ButtonFilterClear_$" src="bitmap:ieframe.dll,545,13,1" hidefocus="true" style="display: none; position: absolute; left: -17px; top: -4px" onclick="Addons.InnerFilterBar.Clear(true, $)"></span>'];
+		var s = ['<input type="text" name="filter_$" placeholder="Filter" onkeydown="Addons.InnerFilterBar.KeyDown(this, $)"  onkeyup="Addons.InnerFilterBar.KeyUp(this, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this, $)" onfocus="Addons.InnerFilterBar.Focus(this, $)" onblur="Addons.InnerFilterBar.ShowButton(this, $)" style="width: ', Addons.InnerFilterBar.Width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', Addons.InnerFilterBar.Icon, '" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -18px; top: -7px" width="16px" height="16px" onclick="if(Addons.FilterList) {Addons.FilterList.Exec(this,null,$);}" oncontextmenu="if(Addons.FilterList) {Addons.FilterList.Exec(this,null,$);}return false;"><input type="image" id="ButtonFilterClear_$" src="bitmap:ieframe.dll,545,13,1" hidefocus="true" style="display: none; position: absolute; left: -17px; top: -4px" onclick="Addons.InnerFilterBar.Clear(true, $)"></span>'];
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 

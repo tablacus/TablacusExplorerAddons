@@ -16,7 +16,7 @@ if (window.Addon == 1) {
 
 		RememberFolder: function (FV)
 		{
-			if (FV && FV.FolderItem) {
+			if (FV && FV.FolderItem && !FV.FolderItem.Unvailable) {
 				var path = String(api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
 				if (path == FV.Data.Remember) {
 					var col = FV.Columns(Addons.Remember.nFormat);
@@ -47,17 +47,20 @@ if (window.Addon == 1) {
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
 	{
 		if (Ctrl.Type <= CTRL_EB) {
-			if (Prev) {
+			if (Prev && !Prev.Unvailable) {
 				var path = String(api.GetDisplayNameOf(Prev, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
-				Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, Ctrl.Columns, Ctrl.SortColumn, Ctrl.GroupBy];
+				var col = Ctrl.Columns(Addons.Remember.nFormat);
+				if (col) {
+					Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, col, Ctrl.SortColumn, Ctrl.GroupBy];
+				}
 			}
 			var path = String(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
 			var ar = Addons.Remember.db[path];
 			if (ar) {
 				fs.ViewMode = ar[1];
 				fs.ImageSize = ar[2];
-			}
-			else if (Ctrl && Ctrl.Items) {
+				Ctrl.Data.Setting = 'Remember';
+			} else if (Ctrl && Ctrl.Items) {
 				fs.ViewMode = Ctrl.CurrentViewMode;
 				fs.ImageSize = Ctrl.IconSize;
 			}
@@ -66,16 +69,19 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		Ctrl.Data.Remember = String(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
-		var ar = Addons.Remember.db[Ctrl.Data.Remember];
-		if (ar) {
-			Ctrl.CurrentViewMode(ar[1], ar[2]);
-			Ctrl.Columns = ar[3];
-			Ctrl.SortColumn = ar[4];
-			if (Ctrl.GroupBy && ar[5]) {
-				Ctrl.GroupBy = ar[5];
+			Addons.Debug.alert(Ctrl.Data.Setting+ new Date());
+		if (Ctrl.Data.Setting == 'Remember') {
+			Ctrl.Data.Remember = String(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
+			var ar = Addons.Remember.db[Ctrl.Data.Remember];
+			if (ar) {
+				Ctrl.CurrentViewMode(ar[1], ar[2]);
+				Ctrl.Columns = ar[3];
+				Ctrl.SortColumn = ar[4];
+				if (Ctrl.GroupBy && ar[5]) {
+					Ctrl.GroupBy = ar[5];
+				}
+				ar[0] = new Date().getTime();
 			}
-			ar[0] = new Date().getTime();
 		}
 	});
 

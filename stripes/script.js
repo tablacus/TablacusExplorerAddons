@@ -136,22 +136,17 @@ if (window.Addon == 1) {
 		Addons.Stripes.Arrange2(te.CtrlFromWindow(hwnd));
 	});
 
-	AddEvent("AddonDisabled", function(Id)
+	AddEventId("AddonDisabledEx", "stripes", function()
 	{
-		if (String(Id).toLowerCase() == "stripes") {
-			AddEventEx(window, "beforeunload", function ()
-			{
-				var cFV = te.Ctrls(CTRL_FV);
-				var lvbk = api.Memory("LVBKIMAGE");
-				lvbk.ulFlags = LVBKIF_SOURCE_NONE ;
-				for (var i in cFV) {
-					var hwnd = cFV[i].hwndList;
-					if (hwnd) {
-						api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
-						cFV[i].ViewFlags &= ~8;
-					}
-				}
-			});
+		var cFV = te.Ctrls(CTRL_FV);
+		var lvbk = api.Memory("LVBKIMAGE");
+		lvbk.ulFlags = LVBKIF_SOURCE_NONE ;
+		for (var i in cFV) {
+			var hwnd = cFV[i].hwndList;
+			if (hwnd) {
+				api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
+				cFV[i].ViewFlags &= ~8;
+			}
 		}
 	});
 

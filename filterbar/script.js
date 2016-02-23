@@ -21,11 +21,6 @@ if (window.Addon == 1) {
 		iCaret: -1,
 		strName: "Filter Bar",
 
-		IncludeObject: function (Ctrl, Path1, Path2)
-		{
-			return Ctrl.Data.RE.test(Path1) || (Path1 != Path2 && Ctrl.Data.RE.test(Path2)) ? S_OK : S_FALSE;
-		},
-
 		KeyDown: function (o)
 		{
 			if (window.event.keyCode != VK_PROCESSKEY) {
@@ -52,30 +47,15 @@ if (window.Addon == 1) {
 			Addons.FilterBar.ShowButton();
 			var FV = te.Ctrl(CTRL_FV);
 			s = document.F.filter.value;
-			if (Addons.FilterBar.RE) {
-				if (String(s).toLowerCase() != FV.FilterView.toLowerCase() || !FV.OnIncludeObject) {
-					if (s) {
-						FV.FilterView = s;
-						try {
-							FV.Data.RE = new RegExp((window.migemo && migemo.query(s)) || s, "i");
-							FV.OnIncludeObject = Addons.FilterBar.IncludeObject;
-						} catch (e) {
-							FV.OnIncludeObject = null;
-						}
-					} else {
-						FV.FilterView = null;
-						FV.OnIncludeObject = null;
-					}
-					FV.Refresh();
+			if (s) {
+				if (Addons.FilterBar.RE && !/^\*|\//.test(s)) {
+					s = "/" + s + "/i";
+				} else if (!/[\*\?\/]/.test(s)) {
+					s = "*" + s + "*";
 				}
-				return;
-			}
-			if (s && !/[\*\?]/.test(s)) {
-				s = "*" + s + "*";
 			}
 			if (String(s).toLowerCase() != FV.FilterView.toLowerCase()) {
 				FV.FilterView = s ? s : null;
-				FV.OnIncludeObject = null;
 				FV.Refresh();
 			}
 		},
@@ -99,7 +79,6 @@ if (window.Addon == 1) {
 			if (flag) {
 				var FV = te.Ctrl(CTRL_FV);
 				FV.FilterView = null;
-				FV.OnIncludeObject = null;
 				FV.Refresh();
 			}
 		},
@@ -121,17 +100,12 @@ if (window.Addon == 1) {
 		{
 			clearTimeout(Addons.FilterBar.tid);
 			var s = Ctrl.FilterView;
-			var res = /^\*(.*)\*$/.exec(s);
+			var res = (Addons.FilterBar.RE ? /^\/(.*)\/i/ : /^\*(.*)\*$|^\*$/).exec(s);
 			if (res) {
-				s = res[1];
-			} else if (s == "*") {
-				s = "";
+				s = res[1] || "";
 			}
 			document.F.filter.value = s;
 			Addons.FilterBar.ShowButton();
-			if (Addons.FilterBar.RE && s && !Ctrl.OnIncludeObject) {
-				Addons.FilterBar.Change();
-			}
 		}
 
 	};
@@ -176,7 +150,7 @@ if (window.Addon == 1) {
 		}
 		AddTypeEx("Add-ons", "Filter Bar", Addons.FilterBar.Exec);
 	}
-	var s = ['<input type="text" name="filter" placeholder="Filter" onkeydown="Addons.FilterBar.KeyDown(this)" onkeyup="Addons.FilterBar.KeyUp(this)" onfocus="Addons.FilterBar.Focus(this)" onblur="Addons.FilterBar.ShowButton()" onmouseup="Addons.FilterBar.KeyDown(this)" style="width:', width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', icon, '" id="ButtonFilter" hidefocus="true" style="position: absolute; left: -18px; top: -7px"><input type="image" id="ButtonFilterClear" src="bitmap:ieframe.dll,545,13,1" style="display: none; position: absolute; left: -17px; top: -5px" hidefocus="true" onclick="Addons.FilterBar.Clear(true)"></span>'];
+	var s = ['<input type="text" name="filter" placeholder="Filter" onkeydown="Addons.FilterBar.KeyDown(this)" onkeyup="Addons.FilterBar.KeyUp(this)" onfocus="Addons.FilterBar.Focus(this)" onblur="Addons.FilterBar.ShowButton()" onmouseup="Addons.FilterBar.KeyDown(this)" style="width:', width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', icon, '" id="ButtonFilter" hidefocus="true" style="position: absolute; left: -18px; top: -7px" onclick="if(Addons.FilterList) {Addons.FilterList.Exec(this);}" oncontextmenu="if(Addons.FilterList) {Addons.FilterList.Exec(this);}return false;"><input type="image" id="ButtonFilterClear" src="bitmap:ieframe.dll,545,13,1" style="display: none; position: absolute; left: -17px; top: -5px" hidefocus="true" onclick="Addons.FilterBar.Clear(true)"></span>'];
 
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
 
