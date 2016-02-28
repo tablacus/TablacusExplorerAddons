@@ -1,9 +1,7 @@
-﻿Addon_Id = "emptyfolder";
-Default = "None";
+﻿var Addon_Id = "emptyfolder";
+var Default = "None";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-var item = items.length ? items[0] : null;
-
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.EmptyFolder =
 	{
@@ -15,8 +13,9 @@ if (window.Addon == 1) {
 		GetSearchString: function(Ctrl)
 		{
 			if (Ctrl) {
-				if (new RegExp("^" + Addons.EmptyFolder.PATH + "\\s*(.*)" , "i").test(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
-					return RegExp.$1;
+				var res = new RegExp("^" + Addons.EmptyFolder.PATH + "\\s*(.*)" , "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+				if (res) {
+					return res[1];
 				}
 			}
 			return "";
@@ -143,7 +142,7 @@ if (window.Addon == 1) {
 			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.EmptyFolder.Exec, "Func");
 		}
 		//Type
-		AddTypeEx("Add-ons", "Attributes color", Addons.EmptyFolder.Exec);
+		AddTypeEx("Add-ons", "Empty folder", Addons.EmptyFolder.Exec);
 	}
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
 	var s = GetAddonOption(Addon_Id, "Icon");

@@ -24,12 +24,34 @@ if (window.Addon == 1) {
 				var TV = FV.TreeView;
 				if (TV) {
 					TV.Visible = !TV.Visible;
-					if (TV.Width == 0 && TV.Visible) {
-						TV.Width = 200;
+					if (TV.Visible) {
+						if (TV.Width == 0) {
+							TV.Width = 200;
+						}
+						Addons.TreeView.Expand(TV.FolderView);
 					}
 				}
 			}
 			return S_OK;
+		},
+
+		Expand: function (Ctrl)
+		{
+			if (Ctrl.FolderItem) {
+				var TV = Ctrl.TreeView;
+				if (TV) {
+					if (Addons.TreeView.tid[TV.Id]) {
+						clearTimeout(Addons.TreeView.tid[TV.Id]);
+						delete Addons.TreeView.tid[TV.Id];
+					}
+					TV.Expand(Ctrl.FolderItem, Addons.TreeView.Depth);
+					Addons.TreeView.tid[TV.Id] = setTimeout(function ()
+					{
+						delete Addons.TreeView.tid[TV.Id];
+						TV.Expand(Ctrl.FolderItem, 0);
+					}, 500);
+				}
+			}
 		},
 
 		Popup: function ()
@@ -45,24 +67,7 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("ChangeView", function (Ctrl)
-	{
-		if (Ctrl.FolderItem) {
-			var TV = Ctrl.TreeView;
-			if (TV) {
-				if (Addons.TreeView.tid[TV.Id]) {
-					clearTimeout(Addons.TreeView.tid[TV.Id]);
-					delete Addons.TreeView.tid[TV.Id];
-				}
-				TV.Expand(Ctrl.FolderItem, Addons.TreeView.Depth);
-				Addons.TreeView.tid[TV.Id] = setTimeout(function ()
-				{
-					delete Addons.TreeView.tid[TV.Id];
-					TV.Expand(Ctrl.FolderItem, 0);
-				}, 500);
-			}
-		}
-	});
+	AddEvent("ChangeView", Addons.TreeView.Expand);
 
 	if (item) {
 		//Menu
@@ -94,7 +99,8 @@ if (window.Addon == 1) {
 	{
 		var hItem = Ctrl.HitTest(pt, TVHT_ONITEM);
 		if (hItem) {
-			Ctrl.FolderView.Navigate(Ctrl.SelectedItem, OpenMode);
+			var FV = Ctrl.FolderView;
+			FV.Navigate(Ctrl.SelectedItem, GetNavigateFlags(FV));
 		}
 		return S_OK;
 	}, "Func", true);
@@ -119,7 +125,7 @@ if (window.Addon == 1) {
 	SetKeyExec("Tree", "$1c", function (Ctrl, pt)
 	{
 		var FV = GetFolderView(Ctrl, pt);
-		FV.Navigate(Ctrl.SelectedItem, OpenMode);
+		FV.Navigate(Ctrl.SelectedItem, GetNavigateFlags(FV));
 		return S_OK;
 	}, "Func", true);
 
@@ -156,6 +162,5 @@ if (window.Addon == 1) {
 	}
 } else {
 	EnableInner();
-	document.getElementById("tab0").value = "General";
-	document.getElementById("panel0").innerHTML = '<input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label>';
+	SetTabContents(0, "General", '<input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label>');
 }

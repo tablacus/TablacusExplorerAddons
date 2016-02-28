@@ -1,4 +1,4 @@
-Addon_Id = "innerbreadcrumbsaddressbar";
+var Addon_Id = "innerbreadcrumbsaddressbar";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -190,12 +190,14 @@ if (window.Addon == 1) {
 					FolderMenu.Clear();
 					var hMenu = api.CreatePopupMenu();
 					FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDESKTOP));
-					FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDRIVES), api.GetDisplayNameOf(ssfDRIVES, SHGDN_INFOLDER), true);
+					FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDRIVES));
+					var path0 = api.GetDisplayNameOf(ssfDESKTOP, SHGDN_FORPARSING);
 					var Items = sha.NameSpace(ssfDRIVES).Items();
 					for (var i = 0; i < Items.Count; i++) {
-						var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-						if (path) {
-							FolderMenu.AddMenuItem(hMenu, Items.Item(i));
+						var Item = Items.Item(i);
+						var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
+						if (path && path != path0) {
+							FolderMenu.AddMenuItem(hMenu, Item, null, true);
 						}
 					}
 					FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfBITBUCKET), api.GetDisplayNameOf(ssfBITBUCKET, SHGDN_INFOLDER), true);

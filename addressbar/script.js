@@ -77,7 +77,7 @@ if (window.Addon == 1) {
 						if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
 							s.unshift('<span id="addressbar' + n + '" class="button" style="line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.AddressBar.Popup(this,' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + BUTTONS.next + '</span>');
 						}
-						s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Go(' + n + ')" onmousedown="Addons.AddressBar.GoNew(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
+						s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Go(' + n + ')" onmousedown="Addons.AddressBar.Go(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
 						FolderItem = api.ILGetParent(FolderItem);
 						o.innerHTML = s.join("");
 						if (o.offsetWidth > width && n > 0) {
@@ -121,13 +121,6 @@ if (window.Addon == 1) {
 			if (!Addons.AddressBar.bXP) {
 				o.style.color = "window";
 				document.getElementById("breadcrumbbuttons").style.display = "inline-block";
-			}
-		},
-
-		GoNew: function (n)
-		{
-			if (api.GetKeyState(VK_MBUTTON) < 0) {
-				Navigate(this.GetPath(n), SBSP_NEWBROWSER);
 			}
 		},
 
@@ -195,12 +188,14 @@ if (window.Addon == 1) {
 				FolderMenu.Clear();
 				var hMenu = api.CreatePopupMenu();
 				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDESKTOP));
-				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDRIVES), api.GetDisplayNameOf(ssfDRIVES, SHGDN_INFOLDER), true);
+				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfDRIVES));
 				var Items = sha.NameSpace(ssfDRIVES).Items();
+				var path0 = api.GetDisplayNameOf(ssfDESKTOP, SHGDN_FORPARSING);
 				for (var i = 0; i < Items.Count; i++) {
-					var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-					if (path) {
-						FolderMenu.AddMenuItem(hMenu, Items.Item(i));
+					var Item = Items.Item(i);
+					var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
+					if (path && path != path0) {
+						FolderMenu.AddMenuItem(hMenu, Item, null, true);
 					}
 				}
 				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfBITBUCKET), api.GetDisplayNameOf(ssfBITBUCKET, SHGDN_INFOLDER), true);
@@ -327,6 +322,5 @@ if (window.Addon == 1) {
 	}
 	Addons.AddressBar.Resize();
 } else {
-	document.getElementById("tab0").value = GetText("General");
-	document.getElementById("panel0").innerHTML = ['<table style="width: 100%"><tr><td><input type="checkbox" id="XP" /><label for="XP">XP ', GetText("Style").toLowerCase(), '</label></td></tr><tr><td><label>', GetText("Width"), '</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="', GetText("Auto"), '" onclick="document.F.Width.value=\'\'" /></td></tr></table>'].join("");
+	SetTabContents(0, "General", ['<table style="width: 100%"><tr><td><input type="checkbox" id="XP" /><label for="XP">XP ', GetText("Style").toLowerCase(), '</label></td></tr><tr><td><label>', GetText("Width"), '</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="', GetText("Auto"), '" onclick="document.F.Width.value=\'\'" /></td></tr></table>'].join(""));
 }
