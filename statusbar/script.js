@@ -11,7 +11,7 @@ if (window.Addon == 1) {
 	AddEvent("StatusText", function (Ctrl, Text, iPart)
 	{
 		var s = String(Text);
-		if (Ctrl.Type <= CTRL_EB && s.match(/^\d/)) {
+		if (Ctrl.Type <= CTRL_EB && /^\d/.test(s.match)) {
 			var Items = Ctrl.SelectedItems();
 			if (Items.Count == 1) {
 				try {
@@ -25,9 +25,6 @@ if (window.Addon == 1) {
 		}
 		return S_OK;
 	});
+} else {
+	SetTabContents(0, "View", '<input type="checkbox" id="Title" /><label for="Title">Title Bar</label>');
 }
-else {
-	document.getElementById("tab0").value = GetText("View");
-	document.getElementById("panel0").innerHTML = '<input type="checkbox" id="Title" /><label for="Title">Title Bar</label>';
-}
-

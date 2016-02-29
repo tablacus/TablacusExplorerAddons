@@ -1,9 +1,8 @@
 ﻿var Addon_Id = "filterbar";
 var Default = "ToolBar2Right";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
+var item = GetAddonElement(Addon_Id);
+if (item) {
 	if (!item.getAttribute("Set")) {
 		item.setAttribute("MenuPos", -1);
 
@@ -158,6 +157,5 @@ if (window.Addon == 1) {
 		o.style.verticalAlign = "middle";
 	}
 } else {
-	document.getElementById("tab0").value = "General";
-	document.getElementById("panel0").innerHTML = '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr><tr><td><label>Filter</label></td></tr><tr><td><input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr></table>';
+	SetTabContents(0, "General", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr><tr><td><label>Filter</label></td></tr><tr><td><input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr></table>');
 }

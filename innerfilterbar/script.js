@@ -1,9 +1,6 @@
 ﻿var Addon_Id = "innerfilterbar";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-}
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.InnerFilterBar =
 	{
@@ -163,6 +160,5 @@ if (window.Addon == 1) {
 		AddTypeEx("Add-ons", "Inner Filter Bar", Addons.InnerFilterBar.Exec);
 	}
 } else {
-	document.getElementById("tab0").value = "General";
-	document.getElementById("panel0").innerHTML = '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr><tr><td><label>Filter</label></td></tr><tr><td><input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr></table>';
+	SetTabContents(0, "General", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr><tr><td><label>Filter</label></td></tr><tr><td><input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr></table>');
 }

@@ -1,10 +1,7 @@
-﻿Addon_Id = "attributescolor";
-Default = "None";
+﻿var Addon_Id = "attributescolor";
+var Default = "None";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-}
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.AttributesColor = {
 		Color: {},
@@ -86,7 +83,6 @@ if (window.Addon == 1) {
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.AttributesColor.Exec();" oncontextmenu="Addons.AttributesColor.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
 }
 else {
-	document.getElementById("tab0").value = GetText("General");
 	var s = ['<table>'];
 	var attrs = [FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_COMPRESSED, FILE_ATTRIBUTE_ENCRYPTED, FILE_ATTRIBUTE_REPARSE_POINT, FILE_ATTRIBUTE_DIRECTORY];
 	var names = [8768, 8769, 8770, 8771, 8772, "Junction", WINVER >= 0x600 ? 33017 : 4131];
@@ -99,7 +95,7 @@ else {
 		s.push('</tr>');
 	}
 	s.push('</table>');
-	document.getElementById("panel0").innerHTML = s.join("");
+	SetTabContents(0, "General", s.join(""));
 	ColorChanged = function (o)
 	{
 		document.getElementById("Color_" + o.name).style.backgroundColor = o.value;
