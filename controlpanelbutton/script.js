@@ -1,5 +1,5 @@
 ﻿var Addon_Id = "controlpanelbutton";
-window.Default = "ToolBar2Left";
+var Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
 	Addons.ControlPanelButton = 
@@ -33,8 +33,7 @@ if (window.Addon == 1) {
 	}
 
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "shell32.dll,21,16" : "shell32.dll,21,32");
-	var s = ['<span class="button" onmousedown="Addons.ControlPanelButton.Open(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Control Panel" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="' + h, 'px"></span>'];
+	var src =  ExtractMacro(te, GetAddonOption(Addon_Id, "Icon")) || (h <= 16 ? "icon:shell32.dll,21,16" : "icon:shell32.dll,21,32");
+	var s = ['<span class="button" onmousedown="Addons.ControlPanelButton.Open(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Control Panel" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
 	SetAddon(Addon_Id, Default, s);
 }
-

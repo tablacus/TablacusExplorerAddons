@@ -136,7 +136,7 @@
 				}
 			}
 		}
-	});
+	}, true);
 
 	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
 	{
@@ -156,7 +156,7 @@
 				}
 			}
 		}
-	});
+	}, true);
 
 	HOME_PATH = Addons.SpeedDial.PATH;
 }

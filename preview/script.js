@@ -1,10 +1,10 @@
 var Addon_Id = "preview";
 
 if (window.Addon == 1) {
-	Addons.Preview = 
+	Addons.Preview =
 	{
 		tid: null,
-		Align: api.strcmpi(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
+		Align: api.StrCmpI(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
 		Width: 0,
 
 		Arrange: function (Item)
@@ -77,9 +77,8 @@ if (window.Addon == 1) {
 
 		Drag: function ()
 		{
-			var pdwEffect = api.Memory("DWORD");
-			pdwEffect.X = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
-			api.DoDragDrop(Addons.Preview.Item, pdwEffect.X, pdwEffect);
+			var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
+			api.DoDragDrop(Addons.Preview.Item, pdwEffect[0], pdwEffect);
 		},
 		
 		Init: function ()

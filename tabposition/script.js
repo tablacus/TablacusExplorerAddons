@@ -2,8 +2,8 @@ var Addon_Id = "tabposition";
 
 if (window.Addon == 1) {
 	Addons.TabPositon = {
-		nNew: api.QuadPart(GetAddonOption(Addon_Id, "NewTab")),
-		nClose: api.QuadPart(GetAddonOption(Addon_Id, "Close"))
+		nNew: GetAddonOptionEx(Addon_Id, "NewTab"),
+		nClose: GetAddonOptionEx(Addon_Id, "Close")
 	};
 
 	AddEvent("Close", function (Ctrl)
@@ -28,10 +28,11 @@ if (window.Addon == 1) {
 						break;
 					case 1:
 						var Parent = api.ILGetParent(Ctrl);
-						for (var i = TC.Count; i-- > 0;) {
+						for (var i in TC) {
 							FV = TC[i];
 							if (FV && api.ILIsEqual(FV, Parent)) {
 								nIndex = i;
+								break;
 							}
 						}
 						break;
@@ -89,4 +90,3 @@ if (window.Addon == 1) {
 		}
 	});
 }
-

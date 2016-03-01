@@ -12,7 +12,8 @@
 		while (!ado.EOS) {
 			var ar = ado.ReadText(adReadLine).split("\t");
 			if (ar[0] != "") {
-				Addons.TabColorPlus.cc.push(re.test(ar[0]) ? new RegExp(RegExp.$1, RegExp.$2) : ar[0]);
+				var res = re.exec(ar[0]);
+				Addons.TabColorPlus.cc.push(res ? new RegExp(res[1], res[2]) : ar[0]);
 				Addons.TabColorPlus.Color.push(ar[1]);
 			}
 		}
@@ -24,9 +25,10 @@
 	AddEvent("GetTabColor", function (Ctrl)
 	{
 		var path = api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSING);
+		var path2 = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		for (var i in Addons.TabColorPlus.cc) {
 			var cc = Addons.TabColorPlus.cc[i];
-			if (cc.test ? cc.test(path) : api.PathMatchSpec(path, cc)) {
+			if (cc.test ? cc.test(path) || cc.test(path2) : api.PathMatchSpec(path, cc) || api.PathMatchSpec(path2, cc)) {
 				return Addons.TabColorPlus.Color[i];
 			}
 		}
