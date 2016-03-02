@@ -10,7 +10,7 @@ if (window.Addon == 1) {
 					if (exp && exp.Visible && !exp.Busy) {
 						var doc = exp.Document;
 						if (doc) {
-							if (Addons.OpenInstead.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)) == S_OK) {
+							if (Addons.OpenInstead.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
 								exp.Visible = false;
 								var FV = te.Ctrl(CTRL_FV);
 								FV = FV.Navigate(doc, SBSP_NEWBROWSER);
@@ -30,17 +30,14 @@ if (window.Addon == 1) {
 						}
 					}
 				}
-			}
-			catch (e) {
-			}
+			} catch (e) {}
 		},
 
 		Match: function (path)
 		{
 			if (path && Addons.OpenInstead[/^.?:\\|^\\\\/.test(path) ? "RealFolders" : "SpecialFolders"]) {
-				return RunEvent2("Addons.OpenInstead", path);
+				return !RunEvent3("UseExplorer", path);
 			}
-			return S_FALSE;
 		}
 	};
 
@@ -50,11 +47,8 @@ if (window.Addon == 1) {
 		setTimeout(Addons.OpenInstead.Exec, 500);
 	});
 
-	var items = te.Data.Addons.getElementsByTagName("openinstead");
-	if (items.length) {
-		var item = items[0];
-		Addons.OpenInstead.RealFolders = item.getAttribute("RealFolders");
-		Addons.OpenInstead.SpecialFolders = item.getAttribute("SpecialFolders");
-		Addons.OpenInstead.TakeOver = item.getAttribute("TakeOver");
-	}
+	var item = GetAddonElement("openinstead");
+	Addons.OpenInstead.RealFolders = item.getAttribute("RealFolders");
+	Addons.OpenInstead.SpecialFolders = item.getAttribute("SpecialFolders");
+	Addons.OpenInstead.TakeOver = item.getAttribute("TakeOver");
 }

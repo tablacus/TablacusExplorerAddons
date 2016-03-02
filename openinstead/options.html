@@ -25,11 +25,15 @@
         <label for="TakeOver">Take over the Explorer view</label>
         <br />
       </div>
-      <table width="95%">
+      <table id="buttons" width="100%">
         <tr>
-          <td align="right">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />
+          <td style="width: 100%; white-space: nowrap">
+          </td>
+          <td style="width: 100px; white-space: nowrap">
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+          </td>
+          <td style="width: 100px; white-space: nowrap">
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
           </td>
         </tr>
       </table>
