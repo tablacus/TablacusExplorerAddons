@@ -1,8 +1,7 @@
-﻿Addon_Id = "everything";
-Default = "ToolBar2Right";
+﻿var Addon_Id = "everything";
+var Default = "ToolBar2Right";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-var item = items.length ? items[0] : null;
+var item = GetAddonElement(Addon_Id);
 
 if (window.Addon == 1) {
 	Addons.Everything =
@@ -200,7 +199,7 @@ if (window.Addon == 1) {
 			var itemSize = item.Size;
 			for (var i = 0; i < nItems && api.GetAsyncKeyState(VK_ESCAPE) >= 0; i++) {
 				var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4, api.Memory("BYTE", itemSize, cd.lpData + list.Size + list.Read("offset") + itemSize * i));
-				arItems.push(fso.BuildPath(data.Read(item.Read("path_offset"), VT_LPWSTR), data.Read(item.Read("filename_offset"), VT_LPWSTR)));
+				arItems.push(data.Read(item.Read("path_offset"), VT_LPWSTR) + "\\" + data.Read(item.Read("filename_offset"), VT_LPWSTR));
 			}
 			Ctrl.RemoveAll();
 			Ctrl.AddItems(arItems);
@@ -257,45 +256,44 @@ if (window.Addon == 1) {
 
 	var width = "176px";
 	var icon = "bitmap:ieframe.dll,216,16,17";
-	if (item) {
-		var s = item.getAttribute("Folders");
-		if (s) {
-			Addons.Everything.Max = api.QuadPart(s);
-		}
-		var s = item.getAttribute("Width");
-		if (s) {
-			width = (api.QuadPart(s) == s) ? (s + "px") : s;
-		}
-		var s = item.getAttribute("Icon");
-		if (s) {
-			icon = s;
-		}
-		Addons.Everything.RE = api.LowPart(item.getAttribute("RE"));
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.Everything.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.Everything.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.Everything.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Everything.strName));
-				ExtraMenuCommand[nPos] = Addons.Everything.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Everything.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Everything.Exec, "Func");
-		}
-		Addons.Everything.NewTab = api.QuadPart(item.getAttribute("NewTab"));
-		AddTypeEx("Add-ons", "Everything", Addons.Everything.Exec);
+
+	var s = item.getAttribute("Folders");
+	if (s) {
+		Addons.Everything.Max = api.QuadPart(s);
 	}
+	var s = item.getAttribute("Width");
+	if (s) {
+		width = (api.QuadPart(s) == s) ? (s + "px") : s;
+	}
+	var s = item.getAttribute("Icon");
+	if (s) {
+		icon = s;
+	}
+	Addons.Everything.RE = api.LowPart(item.getAttribute("RE"));
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.Everything.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		var s = item.getAttribute("MenuName");
+		if (s && s != "") {
+			Addons.Everything.strName = s;
+		}
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.Everything.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Everything.strName));
+			ExtraMenuCommand[nPos] = Addons.Everything.Exec;
+			return nPos;
+		});
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Everything.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Everything.Exec, "Func");
+	}
+	Addons.Everything.NewTab = api.QuadPart(item.getAttribute("NewTab"));
+	AddTypeEx("Add-ons", "Everything", Addons.Everything.Exec);
 
 	var s = ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', width, '; padding-right:', WINVER < 0x602 ? "32" : "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', icon, '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'];
 	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
@@ -304,11 +302,10 @@ if (window.Addon == 1) {
 		o.style.verticalAlign = "middle";
 	}
 } else {
-	document.getElementById("tab0").value = "General";
 	var s = ['<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr>'];
 	s.push('<tr><td><label>Action</label></td></tr>');
 	s.push('<tr><td><input type="checkbox" name="NewTab" id="NewTab"><label for="NewTab">Open in New Tab</label>&emsp;<input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr>');
 	s.push('<tr><td style="width: 100%"><label>Folders</label></td></tr><tr><td><input type="text" name="Folders" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Folders.value=1000" /></td></tr></table>');
-	s.push('<br /><br /><input type="button" value="Get Everything..." title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">');
-	document.getElementById("panel0").innerHTML = s.join("");
+	s.push('<br /><br /><input type="button" value="', api.sprintf(999, GetText("Get %s..."), "Everything"), '" title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">');
+	SetTabContents(0, "General", s.join(""));
 }
