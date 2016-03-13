@@ -1,14 +1,11 @@
-Addon_Id = "importexplorer";
-Default = "ToolBar2Left";
+var Addon_Id = "importexplorer";
+var Default = "ToolBar2Left";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("RealFolders", 1);
-		item.setAttribute("SpecialFolders", 1);
-		item.setAttribute("TakeOver", 1);
-	}
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("RealFolders", 1);
+	item.setAttribute("SpecialFolders", 1);
+	item.setAttribute("TakeOver", 1);
 }
 if (window.Addon == 1) {
 	Addons.ImportExplorer =
@@ -25,7 +22,7 @@ if (window.Addon == 1) {
 					if (exp && exp.Visible && !exp.Busy) {
 						var doc = exp.Document;
 						if (doc) {
-							if (Addons.ImportExplorer.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)) == S_OK) {
+							if (Addons.ImportExplorer.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
 								exp.Visible = false;
 								var FV = te.Ctrl(CTRL_FV);
 								FV = FV.Navigate(doc, SBSP_NEWBROWSER);
@@ -45,18 +42,15 @@ if (window.Addon == 1) {
 						}
 					}
 				}
-			}
-			catch (e) {
-			}
+			} catch (e) {}
 			return S_OK;
 		},
 
 		Match: function (path)
 		{
 			if (path && Addons.ImportExplorer[/^.?:\\|^\\\\/.test(path) ? "RealFolders" : "SpecialFolders"]) {
-				return RunEvent2("Addons.OpenInstead", path);
+				return !RunEvent3("UseExplorer", path);
 			}
-			return S_FALSE;
 		}
 	};
 
@@ -103,6 +97,5 @@ else {
 	var s = ['<input type="checkbox" id="RealFolders" /><label for="RealFolders">Real Folders</label><br />'];
 	s.push('<input type="checkbox" id="SpecialFolders" /><label for="SpecialFolders">Special Folders</label><br />');
 	s.push('<input type="checkbox" id="TakeOver" /><label for="TakeOver">Take over the Explorer view</label>');
-	document.getElementById("tab0").value = GetText("General");
-	document.getElementById("panel0").innerHTML = s.join("");
+	SetTabContents(0, "General", s.join(""));
 }

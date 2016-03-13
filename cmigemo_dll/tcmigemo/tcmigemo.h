@@ -1,5 +1,7 @@
 #include "resource.h"
 #include <windows.h>
+#include <shlwapi.h>
+#pragma comment (lib, "shlwapi.lib")
 
 #define MAX_MIGEMO 8
 
@@ -42,3 +44,15 @@ private:
 	LONG		m_cRef;
 	int			m_CP;
 };
+
+class CteClassFactory : public IClassFactory
+{
+public:
+	STDMETHODIMP QueryInterface(REFIID riid, void **ppvObject);
+	STDMETHODIMP_(ULONG) AddRef();
+	STDMETHODIMP_(ULONG) Release();
+	
+	STDMETHODIMP CreateInstance(IUnknown *pUnkOuter, REFIID riid, void **ppvObject);
+	STDMETHODIMP LockServer(BOOL fLock);
+};
+

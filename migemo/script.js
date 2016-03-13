@@ -1,15 +1,12 @@
-﻿Addon_Id = "migemo";
+﻿var Addon_Id = "migemo";
 
 Addons.Migemo = 
 {
 	Init: function ()
 	{
 		try {
-			var ado = te.CreateObject("Adodb.Stream");
-			ado.CharSet = "utf-8";
-			ado.Open();
-			ado.LoadFromFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "lib\\migemo\\migemo.js"));
-			var s = ado.ReadText();
+			var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "lib\\migemo\\migemo.js"));
+			var s = ado.ReadText(adReadAll);
 			ado.Close();
 		} catch (e) {
 			s = "";
@@ -28,10 +25,8 @@ if (window.Addon == 1) {
 		Addons.Migemo.Init();
 	}
 } else {
-	document.getElementById("tab4").value = "General";
 	var s = [''];
 	s.push('<table style="width: 100%"><tr><td><label>Test</label></td></tr><tr><td><input type="text" autocomplete="off" onkeyup="KeyUp(this)" style="width: 50%" /></td></td></tr>');
-
 	s.push('<tr><td><label>Regular Expression</label></td></tr><tr><td><input type="text" id="_Migemo" style="width: 100%" readonly /></td></tr></table>');
 
 	KeyUp = function (o)
@@ -47,9 +42,9 @@ if (window.Addon == 1) {
 	}
 	s.push('<table style="width: 100%"><tr><td><label>Path</label></td></tr><tr><td style="width: 100%"><input type="text" readonly value="', fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "lib\\migemo\\migemo.js"), '"style="width: 100%" /></td><td><input type="button" value="Open" onclick="OpenLibrary()"></td></td></tr>');
 	s.push('</table><br />');
-	s.push('<table style="width: 100%"><tr><td style="width: 100%"><input type="button" value="Get JavaScript/Migemo..." title="http://www.oldriver.org/jsmigemo/" onclick="wsh.Run(this.title)">');
+	s.push('<table style="width: 100%"><tr><td style="width: 100%"><input type="button" value="', api.sprintf(999, GetText("Get %s..."), 'JavaScript/Migemo'), '" title="http://www.oldriver.org/jsmigemo/" onclick="wsh.Run(this.title)">');
 	s.push('</td><td><input type="button" value="Install" onclick="InstallMigemo(this)"></td></tr></table>');
-	document.getElementById("panel4").innerHTML = s.join("");
+	SetTabContents(4, "General", s.join(""));
 
 	OpenLibrary = function ()
 	{
@@ -70,10 +65,11 @@ if (window.Addon == 1) {
 		xhr.setRequestHeader('Cache-Control', 'no-cache');
 		xhr.setRequestHeader('If-Modified-Since', 'Thu, 01 Jun 1970 00:00:00 GMT');
 		xhr.send(null);
-		if (!/<a href="(jsmigemo.*\.zip)">/i.test(xhr.responseText)) {
+		var res = /<a href="(jsmigemo.*\.zip)">/i.exec(xhr.responseText);
+		if (!res) {
 			return;
 		}
-		var file = RegExp.$1;
+		var file = res[1];
 		if (!confirmOk(GetText("Do you want to install it now?") + "\r\n" + file)) {
 			return;
 		}

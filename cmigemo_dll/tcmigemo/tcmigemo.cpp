@@ -7,9 +7,60 @@
 #include "tcmigemo.h"
 
 // Global Variables:
+const TCHAR g_szProgid[] = TEXT("Tablacus.CMigemo");
+const TCHAR g_szClsid[] = TEXT("{08D62D88-0F74-4a37-9F24-628A385EEC5C}");
 CteMigemo *g_ppMigemo[MAX_MIGEMO];
+LONG      g_lLocks = 0;
+HINSTANCE g_hinstDll = NULL;
 
-// Unit
+// Functions
+
+VOID teSysFreeString(BSTR *pbs)
+{
+	if (*pbs) {
+		::SysFreeString(*pbs);
+		*pbs = NULL;
+	}
+}
+
+void LockModule(BOOL bLock)
+{
+	if (bLock) {
+		InterlockedIncrement(&g_lLocks);
+	} else {
+		InterlockedDecrement(&g_lLocks);
+	}
+}
+
+HRESULT ShowRegError(LSTATUS ls)
+{
+	LPTSTR lpBuffer = NULL;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,  
+		NULL, ls, LANG_USER_DEFAULT, (LPTSTR)&lpBuffer, 0, NULL);  
+	MessageBox(NULL, lpBuffer, TEXT(PRODUCTNAME), MB_ICONHAND | MB_OK);  
+	LocalFree(lpBuffer);
+	return HRESULT_FROM_WIN32(ls);
+}
+
+LSTATUS CreateRegistryKey(HKEY hKeyRoot, LPTSTR lpszKey, LPTSTR lpszValue, LPTSTR lpszData)
+{
+	HKEY  hKey;
+	LSTATUS  lr;
+	DWORD dwSize;
+
+	lr = RegCreateKeyEx(hKeyRoot, lpszKey, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL);
+	if (lr == ERROR_SUCCESS) {
+		if (lpszData != NULL) {
+			dwSize = (lstrlen(lpszData) + 1) * sizeof(TCHAR);
+		} else {
+			dwSize = 0;
+		}
+		lr = RegSetValueEx(hKey, lpszValue, 0, REG_SZ, (LPBYTE)lpszData, dwSize);
+		RegCloseKey(hKey);
+	}
+	return lr;
+}
+
 BSTR GetLPWSTRFromVariant(VARIANT *pv)
 {
 	if (pv->vt == (VT_VARIANT | VT_BYREF)) {
@@ -143,6 +194,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 			for (int i = MAX_MIGEMO; i--;) {
 				g_ppMigemo[i] = NULL;
 			}
+			g_hinstDll = hinstDll;
 			break;
 		case DLL_PROCESS_DETACH:
 			for (int i = MAX_MIGEMO; i--;) {
@@ -155,23 +207,82 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 	}
 	return TRUE;
 }
-
 // DLL Export
-STDAPI_(VOID) Migemo(VARIANT *pVarResult)
+/*// For api.GetProcObject
+STDAPI_(VOID) TCAL(VARIANT *pVarResult)
 {
-	CteMigemo *pMigemo = NULL;
-	for (int i = MAX_MIGEMO; i--;) {
-		if (!g_ppMigemo[i]) {
-			pMigemo = new CteMigemo();
-			g_ppMigemo[i] = pMigemo;
-			break;
-		}
-		if (!g_ppMigemo[i]->m_hMigemo) {
-			pMigemo = g_ppMigemo[i];
-			break;
+	teSetObject(pVarResult, g_pBase);
+}
+*///
+
+STDAPI DllCanUnloadNow(void)
+{
+	return g_lLocks == 0 ? S_OK : S_FALSE;
+}
+
+STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppv)
+{
+	static CteClassFactory serverFactory;
+	CLSID clsid;
+	HRESULT hr = CLASS_E_CLASSNOTAVAILABLE;
+
+	*ppv = NULL;
+	CLSIDFromString(g_szClsid, &clsid);
+	if (IsEqualCLSID(rclsid, clsid)) {
+		hr = serverFactory.QueryInterface(riid, ppv);
+	}
+	return hr;
+}
+
+STDAPI DllRegisterServer(void)
+{
+	TCHAR szModulePath[MAX_PATH];
+	TCHAR szKey[256];
+
+	wsprintf(szKey, TEXT("CLSID\\%s"), g_szClsid);
+	LSTATUS lr = CreateRegistryKey(HKEY_CLASSES_ROOT, szKey, NULL, const_cast<LPTSTR>(g_szProgid));
+	if (lr != ERROR_SUCCESS) {
+		return ShowRegError(lr);
+	}
+	GetModuleFileName(g_hinstDll, szModulePath, sizeof(szModulePath) / sizeof(TCHAR));
+	wsprintf(szKey, TEXT("CLSID\\%s\\InprocServer32"), g_szClsid);
+	lr = CreateRegistryKey(HKEY_CLASSES_ROOT, szKey, NULL, szModulePath);
+	if (lr != ERROR_SUCCESS) {
+		return ShowRegError(lr);
+	}
+	lr = CreateRegistryKey(HKEY_CLASSES_ROOT, szKey, TEXT("ThreadingModel"), TEXT("Apartment"));
+	if (lr != ERROR_SUCCESS) {
+		return ShowRegError(lr);
+	}
+	wsprintf(szKey, TEXT("CLSID\\%s\\ProgID"), g_szClsid);
+	lr = CreateRegistryKey(HKEY_CLASSES_ROOT, szKey, NULL, const_cast<LPTSTR>(g_szProgid));
+	if (lr != ERROR_SUCCESS) {
+		return ShowRegError(lr);
+	}
+	lr = CreateRegistryKey(HKEY_CLASSES_ROOT, const_cast<LPTSTR>(g_szProgid), NULL, TEXT(PRODUCTNAME));
+	if (lr != ERROR_SUCCESS) {
+		return ShowRegError(lr);
+	}
+	wsprintf(szKey, TEXT("%s\\CLSID"), g_szProgid);
+	lr = CreateRegistryKey(HKEY_CLASSES_ROOT, szKey, NULL, const_cast<LPTSTR>(g_szClsid));
+	if (lr != ERROR_SUCCESS) {
+		return ShowRegError(lr);
+	}
+	return S_OK;
+}
+
+STDAPI DllUnregisterServer(void)
+{
+	TCHAR szKey[64];
+	wsprintf(szKey, TEXT("CLSID\\%s"), g_szClsid);
+	LSTATUS ls = SHDeleteKey(HKEY_CLASSES_ROOT, szKey);
+	if (ls == ERROR_SUCCESS) {
+		ls = SHDeleteKey(HKEY_CLASSES_ROOT, g_szProgid);
+		if (ls == ERROR_SUCCESS) {
+			return S_OK;
 		}
 	}
-	teSetObjectRelease(pVarResult, pMigemo);
+	return ShowRegError(ls);
 }
 
 //CteMigemo
@@ -221,15 +332,12 @@ VOID CteMigemo::Close()
 
 STDMETHODIMP CteMigemo::QueryInterface(REFIID riid, void **ppvObject)
 {
-	*ppvObject = NULL;
-
-	if (IsEqualIID(riid, IID_IUnknown) || IsEqualIID(riid, IID_IDispatch)) {
-		*ppvObject = static_cast<IDispatch *>(this);
-	} else {
-		return E_NOINTERFACE;
-	}
-	AddRef();
-	return S_OK;
+	static const QITAB qit[] =
+	{
+		QITABENT(CteMigemo, IDispatch),
+		{ 0 },
+	};
+	return QISearch(this, qit, riid, ppvObject);
 }
 
 STDMETHODIMP_(ULONG) CteMigemo::AddRef()
@@ -373,4 +481,56 @@ STDMETHODIMP CteMigemo::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD
 	MessageBox(NULL, (LPWSTR)szError, 0, 0);
 *///
 	return DISP_E_MEMBERNOTFOUND;
+}
+
+// CteClassFactory
+
+STDMETHODIMP CteClassFactory::QueryInterface(REFIID riid, void **ppvObject)
+{
+	static const QITAB qit[] =
+	{
+		QITABENT(CteClassFactory, IClassFactory),
+		{ 0 },
+	};
+	return QISearch(this, qit, riid, ppvObject);
+}
+
+STDMETHODIMP_(ULONG) CteClassFactory::AddRef()
+{
+	LockModule(TRUE);
+	return 2;
+}
+
+STDMETHODIMP_(ULONG) CteClassFactory::Release()
+{
+	LockModule(FALSE);
+	return 1;
+}
+
+STDMETHODIMP CteClassFactory::CreateInstance(IUnknown *pUnkOuter, REFIID riid, void **ppvObject)
+{
+	*ppvObject = NULL;
+
+	if (pUnkOuter != NULL) {
+		return CLASS_E_NOAGGREGATION;
+	}
+	CteMigemo *pMigemo = NULL;
+	for (int i = MAX_MIGEMO; i--;) {
+		if (!g_ppMigemo[i]) {
+			pMigemo = new CteMigemo();
+			g_ppMigemo[i] = pMigemo;
+			break;
+		}
+		if (!g_ppMigemo[i]->m_hMigemo) {
+			pMigemo = g_ppMigemo[i];
+			break;
+		}
+	}
+	return pMigemo ? pMigemo->QueryInterface(riid, ppvObject) : CLASS_E_CLASSNOTAVAILABLE;
+}
+
+STDMETHODIMP CteClassFactory::LockServer(BOOL fLock)
+{
+	LockModule(fLock);
+	return S_OK;
 }
