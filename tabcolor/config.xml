@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
-    <MinVersion>2015.2.22</MinVersion>
-    <pubDate>Mon, 31 Mar 2014 00:00:00 UTC</pubDate>
+    <Version>1.04</Version>
+    <MinVersion>2016.3.12</MinVersion>
+    <pubDate>Mon, 14 Mar 2016 00:00:00 UTC</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
@@ -11,13 +11,11 @@
   </General>
   <en>
     <Name>Change Tab Color</Name>
-    <Description>
-      Change Tab Color.
-      Require "Tab Plus"
+    <Description>Change Tab Color. Require "Tab Plus"
     </Description>
   </en>
   <ja>
     <Name>タブに色を付ける</Name>
-    <Description>タブプラスのタブに色を付けます。</Description>
+    <Description>タブに色を付けます。※タブプラスが必要</Description>
   </ja>
 </TablacusExplorer>

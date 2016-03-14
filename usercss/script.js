@@ -12,8 +12,10 @@ if (window.Addon == 1) {
 	{
 		g_bCss = false;
 		var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\user.css"));
-		document.E.css.value = ado.ReadText(adReadAll);
-		ado.Close();
+		if (ado) {
+			document.E.css.value = ado.ReadText(adReadAll);
+			ado.Close();
+		}
 	}
 
 	ReloadUserCss = function ()

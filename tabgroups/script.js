@@ -79,7 +79,7 @@ if (window.Addon == 1) {
 
 		Tab: function (s, i)
 		{
-			s.push('<li id="tabgroups', i, '" style="font-family:', document.body.style.fontFamily, '"');
+			s.push('<li id="tabgroups', i, '"');
 			s.push(' onmousedown="return Addons.Tabgroups.Down(this)" onmouseup="return Addons.Tabgroups.Up(this)"');
 			s.push(' oncontextmenu="return Addons.Tabgroups.Popup(this)" onmousewheel="Addons.Tabgroups.Wheel()"');
 			s.push(' onmousemove="Addons.Tabgroups.Move(this)" ondblclick="return Addons.Tabgroups.Edit(this)" onfocus="this.blur()"');
@@ -95,7 +95,7 @@ if (window.Addon == 1) {
 			}
 			var s = [this.Data[i].Name];
 			if (this.Data[i].Lock) {
-				s.unshift('<img src="', Addons.TabPlus ? Addons.TabPlus.ImgLock : MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13), '" style="width: 13px">');
+				s.unshift('<img src="', Addons.TabPlus ? Addons.TabPlus.ImgLock : MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13), '" style="width: 13px; padding-right: 2px">');
 			}
 			o.innerHTML = s.join("");
 			var style = o.style;

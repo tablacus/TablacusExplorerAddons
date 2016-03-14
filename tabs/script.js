@@ -22,7 +22,9 @@ if (window.Addon == 1) {
 			}
 		}
 	};
-	window.OpenMode = GetAddonOption("tabs", "NewTab") ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER;
+	if (GetAddonOption("tabs", "NewTab")) {
+		window.OpenMode = SBSP_NEWBROWSER;
+	}
 
 	AddEvent("ToolTip", function (Ctrl, Index)
 	{
@@ -181,4 +183,6 @@ if (window.Addon == 1) {
 		Addons.Tabs.himl = api.ImageList_LoadImage(hModule, 545, 13, 0, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION);
 	}
 	Addons.Tabs.hFont = CreateFont(DefaultFont);
+} else {
+	SetTabContents(0, "General", '<input type="checkbox" id="NewTab" value="2" /><label for="NewTab">Open in New Tab</label>');
 }

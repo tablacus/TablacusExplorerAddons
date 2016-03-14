@@ -1,20 +1,16 @@
-var Addon_Id = "tabcolor";
+var item = GetAddonElement("tabcolor");
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "Tabs");
+	item.setAttribute("MenuPos", 0);
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuExec", 1);
-		item.setAttribute("Menu", "Tabs");
-		item.setAttribute("MenuPos", 0);
+	item.setAttribute("KeyOn", "List");
+	item.setAttribute("Key", "");
 
-		item.setAttribute("KeyOn", "List");
-		item.setAttribute("Key", "");
-
-		item.setAttribute("MouseOn", "List");
-		item.setAttribute("Mouse", "");
-	}
+	item.setAttribute("MouseOn", "List");
+	item.setAttribute("Mouse", "");
 }
+
 if (window.Addon == 1) {
 	Addons.TabColor = {
 		db: {},
@@ -52,29 +48,27 @@ if (window.Addon == 1) {
 		}
 	}
 
-	if (items.length) {
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.TabColor.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.TabColor.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.TabColor.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TabColor.strName));
-				ExtraMenuCommand[nPos] = Addons.TabColor.Exec;
-				return nPos;
-			});
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.TabColor.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		var s = item.getAttribute("MenuName");
+		if (s && s != "") {
+			Addons.TabColor.strName = s;
 		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.TabColor.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TabColor.Exec, "Func");
-		}
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.TabColor.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TabColor.strName));
+			ExtraMenuCommand[nPos] = Addons.TabColor.Exec;
+			return nPos;
+		});
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.TabColor.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TabColor.Exec, "Func");
 	}
 
 	AddEvent("GetTabColor", function (Ctrl)
