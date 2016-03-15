@@ -20,12 +20,9 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("Dragleave", function (Ctrl)
+	AddEvent("DragLeave", function (Ctrl)
 	{
 		clearTimeout(Addons.DragTop.tid);
 		Addons.DragTop.tid = null;
 	});
-
-	te.HookDragDrop(CTRL_FV, true);
-	te.HookDragDrop(CTRL_TV, true);
 }

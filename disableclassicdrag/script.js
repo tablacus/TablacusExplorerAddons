@@ -12,6 +12,4 @@
 			api.SetWindowTheme(Ctrl.hwndList, null, null);
 		}
 	});
-
-	te.HookDragDrop(CTRL_FV, true);
 }
