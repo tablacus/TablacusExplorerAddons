@@ -13,13 +13,13 @@
 			for (var i = items.length; i-- > 0;) {
 				var item = items[i];
 				var filter = item.getAttribute("Filter");
-				if (/\/(.*)\/(.*)/.test(filter)) {
-					var re = new RegExp(RegExp.$1, RegExp.$2);
+				var res = /\/(.*)\/(.*)/.exec(filter);
+				if (res) {
+					var re = new RegExp(res[1], res[2]);
 					if (re.test(path) || (path2 && re.test(path2))) {
 						return item;
 					}
-				}
-				else if (api.PathMatchSpec(path, filter) || api.PathMatchSpec(path2, filter)) {
+				} else if (api.PathMatchSpec(path, filter) || api.PathMatchSpec(path2, filter)) {
 					return item;
 				}
 			}
@@ -31,15 +31,18 @@
 	{
 		var item = Addons.FolderSettings.Get(Ctrl);
 		if (item) {
-			if (item.text.match(/CurrentViewMode\(\s*(\d+)\s*,\s*(\d+)/i)) {
-				fs.ViewMode = RegExp.$1;
-				fs.ImageSize = RegExp.$2;
+			var res = /CurrentViewMode\(\s*(\d+)\s*,\s*(\d+)/i.exec(item.text);
+			if (res) {
+				fs.ViewMode = res[1];
+				fs.ImageSize = res[2];
 			}
-			if (item.text.match(/CurrentViewMode\s*=\s*(\d+)/i)) {
-				fs.ViewMode = RegExp.$1;
+			res = /CurrentViewMode\s*=\s*(\d+)/i.exec(item.text);
+			if (res) {
+				fs.ViewMode = res[1];
 			}
-			if (item.text.match(/IconSize\s*=\s*(\d+)/i)) {
-				fs.ImageSize = RegExp.$1;
+			res = /IconSize\s*=\s*(\d+)/i.exec(item.text);
+			if (res) {
+				fs.ImageSize = res[1];
 			}
 		}
 	});

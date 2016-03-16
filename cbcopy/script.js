@@ -1,11 +1,11 @@
 if (window.Addon == 1) {
-	g_cbcopy =
+	Addons.CBCopy =
 	{
 		Copy: function (Items)
 		{
 			var pdwEffect = Items.pdwEffect;
 			if (pdwEffect) {
-				pdwEffect.X = DROPEFFECT_COPY | DROPEFFECT_LINK;
+				pdwEffect[0] = DROPEFFECT_COPY | DROPEFFECT_LINK;
 			}
 			api.OleSetClipboard(Items);
 			return S_OK;
@@ -16,7 +16,7 @@ if (window.Addon == 1) {
 	{
 		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
 			if ((wParam & 0xfff) == CommandID_COPY - 1) {
-				return g_cbcopy.Copy(Ctrl.SelectedItems);
+				return Addons.CBCopy.Copy(Ctrl.SelectedItems);
 			}
 		}
 	});
@@ -24,7 +24,7 @@ if (window.Addon == 1) {
 	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
 	{
 		if (Verb == CommandID_COPY - 1) {
-			return g_cbcopy.Copy(ContextMenu.Items);
+			return Addons.CBCopy.Copy(ContextMenu.Items);
 		}
 	});
 }

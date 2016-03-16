@@ -2,15 +2,13 @@ var Addon_Id = "addressbar";
 var Default = "ToolBar2Center";
 
 var item = GetAddonElement(Addon_Id);
-if (item) {
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("Menu", "Edit");
-		item.setAttribute("MenuPos", -1);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("Menu", "Edit");
+	item.setAttribute("MenuPos", -1);
 
-		item.setAttribute("KeyExec", 1);
-		item.setAttribute("KeyOn", "All");
-		item.setAttribute("Key", "Alt+D");
-	}
+	item.setAttribute("KeyExec", 1);
+	item.setAttribute("KeyOn", "All");
+	item.setAttribute("Key", "Alt+D");
 }
 
 if (window.Addon == 1) {
@@ -276,31 +274,30 @@ if (window.Addon == 1) {
 		return document.F.addressbar.value;
 	}
 
-	if (item) {
-		Addons.AddressBar.bXP = item.getAttribute("XP");
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.AddressBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.AddressBar.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.AddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.AddressBar.strName));
-				ExtraMenuCommand[nPos] = Addons.AddressBar.Exec;
-				return nPos;
-			});
+	Addons.AddressBar.bXP = item.getAttribute("XP");
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.AddressBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		var s = item.getAttribute("MenuName");
+		if (s && s != "") {
+			Addons.AddressBar.strName = s;
 		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.AddressBar.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.AddressBar.Exec, "Func");
-		}
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.AddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.AddressBar.strName));
+			ExtraMenuCommand[nPos] = Addons.AddressBar.Exec;
+			return nPos;
+		});
 	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.AddressBar.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.AddressBar.Exec, "Func");
+	}
+
 	AddTypeEx("Add-ons", "Address Bar", Addons.AddressBar.Exec);
 
 	var s = item.getAttribute("Width");
@@ -310,16 +307,13 @@ if (window.Addon == 1) {
 		s = "100%";
 	}
 	s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbbuttons" style="background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 1px; padding-left: 20px"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus(this)" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="addressbarselect" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">', BUTTONS.dropdown,'</span></div>'];
-	
+
 	s.push('<img id="addr_img" src="icon:shell32.dll,3,16"');
 	s.push(' onclick="return Addons.AddressBar.Exec();"');
 	s.push(' oncontextmenu="Addons.AddressBar.Exec(); return false;"');
 	s.push(' style="position: absolute; left: 4px; top: 2px; width: 16px; height: 16px; z-index: 3; border: 0px" /></div>');
 
-	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
-	if (o.style.verticalAlign.length == 0) {
-		o.style.verticalAlign = "middle";
-	}
+	SetAddon(Addon_Id, Default, s, "middle");
 	Addons.AddressBar.Resize();
 } else {
 	SetTabContents(0, "General", ['<table style="width: 100%"><tr><td><input type="checkbox" id="XP" /><label for="XP">XP ', GetText("Style").toLowerCase(), '</label></td></tr><tr><td><label>', GetText("Width"), '</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="', GetText("Auto"), '" onclick="document.F.Width.value=\'\'" /></td></tr></table>'].join(""));

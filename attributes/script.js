@@ -1,18 +1,16 @@
 var Addon_Id = "attributes";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuExec", 1);
-		item.setAttribute("Menu", "Context");
-		item.setAttribute("MenuPos", 1);
-		item.setAttribute("MenuName", "Attributes...");
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "Context");
+	item.setAttribute("MenuPos", 1);
+	item.setAttribute("MenuName", "Attributes...");
 
-		item.setAttribute("KeyOn", "List");
-		item.setAttribute("MouseOn", "List");
-	}
+	item.setAttribute("KeyOn", "List");
+	item.setAttribute("MouseOn", "List");
 }
+
 if (window.Addon == 1) {
 	Addons.Attributes =
 	{
@@ -29,34 +27,32 @@ if (window.Addon == 1) {
 		}
 	}
 
-	if (items.length) {
-		var s = item.getAttribute("MenuName");
-		if (s && s != "") {
-			Addons.Attributes.strName = GetText(s);
-		}
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.Attributes.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-			{
-				if (item && item.IsFileSystem) {
-					api.InsertMenu(hMenu, Addons.Attributes.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.Attributes.strName);
-					ExtraMenuCommand[nPos] = Addons.Attributes.Exec;
-				}
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Attributes.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Attributes.Exec, "Func");
-		}
-
-		AddTypeEx("Add-ons", "Attributes...", Addons.Attributes.Exec);
+	var s = item.getAttribute("MenuName");
+	if (s && s != "") {
+		Addons.Attributes.strName = GetText(s);
 	}
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.Attributes.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
+		{
+			if (item && item.IsFileSystem) {
+				api.InsertMenu(hMenu, Addons.Attributes.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.Attributes.strName);
+				ExtraMenuCommand[nPos] = Addons.Attributes.Exec;
+			}
+			return nPos;
+		});
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Attributes.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Attributes.Exec, "Func");
+	}
+
+	AddTypeEx("Add-ons", "Attributes...", Addons.Attributes.Exec);
 }
 if (window.Addon == 2) {
 	arAttrib = [FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_ARCHIVE];
@@ -66,16 +62,7 @@ if (window.Addon == 2) {
 
 	Resize = function ()
 	{
-		var w = ((document.documentElement.clientWidth || document.body.clientWidth) - 16) + "px";
-		var h = (document.documentElement.clientHeight || document.body.clientHeight) - 8;
-		var o = document.getElementById("P");
-		h -= 36;
-		if (h > 0) {
-			o.style.height = h + 'px';
-		}
-		o.style.width = w;
-		document.F.style.width = w;
-		document.getElementById("R").style.width = w;
+		CalcElementHeight(document.getElementById("P"), 3);
 		return false;
 	}
 
@@ -189,4 +176,13 @@ if (window.Addon == 2) {
 	});
 
 	AddEventEx(window, "resize", Resize);
+
+	AddEventEx(window, "keydown", function (e)
+	{
+		var key = (e || event).keyCode;
+		if (key == VK_ESCAPE) {
+			window.close();
+		}
+		return true;
+	});
 }

@@ -2,14 +2,12 @@
 var Default = "ToolBar2Right";
 
 var item = GetAddonElement(Addon_Id);
-if (item) {
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuPos", -1);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuPos", -1);
 
-		item.setAttribute("KeyExec", 1);
-		item.setAttribute("KeyOn", "All");
-		item.setAttribute("Key", "Ctrl+E");
-	}
+	item.setAttribute("KeyExec", 1);
+	item.setAttribute("KeyOn", "All");
+	item.setAttribute("Key", "Ctrl+E");
 }
 
 if (window.Addon == 1) {
@@ -115,47 +113,40 @@ if (window.Addon == 1) {
 	var width = "176px";
 	var icon = "../addons/filterbar/filter.png";
 
-	if (item) {
-		var s = item.getAttribute("Width");
-		if (s) {
-			width = (api.QuadPart(s) == s) ? (s + "px") : s;
-		}
-		var s = item.getAttribute("Icon");
-		if (s) {
-			icon = s;
-		}
-		Addons.FilterBar.RE = item.getAttribute("RE");
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.FilterBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.FilterBar.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.FilterBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.FilterBar.strName));
-				ExtraMenuCommand[nPos] = Addons.FilterBar.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.FilterBar.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.FilterBar.Exec, "Func");
-		}
-		AddTypeEx("Add-ons", "Filter Bar", Addons.FilterBar.Exec);
+	var s = item.getAttribute("Width");
+	if (s) {
+		width = (api.QuadPart(s) == s) ? (s + "px") : s;
 	}
-	var s = ['<input type="text" name="filter" placeholder="Filter" onkeydown="Addons.FilterBar.KeyDown(this)" onkeyup="Addons.FilterBar.KeyUp(this)" onfocus="Addons.FilterBar.Focus(this)" onblur="Addons.FilterBar.ShowButton()" onmouseup="Addons.FilterBar.KeyDown(this)" style="width:', width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', icon, '" id="ButtonFilter" hidefocus="true" style="position: absolute; left: -18px; top: -7px" onclick="if(Addons.FilterList) {Addons.FilterList.Exec(this);}" oncontextmenu="if(Addons.FilterList) {Addons.FilterList.Exec(this);}return false;"><input type="image" id="ButtonFilterClear" src="bitmap:ieframe.dll,545,13,1" style="display: none; position: absolute; left: -17px; top: -5px" hidefocus="true" onclick="Addons.FilterBar.Clear(true)"></span>'];
-
-	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
-
-	if (o.style.verticalAlign.length == 0) {
-		o.style.verticalAlign = "middle";
+	var s = item.getAttribute("Icon");
+	if (s) {
+		icon = s;
 	}
+	Addons.FilterBar.RE = item.getAttribute("RE");
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.FilterBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		var s = item.getAttribute("MenuName");
+		if (s && s != "") {
+			Addons.FilterBar.strName = s;
+		}
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.FilterBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.FilterBar.strName));
+			ExtraMenuCommand[nPos] = Addons.FilterBar.Exec;
+			return nPos;
+		});
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.FilterBar.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.FilterBar.Exec, "Func");
+	}
+	AddTypeEx("Add-ons", "Filter Bar", Addons.FilterBar.Exec);
+
+	SetAddon(Addon_Id, Default, ['<input type="text" name="filter" placeholder="Filter" onkeydown="Addons.FilterBar.KeyDown(this)" onkeyup="Addons.FilterBar.KeyUp(this)" onfocus="Addons.FilterBar.Focus(this)" onblur="Addons.FilterBar.ShowButton()" onmouseup="Addons.FilterBar.KeyDown(this)" style="width:', width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', icon, '" id="ButtonFilter" hidefocus="true" style="position: absolute; left: -18px; top: -7px" onclick="if(Addons.FilterList) {Addons.FilterList.Exec(this);}" oncontextmenu="if(Addons.FilterList) {Addons.FilterList.Exec(this);}return false;"><input type="image" id="ButtonFilterClear" src="bitmap:ieframe.dll,545,13,1" style="display: none; position: absolute; left: -17px; top: -5px" hidefocus="true" onclick="Addons.FilterBar.Clear(true)"></span>'], "middle");
 } else {
 	SetTabContents(0, "General", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr><tr><td><label>Filter</label></td></tr><tr><td><input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr></table>');
 }

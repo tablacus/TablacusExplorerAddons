@@ -1,40 +1,33 @@
 ﻿var Addon_Id = "folderbutton";
 var Default = "ToolBar2Left";
 
-if (window.Addon == 1) {
-	g_folderbutton =
-	{
-		ChangeView: window.ChangeView,
-		bDrag: false,
+var item = GetAddonElement(Addon_Id);
 
-		Open: function (o)
+if (window.Addon == 1) {
+	Addons.FolderButton =
+	{
+		bDrag: false,
+		strName: "",
+
+		Exec: function (Ctrl, pt)
 		{
-			var FV = te.Ctrl(CTRL_FV);
+			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
-				pt = GetPos(o, true);
-				var FolderItem = FolderMenu.Open(FV.FolderItem, pt.x, pt.y + o.offsetHeight);
-				if (FolderItem) {
-					switch (window.g_menu_button - 0) {
-						case 2:
-							PopupContextMenu(FolderItem);
-							break;
-						case 3:
-							Navigate(FolderItem, SBSP_NEWBROWSER);
-							break;
-						default:
-							Navigate(FolderItem, OpenMode);
-							break;
-					}
+				var s = InputDialog("Path", api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+				if (s) {
+					FV.Navigate(s, GetNavigateFlags(FV));
 				}
 			}
-			return false;
+			return S_OK;
 		},
 
 		Popup: function (o)
 		{
 			var FV = te.Ctrl(CTRL_FV);
 			if (FV) {
-				FV.Refresh();
+				pt = GetPos(o, true);
+				var FolderItem = FolderMenu.Open(FV.FolderItem, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI);
+				FolderMenu.Invoke(FolderItem);
 			}
 			return false;
 		},
@@ -61,26 +54,36 @@ if (window.Addon == 1) {
 		}
 	};
 
-	s = ['<span class="button"'];
-	s.push(' onclick="return g_folderbutton.Open(this)"');
-	s.push(' onmousedown="g_folderbutton.Button(true)" onmouseup="g_folderbutton.Button(false)"');
-	s.push(' oncontextmenu="return g_folderbutton.Popup(this)"');
-	s.push(' onmouseover="MouseOver(this)" onmouseout="MouseOut(); g_folderbutton.Drag()">');
-	s.push('<img alt="Folder" id="FolderButton" src="../image/toolbar/s_3_4.png" icon="shell32.dll,4,16">');
-	s.push('</span><span style="width: 1px"> </span>');
-	SetAddon(Addon_Id, Default, s.join(""));
-
-	if (document.documentMode) {
-		window.ChangeView = function (Ctrl)
+	Addons.FolderButton.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.FolderButton.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
-			var info = api.Memory("SHFILEINFO");
-			api.ShGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_OPENICON | SHGFI_PIDL);
-			var image = te.GdiplusBitmap;
-			image.FromHICON(info.hIcon, api.GetSysColor(COLOR_BTNFACE));
-			api.DestroyIcon(info.hIcon);
-			document.getElementById("FolderButton").src = "data:image/png;base64," + image.Base64("image/png");
-			return g_folderbutton.ChangeView ? g_folderbutton.ChangeView(Ctrl) : S_OK;
-		}
+			api.InsertMenu(hMenu, Addons.FolderButton.nPos, MF_BYPOSITION | MF_STRING | Addons.FolderButton.Enabled ? MF_CHECKED : 0, ++nPos, GetText(Addons.FolderButton.strName));
+			ExtraMenuCommand[nPos] = Addons.FolderButton.Exec;
+			return nPos;
+		});
 	}
-}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.FolderButton.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.FolderButton.Exec, "Func");
+	}
+	//Type
+	AddTypeEx("Add-ons", "Folder button", Addons.FolderButton.Exec);
 
+	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
+	var s = GetAddonOption(Addon_Id, "Icon");
+	if (!s) {
+		s = "icon:shell32.dll,4,16";
+		AddEvent("ChangeView", function (Ctrl)
+		{
+			document.getElementById("FolderButton").src = GetIconImage(Ctrl, api.GetSysColor(COLOR_BTNFACE));
+		});
+	}
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FolderButton.Exec(this);" oncontextmenu="Addons.FolderButton.Popup(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut(); Addons.FolderButton.Drag()" onmousedown="Addons.FolderButton.Button(true)" onmouseup="Addons.FolderButton.Button(false)"><img id="FolderButton" title="', Addons.FolderButton.strName.replace(/"/g, ""), '" src="', s.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px" />', '</span>']);
+}

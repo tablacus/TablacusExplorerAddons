@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
-	<General>
-		<Version>1.07</Version>
-		<MinVersion>2013.4.21</MinVersion>
-		<pubDate>Sun, 21 Apr 2013 00:00:00 UTC</pubDate>
-		<Options>Location</Options>
-		<Creator>Gaku</Creator>
-		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
-		<License>MIT License</License>
-	</General>
-	<en>
-		<Name>DriveBar</Name>
-		<Description>Drive Bar</Description>
-	</en>
-	<ja>
-		<Name>ドライブ バー</Name>
-		<Description>ドライブ バー</Description>
-	</ja>
+  <General>
+    <Version>1.08</Version>
+    <MinVersion>2016.3.16</MinVersion>
+    <pubDate>Wed, 16 Mar 2016 00:00:00 UTC</pubDate>
+    <Options>Location</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>DriveBar</Name>
+    <Description>Drive Bar</Description>
+  </en>
+  <ja>
+    <Name>ドライブ バー</Name>
+    <Description>ドライブ バー</Description>
+  </ja>
 </TablacusExplorer>

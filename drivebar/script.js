@@ -31,11 +31,11 @@ if (window.Addon == 1) {
 
 	};
 
-	AddEvent("DeviceChanged", function ()
+	AddEvent("DeviceChanged", function (Ctrl)
 	{
 		var icon = [53, 7, 8, 9, 11, 12];
 		var image = te.GdiplusBitmap;
-		var strDrive = "";
+		var arDrive = [];
 		var Items = sha.NameSpace(ssfDRIVES).Items();
 		for (var i = 0; i < Items.Count; i++) {
 			var Item = Items.Item(i);
@@ -45,9 +45,9 @@ if (window.Addon == 1) {
 				var vol = api.GetDisplayNameOf(Item, SHGDN_INFOLDER);
 				var src = '';
 				if (document.documentMode) { //IE8-
-					var info = api.Memory("SHFILEINFO");
-					api.ShGetFileInfo(Item, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
-					var hIcon = info.hIcon;
+					var sfi = api.Memory("SHFILEINFO");
+					api.SHGetFileInfo(Item, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
+					var hIcon = sfi.hIcon;
 					if (hIcon) {
 						image.FromHICON(hIcon, api.GetSysColor(COLOR_BTNFACE));
 						src = image.DataURI("image/png" , hIcon);
@@ -66,12 +66,11 @@ if (window.Addon == 1) {
 					}
 					src = MakeImgSrc('icon:shell32.dll,' + nIcon + ',16', 0, false, 16);
 				}
-				strDrive += '<span class="button" title="' + vol + '" path="' + path + '" onclick="Addons.DriveBar.Open(this)" oncontextmenu="Addons.DriveBar.Popup(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><span style="position: absolute; font-weight: bold; font-size: 9px; text-shadow: 1px 1px 0px buttonface, -1px 1px 0px buttonface, 1px -1px 0px buttonface, -1px -1px 0px buttonface; filter: glow(color=white,strength=1);">' + letter + '</span><img width=16 height=16 src="' + src + '" /></span>';
+				arDrive.push('<span class="button" title="', vol, '" path="', path, '" onclick="Addons.DriveBar.Open(this)" oncontextmenu="Addons.DriveBar.Popup(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><span style="position: absolute; font-weight: bold; font-size: 9px; text-shadow: 1px 1px 0px buttonface, -1px 1px 0px buttonface, 1px -1px 0px buttonface, -1px -1px 0px buttonface; filter: glow(color=white,strength=1);">', letter, '</span><img width=16 height=16 src="', src, '" /></span>');
 			}
 		}
-		document.getElementById("drivebar").innerHTML = strDrive;
+		document.getElementById("drivebar").innerHTML = arDrive.join("");
 	});
 
 	SetAddon(Addon_Id, Default, '<span id="drivebar"></span>');
 }
-
