@@ -1,10 +1,10 @@
-﻿Addon_Id = "fullpathbar";
-Default = "BottomBar3Left";
+﻿var Addon_Id = "fullpathbar";
+var Default = "BottomBar3Left";
 
 if (window.Addon == 1) {
 	Addons.FullPathBar =
 	{
-		Title: GetAddonOption(Addon_Id, "Title"),
+		Title: GetAddonOptionEx(Addon_Id, "Title"),
 
 		Show: function (Ctrl)
 		{
@@ -28,6 +28,5 @@ if (window.Addon == 1) {
 		Addons.FullPathBar.Show(te.Ctrl(CTRL_FV));
 	});
 } else {
-	document.getElementById("tab0").value = GetText("View");
-	document.getElementById("panel0").innerHTML = '<input type="checkbox" id="Title" /><label for="Title">Title Bar</label>';
+	SetTabContents(0, "View", '<input type="checkbox" id="Title" /><label for="Title">Title Bar</label>');
 }

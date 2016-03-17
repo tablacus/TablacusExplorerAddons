@@ -1,20 +1,18 @@
-﻿Addon_Id = "history";
-Default = "ToolBar2Left";
+﻿var Addon_Id = "history";
+var Default = "ToolBar2Left";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("Menu", "File");
-		item.setAttribute("MenuPos", -1);
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("Menu", "File");
+	item.setAttribute("MenuPos", -1);
 
-		item.setAttribute("KeyExec", 1);
-		item.setAttribute("KeyOn", "All");
-		item.setAttribute("Key", "Ctrl+H");
+	item.setAttribute("KeyExec", 1);
+	item.setAttribute("KeyOn", "All");
+	item.setAttribute("Key", "Ctrl+H");
 
-		item.setAttribute("Save", 1000);
-	}
+	item.setAttribute("Save", 1000);
 }
+
 if (window.Addon == 1) {
 	Addons.History1 =
 	{
@@ -88,7 +86,7 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-		},
+		}
 	}
 	try {
 		var ado = te.CreateObject("Adodb.Stream");
@@ -198,41 +196,37 @@ if (window.Addon == 1) {
 		}
 	});
 
-	if (items.length) {
-		Addons.History1.Save = item.getAttribute("Save") || Addons.History1.Save;
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.History1.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			Addons.History1.strName = item.getAttribute("MenuName") || "History";
+	Addons.History1.Save = item.getAttribute("Save") || Addons.History1.Save;
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.History1.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		Addons.History1.strName = item.getAttribute("MenuName") || "History";
 
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.History1.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.History1.strName));
-				ExtraMenuCommand[nPos] = Addons.History1.Exec;
-				return nPos;
-			});
-		}
-		if (!Addons.History1.strName) {
-			var info = GetAddonInfo(Addon_Id);
-			Addons.History1.strName = info.Name;
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.History1.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.History1.Exec, "Func");
-		}
-		AddTypeEx("Add-ons", "Reset Columns", Addons.History1.Exec);
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.History1.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.History1.strName));
+			ExtraMenuCommand[nPos] = Addons.History1.Exec;
+			return nPos;
+		});
 	}
+	if (!Addons.History1.strName) {
+		var info = GetAddonInfo(Addon_Id);
+		Addons.History1.strName = info.Name;
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.History1.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.History1.Exec, "Func");
+	}
+	AddTypeEx("Add-ons", "Reset Columns", Addons.History1.Exec);
 
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
 	var s = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,12" : "bitmap:ieframe.dll,204,24,12");
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.History1.Exec(this);" oncontextmenu="Addons.History1.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.History1.strName, '" src="' + s.replace(/"/g, "") + '" width="', h, 'px" height="', h, 'px" /></span>']);
 } else {
 	EnableInner();
-	document.getElementById("tab0").value = GetText("General");
-	document.getElementById("panel0").innerHTML = ['<label>Folders</label><br /><input type="text" name="Save" size="4" />'].join("");
+	SetTabContents(0, "General", '<label>Folders</label><br /><input type="text" name="Save" size="4" />');
 }
-

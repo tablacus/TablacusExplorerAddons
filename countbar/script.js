@@ -33,9 +33,7 @@ if (window.Addon == 1) {
 			}
 		}
 	});
-	
-	var hModule = api.GetModuleHandle(fso.BuildPath(system32, "shell32.dll"))
-	Addons.CountBar.Item = [api.LoadString(hModule, 38192) || api.LoadString(hModule, 6466), api.LoadString(hModule, 38193) || api.LoadString(hModule, 6466), api.LoadString(hModule, 38194) || api.LoadString(hModule, 6477), api.LoadString(hModule, 38195) || api.LoadString(hModule, 6477)];
+	Addons.CountBar.Item = [api.LoadString(hShell32, 38192) || api.LoadString(hShell32, 6466), api.LoadString(hShell32, 38193) || api.LoadString(hShell32, 6466), api.LoadString(hShell32, 38194) || api.LoadString(hShell32, 6477), api.LoadString(hShell32, 38195) || api.LoadString(hShell32, 6477)];
 	var ar = ["%s items selected", "%s item selected", "%s items", "%s item"];
 	for (var i in Addons.CountBar.Item) {
 		var s = Addons.CountBar.Item[i];
@@ -43,8 +41,6 @@ if (window.Addon == 1) {
 			Addons.CountBar.Item[i] = /%1[^ ]*/.test(s) ? s.replace(/%1[^ ]*/, "%s") : ar[i];
 		}
 	}
-}
-else {
-	document.getElementById("tab0").value = GetText("View");
-	document.getElementById("panel0").innerHTML = '<input type="checkbox" id="Title" /><label for="Title">Title Bar</label>';
+} else {
+	SetTabContents(0, "View", '<input type="checkbox" id="Title" /><label for="Title">Title Bar</label>');
 }

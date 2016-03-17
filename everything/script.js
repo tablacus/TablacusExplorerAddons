@@ -296,11 +296,7 @@ if (window.Addon == 1) {
 	AddTypeEx("Add-ons", "Everything", Addons.Everything.Exec);
 
 	var s = ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', width, '; padding-right:', WINVER < 0x602 ? "32" : "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', icon, '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'];
-	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
-
-	if (o.style.verticalAlign.length == 0) {
-		o.style.verticalAlign = "middle";
-	}
+	SetAddon(Addon_Id, Default, s, "middle");
 } else {
 	var s = ['<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr>'];
 	s.push('<tr><td><label>Action</label></td></tr>');

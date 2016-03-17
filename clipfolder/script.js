@@ -1,18 +1,13 @@
-﻿var Addon_Id = "clipfolder";
+﻿var item = GetAddonElement("clipfolder");
+if (!item.getAttribute("Set")) {
+	item.setAttribute("Filter", "*.cfu");
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "Background");
+	item.setAttribute("MenuPos", -1);
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("Filter", "*.cfu");
-		item.setAttribute("MenuExec", 1);
-		item.setAttribute("Menu", "Background");
-		item.setAttribute("MenuPos", -1);
+	item.setAttribute("KeyOn", "List");
 
-		item.setAttribute("KeyOn", "List");
-
-		item.setAttribute("MouseOn", "List");
-	}
+	item.setAttribute("MouseOn", "List");
 }
 
 if (window.Addon == 1) {
@@ -312,38 +307,33 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	if (items.length) {
-		Addons.ClipFolder.Spec = item.getAttribute("Filter") || "*.cfu";
-		Addons.ClipFolder.strName = GetText(item.getAttribute("MenuName") || "Create clip folder...");
-		Addons.ClipFolder.strName2 = GetText(item.getAttribute("MenuName2") || "Save clip folder");
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.ClipFolder.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-			{
-				var path = api.GetDisplayNameOf(item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-				if (/^[A-Z]:\\|^\\/i.test(path)) {
-					api.InsertMenu(hMenu, Addons.ClipFolder.nPos, MF_BYPOSITION | MF_STRING, ++nPos, api.PathMatchSpec(path, Addons.ClipFolder.Spec) ? Addons.ClipFolder.strName2 : Addons.ClipFolder.strName);
-					ExtraMenuCommand[nPos] = Addons.ClipFolder.Exec;
-				}
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.ClipFolder.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.ClipFolder.Exec, "Func");
-		}
-
-		AddTypeEx("Add-ons", "Create clip folder...", Addons.ClipFolder.Exec);
+	Addons.ClipFolder.Spec = item.getAttribute("Filter") || "*.cfu";
+	Addons.ClipFolder.strName = GetText(item.getAttribute("MenuName") || "Create clip folder...");
+	Addons.ClipFolder.strName2 = GetText(item.getAttribute("MenuName2") || "Save clip folder");
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.ClipFolder.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
+		{
+			var path = api.GetDisplayNameOf(item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			if (/^[A-Z]:\\|^\\/i.test(path)) {
+				api.InsertMenu(hMenu, Addons.ClipFolder.nPos, MF_BYPOSITION | MF_STRING, ++nPos, api.PathMatchSpec(path, Addons.ClipFolder.Spec) ? Addons.ClipFolder.strName2 : Addons.ClipFolder.strName);
+				ExtraMenuCommand[nPos] = Addons.ClipFolder.Exec;
+			}
+			return nPos;
+		});
 	}
-	te.HookDragDrop(CTRL_FV, true);
-}
-else {
-	document.getElementById("tab0").value = "General";
-	document.getElementById("panel0").innerHTML = '<label>Filter</label><input type="text" name="Filter" style="width: 100%" />';
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.ClipFolder.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.ClipFolder.Exec, "Func");
+	}
+
+	AddTypeEx("Add-ons", "Create clip folder...", Addons.ClipFolder.Exec);
+} else {
+	SetTabContents(0, "General", '<label>Filter</label><input type="text" name="Filter" style="width: 100%" />');
 	document.getElementById("panel7").insertAdjacentHTML("BeforeEnd", '<br /><label>Name</label>2<input type="text" name="MenuName2" style="width: 100%" />');
 }

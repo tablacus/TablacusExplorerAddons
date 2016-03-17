@@ -1,18 +1,15 @@
-Addon_Id = "clipboardhistory";
+var Addon_Id = "clipboardhistory";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuExec", 1);
-		item.setAttribute("Menu", "Background");
-		item.setAttribute("MenuPos", 0);
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "Background");
+	item.setAttribute("MenuPos", 0);
 
-		item.setAttribute("KeyOn", "List");
-		item.setAttribute("MouseOn", "List");
+	item.setAttribute("KeyOn", "List");
+	item.setAttribute("MouseOn", "List");
 
-		item.setAttribute("Save", 15);
-	}
+	item.setAttribute("Save", 15);
 }
 if (window.Addon == 1) {
 	Addons.ClipboardHistory =
@@ -93,44 +90,42 @@ if (window.Addon == 1) {
 		}
 	}
 
-	if (items.length) {
-		Addons.ClipboardHistory.Save = item.getAttribute("Save") || 15;
-		var s = item.getAttribute("MenuName");
-		if (!s || s == "") {
-			var info = GetAddonInfo(Addon_Id);
-			s = info.Name;
-		}
-		Addons.ClipboardHistory.strName = GetText(s);
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.ClipboardHistory.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-			{
-				if (te.Data.ClipboardHistory.length) {
-					Addons.ClipboardHistory.nCommand = nPos + 1;
-					var mii = api.Memory("MENUITEMINFO");
-					mii.cbSize = mii.Size;
-					mii.fMask = MIIM_STRING | MIIM_SUBMENU;
-					mii.dwTypeData = Addons.ClipboardHistory.strName;
-					mii.hSubMenu = Addons.ClipboardHistory.CreateMenu();
-					api.InsertMenuItem(hMenu, Addons.ClipboardHistory.nPos, true, mii);
-					AddEvent("MenuCommand", Addons.ClipboardHistory.MenuCommand);
-					nPos += te.Data.ClipboardHistory.length;
-				}
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.ClipboardHistory.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.ClipboardHistory.Exec, "Func");
-		}
-
-		AddTypeEx("Add-ons", "Clipboard list", Addons.ClipboardHistory.Exec);
+	Addons.ClipboardHistory.Save = item.getAttribute("Save") || 15;
+	var s = item.getAttribute("MenuName");
+	if (!s || s == "") {
+		var info = GetAddonInfo(Addon_Id);
+		s = info.Name;
 	}
+	Addons.ClipboardHistory.strName = GetText(s);
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.ClipboardHistory.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
+		{
+			if (te.Data.ClipboardHistory.length) {
+				Addons.ClipboardHistory.nCommand = nPos + 1;
+				var mii = api.Memory("MENUITEMINFO");
+				mii.cbSize = mii.Size;
+				mii.fMask = MIIM_STRING | MIIM_SUBMENU;
+				mii.dwTypeData = Addons.ClipboardHistory.strName;
+				mii.hSubMenu = Addons.ClipboardHistory.CreateMenu();
+				api.InsertMenuItem(hMenu, Addons.ClipboardHistory.nPos, true, mii);
+				AddEvent("MenuCommand", Addons.ClipboardHistory.MenuCommand);
+				nPos += te.Data.ClipboardHistory.length;
+			}
+			return nPos;
+		});
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.ClipboardHistory.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.ClipboardHistory.Exec, "Func");
+	}
+
+	AddTypeEx("Add-ons", "Clipboard list", Addons.ClipboardHistory.Exec);
 
 	AddEvent("SystemMessage", function (Ctrl, hwnd, msg, wParam, lParam)
 	{
@@ -152,8 +147,6 @@ if (window.Addon == 1) {
 	if (!te.Data.ClipboardHistory) {
 		te.Data.ClipboardHistory = te.Array();
 	}
-}
-else {
-	document.getElementById("tab0").value = "General";
-	document.getElementById("panel0").innerHTML = '<table style="width: 100%"><tr><td><label>Menus</label></td></tr><tr><td><input type="text" name="Save" size="4" /></td><td><input type="button" value="Default" onclick="document.F.Save.value=15" /></td></tr></table>';
+} else {
+	SetTabContents(0, "General", '<table style="width: 100%"><tr><td><label>Menus</label></td></tr><tr><td><input type="text" name="Save" size="4" /></td><td><input type="button" value="Default" onclick="document.F.Save.value=15" /></td></tr></table>');
 }
