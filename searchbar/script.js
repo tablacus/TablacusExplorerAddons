@@ -1,12 +1,9 @@
 ﻿var Addon_Id = "searchbar";
 var Default = "ToolBar2Right";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuPos", -1);
-	}
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuPos", -1);
 }
 
 if (window.Addon == 1) {
@@ -26,7 +23,7 @@ if (window.Addon == 1) {
 						CancelFilterView(FV);
 					}
 				}
-			}, 100);
+			}, 99);
 		},
 
 		KeyDown: function (o)
@@ -35,7 +32,7 @@ if (window.Addon == 1) {
 				Addons.SearchBar.Search();
 				(function (o) { setTimeout(function () {
 					o.focus();
-				}, 1000);}) (o);
+				}, 999);}) (o);
 				return false;
 			}
 		},
@@ -46,8 +43,7 @@ if (window.Addon == 1) {
 			var s = document.F.search.value;
 			if (s.length) {
 				FV.FilterView(s);
-			}
-			else {
+			} else {
 				CancelFilterView(FV);
 			}
 			Addons.SearchBar.ShowButton();
@@ -72,7 +68,7 @@ if (window.Addon == 1) {
 
 		ShowButton: function ()
 		{
-			if (osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602) {
+			if (WINVER < 0x602) {
 				document.getElementById("ButtonSearchClear").style.display = document.F.search.value.length ? "inline" : "none";
 			}
 		},
@@ -91,49 +87,38 @@ if (window.Addon == 1) {
 	});
 
 	var width = "176px";
-	var icon = "bitmap:ieframe.dll,216,16,17";
-	if (items.length) {
-		var s = item.getAttribute("Width");
-		if (s) {
-			width = (api.QuadPart(s) == s) ? (s + "px") : s;
-		}
-		var s = item.getAttribute("Icon");
-		if (s) {
-			icon = s;
-		}
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.SearchBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.SearchBar.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.SearchBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.SearchBar.strName));
-				ExtraMenuCommand[nPos] = Addons.SearchBar.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.SearchBar.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SearchBar.Exec, "Func");
-		}
-		AddTypeEx("Add-ons", "Search Bar", Addons.SearchBar.Exec);
+	var s = item.getAttribute("Width");
+	if (s) {
+		width = (api.QuadPart(s) == s) ? (s + "px") : s;
 	}
-
-	var s = ['<input type="text" name="search" placeholder="Search" onkeydown="return Addons.SearchBar.KeyDown(this)" onmouseup="Addons.SearchBar.Change(this)" onfocus="Addons.SearchBar.Focus(this)" style="width:', width, '; padding-right:', osInfo.dwMajorVersion * 100 + osInfo.dwMinorVersion < 602 ? "32": "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonSearchClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.SearchBar.Clear()" style="display: none; position: absolute; left: -33px; top: -4px" hidefocus="true"><input type="image" src="', icon, '" onclick="Addons.SearchBar.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -6px; width 16px; height: 16px"></span>'];
-	var o = document.getElementById(SetAddon(Addon_Id, Default, s));
-
-	if (o.style.verticalAlign.length == 0) {
-		o.style.verticalAlign = "middle";
+	var icon = item.getAttribute("Icon") || "bitmap:ieframe.dll,216,16,17";
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.SearchBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		var s = item.getAttribute("MenuName");
+		if (s && s != "") {
+			Addons.SearchBar.strName = s;
+		}
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.SearchBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.SearchBar.strName));
+			ExtraMenuCommand[nPos] = Addons.SearchBar.Exec;
+			return nPos;
+		});
 	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.SearchBar.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SearchBar.Exec, "Func");
+	}
+	AddTypeEx("Add-ons", "Search Bar", Addons.SearchBar.Exec);
+
+	var s = ['<input type="text" name="search" placeholder="Search" onkeydown="return Addons.SearchBar.KeyDown(this)" onmouseup="Addons.SearchBar.Change(this)" onfocus="Addons.SearchBar.Focus(this)" style="width:', width, '; padding-right:', WINVER < 0x602 ? "32": "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonSearchClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.SearchBar.Clear()" style="display: none; position: absolute; left: -33px; top: -4px" hidefocus="true"><input type="image" src="', icon, '" onclick="Addons.SearchBar.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -6px; width 16px; height: 16px"></span>'];
+	SetAddon(Addon_Id, Default, s, "middle");
 }
 else {
-	document.getElementById("tab0").value = "View";
-	document.getElementById("panel0").innerHTML = '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr></table>';
+	SetTabContents(0, "View", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr></table>');
 }

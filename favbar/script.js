@@ -1,5 +1,5 @@
-﻿Addon_Id = "favbar";
-Default = "ToolBar4Center";
+﻿var Addon_Id = "favbar";
+var Default = "ToolBar4Center";
 
 if (window.Addon == 1) {
 	Addons.FavBar =
@@ -153,18 +153,14 @@ if (window.Addon == 1) {
 					var sh = (height ? ' style="height:' + height + 'px"' : '');
 					if (icon) {
 						img = '<img src="' + (icon || "").replace(/"/g, "") + '"' + sh + '>';
-					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background")) {
+					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
 						var path = Addons.FavBar.GetPath(items, i);
 						var pidl = api.ILCreateFromPath(path);
 						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
-							var res = /"([^"]*)"/.exec(path);
-							if (!res) {
-								res = /([^ ]*)/.exec(path);
-							}
+							var res = /"([^"]*)"/.exec(path) || /([^ ]*)/.exec(path);
 							if (res) {
-								path = res[1];
+								pidl = api.ILCreateFromPath(res[1]);
 							}
-							pidl = api.ILCreateFromPath(path);
 						}
 						img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '">';
 					} else if (strFlag == "open") {
@@ -259,6 +255,5 @@ if (window.Addon == 1) {
 		return S_OK;
 	});
 } else {
-	document.getElementById("tab0").value = GetText("General");
-	document.getElementById("panel0").innerHTML = ['<input type="checkbox" id="NewTab" value="2" /><label for="NewTab">Open in New Tab</label><br /><label>Icon</label></label><br /><input type="text" name="Size" size="4" />px'].join("");
+	SetTabContents(0, "General", '<input type="checkbox" id="NewTab" value="2" /><label for="NewTab">Open in New Tab</label><br /><label>Icon</label></label><br /><input type="text" name="Size" size="4" />px');
 }

@@ -38,6 +38,9 @@ if (window.Addon == 1) {
 			var bSave = false;
 			Addons.ClipFolder.Open(Ctrl, null, db);
 			var arFV = Addons.ClipFolder.SyncFV(Ctrl);
+			for (var i in arFV) {
+				arFV[i].SelectItem(null, SVSI_DESELECTOTHERS);
+			}
 			for (var j = 0; j < Items.Count; j++) {
 				var Item = Items.Item(j);
 				for (var i in arFV) {

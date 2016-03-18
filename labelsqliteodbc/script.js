@@ -207,8 +207,7 @@ if (window.Addon == 1) {
 		AddEventId("AddonDisabledEx", "LabelSQLiteOdbc", Addons.LabelSQLiteOdbc.Finalize);
 	}, true);
 } else {
-	document.getElementById("tab0").value = "General";
-	document.getElementById("panel0").innerHTML = '<input type="button" value="Load" onclick="Addons.LabelSQLiteOdbc.Import()" /><br /><input type="button" value="Save" onclick="Addons.LabelSQLiteOdbc.Export()" /><br /><br /><input type="button" value="' + api.sprintf(999, GetText("Get %s..."), "SQLite ODBC Driver") + '" title="http://www.ch-werner.de/sqliteodbc/" onclick="wsh.Run(this.title)" />';
+	SetTabContents(0, "General", '<input type="button" value="Load" onclick="Addons.LabelSQLiteOdbc.Import()" /><br /><input type="button" value="Save" onclick="Addons.LabelSQLiteOdbc.Export()" /><br /><br /><input type="button" value="' + api.sprintf(999, GetText("Get %s..."), "SQLite ODBC Driver") + '" title="http://www.ch-werner.de/sqliteodbc/" onclick="wsh.Run(this.title)" />');
 
 	Addons.LabelSQLiteOdbc.Import = function ()
 	{
