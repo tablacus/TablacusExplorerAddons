@@ -1,20 +1,18 @@
 ﻿var Addon_Id = "retouch";
 var Default = "ToolBar2Left";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuExec", 1);
-		item.setAttribute("Menu", "Edit");
-		item.setAttribute("MenuPos", -1);
-		item.setAttribute("MenuName", "Retouch...");
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "Edit");
+	item.setAttribute("MenuPos", -1);
+	item.setAttribute("MenuName", "Retouch...");
 
-		item.setAttribute("KeyOn", "List");
+	item.setAttribute("KeyOn", "List");
 
-		item.setAttribute("MouseOn", "List");
-	}
+	item.setAttribute("MouseOn", "List");
 }
+
 if (window.Addon == 1) {
 	Addons.Retouch =
 	{
@@ -32,39 +30,36 @@ if (window.Addon == 1) {
 			}
 		}
 	};
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "icon:shell32.dll,141,16" : "icon:shell32.dll,141,32");
+	var h = item.getAttribute("IconSize") || window.IconSize || 24;
+	var s = item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,141,16" : "icon:shell32.dll,141,32");
 	s = ['<span class="button" id="RetouchButton" onclick="Addons.Retouch.Exec()" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="return false;"><img title="Retouch..." src="', s.replace(/"/g, ""), '" style="width:', h, 'px; height:', h, 'px"' ,'></span>'];
 	SetAddon(Addon_Id, Default, s);
 
-	if (items.length) {
-		var s = item.getAttribute("MenuName");
-		if (s && s != "") {
-			Addons.Retouch.strName = s;
-		}
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.Retouch.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.Retouch.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Retouch.strName));
-				ExtraMenuCommand[nPos] = Addons.Retouch.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.Retouch.Exec();", "JScript");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.Retouch.Exec();", "JScript");
-		}
-
-		AddTypeEx("Add-ons", "Retouch", Addons.Retouch.Exec);
+	var s = item.getAttribute("MenuName");
+	if (s && s != "") {
+		Addons.Retouch.strName = s;
 	}
-}
-else if (window.Addon == 2) {
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.Retouch.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.Retouch.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Retouch.strName));
+			ExtraMenuCommand[nPos] = Addons.Retouch.Exec;
+			return nPos;
+		});
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.Retouch.Exec();", "JScript");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.Retouch.Exec();", "JScript");
+	}
+
+	AddTypeEx("Add-ons", "Retouch", Addons.Retouch.Exec);
+} else if (window.Addon == 2) {
 	Addons = {};
 	Addons.Retouch =
 	{
@@ -81,13 +76,6 @@ else if (window.Addon == 2) {
 					document.title = Addons.Retouch.File;
 					Addons.Retouch.Image = te.GdiplusBitmap();
 					Addons.Retouch.Image.FromFile(Addons.Retouch.File);
-					if (Addons.Retouch.File.match(/\.jpe?g/i)) {
-						var hBM = Addons.Retouch.Image.GetHBITMAP(0);
-						if (hBM) {
-							Addons.Retouch.Image.FromHBITMAP(hBM, 0);
-							api.DeleteObject(hBM);
-						}
-					}
 					Addons.Retouch.Width = Addons.Retouch.Image.GetWidth();
 					Addons.Retouch.Height = Addons.Retouch.Image.GetHeight();
 					document.F.percent.value = 100;
@@ -158,7 +146,7 @@ else if (window.Addon == 2) {
 			(function () { setTimeout(function () {
 				var commdlg = te.CommonDialog;
 				commdlg.InitDir = fso.GetParentFolderName(Addons.Retouch.File);
-				commdlg.Filter = "All Files|*.*";
+				commdlg.Filter = (api.LoadString(hShell32, 9007) + (api.LoadString(hShell32, 9014).replace(/[^#]*#[^#]*#/, ""))).replace(/#/g, "|");
 				commdlg.Flags = OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
 				if (commdlg.ShowSave()) {
 					var path = commdlg.FileName;
@@ -178,13 +166,13 @@ else if (window.Addon == 2) {
 					ep.NumberOfValues = 1;
 					ep.Type = EncoderParameterValueTypeLong;
 					var pTrans = api.Memory("DWORD");
-					pTrans.X = document.F.quality.value;
+					pTrans[0] = document.F.quality.value;
 					ep.Value = pTrans.P;
 					if (thum.Save(path, eps) == 0) {
 						wsh.Popup(GetText("Completed.") + "\n" + path, 0, "Tablacus Explorer", MB_ICONINFORMATION);
 					}
 				}
-			}, 100);}) ();
+			}, 99);}) ();
 		}
 	};
 }
