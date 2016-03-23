@@ -1,6 +1,6 @@
-﻿Addon_Id = "linkbar";
-Default = "ToolBar4Center";
-AddonName = "LinkBar";
+﻿var Addon_Id = "linkbar";
+var Default = "ToolBar4Center";
+var AddonName = "LinkBar";
 
 if (window.Addon == 1) {
 	Addons.LinkBar =

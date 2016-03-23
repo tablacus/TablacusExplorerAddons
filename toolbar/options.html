@@ -17,10 +17,10 @@
   <body>
     <form name="F" style="display: inline;">
       <div class="panel" id="panel0" style="display: block;">
-        <table width="99%">
+        <table width="100%">
           <tr>
-            <td width="150px" valign="top">
-              <select name="List" size="19" style="width: 150px; height: 380px" onclick="EditXEx(EditTB)" ondblclick="EditTB()" oncontextmenu="CancelX('List')">
+            <td width="12.5em" valign="top">
+              <select name="List" size="19" style="width: 12.5em; height: 34em; height: calc(100vh - 5.7em); min-height: 17em" onchange="EditXEx(EditTB)" ondblclick="EditTB()" oncontextmenu="CancelX('List')">
               </select>
             </td>
             <td valign="top">
@@ -28,58 +28,62 @@
               <br />
               <input type="text" name="Name" style="width: 100%" onchange="ChangeX('List')" />
               <label>Type</label>
+              <br />
+              <select name="Type" onchange="ChangeX('List')">
+              </select>
               <table class="layout">
                 <tr>
-                  <td>
-                    <select name="Type" onchange="ChangeX('List')">
-                    </select>
-                  </td>
-                  <td align="right">
-                    <input type="button" value="Portable" onclick="PortableX('Path')" />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
+                  <td style="width: 100%; vertical-align: bottom">
                     <label>Options</label>
                   </td>
-                  <td align="right">
-                    <input type="button" value="Browse..." onclick="RefX('Path', true, this)" style="width: 224px" />
+                  <td class="buttons">
+                    <input type="button" value="Portable" onclick="PortableX('Path')" title="Options" />
+                  </td>
+                  <td>
+                    <input type="button" value="Browse..." onclick="RefX('Path', true, this)" title="Options" />
                   </td>
                 </tr>
               </table>
-              <textarea name="Path" style="width: 100%; height: 200px" onchange="ChangeX('List')"></textarea>
+              <textarea name="Path" style="width: 100%; height: 20em; height: calc(100vh - 21em); min-height: 2em" onchange="ChangeX('List')"></textarea>
               <table class="layout">
                 <tr>
-                  <td>
+                  <td class="buttons">
                     <label>Icon</label>
                   </td>
-                  <td>
+                  <td style="width: 100%">
                     <div id="_Icon" style="height: 40px; overflow: auto"></div>
                   </td>
-                  <td align="right">
+                  <td class="buttons">
                     <label>Height</label>
+                  </td>
+                  <td class="buttons">
                     <input type="text" name="Height" style="width: 64px" onchange="ChangeX('List'); SetImage();" />
+                  </td>
+                  <td class="buttons">
                     <input type="button" value="File" onclick="RefX('Icon', false, null, 'ChangeX(\'List\');SetImage();'); SetImage();" />
+                  </td>
+                  <td>
                     <input type="button" value="Browse..." onclick="ShowIcon();" />
                   </td>
                 </tr>
               </table>
               <input type="text" name="Icon" style="width: 100%" onchange="ChangeX('List');SetImage();" />
-
             </td>
           </tr>
         </table>
-        <table width="97%">
+        <table width="100%">
           <tr>
-            <td>
+            <td style="width: 100%; white-space: nowrap">
               <input type="button" value="Remove" onclick="RemoveX('List')" />
               <input type="button" value="Up" onclick="MoveX('List',-1)" />
               <input type="button" value="Down" onclick="MoveX('List',1)" />
               <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>&nbsp;
               <input type="button" value="Test" onclick="TestX('')" />
             </td>
-            <td align="right">
+            <td class="buttons">
               <input type="button" value="Add" onclick="AddX('List', ReplaceTB)" />
+            </td>
+            <td style="white-space: nowrap">
               <input type="button" value="Replace" onclick="ReplaceTB('List')" />
             </td>
           </tr>
@@ -89,13 +93,13 @@
       <table id="buttons" width="100%">
         <tr>
           <td style="width: 100%; white-space: nowrap">
-            <input type="button" value="Location" onclick="ShowLocation();" />
+            <input type="button" value="Position" onclick="ShowLocation();" />
           </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+          <td class="buttons">
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />
           </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
+          <td class="buttons">
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />
           </td>
         </tr>
       </table>

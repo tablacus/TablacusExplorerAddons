@@ -1,4 +1,4 @@
-Addon_Id = "mouse";
+var Addon_Id = "mouse";
 
 if (window.Addon == 1) {
 	Addons.Mouse =

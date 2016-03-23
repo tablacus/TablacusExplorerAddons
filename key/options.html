@@ -15,64 +15,67 @@
     </script>
     <form name="F" style="display: inline;">
       <div class="panel" style="display: block;">
-        <table width="99%">
+        <table width="100%">
           <tr>
-            <td width="150px" valign="top">
-              <select name="Key" style="width: 150px" onchange="SwitchX('Key', this)">
+            <td width="12.5em" valign="top">
+              <select name="Key" style="width: 12.5em" onchange="SwitchX('Key', this)">
               </select>
               <br />
-              <select name="KeyAll" size="18" style="width: 150px; height: 360px" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              <select name="KeyAll" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
               </select>
-              <select name="KeyList" size="18" style="width: 150px; height: 360px; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              <select name="KeyList" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
               </select>
-              <select name="KeyTree" size="18" style="width: 150px; height: 360px; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              <select name="KeyTree" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
               </select>
-              <select name="KeyBrowser" size="18" style="width: 150px; height: 360px; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              <select name="KeyBrowser" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
               </select>
             </td>
             <td valign="top">
               <label>Key</label>
               <input type="text" name="KeyKey" style="width: 100%" onchange="ChangeX('Key');SetKeyShift();" />
-              <div id="_KeyState" style="white-space; nowrap">
+              <div id="_KeyState" style="white-space: nowrap">
                 <select id="_KeySelect" onchange="KeySelect(this)"></select>
                 <input type="button" value="Input" onclick="InputKey();ChangeX('Key');" />
               </div>
               <label>Type</label>
+              <br />
+              <select name="KeyType" onchange="ChangeX('Key')">
+              </select>
               <table class="layout">
                 <tr>
-                  <td valign="bottom">
-                    <select name="KeyType" onchange="ChangeX('Key')">
-                    </select>
-                  </td>
-                  <td align="right">
-                    <input type="button" value="Portable" onclick="PortableX('KeyPath')" title="Options" />
-                  </td>
-                </tr>
-              </table>
-              <table class="layout">
-                <tr>
-                  <td>
+                  <td style="width: 100%; vertical-align: bottom">
                     <label>Options</label>
                   </td>
-                  <td align="right">
-                    <input type="button" value="Reference..." onclick="RefX('KeyPath', true, this)"  style="min-width: 200px"  title="Options" />
+                  <td class="buttons">
+                    <input type="button" value="Portable" onclick="PortableX('KeyPath')" title="Options" />
+                  </td>
+                  <td>
+                    <input type="button" value="Browse..." onclick="RefX('KeyPath', true, this)" title="Options" />
                   </td>
                 </tr>
               </table>
-              <textarea name="KeyPath" style="width: 100%; height: 250px" onchange="ChangeX('Key')"></textarea>
+              <textarea name="KeyPath" style="width: 100%; height: 23em; height: calc(100vh - 17.4em); min-height: 2em" onchange="ChangeX('Key')"></textarea>
             </td>
           </tr>
         </table>
-        <table width="97%">
+        <table width="100%">
           <tr>
-            <td>
+            <td class="buttons">
               <input type="button" value="Remove" onclick="RemoveX('Key')" />
+            </td>
+            <td class="buttons">
               <input type="button" value="Up" onclick="MoveX('Key', -1)" />
+            </td>
+            <td class="buttons">
               <input type="button" value="Down" onclick="MoveX('Key', 1)" />
+            </td>
+            <td style="width: 100%; vertical-align: middle">
               <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
             </td>
-            <td align="right">
+            <td class="buttons">
               <input type="button" value="Add" onclick="AddX('Key')" />
+            </td>
+            <td>
               <input type="button" value="Replace" onclick="ReplaceX('Key')" />
             </td>
           </tr>
@@ -82,11 +85,11 @@
         <tr>
           <td style="width: 100%; white-space: nowrap">
           </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+          <td class="buttons">
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />
           </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
+          <td class="buttons">
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />
           </td>
         </tr>
       </table>
