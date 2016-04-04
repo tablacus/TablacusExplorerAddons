@@ -68,9 +68,10 @@ if (window.Addon == 1) {
 				}
 				var oPopup = document.getElementById("breadcrumbsselect_" + Id);
 				var oImg = document.getElementById("breadcrumbsaddr_img_" + Id);
-				var width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetHeight - 2;
+				var width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetWidth - 2;
 				var height = oAddr.offsetHeight - (6 * screen.deviceYDPI / 96);
 				var n = 0;
+				o.style.width = "auto";
 				do {
 					if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
 						s.unshift('<span id="breadcrumbsaddressbar_' + Id + "_"  + n + '" class="button" style="line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + BUTTONS.next + '</span>');
@@ -85,6 +86,7 @@ if (window.Addon == 1) {
 					}
 					n++;
 				} while (!api.ILIsEmpty(FolderItem) && n < 99);
+				o.style.width = (oAddr.offsetWidth - 2) + "px";
 				if (api.ILIsEmpty(FolderItem)) {
 					if (!bRoot) {
 						o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.next + '</span>');
@@ -100,17 +102,16 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Focus: function (o, Id)
+		Focus: function (Id)
 		{
+			var o = document.getElementById("breadcrumbsaddressbar_" + Id);
 			Activate(o, Id);
 			o.select();
-			o.style.color = "windowtext";
 			document.getElementById("breadcrumbsbuttons_" + Id).style.display = "none";
 		},
 
 		Blur: function (o, Id)
 		{
-			o.style.color = "window";
 			document.getElementById("breadcrumbsbuttons_" + Id).style.display = "inline-block";
 		},
 
@@ -302,7 +303,7 @@ if (window.Addon == 1) {
 	AddEvent("PanelCreated", function (Ctrl)
 	{
 		var s = (Addons.InnerBreadcrumbsAddressBar.path2[Ctrl.Id] || "").replace(/"/, "");
-		s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbsbuttons_$" style="background-color: window; white-space: nowrap; position: absolute; top: 1px; left: 2px; padding-left: 20px"></div><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(this, $)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(this, $)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="breadcrumbsselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</span></div>'];
+		s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbsbuttons_$"  class="breadcrumb" style="position: absolute; top: 1px; left: 1px; padding-left: 20px" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus($)"></div><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus($)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(this, $)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; padding-left: 20px; padding-right: 16px;"><div class="breadcrumb"><div id="breadcrumbsselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</div></div>'];
 		s.push('<img id="breadcrumbsaddr_img_$" src="icon:shell32.dll,3,16"');
 		s.push(' onclick="return Addons.InnerBreadcrumbsAddressBar.ExecEx($);"');
 		s.push(' oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ExecEx($); return false;"');

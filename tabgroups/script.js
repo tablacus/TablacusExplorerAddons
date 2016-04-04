@@ -5,8 +5,6 @@ if (window.Addon == 1) {
 	Addons.Tabgroups =
 	{
 		Name: null,
-		Index: 1,
-		Click: 0,
 		nDrag: 0,
 		nDrop: 0,
 		WheelButton: 0,
@@ -15,47 +13,123 @@ if (window.Addon == 1) {
 
 		Init: function ()
 		{
-			var s = []
-			s.push('<ul class="tab0" id="tabgroups"><li class="activetab"> </li></ul>');
-			SetAddon(Addon_Id, Default, s.join(""));
-			this.Data = [];
-			this.New();
-			xml = OpenXml("tabgroups.xml", true, true);
-			var items = xml.getElementsByTagName('Item');
-			if (items.length) {
-				for (i = 0; i < items.length; i++) {
-					this.New(items[i].getAttribute("Name"), items[i].getAttribute("Color"), items[i].getAttribute("Lock"));
-				}
-			} else {
-				this.Click = 1;
-				setTimeout(function ()
-				{
-					Addons.Tabgroups.Add();
-				}, 99);
+			SetAddon(Addon_Id, Default, '<ul class="tab0" id="tabgroups"><li class="activetab"> </li></ul>');
+			if (!te.Data.Tabgroups) {
+				te.Data.Tabgroups = te.Object();
+				te.Data.Tabgroups.Data = te.Array();
+				te.Data.Tabgroups.Index = 1;
 			}
-			items = xml.getElementsByTagName('Index');
+
+			setTimeout(function ()
+			{
+				if (!te.Data.Tabgroups.Click) {
+					Addons.Tabgroups.LoadWindow(OpenXml("window.xml", true, false));
+				}
+			}, 999);
+		},
+
+		LoadWindow: function (xml)
+		{
+			var items = xml ? xml.getElementsByTagName("Group") : {};
 			if (items.length) {
-				this.Click = items[0].text;
+				te.Data.Tabgroups.Click = items.length ? items[0].getAttribute("Index") : 1;
+				items = items[0].getElementsByTagName("Item");
+			} else {
+				xml = OpenXml("tabgroups.xml", true, true);
+				items = xml.getElementsByTagName("Index");
+				te.Data.Tabgroups.Click = items.length ? items[0].text : 1;
+				items = xml.getElementsByTagName("Item");
+				Addons.Tabgroups.DeleteOldXml = items.length;
+			}
+			if (items.length) {
+				te.Data.Tabgroups.Data = te.Array();
+				for (i = 0; i < items.length; i++) {
+					Addons.Tabgroups.New(items[i].getAttribute("Name"), items[i].getAttribute("Color"), items[i].getAttribute("Lock"));
+				}
+			}
+			if (!te.Data.Tabgroups.Data.length) {
+				Addons.Tabgroups.Add();
+			}
+			Addons.Tabgroups.Arrange(true);
+		},
+
+		Load: function ()
+		{
+			var commdlg = te.CommonDialog();
+			commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "layout");
+			commdlg.Filter = "XML Files|*.xml|All Files|*.*";
+			commdlg.Flags = OFN_FILEMUSTEXIST;
+			if (commdlg.ShowOpen()) {
+				var fn = api.PathUnquoteSpaces(commdlg.filename);
+				if (fso.FileExists(fn)) {
+					xml = te.CreateObject("Msxml2.DOMDocument");
+					xml.async = false;
+					xml.load(fn);
+				}
+				var items = xml.getElementsByTagName("Group");
+				if (items.length) {
+					var items = items[0].getElementsByTagName("Item");
+					if (items.length == 1) {
+						this.New(items[0].getAttribute("Name"), items[0].getAttribute("Color"), items[0].getAttribute("Lock"));
+						var nGroup = te.Data.Tabgroups.Data.length;
+						te.Data.Tabgroups.Click = nGroup;
+						LoadXml(xml, nGroup);
+					}
+				}
+				this.Arrange();
 			}
 		},
 
 		Save: function ()
 		{
-			var xml = CreateXml();
-			var root = xml.createElement("TablacusExplorer");
-			for (var i = 1; i < Addons.Tabgroups.Data.length; i++) {
-				var item = xml.createElement("Item");
-				var o = Addons.Tabgroups.Data[i];
-				item.setAttribute("Name", o.Name);
-				item.setAttribute("Color", o.Color);
-				item.setAttribute("Lock", o.Lock);
-				root.appendChild(item);
+			var commdlg = te.CommonDialog();
+			commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "layout");
+			commdlg.Filter = "XML Files|*.xml|All Files|*.*";
+			commdlg.DefExt = "xml";
+			commdlg.Flags = OFN_OVERWRITEPROMPT;
+			if (commdlg.ShowSave()) {
+				var fn = api.PathUnquoteSpaces(commdlg.filename);
+				var xml = CreateXml(true);
+				var root = xml.documentElement;
+				var nGroup = te.Data.Tabgroups.Click;
+				var cTC = te.Ctrls(CTRL_TC);
+				for (var i in cTC) {
+					if (cTC[i].Data.Group == nGroup) {
+						SaveXmlTC(cTC[i], xml, 1);
+					}
+				}
+				var item = xml.createElement("Group");
+				item.setAttribute("Index", 1);
+				xml.documentElement.appendChild(item);
+				this.Save3(xml, item, nGroup - 1);
+				try {
+					xml.save(fn);
+				} catch (e) {
+					if (e.number != E_ACCESSDENIED) {
+						ShowError(e, [GetText("Save"), fn].join(": "));
+					}
+				}
 			}
-			var item = xml.createElement("Index");
-			item.text = Addons.Tabgroups.Index;
-			root.appendChild(item);
-			xml.appendChild(root);
-			SaveXmlEx("tabgroups.xml", xml, true);
+		},
+
+		Save2: function (xml)
+		{
+			var item = xml.createElement("Group");
+			item.setAttribute("Index", te.Data.Tabgroups.Index);
+			xml.documentElement.appendChild(item);
+			for (var i = 0; i < te.Data.Tabgroups.Data.length; i++) {
+				Addons.Tabgroups.Save3(xml, item, i)
+			}
+		},
+
+		Save3: function (xml, parent, i)
+		{
+			var item = xml.createElement("Item");
+			var o = te.Data.Tabgroups.Data[i];
+			item.setAttribute("Name", o.Name);
+			item.setAttribute("Color", o.Color);
+			item.setAttribute("Lock", o.Lock);
+			parent.appendChild(item);
 		},
 
 		Arrange: function (bForce)
@@ -64,15 +138,15 @@ if (window.Addon == 1) {
 			var s = [];
 			var o = document.getElementById("tabgroups");
 			var tabs = o.getElementsByTagName("li");
-			if (bForce || tabs.length != this.Data.length) {
-				for (var i = 1; i < this.Data.length; i++) {
-					this.Tab(s, i);
+			if (bForce || tabs.length != te.Data.Tabgroups.Data.length + 1) {
+				for (var i = 0; i < te.Data.Tabgroups.Data.length; i++) {
+					this.Tab(s, i + 1);
 				}
 				s.push('<li class="tab3" title="', GetText("New Tab"), '" onclick="return Addons.Tabgroups.Add()">+</li>');
 				o.innerHTML = s.join("");
 			}
-			for (var i = 1; i < this.Data.length; i++) {
-				this.Style(tabs, i);
+			for (var i = 0; i < te.Data.Tabgroups.Data.length; i++) {
+				this.Style(tabs, i + 1);
 			}
 			this.Change();
 		},
@@ -82,7 +156,7 @@ if (window.Addon == 1) {
 			s.push('<li id="tabgroups', i, '"');
 			s.push(' onmousedown="return Addons.Tabgroups.Down(this)" onmouseup="return Addons.Tabgroups.Up(this)"');
 			s.push(' oncontextmenu="return Addons.Tabgroups.Popup(this)" onmousewheel="Addons.Tabgroups.Wheel()"');
-			s.push(' onmousemove="Addons.Tabgroups.Move(this)" ondblclick="return Addons.Tabgroups.Edit(this)" onfocus="this.blur()"');
+			s.push(' onmousemove="Addons.Tabgroups.Move(this)" ondblclick="return Addons.Tabgroups.Edit(this)"');
 			s.push(' draggable="true" ondragstart="return Addons.Tabgroups.Start5(this)" ondragover="Addons.Tabgroups.Over5(this)" ondrop="Addons.Tabgroups.Drop5(this)" ondragend="Addons.Tabgroups.End5(this)"');
 			s.push('></li>');
 		},
@@ -93,26 +167,21 @@ if (window.Addon == 1) {
 			if (!o) {
 				return;
 			}
-			var s = [this.Data[i].Name];
-			if (this.Data[i].Lock) {
+			var data = te.Data.Tabgroups.Data[i - 1];
+			var s = [data.Name];
+			if (data.Lock) {
 				s.unshift('<img src="', Addons.TabPlus ? Addons.TabPlus.ImgLock : MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13), '" style="width: 13px; padding-right: 2px">');
 			}
 			o.innerHTML = s.join("");
 			var style = o.style;
-			var cl = this.Data[i].Color;
+			var cl = data.Color;
 			if (cl) {
-				if (i == this.Index) {
-					if (document.documentMode >= 10) {
-						style.background = "";
-					} else {
-						style.filter = "";
-					}
-					style.backgroundColor = cl;
-				} else if (document.documentMode >= 10) {
-					style.background = "linear-gradient(to bottom, #ffffff," + cl + " 70%)";
+				if (document.documentMode >= 10) {
+					style.background = "none";
 				} else {
-					style.filter = 'progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=#ffffff,endcolorstr=' + cl + ')';
+					style.filter = "none";
 				}
+				style.backgroundColor = cl;
 				cl = api.sscanf(cl, "#%06x") 
 				cl = (cl & 0xff0000) * .0045623779296875 + (cl & 0xff00) * 2.29296875 + (cl & 0xff) * 114;
 				style.color = cl > 127000 ? "black" : "white";
@@ -125,11 +194,11 @@ if (window.Addon == 1) {
 				style.color = "";
 				style.backgroundColor = "";
 			}
-			if (i == this.Index) {
+			if (i == te.Data.Tabgroups.Index) {
 				o.className = 'activetab';
 				style.zIndex = tabs.length;
 			} else {
-				o.className = i < this.Index ? 'tab' : 'tab2';
+				o.className = i < te.Data.Tabgroups.Index ? 'tab' : 'tab2';
 				style.zIndex = tabs.length - i;
 			}
 		},
@@ -138,11 +207,11 @@ if (window.Addon == 1) {
 		{
 			var s;
 			var Name = {};
-			for (var i = this.Data.length; i--;) {
-				Name[this.Data[i].Name] = true;
+			for (var i = te.Data.Tabgroups.Data.length; i--;) {
+				Name[te.Data.Tabgroups.Data[i].Name] = true;
 			}
-			for (var i = 1; i <= this.Data.length + 1; i++) {
-				s = GetText("Group") + i;
+			for (var i = 0; i <= te.Data.Tabgroups.Data.length; i++) {
+				s = GetText("Group") + (i + 1);
 				if (!Name[s]) {
 					this.New(s);
 					break;
@@ -153,7 +222,11 @@ if (window.Addon == 1) {
 
 		New: function (a1, a2, a3)
 		{
-			this.Data.push({Name: a1 || "", Color: a2 || "", Lock: api.LowPart(a3) & 1});
+			var o = te.Object();
+			o.Name = a1 || "";
+			o.Color = a2 || "";
+			o.Lock = api.LowPart(a3) & 1;
+			te.Data.Tabgroups.Data.push(o);
 		},
 
 		Change: function (n)
@@ -162,12 +235,12 @@ if (window.Addon == 1) {
 			setTimeout("te.UnlockUpdate();", 200);
 			var oShow = {};
 			if (n > 0) {
-				this.Click = n;
+				te.Data.Tabgroups.Click = n;
 			}
 			this.Fix();
-			var nOld = this.Index;
-			if (this.Click != this.Index && this.Click < this.Data.length) {
-				this.Index = this.Click;
+			var nOld = te.Data.Tabgroups.Index;
+			if (te.Data.Tabgroups.Click != te.Data.Tabgroups.Index && te.Data.Tabgroups.Click < te.Data.Tabgroups.Data.length + 1) {
+				te.Data.Tabgroups.Index = te.Data.Tabgroups.Click;
 				this.Arrange();
 			}
 			var bDisp = false;
@@ -181,7 +254,7 @@ if (window.Addon == 1) {
 				} else if (!TC.Data.Group) {
 					freeTC.push(TC);
 				}
-				var b = TC.Data.Group == this.Index;
+				var b = TC.Data.Group == te.Data.Tabgroups.Index;
 				if (b) {
 					var s = [TC.Left, TC.Top, TC.Width, TC.Height].join(",");
 					if (oShow[s]) {
@@ -212,7 +285,7 @@ if (window.Addon == 1) {
 					}
 				} else {
 					var TC = this.CreateTC(freeTC, 0, 0, "100%", "100%", te.Data.Tab_Style, te.Data.Tab_Align, te.Data.Tab_TabWidth, te.Data.Tab_TabHeight);
-					TC.Data.Group = this.Index;
+					TC.Data.Group = te.Data.Tabgroups.Index;
 					TC.Selected.Navigate2(HOME_PATH, SBSP_NEWBROWSER, te.Data.View_Type, te.Data.View_ViewMode, te.Data.View_fFlags, te.Data.View_Options, te.Data.View_ViewFlags, te.Data.View_IconSize, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root);
 				}
 			}
@@ -221,6 +294,7 @@ if (window.Addon == 1) {
 
 		CreateTC: function (freeTC, Left, Top, Width, Height, Style, Align, TabWidth, TabHeight)
 		{
+			var TC;
 			if (freeTC.length) {
 				TC = freeTC.shift();
 				TC.Left = Left;
@@ -235,13 +309,13 @@ if (window.Addon == 1) {
 			} else {
 				TC = te.CreateCtrl(CTRL_TC, Left, Top, Width, Height, Style, Align, TabWidth, TabHeight);
 			}
-			TC.Data.Group = this.Index;
+			TC.Data.Group = te.Data.Tabgroups.Index;
 			return TC;
 		},
 
 		Close: function (nPos, bNotUpdate)
 		{
-			if (this.Data[nPos].Lock) {
+			if (te.Data.Tabgroups.Data[nPos - 1].Lock) {
 				return;
 			}
 			var cTC = te.Ctrls(CTRL_TC);
@@ -256,9 +330,9 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			this.Data.splice(nPos, 1);
-			if (this.Index >= this.Data.length && this.Index > 1) {
-				this.Index--;
+			te.Data.Tabgroups.Data.splice(nPos - 1, 1);
+			if (te.Data.Tabgroups.Index >= te.Data.Tabgroups.Data.length + 1 && te.Data.Tabgroups.Index > 1) {
+				te.Data.Tabgroups.Index--;
 			}
 			if (!bNotUpdate) {
 				this.Arrange();
@@ -267,9 +341,9 @@ if (window.Addon == 1) {
 
 		CloseOther: function (nPos)
 		{
-			for (var i = this.Data.length; i-- > 1;) {
-				if (i != nPos) {
-					this.Close(i, true);
+			for (var i = te.Data.Tabgroups.Data.length; i--;) {
+				if (i != nPos - 1) {
+					this.Close(i + 1, true);
 				}
 			}
 			this.Arrange();
@@ -277,11 +351,10 @@ if (window.Addon == 1) {
 
 		Down: function (o)
 		{
-			this.Click = o.id.replace(/\D/g, '') - 0;
 			this.WheelButton = api.GetKeyState(VK_MBUTTON);
 			if (api.GetKeyState(VK_LBUTTON) < 0) {
 				api.GetCursorPos(this.pt);
-				this.Change();
+				this.Change(o.id.replace(/\D/g, '') - 0);
 			}
 			return true;
 		},
@@ -301,28 +374,28 @@ if (window.Addon == 1) {
 				var nDrop = o.id.replace(/\D/g, '');
 				if (nDrop == this.nDrop) {
 					this.nDrop = 0;
-					var ar = new Array(this.Data.length);
-					var Data = this.Data.concat();
+					var ar = new Array(te.Data.Tabgroups.Data.length);
+					var Data = te.Data.Tabgroups.Data.concat();
 					var j = 0;
-					for (var i = 0; i < this.Data.length; i++) {
-						if (j == nDrop) {
+					for (var i = 0; i < te.Data.Tabgroups.Data.length; i++) {
+						if (j == nDrop - 1) {
 							j++;
 						}
-						ar[i] = (i == this.nDrag) ? nDrop : j++;
+						ar[i] = (i == this.nDrag - 1) ? nDrop - 1 : j++;
 					}
-					for (var i = 1; i < this.Data.length; i++) {
-						this.Data[ar[i]] = Data[i];
+					for (var i = 0; i < te.Data.Tabgroups.Data.length; i++) {
+						te.Data.Tabgroups.Data[ar[i]] = Data[i];
 					}
 					var cTC = te.Ctrls(CTRL_TC);
 					for (var i in cTC) {
 						var TC = cTC[i];
-						if (TC.Data.Group >= ar.length) {
+						if (TC.Data.Group > ar.length) {
 							TC.Close();
 						} else {
-							TC.Data.Group = ar[TC.Data.Group];
+							TC.Data.Group = ar[TC.Data.Group - 1] + 1;
 						}
 					}
-					this.Click = nDrop;
+					te.Data.Tabgroups.Click = nDrop;
 					this.Arrange();
 				}
 			}
@@ -331,13 +404,13 @@ if (window.Addon == 1) {
 
 		Popup: function (o)
 		{
-			this.Click = o.id.replace(/\D/g, '') - 0;
+			te.Data.Tabgroups.Click = o.id.replace(/\D/g, '') - 0;
 			var hMenu = api.CreatePopupMenu();
-			var sMenu = [1, "&Edit", 5, "Color", 2, "&Close Tab", 3, "Cl&amp;ose Other Tabs", 4, "&New Tab", 6, "&Lock"];
+			var sMenu = [1, "Rename", 5, "Color", 0, "", 2, "&Close Tab", 3, "Cl&amp;ose Other Tabs", 0, "", 4, "&New Tab", 6, "&Lock", 0, "", 7, "Load", 8, "Save"];
 			for (var i = sMenu.length / 2; i--;) {
 				var uId = sMenu[i * 2];
-				var uFlags = MF_BYPOSITION | MF_STRING;
-				if (this.Data[this.Click].Lock) {
+				var uFlags = uId ? MF_STRING : MF_SEPARATOR;
+				if (te.Data.Tabgroups.Data[te.Data.Tabgroups.Click - 1].Lock) {
 					if (uId == 2) {
 						uFlags |= MF_DISABLED;
 					}
@@ -345,7 +418,7 @@ if (window.Addon == 1) {
 						uFlags |= MF_CHECKED;
 					}
 				}
-				api.InsertMenu(hMenu, 0, uFlags, uId, GetText(sMenu[i * 2 + 1]));
+				api.InsertMenu(hMenu, 0, MF_BYPOSITION | uFlags, uId, GetText(sMenu[i * 2 + 1]));
 			}
 			api.GetCursorPos(this.pt);
 			var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, this.pt.x, this.pt.y, te.hwnd, null, null);
@@ -353,44 +426,50 @@ if (window.Addon == 1) {
 			switch (nVerb) {
 				case 1:
 					this.Edit(o);
-					break
+					break;
 				case 2:
-					this.Close(this.Click);
-					break
+					this.Close(te.Data.Tabgroups.Click);
+					break;
 				case 3:
-					this.CloseOther(this.Click);
-					break
+					this.CloseOther(te.Data.Tabgroups.Click);
+					break;
 				case 4:
 					this.Add();
-					break
+					break;
 				case 5:
 					this.SetColor();
-					break
+					break;
 				case 6:
 					this.Lock();
-					break
+					break;
+				case 7:
+					this.Load();
+					break;
+				case 8:
+					this.Save();
+					break;
 			}
 			return false;
 		},
 
 		Edit: function (o)
 		{
-			var s = InputDialog(GetText("Name"), this.Data[this.Click].Name);
+			var s = InputDialog(GetText("Name"), te.Data.Tabgroups.Data[te.Data.Tabgroups.Click - 1].Name);
 			if (s) {
-				o.value = this.Data[this.Click].Name = s;
+				o.value = te.Data.Tabgroups.Data[te.Data.Tabgroups.Click - 1].Name = s;
 				this.Arrange();
 			}
 		},
 
 		SetColor: function ()
 		{
-			this.Data[this.Click].Color = ChooseWebColor(this.Data[this.Click].Color);
+			te.Data.Tabgroups.Data[te.Data.Tabgroups.Click - 1].Color = ChooseWebColor(te.Data.Tabgroups.Data[te.Data.Tabgroups.Click - 1].Color);
 			this.Arrange();
 		},
 
 		Lock: function ()
 		{
-			this.Data[this.Click].Lock ^= 1;
+			te.Data.Tabgroups.Data[te.Data.Tabgroups.Click - 1].Lock ^= 1;
 			this.Arrange();
 		},
 
@@ -400,7 +479,7 @@ if (window.Addon == 1) {
 			for (var i in cTC) {
 				var TC = cTC[i];
 				if (!TC.Data.Group && TC.Visible) {
-					TC.Data.Group = this.Index;
+					TC.Data.Group = te.Data.Tabgroups.Index;
 				}
 			}
 		},
@@ -442,6 +521,7 @@ if (window.Addon == 1) {
 		Start5: function (o)
 		{
 			event.dataTransfer.effectAllowed = 'move';
+			this.Cursor("default")
 			this.Drag5 = o.id;
 			return api.GetKeyState(VK_LBUTTON) < 0;
 		},
@@ -475,21 +555,21 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Wheel: function ()
+		Wheel: function (n)
 		{
-			this.Click = this.Click - event.wheelDelta / 120
-			if (this.Click < 1) {
-				this.Click = this.Data.length - 1;
+			n = te.Data.Tabgroups.Click + (n || (- event.wheelDelta / 120));
+			if (n < 1) {
+				n = te.Data.Tabgroups.Data.length;
 			}
-			if (this.Click >= this.Data.length) {
-				this.Click = 1;
+			if (n >= te.Data.Tabgroups.Data.length + 1) {
+				n = 1;
 			}
-			this.Change();
+			this.Change(n);
 		},
 
 		FromPt: function (pt)
 		{
-			for (var n = this.Data.length; n-- > 0;) {
+			for (var n = te.Data.Tabgroups.Data.length + 1; n-- > 0;) {
 				if (HitTest(document.getElementById("tabgroups" + n), pt)) {
 					return n;
 				}
@@ -506,8 +586,6 @@ if (window.Addon == 1) {
 		setTimeout("Addons.Tabgroups.Arrange();", 500);
 	});
 
-	AddEvent("Finalize", Addons.Tabgroups.Save);
-
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		if (Ctrl.Type == CTRL_WB) {
@@ -520,7 +598,7 @@ if (window.Addon == 1) {
 		if (Ctrl.Type == CTRL_WB) {
 			var i = Addons.Tabgroups.FromPt(pt);
 			if (i >= 0) { 
-				if (i != Addons.Tabgroups.Index) {
+				if (i != te.Data.Tabgroups.Index) {
 					if (IsDrag(pt, Addons.Tabgroups.pt)) {
 						clearTimeout(Addons.Tabgroups.tid);
 						Addons.Tabgroups.pt = pt.Clone();
@@ -552,5 +630,20 @@ if (window.Addon == 1) {
 	{
 		clearTimeout(Addons.Tabgroups.tid);
 		Addons.Tabgroups.tid = null;
+	});
+
+	AddEvent("LoadWindow", Addons.Tabgroups.LoadWindow);
+
+	AddEvent("SaveWindow", function (xml, all)
+	{
+		Addons.Tabgroups.Save2(xml);
+		if (all && Addons.Tabgroups.DeleteOldXml) {
+			DeleteItem(fso.BuildPath(te.Data.DataFolder, "config\\tabgroups.xml"));
+		}
+	});
+
+	AddEventId("AddonDisabledEx", "tabgroups", function ()
+	{
+		te.Data.Tabgroups = null;
 	});
 }

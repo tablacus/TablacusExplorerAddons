@@ -65,11 +65,12 @@ if (window.Addon == 1) {
 				var oAddr = document.F.addressbar;
 				var oImg = document.getElementById("addr_img");
 				var oPopup = document.getElementById("addressbarselect");
-				var width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetHeight - 2;
+				var width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetWidth - 2;
 				var height = oAddr.offsetHeight - (6 * screen.deviceYDPI / 96);
 				if (Addons.AddressBar.bXP) {
-					oAddr.style.color = "windowtext";
+					oAddr.style.color = "WindowText";
 				} else {
+					o.style.width = "auto";
 					var n = 0;
 					do {
 						if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
@@ -85,12 +86,12 @@ if (window.Addon == 1) {
 						}
 						n++;
 					} while (!api.ILIsEmpty(FolderItem) && n < 99);
+					o.style.width = (oAddr.offsetWidth - 2) + "px";
 					if (api.ILIsEmpty(FolderItem)) {
 						if (!bRoot) {
 							o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup(this, ' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.next + '</span>');
 						}
-					}
-					else {
+					} else {
 						o.insertAdjacentHTML("AfterBegin", '<span id="addressbar' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Popup2(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.parent + '</span>');
 					}
 					this.nLevel = n;
@@ -107,17 +108,16 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
-		Focus: function (o)
+		Focus: function ()
 		{
+			var o = document.getElementById("addressbar");
 			o.select();
-			o.style.color = "windowtext";
 			document.getElementById("breadcrumbbuttons").style.display = "none";
 		},
 
 		Blur: function (o)
 		{
 			if (!Addons.AddressBar.bXP) {
-				o.style.color = "window";
 				document.getElementById("breadcrumbbuttons").style.display = "inline-block";
 			}
 		},
@@ -306,7 +306,7 @@ if (window.Addon == 1) {
 	} else {
 		s = "100%";
 	}
-	s = ['<div style="position: relative; width; 100px; overflow: hidden"><div id="breadcrumbbuttons" style="background-color: window; white-space: nowrap; position: absolute; left: 2px; top: 1px; padding-left: 20px"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus(this)" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; color: window; padding-left: 20px; padding-right: 16px;"><div id="addressbarselect" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">', BUTTONS.dropdown,'</span></div>'];
+	s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbbuttons" class="breadcrumb" style="position: absolute; left: 1px; top: 1px; padding-left: 20px" onfocus="Addons.AddressBar.Focus()"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus()" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; padding-left: 20px; padding-right: 16px" /><div class="breadcrumb"><div id="addressbarselect" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">', BUTTONS.dropdown,'</div></div>'];
 
 	s.push('<img id="addr_img" src="icon:shell32.dll,3,16"');
 	s.push(' onclick="return Addons.AddressBar.Exec();"');
