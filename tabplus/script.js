@@ -108,7 +108,7 @@ if (window.Addon == 1) {
 		{
 			var FV = TC.Item(i);
 			if (FV) {
-				s.push('<li id="tabplus_$_', i,'" draggable="true" ondragstart="return Addons.TabPlus.Start5(this)" ondragend="Addons.TabPlus.End5(this)" onfocus="this.blur()" onmousemove="Addons.TabPlus.Move(this, $)"></li>');
+				s.push('<li id="tabplus_$_', i,'" draggable="true" ondragstart="return Addons.TabPlus.Start5(this)" ondragend="Addons.TabPlus.End5(this)" onmousemove="Addons.TabPlus.Move(this, $)"></li>');
 			}
 		},
 
@@ -155,18 +155,12 @@ if (window.Addon == 1) {
 				var style = o.style;
 				var cl = RunEvent4("GetTabColor", FV);
 				if (cl) {
-					if (i == TC.SelectedIndex) {
-						if (document.documentMode >= 10) {
-							style.background = "";
-						} else {
-							style.filter = "";
-						}
-						style.backgroundColor = cl;
-					} else if (document.documentMode >= 10) {
-						style.background = "linear-gradient(to bottom, #ffffff," + cl + " 70%)";
+					if (document.documentMode >= 10) {
+						style.background = "none";
 					} else {
-						style.filter = 'progid:DXImageTransform.Microsoft.gradient(GradientType=0,startcolorstr=#ffffff,endcolorstr=' + cl + ')';
+						style.filter = "none";
 					}
+					style.backgroundColor = cl;
 					cl = api.sscanf(cl, "#%06x") 
 					cl = (cl & 0xff0000) * .0045623779296875 + (cl & 0xff00) * 2.29296875 + (cl & 0xff) * 114;
 					style.color = cl > 127000 ? "black" : "white";
@@ -546,7 +540,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Dragleave", function (Ctrl)
+	AddEvent("DragLeave", function (Ctrl)
 	{
 		clearTimeout(Addons.TabPlus.tid);
 		Addons.TabPlus.tid = null;

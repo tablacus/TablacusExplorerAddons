@@ -98,24 +98,13 @@ if (window.Addon == 1) {
 	SetGestureExec("Tree", "1", function ()
 	{
 		var hItem = Ctrl.HitTest(pt, TVHT_ONITEM);
-		Addons.TreeView.tid2 = setTimeout(function ()
-		{
-			Addons.TreeView.tid2 = null;
-			if (hItem) {
-				var FV = Ctrl.FolderView;
+		if (hItem) {
+			var FV = Ctrl.FolderView;
+			if (!api.ILIsEqual(FV.FolderItem, Ctrl.SelectedItem)) {
 				FV.Navigate(Ctrl.SelectedItem, GetNavigateFlags(FV));
 			}
-		}, sha.GetSystemInformation("DoubleClickTime"));
-		return S_OK;
-	}, "Func", true);
-
-	SetGestureExec("Tree", "11", function ()
-	{
-		if (Addons.TreeView.tid2) {
-			clearTimeout(Addons.TreeView.tid2);
-			Addons.TreeView.tid2 = null;
 		}
-		return S_FALSE;
+		return S_OK;
 	}, "Func", true);
 
 	SetGestureExec("Tree", "3", function ()

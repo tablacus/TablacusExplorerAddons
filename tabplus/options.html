@@ -55,7 +55,7 @@
         <label>Icon</label> (13px)
         <br />
         <label>Lock</label>
-        <table style="width: 100%">
+        <table style="width: 100%; line-height: 1.2em">
           <tr>
             <td style="width: 100%">
               <input type="text" name="IconLock" onchange="SetImage();" style="width: 100%" />
@@ -66,7 +66,7 @@
           </tr>
         </table>
         <label>Close</label>
-        <table style="width: 100%">
+        <table style="width: 100%; line-height: 1.2em">
           <tr>
             <td style="width: 100%">
               <input type="text" name="IconClose" onchange="SetImage();" style="width: 100%" />
@@ -84,12 +84,12 @@
         <label for="NewTab">Open in New Tab</label>
         <input type="hidden" name="Set" value="1" />
       </div>
-      <table width="100%">
+      <table class="footer">
         <tr>
           <td style="width: 100%; white-space: nowrap">
           </td>
           <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />&nbsp;
           </td>
           <td style="width: 100px; white-space: nowrap">
             <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
