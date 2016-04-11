@@ -108,7 +108,11 @@ if (window.Addon == 1) {
 		{
 			var FV = TC.Item(i);
 			if (FV) {
-				s.push('<li id="tabplus_$_', i,'" draggable="true" ondragstart="return Addons.TabPlus.Start5(this)" ondragend="Addons.TabPlus.End5(this)" onmousemove="Addons.TabPlus.Move(this, $)"></li>');
+				s.push('<li id="tabplus_$_', i,'" draggable="true" ondragstart="return Addons.TabPlus.Start5(this)" ondragend="Addons.TabPlus.End5(this)" onmousemove="Addons.TabPlus.Move(this, $)"');
+				if (this.opt.Align > 1 && this.opt.Width) {
+					s.push(' style="width: 100%"');
+				}
+				s.push('></li>');
 			}
 		},
 
@@ -119,24 +123,30 @@ if (window.Addon == 1) {
 			if (FV && o) {
 				var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				o.title = path;
-				var s = ['<table><tr>'];
+				var s = ['<table style="width: 100%"><tr style="width: 100%">'];
 				try {
 					var w = FV.Data.Lock || this.opt.Close ? -13 : 0;
 					if (FV.Data.Lock) {
-						s.push('<td style="padding-right: 2px; vertical-align: middle"><img src="', this.ImgLock, '" style="width: 13px"></td>');
+						s.push('<td style="padding-right: 2px; vertical-align: middle; width: 13px"><img src="', this.ImgLock, '" style="width: 13px"></td>');
 						w -= 2;
 					}
 					if (this.opt.Icon) {
 						path = GetIconImage(FV, api.GetSysColor(COLOR_BTNFACE));
 						if (path) {
-							s.push('<td style="padding-right: 3px; vertical-align: middle"><img src="', path, '" /></td>');
+							s.push('<td style="padding-right: 3px; vertical-align: middle; width: 20px"><img src="', path, '" /></td>');
 							w -= 20;
 						}
 					}
 					s.push('<td style="vertical-align: middle;"><div style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;');
+					if (this.opt.Close && !FV.Data.Lock && this.opt.Align > 1 && this.opt.Width) {
+						w -= 13;
+					}
 					w += Number(this.opt.Width) || 0;
 					if (w > 0) {
 						s.push((this.opt.Fix ? 'width: ' : 'max-width:'), w, 'px');
+					}
+					if (this.opt.Align > 1 && this.opt.Width) {
+						s.push('; text-align: left; max-width: 100%');
 					}
 					var n = "";
 					if (FV.FolderItem) {

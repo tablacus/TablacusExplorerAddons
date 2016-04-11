@@ -12,17 +12,23 @@ if (window.Addon == 1) {
 
 		KeyDown: function (o, Id)
 		{
-			if (window.event.keyCode != VK_PROCESSKEY) {
+			var k = window.event.keyCode;
+			if (k != VK_PROCESSKEY) {
 				this.filter[Id] = o.value;
 				clearTimeout(this.tid[Id]);
-				this.tid[Id] = setTimeout("Addons.InnerFilterBar.Change(" + Id + ")", 500);
+				if (k == VK_RETURN) {
+					this.Change(Id);
+					return false;
+				} else {
+					this.tid[Id] = setTimeout("Addons.InnerFilterBar.Change(" + Id + ")", 500);
+				}
 			}
 		},
 
 		KeyUp: function (o, Id)
 		{
 			var k = window.event.keyCode;
-			if (k == VK_RETURN || k == VK_UP || k == VK_DOWN) {
+			if (k == VK_UP || k == VK_DOWN) {
 				var TC = te.Ctrl(CTRL_TC, Id);
 				if (TC) {
 					var FV = TC.Selected;
@@ -112,12 +118,20 @@ if (window.Addon == 1) {
 					Addons.InnerFilterBar.ShowButton(o, Id);
 				}
 			}
+		},
+
+		FilterList: function (o, id)
+		{
+			if (Addons.FilterList) {
+				Addons.FilterList.Exec(o, null, id);
+			}
+			return false;
 		}
 	};
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var s = ['<input type="text" name="filter_$" placeholder="Filter" onkeydown="Addons.InnerFilterBar.KeyDown(this, $)"  onkeyup="Addons.InnerFilterBar.KeyUp(this, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this, $)" onfocus="Addons.InnerFilterBar.Focus(this, $)" onblur="Addons.InnerFilterBar.ShowButton(this, $)" style="width: ', Addons.InnerFilterBar.Width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', Addons.InnerFilterBar.Icon, '" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -18px; top: -7px" width="16px" height="16px" onclick="if(Addons.FilterList) {Addons.FilterList.Exec(this,null,$);}" oncontextmenu="if(Addons.FilterList) {Addons.FilterList.Exec(this,null,$);}return false;"><input type="image" id="ButtonFilterClear_$" src="bitmap:ieframe.dll,545,13,1" hidefocus="true" style="display: none; position: absolute; left: -17px; top: -4px" onclick="Addons.InnerFilterBar.Clear(true, $)"></span>'];
+		var s = ['<input type="text" name="filter_$" placeholder="Filter" onkeydown="return Addons.InnerFilterBar.KeyDown(this,$)"  onkeyup="return Addons.InnerFilterBar.KeyUp(this, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this,$)" onfocus="Addons.InnerFilterBar.Focus(this, $)" onblur="Addons.InnerFilterBar.ShowButton(this,$)" ondblclick="return Addons.InnerFilterBar.FilterList(this,$)" style="width: ', Addons.InnerFilterBar.Width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', Addons.InnerFilterBar.Icon, '" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -18px; top: -7px" width="16px" height="16px" onclick="return Addons.InnerFilterBar.FilterList(this,$)" oncontextmenu="return Addons.InnerFilterBar.FilterList(this,$)"><input type="image" id="ButtonFilterClear_$" src="bitmap:ieframe.dll,545,13,1" hidefocus="true" style="display: none; position: absolute; left: -17px; top: -4px" onclick="Addons.InnerFilterBar.Clear(true, $)"></span>'];
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
