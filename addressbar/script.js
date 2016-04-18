@@ -115,7 +115,7 @@ if (window.Addon == 1) {
 			document.getElementById("breadcrumbbuttons").style.display = "none";
 		},
 
-		Blur: function (o)
+		Blur: function ()
 		{
 			if (!Addons.AddressBar.bXP) {
 				document.getElementById("breadcrumbbuttons").style.display = "inline-block";
@@ -235,6 +235,7 @@ if (window.Addon == 1) {
 			document.F.addressbar.value = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			Addons.AddressBar.Arrange(Ctrl.FolderItem);
 			document.getElementById("addr_img").src = GetIconImage(Ctrl, api.GetSysColor(COLOR_WINDOW));
+			setTimeout("Addons.AddressBar.Blur()", 99);
 		}
 	});
 
@@ -306,7 +307,7 @@ if (window.Addon == 1) {
 	} else {
 		s = "100%";
 	}
-	s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbbuttons" class="breadcrumb" style="position: absolute; left: 1px; top: 1px; padding-left: 20px" onfocus="Addons.AddressBar.Focus()"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus()" onblur="Addons.AddressBar.Blur(this)" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; padding-left: 20px; padding-right: 16px" /><div class="breadcrumb"><div id="addressbarselect" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">', BUTTONS.dropdown,'</div></div>'];
+	s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbbuttons" class="breadcrumb" style="position: absolute; left: 1px; top: 1px; padding-left: 20px" onfocus="Addons.AddressBar.Focus()"></div><input id="addressbar" type="text" onkeydown="return Addons.AddressBar.KeyDown(this)" onfocus="Addons.AddressBar.Focus()" onblur="Addons.AddressBar.Blur()" onresize="Addons.AddressBar.Resize()" style="width: ', s.replace(/;"<>/g, ''), '; vertical-align: middle; padding-left: 20px; padding-right: 16px" /><div class="breadcrumb"><div id="addressbarselect" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">', BUTTONS.dropdown,'</div></div>'];
 
 	s.push('<img id="addr_img" src="icon:shell32.dll,3,16"');
 	s.push(' onclick="return Addons.AddressBar.Exec();"');
