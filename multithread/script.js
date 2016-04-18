@@ -3,6 +3,7 @@
 	{
 		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bDelete)
 		{
+			var path;
 			if (!(grfKeyState & MK_LBUTTON) || Items.Count == 0) {
 				return false;
 			}
@@ -10,17 +11,18 @@
 			if (!bDelete && api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Parent, false)) {
 				return false;
 			}
-			if (Dest && Dest.ExtendedProperty) {
-				Dest = Dest.ExtendedProperty("linktarget") || Dest.Path;
+			try {
+				path = Dest.ExtendedProperty("linktarget") || Dest.Path || Dest;
+			} catch (e) {
+				path = Dest.Path || Dest;
 			}
-			if (bDelete || (Dest != "" && fso.FolderExists(Dest))) {
+			if (bDelete || (path && fso.FolderExists(path))) {
 				var arFrom = [];
 				for (i = Items.Count - 1; i >= 0; i--) {
-					var Path = Items.Item(i).Path;
-					if (IsExists(Path)) {
-						arFrom.unshift(Path);
-					}
-					else {
+					var path1 = Items.Item(i).Path;
+					if (IsExists(path1)) {
+						arFrom.unshift(path1);
+					} else {
 						pdwEffect[0] = DROPEFFECT_NONE;
 						break;
 					}
@@ -29,16 +31,14 @@
 					var wFunc = 0;
 					if (bDelete) {
 						wFunc = FO_DELETE;
-					}
-					else {
+					} else {
 						if (bOver) {
-							var DropTarget = api.DropTarget(Dest);
+							var DropTarget = api.DropTarget(path);
 							DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 						}
 						if (pdwEffect[0] & DROPEFFECT_COPY) {
 							wFunc = FO_COPY;
-						}
-						else if (pdwEffect[0] & DROPEFFECT_MOVE) {
+						} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
 							wFunc = FO_MOVE;
 						}
 					}
@@ -48,11 +48,10 @@
 							if (api.GetKeyState(VK_SHIFT) < 0) {
 								fFlags = 0;
 							}
-						}
-						else if (api.ILIsEqual(Dest, Parent)) {
+						} else if (api.ILIsEqual(path, Parent)) {
 							fFlags |= FOF_RENAMEONCOLLISION;
 						}
-						api.SHFileOperation(wFunc, arFrom.join("\0"), Dest, fFlags, true);
+						api.SHFileOperation(wFunc, arFrom.join("\0"), path, fFlags, true);
 						return true;
 					}
 				}
@@ -77,8 +76,7 @@
 						}
 						Dest = Ctrl.FolderItem;
 					}
-				}
-				else {
+				} else {
 					Dest = Ctrl.FolderItem;
 				}
 				if (Addons.MultiThread.FO(Ctrl, dataObj, Dest, grfKeyState, pt, pdwEffect, true)) {
@@ -133,6 +131,4 @@
 				break;
 		}
 	});
-	te.HookDragDrop(CTRL_FV, true);
-	te.HookDragDrop(CTRL_TV, true);
 }
