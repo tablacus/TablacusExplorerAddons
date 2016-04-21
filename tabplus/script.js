@@ -137,7 +137,7 @@ if (window.Addon == 1) {
 							w -= 20;
 						}
 					}
-					s.push('<td style="vertical-align: middle;"><div style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;');
+					s.push('<td style="vertical-align: middle;"><div style="overflow: hidden; white-space: nowrap;');
 					if (this.opt.Close && !FV.Data.Lock && this.opt.Align > 1 && this.opt.Width) {
 						w -= 13;
 					}
