@@ -16,7 +16,11 @@
 			for (var i in cFV) {
 				var FV = cFV[i];
 				if (FV.hwndList) {
-					Addons.ClassicStyle.SetTheme(FV);
+					api.SetWindowTheme(FV.hwndList, s, null);
+					if (FV.Type == CTRL_EB) {
+						var hwnd = FindChildByClass(FV.hwnd, WC_TREEVIEW);
+						api.SetWindowTheme(hwnd, s, null);
+					}
 					if (FV.TreeView) {
 						api.SetWindowTheme(FV.TreeView.hwndTree, s, null);
 					}
@@ -32,14 +36,9 @@
 		api.SetWindowTheme(Ctrl.hwndTree, null, null);
 	});
 
-	AddEvent("AddonDisabled", function(Id)
+	AddEventId("AddonDisabledEx", "classicstyle", function ()
 	{
-		if (api.strcmpi(Id, "classicstyle") == 0) {
-			AddEventEx(window, "beforeunload", function ()
-			{
-				Addons.ClassicStyle.SetThemeAll("explorer");
-			});
-		}
+		Addons.ClassicStyle.SetThemeAll("explorer");
 	});
 
 	Addons.ClassicStyle.SetThemeAll(null);
