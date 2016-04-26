@@ -257,7 +257,7 @@ if (window.Addon == 1) {
 				for (var i = 0; i < Items.Count; i++) {
 					var s = Items.Item(i).Path;
 					if (p & 1) {
-						s = s.replace(/\..+$/, "");
+						s = s.replace(/\.[^\\]+$/, "");
 					}
 					if (p & 2) {
 						s = fso.GetFileName(s);
