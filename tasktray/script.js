@@ -24,7 +24,6 @@ if (window.Addon == 1) {
 			for (var nDog = 5; !api.Shell_NotifyIcon(NIM_ADD, NotifyData) && nDog--;) {
 				api.Sleep(100);
 			}
-			api.DestroyIcon(NotifyData.hIcon);
 		},
 
 		DeleteIcon: function ()
