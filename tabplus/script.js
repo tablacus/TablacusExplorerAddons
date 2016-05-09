@@ -70,7 +70,7 @@ if (window.Addon == 1) {
 
 		SelectionChanged: function (TC, Id)
 		{
-			if (TC.Type = CTRL_TC && TC.Visible && !Addons.TabPlus.tids[TC.Id]) {
+			if (TC.Type == CTRL_TC && TC.Visible && !Addons.TabPlus.tids[TC.Id]) {
 				Addons.TabPlus.tids[TC.Id] = setTimeout(function () {
 					Addons.TabPlus.Arrange(TC.Id);
 				}, 99);
