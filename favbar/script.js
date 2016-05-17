@@ -4,7 +4,6 @@ var Default = "ToolBar4Center";
 if (window.Addon == 1) {
 	Addons.FavBar =
 	{
-		AddFavorite: window.AddFavorite,
 		Click: function (i)
 		{
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
@@ -172,7 +171,9 @@ if (window.Addon == 1) {
 				}
 				s.push('&nbsp;</label>');
 
-				document.getElementById('_favbar').innerHTML = s.join("");
+				var o = document.getElementById('_favbar');
+				o.innerHTML = s.join("");
+				ApplyLang(o);
 				Resize();
 			}
 		},
@@ -199,7 +200,7 @@ if (window.Addon == 1) {
 		},
 
 	};
-	SetAddon(Addon_Id, Default, '<span id="_favbar"></span>');
+	Addons.FavBar.Parent = document.getElementById(SetAddon(Addon_Id, Default, '<span id="_favbar"></span>'));
 	Addons.FavBar.Arrange();
 	AddEvent("FavoriteChanged", Addons.FavBar.Arrange);
 
@@ -222,7 +223,7 @@ if (window.Addon == 1) {
 					return S_OK;
 				}
 			}
-			if (HitTest(document.getElementById('_favbar'), pt) && dataObj.Count) {
+			if (HitTest(Addons.FavBar.Parent, pt) && dataObj.Count) {
 				pdwEffect[0] = DROPEFFECT_LINK;
 				return S_OK;
 			}
@@ -242,8 +243,11 @@ if (window.Addon == 1) {
 					return Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
 				}
 			}
-			if (HitTest(document.getElementById("_favbar"), pt) && dataObj.Count) {
-				AddFavorite(dataObj.Item(0));
+			if (HitTest(Addons.FavBar.Parent, pt) && dataObj.Count) {
+				setTimeout(function ()
+				{
+					AddFavorite(dataObj.Item(0));
+				}, 99);
 				return S_OK;
 			}
 		}

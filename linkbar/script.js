@@ -154,9 +154,38 @@ if (window.Addon == 1) {
 			return -1;
 		},
 
+		Append: function (dataObj)
+		{
+			var xml = te.Data.xmlLinkBar;
+			var root = xml.documentElement;
+			if (!root) {
+				xml.appendChild(xml.createProcessingInstruction("xml", 'version="1.0" encoding="UTF-8"'));
+				root = xml.createElement("TablacusExplorer");
+				xml.appendChild(root);
+			}
+			if (root) {
+				for (i = 0; i < dataObj.Count; i++) {
+					var FolderItem = dataObj.Item(i);
+					var item = xml.createElement("Item");
+					item.setAttribute("Name", api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER));
+					item.text = api.GetDisplayNameOf(FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
+					if (fso.FileExists(item.text)) {
+						item.text = api.PathQuoteSpaces(item.text);
+						item.setAttribute("Type", "Exec");
+					} else {
+						item.setAttribute("Type", "Open");
+					}
+					root.appendChild(item);
+				}
+				SaveXmlEx("linkbar.xml", xml);
+				Addons.LinkBar.Arrange();
+				ApplyLang(document);
+			}
+		}
+
 	};
 	te.Data.xmlLinkBar = OpenXml("linkbar.xml", false, true);
-	SetAddon(Addon_Id, Default, '<span id="_linkbar"></span>');
+	Addons.LinkBar.Parent = document.getElementById(SetAddon(Addon_Id, Default, '<span id="_linkbar"></span>'));
 	Addons.LinkBar.Arrange();
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
@@ -182,6 +211,9 @@ if (window.Addon == 1) {
 					MouseOver(document.getElementById("_linkbar" + i));
 				}
 				return S_OK;
+			} else if (HitTest(Addons.LinkBar.Parent, pt) && dataObj.Count) {
+				pdwEffect[0] = DROPEFFECT_LINK;
+				return S_OK;
 			}
 		}
 		MouseOut("_linkbar");
@@ -195,34 +227,12 @@ if (window.Addon == 1) {
 			var i = Addons.LinkBar.FromPt(items.length + 1, pt);
 			if (i >= 0) {
 				if (i == items.length) {
-					var xml = te.Data.xmlLinkBar;
-					var root = xml.documentElement;
-					if (!root) {
-						xml.appendChild(xml.createProcessingInstruction("xml", 'version="1.0" encoding="UTF-8"'));
-						root = xml.createElement("TablacusExplorer");
-						xml.appendChild(root);
-					}
-					if (root) {
-						for (i = 0; i < dataObj.Count; i++) {
-							var FolderItem = dataObj.Item(i);
-							var item = xml.createElement("Item");
-							item.setAttribute("Name", api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER));
-							item.text = api.GetDisplayNameOf(FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
-							if (fso.FileExists(item.text)) {
-								item.text = api.PathQuoteSpaces(item.text);
-								item.setAttribute("Type", "Exec");
-							} else {
-								item.setAttribute("Type", "Open");
-							}
-							root.appendChild(item);
-						}
-						SaveXmlEx("linkbar.xml", xml);
-						Addons.LinkBar.Arrange();
-						ApplyLang(document);
-					}
+					Addons.LinkBar.Append(dataObj);
 					return S_OK;
 				}
 				return Exec(external, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
+			} else if (HitTest(Addons.LinkBar.Parent, pt) && dataObj.Count) {
+				Addons.LinkBar.Append(dataObj);
 			}
 		}
 	});

@@ -1,4 +1,4 @@
-Addon_Id = "remember";
+var Addon_Id = "remember";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -16,8 +16,8 @@ if (window.Addon == 1) {
 
 		RememberFolder: function (FV)
 		{
-			if (FV && FV.FolderItem && !FV.FolderItem.Unvailable) {
-				var path = String(api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
+			if (FV && FV.FolderItem && !FV.FolderItem.Unvailable && FV.Data && FV.Data.Remember) {
+				var path = Addons.Remember.GetPath(FV);
 				if (path == FV.Data.Remember) {
 					var col = FV.Columns(Addons.Remember.nFormat);
 					if (col) {
@@ -25,6 +25,13 @@ if (window.Addon == 1) {
 					}
 				}
 			}
+		},
+		
+		GetPath: function (pid)
+		{
+			var path = (typeof(pid) == "string" ? pid : String(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX))).toLowerCase();
+			var res = /^([a-z][a-z\-_]+:).*/i.exec(path);
+			return res ? res[1] : path;
 		}
 	};
 
@@ -38,7 +45,7 @@ if (window.Addon == 1) {
 				ar[j] = item.getAttribute(Addons.Remember.ID[j]);
 			}
 			if (ar[1]) {
-				Addons.Remember.db[String(ar.pop()).toLowerCase()] = ar;
+				Addons.Remember.db[Addons.Remember.GetPath(String(ar.pop()))] = ar;
 			}
 		}
 		xml = null;
@@ -48,39 +55,42 @@ if (window.Addon == 1) {
 	{
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Prev && !Prev.Unvailable) {
-				var path = String(api.GetDisplayNameOf(Prev, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
+				var path = Addons.Remember.GetPath(Prev);
 				var col = Ctrl.Columns(Addons.Remember.nFormat);
 				if (col) {
 					Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, col, Ctrl.SortColumn, Ctrl.GroupBy];
 				}
 			}
-			var path = String(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
-			var ar = Addons.Remember.db[path];
+			var ar = Addons.Remember.db[Addons.Remember.GetPath(Ctrl)];
 			if (ar) {
 				fs.ViewMode = ar[1];
 				fs.ImageSize = ar[2];
-				Ctrl.Data.Setting = 'Remember';
 			} else if (Ctrl && Ctrl.Items) {
 				fs.ViewMode = Ctrl.CurrentViewMode;
 				fs.ImageSize = Ctrl.IconSize;
 			}
+			Ctrl.Data.Setting = 'Remember';
+			Ctrl.Data.Remember = "";
 		}
 	});
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-			Addons.Debug.alert(Ctrl.Data.Setting+ new Date());
 		if (Ctrl.Data.Setting == 'Remember') {
-			Ctrl.Data.Remember = String(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
-			var ar = Addons.Remember.db[Ctrl.Data.Remember];
-			if (ar) {
-				Ctrl.CurrentViewMode(ar[1], ar[2]);
-				Ctrl.Columns = ar[3];
-				Ctrl.SortColumn = ar[4];
-				if (Ctrl.GroupBy && ar[5]) {
-					Ctrl.GroupBy = ar[5];
+			var path = Addons.Remember.GetPath(Ctrl);
+			if (path) {
+				Ctrl.Data.Remember = path;
+				var ar = Addons.Remember.db[Ctrl.Data.Remember];
+				if (ar) {
+					Ctrl.CurrentViewMode(ar[1], ar[2]);
+					Ctrl.Columns = ar[3];
+					var col = Ctrl.Columns(Addons.Remember.nFormat);
+					Ctrl.SortColumn = ar[4];
+					if (Ctrl.GroupBy && ar[5]) {
+						Ctrl.GroupBy = ar[5];
+					}
+					ar[0] = new Date().getTime();
 				}
-				ar[0] = new Date().getTime();
 			}
 		}
 	});
@@ -88,6 +98,8 @@ if (window.Addon == 1) {
 	AddEvent("ChangeView", Addons.Remember.RememberFolder);
 	AddEvent("CloseView", Addons.Remember.RememberFolder);
 	AddEvent("Command", Addons.Remember.RememberFolder);
+	AddEvent("ViewModeChanged", Addons.Remember.RememberFolder);
+	AddEvent("ColumnsChanged", Addons.Remember.RememberFolder);
 	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
 	{
 		var Ctrl = te.Ctrl(CTRL_FV);
