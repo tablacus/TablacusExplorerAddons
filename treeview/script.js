@@ -134,14 +134,30 @@ if (window.Addon == 1) {
 	AddTypeEx("Add-ons", Addons.TreeView.strName, Addons.TreeView.Exec);
 
 	if (WINVER >= 0x600) {
-		AddEvent("ChangeNotify", function (Ctrl, pidls, wParam, lParam)
+		AddEvent("AppMessage", function (Ctrl, hwnd, msg, wParam, lParam)
 		{
-			var cTV = te.Ctrls(CTRL_TV);
-			for (var i in cTV) {
-				cTV[i].Notify(pidls.lEvent, pidls[0], pidls[1], wParam, lParam);
+			if (msg == Addons.TreeView.WM) {
+				var pidls = {};
+				var hLock = api.SHChangeNotification_Lock(wParam, lParam, pidls);
+				if (hLock) {
+					api.SHChangeNotification_Unlock(hLock);
+					var cTV = te.Ctrls(CTRL_TV);
+					for (var i in cTV) {
+						cTV[i].Notify(pidls.lEvent, pidls[0], pidls[1], wParam, lParam);
+					}
+				}
+				return S_OK;
 			}
 		});
+
+		AddEvent("Finalize", function ()
+		{
+			api.SHChangeNotifyDeregister(Addons.TreeView.uRegisterId);
+		});
+
+		Addons.TreeView.uRegisterId = api.SHChangeNotifyRegister(te.hwnd, SHCNRF_InterruptLevel | SHCNRF_NewDelivery, SHCNE_MKDIR | SHCNE_MEDIAINSERTED | SHCNE_DRIVEADD | SHCNE_NETSHARE | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RENAMEFOLDER | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT | SHCNE_UPDATEDIR, Addons.TreeView.WM, ssfDESKTOP, true);
 	}
+
 } else {
 	EnableInner();
 	SetTabContents(0, "General", '<input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label>');
