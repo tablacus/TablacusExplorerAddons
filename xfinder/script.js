@@ -674,7 +674,7 @@ if (window.Addon == 1) {
 			{
 				var ar = WScript.Col(s);
 				for (var i = 1; i < ar.length; i++) {
-					api.SetFileTime(ar[i], ar[0], null, null);
+					api.SetFileTime(ar[i], null, null, ar[0]);
 				}
 			 	return S_OK;
 			},
