@@ -87,7 +87,6 @@ if (window.Addon == 1) {
 						Name = Addons.MainMenuButton.strMenus[i].replace("&", "");
 					}
 				}
-				api.DestroyMenu(hMenu);
 				if (nVerb) {
 					var mii = api.Memory("MENUITEMINFO");
 					mii.cbSize = mii.Size;
@@ -102,6 +101,8 @@ if (window.Addon == 1) {
 						Exec(Ctrl, item.text, window.g_menu_button == 3 && s == "Open" ? "Open in New Tab" : s, Ctrl.hwnd, pt);
 						return S_OK;
 					}
+				} else {
+					api.DestroyMenu(hMenu);
 				}
 			}, 99);
 		},
