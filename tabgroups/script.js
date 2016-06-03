@@ -315,7 +315,7 @@ if (window.Addon == 1) {
 
 		Close: function (nPos, bNotUpdate)
 		{
-			if (te.Data.Tabgroups.Data[nPos - 1].Lock) {
+			if (te.Data.Tabgroups.Data[nPos - 1].Lock || (!bNotUpdate && !confirmOk("Are you sure?"))) {
 				return;
 			}
 			var cTC = te.Ctrls(CTRL_TC);
@@ -341,12 +341,14 @@ if (window.Addon == 1) {
 
 		CloseOther: function (nPos)
 		{
-			for (var i = te.Data.Tabgroups.Data.length; i--;) {
-				if (i != nPos - 1) {
-					this.Close(i + 1, true);
+			if (confirmOk("Are you sure?")) {
+				for (var i = te.Data.Tabgroups.Data.length; i--;) {
+					if (i != nPos - 1) {
+						this.Close(i + 1, true);
+					}
 				}
+				this.Arrange();
 			}
-			this.Arrange();
 		},
 
 		Down: function (o)
