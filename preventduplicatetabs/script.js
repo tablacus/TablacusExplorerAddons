@@ -7,6 +7,9 @@
 			if (Ctrl.hwnd != Item.hwnd && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
 				if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.hwnd == Ctrl.hwnd) {
 					TC.SelectedIndex = i;
+					setTimeout(function () {
+						Ctrl.Close();
+					}, 99);
 				}
 				return E_FAIL;
 			}

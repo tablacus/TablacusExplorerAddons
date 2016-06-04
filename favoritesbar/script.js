@@ -64,11 +64,13 @@ if (window.Addon == 1) {
 				var items = menus[0].getElementsByTagName("Item");
 				if (i >= 0) {
 					var hMenu = api.CreatePopupMenu();
-					var ContextMenu = api.ContextMenu(this.GetPath(items, i));
+					var path = this.GetPath(items, i);
+					var ContextMenu = api.ContextMenu(path);
 					if (ContextMenu) {
 						ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_DEFAULTONLY);
 						RemoveCommand(hMenu, ContextMenu, "delete;rename");
 						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 3, api.LoadString(hShell32, 31368));
 					}
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("&Edit"));
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Add"));
@@ -88,6 +90,9 @@ if (window.Addon == 1) {
 					}
 					if (nVerb == 2) {
 						this.ShowOptions();
+					}
+					if (nVerb == 3) {
+						this.OpenContains(path);
 					}
 					api.DestroyMenu(hMenu);
 				}
@@ -153,6 +158,16 @@ if (window.Addon == 1) {
 		ShowOptions: function (i)
 		{
 			ShowOptions("Tab=Menus&Menus=Favorites" + (isFinite(i) ? "," + i : ""));
+		},
+
+		OpenContains: function (path)
+		{
+			Navigate(fso.GetParentFolderName(path), SBSP_NEWBROWSER);
+			setTimeout(function ()
+			{
+				FV = te.Ctrl(CTRL_FV);
+				FV.SelectItem(path, SVSI_SELECT | SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS);
+			}, 99);
 		},
 
 		GetPath: function (items, i)
