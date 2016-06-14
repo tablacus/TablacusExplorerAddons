@@ -221,7 +221,7 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.History1.Exec, "Func");
 	}
-	AddTypeEx("Add-ons", "Reset Columns", Addons.History1.Exec);
+	AddTypeEx("Add-ons", "History", Addons.History1.Exec);
 
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
 	var s = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,12" : "bitmap:ieframe.dll,204,24,12");

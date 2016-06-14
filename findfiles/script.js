@@ -1,5 +1,5 @@
-﻿Addon_Id = "findfiles";
-Default = "None";
+﻿var Addon_Id = "findfiles";
+var Default = "None";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 var item = null;
@@ -25,8 +25,9 @@ Addons.FindFiles =
 	GetSearchString: function(Ctrl)
 	{
 		if (Ctrl) {
-			if (new RegExp("^" + Addons.FindFiles.PATH + "\\s*(.*)" , "i").test(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
-				return RegExp.$1;
+			var res = new RegExp("^" + Addons.FindFiles.PATH + "\\s*(.*)" , "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+			if (res) {
+				return res[1];
 			}
 		}
 		return "";
@@ -139,7 +140,7 @@ if (window.Addon == 1) {
 			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.FindFiles.Exec, "Func");
 		}
 		//Type
-		AddTypeEx("Add-ons", "Attributes color", Addons.FindFiles.Exec);
+		AddTypeEx("Add-ons", "Find Files", Addons.FindFiles.Exec);
 	}
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
 	var s = GetAddonOption(Addon_Id, "Icon");
