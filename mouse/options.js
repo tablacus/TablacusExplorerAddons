@@ -28,7 +28,7 @@ function SetMouseOptions()
 var ar = [];
 var s = "CSA";
 for (var i = 0; i < s.length; i++) {
-	ar.push('<input type="button" value="', MainWindow.g_KeyState[i][0],'" title="', s.charAt(i), '" onclick="AddMouse(this)" />');
+	ar.push('<input type="button" value="', MainWindow.g_.KeyState[i][0],'" title="', s.charAt(i), '" onclick="AddMouse(this)" />');
 }
 document.getElementById("__MOUSEDATA").innerHTML = ar.join("");
 LoadLang2(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\mouse\\lang\\" + te.Data.Conf_Lang + ".xml"));
