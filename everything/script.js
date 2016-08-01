@@ -120,6 +120,32 @@ if (window.Addon == 1) {
 					}
 				}
 			}
+		},
+
+		Open: function (Path, hwndView)
+		{
+			var hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
+			if (hwnd) {
+				var query = new ApiStruct({
+					reply_hwnd: [VT_I4, 4],
+					reply_copydata_message: [VT_I4, 4],
+					search_flags: [VT_I4, api.sizeof("DWORD")],
+					offset: [VT_I4, api.sizeof("DWORD")],
+					max_results: [VT_I4, api.sizeof("DWORD")],
+					search_string: [VT_LPWSTR, api.sizeof("WCHAR"), Path.length + 1]
+				}, 4);
+				query.Write("reply_hwnd", hwndView);
+				query.Write("reply_copydata_message", 2);
+				query.Write("max_results", Addons.Everything.Max);
+				query.Write("search_string", Path);
+
+				var cds = api.Memory("COPYDATASTRUCT");
+				cds.cbData = query.Size;
+				cds.dwData = 2;//EVERYTHING_IPC_COPYDATAQUERY;
+				cds.lpData = query.Memory;
+				api.SendMessage(hwnd, WM_COPYDATA, hwndView, cds);
+			}
+			return hwnd;
 		}
 
 	};
@@ -144,26 +170,13 @@ if (window.Addon == 1) {
 				Path = 'regex:' + ((window.migemo && (migemo.query(Path) + '|' + Path)) || Path);
 			}
 			if (Path) {
-				var hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
-				if (hwnd) {
-					var query = new ApiStruct({
-						reply_hwnd: [VT_I4, 4],
-						reply_copydata_message: [VT_I4, 4],
-						search_flags: [VT_I4, api.sizeof("DWORD")],
-						offset: [VT_I4, api.sizeof("DWORD")],
-						max_results: [VT_I4, api.sizeof("DWORD")],
-						search_string: [VT_LPWSTR, api.sizeof("WCHAR"), Path.length + 1]
-					}, 4);
-					query.Write("reply_hwnd", Ctrl.hwndView);
-					query.Write("reply_copydata_message", 2);
-					query.Write("max_results", Addons.Everything.Max);
-					query.Write("search_string", Path);
-
-					var cds = api.Memory("COPYDATASTRUCT");
-					cds.cbData = query.Size;
-					cds.dwData = 2;//EVERYTHING_IPC_COPYDATAQUERY;
-					cds.lpData = query.Memory;
-					api.SendMessage(hwnd, WM_COPYDATA, Ctrl.hwndView, cds);
+				var hwndView = Ctrl.hwndView;
+				if (!Addons.Everything.Open(Path, hwndView) && Addons.Everything.Exec) {
+					wsh.Run(Addons.Everything.Exec);
+					setTimeout(function ()
+					{
+						Addons.Everything.Open(Path , hwndView);
+					}, 500);
 				}
 			}
 		}, 99);
@@ -270,6 +283,7 @@ if (window.Addon == 1) {
 		icon = s;
 	}
 	Addons.Everything.RE = api.LowPart(item.getAttribute("RE"));
+	Addons.Everything.Exec = ExtractMacro(te, item.getAttribute("Exec"));
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		Addons.Everything.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -301,7 +315,19 @@ if (window.Addon == 1) {
 	var s = ['<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr>'];
 	s.push('<tr><td><label>Action</label></td></tr>');
 	s.push('<tr><td><input type="checkbox" name="NewTab" id="NewTab"><label for="NewTab">Open in New Tab</label>&emsp;<input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr>');
-	s.push('<tr><td style="width: 100%"><label>Folders</label></td></tr><tr><td><input type="text" name="Folders" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Folders.value=1000" /></td></tr></table>');
+	s.push('<tr><td style="width: 100%"><label>Folders</label></td></tr><tr><td><input type="text" name="Folders" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Folders.value=1000" /></td></tr>');
+	s.push('<tr><td style="width: 100%"><label>Exec</label></td></tr><tr><td><input type="text" name="Exec" style="width: 100%" /></td><td><input type="button" value="Default" onclick="SetExe()" /></td></tr></table>');
 	s.push('<br /><br /><input type="button" value="', api.sprintf(999, GetText("Get %s..."), "Everything"), '" title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">');
 	SetTabContents(0, "General", s.join(""));
+
+	SetExe = function ()
+	{
+		var path =fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
+		if (!fso.FileExists(path)) {
+			path = path.replace(/ \(x86\)\\/, "\\");
+		}
+		if (fso.FileExists(path) && confirmOk("Are you sure?")) {
+			document.F.Exec.value = api.PathQuoteSpaces(path) + " -startup";
+		}
+	}
 }
