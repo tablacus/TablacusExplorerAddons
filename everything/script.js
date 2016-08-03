@@ -171,8 +171,8 @@ if (window.Addon == 1) {
 			}
 			if (Path) {
 				var hwndView = Ctrl.hwndView;
-				if (!Addons.Everything.Open(Path, hwndView) && Addons.Everything.Exec) {
-					wsh.Run(Addons.Everything.Exec);
+				if (!Addons.Everything.Open(Path, hwndView) && Addons.Everything.ExePath) {
+					wsh.Run(Addons.Everything.ExePath);
 					setTimeout(function ()
 					{
 						Addons.Everything.Open(Path , hwndView);
@@ -283,7 +283,7 @@ if (window.Addon == 1) {
 		icon = s;
 	}
 	Addons.Everything.RE = api.LowPart(item.getAttribute("RE"));
-	Addons.Everything.Exec = ExtractMacro(te, item.getAttribute("Exec"));
+	Addons.Everything.ExePath = ExtractMacro(te, item.getAttribute("Exec"));
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		Addons.Everything.nPos = api.LowPart(item.getAttribute("MenuPos"));
