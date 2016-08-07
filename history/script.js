@@ -184,7 +184,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 		}
-		if (!Verb) {
+		if (!Verb || Verb == CommandID_STORE - 1) {
 			if (ContextMenu.Items.Count >= 1) {
 				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				if (Addons.History1.IsHandle(path)) {
