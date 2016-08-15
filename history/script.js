@@ -16,7 +16,7 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.History1 =
 	{
-		SAVE: 1000,
+		Save: 1000,
 		PATH: "history:",
 		CONFIG: fso.BuildPath(te.Data.DataFolder, "config\\history.tsv"),
 		db: {},
@@ -38,7 +38,7 @@ if (window.Addon == 1) {
 			keys.sort(function (a, b) {
 				return Addons.History1.db[b] - Addons.History1.db[a];
 			});
-			while (keys.length > this.SAVE) {
+			while (keys.length > this.Save) {
 				delete this.db[keys.pop()];
 			}
 		},
