@@ -21,7 +21,7 @@ if (items.length) {
 if (window.Addon == 1) {
 	Addons.UndoCloseTab =
 	{
-		MAX: 100,
+		MAX: 30,
 		db: [],
 		bSave: false,
 
@@ -31,20 +31,8 @@ if (window.Addon == 1) {
 			if (FV) {
 				Addons.UndoCloseTab.bLock = true;
 				while (Addons.UndoCloseTab.db.length) {
-					var s = Addons.UndoCloseTab.db.shift();
-					if (typeof(s) == "string") {
-						var a = s.split(/\n/);
-						if (a.length > 1) {
-							s = te.FolderItems(a.length - 1);
-							s.Index = a.pop();
-							for (i in a) {
-								s.AddItem(a[i]);
-							}
-						}
-					}
 					Addons.UndoCloseTab.bFail = false;
-					FV.Navigate(s, SBSP_NEWBROWSER);
-					Addons.UndoCloseTab.bSave = true;
+					Addons.UndoCloseTab.Open(FV, 0);
 					if (!Addons.UndoCloseTab.bFail) {
 						break;
 					}
@@ -52,7 +40,33 @@ if (window.Addon == 1) {
 				Addons.UndoCloseTab.bLock = false;
 			}
 			return S_OK;
+		},
+
+		Open: function (FV, i)
+		{
+			if (FV) {
+				var Items = Addons.UndoCloseTab.Get(i);
+				Addons.UndoCloseTab.db.splice(i, 1);
+				FV.Navigate(Items, SBSP_NEWBROWSER);
+				Addons.UndoCloseTab.bSave = true;
+			}
+		},
+
+		Get: function (nIndex)
+		{
+			var s = Addons.UndoCloseTab.db[nIndex];
+			if (!s.Count) {
+				var a = s.split(/\n/);
+				s = te.FolderItems();
+				s.Index = a.pop();
+				for (i in a) {
+					s.AddItem(a[i]);
+				}
+				Addons.UndoCloseTab.db[nIndex] = s;
+			}
+			return s;
 		}
+
 	}
 
 	var xml = OpenXml("closedtabs.xml", true, false);
