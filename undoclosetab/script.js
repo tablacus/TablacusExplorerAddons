@@ -1,27 +1,24 @@
 ﻿var Addon_Id = "undoclosetab";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuExec", 1);
-		item.setAttribute("Menu", "Tabs");
-		item.setAttribute("MenuPos", 0);
-		item.setAttribute("MenuName", "&Undo close tab");
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "Tabs");
+	item.setAttribute("MenuPos", 0);
+	item.setAttribute("MenuName", "&Undo close tab");
 
-		item.setAttribute("KeyExec", 1);
-		item.setAttribute("Key", "Shift+Ctrl+T");
-		item.setAttribute("KeyOn", "All");
+	item.setAttribute("KeyExec", 1);
+	item.setAttribute("Key", "Shift+Ctrl+T");
+	item.setAttribute("KeyOn", "All");
 
-		item.setAttribute("MouseExec", 1);
-		item.setAttribute("Mouse", "3");
-		item.setAttribute("MouseOn", "Tabs_Background");
-	}
+	item.setAttribute("MouseExec", 1);
+	item.setAttribute("Mouse", "3");
+	item.setAttribute("MouseOn", "Tabs_Background");
 }
 if (window.Addon == 1) {
 	Addons.UndoCloseTab =
 	{
-		MAX: 30,
+		Save: 30,
 		db: [],
 		bSave: false,
 
@@ -54,8 +51,9 @@ if (window.Addon == 1) {
 
 		Get: function (nIndex)
 		{
+			Addons.UndoCloseTab.db.splice(Addons.UndoCloseTab.Save, MAXINT);
 			var s = Addons.UndoCloseTab.db[nIndex];
-			if (!s.Count) {
+			if (typeof(s) == "string") {
 				var a = s.split(/\n/);
 				s = te.FolderItems();
 				s.Index = a.pop();
@@ -86,7 +84,7 @@ if (window.Addon == 1) {
 			}
 			else {
 				Addons.UndoCloseTab.db.unshift(Ctrl.History);
-				Addons.UndoCloseTab.db.splice(Addons.UndoCloseTab.MAX, MAXINT);
+				Addons.UndoCloseTab.db.splice(Addons.UndoCloseTab.Save, MAXINT);
 				Addons.UndoCloseTab.bSave = true;
 			}
 		}
@@ -122,30 +120,31 @@ if (window.Addon == 1) {
 		}
 	});
 
-	if (items.length) {
-		var s = item.getAttribute("MenuName");
-		if (s && s != "") {
-			Addons.UndoCloseTab.strName = s;
-		}
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.UndoCloseTab.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.UndoCloseTab.nPos, MF_BYPOSITION | MF_STRING | ((Addons.UndoCloseTab.db.length) ? MF_ENABLED : MF_DISABLED), ++nPos, GetText(Addons.UndoCloseTab.strName));
-				ExtraMenuCommand[nPos] = Addons.UndoCloseTab.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.UndoCloseTab.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.UndoCloseTab.Exec, "Func");
-		}
-
-		AddTypeEx("Add-ons", "Undo close tab", Addons.UndoCloseTab.Exec);
+	Addons.UndoCloseTab.Save = item.getAttribute("Save") || 30;
+	var s = item.getAttribute("MenuName");
+	if (s && s != "") {
+		Addons.UndoCloseTab.strName = s;
 	}
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.UndoCloseTab.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.UndoCloseTab.nPos, MF_BYPOSITION | MF_STRING | ((Addons.UndoCloseTab.db.length) ? MF_ENABLED : MF_DISABLED), ++nPos, GetText(Addons.UndoCloseTab.strName));
+			ExtraMenuCommand[nPos] = Addons.UndoCloseTab.Exec;
+			return nPos;
+		});
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.UndoCloseTab.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.UndoCloseTab.Exec, "Func");
+	}
+
+	AddTypeEx("Add-ons", "Undo close tab", Addons.UndoCloseTab.Exec);
+} else {
+	SetTabContents(0, "General", '<label>Save</label><br /><input type="text" name="Save" size="4" />');
 }
