@@ -17,7 +17,7 @@
   </head>
   <body>
     <form name="F" style="width: 100%">
-      <div id="P" class="panel" style="display: block; width: 100%">
+      <div id="P" class="panel" style="display: block; width: 100%; height: calc(100vh - 3em)">
         <label>Path</label>
         <div id="Path"></div>
         <label id="label_0">Creation Time</label>
@@ -34,7 +34,7 @@
     <table style="width: 100%">
       <tr>
         <td align="center">
-          <input type="button" value="OK" class="ok" onclick="return SetTimeStamp();" />
+          <input type="button" value="OK" class="ok" onclick="return SetTimeStamp();" autofocus />
           <input type="button" value="Cancel" class="cancel" onclick="window.close();return true;" />
         </td>
       </tr>

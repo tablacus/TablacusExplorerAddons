@@ -1,67 +1,81 @@
-﻿Addon_Id = "cal";
-
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-var item = items.length ? items[0] : null;
+﻿var Addon_Id = "cal";
+var item = GetAddonElement(Addon_Id);
 
 Addons.CAL =
 {
 	tid: [],
 
-	Init: function (item)
-	{
-	},
-
 	IsHandle: function (Ctrl, need)
 	{
-		return Addons.CAL.GetObject(Ctrl, {}, need) != null;
+		return Addons.CAL.GetObject(Ctrl, need) != null;
 	},
 
-	GetObject: function (Ctrl, dir, need)
+	GetObject: function (Ctrl, need)
 	{
 		if (!Addons.CAL.DLL) {
 			return;
 		}
-		dir.file = typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-		dir.path = "";
+		var lib = {
+			file: typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING),
+			path: ""
+		}
+		if (!Addons.CAL.Obj) {
+			Addons.CAL.Init();
+		}
 		var nDog = 32;
 		var items = Addons.CAL.xml.getElementsByTagName("Item");
-		while (/^[A-Z]:\\|^\\/i.test(dir.file) && nDog--) {
-			var CAL = null;
-			for (var i = 0; i < items.length; i++) {
-				var item = items[i];
-				var filter = item.getAttribute("Filter");
-				if (filter && api.PathMatchSpec(dir.file, filter)) {
-					if (!need || item.getAttribute(need)) {
-						var dllPath = ExtractMacro(te, item.getAttribute("Path").replace(/\*/g, api.sizeof("HANDLE") * 8));
-						var procName = item.getAttribute("Name").replace(/\W.*$/, "");
-						if (need && /\.exe"?\s*/i.test(dllPath)) {
-							CAL = Addons.CAL.OpenExe(dllPath);
-						} else {
-							CAL = Addons.CAL.DLL.open(dllPath, procName);
-						}
-						if (!CAL && api.sizeof("HANDLE") == 8 && /UNLHA[36][24].DLL$|UNZIP[36][24].DLL$|ZIP[36][24]J\.DLL$|TAR[36][24]\.DLL$|CAB[36][24]\.DLL$|UNRAR[36][24]\.DLL$|7\-ZIP[36][24]\.DLL$/i.test(dllPath)) {
-							CAL = Addons.CAL.DLL.open(dllPath.replace(/[^\\]*\.dll$/, "UNBYPASS.DLL"), procName);
-						}
-						if (CAL) {
-							if (need || CAL.OpenArchive) {
-								if (CAL.CheckArchive(dir.file, 0) !== false) {
-									dir.Extract = item.getAttribute("Extract");
-									dir.Add = item.getAttribute("Add");
-									dir.Delete = item.getAttribute("Delete");
-									return CAL;
-								}
-								if (CAL.GetRunning()) {
-									dir.busy = true;
-									return;
-								}
+		while (/^[A-Z]:\\|^\\\\[A-Z]/i.test(lib.file) && nDog--) {
+			for (var i in Addons.CAL.Obj) {
+				var item = Addons.CAL.Obj[i];
+				if (item.Filter && api.PathMatchSpec(lib.file, item.Filter)) {
+					if (!need || item[need]) {
+						if ((item.X.CheckArchive && item.X.CheckArchive(lib.file, 0) !== false) || 
+						(item[need] && need != "wait" && item.X.Exec)) {
+							for (var j in item) {
+								lib[j] = item[j];
 							}
+							return lib;
+						}
+						if (need == "wait" && item.X.GetRunning()) {
+							lib.busy = true;
+							return lib;
 						}
 					}
 				}
 			}
-			dir.path = fso.BuildPath(fso.GetFileName(dir.file), dir.path);
-			dir.file = fso.GetParentFolderName(dir.file);
+			lib.path = fso.BuildPath(fso.GetFileName(lib.file), lib.path);
+			lib.file = fso.GetParentFolderName(lib.file);
 		};
+	},
+
+	Init: function ()
+	{
+		Addons.CAL.Obj = [];
+		var items = Addons.CAL.xml.getElementsByTagName("Item");
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			var dllPath = ExtractMacro(te, item.getAttribute("Path").replace(/\*/g, api.sizeof("HANDLE") * 8));
+			var procName = item.getAttribute("Name").replace(/\W.*$/, "");
+			if (/\.exe"?\s*/i.test(dllPath)) {
+				CAL = Addons.CAL.OpenExe(dllPath);
+			} else {
+				CAL = Addons.CAL.DLL.open(dllPath, procName);
+			}
+			if (!CAL && api.sizeof("HANDLE") == 8 && /UNLHA[36][24].DLL$|UNZIP[36][24].DLL$|ZIP[36][24]J\.DLL$|TAR[36][24]\.DLL$|CAB[36][24]\.DLL$|UNRAR[36][24]\.DLL$|7\-ZIP[36][24]\.DLL$/i.test(dllPath)) {
+				CAL = Addons.CAL.DLL.open(dllPath.replace(/[^\\]*\.dll$/, "UNBYPASS.DLL"), procName);
+			}
+			if (CAL && CAL.Exec) {
+				Addons.CAL.Obj.push({
+					X: CAL,
+					Filter: item.getAttribute("Filter"),
+					Extract: item.getAttribute("Extract"),
+					Add: item.getAttribute("Add"),
+					Delete: item.getAttribute("Delete"),
+					Name: procName,
+					wait: 1
+				});
+			}
+		}
 	},
 
 	Refresh: function (Ctrl)
@@ -69,28 +83,31 @@ Addons.CAL =
 		Ctrl.Refresh();
 	},
 
-	Exec: function (Ctrl, CAL, dir, strCmd, strPath, arList, bRefresh, arFull)
+	Exec: function (Ctrl, lib, strCmd, strPath, arList, bRefresh, arFull)
 	{
-		strCmd = strCmd.replace(/%archive%/i, api.PathQuoteSpaces(dir.file));
-		strCmd = strCmd.replace(/%base%/i, dir.path);
+		strCmd = strCmd.replace(/%archive%/i, api.PathQuoteSpaces(lib.file));
+		strCmd = strCmd.replace(/%base%/i, lib.path);
 		if (/%path%/i.test(strCmd)) {
 			strCmd = strCmd.replace(/%path%/i, strPath);
 		} else if (arFull) {
 			strCmd = strCmd.replace(/%items%/i, arFull.join(" "));
 		}
 		strCmd = strCmd.replace(/%items%/i, arList.join(" "));
-		var szOutput = [];
-		var r = CAL.Exec(te.hwnd, strCmd, szOutput, 30000);
+		var pszOut = [];
+		var r = lib.X.Exec(te.hwnd, strCmd, pszOut, 30000);
 		if (r) {
-			if (szOutput[0]) {
-				MessageBox(strCmd + "\n" + szOutput[0].replace(/^\s*/, ""), TITLE, MB_OK);
+			if (pszOut[0]) {
+				MessageBox(strCmd + "\n" + pszOut[0].replace(/^\s*/, ""), TITLE, MB_OK);
 			}
 		} else if (bRefresh) {
 			Addons.CAL.Refresh(Ctrl);
 		}
 		if (Addons.Debug) {
-			Addons.Debug.alert(strCmd);
-			Addons.Debug.alert(szOutput[0]);
+			Addons.Debug.alert(lib.Name + " " + strCmd);
+			Addons.Debug.alert(pszOut[0]);
+		} else {
+			api.OutputDebugString(lib.Name + " " + strCmd);
+			api.OutputDebugString(pszOut[0]);
 		}
 		return r;
 	},
@@ -119,11 +136,11 @@ Addons.CAL =
 					break;
 				case CommandID_COPY:
 				case CommandID_CUT:
-					var dir = {};
-					if (Addons.CAL.GetObject(Ctrl, dir, "Extract")) {
+					var lib = Addons.CAL.GetObject(Ctrl, "Extract");
+					if (lib) {
 						api.OleSetClipboard(Ctrl.SelectedItems());
 						Addons.CAL.ClipId = api.sprintf(9, "%x", Ctrl.SessionId);
-						Addons.CAL.ClipPath = dir.file;
+						Addons.CAL.ClipPath = lib.file;
 						return S_OK;
 					}
 					break;
@@ -136,19 +153,18 @@ Addons.CAL =
 		if (!Items.Count) {
 			return;
 		}
-		var dir = {};
-		var CAL = Addons.CAL.GetObject(Ctrl, dir, "Add");
-		if (CAL) {
+		var lib = Addons.CAL.GetObject(Ctrl, "Add");
+		if (lib) {
 			var ar = [], arFull = [], root;
-			if (dir.path) {
+			if (lib.path) {
 				root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
-				var path = fso.BuildPath(root, dir.path);
+				var path = fso.BuildPath(root, lib.path);
 				DeleteItem(path);
 				Addons.CAL.CreateFolder(path);
 				var oDest = sha.NameSpace(path);
 				if (oDest) {
 					oDest.CopyHere(Items, FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR);
-					ar.push(dir.path);
+					ar.push(lib.path);
 					arFull.push(path);
 				}
 			} else {
@@ -159,7 +175,7 @@ Addons.CAL =
 					arFull.unshift(api.PathQuoteSpaces(Item.Path));
 				}
 			}
-			Addons.CAL.Exec(Ctrl, CAL, dir, dir.Add, root, ar, true, arFull);
+			Addons.CAL.Exec(Ctrl, lib, lib.Add, root, ar, true, arFull);
 			return true;
 		}
 	},
@@ -170,9 +186,8 @@ Addons.CAL =
 		if (!Items.Count) {
 			return;
 		}
-		var dir = {};
-		var CAL = Addons.CAL.GetObject(Ctrl, dir, "Delete");
-		if (CAL) {
+		var lib = Addons.CAL.GetObject(Ctrl, "Delete");
+		if (lib) {
 			if (!confirmOk("Are you sure?")) {
 				return;
 			}
@@ -181,7 +196,7 @@ Addons.CAL =
 			for (var i = Items.Count; i-- > 0;) {
 				ar.unshift(api.PathQuoteSpaces(Items.Item(i).Path.replace(root, "").replace(/^\\/, "")));
 			}
-			Addons.CAL.Exec(Ctrl, CAL, dir, dir.Delete, root, ar, true);
+			Addons.CAL.Exec(Ctrl, lib, lib.Delete, root, ar, true);
 			return true;
 		}
 	},
@@ -189,9 +204,8 @@ Addons.CAL =
 	Navigate: function (Ctrl)
 	{
 		var path = Ctrl.FolderItem.Path;
-		var dir = {};
-		var CAL = Addons.CAL.GetObject(path, dir);
-		if (CAL) {
+		var lib = Addons.CAL.GetObject(path, "wait");
+		if (lib) {
 			Ctrl.SortColumn = "";
 			clearTimeout(Addons.CAL.tid[Ctrl.Id]); 
 			Addons.CAL.tid[Ctrl.Id] = setTimeout(function ()
@@ -199,10 +213,10 @@ Addons.CAL =
 				delete Addons.CAL.tid[Ctrl.Id];
 				Ctrl.RemoveAll();
 				var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
-				var harc = CAL.OpenArchive(te.hwnd, dir.file, 1);
+				var harc = lib.X.OpenArchive(te.hwnd, lib.file, 1);
 				if (harc) {
 					var info = {};
-					var iFind = CAL.FindFirst(harc, "", info);
+					var iFind = lib.X.FindFirst(harc, "", info);
 					var Folder = {}, Folder2 = {};
 					while (iFind == 0) {
 						var fn = info.szFileName.replace(/\//g, "\\");
@@ -210,7 +224,7 @@ Addons.CAL =
 							continue;
 						}
 						var strParent = fso.GetParentFolderName(fn).toLowerCase();
-						if (strParent == dir.path.toLowerCase()) {
+						if (strParent == lib.path.toLowerCase()) {
 							var dwAttr = 0;
 							if (/\\$/.test(fn)) {
 								dwAttr = FILE_ATTRIBUTE_DIRECTORY;
@@ -225,13 +239,13 @@ Addons.CAL =
 							}
 							Folder2[fn] = 1;
 						}
-						iFind = CAL.FindNext(harc, info);
+						iFind = lib.X.FindNext(harc, info);
 					}
-					CAL.CloseArchive(harc);
+					lib.X.CloseArchive(harc);
 					for (fn in Folder2) {
 						if (!Folder[fn]) {
 							var strParent = fso.GetParentFolderName(fn).toLowerCase();
-							if (strParent == dir.path.toLowerCase()) {
+							if (strParent == lib.path.toLowerCase()) {
 								var pidl = api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), FILE_ATTRIBUTE_DIRECTORY, new Date(), 0);
 								Ctrl.AddItem(pidl);
 							}
@@ -239,7 +253,7 @@ Addons.CAL =
 					}
 				}
 			}, 500);
-		} else if (dir.busy) {
+		} else if (lib && lib.busy) {
 			setTimeout(function ()
 			{
 				Addons.CAL.Navigate(Ctrl);
@@ -262,10 +276,11 @@ Addons.CAL =
 				return (oExec.ExitCode);
 			},
 
-			CheckArchive: function ()
+			GetRunning: function ()
 			{
-				return true;
+				return false;
 			}
+
 		};
 	},
 
@@ -282,7 +297,9 @@ Addons.CAL =
 
 	Finalize: function ()
 	{
-		Addons.CAL.DLL = null;
+		delete Addons.CAL.Obj;
+		CollectGarbage();
+		delete Addons.CAL.DLL;
 	}
 }
 if (window.Addon == 1) {
@@ -327,18 +344,17 @@ if (window.Addon == 1) {
 			return;
 		}
 		var strSessionId = fso.GetParentFolderName(ar[0]).replace(root + "\\", "").replace(/\\.*/, "");
-		dir = {};
-		var CAL = Addons.CAL.GetObject(strSessionId == Addons.CAL.ClipId ? Addons.CAL.ClipPath : Ctrl, dir, "Extract");
-		if (CAL) {
+		var lib = Addons.CAL.GetObject(strSessionId == Addons.CAL.ClipId ? Addons.CAL.ClipPath : Ctrl, "Extract");
+		if (lib) {
 			var dest = fso.BuildPath(root, strSessionId);
 			for (var i = ar.length; i--;) {
 				ar[i] = api.PathQuoteSpaces(ar[i].replace(dest, "").replace(/^\\/, ""));
 			}
 			Addons.CAL.CreateFolder(dest);
-			Addons.CAL.Exec(Ctrl, CAL, dir, dir.Extract, dest, ar);
+			Addons.CAL.Exec(Ctrl, lib, lib.Extract, dest, ar);
 		}
 	});
-	
+
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
 	{
 		var hr = Addons.CAL.Command(Ctrl, wParam & 0xfff);
@@ -364,10 +380,10 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 			if (Selected.Item(0).IsFolder) {
-				var dir = {};
-				if (Addons.CAL.GetObject(Ctrl, dir)) {
+				var lib = Addons.CAL.GetObject(Ctrl);
+				if (lib) {
 					var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
-					path = path.replace(root, dir.file);
+					path = path.replace(root, lib.file);
 					Ctrl.Navigate(path);
 					return S_OK;
 				}
@@ -395,7 +411,8 @@ if (window.Addon == 1) {
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
-			if (Addons.CAL.GetObject(Ctrl, {}, "Add")) {
+			var lib = Addons.CAL.GetObject(Ctrl, "Add");
+			if (lib) {
 				return S_OK;
 			}
 		}
@@ -404,7 +421,8 @@ if (window.Addon == 1) {
 	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
-			if (Addons.CAL.GetObject(Ctrl, {}, "Add")) {
+			var lib = Addons.CAL.GetObject(Ctrl, "Add");
+			if (lib) {
 				pdwEffect[0] = DROPEFFECT_COPY;
 				return S_OK;
 			}
@@ -413,7 +431,8 @@ if (window.Addon == 1) {
 
 	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
-		if (Addons.CAL.GetObject(Ctrl, {}, "Add")) {
+		var lib = Addons.CAL.GetObject(Ctrl, "Add");
+		if (lib) {
 			Addons.CAL.Append(Ctrl, dataObj);
 			return S_OK;
 		}
@@ -424,13 +443,40 @@ if (window.Addon == 1) {
 		return S_OK;
 	});
 
-	AddEventId("AddonDisabledEx", "cal", Addons.CAL.Finalize);
+	AddEvent("AddonDisabled", function (Id)
+	{
+		if (Id.toLowerCase() == "cal") {
+			Addons.CAL.Finalize();
+		}
+	});
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
 	{
 		if (Ctrl.Type <= CTRL_EB && Addons.CAL.IsHandle(Prev)) {
 			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
 			DeleteItem(root);
+		}
+	});
+
+	AddEvent("BeginLabelEdit", function (Ctrl, Name)
+	{
+		if (Ctrl.Type <= CTRL_EB) {
+			if (Addons.CAL.IsHandle(Ctrl)) {
+				return 1;
+			}
+		}
+	});
+
+	AddEvent("ToolTip", function (Ctrl, Index)
+	{
+		if (Ctrl.Type <= CTRL_EB) {
+			if (Addons.CAL.IsHandle(Ctrl)) {
+				var Item = Ctrl.Items.Item(Index);
+				if (Item.IsFolder) {
+					var s = FormatDateTime(Item.ModifyDate);
+					return s ? api.PSGetDisplayName("Write") + " : " + s : "";
+				}
+			}
 		}
 	});
 }

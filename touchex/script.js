@@ -58,15 +58,10 @@ if (window.Addon == 2) {
 	window.SetTimeStamp = function ()
 	{
 		for (var i = dialogArguments.Selected.Count; i-- > 0;) {
-			api.SetFileTime(dialogArguments.Selected.Item(i), document.F.dt_1.value, document.F.dt_2.value, document.F.dt_0.value);
+			SetFileTime(dialogArguments.Selected.Item(i).Path, new Date(document.F.dt_1.value), new Date(document.F.dt_2.value), new Date(document.F.dt_0.value));
 		}
 		window.close();
 		return true;
-	};
-
-	window.FormatDateTime = function (s)
-	{
-		return api.GetDateFormat(LOCALE_USER_DEFAULT, 0, s, api.GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SSHORTDATE)) + " " + api.GetTimeFormat(LOCALE_USER_DEFAULT, 0, s, api.GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_STIMEFORMAT));
 	};
 
 	document.onkeydown = function ()
@@ -88,19 +83,23 @@ if (window.Addon == 2) {
 		var wfd = api.Memory("WIN32_FIND_DATA");
 		var hFind = api.FindFirstFile(s, wfd);
 		if (hFind == INVALID_HANDLE_VALUE) {
-			window.close();
+			if (api.SHGetDataFromIDList(item, SHGDFIL_FINDDATA, wfd, wfd.Size) != S_OK) {
+				window.close();
+			}
+		} else {
+			api.FindClose(hFind);
 		}
+		var ar = [wfd.ftLastWriteTime, wfd.ftCreationTime, wfd.ftLastAccessTime];
 		var n = dialogArguments.Selected.Count;
+		s = te.OnReplacePath(s) || s;
 		document.getElementById("Path").innerHTML = (n > 1) ? s += " : " + n : s;
 
-		var ar = [wfd.ftLastWriteTime, wfd.ftCreationTime, wfd.ftLastAccessTime];
 		for (var i = 3; i--;) {
 			document.getElementById("label_" + i).innerHTML = api.PSGetDisplayName("{B725F130-47EF-101A-A5F1-02608C9EEBAC} " + (i + 14));
 			s = FormatDateTime(ar[i]);
 			document.F.elements["dt_" + i].value = s;
 			document.getElementById("od_"+ i).innerHTML = s;
 		}
-		api.FindClose(hFind);
 		document.F.dt_0.select();
 		document.F.dt_0.focus();
 	});

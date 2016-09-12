@@ -12,8 +12,6 @@
     <script type="text/javascript">
       Addon = 2;
     </script>
-    <script type="text/javascript" charset="utf-8" src="script.js">
-    </script>
   </head>
   <body>
     <form name="F" style="width: 100%">
@@ -27,12 +25,14 @@
         <td id="toolbar" style="width: 100%; white-space: nowrap">
         </td>
         <td style="width: 8em; white-space: nowrap">
-          <input type="button" value="OK" class="ok" onclick="SetAttributes(); return true;" />&nbsp;
+          <input type="button" value="OK" class="ok" onclick="SetAttributes(); return true;" autofocus />&nbsp;
         </td>
         <td style="width: 8em; white-space: nowrap">
           <input type="button" value="Cancel" class="cancel" onclick="window.close(); return true;" />&nbsp;
         </td>
       </tr>
     </table>
+    <script type="text/javascript" charset="utf-8" src="script.js">
+    </script>
   </body>
 </html>

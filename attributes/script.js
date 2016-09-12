@@ -69,8 +69,8 @@ if (window.Addon == 2) {
 	CheckAll = function (e)
 	{
 		var o = e ? e.currentTarget : window.event.srcElement;
-		for (var i in arCheckbox) {
-			arCheckbox[i][o.value].checked = o.checked;
+		for (var i in cItems) {
+			cItems[i].ckbx[o.value].checked = o.checked;
 		}
 	}
 
@@ -80,18 +80,15 @@ if (window.Addon == 2) {
 		for (var j in arAttrib) {
 			filter |= arAttrib[j];
 		}
-		for (var i in arCheckbox) {
+		for (var i in cItems) {
 			var attr = 0;
 			for (var j in arAttrib) {
-				attr |= arCheckbox[i][j].checked ? arAttrib[j] : 0;
+				attr |= cItems[i].ckbx[j].checked ? arAttrib[j] : 0;
 			}
 			if ((cItems[i].Attributes ^ attr) & filter) {
 				attr |= cItems[i].Attributes & (~filter);
-				try {
-					cItems[i].Attributes = attr;
-				}
-				catch (e) {
-					wsh.Popup(e.description + "\n" + cItems[i].Path, 0, TITLE, MB_ICONEXCLAMATION);
+				if (!SetFileAttributes(cItems[i].Path, attr)) {
+					MessageBox(api.LoadString(hShell32, 4228).replace(/\t|\(%d\)/g, "") + "\n" + cItems[i].Path, TITLE, MB_ICONEXCLAMATION);
 				}
 			}
 		}
@@ -107,7 +104,6 @@ if (window.Addon == 2) {
 			if (Selected) {
 				var table = document.getElementById("T");
 				var nSelected = Selected.Count;
-				arCheckbox = [];
 
 				var tr = document.createElement('tr');
 				tr.className = "oddline";
@@ -137,38 +133,30 @@ if (window.Addon == 2) {
 						tr.className = "oddline";
 					}
 					td = document.createElement('td');
-					var Item;
-					try {
-						Item = fso.GetFile(Selected.Item(i).Path);
-					}
-					catch (e) {
-						try {
-							Item = fso.GetFolder(Selected.Item(i).Path);
-						}
-						catch (e) {
-							Item = null;
-						}
-					}
-					if (Item) {
-						cItems[i] = Item;
-					}
-					var attr = Item.Attributes;
-					td.innerText = Selected.Item(i).Name;
-					td.style.paddingLeft = "8px";
-					tr.appendChild(td);
-
-					arCheckbox[i] = [];
-					for (var j = 0; j < 4; j++) {
-						td = document.createElement('th');
-						var input = document.createElement('input');
-						input.type="checkbox";
-						input.checked= (attr & arAttrib[j]);
-						arCheckbox[i][j] = input;
-						td.appendChild(input);
-						td.title = GetText(arHelp[j]);
+					var Item = Selected.Item(i);
+					var wfd = api.Memory("WIN32_FIND_DATA");
+					if  (api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size) == S_OK) {
+						oItem = {};
+						oItem.Path = Item.Path;
+						var attr = wfd.dwFileAttributes;
+						oItem.Attributes = attr;
+						td.innerText = wfd.cFileName;
+						td.style.paddingLeft = "8px";
 						tr.appendChild(td);
+						oItem.ckbx = [];
+						for (var j = 0; j < 4; j++) {
+							td = document.createElement('th');
+							var input = document.createElement('input');
+							input.type="checkbox";
+							input.checked= (attr & arAttrib[j]);
+							oItem.ckbx[j] = input;
+							td.appendChild(input);
+							td.title = GetText(arHelp[j]);
+							tr.appendChild(td);
+						}
+						table.appendChild(tr);
+						cItems.push(oItem);
 					}
-					table.appendChild(tr);
 				}
 			}
 		}
@@ -177,7 +165,7 @@ if (window.Addon == 2) {
 
 	AddEventEx(window, "resize", Resize);
 
-	AddEventEx(window, "keydown", function (e)
+	AddEventEx(document.body, "keydown", function (e)
 	{
 		var key = (e || event).keyCode;
 		if (key == VK_ESCAPE) {

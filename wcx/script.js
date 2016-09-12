@@ -8,40 +8,52 @@ Addons.WCX =
 
 	IsHandle: function (Ctrl)
 	{
-		return Addons.WCX.GetObject(Ctrl, {}) != null;
+		return Addons.WCX.GetObject(Ctrl) != null;
 	},
 
-	GetObject: function (Ctrl, dir)
+	GetObject: function (Ctrl)
 	{
 		if (!Addons.WCX.DLL) {
 			return;
 		}
-		dir.file = typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-		dir.path = "";
+		var lib = {
+			file: typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING),
+			path: ""
+		}
+		if (!Addons.WCX.Obj) {
+			Addons.WCX.Init();
+		}
 		var nDog = 32;
-		var items = Addons.WCX.xml.getElementsByTagName("Item");
-		while (/^[A-Z]:\\|^\\/i.test(dir.file) && nDog--) {
-			var WCX = null;
-			for (var i = 0; i < items.length; i++) {
-				var item = items[i];
-				var filter = item.getAttribute("Filter");
-				if (api.PathMatchSpec(dir.file, filter)) {
-					var dllPath = ExtractMacro(te, item.getAttribute("Path")) + (api.sizeof("HANDLE") > 4 ? "64" : "");
-					WCX = Addons.WCX.DLL.open(dllPath);
-					if (WCX) {
-						if (WCX.OpenArchive) {
-							if (WCX.CanYouHandleThisFile(dir.file)) {
-								WCX.SetChangeVolProc(-1, Addons.WCX.ChangeVolProc);
-								WCX.SetProcessDataProc(-1, Addons.WCX.ProcessDataProc);
-								return WCX;
-							}
-						}
+		while (/^[A-Z]:\\|^\\\\[A-Z]/i.test(lib.file) && nDog--) {
+			for (var i in Addons.WCX.Obj) {
+				var item = Addons.WCX.Obj[i];
+				if (api.PathMatchSpec(lib.file, item.filter)) {
+					if (item.X.CanYouHandleThisFile(lib.file)) {
+						lib.X = item.X;
+						lib.X.SetChangeVolProc(-1, Addons.WCX.ChangeVolProc);
+						lib.X.SetProcessDataProc(-1, Addons.WCX.ProcessDataProc);
+						return lib;
 					}
 				}
 			}
-			dir.path = fso.BuildPath(fso.GetFileName(dir.file), dir.path);
-			dir.file = fso.GetParentFolderName(dir.file);
-		};
+			lib.path = fso.BuildPath(fso.GetFileName(lib.file), lib.path);
+			lib.file = fso.GetParentFolderName(lib.file);
+		}
+	},
+
+	Init: function ()
+	{
+		Addons.WCX.Obj = [];
+		var items = Addons.WCX.xml.getElementsByTagName("Item");
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			var filter = item.getAttribute("Filter");
+			var dllPath = (ExtractMacro(te, item.getAttribute("Path")) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1");
+			var WCX = Addons.WCX.DLL.open(dllPath);
+			if (WCX && WCX.OpenArchive) {
+				Addons.WCX.Obj.push({ X: WCX, filter: filter});
+			}
+		}
 	},
 
 	Refresh: function (Ctrl)
@@ -69,11 +81,11 @@ Addons.WCX =
 					return S_OK;
 				case CommandID_COPY:
 				case CommandID_CUT:
-					var dir = {};
-					if (Addons.WCX.GetObject(Ctrl, dir)) {
+					var lib = Addons.WCX.GetObject(Ctrl);
+					if (lib) {
 						api.OleSetClipboard(Ctrl.SelectedItems());
 						Addons.WCX.ClipId = api.sprintf(9, "%x", Ctrl.SessionId);
-						Addons.WCX.ClipPath = dir.file;
+						Addons.WCX.ClipPath = lib.file;
 						return S_OK;
 					}
 			}
@@ -85,9 +97,8 @@ Addons.WCX =
 		if (!Items.Count) {
 			return;
 		}
-		var dir = {};
-		var WCX = Addons.WCX.GetObject(Ctrl, dir);
-		if (WCX) {
+		var lib = Addons.WCX.GetObject(Ctrl);
+		if (lib && lib.X.PackFiles) {
 			var ar = [], root;
 			root = Items.Item(-1).Path;
 			for (var i = Items.Count; i-- > 0;) {
@@ -95,7 +106,7 @@ Addons.WCX =
 				ar.unshift(api.PathQuoteSpaces(Item.Path.replace(root, "").replace(/^\\/, "")));
 			}
 			ar.push("");
-			if (WCX.PackFiles(dir.file, dir.path, root + "\\", ar.join("\0"), 0) == 0) {
+			if (lib.X.PackFiles(lib.file, lib.path, root + "\\", ar.join("\0"), 0) == 0) {
 				Addons.WCX.Refresh(Ctrl);
 			}
 		}
@@ -107,16 +118,15 @@ Addons.WCX =
 		if (!Items.Count || !confirmOk("Are you sure?")) {
 			return;
 		}
-		var dir = {};
-		var WCX = Addons.WCX.GetObject(Ctrl.FolderItem.Path, dir);
-		if (WCX) {
+		var lib = Addons.WCX.GetObject(Ctrl.FolderItem.Path);
+		if (lib && lib.X.DeleteFiles) {
 			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
 			var ar = [];
 			for (var i = Items.Count; i-- > 0;) {
 				ar.unshift(api.PathQuoteSpaces(Items.Item(i).Path.replace(root, "").replace(/^\\/, "")));
 			}
 			ar.push("");
-			if (WCX.DeleteFiles(dir.file, ar.join("\0")) == 0) {
+			if (lib.X.DeleteFiles(lib.file, ar.join("\0")) == 0) {
 				Addons.WCX.Refresh(Ctrl);
 			}
 		}
@@ -125,9 +135,8 @@ Addons.WCX =
 	Navigate: function (Ctrl)
 	{
 		var path = Ctrl.FolderItem.Path;
-		var dir = {};
-		var WCX = Addons.WCX.GetObject(path, dir);
-		if (WCX) {
+		var lib = Addons.WCX.GetObject(path);
+		if (lib) {
 			Ctrl.SortColumn = "";
 			clearTimeout(Addons.WCX.tid[Ctrl.Id]); 
 			Addons.WCX.tid[Ctrl.Id] = setTimeout(function ()
@@ -136,15 +145,15 @@ Addons.WCX =
 				Ctrl.RemoveAll();
 				var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
 				var OpenData = {
-					ArcName: dir.file,
+					ArcName: lib.file,
 					OpenMode: 0
 				}
-				var harc = WCX.OpenArchive(OpenData);
+				var harc = lib.X.OpenArchive(OpenData);
 				if (harc) {
 					var Folder = {}, Folder2 = {};
 					do {
 						var info = [];
-						if (WCX.ReadHeaderEx(harc, info)) {
+						if (lib.X.ReadHeaderEx(harc, info)) {
 							break;
 						}
 						var fn = info.FileName.replace(/\//g, "\\");
@@ -152,7 +161,7 @@ Addons.WCX =
 							continue;
 						}
 						var strParent = fso.GetParentFolderName(fn).toLowerCase();
-						if (strParent == dir.path.toLowerCase()) {
+						if (strParent == lib.path.toLowerCase()) {
 							if (info.FileAttr & FILE_ATTRIBUTE_DIRECTORY) {
 								Folder[fn.replace(/\\$/, "")] = 1;
 							}
@@ -165,12 +174,12 @@ Addons.WCX =
 							}
 							Folder2[fn] = 1;
 						}
-					} while (WCX.ProcessFile(harc, 0) == 0);
-					WCX.CloseArchive(harc);
+					} while (lib.X.ProcessFile(harc, 0) == 0);
+					lib.X.CloseArchive(harc);
 					for (fn in Folder2) {
 						if (!Folder[fn]) {
 							var strParent = fso.GetParentFolderName(fn).toLowerCase();
-							if (strParent == dir.path.toLowerCase()) {
+							if (strParent == lib.path.toLowerCase()) {
 								var pidl = api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), FILE_ATTRIBUTE_DIRECTORY, new Date(), 0);
 								Ctrl.AddItem(pidl);
 							}
@@ -214,7 +223,9 @@ Addons.WCX =
 
 	Finalize: function ()
 	{
-		Addons.WCX.DLL = null;
+		delete Addons.WCX.Obj;
+		CollectGarbage();
+		delete Addons.WCX.DLL;
 	}
 }
 if (window.Addon == 1) {
@@ -259,8 +270,8 @@ if (window.Addon == 1) {
 		}
 		var strSessionId = fso.GetParentFolderName(ar[0]).replace(root + "\\", "").replace(/\\.*/, "");
 		dir = {};
-		var WCX = Addons.WCX.GetObject(strSessionId == Addons.WCX.ClipId ? Addons.WCX.ClipPath : Ctrl, dir);
-		if (WCX) {
+		var lib = Addons.WCX.GetObject(strSessionId == Addons.WCX.ClipId ? Addons.WCX.ClipPath : Ctrl);
+		if (lib) {
 			var o = {}, dest;
 			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, "tablacus\\" + strSessionId);
 			for (var i = ar.length; i--;) {
@@ -270,14 +281,14 @@ if (window.Addon == 1) {
 			Addons.WCX.CreateFolder(root);
 			wsh.CurrentDirectory = root;
 			var OpenData = {
-				ArcName: dir.file,
+				ArcName: lib.file,
 				OpenMode: 1
 			}
-			var harc = WCX.OpenArchive(OpenData);
+			var harc = lib.X.OpenArchive(OpenData);
 			if (harc) {
 				do {
 					var info = [];
-					if (WCX.ReadHeaderEx(harc, info)) {
+					if (lib.X.ReadHeaderEx(harc, info)) {
 						break;
 					}
 					var fn = info.FileName.replace(/\//g, "\\");
@@ -291,8 +302,8 @@ if (window.Addon == 1) {
 							Addons.WCX.CreateFolder(fso.GetParentFolderName(dest));
 						}
 					}
-				} while (WCX.ProcessFile(harc, op, null, dest) == 0);
-				WCX.CloseArchive(harc);
+				} while (lib.X.ProcessFile(harc, op, null, dest) == 0);
+				lib.X.CloseArchive(harc);
 			}
 			wsh.CurrentDirectory = fso.GetSpecialFolder(2).Path;
 		}
@@ -323,10 +334,10 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 			if (Selected.Item(0).IsFolder) {
-				var dir = {};
-				if (Addons.WCX.GetObject(Ctrl, dir)) {
+				var lib = Addons.WCX.GetObject(Ctrl);
+				if (lib) {
 					var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
-					path = path.replace(root, dir.file);
+					path = path.replace(root, lib.file);
 					Ctrl.Navigate(path);
 					return S_OK;
 				}
@@ -363,8 +374,9 @@ if (window.Addon == 1) {
 	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
-			if (Addons.WCX.IsHandle(Ctrl)) {
-				pdwEffect[0] = DROPEFFECT_COPY;
+			var lib = Addons.WCX.GetObject(Ctrl);
+			if (lib) {
+				pdwEffect[0] = lib.X.PackFiles ? DROPEFFECT_COPY : DROPEFFECT_NONE;
 				return S_OK;
 			}
 		}
@@ -397,4 +409,27 @@ if (window.Addon == 1) {
 			DeleteItem(root);
 		}
 	});
+
+	AddEvent("BeginLabelEdit", function (Ctrl, Name)
+	{
+		if (Ctrl.Type <= CTRL_EB) {
+			if (Addons.WCX.IsHandle(Ctrl)) {
+				return 1;
+			}
+		}
+	});
+
+	AddEvent("ToolTip", function (Ctrl, Index)
+	{
+		if (Ctrl.Type <= CTRL_EB) {
+			if (Addons.WCX.IsHandle(Ctrl)) {
+				var Item = Ctrl.Items.Item(Index);
+				if (Item.IsFolder) {
+					var s = FormatDateTime(Item.ModifyDate);
+					return s ? api.PSGetDisplayName("Write") + " : " + s : "";
+				}
+			}
+		}
+	});
+
 }

@@ -37,7 +37,7 @@ if (window.Addon == 1) {
 							this.Tab(s, TC, i);
 						}
 						if (this.opt.New) {
-							s.push('<li class="tab3" onclick="Addons.TabPlus.New(', Id, ');return false" title="', GetText("New Tab"), '"');
+							s.push('<li class="tab3" onclick="Addons.TabPlus.New(', Id, ');return false" title="', this.opt.Tooltips ? GetText("New Tab") : "", '"');
 							if (this.opt.Align > 1 && this.opt.Width) {
 								s.push(' style="text-align: center; width: 100%"');
 							}
@@ -122,7 +122,9 @@ if (window.Addon == 1) {
 			var o = document.getElementById("tabplus_" + TC.Id + "_" + i);
 			if (FV && o) {
 				var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-				o.title = path;
+				if (this.opt.Tooltips) {
+					o.title = path;
+				}
 				var s = ['<table style="width: 100%"><tr style="width: 100%">'];
 				try {
 					var w = FV.Data.Lock || this.opt.Close ? -13 : 0;
@@ -157,7 +159,7 @@ if (window.Addon == 1) {
 					}
 					s.push('" >', n.replace(/</g, "&lt;"), '</div></td>');
 					if (this.opt.Close && !FV.Data.Lock) {
-						s.push('<td style="vertical-align: middle; width: 13px" align="right"><img class="button" src="', this.ImgClose, '" style="width: 13px" id="tabplus_', FV.Parent.Id, '_', i, 'x" title="', GetText("Close Tab"), '" onmouseover="MouseOver(this)" onmouseout="MouseOut()"></td>');
+						s.push('<td style="vertical-align: middle; width: 13px" align="right"><img class="button" src="', this.ImgClose, '" style="width: 13px" id="tabplus_', FV.Parent.Id, '_', i, 'x" title="', this.opt.Tooltips ? GetText("Close Tab") : "", '" onmouseover="MouseOver(this)" onmouseout="MouseOut()"></td>');
 					}
 				} catch (e) {}
 				s.push('</tr></table>');
@@ -518,7 +520,7 @@ if (window.Addon == 1) {
 					}
 					pdwEffect[0] = DROPEFFECT_NONE;
 					return S_OK;
-				} else if (dataObj.Item(0) && dataObj.Item(0).IsFolder) {
+				} else if (dataObj.Count && dataObj.Item(0).IsFolder) {
 					pdwEffect[0] = DROPEFFECT_LINK;
 					return S_OK;
 				}

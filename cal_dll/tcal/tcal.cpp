@@ -30,6 +30,7 @@ TEmethod methodTCAL[] = {
 	{ 0x60010023, L"FindFirst" },
 	{ 0x60010024, L"FindNext" },
 	{ 0x6001000C, L"Close" },
+	{ 0x6001FFFF, L"IsUnicode" },
 	{ 0, NULL }
 };
 
@@ -737,16 +738,26 @@ STDMETHODIMP CteCAL::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSysFreeString(&bsOutput);
 					teSysFreeString(&bsCmdLine);
 				}
+			} else if (wFlags == DISPATCH_PROPERTYGET) {
+				teSetBool(pVarResult, CALW || CAL);
 			}
 			return S_OK;		
 		//GetVersion
 		case 0x60010002:
+			if (wFlags == DISPATCH_PROPERTYGET) {
+				teSetBool(pVarResult, CALGetVersion != NULL);
+				return S_OK;		
+			}
 			if (CALGetVersion) {
 				teSetLong(pVarResult, CALGetVersion());
 			}
 			return S_OK;		
 		//GetRunning
 		case 0x60010010:
+			if (wFlags == DISPATCH_PROPERTYGET) {
+				teSetBool(pVarResult, CALGetRunning != NULL);
+				return S_OK;		
+			}
 			if (CALGetRunning) {
 				teSetBool(pVarResult, CALGetRunning());
 			}
@@ -763,6 +774,8 @@ STDMETHODIMP CteCAL::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetBool(pVarResult, CALCheckArchive((LPCSTR)bsFileName, iMode));
 					teSysFreeString(&bsFileName);
 				}
+			} else if (wFlags == DISPATCH_PROPERTYGET) {
+				teSetBool(pVarResult, CALCheckArchiveW || CALCheckArchive);
 			}
 			return S_OK;		
 		//ConfigDialog
@@ -778,6 +791,8 @@ STDMETHODIMP CteCAL::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetBool(pVarResult, CALConfigDialog(hwnd, (LPSTR)szOptionBuffer, iMode));
 					teSetPSZA(&pDispParams->rgvarg[nArg - 1], szOptionBuffer, m_CP);
 				}
+			} else if (wFlags == DISPATCH_PROPERTYGET) {
+				teSetBool(pVarResult, CALConfigDialogW || CALConfigDialog);
 			}
 			return S_OK;		
 		//OpenArchive
@@ -799,8 +814,12 @@ STDMETHODIMP CteCAL::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 			return S_OK;
 		//CloseArchive
 		case 0x60010022:
-			if (CALCloseArchive && nArg >= 0) {
-				teSetLong(pVarResult, CALCloseArchive((HARC)GetLLFromVariant(&pDispParams->rgvarg[nArg])));
+			if (nArg >= 0) {
+				if (CALCloseArchive) {
+					teSetLong(pVarResult, CALCloseArchive((HARC)GetLLFromVariant(&pDispParams->rgvarg[nArg])));
+				}
+			} else if (wFlags == DISPATCH_PROPERTYGET) {
+				teSetBool(pVarResult, CALCloseArchive != NULL);
 			}
 			return S_OK;		
 		//FindFirst
@@ -819,6 +838,8 @@ STDMETHODIMP CteCAL::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					GetCALInfoA(&pDispParams->rgvarg[nArg - 2], info, m_CP);
 					teSysFreeString(&bsWildName);
 				}
+			} else if (wFlags == DISPATCH_PROPERTYGET) {
+				teSetBool(pVarResult, CALFindFirstW || CALFindFirst);
 			}
 			return S_OK;
 		//FindNext
@@ -834,6 +855,8 @@ STDMETHODIMP CteCAL::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetLong(pVarResult, CALFindNext(hwnd, &info));
 					GetCALInfoA(&pDispParams->rgvarg[nArg - 1], info, m_CP);
 				}
+			} else if (wFlags == DISPATCH_PROPERTYGET) {
+				teSetBool(pVarResult, CALFindNextW || CALFindNext);
 			}
 			return S_OK;
 		//Close
@@ -848,6 +871,10 @@ STDMETHODIMP CteCAL::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					break;
 				}
 			}
+			return S_OK;
+		//IsUnicode
+		case 0x6001FFFF:
+			teSetBool(pVarResult, CALOpenArchiveW || CALSetUnicodeMode);
 			return S_OK;
 		//this
 		case DISPID_VALUE:

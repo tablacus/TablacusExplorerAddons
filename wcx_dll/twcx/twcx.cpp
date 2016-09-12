@@ -33,6 +33,7 @@ TEmethod methodTWCX[] = {
 	{ 0x60010009, L"SetChangeVolProc" },
 	{ 0x6001000A, L"SetProcessDataProc" },
 	{ 0x6001000C, L"Close" },
+	{ 0x6001FFFF, L"IsUnicode" },
 	{ 0, NULL }
 };
 
@@ -692,14 +693,16 @@ VOID CteWCX::SetProcEx(HANDLE hArcData, int n)
 	if (n & 1) {
 		if (WCX_SetChangeVolProcW) {
 			WCX_SetChangeVolProcW(hArcData, twcx_tChangeVolProcW);
-		} else if (WCX_SetChangeVolProc) {
+		}
+		if (WCX_SetChangeVolProc) {
 			WCX_SetChangeVolProc(hArcData, twcx_tChangeVolProc);
 		}
 	}
 	if (n & 2) {
 		if (WCX_SetProcessDataProcW) {
 			WCX_SetProcessDataProcW(hArcData, twcx_tProcessDataProcW);
-		} else if (WCX_SetProcessDataProc) {
+		}
+		if (WCX_SetProcessDataProc) {
 			WCX_SetProcessDataProc(hArcData, twcx_tProcessDataProc);
 		}
 	}
@@ -1045,6 +1048,10 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 			return S_OK;
 		//Close
 		case 0x6001000C:
+			return S_OK;
+		//IsUnicode
+		case 0x6001FFFF:
+			teSetBool(pVarResult, WCX_OpenArchiveW != NULL);
 			return S_OK;
 		//this
 		case DISPID_VALUE:

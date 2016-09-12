@@ -22,12 +22,14 @@ if (window.Addon == 1) {
 			if (Selected && Selected.Count) {
 				try {
 					var item = Selected.Item(0);
-					var ModifyDate = api.GetDateFormat(LOCALE_USER_DEFAULT, 0, item.ModifyDate, api.GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SSHORTDATE)) + " " + api.GetTimeFormat(LOCALE_USER_DEFAULT, 0, item.ModifyDate, api.GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_STIMEFORMAT));
-					var s = InputDialog(item.Path + (Selected.Count > 1 ? " : " + Selected.Count : "") + "\n" + ModifyDate, ModifyDate);
+					var ModifyDate = FormatDateTime(item.ModifyDate);
+					var s = InputDialog((te.OnReplacePath(item.Path) || item.Path) + (Selected.Count > 1 ? " : " + Selected.Count : "") + "\n" + ModifyDate, ModifyDate);
 					if (s) {
 						ModifyDate = isNaN(new Date(s)) ? s : new Date(s).getVarDate();
 						for (var i = Selected.Count; i-- > 0;) {
-							Selected.Item(i).ModifyDate = ModifyDate;
+							if (!SetFileTime(Selected.Item(i).Path, null, null, ModifyDate)) {
+								Selected.Item(i).ModifyDate = ModifyDate;
+							}
 						}
 					}
 				}

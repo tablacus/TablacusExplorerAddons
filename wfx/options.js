@@ -1,4 +1,4 @@
-﻿var AddonName = "WCX";
+﻿var AddonName = "WFX";
 var g_Chg = {List: false};
 
 function LoadFS()
@@ -71,59 +71,38 @@ function PathChanged()
 	if (re) {
 		document.F.Path.value = re[1];
 	}
-	if (document.F.Name.value === "") {
-		document.F.Name.value = fso.GetBaseName(document.F.Path.value);
-	}
-	SetProp();
+	SetProp(true);
 }
 
-function LoadDll()
+function SetProp(bName)
 {
-	var twcxPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\wcx\\twcx", api.sizeof("HANDLE") * 8, ".dll"].join(""));
-	return {
-		X: api.DllGetClassObject(twcxPath, "{56297D71-E778-4dfd-8678-6F4079A2BC50}"),
-		Path: (ExtractMacro(te, document.F.Path.value) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1")
-	};
-}
-
-function SetProp()
-{
-	var DLL = LoadDll();
-	if (DLL.X) {
-		var WCX = DLL.X.open(DLL.Path) || {};
+	var WFX;
+	var dllPath = (ExtractMacro(te, document.F.Path.value) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
+	var twfxPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\wfx\\twfx", api.sizeof("HANDLE") * 8, ".dll"].join(""));
+	var DLL = api.DllGetClassObject(twfxPath, "{5396F915-5592-451c-8811-87314FC0EF11}");
+	if (DLL) {
+		WFX = DLL.open(dllPath) || {};
 	}
-	var arProp = ["IsUnicode", "OpenArchive", "ReadHeaderEx", "ProcessFile", "CloseArchive", "PackFiles", "DeleteFiles", "CanYouHandleThisFile", "ConfigurePacker", "SetChangeVolProc", "SetProcessDataProc"];
+	if (bName) {
+		document.F.Name.value = WFX.FsGetDefRootName ? WFX.FsGetDefRootName() : fso.GetBaseName(document.F.Path.value);
+	}
+	var arProp = ["IsUnicode", "FsInit", "FsFindFirst", "FsFindNext", "FsFindClose", "FsSetCryptCallback", "FsGetDefRootName", "FsGetFile", "FsPutFile", "FsRenMovFile", "FsDeleteFile", "FsRemoveDir", "FsMkDir", "FsExecuteFile", "FsSetAttr", "FsSetTime", "FsDisconnect", "FsExtractCustomIcon"];
 	var arHtml = [[], [], []];
 	for (var i in arProp) {
-		arHtml[i < (arProp.length - 1) / 2 ? 0 : 1].push('<input type="checkbox" ', WCX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '<br / >');
+		arHtml[i < arProp.length / 2 ? 0 : 1].push('<input type="checkbox" ', WFX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '<br / >');
 	}
-	arHtml[2].push('64bit<br /><input type="text" value="', (ExtractMacro(te, document.F.Path.value) + "64").replace(/\.u(wcx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
+	arHtml[2].push('64bit<br /><input type="text" value="', (ExtractMacro(te, document.F.Path.value) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
 	for (var i = 3; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
-	var ar = [fso.GetFileName(DLL.Path)];
+	var ar = [fso.GetFileName(dllPath)];
 	try {
-		var s = fso.GetFileVersion(DLL.Path);
+		var s = fso.GetFileVersion(dllPath);
 		if (s) {
 			ar.push("Ver. " + s);
 		}
 	} catch(e) {}
 	document.getElementById("ver").innerHTML = ar.join(" ");
-}
-
-function ConfigDialog()
-{
-	var DLL = LoadDll();
-	if (!DLL.X) {
-		MessageBox(api.LoadString(hShell32, 8720).replace(/%1[!ls]*/, twcxPath) , TITLE, MB_OK);
-		return;
-	}
-	var WCX = DLL.X.open(DLL.Path);
-	if (!WCX) {
-		MessageBox(api.LoadString(hShell32, 8720).replace(/%1[!ls]*/, DLL.Path) , TITLE, MB_OK);
-		return;
-	}
-	WCX.ConfigurePacker(api.GetWindowLongPtr(api.GetWindow(document), GWLP_HWNDPARENT));
 }
 
 ApplyLang(document);

@@ -22,8 +22,8 @@
       <div class="panel" style="display: block;">
         <table width="100%">
           <tr>
-            <td width="150px" valign="top">
-              <select name="List" size="19" style="width: 150px; height: 390px" onclick="EditXEx(EditFS)" ondblclick="EditFS()">
+            <td style="width: 10em" valign="top">
+              <select name="List" size="19" style="width: 10em; height: 33em; height: calc(100vh - 5.7em)" onclick="EditXEx(EditFS)" ondblclick="EditFS()">
               </select>
             </td>
             <td valign="top">
@@ -33,7 +33,7 @@
               <br />
               <label>Path</label>
               <br />
-              <input type="text" name="Path" style="width: 100%" />
+              <input type="text" name="Path" style="width: 100%" onchange="SetProp();" />
               <br />
               <input type="button" value="Browse..." onclick="RefX('Path',0,0,1)" />
               <input type="button" value="Portable" onclick="PortableX('Path')" />
@@ -54,8 +54,9 @@
               <br />
               <input type="text" name="Delete" style="width: 100%" />
               <br />
-              <br />
-              <input type="button" value="Options..." onclick="ConfigDialog()" />
+              <input type="button" value="Options..." onclick="ConfigDialog()" /><br />
+              <label>Info</label>&emsp;<span id="ver"></span>
+              <table style="width: 100%"><tr><td id="prop0" style="width: 33%"></td><td id="prop1" style="width: 33%"><td id="prop2"></td></table>
             </td>
           </tr>
         </table>
@@ -81,7 +82,7 @@
             <select id="_Archiver">
               <option value='7-zip*.dll/*.7z;*.zip/x %archive% -o"%path%" %items%/a %archive% "%path%\" %items%/d %archive% %items%'>SevenZip (7-zip)</option>
               <option value='7-zip*.dll/*.7z;*.zip;*.rar;*.ar;*.z;*.lzh;*.cab;*.xz;*.ppmd;*.arj;*.xar;*.rpm;*.gzip;*.wim;*.bz2;*.bzip2;*.tbz2;*.tbz;*.apm;*.gz;*.tgz;*.tpz/x %archive% -o"%path%" %items%//'>SevenZip (7z.dll)</option>
-              <option value='"C:\Program Files\7-Zip\7zG.exe"/*.7z;*.zip;*.xz;*.bzip2;*.gzip;*.tar;*.wim/x %archive% -o"%path%" %items%/a %archive% %items%/d %archive% %items%'>7-zip (7zG.exe)</option>
+              <option value='"C:\Program Files\7-Zip\7zG.exe"/*.7z;*.zip;*.xz;*.bzip2;*.gzip;*.tar;*.wim/x %archive% -o"%path%" %items%/a %archive% %items%/d %archive% %items%'>7zG (7zG.exe)</option>
               <option value='lmzip*.dll/*.zip/-j %archive% -d "%path%" %items%//'>Unzip (LMZIP)</option>
               <option value='lmzip*.dll/*.zip//-r %archive% "%path%\" %items%/-d %archive% %items%'>Zip (LMZIP)</option>
               <option value='unlha*.dll/*.lzh/x %archive% "%path%\" %items%/a -r2 %archive% "%path%\" %items%/d %archive% %items%'>Unlha (lzh)</option>
@@ -96,7 +97,7 @@
             <input type="button" value="Add" onclick="AddArchiver()" />
           </td>
           <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />&nbsp;
           </td>
           <td style="width: 100px; white-space: nowrap">
             <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;

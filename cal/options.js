@@ -55,6 +55,7 @@ function EditFS()
 	document.F.Extract.value = a[3];
 	document.F.Add.value = a[4];
 	document.F.Delete.value = a[5];
+	SetProp();
 }
 
 function ReplaceFS()
@@ -68,21 +69,73 @@ function ReplaceFS()
 	o = document.F.Type;
 	SetData(sel, [document.F.Name.value, document.F.Path.value, document.F.Filter.value, document.F.Extract.value, document.F.Add.value, document.F.Delete.value]);
 	g_Chg.List = true;
+	SetProp();
+}
+
+function LoadDll()
+{
+	var dllPath = document.F.Path.value.replace(/\*/g, api.sizeof("HANDLE") * 8);
+	if (/\.exe"?\s*/i.test(dllPath)) {
+		return {};
+	}
+	var bit = String(api.sizeof("HANDLE") * 8);
+	var DLL = {
+		X: api.DllGetClassObject(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\cal\\tcal" + bit + '.dll'), "{D45DF22D-DA6A-406b-8C1E-5A6642B5BEE3}"),
+		Path: dllPath,
+		Name: document.F.Name.value.replace(/\W.*$/, ""),
+	};
+	var CAL = DLL.X.open(DLL.Path, DLL.Name);
+	if (!CAL && api.sizeof("HANDLE") == 8 && /UNLHA[36][24].DLL$|UNZIP[36][24].DLL$|ZIP[36][24]J\.DLL$|TAR[36][24]\.DLL$|CAB[36][24]\.DLL$|UNRAR[36][24]\.DLL$|7\-ZIP[36][24]\.DLL$/i.test(DLL.Path)) {
+		CAL = DLL.X.open(DLL.Path.replace(/[^\\]*\.dll$/, "UNBYPASS.DLL"), DLL.Name);
+		if (CAL) {
+			DLL.Unbypass = true;
+		}
+	}
+	DLL.CAL = CAL || {};
+	return DLL;
+}
+
+function SetProp()
+{
+	var arHtml = [[], [], []];
+	var DLL = LoadDll();
+	if (DLL.CAL) {
+		var CAL = DLL.CAL;
+		var arProp = ["Exec", "GetVersion", "GetRunning", "CheckArchive", "ConfigDialog", "OpenArchive", "CloseArchive", "FindFirst", "FindNext"];
+		for (var i in arProp) {
+			arHtml[i % 3].push('<input type="checkbox" ', CAL[arProp[i]] ? "checked" : "", ' onclick="return false;">', DLL.Name, arProp[i].replace(/^Exec$/, ""), '<br / >');
+		}
+		arHtml[0].push('<input type="checkbox" ', CAL.IsUnicode ? "checked" : "", ' onclick="return false;">Unicode<br / >');
+		if (DLL.Unbypass) {
+			arHtml[1].push('<input type="checkbox" checked onclick="return false;">Unbypass<br / >');
+		}
+	}
+	for (var i = 3; i--;) {
+		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
+	}
+	var ar = [fso.GetFileName(DLL.Path)];
+	if (DLL.CAL) {
+		var v = DLL.CAL.GetVersion();
+		if (v) {
+			ar.push(" Ver. " + v / 100)
+		}
+	}
+	document.getElementById("ver").innerHTML = ar.join("");
 }
 
 function ConfigDialog()
 {
-	var dllPath = document.F.Path.value.replace(/\*/g, api.sizeof("HANDLE") * 8);
-	var procName = document.F.Name.value.replace(/\W.*$/, "");
-	if (/\.exe"?\s*/i.test(dllPath)) {
+	var DLL = LoadDll();
+	if (!DLL.X) {
 		return;
 	}
-	var bit = String(api.sizeof("HANDLE") * 8);
-	var DLL = api.DllGetClassObject(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\cal\\tcal" + bit + '.dll'), "{D45DF22D-DA6A-406b-8C1E-5A6642B5BEE3}");
-	if (!DLL) {
-		return;
+	var CAL = DLL.X.open(DLL.Path, DLL.Name);
+	if (!CAL && api.sizeof("HANDLE") == 8 && /UNLHA[36][24].DLL$|UNZIP[36][24].DLL$|ZIP[36][24]J\.DLL$|TAR[36][24]\.DLL$|CAB[36][24]\.DLL$|UNRAR[36][24]\.DLL$|7\-ZIP[36][24]\.DLL$/i.test(DLL.Path)) {
+		CAL = Addons.CAL.DLL.open(DLL.Path.replace(/[^\\]*\.dll$/, "UNBYPASS.DLL"), DLL.Name);
+		if (CAL) {
+			DLL.Unbypass = true;
+		}
 	}
-	var CAL = DLL.open(dllPath, procName);
 	if (!CAL) {
 		return;
 	}
