@@ -97,11 +97,11 @@ if (window.Addon == 1) {
 
 	SetGestureExec("Tree", "1", function ()
 	{
-		var hItem = Ctrl.HitTest(pt, TVHT_ONITEM);
-		if (hItem) {
+		var Item = Ctrl.HitTest(pt);
+		if (Item) {
 			var FV = Ctrl.FolderView;
-			if (!api.ILIsEqual(FV.FolderItem, Ctrl.SelectedItem)) {
-				FV.Navigate(Ctrl.SelectedItem, GetNavigateFlags(FV));
+			if (!api.ILIsEqual(FV.FolderItem, Item)) {
+				FV.Navigate(Item, GetNavigateFlags(FV));
 			}
 		}
 		return S_OK;
@@ -109,9 +109,9 @@ if (window.Addon == 1) {
 
 	SetGestureExec("Tree", "3", function ()
 	{
-		var hItem = Ctrl.HitTest(pt, TVHT_ONITEM);
-		if (hItem) {
-			Ctrl.FolderView.Navigate(Ctrl.SelectedItem, SBSP_NEWBROWSER);
+		var Item = Ctrl.HitTest(pt);
+		if (Item) {
+			Ctrl.FolderView.Navigate(Item, SBSP_NEWBROWSER);
 		}
 		return S_OK;
 	}, "Func", true);

@@ -32,33 +32,19 @@ Addons.WFX =
 
 		var Obj = Addons.WFX.Obj[re[2]];
 		if (Obj) {
+			if (!Obj.X) {
+				Obj.X = Addons.WFX.DLL.open(Obj.dllPath);
+				if (Obj.X.FsInit) {
+					if (Obj.X.FsInit(lib.PluginNr, this.ArrayProc, this.ProgressProc, this.LogProc, this.RequestProc) == 0) {
+						Obj.X.FsSetDefaultParams(fso.BuildPath(te.Data.DataFolder, "config\\fsplugin.ini"));
+						Obj.X.FsSetCryptCallback(this.CryptProc, lib.PluginNr, 1);
+					}
+				}
+			}
 			lib.X = Obj.X;
 			lib.root = re[1] + re[2];
 			lib.path = re[3] || "\\";
 			lib.PluginNr = Obj.PluginNr;
-			if (lib.X.FsInit) {
-				if (lib.X.FsInit(lib.PluginNr, this.ArrayProc, this.ProgressProc, this.LogProc, this.RequestProc)) {
-					lib.X =
-					{
-						FsFindFirst: function (path, wfd)
-						{
-							return -1;
-						},
-
-						FsFindNext: function (hFind, wfd)
-						{
-							return false;
-						},
-
-						FsFindClose: function (hFind)
-						{
-						}
-					}
-					Addons.WFX.Obj[re[2]].X = lib.X;
-				} else {
-					lib.X.FsSetCryptCallback(this.CryptProc, lib.PluginNr, 1);
-				}
-			}
 			return lib;
 		}
 	},
@@ -116,7 +102,6 @@ Addons.WFX =
 					var s = items[i].getAttribute("Name");
 					Addons.WFX.Obj[s] = 
 					{
-						X: WFX,
 						dllPath: dllPath,
 						PluginNr: i + 1
 					}
@@ -181,7 +166,7 @@ Addons.WFX =
 						var Selected = Ctrl.SelectedItems();
 						if (Selected.Count) {
 							if (lib.X.FsExecuteFile) {
-								lib.X.FsExecuteFile(te.hwnd, fso.BuildPath(lib.path, unescape(fso.GetFileName(Selected.Item(0).Path))), "properties")
+								lib.X.FsExecuteFile(te.hwnd, [fso.BuildPath(lib.path, unescape(fso.GetFileName(Selected.Item(0).Path)))], "properties")
 								return S_OK;
 							}
 						}
@@ -391,6 +376,46 @@ Addons.WFX =
 				}
 			}
 		}, 999);
+	},
+
+	DefaultCommand: function (Ctrl, Selected)
+	{
+		if (Selected.Count) {
+			var Item = Selected.Item(0);
+			var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			if (Addons.WFX.IsHandle(path)) {
+				Ctrl.Navigate(path);
+				return S_OK;
+			}
+			var lib = Addons.WFX.GetObject(Ctrl);
+			if (lib) {
+				var path = fso.BuildPath(lib.path, unescape(Item.Name));
+				if (IsFolderEx(Item)) {
+					Ctrl.Navigate(fso.BuildPath(lib.root, path));
+				} else {
+					var pRemote = [path];
+					var iRes = lib.X.FsExecuteFile && lib.X.FsExecuteFile(te.hwnd, pRemote, "open");
+					if (iRes == 0) {
+						return S_OK;
+					}
+					var wfd = {};
+					var hFind = lib.X.FsFindFirst(pRemote[0], wfd);
+					if (hFind != -1 && wfd.dwFileAttributes < 0) {
+						while (api.PathMatchSpec(wfd.cFileName, ".;..") && lib.X.FsFindNext(hFind, wfd)) {
+						}
+						lib.X.FsFindClose(hFind);
+						if (!api.PathMatchSpec(wfd.cFileName, ".;..")) {
+							Ctrl.Navigate(fso.BuildPath(lib.root, pRemote[0]).replace(/\\$/, ""));
+							return S_OK;
+						}
+					}
+					if (iRes == -1) {
+						return;
+					}
+				}
+				return S_OK;
+			}
+		}
 	},
 
 	ShowError: function (r, path)
@@ -610,27 +635,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("DefaultCommand", function (Ctrl, Selected)
-	{
-		if (Selected.Count) {
-			var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-			if (Addons.WFX.IsHandle(path)) {
-				Ctrl.Navigate(path);
-				return S_OK;
-			}
-			var Item = Selected.Item(0);
-			var lib = Addons.WFX.GetObject(Ctrl);
-			if (lib) {
-				var path = fso.BuildPath(lib.path, unescape(Item.Name));
-				if (IsFolderEx(Item)) {
-					Ctrl.Navigate(fso.BuildPath(lib.root, path));
-				} else if (lib.X.FsExecuteFile && lib.X.FsExecuteFile(te.hwnd, path, "open") == -1) {
-					return;
-				}
-				return S_OK;
-			}
-		}
-	}, true);
+	AddEvent("DefaultCommand", Addons.WFX.DefaultCommand, true);
 
 	AddEvent("ILGetParent", function (FolderItem)
 	{

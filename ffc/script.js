@@ -1,4 +1,4 @@
-﻿Addon_Id = "ffc";
+﻿var Addon_Id = "ffc";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 if (items.length) {
@@ -23,37 +23,28 @@ if (window.Addon == 1) {
 				return false;
 			}
 			if (Dest) {
-				var path = Dest.Path;
-				if (Dest.IsLink) {
-					try {
-						path = Dest.GetLink.Path;
-					} catch (e) {
-						if (e.number == api.LowPart(0x800a0046)) {
-							var sc = wsh.CreateShortcut(Dest.Path);
-							if (sc) {
-								path = sc.TargetPath;
-							}
-						}
-					}
+				try {
+					path = Dest.ExtendedProperty("linktarget") || Dest.Path || Dest;
+				} catch (e) {
+					path = Dest.Path || Dest;
 				}
 				if (path && fso.FolderExists(path)) {
 					while (i--) {
 						if (!IsExists(Items.Item(i).Path)) {
-							pdwEffect.x = DROPEFFECT_NONE;
+							pdwEffect[0] = DROPEFFECT_NONE;
 							break;
 						}
 					}
-					if (pdwEffect.x) {
+					if (pdwEffect[0]) {
 						nVerb = -1;
 						if (bOver) {
 							var DropTarget = api.DropTarget(path);
 							DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 						}
-						if (pdwEffect.x & DROPEFFECT_COPY) {
+						if (pdwEffect[0] & DROPEFFECT_COPY) {
 							nVerb = GetAddonOption("ffc", "Copy");
-						}
-						else if (pdwEffect.x & DROPEFFECT_MOVE) {
-							if (api.strcmpi(fso.GetDriveName(Parent.Path), fso.GetDriveName(path))) {
+						} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
+							if (!api.PathIsSameRoot(Parent.Path, path)) {
 								nVerb = GetAddonOption("ffc", "Move");
 							}
 						}
@@ -82,22 +73,19 @@ if (window.Addon == 1) {
 		switch (Ctrl.Type) {
 			case CTRL_SB:
 			case CTRL_EB:
-				var Items = Ctrl.Items();
-				var Dest;
-				var i = Ctrl.HitTest(pt, LVHT_ONITEM);
-				if (i >= 0) {
-					Dest = Items.Item(i);
+			case CTRL_TV:
+				var Dest = Ctrl.HitTest(pt);
+				if (Dest) {
 					if (!fso.FolderExists(Dest.Path)) {
 						if (api.DropTarget(Dest)) {
 							return E_FAIL;
 						}
 						Dest = Ctrl.FolderItem;
 					}
-				}
-				else {
+				} else {
 					Dest = Ctrl.FolderItem;
 				}
-				if (Addons.FFC.FO(Ctrl, dataObj, Dest, grfKeyState, pt, pdwEffect, true)) {
+				if (Dest && Addons.FFC.FO(Ctrl, dataObj, Dest, grfKeyState, pt, pdwEffect, true)) {
 					return S_OK
 				}
 				break;
@@ -137,6 +125,4 @@ if (window.Addon == 1) {
 				break;
 		}
 	});
-	te.HookDragDrop(CTRL_FV, true);
-	te.HookDragDrop(CTRL_TV, true);
 }

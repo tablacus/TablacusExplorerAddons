@@ -149,6 +149,14 @@ typedef struct{
 	int CmtState;
 } tOpenArchiveDataW;
 
+typedef struct {
+	int size;
+	DWORD PluginInterfaceVersionLow;
+	DWORD PluginInterfaceVersionHi;
+	char DefaultIniName[MAX_PATH];
+} PackDefaultParamStruct;
+
+
 // Total Commander Packer Plug-in Callbacks
 
 typedef int (__stdcall *tChangeVolProc)(char *ArcName, int Mode);
@@ -177,6 +185,7 @@ typedef int (__stdcall *LPFNWCX_DeleteFilesW) (WCHAR *PackedFile, WCHAR *DeleteL
 typedef BOOL (__stdcall *LPFNWCX_CanYouHandleThisFile) (char *FileName);
 typedef BOOL (__stdcall *LPFNWCX_CanYouHandleThisFileW) (WCHAR *FileName);
 typedef void (__stdcall *LPFNWCX_ConfigurePacker) (HWND Parent, HINSTANCE DllInstance);
+typedef void (__stdcall *LPFNWCX_PackSetDefaultParams) (PackDefaultParamStruct* dps);
 
 // Total Commander Packer Plugin Wrapper Object
 class CteWCX : public IDispatch
@@ -216,6 +225,7 @@ public:
 	LPFNWCX_CanYouHandleThisFile WCX_CanYouHandleThisFile;
 	LPFNWCX_CanYouHandleThisFileW WCX_CanYouHandleThisFileW;
 	LPFNWCX_ConfigurePacker WCX_ConfigurePacker;
+	LPFNWCX_PackSetDefaultParams WCX_PackSetDefaultParams;
 
 	HMODULE		m_hDll;
 	BSTR		m_bsLib;

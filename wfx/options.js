@@ -1,5 +1,5 @@
 ﻿var AddonName = "WFX";
-var g_Chg = {List: false};
+var g_Chg = {List: false, Data: "List"};
 
 function LoadFS()
 {
@@ -86,13 +86,13 @@ function SetProp(bName)
 	if (bName) {
 		document.F.Name.value = WFX.FsGetDefRootName ? WFX.FsGetDefRootName() : fso.GetBaseName(document.F.Path.value);
 	}
-	var arProp = ["IsUnicode", "FsInit", "FsFindFirst", "FsFindNext", "FsFindClose", "FsSetCryptCallback", "FsGetDefRootName", "FsGetFile", "FsPutFile", "FsRenMovFile", "FsDeleteFile", "FsRemoveDir", "FsMkDir", "FsExecuteFile", "FsSetAttr", "FsSetTime", "FsDisconnect", "FsExtractCustomIcon"];
-	var arHtml = [[], [], []];
+	var arProp = ["IsUnicode", "FsInit", "FsFindFirst", "FsFindNext", "FsFindClose", "FsSetCryptCallback", "FsGetDefRootName", "FsGetFile", "FsPutFile", "FsRenMovFile", "FsDeleteFile", "FsRemoveDir", "FsMkDir", "FsExecuteFile", "FsSetAttr", "FsSetTime", "FsDisconnect", "FsExtractCustomIcon", "FsSetDefaultParams"];
+	var arHtml = [[], [], [], []];
 	for (var i in arProp) {
-		arHtml[i < arProp.length / 2 ? 0 : 1].push('<input type="checkbox" ', WFX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '<br / >');
+		arHtml[i % 3].push('<input type="checkbox" ', WFX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '<br / >');
 	}
-	arHtml[2].push('64bit<br /><input type="text" value="', (ExtractMacro(te, document.F.Path.value) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
-	for (var i = 3; i--;) {
+	arHtml[3].push('64bit<br /><input type="text" value="', (ExtractMacro(te, document.F.Path.value) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
+	for (var i = 4; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
 	var ar = [fso.GetFileName(dllPath)];
@@ -110,7 +110,16 @@ var info = GetAddonInfo(AddonName.toLowerCase());
 document.title = info.Name;
 LoadFS();
 SetOnChangeHandler();
+
 AddEventEx(window, "beforeunload", function ()
 {
-	SetOptions(SaveFS);
+	if (g_nResult == 2 || !g_bChanged) {
+		return;
+	}
+	if (ConfirmX(true, ReplaceFS)) {
+		SaveFS();
+		TEOk();
+		return;
+	}
+	event.returnValue = GetText('Close');
 });

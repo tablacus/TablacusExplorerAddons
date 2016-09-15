@@ -45,22 +45,19 @@
 		switch (Ctrl.Type) {
 			case CTRL_SB:
 			case CTRL_EB:
-				var Items = Ctrl.Items();
-				var Dest;
-				var i = Ctrl.HitTest(pt, LVHT_ONITEM);
-				if (i >= 0) {
-					Dest = Items.Item(i);
+			case CTRL_TV:
+				var Dest = Ctrl.HitTest(pt);
+				if (Dest) {
 					if (!fso.FolderExists(Dest.Path)) {
 						if (api.DropTarget(Dest)) {
 							return E_FAIL;
 						}
 						Dest = Ctrl.FolderItem;
 					}
-				}
-				else {
+				} else {
 					Dest = Ctrl.FolderItem;
 				}
-				if (Addons.MultiProcess.FO(Ctrl, dataObj, Dest, grfKeyState, pt, pdwEffect, 0)) {
+				if (Dest && Addons.MultiProcess.FO(Ctrl, dataObj, Dest, grfKeyState, pt, pdwEffect, 0)) {
 					return S_OK
 				}
 				break;
@@ -112,7 +109,4 @@
 				break;
 		}
 	});
-
-	te.HookDragDrop(CTRL_FV, true);
-	te.HookDragDrop(CTRL_TV, true);
 }

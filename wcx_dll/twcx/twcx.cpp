@@ -32,6 +32,7 @@ TEmethod methodTWCX[] = {
 	{ 0x60010008, L"ConfigurePacker" },
 	{ 0x60010009, L"SetChangeVolProc" },
 	{ 0x6001000A, L"SetProcessDataProc" },
+	{ 0x6001000B, L"PackSetDefaultParams" },
 	{ 0x6001000C, L"Close" },
 	{ 0x6001FFFF, L"IsUnicode" },
 	{ 0, NULL }
@@ -651,6 +652,7 @@ CteWCX::CteWCX(HMODULE hDll, LPWSTR lpLib)
 	teGetProcAddress(m_hDll, "DeleteFiles", (FARPROC *)&WCX_DeleteFiles, (FARPROC *)&WCX_DeleteFilesW);
 	teGetProcAddress(m_hDll, "CanYouHandleThisFile", (FARPROC *)&WCX_CanYouHandleThisFile, (FARPROC *)&WCX_CanYouHandleThisFileW);
 	teGetProcAddress(m_hDll, "ConfigurePacker", (FARPROC *)&WCX_ConfigurePacker, NULL);
+	teGetProcAddress(m_hDll, "PackSetDefaultParams", (FARPROC *)&WCX_PackSetDefaultParams, NULL);
 	SetProcEx(INVALID_HANDLE_VALUE, 3);
 }
 
@@ -686,6 +688,7 @@ VOID CteWCX::Close()
 	WCX_CanYouHandleThisFile = NULL;
 	WCX_CanYouHandleThisFileW = NULL;
 	WCX_ConfigurePacker = NULL;
+	WCX_PackSetDefaultParams = NULL;
 }
 
 VOID CteWCX::SetProcEx(HANDLE hArcData, int n)
@@ -693,16 +696,14 @@ VOID CteWCX::SetProcEx(HANDLE hArcData, int n)
 	if (n & 1) {
 		if (WCX_SetChangeVolProcW) {
 			WCX_SetChangeVolProcW(hArcData, twcx_tChangeVolProcW);
-		}
-		if (WCX_SetChangeVolProc) {
+		} else if (WCX_SetChangeVolProc) {
 			WCX_SetChangeVolProc(hArcData, twcx_tChangeVolProc);
 		}
 	}
 	if (n & 2) {
 		if (WCX_SetProcessDataProcW) {
 			WCX_SetProcessDataProcW(hArcData, twcx_tProcessDataProcW);
-		}
-		if (WCX_SetProcessDataProc) {
+		} else if (WCX_SetProcessDataProc) {
 			WCX_SetProcessDataProc(hArcData, twcx_tProcessDataProc);
 		}
 	}
@@ -752,319 +753,330 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 {
 	int nArg = pDispParams ? pDispParams->cArgs - 1 : -1;
 	int nResult = E_NOT_SUPPORTED;
-
-	switch (dispIdMember) {
-		//OpenArchive
-		case 0x60010001:
-			if (nArg >= 0) {
-				HANDLE hArcData = 0;
-				IDispatch *pdisp;
-				if (GetDispatch(&pDispParams->rgvarg[nArg], &pdisp)) {
-					tOpenArchiveDataW OpenDataW = { 0 };
-					VARIANT vArcName, v;
-					teGetProperty(pdisp, L"ArcName", &vArcName);
-					OpenDataW.ArcName = vArcName.bstrVal;
-					teGetProperty(pdisp, L"OpenMode", &v);
-					OpenDataW.OpenMode = GetIntFromVariantClear(&v);
-					if (WCX_OpenArchiveW) {
-						hArcData = WCX_OpenArchiveW(&OpenDataW);
-						teSetLong(&v, OpenDataW.OpenResult);
-					} else if (WCX_OpenArchive) {
-						tOpenArchiveData OpenDataA = { 0 };
-						OpenDataA.OpenMode = OpenDataW.OpenMode;
-						BSTR bsArcName = teWide2Ansi(OpenDataW.ArcName, -1);
-						OpenDataA.ArcName = (char *)bsArcName;
-						hArcData = WCX_OpenArchive(&OpenDataA);
-						teSetLong(&v, OpenDataA.OpenResult);
-						teSysFreeString(&bsArcName);
-					}
-					teSetPtr(pVarResult, hArcData);
-					SetProcEx(hArcData, 3);
-					if (v.vt != VT_EMPTY) {
-						tePutProperty(pdisp, L"OpenResult", &v);
-						VariantClear(&v);
-					}
-					SafeRelease(&pdisp);
-				}
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, WCX_OpenArchiveW || WCX_OpenArchive);
-			}
-			return S_OK;		
-		//ReadHeaderEx
-		case 0x60010002:
-			if (nArg >= 1) {
-				IUnknown *punk;
-				if (FindUnknown(&pDispParams->rgvarg[nArg - 1], &punk)) {
-					tHeaderDataExW HeaderExW = { 0 };
-					HANDLE hArcData = (HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]); 
-					if (WCX_ReadHeaderExW) {
-						nResult = WCX_ReadHeaderExW(hArcData, &HeaderExW);
-					} else if (WCX_ReadHeaderEx) {
-						tHeaderDataEx HeaderExA = { 0 };
-						nResult = WCX_ReadHeaderEx(hArcData, &HeaderExA);
-						MultiByteToWideChar(CP_ACP, 0, (LPCSTR)HeaderExA.ArcName, 1024, HeaderExW.ArcName, 1024);
-						MultiByteToWideChar(CP_ACP, 0, (LPCSTR)HeaderExA.FileName, 1024, HeaderExW.FileName, 1024);
-						HeaderExW.Flags = HeaderExA.Flags;
-						HeaderExW.PackSize = HeaderExA.PackSize;
-						HeaderExW.PackSizeHigh = HeaderExA.PackSizeHigh;
-						HeaderExW.UnpSize = HeaderExA.UnpSize;
-						HeaderExW.UnpSizeHigh = HeaderExA.UnpSizeHigh;
-						HeaderExW.HostOS = HeaderExA.HostOS;
-						HeaderExW.FileCRC = HeaderExA.FileCRC;
-						HeaderExW.FileTime = HeaderExA.FileTime;
-						HeaderExW.UnpVer = HeaderExA.UnpVer;
-						HeaderExW.Format = HeaderExA.Format;
-						HeaderExW.FileAttr = HeaderExA.FileAttr;
-					} else if (WCX_ReadHeader) {
-						tHeaderData HeaderA = { 0 };
-						nResult = WCX_ReadHeader(hArcData, &HeaderA);
-						MultiByteToWideChar(CP_ACP, 0, (LPCSTR)HeaderA.ArcName, 260, HeaderExW.ArcName, 1024);
-						MultiByteToWideChar(CP_ACP, 0, (LPCSTR)HeaderA.FileName, 260, HeaderExW.FileName, 1024);
-						HeaderExW.Flags = HeaderA.Flags;
-						HeaderExW.PackSize = HeaderA.PackSize;
-						HeaderExW.UnpSize = HeaderA.UnpSize;
-						HeaderExW.HostOS = HeaderA.HostOS;
-						HeaderExW.FileCRC = HeaderA.FileCRC;
-						HeaderExW.FileTime = HeaderA.FileTime;
-						HeaderExW.UnpVer = HeaderA.UnpVer;
-						HeaderExW.Format = HeaderA.Format;
-						HeaderExW.FileAttr = HeaderA.FileAttr;
-					}
-					if (nResult == E_SUCCESS) {
-						VARIANT v;
-						teSetSZ(&v, HeaderExW.ArcName);
-						tePutProperty(punk, L"ArcName", &v);
-						VariantClear(&v);
-						teSetSZ(&v, HeaderExW.FileName);
-						tePutProperty(punk, L"FileName", &v);
-						VariantClear(&v);
-						teSetLong(&v, HeaderExW.Flags);
-						tePutProperty(punk, L"Flags", &v);
-						VariantClear(&v);
-						teSetLL(&v, HeaderExW.PackSize);
-						tePutProperty(punk, L"PackSize", &v);
-						VariantClear(&v);
-						teSetLL(&v, HeaderExW.PackSizeHigh);
-						tePutProperty(punk, L"PackSizeHigh", &v);
-						VariantClear(&v);
-						teSetLL(&v, HeaderExW.UnpSize);
-						tePutProperty(punk, L"UnpSize", &v);
-						VariantClear(&v);
-						teSetLL(&v, HeaderExW.UnpSizeHigh);
-						tePutProperty(punk, L"UnpSizeHigh", &v);
-						VariantClear(&v);
-						teSetLong(&v, HeaderExW.HostOS);
-						tePutProperty(punk, L"HostOS", &v);
-						VariantClear(&v);
-						teSetLong(&v, HeaderExW.FileCRC);
-						tePutProperty(punk, L"FileCRC", &v);
-						VariantClear(&v);
-						if (::DosDateTimeToVariantTime(HIWORD(HeaderExW.FileTime), LOWORD(HeaderExW.FileTime), &v.date)) {
-							v.vt = VT_DATE;
-							tePutProperty(punk, L"FileTime", &v);
+	try {
+		switch (dispIdMember) {
+			//OpenArchive
+			case 0x60010001:
+				if (nArg >= 0) {
+					HANDLE hArcData = 0;
+					IDispatch *pdisp;
+					if (GetDispatch(&pDispParams->rgvarg[nArg], &pdisp)) {
+						tOpenArchiveDataW OpenDataW = { 0 };
+						VARIANT vArcName, v;
+						teGetProperty(pdisp, L"ArcName", &vArcName);
+						OpenDataW.ArcName = vArcName.bstrVal;
+						teGetProperty(pdisp, L"OpenMode", &v);
+						OpenDataW.OpenMode = GetIntFromVariantClear(&v);
+						if (WCX_OpenArchiveW) {
+							hArcData = WCX_OpenArchiveW(&OpenDataW);
+							teSetLong(&v, OpenDataW.OpenResult);
+						} else if (WCX_OpenArchive) {
+							tOpenArchiveData OpenDataA = { 0 };
+							OpenDataA.OpenMode = OpenDataW.OpenMode;
+							BSTR bsArcName = teWide2Ansi(OpenDataW.ArcName, -1);
+							OpenDataA.ArcName = (char *)bsArcName;
+							hArcData = WCX_OpenArchive(&OpenDataA);
+							teSetLong(&v, OpenDataA.OpenResult);
+							teSysFreeString(&bsArcName);
+						}
+						teSetPtr(pVarResult, hArcData);
+						SetProcEx(hArcData, 3);
+						if (v.vt != VT_EMPTY) {
+							tePutProperty(pdisp, L"OpenResult", &v);
 							VariantClear(&v);
 						}
-						teSetLong(&v, HeaderExW.UnpVer);
-						tePutProperty(punk, L"UnpVer", &v);
-						VariantClear(&v);
-						teSetLong(&v, HeaderExW.Format);
-						tePutProperty(punk, L"Format", &v);
-						VariantClear(&v);
-						teSetLong(&v, HeaderExW.FileAttr);
-						tePutProperty(punk, L"FileAttr", &v);
-						VariantClear(&v);
+						SafeRelease(&pdisp);
 					}
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_OpenArchiveW || WCX_OpenArchive);
 				}
-				teSetLong(pVarResult, nResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, WCX_ReadHeaderExW || WCX_ReadHeaderEx || WCX_ReadHeader);
-			}
-			return S_OK;
-		//ProcessFile
-		case 0x60010003:
-			if (nArg >= 1) {
-				HANDLE hArcData = (HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]); 
-				int nOperation = GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]); 
-				LPWSTR lpDestPath = nArg >= 2 ? GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 2]) : NULL;
-				LPWSTR lpDestName = nArg >= 3 ? GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 3]) : NULL;
-				if (WCX_ProcessFileW) {
-					nResult = WCX_ProcessFileW(hArcData, nOperation, lpDestPath, lpDestName);
-				} else if (WCX_ProcessFile) {
-					BSTR bsDestPath = teWide2Ansi(lpDestPath, -1);
-					BSTR bsDestName = teWide2Ansi(lpDestName, -1);
-					if (nOperation == 2) {
-						char *lp1 = (char *)bsDestName;
+				return S_OK;		
+			//ReadHeaderEx
+			case 0x60010002:
+				if (nArg >= 1) {
+					IUnknown *punk;
+					if (FindUnknown(&pDispParams->rgvarg[nArg - 1], &punk)) {
+						tHeaderDataExW HeaderExW = { 0 };
+						HANDLE hArcData = (HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]); 
+						if (WCX_ReadHeaderExW) {
+							nResult = WCX_ReadHeaderExW(hArcData, &HeaderExW);
+						} else if (WCX_ReadHeaderEx) {
+							tHeaderDataEx HeaderExA = { 0 };
+							nResult = WCX_ReadHeaderEx(hArcData, &HeaderExA);
+							MultiByteToWideChar(CP_ACP, 0, (LPCSTR)HeaderExA.ArcName, 1024, HeaderExW.ArcName, 1024);
+							MultiByteToWideChar(CP_ACP, 0, (LPCSTR)HeaderExA.FileName, 1024, HeaderExW.FileName, 1024);
+							HeaderExW.Flags = HeaderExA.Flags;
+							HeaderExW.PackSize = HeaderExA.PackSize;
+							HeaderExW.PackSizeHigh = HeaderExA.PackSizeHigh;
+							HeaderExW.UnpSize = HeaderExA.UnpSize;
+							HeaderExW.UnpSizeHigh = HeaderExA.UnpSizeHigh;
+							HeaderExW.HostOS = HeaderExA.HostOS;
+							HeaderExW.FileCRC = HeaderExA.FileCRC;
+							HeaderExW.FileTime = HeaderExA.FileTime;
+							HeaderExW.UnpVer = HeaderExA.UnpVer;
+							HeaderExW.Format = HeaderExA.Format;
+							HeaderExW.FileAttr = HeaderExA.FileAttr;
+						} else if (WCX_ReadHeader) {
+							tHeaderData HeaderA = { 0 };
+							nResult = WCX_ReadHeader(hArcData, &HeaderA);
+							MultiByteToWideChar(CP_ACP, 0, (LPCSTR)HeaderA.ArcName, 260, HeaderExW.ArcName, 1024);
+							MultiByteToWideChar(CP_ACP, 0, (LPCSTR)HeaderA.FileName, 260, HeaderExW.FileName, 1024);
+							HeaderExW.Flags = HeaderA.Flags;
+							HeaderExW.PackSize = HeaderA.PackSize;
+							HeaderExW.UnpSize = HeaderA.UnpSize;
+							HeaderExW.HostOS = HeaderA.HostOS;
+							HeaderExW.FileCRC = HeaderA.FileCRC;
+							HeaderExW.FileTime = HeaderA.FileTime;
+							HeaderExW.UnpVer = HeaderA.UnpVer;
+							HeaderExW.Format = HeaderA.Format;
+							HeaderExW.FileAttr = HeaderA.FileAttr;
+						}
+						if (nResult == E_SUCCESS) {
+							VARIANT v;
+							teSetSZ(&v, HeaderExW.ArcName);
+							tePutProperty(punk, L"ArcName", &v);
+							VariantClear(&v);
+							teSetSZ(&v, HeaderExW.FileName);
+							tePutProperty(punk, L"FileName", &v);
+							VariantClear(&v);
+							teSetLong(&v, HeaderExW.Flags);
+							tePutProperty(punk, L"Flags", &v);
+							VariantClear(&v);
+							teSetLL(&v, HeaderExW.PackSize);
+							tePutProperty(punk, L"PackSize", &v);
+							VariantClear(&v);
+							teSetLL(&v, HeaderExW.PackSizeHigh);
+							tePutProperty(punk, L"PackSizeHigh", &v);
+							VariantClear(&v);
+							teSetLL(&v, HeaderExW.UnpSize);
+							tePutProperty(punk, L"UnpSize", &v);
+							VariantClear(&v);
+							teSetLL(&v, HeaderExW.UnpSizeHigh);
+							tePutProperty(punk, L"UnpSizeHigh", &v);
+							VariantClear(&v);
+							teSetLong(&v, HeaderExW.HostOS);
+							tePutProperty(punk, L"HostOS", &v);
+							VariantClear(&v);
+							teSetLong(&v, HeaderExW.FileCRC);
+							tePutProperty(punk, L"FileCRC", &v);
+							VariantClear(&v);
+							if (::DosDateTimeToVariantTime(HIWORD(HeaderExW.FileTime), LOWORD(HeaderExW.FileTime), &v.date)) {
+								v.vt = VT_DATE;
+								tePutProperty(punk, L"FileTime", &v);
+								VariantClear(&v);
+							}
+							teSetLong(&v, HeaderExW.UnpVer);
+							tePutProperty(punk, L"UnpVer", &v);
+							VariantClear(&v);
+							teSetLong(&v, HeaderExW.Format);
+							tePutProperty(punk, L"Format", &v);
+							VariantClear(&v);
+							teSetLong(&v, HeaderExW.FileAttr);
+							tePutProperty(punk, L"FileAttr", &v);
+							VariantClear(&v);
+						}
 					}
-					try {
-						nResult = WCX_ProcessFile(hArcData, nOperation, (char *)bsDestPath, (char *)bsDestName);
-					} catch (...) {
-						nResult = 13;
-					}
-					teSysFreeString(&bsDestName);
-					teSysFreeString(&bsDestPath);
+					teSetLong(pVarResult, nResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_ReadHeaderExW || WCX_ReadHeaderEx || WCX_ReadHeader);
 				}
-				teSetLong(pVarResult, nResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, WCX_ProcessFileW || WCX_ProcessFile);
-			}
-			return S_OK;
-		//CloseArchive
-		case 0x60010004:
-			if (WCX_CloseArchive && nArg >= 0) {
-				teSetLong(pVarResult, WCX_CloseArchive((HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg])));
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, WCX_CloseArchive != NULL);
-			}
-			return S_OK;		
-		//PackFiles
-		case 0x60010005:
-			if (nArg >= 4) {
-				LPWSTR lpPackedFile = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				LPWSTR lpSubPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
-				if (lstrlen(lpSubPath) == 0) {
-					lpSubPath = NULL;
+				return S_OK;
+			//ProcessFile
+			case 0x60010003:
+				if (nArg >= 1) {
+					HANDLE hArcData = (HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]); 
+					int nOperation = GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]); 
+					LPWSTR lpDestPath = nArg >= 2 ? GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 2]) : NULL;
+					LPWSTR lpDestName = nArg >= 3 ? GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 3]) : NULL;
+					if (WCX_ProcessFileW) {
+						nResult = WCX_ProcessFileW(hArcData, nOperation, lpDestPath, lpDestName);
+					} else if (WCX_ProcessFile) {
+						BSTR bsDestPath = teWide2Ansi(lpDestPath, -1);
+						BSTR bsDestName = teWide2Ansi(lpDestName, -1);
+						if (nOperation == 2) {
+							char *lp1 = (char *)bsDestName;
+						}
+						try {
+							nResult = WCX_ProcessFile(hArcData, nOperation, (char *)bsDestPath, (char *)bsDestName);
+						} catch (...) {
+							nResult = 13;
+						}
+						teSysFreeString(&bsDestName);
+						teSysFreeString(&bsDestPath);
+					}
+					teSetLong(pVarResult, nResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_ProcessFileW || WCX_ProcessFile);
 				}
-				LPWSTR lpSrcPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 2]);
-				LPWSTR lpAddList = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 3]);
-				int nFlags = GetIntFromVariant(&pDispParams->rgvarg[nArg - 4]);
-				SetProcEx(INVALID_HANDLE_VALUE, 3);
-				if (WCX_PackFilesW) {
-					try {
-						nResult = WCX_PackFilesW(lpPackedFile, lpSubPath, lpSrcPath, lpAddList, nFlags);
-					} catch (...) {
-						nResult = E_NOT_SUPPORTED;
-					}
-				} else if (WCX_PackFiles) {
-					BSTR bsPackedFile = teWide2Ansi(lpPackedFile, -1);
-					BSTR bsSubPath = teWide2Ansi(lpSubPath, -1);
-					BSTR bsSrcPath = teWide2Ansi(lpSrcPath, -1);
-					BSTR bsAddList = teWide2Ansi(lpAddList, ::SysStringLen(lpAddList));
-					try {
-						nResult = WCX_PackFiles((char *)bsPackedFile, (char *)bsSubPath, (char *)bsSrcPath, (char *)bsAddList, nFlags);
-					} catch (...) {
-						nResult = E_NOT_SUPPORTED;
-					}
-					teSysFreeString(&bsAddList);
-					teSysFreeString(&bsSrcPath);
-					teSysFreeString(&bsSubPath);
-					teSysFreeString(&bsPackedFile);
+				return S_OK;
+			//CloseArchive
+			case 0x60010004:
+				if (WCX_CloseArchive && nArg >= 0) {
+					teSetLong(pVarResult, WCX_CloseArchive((HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg])));
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_CloseArchive != NULL);
 				}
-				teSetLong(pVarResult, nResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, WCX_PackFilesW || WCX_PackFiles);
-			}
-			return S_OK;
-		//DeleteFiles
-		case 0x60010006:
-			if (nArg >= 1) {
-				LPWSTR lpPackedFile = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				LPWSTR lpDeleteList = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
-				SetProcEx(INVALID_HANDLE_VALUE, 3);
-				if (WCX_DeleteFilesW) {
-					try {
-						nResult = WCX_DeleteFilesW(lpPackedFile, lpDeleteList);
-					} catch (...) {
-						nResult = E_NOT_SUPPORTED;
+				return S_OK;		
+			//PackFiles
+			case 0x60010005:
+				if (nArg >= 4) {
+					LPWSTR lpPackedFile = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					LPWSTR lpSubPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
+					if (lstrlen(lpSubPath) == 0) {
+						lpSubPath = NULL;
 					}
-				} else if (WCX_DeleteFiles) {
-					BSTR bsPackedFile = teWide2Ansi(lpPackedFile, -1);
-					BSTR bsDeleteList = teWide2Ansi(lpDeleteList, ::SysStringLen(lpDeleteList));
-					try {
-						nResult = WCX_DeleteFiles((char *)bsPackedFile, (char *)bsDeleteList);
-					} catch (...) {
-						nResult = E_NOT_SUPPORTED;
+					LPWSTR lpSrcPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 2]);
+					LPWSTR lpAddList = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 3]);
+					int nFlags = GetIntFromVariant(&pDispParams->rgvarg[nArg - 4]);
+					SetProcEx(INVALID_HANDLE_VALUE, 3);
+					if (WCX_PackFilesW) {
+						try {
+							nResult = WCX_PackFilesW(lpPackedFile, lpSubPath, lpSrcPath, lpAddList, nFlags);
+						} catch (...) {
+							nResult = E_NOT_SUPPORTED;
+						}
+					} else if (WCX_PackFiles) {
+						BSTR bsPackedFile = teWide2Ansi(lpPackedFile, -1);
+						BSTR bsSubPath = teWide2Ansi(lpSubPath, -1);
+						BSTR bsSrcPath = teWide2Ansi(lpSrcPath, -1);
+						BSTR bsAddList = teWide2Ansi(lpAddList, ::SysStringLen(lpAddList));
+						try {
+							nResult = WCX_PackFiles((char *)bsPackedFile, (char *)bsSubPath, (char *)bsSrcPath, (char *)bsAddList, nFlags);
+						} catch (...) {
+							nResult = E_NOT_SUPPORTED;
+						}
+						teSysFreeString(&bsAddList);
+						teSysFreeString(&bsSrcPath);
+						teSysFreeString(&bsSubPath);
+						teSysFreeString(&bsPackedFile);
 					}
-					teSysFreeString(&bsDeleteList);
-					teSysFreeString(&bsPackedFile);
+					teSetLong(pVarResult, nResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_PackFilesW || WCX_PackFiles);
 				}
-				teSetLong(pVarResult, nResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, WCX_DeleteFilesW || WCX_DeleteFiles);
-			}
-			return S_OK;
-		//CanYouHandleThisFile
-		case 0x60010007:
-			if (nArg >= 0) {
-				LPWSTR lpFileName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				if (WCX_CanYouHandleThisFileW) {
-					teSetBool(pVarResult, WCX_CanYouHandleThisFileW(lpFileName));
-				} else if (WCX_CanYouHandleThisFile) {
-					BSTR bsFileName = teWide2Ansi(lpFileName, -1);
-					teSetBool(pVarResult, WCX_CanYouHandleThisFile((char *)bsFileName));
-					teSysFreeString(&bsFileName);
-				} else {
-					HANDLE hArcData = 0;
-					if (WCX_OpenArchiveW) {
-						tOpenArchiveDataW OpenDataW = { 0 };
-						OpenDataW.ArcName = lpFileName;
-						hArcData = WCX_OpenArchiveW(&OpenDataW);
-					} else if (WCX_OpenArchive) {
-						tOpenArchiveData OpenDataA = { 0 };
-						BSTR bsArcName = teWide2Ansi(lpFileName, -1);
-						OpenDataA.ArcName = (char *)bsArcName;
-						hArcData = WCX_OpenArchive(&OpenDataA);
-						teSysFreeString(&bsArcName);
+				return S_OK;
+			//DeleteFiles
+			case 0x60010006:
+				if (nArg >= 1) {
+					LPWSTR lpPackedFile = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					LPWSTR lpDeleteList = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
+					SetProcEx(INVALID_HANDLE_VALUE, 3);
+					if (WCX_DeleteFilesW) {
+						try {
+							nResult = WCX_DeleteFilesW(lpPackedFile, lpDeleteList);
+						} catch (...) {
+							nResult = E_NOT_SUPPORTED;
+						}
+					} else if (WCX_DeleteFiles) {
+						BSTR bsPackedFile = teWide2Ansi(lpPackedFile, -1);
+						BSTR bsDeleteList = teWide2Ansi(lpDeleteList, ::SysStringLen(lpDeleteList));
+						try {
+							nResult = WCX_DeleteFiles((char *)bsPackedFile, (char *)bsDeleteList);
+						} catch (...) {
+							nResult = E_NOT_SUPPORTED;
+						}
+						teSysFreeString(&bsDeleteList);
+						teSysFreeString(&bsPackedFile);
 					}
-					if (hArcData && WCX_CloseArchive) {
-						WCX_CloseArchive(hArcData);
-						teSetBool(pVarResult, TRUE);
+					teSetLong(pVarResult, nResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_DeleteFilesW || WCX_DeleteFiles);
+				}
+				return S_OK;
+			//CanYouHandleThisFile
+			case 0x60010007:
+				if (nArg >= 0) {
+					LPWSTR lpFileName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					if (WCX_CanYouHandleThisFileW) {
+						teSetBool(pVarResult, WCX_CanYouHandleThisFileW(lpFileName));
+					} else if (WCX_CanYouHandleThisFile) {
+						BSTR bsFileName = teWide2Ansi(lpFileName, -1);
+						teSetBool(pVarResult, WCX_CanYouHandleThisFile((char *)bsFileName));
+						teSysFreeString(&bsFileName);
 					} else {
-						teSetBool(pVarResult, FALSE);
+						HANDLE hArcData = 0;
+						if (WCX_OpenArchiveW) {
+							tOpenArchiveDataW OpenDataW = { 0 };
+							OpenDataW.ArcName = lpFileName;
+							hArcData = WCX_OpenArchiveW(&OpenDataW);
+						} else if (WCX_OpenArchive) {
+							tOpenArchiveData OpenDataA = { 0 };
+							BSTR bsArcName = teWide2Ansi(lpFileName, -1);
+							OpenDataA.ArcName = (char *)bsArcName;
+							hArcData = WCX_OpenArchive(&OpenDataA);
+							teSysFreeString(&bsArcName);
+						}
+						if (hArcData && WCX_CloseArchive) {
+							WCX_CloseArchive(hArcData);
+							teSetBool(pVarResult, TRUE);
+						} else {
+							teSetBool(pVarResult, FALSE);
+						}
 					}
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_CanYouHandleThisFileW || WCX_CanYouHandleThisFile);
 				}
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, WCX_CanYouHandleThisFileW || WCX_CanYouHandleThisFile);
-			}
-			return S_OK;
-		//ConfigurePacker
-		case 0x60010008:
-			if (nArg >= 0) {
-				if (WCX_ConfigurePacker) {
-					WCX_ConfigurePacker((HWND)GetPtrFromVariant(&pDispParams->rgvarg[nArg]), g_hinstDll);
+				return S_OK;
+			//ConfigurePacker
+			case 0x60010008:
+				if (nArg >= 0) {
+					if (WCX_ConfigurePacker) {
+						WCX_ConfigurePacker((HWND)GetPtrFromVariant(&pDispParams->rgvarg[nArg]), g_hinstDll);
+					}
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_ConfigurePacker != NULL);
 				}
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, WCX_ConfigurePacker != NULL);
-			}
-			return S_OK;
-		//SetChangeVolProc
-		case 0x60010009:
-			if (nArg >= 1) {
-				SetProcEx((HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]), 1);
-				SafeRelease(&g_pdispChangeVolProc);
-				GetDispatch(&pDispParams->rgvarg[nArg - 1], &g_pdispChangeVolProc);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, WCX_SetChangeVolProcW || WCX_SetChangeVolProc);
-			}
-			return S_OK;
-		//SetProcessDataProc
-		case 0x6001000A:
-			if (nArg >= 1) {
-				SetProcEx((HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]), 2);
-				SafeRelease(&g_pdispProcessDataProc);
-				GetDispatch(&pDispParams->rgvarg[nArg - 1], &g_pdispProcessDataProc);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, WCX_SetProcessDataProcW || WCX_SetProcessDataProc);
-			}
-			return S_OK;
-		//Close
-		case 0x6001000C:
-			return S_OK;
-		//IsUnicode
-		case 0x6001FFFF:
-			teSetBool(pVarResult, WCX_OpenArchiveW != NULL);
-			return S_OK;
-		//this
-		case DISPID_VALUE:
-			if (pVarResult) {
-				teSetObject(pVarResult, this);
-			}
-			return S_OK;
-	}//end_switch
-/*/// for Debug
-	TCHAR szError[16];
-	wsprintf(szError, TEXT("%x"), dispIdMember);
-	MessageBox(NULL, (LPWSTR)szError, 0, 0);
-*///
+				return S_OK;
+			//SetChangeVolProc
+			case 0x60010009:
+				if (nArg >= 1) {
+					SetProcEx((HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]), 1);
+					SafeRelease(&g_pdispChangeVolProc);
+					GetDispatch(&pDispParams->rgvarg[nArg - 1], &g_pdispChangeVolProc);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_SetChangeVolProcW || WCX_SetChangeVolProc);
+				}
+				return S_OK;
+			//SetProcessDataProc
+			case 0x6001000A:
+				if (nArg >= 1) {
+					SetProcEx((HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]), 2);
+					SafeRelease(&g_pdispProcessDataProc);
+					GetDispatch(&pDispParams->rgvarg[nArg - 1], &g_pdispProcessDataProc);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_SetProcessDataProcW || WCX_SetProcessDataProc);
+				}
+				return S_OK;
+			//PackSetDefaultParams
+			case 0x6001000B:
+				if (nArg >= 0 && WCX_PackSetDefaultParams) {
+					PackDefaultParamStruct dps = { sizeof(PackDefaultParamStruct), 21, 2 };
+					LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					if (lpPath) {
+						WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)lpPath, -1, dps.DefaultIniName, MAX_PATH, NULL, NULL);
+					}
+					WCX_PackSetDefaultParams(&dps);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, WCX_PackSetDefaultParams != NULL);
+				}
+				return S_OK;
+			//Close
+			case 0x6001000C:
+				return S_OK;
+			//IsUnicode
+			case 0x6001FFFF:
+				teSetBool(pVarResult, WCX_OpenArchiveW != NULL);
+				return S_OK;
+			//this
+			case DISPID_VALUE:
+				if (pVarResult) {
+					teSetObject(pVarResult, this);
+				}
+				return S_OK;
+		}//end_switch
+	} catch (...) {
+		return DISP_E_EXCEPTION;
+	}
 	return DISP_E_MEMBERNOTFOUND;
 }
 

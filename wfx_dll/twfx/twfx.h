@@ -121,7 +121,6 @@ int size;
 	char DefaultIniName[MAX_PATH];
 } FsDefaultParamStruct;
 
-
 // Total Commander File System Plug-in Callbacks
 typedef int (__stdcall *tProgressProc)(int PluginNr,char* SourceName,char* TargetName,int PercentDone);
 typedef int (__stdcall *tProgressProcW)(int PluginNr,WCHAR* SourceName,WCHAR* TargetName,int PercentDone);
@@ -168,6 +167,7 @@ typedef int (__stdcall *LPFN_FsExtractCustomIcon) (char* RemoteName,int ExtractF
 typedef int (__stdcall *LPFN_FsExtractCustomIconW) (WCHAR* RemoteName,int ExtractFlags,HICON* TheIcon);
 typedef void (__stdcall *LPFN_FsSetCryptCallback) (tCryptProc pCryptProc,int CryptoNr,int Flags);
 typedef void (__stdcall *LPFN_FsSetCryptCallbackW) (tCryptProcW pCryptProc,int CryptoNr,int Flags);
+typedef void (__stdcall *LPFN_FsSetDefaultParams) (FsDefaultParamStruct* dps);
 
 // Total Commander File System Plugin Wrapper Object
 class CteWFX : public IDispatch
@@ -221,6 +221,7 @@ public:
 	LPFN_FsExtractCustomIconW FsExtractCustomIconW;
 	LPFN_FsSetCryptCallback FsSetCryptCallback;
 	LPFN_FsSetCryptCallbackW FsSetCryptCallbackW;
+	LPFN_FsSetDefaultParams FsSetDefaultParams;
 
 	HMODULE		m_hDll;
 	BSTR		m_bsLib;

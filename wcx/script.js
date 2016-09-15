@@ -30,8 +30,6 @@ Addons.WCX =
 				if (api.PathMatchSpec(lib.file, item.filter)) {
 					if (item.X.CanYouHandleThisFile(lib.file)) {
 						lib.X = item.X;
-						lib.X.SetChangeVolProc(-1, Addons.WCX.ChangeVolProc);
-						lib.X.SetProcessDataProc(-1, Addons.WCX.ProcessDataProc);
 						return lib;
 					}
 				}
@@ -52,6 +50,9 @@ Addons.WCX =
 			var WCX = Addons.WCX.DLL.open(dllPath);
 			if (WCX && WCX.OpenArchive) {
 				Addons.WCX.Obj.push({ X: WCX, filter: filter});
+				WCX.PackSetDefaultParams(fso.BuildPath(te.Data.DataFolder, "config\\pkplugin.ini"));
+				WCX.SetChangeVolProc(-1, Addons.WCX.ChangeVolProc);
+				WCX.SetProcessDataProc(-1, Addons.WCX.ProcessDataProc);
 			}
 		}
 	},
@@ -242,7 +243,7 @@ if (window.Addon == 1) {
 	}, true);
 
 	AddEvent("NavigateComplete", Addons.WCX.Navigate);
-	
+
 	AddEvent("BeginDrag", function (Ctrl)
 	{
 		if (Addons.WCX.IsHandle(Ctrl)) {

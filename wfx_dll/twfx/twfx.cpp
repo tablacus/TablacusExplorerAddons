@@ -42,6 +42,7 @@ TEmethod methodTWFX[] = {
 	{ 0x6001000F, L"FsDisconnect" },
 	{ 0x60010010, L"FsExtractCustomIcon" },
 	{ 0x60010011, L"FsSetCryptCallback" },
+	{ 0x60010012, L"FsSetDefaultParams" },
 	{ 0x6001FFFF, L"IsUnicode" },
 	{ 0, NULL }
 };
@@ -955,6 +956,7 @@ CteWFX::CteWFX(HMODULE hDll, LPWSTR lpLib)
 	teGetProcAddress(m_hDll, "FsDisconnect", (FARPROC *)&FsDisconnect, (FARPROC *)&FsDisconnectW);
 	teGetProcAddress(m_hDll, "FsExtractCustomIcon", (FARPROC *)&FsExtractCustomIcon, (FARPROC *)&FsExtractCustomIconW);
 	teGetProcAddress(m_hDll, "FsSetCryptCallback", (FARPROC *)&FsSetCryptCallback, (FARPROC *)&FsSetCryptCallbackW);
+	teGetProcAddress(m_hDll, "FsSetDefaultParams", (FARPROC *)&FsSetDefaultParams, NULL);
 }
 
 CteWFX::~CteWFX()
@@ -1006,6 +1008,7 @@ VOID CteWFX::Close()
 	FsExtractCustomIconW = NULL;
 	FsSetCryptCallback = NULL;
 	FsSetCryptCallbackW = NULL;
+	FsSetDefaultParams = NULL;
 }
 
 STDMETHODIMP CteWFX::QueryInterface(REFIID riid, void **ppvObject)
@@ -1051,370 +1054,393 @@ STDMETHODIMP CteWFX::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames
 STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
 {
 	int nArg = pDispParams ? pDispParams->cArgs - 1 : -1;
-
-	switch (dispIdMember) {
-		//FsInit
-		case 0x60010001:
-			if (nArg >= 4) {
-				int iResult = 1;
-				int iPluginNr = GetIntFromVariant(&pDispParams->rgvarg[nArg]);
-				SafeRelease(&g_pdispArrayProc);
-				GetDispatch(&pDispParams->rgvarg[nArg - 1], &g_pdispArrayProc);
-				SafeRelease(&g_pdispProgressProc);
-				GetDispatch(&pDispParams->rgvarg[nArg - 2], &g_pdispProgressProc);
-				SafeRelease(&g_pdispLogProc);
-				GetDispatch(&pDispParams->rgvarg[nArg - 3], &g_pdispLogProc);
-				SafeRelease(&g_pdispRequestProc);
-				GetDispatch(&pDispParams->rgvarg[nArg - 4], &g_pdispRequestProc);
-				if (FsInitW) {
-					iResult = FsInitW(iPluginNr, twfx_tProgressProcW, twfx_tLogProcW, twfx_tRequestProcW);
+	try {
+		switch (dispIdMember) {
+			//FsInit
+			case 0x60010001:
+				if (nArg >= 4) {
+					int iResult = 1;
+					int iPluginNr = GetIntFromVariant(&pDispParams->rgvarg[nArg]);
+					SafeRelease(&g_pdispArrayProc);
+					GetDispatch(&pDispParams->rgvarg[nArg - 1], &g_pdispArrayProc);
+					SafeRelease(&g_pdispProgressProc);
+					GetDispatch(&pDispParams->rgvarg[nArg - 2], &g_pdispProgressProc);
+					SafeRelease(&g_pdispLogProc);
+					GetDispatch(&pDispParams->rgvarg[nArg - 3], &g_pdispLogProc);
+					SafeRelease(&g_pdispRequestProc);
+					GetDispatch(&pDispParams->rgvarg[nArg - 4], &g_pdispRequestProc);
+					if (FsInitW) {
+						iResult = FsInitW(iPluginNr, twfx_tProgressProcW, twfx_tLogProcW, twfx_tRequestProcW);
+					} else if (FsInit) {
+						iResult = FsInit(iPluginNr, twfx_tProgressProc, twfx_tLogProc, twfx_tRequestProc);
+					}
+					teSetLong(pVarResult, iResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsInitW || FsInit);
 				}
-				if (FsInit) {
-					iResult = FsInit(iPluginNr, twfx_tProgressProc, twfx_tLogProc, twfx_tRequestProc);
-				}
-				teSetLong(pVarResult, iResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsInitW || FsInit);
-			}
-			return S_OK;		
-		//FsFindFirst
-		case 0x60010002:
-			if (nArg >= 1) {
-				HANDLE hFind = INVALID_HANDLE_VALUE;
-				IUnknown *punk;
-				if (FindUnknown(&pDispParams->rgvarg[nArg - 1], &punk)) {
-					LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-					WIN32_FIND_DATAW wfd = { 0 };
-					if (FsFindFirstW) {
-						hFind = FsFindFirstW(lpPath, &wfd);
-					} else if (FsFindFirst) {
-						WIN32_FIND_DATAA wfda = { 0 };
-						BSTR bsPath = teWide2Ansi(lpPath, -1);
-						hFind = FsFindFirst((char *)bsPath, &wfda);
-						teSysFreeString(&bsPath);
+				return S_OK;		
+			//FsFindFirst
+			case 0x60010002:
+				if (nArg >= 1) {
+					HANDLE hFind = INVALID_HANDLE_VALUE;
+					IUnknown *punk;
+					if (FindUnknown(&pDispParams->rgvarg[nArg - 1], &punk)) {
+						LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+						WIN32_FIND_DATAW wfd = { 0 };
+						if (FsFindFirstW) {
+							hFind = FsFindFirstW(lpPath, &wfd);
+						} else if (FsFindFirst) {
+							WIN32_FIND_DATAA wfda = { 0 };
+							BSTR bsPath = teWide2Ansi(lpPath, -1);
+							hFind = FsFindFirst((char *)bsPath, &wfda);
+							teSysFreeString(&bsPath);
+							if (hFind != INVALID_HANDLE_VALUE) {
+								ConvWin32FindDataFromA(&wfd, &wfda);
+							}
+						}
 						if (hFind != INVALID_HANDLE_VALUE) {
-							ConvWin32FindDataFromA(&wfd, &wfda);
+							SetWin32FindData(punk, &wfd);
 						}
 					}
-					if (hFind != INVALID_HANDLE_VALUE) {
-						SetWin32FindData(punk, &wfd);
-					}
+					teSetLL(pVarResult, (LONGLONG)hFind);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsFindFirstW || FsFindFirst);
 				}
-				teSetLL(pVarResult, (LONGLONG)hFind);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsFindFirstW || FsFindFirst);
-			}
-			return S_OK;
-		//FsFindNext
-		case 0x60010003:
-			if (nArg >= 1) {
-				BOOL bResult = FALSE;
-				IDispatch *pdisp;
-				if (GetDispatch(&pDispParams->rgvarg[nArg - 1], &pdisp)) {
-					HANDLE hFind = (HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]);
-					WIN32_FIND_DATAW wfd = { 0 };
-					VARIANT v;
-					VariantInit(&v);
-					teGetProperty(pdisp, L"dwFileAttributes", &v);
-					wfd.dwFileAttributes = GetIntFromVariantClear(&v);
-					if (FsFindNextW) {
-						bResult = FsFindNextW(hFind, &wfd);
-					} else if (FsFindFirst) {
-						WIN32_FIND_DATAA wfda = { 0 };
-						wfda.dwFileAttributes = wfd.dwFileAttributes;
-						bResult = FsFindNext(hFind, &wfda);
+				return S_OK;
+			//FsFindNext
+			case 0x60010003:
+				if (nArg >= 1) {
+					BOOL bResult = FALSE;
+					IDispatch *pdisp;
+					if (GetDispatch(&pDispParams->rgvarg[nArg - 1], &pdisp)) {
+						HANDLE hFind = (HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]);
+						WIN32_FIND_DATAW wfd = { 0 };
+						VARIANT v;
+						VariantInit(&v);
+						teGetProperty(pdisp, L"dwFileAttributes", &v);
+						wfd.dwFileAttributes = GetIntFromVariantClear(&v);
+						if (FsFindNextW) {
+							bResult = FsFindNextW(hFind, &wfd);
+						} else if (FsFindFirst) {
+							WIN32_FIND_DATAA wfda = { 0 };
+							wfda.dwFileAttributes = wfd.dwFileAttributes;
+							bResult = FsFindNext(hFind, &wfda);
+							if (bResult) {
+								ConvWin32FindDataFromA(&wfd, &wfda);
+							}
+						}
 						if (bResult) {
-							ConvWin32FindDataFromA(&wfd, &wfda);
+							SetWin32FindData(pdisp, &wfd);
+						}
+						SafeRelease(&pdisp);
+					}
+					teSetBool(pVarResult, bResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsFindNextW || FsFindNext);
+				}
+				return S_OK;
+			//FsFindClose
+			case 0x60010004:
+				if (nArg >= 0) {
+					int iResult = 1;
+					if (FsFindClose) {
+						iResult = FsFindClose((HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]));
+					}
+					teSetLong(pVarResult, iResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsFindClose != NULL);
+				}
+				return S_OK;
+			//FsGetDefRootName
+			case 0x60010005:
+				if (FsGetDefRootName) {
+					char DefRootName[MAX_PATH];
+					DefRootName[0] = NULL;
+					FsGetDefRootName(DefRootName, MAX_PATH);
+					teSetSZA(pVarResult, DefRootName, CP_ACP);
+				}
+				return S_OK;
+			//FsGetFile
+			case 0x60010006:
+				if (nArg >= 3) {
+					int iResult = 0;
+					LPWSTR lpRemoteName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					LPWSTR lpLocalName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
+					int nCopyFlags = GetIntFromVariant(&pDispParams->rgvarg[nArg - 2]);
+					RemoteInfoStruct ri = { 0 };
+					if (GetRIFromVariant(&pDispParams->rgvarg[nArg - 3], &ri)) {
+						if (FsGetFileW) {
+							iResult = FsGetFileW(lpRemoteName, lpLocalName, nCopyFlags, &ri);
+						} else if (FsGetFile) {
+							BSTR bsRemoteName = teWide2Ansi(lpRemoteName, -1);
+							BSTR bsLocalName = teWide2Ansi(lpLocalName, -1);
+							iResult = FsGetFile((char *)bsRemoteName, (char *)bsLocalName, nCopyFlags, &ri);
+							teSysFreeString(&bsLocalName);
+							teSysFreeString(&bsRemoteName);
 						}
 					}
-					if (bResult) {
-						SetWin32FindData(pdisp, &wfd);
-					}
-					SafeRelease(&pdisp);
+					teSetLong(pVarResult, iResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsGetFileW || FsGetFile);
 				}
-				teSetBool(pVarResult, bResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsFindNextW || FsFindNext);
-			}
-			return S_OK;
-		//FsFindClose
-		case 0x60010004:
-			if (nArg >= 0) {
-				int iResult = 1;
-				if (FsFindClose) {
-					iResult = FsFindClose((HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]));
-				}
-				teSetLong(pVarResult, iResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsFindClose != NULL);
-			}
-			return S_OK;
-		//FsGetDefRootName
-		case 0x60010005:
-			if (FsGetDefRootName) {
-				char DefRootName[MAX_PATH];
-				DefRootName[0] = NULL;
-				FsGetDefRootName(DefRootName, MAX_PATH);
-				teSetSZA(pVarResult, DefRootName, CP_ACP);
-			}
-			return S_OK;
-		//FsGetFile
-		case 0x60010006:
-			if (nArg >= 3) {
-				int iResult = 0;
-				LPWSTR lpRemoteName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				LPWSTR lpLocalName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
-				int nCopyFlags = GetIntFromVariant(&pDispParams->rgvarg[nArg - 2]);
-				RemoteInfoStruct ri = { 0 };
-				if (GetRIFromVariant(&pDispParams->rgvarg[nArg - 3], &ri)) {
-					if (FsGetFileW) {
-						iResult = FsGetFileW(lpRemoteName, lpLocalName, nCopyFlags, &ri);
-					} else if (FsGetFile) {
+				return S_OK;
+			//FsPutFile
+			case 0x60010007:
+				if (nArg >= 2) {
+					int iResult = 0;
+					LPWSTR lpLocalName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					LPWSTR lpRemoteName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
+					int nCopyFlags = GetIntFromVariant(&pDispParams->rgvarg[nArg - 2]);
+					if (FsPutFileW) {
+						iResult = FsPutFileW(lpLocalName, lpRemoteName, nCopyFlags);
+					} else if (FsPutFile) {
 						BSTR bsRemoteName = teWide2Ansi(lpRemoteName, -1);
 						BSTR bsLocalName = teWide2Ansi(lpLocalName, -1);
-						iResult = FsGetFile((char *)bsRemoteName, (char *)bsLocalName, nCopyFlags, &ri);
+						iResult = FsPutFile((char *)bsLocalName, (char *)bsRemoteName, nCopyFlags);
 						teSysFreeString(&bsLocalName);
 						teSysFreeString(&bsRemoteName);
 					}
+					teSetLong(pVarResult, iResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsPutFileW || FsPutFile);
 				}
-				teSetLong(pVarResult, iResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsGetFileW || FsGetFile);
-			}
-			return S_OK;
-		//FsPutFile
-		case 0x60010007:
-			if (nArg >= 2) {
-				int iResult = 0;
-				LPWSTR lpLocalName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				LPWSTR lpRemoteName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
-				int nCopyFlags = GetIntFromVariant(&pDispParams->rgvarg[nArg - 2]);
-				if (FsPutFileW) {
-					iResult = FsPutFileW(lpLocalName, lpRemoteName, nCopyFlags);
-				} else if (FsPutFile) {
-					BSTR bsRemoteName = teWide2Ansi(lpRemoteName, -1);
-					BSTR bsLocalName = teWide2Ansi(lpLocalName, -1);
-					iResult = FsPutFile((char *)bsLocalName, (char *)bsRemoteName, nCopyFlags);
-					teSysFreeString(&bsLocalName);
-					teSysFreeString(&bsRemoteName);
-				}
-				teSetLong(pVarResult, iResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsPutFileW || FsPutFile);
-			}
-			return S_OK;
-		//FsRenMovFile
-		case 0x60010008:
-			if (nArg >= 4) {
-				int iResult = 0;
-				LPWSTR lpOldName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				LPWSTR lpNewName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
-				BOOL bMove = GetIntFromVariant(&pDispParams->rgvarg[nArg - 2]);
-				BOOL bOverWrite = GetIntFromVariant(&pDispParams->rgvarg[nArg - 3]);
-				RemoteInfoStruct ri = { 0 };
-				if (GetRIFromVariant(&pDispParams->rgvarg[nArg - 4], &ri)) {
-					if (FsRenMovFileW) {
-						iResult = FsRenMovFileW(lpOldName, lpNewName, bMove, bOverWrite, &ri);
-					} else if (FsRenMovFile) {
-						BSTR bsOldName = teWide2Ansi(lpOldName, -1);
-						BSTR bsNewName = teWide2Ansi(lpNewName, -1);
-						iResult = FsRenMovFile((char *)bsOldName, (char *)bsNewName, bMove, bOverWrite, &ri);
-						teSysFreeString(&bsNewName);
-						teSysFreeString(&bsOldName);
+				return S_OK;
+			//FsRenMovFile
+			case 0x60010008:
+				if (nArg >= 4) {
+					int iResult = 0;
+					LPWSTR lpOldName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					LPWSTR lpNewName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
+					BOOL bMove = GetIntFromVariant(&pDispParams->rgvarg[nArg - 2]);
+					BOOL bOverWrite = GetIntFromVariant(&pDispParams->rgvarg[nArg - 3]);
+					RemoteInfoStruct ri = { 0 };
+					if (GetRIFromVariant(&pDispParams->rgvarg[nArg - 4], &ri)) {
+						if (FsRenMovFileW) {
+							iResult = FsRenMovFileW(lpOldName, lpNewName, bMove, bOverWrite, &ri);
+						} else if (FsRenMovFile) {
+							BSTR bsOldName = teWide2Ansi(lpOldName, -1);
+							BSTR bsNewName = teWide2Ansi(lpNewName, -1);
+							iResult = FsRenMovFile((char *)bsOldName, (char *)bsNewName, bMove, bOverWrite, &ri);
+							teSysFreeString(&bsNewName);
+							teSysFreeString(&bsOldName);
+						}
 					}
+					teSetLong(pVarResult, iResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsRenMovFileW || FsRenMovFile);
 				}
-				teSetLong(pVarResult, iResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsRenMovFileW || FsRenMovFile);
-			}
-			return S_OK;
-		case 0x60010009:
-		//FsDeleteFile
-			if (nArg >= 0) {
-				BOOL bResult = FALSE;
-				LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				if (FsDeleteFileW) {
-					bResult = FsDeleteFileW(lpPath);
-				} else if (FsDeleteFile) {
-					BSTR bsPath = teWide2Ansi(lpPath, -1);
-					bResult = FsDeleteFile((char *)bsPath);
-					teSysFreeString(&bsPath);
-				}
-				teSetBool(pVarResult, bResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsDeleteFileW || FsDeleteFile);
-			}
-			return S_OK;
-		//FsRemoveDir
-		case 0x6001000A:
-			if (nArg >= 0) {
-				BOOL bResult = FALSE;
-				LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				if (FsRemoveDirW) {
-					bResult = FsRemoveDirW(lpPath);
-				} else if (FsRemoveDir) {
-					BSTR bsPath = teWide2Ansi(lpPath, -1);
-					bResult = FsRemoveDir((char *)bsPath);
-					teSysFreeString(&bsPath);
-				}
-				teSetBool(pVarResult, bResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsRemoveDirW || FsRemoveDir);
-			}
-			return S_OK;
-		//FsMkDir
-		case 0x6001000B:
-			if (nArg >= 0) {
-				BOOL bResult = FALSE;
-				LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				if (FsMkDirW) {
-					bResult = FsMkDirW(lpPath);
-				} else if (FsMkDir) {
-					BSTR bsPath = teWide2Ansi(lpPath, -1);
-					bResult = FsMkDir((char *)bsPath);
-					teSysFreeString(&bsPath);
-				}
-				teSetBool(pVarResult, bResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsMkDirW || FsMkDir);
-			}
-			return S_OK;
-		//FsExecuteFile
-		case 0x6001000C:
-			if (nArg >= 2) {
-				int iResult = FS_EXEC_YOURSELF;
-				HWND hwndMain = (HWND)GetPtrFromVariant(&pDispParams->rgvarg[nArg]);
-				LPWSTR lpRemoteName = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
-				LPWSTR lpVerb = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 2]);
-				if (FsExecuteFileW) {
-					iResult = FsExecuteFileW(hwndMain, lpRemoteName, lpVerb);
-				} else if (FsExecuteFile) {
-					BSTR bsRemoteName = teWide2Ansi(lpRemoteName, -1);
-					BSTR bsVerb = teWide2Ansi(lpVerb, -1);
-					iResult = FsExecuteFile(hwndMain, (char *)bsRemoteName, (char *)bsVerb);
-					teSysFreeString(&bsVerb);
-					teSysFreeString(&bsRemoteName);
-				}
-				teSetLong(pVarResult, iResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsExecuteFileW || FsExecuteFile);
-			}
-			return S_OK;
-		//FsSetAttr
-		case 0x6001000D:
-			if (nArg >= 1) {
-				BOOL bResult = FALSE;
-				LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				int iNewAttr = GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]);
-				if (FsSetAttrW) {
-					bResult = FsSetAttrW(lpPath, iNewAttr);
-				} else if (FsSetAttr) {
-					BSTR bsPath = teWide2Ansi(lpPath, -1);
-					bResult = FsSetAttr((char *)bsPath, iNewAttr);
-					teSysFreeString(&bsPath);
-				}
-				teSetBool(pVarResult, bResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsSetAttrW || FsSetAttr);
-			}
-			return S_OK;
-		//FsSetTime
-		case 0x6001000E:
-			if (nArg >= 3) {
-				BOOL bResult = FALSE;
-				LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				FILETIME *ppft[3];
-				FILETIME pft[3];
-				for (int i = 3; i--;) {
-					ppft[i] = teVariantTimeToFileTimeEx(&pDispParams->rgvarg[nArg - i - 1], &pft[i]) ? &pft[i] : NULL;
-				}
-				if (FsSetTimeW) {
-					bResult = FsSetTimeW(lpPath, ppft[0], ppft[1], ppft[2]);
-				} else if (FsSetTime) {
-					BSTR bsPath = teWide2Ansi(lpPath, -1);
-					bResult = FsSetTime((char *)bsPath, ppft[0], ppft[1], ppft[2]);
-					teSysFreeString(&bsPath);
-				}
-				teSetBool(pVarResult, bResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsSetTimeW || FsSetTime);
-			}
-			return S_OK;
-		//FsDisconnect
-		case 0x6001000F:
-			if (nArg >= 0) {
-				BOOL bResult = FALSE;
-				LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				if (FsDisconnectW) {
-					bResult = FsDisconnectW(lpPath);
-				} else if (FsDisconnect) {
-					BSTR bsPath = teWide2Ansi(lpPath, -1);
-					bResult = FsDisconnect((char *)bsPath);
-					teSysFreeString(&bsPath);
-				}
-				teSetBool(pVarResult, bResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsDisconnectW || FsDisconnect);
-			}
-			return S_OK;
-		//FsExtractCustomIcon
-		case 0x60010010:
-			if (nArg >= 2) {
-				BOOL iResult = FS_ICON_USEDEFAULT;	
-				IUnknown *punk;
-				if (FindUnknown(&pDispParams->rgvarg[nArg - 2], &punk)) {
+				return S_OK;
+			case 0x60010009:
+			//FsDeleteFile
+				if (nArg >= 0) {
+					BOOL bResult = FALSE;
 					LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-					int iExtractFlags = GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]);
-					HICON hIcon;
-					if (FsExtractCustomIconW) {
-						iResult = FsExtractCustomIconW(lpPath, iExtractFlags, &hIcon);
-					} else if (FsExtractCustomIcon) {
+					if (FsDeleteFileW) {
+						bResult = FsDeleteFileW(lpPath);
+					} else if (FsDeleteFile) {
 						BSTR bsPath = teWide2Ansi(lpPath, -1);
-						iResult = FsExtractCustomIcon((char *)bsPath, iExtractFlags, &hIcon);
+						bResult = FsDeleteFile((char *)bsPath);
 						teSysFreeString(&bsPath);
 					}
-					VARIANT v;
-					teSetPtr(&v, hIcon);
-					tePutProperty(punk, L"0", &v);
-					VariantClear(&v);
+					teSetBool(pVarResult, bResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsDeleteFileW || FsDeleteFile);
 				}
-				teSetLong(pVarResult, iResult);
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsSetAttrW || FsSetAttr);
-			}
-			return S_OK;
-		//FsSetCryptCallback
-		case 0x60010011:
-			if (nArg >= 2) {
-				SafeRelease(&g_pdispCryptProc);
-				GetDispatch(&pDispParams->rgvarg[nArg], &g_pdispCryptProc);
-				int iCryptoNr = GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]);
-				int iFlags = GetIntFromVariant(&pDispParams->rgvarg[nArg - 2]);
-				if (FsSetCryptCallbackW) {
-					FsSetCryptCallbackW(twfx_tCryptProcW, iCryptoNr, iFlags);
-				} else if (FsSetCryptCallback) {
-					FsSetCryptCallback(twfx_tCryptProc, iCryptoNr, iFlags);
+				return S_OK;
+			//FsRemoveDir
+			case 0x6001000A:
+				if (nArg >= 0) {
+					BOOL bResult = FALSE;
+					LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					if (FsRemoveDirW) {
+						bResult = FsRemoveDirW(lpPath);
+					} else if (FsRemoveDir) {
+						BSTR bsPath = teWide2Ansi(lpPath, -1);
+						bResult = FsRemoveDir((char *)bsPath);
+						teSysFreeString(&bsPath);
+					}
+					teSetBool(pVarResult, bResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsRemoveDirW || FsRemoveDir);
 				}
-			} else if (wFlags == DISPATCH_PROPERTYGET) {
-				teSetBool(pVarResult, FsSetCryptCallbackW || FsSetCryptCallback);
-			}
-			return S_OK;
-		//IsUnicode
-		case 0x6001FFFF:
-			teSetBool(pVarResult, FsInitW != NULL);
-			return S_OK;
-		//this
-		case DISPID_VALUE:
-			if (pVarResult) {
-				teSetObject(pVarResult, this);
-			}
-			return S_OK;
-	}//end_switch
-/*/// for Debug
-	TCHAR szError[16];
-	wsprintf(szError, TEXT("%x"), dispIdMember);
-	MessageBox(NULL, (LPWSTR)szError, 0, 0);
-*///
+				return S_OK;
+			//FsMkDir
+			case 0x6001000B:
+				if (nArg >= 0) {
+					BOOL bResult = FALSE;
+					LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					if (FsMkDirW) {
+						bResult = FsMkDirW(lpPath);
+					} else if (FsMkDir) {
+						BSTR bsPath = teWide2Ansi(lpPath, -1);
+						bResult = FsMkDir((char *)bsPath);
+						teSysFreeString(&bsPath);
+					}
+					teSetBool(pVarResult, bResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsMkDirW || FsMkDir);
+				}
+				return S_OK;
+			//FsExecuteFile
+			case 0x6001000C:
+				if (nArg >= 2) {
+					int iResult = FS_EXEC_YOURSELF;
+					IDispatch *pdisp;
+					if (GetDispatch(&pDispParams->rgvarg[nArg - 1], &pdisp)) {
+						WCHAR szRemoteName[1024];
+						VARIANT v;
+						VariantInit(&v);
+						teGetProperty(pdisp, L"0", &v);
+						LPWSTR lpRemoteName = GetLPWSTRFromVariant(&v);
+						lstrcpyn(szRemoteName, lpRemoteName, 1024);
+						HWND hwndMain = (HWND)GetPtrFromVariant(&pDispParams->rgvarg[nArg]);
+						LPWSTR lpVerb = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 2]);
+						if (FsExecuteFileW) {
+							iResult = FsExecuteFileW(hwndMain, szRemoteName, lpVerb);
+						} else if (FsExecuteFile) {
+							char szRemoteNameA[1024];
+							WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)szRemoteName, -1, (LPSTR)szRemoteNameA, 1024, NULL, NULL);
+							BSTR bsVerb = teWide2Ansi(lpVerb, -1);
+							iResult = FsExecuteFile(hwndMain, szRemoteNameA, (char *)bsVerb);
+							teSysFreeString(&bsVerb);
+							MultiByteToWideChar(CP_ACP, 0, szRemoteNameA, -1, szRemoteName, 1024);
+						}
+						VariantClear(&v);
+						teSetSZ(&v, szRemoteName);
+						tePutProperty(pdisp, L"0", &v);
+						pdisp->Release();
+					}
+					teSetLong(pVarResult, iResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsExecuteFileW || FsExecuteFile);
+				}
+				return S_OK;
+			//FsSetAttr
+			case 0x6001000D:
+				if (nArg >= 1) {
+					BOOL bResult = FALSE;
+					LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					int iNewAttr = GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]);
+					if (FsSetAttrW) {
+						bResult = FsSetAttrW(lpPath, iNewAttr);
+					} else if (FsSetAttr) {
+						BSTR bsPath = teWide2Ansi(lpPath, -1);
+						bResult = FsSetAttr((char *)bsPath, iNewAttr);
+						teSysFreeString(&bsPath);
+					}
+					teSetBool(pVarResult, bResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsSetAttrW || FsSetAttr);
+				}
+				return S_OK;
+			//FsSetTime
+			case 0x6001000E:
+				if (nArg >= 3) {
+					BOOL bResult = FALSE;
+					LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					FILETIME *ppft[3];
+					FILETIME pft[3];
+					for (int i = 3; i--;) {
+						ppft[i] = teVariantTimeToFileTimeEx(&pDispParams->rgvarg[nArg - i - 1], &pft[i]) ? &pft[i] : NULL;
+					}
+					if (FsSetTimeW) {
+						bResult = FsSetTimeW(lpPath, ppft[0], ppft[1], ppft[2]);
+					} else if (FsSetTime) {
+						BSTR bsPath = teWide2Ansi(lpPath, -1);
+						bResult = FsSetTime((char *)bsPath, ppft[0], ppft[1], ppft[2]);
+						teSysFreeString(&bsPath);
+					}
+					teSetBool(pVarResult, bResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsSetTimeW || FsSetTime);
+				}
+				return S_OK;
+			//FsDisconnect
+			case 0x6001000F:
+				if (nArg >= 0) {
+					BOOL bResult = FALSE;
+					LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					if (FsDisconnectW) {
+						bResult = FsDisconnectW(lpPath);
+					} else if (FsDisconnect) {
+						BSTR bsPath = teWide2Ansi(lpPath, -1);
+						bResult = FsDisconnect((char *)bsPath);
+						teSysFreeString(&bsPath);
+					}
+					teSetBool(pVarResult, bResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsDisconnectW || FsDisconnect);
+				}
+				return S_OK;
+			//FsExtractCustomIcon
+			case 0x60010010:
+				if (nArg >= 2) {
+					BOOL iResult = FS_ICON_USEDEFAULT;	
+					IUnknown *punk;
+					if (FindUnknown(&pDispParams->rgvarg[nArg - 2], &punk)) {
+						LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+						int iExtractFlags = GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]);
+						HICON hIcon;
+						if (FsExtractCustomIconW) {
+							iResult = FsExtractCustomIconW(lpPath, iExtractFlags, &hIcon);
+						} else if (FsExtractCustomIcon) {
+							BSTR bsPath = teWide2Ansi(lpPath, -1);
+							iResult = FsExtractCustomIcon((char *)bsPath, iExtractFlags, &hIcon);
+							teSysFreeString(&bsPath);
+						}
+						VARIANT v;
+						teSetPtr(&v, hIcon);
+						tePutProperty(punk, L"0", &v);
+						VariantClear(&v);
+					}
+					teSetLong(pVarResult, iResult);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsSetAttrW || FsSetAttr);
+				}
+				return S_OK;
+			//FsSetCryptCallback
+			case 0x60010011:
+				if (nArg >= 2) {
+					SafeRelease(&g_pdispCryptProc);
+					GetDispatch(&pDispParams->rgvarg[nArg], &g_pdispCryptProc);
+					int iCryptoNr = GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]);
+					int iFlags = GetIntFromVariant(&pDispParams->rgvarg[nArg - 2]);
+					if (FsSetCryptCallbackW) {
+						FsSetCryptCallbackW(twfx_tCryptProcW, iCryptoNr, iFlags);
+					} else if (FsSetCryptCallback) {
+						FsSetCryptCallback(twfx_tCryptProc, iCryptoNr, iFlags);
+					}
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsSetCryptCallbackW || FsSetCryptCallback);
+				}
+				return S_OK;
+			//FsSetDefaultParams
+			case 0x60010012:
+				if (nArg >= 0 && FsSetDefaultParams) {
+					FsDefaultParamStruct dps = { sizeof(FsDefaultParamStruct), 10, 2 };
+					LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+					if (lpPath) {
+						WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)lpPath, -1, dps.DefaultIniName, MAX_PATH, NULL, NULL);
+					}
+					FsSetDefaultParams(&dps);
+				} else if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetBool(pVarResult, FsSetDefaultParams != NULL);
+				}
+				return S_OK;
+			//IsUnicode
+			case 0x6001FFFF:
+				teSetBool(pVarResult, FsInitW != NULL);
+				return S_OK;
+			//this
+			case DISPID_VALUE:
+				if (pVarResult) {
+					teSetObject(pVarResult, this);
+				}
+				return S_OK;
+		}//end_switch
+	} catch (...) {
+		return DISP_E_EXCEPTION;
+	}
 	return DISP_E_MEMBERNOTFOUND;
 }
 

@@ -21,12 +21,12 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
             VALUE "CompanyName", "Tablacus\0"
             VALUE "FileDescription", PRODUCTNAME "\0"
             VALUE "FileVersion", STRING(VER_Y) "." STRING(VER_M) "." STRING(VER_D) "." STRING(VER_Z) "\0"
-            VALUE "InternalName", "twfx\0"
+            VALUE "InternalName", INTERNALNAME "\0"
             VALUE "LegalCopyright", "(C) Gaku\0"
 #ifdef _WIN64
-            VALUE "OriginalFilename", "twfx64.dll\0"
+            VALUE "OriginalFilename", INTERNALNAME "64.dll\0"
 #else
-            VALUE "OriginalFilename", "twfx32.dll\0"
+            VALUE "OriginalFilename", INTERNALNAME "32.dll\0"
 #endif
             VALUE "ProductName", PRODUCTNAME "\0"
             VALUE "ProductVersion", STRING(VER_Y) "." STRING(VER_M) "." STRING(VER_D) "." STRING(VER_Z) "\0"
