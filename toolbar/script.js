@@ -115,26 +115,26 @@ if (window.Addon == 1) {
 			var menus = 0;
 			for (var i = 0; i < items.length; i++) {
 				var item = items[i];
-				var strFlag = api.StrCmpI(item.getAttribute("Type"), "Menus") ? "" : item.text;
-				if (api.PathMatchSpec(strFlag, "Close") && menus) {
+				var strFlag = (api.StrCmpI(item.getAttribute("Type"), "Menus") ? "" : item.text).toLowerCase();
+				if (strFlag == "close" && menus) {
 					menus--;
 					continue;
 				}
 				var menus1 = menus;
-				if (api.PathMatchSpec(strFlag, "Open")) {
+				if (strFlag == "open") {
 					if (menus++) {
 						continue;
 					}
 				} else if (menus) {
 					continue;
 				}
-				var img = item.getAttribute("Name");
-				if (img == "/" || api.StrCmpI(strFlag, "Break") == 0) {
-					s.push("<br />");
-				} else if (img == "//" || api.StrCmpI(strFlag, "BarBreak") == 0) {
-					s.push('<hr />');
-				} else if (img == "-" || api.StrCmpI(strFlag, "Separator") == 0) {
-					s.push('<span style="color: gray">|</span>');
+				var img = String(item.getAttribute("Name")).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+				if (img == "/" || strFlag == "break") {
+					s.push('<br class="break" />');
+				} else if (img == "//" || strFlag == "barbreak") {
+					s.push('<hr class="barbreak" />');
+				} else if (img == "-" || strFlag == "separator") {
+					s.push('<span class="separator">|</span>');
 				} else {
 					var icon = item.getAttribute("Icon");
 					if (icon != "") {

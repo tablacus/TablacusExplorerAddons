@@ -86,41 +86,49 @@ if (window.Addon == 1) {
 			var image = te.GdiplusBitmap;
 			for (var i = 0; i < items.length; i++) {
 				var item = items[i];
-				var strFlag = api.StrCmpI(item.getAttribute("Type"), "Menus") ? "" : item.text;
-				if (api.PathMatchSpec(strFlag, "Close") && menus) {
+				var strFlag = (api.StrCmpI(item.getAttribute("Type"), "Menus") ? "" : item.text).toLowerCase();
+				if (strFlag == "close" && menus) {
 					menus--;
 					continue;
 				}
 				var menus1 = menus;
-				if (api.PathMatchSpec(strFlag, "Open")) {
+				if (strFlag == "open") {
 					if (menus++) {
 						continue;
 					}
 				} else if (menus) {
 					continue;
 				}
-				var img = '';
-				var icon = item.getAttribute("Icon");
-				if (icon != "") {
-					var h = (item.getAttribute("Height") || "").replace(/"/g, "");
-					var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
-					h -= 0;
-					img = '<img src="' + (icon || "").replace(/"/g, "") + '"' + sh + '>';
-				} else if (/Open|Exec/i.test(item.getAttribute("Type"))) {
-					var path = this.GetPath(items, i);
-					var pidl = api.ILCreateFromPath(path);
-					if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
-						var res = /"([^"]*)"/.exec(path) || /([^ ]*)/.exec(path);
-						if (res) {
-							pidl = api.ILCreateFromPath(res[1]);
+				if (strFlag == "break") {
+					s.push('<br class="break" />');
+				} else if (strFlag == "barbreak") {
+					s.push('<hr class="barbreak" />');
+				} else if (strFlag == "separator") {
+					s.push('<span class="separator">|</span>');
+				} else {
+					var img = '';
+					var icon = item.getAttribute("Icon");
+					if (icon != "") {
+						var h = (item.getAttribute("Height") || "").replace(/"/g, "");
+						var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
+						h -= 0;
+						img = '<img src="' + (icon || "").replace(/"/g, "") + '"' + sh + '>';
+					} else if (/Open|Exec/i.test(item.getAttribute("Type"))) {
+						var path = this.GetPath(items, i);
+						var pidl = api.ILCreateFromPath(path);
+						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
+							var res = /"([^"]*)"/.exec(path) || /([^ ]*)/.exec(path);
+							if (res) {
+								pidl = api.ILCreateFromPath(res[1]);
+							}
+						}
+						if (pidl) {
+							img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '">';
 						}
 					}
-					if (pidl) {
-						img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '">';
-					}
+					s.push('<span id="_linkbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' + i + ')" onmousedown="Addons.LinkBar.Down(' : 'onmousedown="Addons.LinkBar.Open(');
+					s.push(i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, '<span class="linklabel"> ', item.getAttribute("Name").replace(/</g, "&lt;").replace(/>/g, "&gt;"), '</span></span> ');
 				}
-				s.push('<span id="_linkbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' + i + ')" onmousedown="Addons.LinkBar.Down(' : 'onmousedown="Addons.LinkBar.Open(');
-				s.push(i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, ' ', items[i].getAttribute("Name"), '</span> ');
 			}
 			s.push('<label id="Link', items.length, '" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
 			s.push('&nbsp;</label>');
