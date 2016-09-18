@@ -1,10 +1,11 @@
-Addon_Id = "favoritesbar";
+var Addon_Id = "favoritesbar";
 
 if (window.Addon == 1) {
 	Addons.FavoritesBar =
 	{
 		Align: api.StrCmpI(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
 		Width: 0,
+		arExpand: GetAddonOptionEx("favoritesbar", "Expanded") ? [BUTTONS.opened, ''] : [BUTTONS.closed, ' style="display: none"'],
 
 		Init: function ()
 		{
@@ -129,11 +130,12 @@ if (window.Addon == 1) {
 						continue;
 					}
 					path = Addons.FavoritesBar.GetPath(items, i);
-					if (img) {
-						img = '<img src="' + MakeImgSrc(img, 0, false, 16) + '" />';
-					} else if (nOpen) {
-						img = '<a id="fav' + i + '_button" class="treebutton">' + BUTTONS.opened + '</a><img src="' + MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16) + '">';
-					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
+					if (nOpen) {
+						img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a><img src="' + (img || MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16)) + '">';
+					} else if (img) {
+						img = '<img src="' + MakeImgSrc("icon:shell32.dll,0,16", 0, false, 16) + '">';
+					}
+					else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
 						var pidl = api.ILCreateFromPath(path);
 						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
 							var res = /"([^"]*)"/.exec(path) || /([^ ]*)/.exec(path);
@@ -147,7 +149,7 @@ if (window.Addon == 1) {
 					}
 					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', items[i].text.replace(/"/g, "&quot;"), '" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", strName.replace(/&/g, ""), '</div> ');
 					if (nOpen) {
-						s.push(api.sprintf(99, '<div id="fav%d_">', i));
+						s.push(api.sprintf(99, '<div id="fav%d_"%s>', i, Addons.FavoritesBar.arExpand[1]));
 						nLevel++;
 					}
 				}
