@@ -1,4 +1,4 @@
-var urlAddons = "http://www.eonet.ne.jp/~gakana/tablacus/addons/";
+var urlAddons = "http://tablacus.github.io/TablacusExplorerAddons/";
 nCount = 0;
 returnValue = false;
 xhr = null;
