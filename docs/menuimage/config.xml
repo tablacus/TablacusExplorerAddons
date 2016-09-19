@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2013.12.8</MinVersion>
+    <pubDate>Sun, 8 Dec 2013 00:00:00 UTC</pubDate>
+    <Options>Common:7:7</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Menu Image</Name>
+    <Description>Display the image of the selected file in the menu.</Description>
+  </en>
+  <ja>
+    <Name>メニューに画像</Name>
+    <Description>メニューに選択したファイルの画像を表示します。</Description>
+  </ja>
+</TablacusExplorer>

@@ -1,8 +1,7 @@
 ﻿var Addon_Id = "ffc";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
+var item = GetAddonElement(Addon_Id);
+if (item) {
 	if (!item.getAttribute("Set")) {
 		item.setAttribute("Class", "{E6385E40-E2A6-11d5-ABE6-9EB61339EA35}");
 		item.setAttribute("Copy", 1);
@@ -12,6 +11,8 @@ if (items.length) {
 if (window.Addon == 1) {
 	Addons.FFC =
 	{
+		bDiffDriveOnly: item.getAttribute("DiffDriveOnly"),
+
 		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver)
 		{
 			var i = Items.Count;
@@ -42,13 +43,12 @@ if (window.Addon == 1) {
 							DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 						}
 						if (pdwEffect[0] & DROPEFFECT_COPY) {
-							nVerb = GetAddonOption("ffc", "Copy");
+							nVerb = GetAddonOptionEx("ffc", "Copy");
 						} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
-							if (!api.PathIsSameRoot(Parent.Path, path)) {
-								nVerb = GetAddonOption("ffc", "Move");
+							if (!(Addons.FFC.bDiffDriveOnly && api.PathIsSameRoot(Parent.Path, path))) {
+								nVerb = GetAddonOptionEx("ffc", "Move");
 							}
 						}
-						nVerb = api.LowPart(nVerb);
 						if (nVerb > 0) {
 							var dll = api.PathUnquoteSpaces(ExtractMacro(te, GetAddonOption("ffc", "Path") + ""));
 							var cls = GetAddonOption("ffc", "Class");

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.19</Version>
+    <MinVersion>2016.8.7</MinVersion>
+    <pubDate>Sun, 07 Aug 2016 00:00:00 GMT</pubDate>
+    <Options>Common:0,5,6,7,8,9:0</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Everything</Name>
+    <Description>Search on Everything Search Engine.</Description>
+  </en>
+  <ja>
+    <Name>Everything</Name>
+    <Description>Everything Search Engineで検索を行います。</Description>
+  </ja>
+</TablacusExplorer>

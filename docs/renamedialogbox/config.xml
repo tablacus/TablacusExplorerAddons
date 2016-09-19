@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2014.3.30</MinVersion>
+    <pubDate>Sun, 6 Apr 2014 00:00:00 UTC</pubDate>
+    <Options>Common:7,8,9:7</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Rename Dialog Box</Name>
+    <Description>Rename Dialog Box</Description>
+  </en>
+  <ja>
+    <Name>名前の変更ダイアログボックス</Name>
+    <Description>名前の変更をダイアログボックスで行います。</Description>
+  </ja>
+</TablacusExplorer>

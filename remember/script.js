@@ -76,7 +76,7 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		if (Ctrl.Data.Setting == 'Remember') {
+		if (Ctrl.Data && Ctrl.Data.Setting == 'Remember') {
 			var path = Addons.Remember.GetPath(Ctrl);
 			if (path) {
 				Ctrl.Data.Remember = path;
@@ -85,10 +85,10 @@ if (window.Addon == 1) {
 					Ctrl.CurrentViewMode(ar[1], ar[2]);
 					Ctrl.Columns = ar[3];
 					var col = Ctrl.Columns(Addons.Remember.nFormat);
-					Ctrl.SortColumn = ar[4];
 					if (Ctrl.GroupBy && ar[5]) {
 						Ctrl.GroupBy = ar[5];
 					}
+					Ctrl.SortColumn = ar[4];
 					ar[0] = new Date().getTime();
 				}
 			}

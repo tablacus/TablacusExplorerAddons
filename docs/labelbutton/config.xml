@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.04</Version>
+    <MinVersion>2016.2.1</MinVersion>
+    <pubDate>Mon, 1 Feb 2016 00:00:00 UTC</pubDate>
+    <Creator>Gaku</Creator>
+    <Options>Location</Options>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Label button</Name>
+    <Description>Label button *Require "Label"</Description>
+  </en>
+  <ja>
+    <Name>ラベル ボタン</Name>
+    <Description>ラベル ボタン ※"ラベル"が必要</Description>
+  </ja>
+</TablacusExplorer>

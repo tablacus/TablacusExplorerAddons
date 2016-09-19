@@ -1,4 +1,4 @@
-Addon_Id = "takeoverfoldersettings";
+var Addon_Id = "takeoverfoldersettings";
 
 var items = te.Data.Addons.getElementsByTagName(Addon_Id);
 var item = items.length ? items[0] : null;
@@ -66,7 +66,7 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		if (Ctrl.Data.Setting == 'TakeOver') {
+		if (Ctrl.Data && Ctrl.Data.Setting == 'TakeOver') {
 			var path = String(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
 			if (PathMatchEx(path, Addons.TakeOverFolderSettings.Filter)) {
 				Ctrl.Data.TakeOver = path;
@@ -74,10 +74,10 @@ if (window.Addon == 1) {
 				if (ar) {
 					Ctrl.CurrentViewMode(ar[0], ar[1]);
 					Ctrl.Columns = ar[2];
-					Ctrl.SortColumn = ar[3];
 					if (Ctrl.GroupBy && ar[4]) {
 						Ctrl.GroupBy = ar[4];
 					}
+					Ctrl.SortColumn = ar[3];
 				}
 			}
 		}

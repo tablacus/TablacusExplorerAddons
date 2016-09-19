@@ -38,12 +38,14 @@
         <input type="button" value="None" title="0" onclick="SetData(this, 'Copy')" />
         <input type="button" value="Default" title="1" onclick="SetData(this, 'Copy')" />
       </div>
-      <div class="panel" style="display: block; height: 9em; height: calc(100vh / 4 - 1em)">
+      <div class="panel" style="display: block; height: 9em; height: calc(100vh / 4)">
         <label>Move</label>
         <input type="text" id="Move" style="width: 100%" />
         <input type="button" value="Browse..." onclick="RefId(this, 'Move')" />
         <input type="button" value="None" title="0" onclick="SetData(this, 'Move')" />
         <input type="button" value="Default" title="2" onclick="SetData(this, 'Move')" />
+        <input type="checkbox" id="DiffDriveOnly" />
+        <label for="DiffDriveOnly">Different drive only</label>
       </div>
       <table style="width: 100%">
         <tr>

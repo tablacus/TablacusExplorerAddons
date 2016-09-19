@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+	<General>
+		<Version>1.00</Version>
+		<MinVersion>2011.06.14</MinVersion>
+		<Options></Options>
+		<pubDate>Fri, 17 Jun 2011 00:00:00 +0900</pubDate>
+	</General>
+	<en>
+		<Name>Tab Parent Folder Name</Name>
+		<Creator>Gaku</Creator>
+		<Description>Tab displays the name of the parent folder.</Description>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+	</en>
+	<ja>
+		<Name>タブに親フォルダ名も表示</Name>
+		<Creator>Gaku</Creator>
+		<Description>タブに親フォルダ名も表示します。</Description>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+	</ja>
+</TablacusExplorer>

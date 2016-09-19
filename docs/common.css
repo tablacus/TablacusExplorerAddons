@@ -1,0 +1,89 @@
+﻿body {
+	line-height: 140%;
+	margin-left: 5%;
+	margin-right: 5%;
+	font-family: 'Lucida Grande', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, メイリオ, 'ＭＳ Ｐゴシック', sans-serif;
+}
+form {
+	display: inline;
+}
+td {
+	line-height: 140%;
+}
+a:link {
+	color: #0000ff;
+}
+a:visited {
+	color: #0033ff;
+}
+a:active {
+	color: #ff0000;
+}
+h1 {
+	background-color: #9ab3e4;
+	width: 100%;
+	line-height: 160%;
+}
+h2 {
+	padding-left: 16px;
+	background-color: #9ab3e4;
+	width: 100%;
+	line-height: 160%;
+}
+h3 {
+	padding-left: 16px;
+	background-color: #f0f0f0;
+	border-bottom: 3px solid #000099;
+}
+h4 {
+	color: white;
+	padding-left: 16px;
+	background-color: navy;
+}
+kbd {
+	font-weight: normal;
+	font-size: 90%;
+	border-left: 1px solid gray;
+	border-top: 1px solid gray;
+	border-right: 2px solid gray;
+	border-bottom: 2px solid gray;
+	padding-left: 2px;
+	padding-right: 1px;
+	padding-top: 2px;
+	padding-bottom: 1px;
+}
+address {
+	display: inline;
+}
+blockquote {
+	font-size: 90%;
+	border: 1px dotted black; 
+	padding: 4px 16px 4px 16px; 
+	background-color: #ffff99;
+}
+.menu {
+	font-size: 97%;
+	background-color: silver;
+	padding: 2px 2px 2px 2px;
+	white-space: nowrap;
+}
+.x {
+	font-style: italic;
+    color: red;
+	font-family: Georgia, serif;
+}
+.bar {
+	background-color: #9ab3e4;
+	border: 1px solid black; 
+	padding-left: 6px; 
+}
+.info {
+	font-size: 90%;
+	border: 1px dotted black; 
+	padding: 4px 16px 4px 16px; 
+	background-color: #ffff99;
+}
+.ss {
+	max-width: 100%;
+	min-width: 320px;
+}

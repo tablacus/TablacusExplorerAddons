@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+	<General>
+		<Version>1.00</Version>
+		<MinVersion>2011.06.08</MinVersion>
+		<Options>dialogWidth: 320px; dialogHeight: 100px; resizable: yes; status=0</Options>
+		<pubDate>Wed, 2 Nov 2011 00:00:00 +0900</pubDate>
+	</General>
+	<en>
+		<Name>Icon Size</Name>
+		<Creator>Gaku</Creator>
+		<Description>Tablacus Icon Size</Description>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+	</en>
+	<ja>
+		<Name>アイコンサイズ</Name>
+		<Creator>Gaku</Creator>
+		<Description>アイコンの大きさ</Description>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+	</ja>
+</TablacusExplorer>

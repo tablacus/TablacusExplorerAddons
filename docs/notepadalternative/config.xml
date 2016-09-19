@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+	<General>
+		<Version>1.00</Version>
+		<MinVersion>2013.11.24</MinVersion>
+		<pubDate>Sun, 24 Nov 2013 00:00:00 UTC</pubDate>
+		<Options>dialogWidth: 640px; dialogHeight: 128px; resizable: yes; status: 0</Options>
+		<Creator>Gaku</Creator>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+		<License>MIT License</License>
+	</General>
+	<en>
+		<Name>Notepad Alternative</Name>
+		<Description>Notepad alternative with another apps.</Description>
+	</en>
+	<ja>
+		<Name>メモ帳の置き換え</Name>
+		<Description>メモ帳を別のアプリに置き換えます。</Description>
+	</ja>
+</TablacusExplorer>

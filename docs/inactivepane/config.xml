@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.01</Version>
+    <MinVersion>2015.6.25</MinVersion>
+    <pubDate>Thu, 25 Jun 2015 00:00:00 UTC</pubDate>
+    <Options>Width: 320; Height: 100</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Inactive pane</Name>
+    <Description>Clearly discriminate active pane by color the inactive pane.</Description>
+  </en>
+  <ja>
+    <Name>非アクティブペイン</Name>
+    <Description>非アクティブペインの色を変えてアクティブペインを判りやすくします。</Description>
+  </ja>
+</TablacusExplorer>

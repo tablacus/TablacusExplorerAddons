@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.02</Version>
+    <MinVersion>2016.3.16</MinVersion>
+    <pubDate>Fri, 18 Mar 2016 00:00:00 UTC</pubDate>
+    <Options>Common:0,5,6,7,8,9:0</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Search Bar</Name>
+    <Description>Search Bar</Description>
+  </en>
+  <ja>
+    <Name>検索 バー</Name>
+    <Description>検索 バー</Description>
+  </ja>
+</TablacusExplorer>

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+	<General>
+		<Version>1.00</Version>
+		<MinVersion>2011.06.08</MinVersion>
+		<Options>dialogWidth: 320px; dialogHeight: 100px; resizable: yes; status=0</Options>
+		<pubDate>Fri, 25 Nov 2011 00:00:00 +0900</pubDate>
+		<License>MIT License</License>
+	</General>
+	<en>
+		<Name>Small Icons</Name>
+		<Creator>Gaku</Creator>
+		<Description>The following add-ons are displayed as small icons.</Description>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+	</en>
+	<ja>
+		<Name>小さいアイコン</Name>
+		<Creator>Gaku</Creator>
+		<Description>これ以降のアドオンを小さいアイコンで表示</Description>
+		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+	</ja>
+</TablacusExplorer>

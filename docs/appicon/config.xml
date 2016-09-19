@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2016.2.23</MinVersion>
+    <pubDate>Tue, 23 Feb 2016 00:00:00 UTC</pubDate>
+    <Options>Common:5:5</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Application Icon</Name>
+    <Description>Application icon</Description>
+  </en>
+  <ja>
+    <Name>アプリアイコン</Name>
+    <Description>アプリアイコン</Description>
+  </ja>
+</TablacusExplorer>

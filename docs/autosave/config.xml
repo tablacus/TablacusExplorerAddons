@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.02</Version>
+    <MinVersion>2016.2.29</MinVersion>
+    <pubDate>Mon, 29 Feb 2016 00:00:00 UTC</pubDate>
+    <Options>Common:0:0</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Auto save</Name>
+    <Description>Save settings periodically.</Description>
+  </en>
+  <ja>
+    <Name>自動的に保存</Name>
+    <Description>定期的に設定を保存</Description>
+  </ja>
+</TablacusExplorer>

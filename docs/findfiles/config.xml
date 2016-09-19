@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.01</Version>
+    <MinVersion>2016.6.2</MinVersion>
+    <pubDate>Tue, 14 Jun 2016 00:00:00 UTC</pubDate>
+    <Options>Common:5,6,7,8,9:5</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Find files</Name>
+    <Description>Simple find files</Description>
+  </en>
+  <ja>
+    <Name>ファイル検索</Name>
+    <Description>単純なファイル検索</Description>
+  </ja>
+</TablacusExplorer>

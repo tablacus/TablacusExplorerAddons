@@ -1,4 +1,5 @@
 ﻿var arItems = ["Path", "Class", "Copy", "Move"];
+var arChecks = ["DiffDriveOnly"];
 
 function RefId(o, s)
 {
@@ -53,6 +54,9 @@ AddEventEx(window, "load", function ()
 			var s = item.getAttribute(arItems[i]);
 			document.F.elements[arItems[i]].value = s ? s : "";
 		}
+		for (i in arChecks) {
+			document.F.elements[arChecks[i]].checked = item.getAttribute(arChecks[i]);
+		}
 	}
 
 	SetOnChangeHandler();
@@ -72,6 +76,14 @@ AddEventEx(window, "load", function ()
 						item.setAttribute(arItems[i], s);
 					} else {
 						item.removeAttribute(arItems[i]);
+					}
+				}
+				for (i in arChecks) {
+					if (document.F.elements[arChecks[i]].checked) {
+						item.setAttribute(arChecks[i], true);
+					}
+					else {
+						item.removeAttribute(arChecks[i]);
 					}
 				}
 				item.setAttribute("Set", 1);
