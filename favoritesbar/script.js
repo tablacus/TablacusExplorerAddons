@@ -111,7 +111,7 @@ if (window.Addon == 1) {
 				for (var i = 0; i < items.length; i++) {
 					var strName = GetText(items[i].getAttribute("Name"));
 					var strType = items[i].getAttribute("Type");
-					var img = items[i].getAttribute("Icon") || "";
+					var img = (items[i].getAttribute("Icon") || "").replace(/"/g, "");
 					var path = items[i].text;
 					var nOpen = 0;
 					if (api.StrCmpI(strType, "Menus") == 0) {
@@ -131,7 +131,7 @@ if (window.Addon == 1) {
 					}
 					path = Addons.FavoritesBar.GetPath(items, i);
 					if (nOpen) {
-						img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a><img src="' + (img || MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16)) + ' class="favicon">';
+						img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a><img src="' + (img || MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16)) + '" class="favicon">';
 					} else if (img) {
 						img = '<img src="' + img + '" class="favicon">';
 					}
