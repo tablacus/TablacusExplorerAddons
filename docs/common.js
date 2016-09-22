@@ -157,10 +157,6 @@ function amp2ul(s)
 
 GetText = function (id)
 {
-	if (id == "Download") {
-		return "ダウンロード";
-	}
-
 	try {
 		id = id.replace(/&amp;/g, "&");
 		var s = te.Data.Lang[id];
