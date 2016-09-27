@@ -101,7 +101,10 @@ if (window.Addon == 1) {
 		if (Item) {
 			var FV = Ctrl.FolderView;
 			if (!api.ILIsEqual(FV.FolderItem, Item)) {
-				FV.Navigate(Item, GetNavigateFlags(FV));
+				setTimeout(function ()
+				{
+					FV.Navigate(Item, GetNavigateFlags(FV));
+				}, 99);
 			}
 		}
 		return S_OK;
@@ -111,7 +114,10 @@ if (window.Addon == 1) {
 	{
 		var Item = Ctrl.HitTest(pt);
 		if (Item) {
-			Ctrl.FolderView.Navigate(Item, SBSP_NEWBROWSER);
+			setTimeout(function ()
+			{
+				Ctrl.FolderView.Navigate(Item, SBSP_NEWBROWSER);
+			}, 99);
 		}
 		return S_OK;
 	}, "Func", true);
