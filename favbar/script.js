@@ -148,7 +148,7 @@ if (window.Addon == 1) {
 					}
 					var img = '';
 					var icon = item.getAttribute("Icon");
-					var height = String(GetAddonOption("favbar", "Size")).replace(/\D/, "") || window.IconSize || 24;;
+					var height = String(GetAddonOption("favbar", "Size")).replace(/\D/, "") || window.IconSize || 24;
 					var sh = (height ? ' style="height:' + height + 'px"' : '');
 					if (icon) {
 						img = '<img src="' + (icon || "").replace(/"/g, "") + '"' + sh + '>';
@@ -167,7 +167,7 @@ if (window.Addon == 1) {
 					}
 					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.strcmpi(item.text, "Open") ? 'onclick="Addons.FavBar.Click(' + i + ')" onmousedown="Addons.FavBar.Down('
  : 'onmousedown="Addons.FavBar.Open(');
-					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, GetText(item.getAttribute("Name")), '</span> ');
+					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, GetText(item.getAttribute("Name").replace(/\\t.*$|&/g, "")), '</span> ');
 				}
 				s.push('&nbsp;</label>');
 

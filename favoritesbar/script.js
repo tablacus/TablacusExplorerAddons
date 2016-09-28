@@ -147,7 +147,7 @@ if (window.Addon == 1) {
 					} else {
 						img = '<img src="' + MakeImgSrc("icon:shell32.dll,0,16", 0, false, 16) + '" class="favicon">';
 					}
-					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', items[i].text.replace(/"/g, "&quot;"), '" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", strName.replace(/&/g, ""), '</div> ');
+					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', items[i].text.replace(/"/g, "&quot;"), '" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", strName.replace(/\\t.*$|&/g, ""), '</div> ');
 					if (nOpen) {
 						s.push(api.sprintf(99, '<div id="fav%d_"%s>', i, Addons.FavoritesBar.arExpand[1]));
 						nLevel++;

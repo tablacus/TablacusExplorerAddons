@@ -8,7 +8,7 @@ if (window.Addon == 1) {
 		nPos: 0,
 		strName: "",
 		Enabled: true,
-		attrs: [FILE_ATTRIBUTE_REPARSE_POINT, FILE_ATTRIBUTE_ENCRYPTED, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_COMPRESSED, FILE_ATTRIBUTE_DIRECTORY],
+		attrs: ["root", FILE_ATTRIBUTE_REPARSE_POINT, FILE_ATTRIBUTE_ENCRYPTED, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_COMPRESSED, FILE_ATTRIBUTE_DIRECTORY],
 
 		Exec: function ()
 		{
@@ -26,6 +26,13 @@ if (window.Addon == 1) {
 	AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes)
 	{
 		if (pid && Addons.AttributesColor.Enabled) {
+			if (api.PathIsRoot(pid.Path)) {
+				var i = Addons.AttributesColor.Color["root"];
+				if (isFinite(i)) {
+					vcd.clrText = i;
+					return;
+				}
+			}
 			var wfd = api.Memory("WIN32_FIND_DATA");
 			api.SHGetDataFromIDList(pid, SHGDFIL_FINDDATA, wfd, wfd.Size);
 			for (var i in Addons.AttributesColor.attrs) {
@@ -84,8 +91,8 @@ if (window.Addon == 1) {
 }
 else {
 	var s = ['<table>'];
-	var attrs = [FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_COMPRESSED, FILE_ATTRIBUTE_ENCRYPTED, FILE_ATTRIBUTE_REPARSE_POINT, FILE_ATTRIBUTE_DIRECTORY];
-	var names = [8768, 8769, 8770, 8771, 8772, "Junction", WINVER >= 0x600 ? 33017 : 4131];
+	var attrs = [FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_COMPRESSED, FILE_ATTRIBUTE_ENCRYPTED, FILE_ATTRIBUTE_REPARSE_POINT, FILE_ATTRIBUTE_DIRECTORY, "root"];
+	var names = [8768, 8769, 8770, 8771, 8772, "Junction", WINVER >= 0x600 ? 33017 : 4131, GetText("Root")];
 	var hModule = api.GetModuleHandle(fso.BuildPath(system32, "shell32.dll"));
 	for (var i in names) {
 		s.push('<tr><td>', isFinite(names[i]) ? api.LoadString(hModule, names[i]) : names[i], '</td>');
