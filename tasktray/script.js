@@ -99,7 +99,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEventEx(window, "beforeunload", Addons.TaskTray.DeleteIcon);
+	AddEvent("Finalize", Addons.TaskTray.DeleteIcon);
 
 	AddEvent("TaskTray", function (Ctrl, hMenu, nPos)
 	{

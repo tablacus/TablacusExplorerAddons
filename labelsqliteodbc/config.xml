@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
-    <MinVersion>2016.3.16</MinVersion>
-    <pubDate>Fri, 18 Mar 2016 00:00:00 UTC</pubDate>
+    <Version>1.02</Version>
+    <MinVersion>2016.10.2</MinVersion>
+    <pubDate>Mon, 03 Oct 2016 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
@@ -11,10 +11,10 @@
   </General>
   <en>
     <Name>Label SQLite ODBC Driver</Name>
-    <Description>Label(SQLite odbc driver) * Require Label and SQLite ODBC Driver</Description>
+    <Description>Label(SQLite ODBC Driver) * Require Label and SQLite ODBC Driver</Description>
   </en>
   <ja>
     <Name>ラベル SQLite ODBC Driver</Name>
-    <Description>ラベル(SQLite odbc driver ※ラベルとSQLite ODBC Driverが必要</Description>
+    <Description>ラベル(SQLite ODBC Driver ※ラベルとSQLite ODBC Driverが必要</Description>
   </ja>
 </TablacusExplorer>

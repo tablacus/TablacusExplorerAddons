@@ -134,7 +134,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEventEx(window, "beforeunload", function ()
+	AddEvent("Finalize", function ()
 	{
 		for (var i = 2; i--;) {
 			api.DeleteObject(Addons.ClipboardHistory.Bitmap[i]);

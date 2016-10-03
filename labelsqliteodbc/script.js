@@ -38,7 +38,7 @@
 		Addons.LabelSQLiteOdbc.db.Open("DRIVER=SQLite3 ODBC Driver;Database=" + Addons.LabelSQLiteOdbc.DBFILE);
 		Addons.LabelSQLiteOdbc.db.Execute("CREATE TABLE IF NOT EXISTS labels (path TEXT, label TEXT);");
 		Addons.LabelSQLiteOdbc.Open = function () {};
-		AddEventEx(window, "beforeunload", Addons.LabelSQLiteOdbc.Close);
+		AddEvent("Finalize", Addons.LabelSQLiteOdbc.Close);
 	},
 
 	Close: function ()
@@ -213,7 +213,7 @@ if (window.Addon == 1) {
 	{
 		var commdlg = te.CommonDialog();
 		commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "config")
-		commdlg.Filter = "TSV Files|*.tsv|All Files|*.*";
+		commdlg.Filter = "TSV Files|*.tsv|" + (api.LoadString(hShell32, 34193) || "All Files") + "|*.*";
 		commdlg.Flags = OFN_FILEMUSTEXIST;
 		if (commdlg.ShowOpen()) {
 			(MainWindow.Addons.LabelSQLiteOdbc || Addons.LabelSQLiteOdbc).Load(commdlg.FileName);
@@ -224,7 +224,7 @@ if (window.Addon == 1) {
 	{
 		var commdlg = te.CommonDialog();
 		commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "config")
-		commdlg.Filter = "TSV Files|*.tsv|All Files|*.*";
+		commdlg.Filter = "TSV Files|*.tsv|" + (api.LoadString(hShell32, 34193) || "All Files") + "|*.*";
 		commdlg.DefExt = "tsv";
 		commdlg.Flags = OFN_OVERWRITEPROMPT;
 		if (commdlg.ShowSave()) {
