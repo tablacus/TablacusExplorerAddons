@@ -1,12 +1,5 @@
 ﻿var Addon_Id = "inactivepane";
-
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Color")) {
-		item.setAttribute("Color", GetWebColor(GetSysColor(COLOR_APPWORKSPACE)));
-	}
-}
+var item = GetAddonElement(Addon_Id);
 
 if (window.Addon == 1) {
 	Addons.InactivePane =
@@ -44,7 +37,7 @@ if (window.Addon == 1) {
 						Addons.InactivePane.tid[Ctrl.hwnd] = setTimeout(function ()
 						{
 							Addons.InactivePane.Arrange(Ctrl);
-						}, 100);
+						}, 500);
 					}
 				}
 			}
@@ -79,58 +72,56 @@ if (window.Addon == 1) {
 
 		IsActive: function (Ctrl)
 		{
-			var TC = te.Ctrl(CTRL_TC);
-			return Ctrl.Parent.Id == TC.Id;
+			return Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id;
+		},
+
+		OnChange: function (Ctrl)
+		{
+			var cTC = te.Ctrls(CTRL_TC);
+			for (var i in cTC) {
+				var TC = cTC[i];
+				if (TC && TC.Visible) {
+					var FV = TC.Selected;
+					Addons.InactivePane.Arrange(FV);
+					var hwnd = FV.hwndList;
+					var lvbk = api.Memory("LVBKIMAGE");
+					var pszImage = api.Memory("WCHAR", 1024);
+					lvbk.pszImage = pszImage;
+					lvbk.cchImageMax = pszImage.Size;
+					lvbk.ulFlags = LVBKIF_SOURCE_URL;
+					api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk);
+					if (pszImage[0]) {
+						var lvbk = api.Memory("LVBKIMAGE");
+						lvbk.ulFlags = LVBKIF_SOURCE_NONE ;
+						api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
+					}
+					if (Addons.Stripes) {
+						Addons.Stripes.Arrange(FV);
+					}
+				}
+			}
 		}
 	}
 
-	AddEvent("ChangeView", function (Ctrl)
+	AddEvent("ChangeView", Addons.InactivePane.OnChange);
+	AddEvent("VisibleChanged", function ()
+	{
+		setTimeout("Addons.InactivePane.OnChange();", 99);
+	});
+
+	AddEventId("AddonDisabledEx", "inactivepane", function ()
 	{
 		var cTC = te.Ctrls(CTRL_TC);
 		for (var i in cTC) {
 			var TC = cTC[i];
-			if (TC && TC.Visible) {
-				var FV = TC.Selected;
-				Addons.InactivePane.Arrange(FV);
-				var hwnd = FV.hwndList;
-				var lvbk = api.Memory("LVBKIMAGE");
-				var pszImage = api.Memory("WCHAR", 1024);
-				lvbk.pszImage = pszImage;
-				lvbk.cchImageMax = pszImage.Size;
-				lvbk.ulFlags = LVBKIF_SOURCE_URL;
-				api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk);
-				if (pszImage[0]) {
-					var lvbk = api.Memory("LVBKIMAGE");
-					lvbk.ulFlags = LVBKIF_SOURCE_NONE ;
-					api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
-				}
-				if (Addons.Stripes) {
-					Addons.Stripes.Arrange(FV);
-				}
+			if (TC) {
+				Addons.InactivePane.Active(TC.Selected);
 			}
 		}
 	});
+	var cl = item ? item.getAttribute("Color") : "";
+	Addons.InactivePane.Color = cl ? GetWinColor(cl) : GetSysColor(COLOR_APPWORKSPACE);
 
-	AddEvent("AddonDisabled", function(Id)
-	{
-		if (api.strcmpi(Id, "inactivepane") == 0) {
-			AddEventEx(window, "beforeunload", function ()
-			{
-				var cTC = te.Ctrls(CTRL_TC);
-				for (var i in cTC) {
-					var TC = cTC[i];
-					if (TC) {
-						var FV = TC.Selected;
-						Addons.InactivePane.Active(FV);
-					}
-				}
-			});
-		}
-	});
-
-	if (item) {
-		Addons.InactivePane.Color = GetWinColor(item.getAttribute("Color"));
-	}
 	var cTC = te.Ctrls(CTRL_TC);
 	for (var i in cTC) {
 		var TC = cTC[i];
