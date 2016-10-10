@@ -36,7 +36,7 @@ if (window.Addon == 1) {
 			} else if (typelc == "shortcut") {
 				iIcon = api.ImageList_GetOverlayImage(te.Data.SHIL[0], 2);
 			} else {
-				if (api.SHGetFileInfo(type, 0, info, info.Size, SHGFI_SYSICONINDEX | (typelc.test(/\*/) ? SHGFI_USEFILEATTRIBUTES : 0))) {
+				if (api.SHGetFileInfo(type, 0, info, info.Size, SHGFI_SYSICONINDEX | (/\*/.test(typelc) ? SHGFI_USEFILEATTRIBUTES : 0))) {
 					if (info.iIcon != iUndef) {
 						iIcon = info.iIcon;
 					}
