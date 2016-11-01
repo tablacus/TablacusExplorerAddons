@@ -88,6 +88,16 @@ Addons.WFX =
 				FsFindClose: function (hFind)
 				{
 					delete this.hash[hFind];
+				},
+
+				FsExecuteFile: function (MainWin, RemoteName, Verb)
+				{
+					if (Verb.toLowerCase() == "properties") {
+						var lib =  Addons.WFX.GetObject('\\\\' + RemoteName[0]);
+						if (lib && lib.X) {
+							lib.X.FsExecuteFile(MainWin, ["\\"], Verb);
+						}
+					}
 				}
 			}
 		}
@@ -508,6 +518,14 @@ Addons.WFX =
 		}
 	},
 
+	Properties: function (Ctrl)
+	{
+		var lib =  Addons.WFX.GetObject(Ctrl);
+		if (lib && lib.X) {
+			lib.X.FsExecuteFile(te.hwnd, ["\\"], "properties");
+		}
+	},
+
 	ArrayProc: function ()
 	{
 		return [];
@@ -615,6 +633,16 @@ if (window.Addon == 1) {
 			if (ar.length) {
 				RemoveCommand(hMenu, ContextMenu, ar.join(";"));
 			}
+		}
+		return nPos;
+	});
+
+	AddEvent("Background", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
+	{
+		var lib = Addons.WFX.GetObject(Ctrl);
+		if (lib) {
+			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 33555));
+			ExtraMenuCommand[nPos] = Addons.WFX.Properties;
 		}
 		return nPos;
 	});

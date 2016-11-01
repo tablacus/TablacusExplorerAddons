@@ -14,7 +14,7 @@ function LoadFS()
 			g_x.List.length = i;
 			while (--i >= 0) {
 				var item = items[i];
-				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Filter")]);
+				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path")]);
 			}
 		}
 		EnableSelectTag(g_x.List);
@@ -32,7 +32,6 @@ function SaveFS()
 			var a = o[i].value.split(g_sep);
 			item.setAttribute("Name", a[0]);
 			item.setAttribute("Path", a[1]);
-			item.setAttribute("Filter", a[2]);
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
@@ -48,7 +47,6 @@ function EditFS()
 	var a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
 	document.F.Name.value = a[0];
 	document.F.Path.value = a[1];
-	document.F.Filter.value = a[2];
 	SetProp();
 }
 
@@ -61,7 +59,7 @@ function ReplaceFS()
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
 	o = document.F.Type;
-	SetData(sel, [document.F.Name.value, document.F.Path.value, document.F.Filter.value]);
+	SetData(sel, [document.F.Name.value, document.F.Path.value]);
 	g_Chg.List = true;
 }
 

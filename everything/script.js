@@ -172,7 +172,7 @@ if (window.Addon == 1) {
 			if (Path) {
 				var hwndView = Ctrl.hwndView;
 				if (!Addons.Everything.Open(Path, hwndView) && Addons.Everything.ExePath) {
-					wsh.Run(Addons.Everything.ExePath);
+					wsh.Run(ExtractMacro(te, Addons.Everything.ExePath));
 					setTimeout(function ()
 					{
 						Addons.Everything.Open(Path , hwndView);
