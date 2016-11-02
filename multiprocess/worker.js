@@ -4,6 +4,7 @@ if (MainWindow.Exchange) {
 	var ex = MainWindow.Exchange[arg[3]];
 	if (ex) {
 		delete MainWindow.Exchange[arg[3]];
+		ex.time = new Date().getTime();
 		switch (ex.Mode) {
 			case 0:
 				api.DropTarget(ex.Dest).Drop(ex.Items, ex.grfKeyState, ex.pt, ex.dwEffect);
@@ -35,6 +36,9 @@ if (MainWindow.Exchange) {
 					//Dialog(UAC)
 					if (api.GetWindowLongPtr(hwnd1, GWL_EXSTYLE) & 8) {
 						if (api.GetClassName(hwnd1) == "#32770") {
+							if (ex) {
+								ex.time = new Date().getTime();
+							}
 							bClose = false;
 							break;
 						}
@@ -43,12 +47,17 @@ if (MainWindow.Exchange) {
 			}
 			if (bClose) {
 				api.KillTimer(hwnd, wParam);
+				try {
+					if (ex && ex.TimeOver && new Date().getTime() - ex.time > ex.Sec * 1000 + 500) {
+						ex.Callback(true);
+					}
+				} catch (e) {}
 				api.PostMessage(hwnd, WM_CLOSE, 0, 0);
 			}
 		}
 		return 0; 
 	}
-	api.SetTimer(te.hwnd, 1, 5000, null);
+	api.SetTimer(te.hwnd, 1, 1000, null);
 
 	var pid = api.Memory("DWORD");
 	api.GetWindowThreadProcessId(te.hwnd, pid);

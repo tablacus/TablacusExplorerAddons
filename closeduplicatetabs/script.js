@@ -18,17 +18,34 @@ if (window.Addon == 1) {
 			var db = {};
 			var FV = GetFolderView(Ctrl, pt);
 			var TC = FV.Parent;
-			for (var i = TC.Count; i--;) {
+			for (var i = TC.Count; i-- > 0;) {
 				var Item = TC.Item(i);
 				var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 				if (db[path]) {
-					if (!db[path].Close()) {
-						Item.Close();
-						continue;
+					db[path].push(Item);
+				} else {
+					db[path] = [Item];
+				}
+			}
+			setTimeout(function ()
+			{
+				var SelectedIndex = TC.SelectedIndex;
+				for (var i in db) {
+					var cFV = db[i];
+					var bSelected = false;
+					for (var j = cFV.length; cFV.length > 1 && j-- > 0;) {
+						var FV = cFV[j];
+						var nIndex = FV.Index;
+						if (FV.Close()) {
+							cFV.splice(j, 1);
+							bSelected |= nIndex == SelectedIndex;
+						}
+					}
+					if (bSelected) {
+						TC.SelectedIndex = cFV[0].Index;
 					}
 				}
-				db[path] = Item;
-			}
+			}, 99);
 			return S_OK;
 		},
 
