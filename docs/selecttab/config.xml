@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
+    <Version>1.00</Version>
     <MinVersion>2016.11.2</MinVersion>
     <pubDate>Sat, 05 Nov 2016 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
@@ -9,11 +9,11 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Prevent Duplicate Tabs</Name>
-    <Description>Prevent Duplicate Tabs</Description>
+    <Name>Select tab</Name>
+    <Description>Select a tab for the specified path.</Description>
   </en>
   <ja>
-    <Name>重複タブ禁止</Name>
-    <Description>重複タブを禁止します。</Description>
+    <Name>タブの選択</Name>
+    <Description>指定したパスのタブを選択します。</Description>
   </ja>
 </TablacusExplorer>
