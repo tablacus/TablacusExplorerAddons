@@ -57,7 +57,7 @@ if (window.Addon == 1) {
 					mii.fMask = MIIM_STRING | MIIM_ID | MIIM_BITMAP;
 					mii.dwTypeData = s.join(" ");
 					mii.wId = i + this.nCommand;
-					AddMenuIconFolderItem(mii, Items.Item(0));
+					AddMenuIconFolderItem(mii, Items.Item(Items.Index));
 					api.InsertMenuItem(hMenu, MAXINT, true, mii);
 				}
 			}
