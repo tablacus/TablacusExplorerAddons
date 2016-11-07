@@ -4,16 +4,21 @@ var Default = "ToolBar2Left";
 if (window.Addon == 1) {
 	Addons.Favorites =
 	{
-		Exec: function (Ctrl, pt) {
-			if (!pt) {
-				var pt = api.Memory("POINT");
-				if (Ctrl.offsetHeight) {
-					pt = GetPos(Ctrl, 9);
-				} else {
-					api.GetCursorPos(pt);
+		Exec: function (Ctrl, pt)
+		{
+			var FV = GetFolderView(Ctrl, pt);
+			if (FV) {
+				if (!pt) {
+					var pt = api.Memory("POINT");
+					if (Ctrl.offsetHeight) {
+						pt = GetPos(Ctrl, 9);
+					} else {
+						api.GetCursorPos(pt);
+					}
 				}
+				FV.Focus();
+				ExecMenu(te, "Favorites", pt, 0);
 			}
-			ExecMenu(te, "Favorites", pt, 0);
 			return S_OK;
 		}
 	};
