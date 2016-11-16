@@ -353,6 +353,17 @@ if (window.Addon == 1) {
 
 		End5: function (o)
 		{
+			var pt = api.Memory("POINT");
+			api.GetCursorPos(pt);
+			var hwnd = api.WindowFromPoint(pt);
+			if (te.hwnd != hwnd && !api.IsChild(te.hwnd, hwnd) && api.GetKeyState(VK_RBUTTON) >= 0 && api.GetKeyState(VK_ESCAPE) >= 0) {
+				var res = /^tabplus_(\d+)_(\d+)/.exec(this.Drag5);
+				if (res) {
+					var FV = te.Ctrl(CTRL_TC, res[1])[res[2]];
+					OpenInExplorer(FV);
+					FV.Close();
+				}
+			}
 			this.Drag5 = null;
 			this.Drag = [];
 			this.Cursor("default");
