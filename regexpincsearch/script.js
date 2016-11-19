@@ -5,7 +5,7 @@ if (window.Addon == 1) {
 	{
 		str: "",
 		tid: null,
-		Timeout: api.LowPart(Option(Addon_Id, "Timeout")) || 2000,
+		Timeout: GetAddonOptionEx(Addon_Id, "Timeout") || 2000,
 		ErrMsg: (api.LoadString(api.GetModuleHandle(fso.BuildPath(system32, "shell32.dll")), 6456) || "%s").replace("%1!ls!", "%s"),
 
 		Search: function ()
@@ -109,7 +109,7 @@ if (window.Addon == 1) {
 					return;
 				}
 				var s = String.fromCharCode(key);
-				if (!/[0-9A-Z_]/i.test(s) && !Addons.RegExpIncSearch.str || api.GetKeyState(VK_CONTROL) < 0) {
+				if (!/[0-9A-Z_\^\$\[\]\-\\]/i.test(s) && !Addons.RegExpIncSearch.str || api.GetKeyState(VK_CONTROL) < 0) {
 					return;
 				}
 				var time = new Date().getTime();
@@ -146,6 +146,5 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", Addons.RegExpIncSearch.Clear);
 } else {
-	document.getElementById("tab0").value = GetText("General");
-	document.getElementById("panel0").innerHTML = '<label>Timeout</label><br /><table style="width: 100%"><tr><td style="width: 100%"><input type="text" id="Timeout" style="width: 6em; text-align:right" />ms</td><td><input type="button" value="Set Default" onclick="document.F.Timeout.value=\'\'" /></td></tr></table>';
+	SetTabContents(0, "General", '<label>Timeout</label><br /><table style="width: 100%"><tr><td style="width: 100%"><input type="text" id="Timeout" style="width: 6em; text-align:right" />ms</td><td><input type="button" value="Set Default" onclick="document.F.Timeout.value=\'\'" /></td></tr></table>');
 }
