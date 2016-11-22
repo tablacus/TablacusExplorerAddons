@@ -1,11 +1,8 @@
 var Addon_Id = "remember";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Save")) {
-		item.setAttribute("Save", 1000);
-	}
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Save")) {
+	item.setAttribute("Save", 1000);
 }
 if (window.Addon == 1) {
 	Addons.Remember =
@@ -65,9 +62,6 @@ if (window.Addon == 1) {
 			if (ar) {
 				fs.ViewMode = ar[1];
 				fs.ImageSize = ar[2];
-			} else if (Ctrl && Ctrl.Items) {
-				fs.ViewMode = Ctrl.CurrentViewMode;
-				fs.ImageSize = Ctrl.IconSize;
 			}
 			Ctrl.Data.Setting = 'Remember';
 			Ctrl.Data.Remember = "";

@@ -30,7 +30,7 @@ if (window.Addon == 1) {
 					}
 					return S_OK;
 				}
-				if (p.match(/[\\\/\\*\\?]/)) {
+				if (/[\\\/\\*\\?]/.test(p)) {
 					var FV = GetFolderView(Ctrl, pt);
 					if (FV) {
 						var TC = FV.Parent;
@@ -170,9 +170,9 @@ if (window.Addon == 1) {
 			newfolder: function (Ctrl, hwnd, pt, line)
 			{
 				var p = ExtractMacro(Ctrl, line);
-				p = p.match("/") ? p.replace(/\\\//g, "") : InputDialog(GetText("New Folder"), p);
+				p = /\//.test(p) ? p.replace(/\\\//g, "") : InputDialog(GetText("New Folder"), p);
 				if (p) {
-					if (!p.match(/^[A-Z]:\\|^\\/i)) {
+					if (!/^[A-Z]:\\|^\\/i.test(p)) {
 						var FV = GetFolderView(Ctrl, pt);
 						p = fso.BuildPath(FV.FolderItem.Path, p);
 					}
@@ -208,9 +208,9 @@ if (window.Addon == 1) {
 			newfile: function (Ctrl, hwnd, pt, line)
 			{
 				var p = ExtractMacro(Ctrl, line);
-				p = p.match("/") ? p.replace(/\\\//g, "") : InputDialog(GetText("New File"), p);
+				p = /\//.test(p) ? p.replace(/\\\//g, "") : InputDialog(GetText("New File"), p);
 				if (p) {
-					if (!p.match(/^[A-Z]:\\|^\\/i)) {
+					if (!/^[A-Z]:\\|^\\/i.test(p)) {
 						var FV = GetFolderView(Ctrl, pt);
 						p = fso.BuildPath(FV.FolderItem.Path, p);
 					}
@@ -281,7 +281,7 @@ if (window.Addon == 1) {
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV) {
 					if (api.StrCmpI(line, "Menu") == 0) {
-						Addons.XFinder.Popup(FV, /&V/);
+						Addons.XFinder.Popup(FV, /&V/i);
 						return S_OK;
 					}
 					var p = api.sscanf(line, "%d");
@@ -317,7 +317,7 @@ if (window.Addon == 1) {
 						FV.SortColumn = s;
 						return S_OK;
 					}
-					Addons.XFinder.Popup(FV, /&[O|I]/);
+					Addons.XFinder.Popup(FV, /&[O|I]/i);
 				}
 				return S_OK;
 			},
@@ -353,7 +353,7 @@ if (window.Addon == 1) {
 				if (fn) {
 					return fn(Ctrl, hwnd, pt, d)
 				}
-				te.Data.XFEnv[a] = d;
+				AddEnv(a, d);
 			 	return S_OK;
 			},
 			
@@ -369,12 +369,13 @@ if (window.Addon == 1) {
 			input: function (Ctrl, hwnd, pt, line)
 			{
 				var ar = WScript.Col(ExtractMacro(Ctrl, line));
-				te.Data.XFEnv.inputdata = InputDialog([ar[1], ar[2]].join("\n"), ar[3], ar[0]);
-				if (api.StrCmpI(typeof(te.Data.XFEnv.inputdata), "string")) {
-					te.Data.XFEnv.inputdata = "";
-					return E_ABORT;
+				var r = InputDialog([ar[1], ar[2]].join("\n"), ar[3] || "", ar[0]);
+				if (typeof(r) == "string") {
+					AddEnv("inputdata", r);
+				 	return S_OK;
 				}
-			 	return S_OK;
+				AddEnv("inputdata", "");
+				return E_ABORT;
 			},
 
 			choosefolder: function (Ctrl, hwnd, pt, line)
@@ -384,7 +385,7 @@ if (window.Addon == 1) {
 				var ar = WScript.Col(ExtractMacro(Ctrl, line));
 				var FolderItem = FolderMenu.Open(ar[0], pt.x, pt.y, ar[1]);
 				if (FolderItem) {
-					te.Data.XFEnv.inputdata = api.GetDisplayNameOf(FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+					AddEnv("inputdata", api.GetDisplayNameOf(FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX));
 				 	return S_OK;
 				}
 				return S_FALSE;
@@ -768,7 +769,7 @@ if (window.Addon == 1) {
 			}
 			for (var i = api.GetMenuItemCount(hMenu); i--;) {
 				var s = api.GetMenuString(hMenu, i, MF_BYPOSITION);
-				if (s && s.match(re)) {
+				if (re.test(s)) {
 					var pt = api.Memory("POINT");
 					api.GetCursorPos(pt);
 					var nVerb = api.TrackPopupMenuEx(api.GetSubMenu(hMenu, i), TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
@@ -1012,12 +1013,6 @@ if (window.Addon == 1) {
 		}
 	}]);
 
-	AddEvent("ReplaceMacroEx", [/%([\w\-_]+)%/g, function (strMatch, ref1)
-	{
-		var s1 = te.Data.XFEnv[ref1.toLowerCase()];
-		return s1 !== undefined ? s1 : strMatch;
-	}]);
-
 	AddType("X-Finder",
 	{
 		Exec: function (Ctrl, s, type, hwnd, pt)
@@ -1037,10 +1032,6 @@ if (window.Addon == 1) {
 
 	});
 
-	if (!te.Data.XFEnv) {
-		te.Data.XFEnv = {};
-	}
-	
 	if (!window.WScript) {
 		WScript = {};
 	}
