@@ -10,7 +10,7 @@ if (window.Addon == 1) {
 
 		Search: function ()
 		{
-			if (Addons.RegExpIncSearch.str) {
+			if (Addons.RegExpIncSearch.str && Addons.RegExpIncSearch.str != '^') {
 				if (!Addons.RegExpIncSearch.SearchEx(0, 1)) {
 					var re;
 					var FV = te.Ctrl(CTRL_FV);
@@ -66,7 +66,7 @@ if (window.Addon == 1) {
 			var bFocus = !re;
 			if (bFocus) {
 				try {
-					re = new RegExp((window.migemo && migemo.query(Addons.RegExpIncSearch.str)) || Addons.RegExpIncSearch.str, "i");
+					re = new RegExp((window.migemo && migemo.query(Addons.RegExpIncSearch.str).replace(/\\\^/g, "^")) || Addons.RegExpIncSearch.str, "i");
 				} catch (e) {
 					return false;
 				}
@@ -109,7 +109,9 @@ if (window.Addon == 1) {
 					return;
 				}
 				var s = String.fromCharCode(key);
-				if (!/[0-9A-Z_\^\$\[\]\-\\]/i.test(s) && !Addons.RegExpIncSearch.str || api.GetKeyState(VK_CONTROL) < 0) {
+				if (s == '^') {
+					Addons.RegExpIncSearch.Clear();
+				} else if (!/[0-9A-Z_\$\[\]\-\\]/i.test(s) && !Addons.RegExpIncSearch.str || api.GetKeyState(VK_CONTROL) < 0) {
 					return;
 				}
 				var time = new Date().getTime();
