@@ -1,17 +1,14 @@
 var Addon_Id = "touchex";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuExec", 1);
-		item.setAttribute("Menu", "Context");
-		item.setAttribute("MenuPos", 1);
-		item.setAttribute("MenuName", "Change the Time Stamp...");
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "Context");
+	item.setAttribute("MenuPos", 1);
+	item.setAttribute("MenuName", "Change the Time Stamp...");
 
-		item.setAttribute("KeyOn", "List");
-		item.setAttribute("MouseOn", "List");
-	}
+	item.setAttribute("KeyOn", "List");
+	item.setAttribute("MouseOn", "List");
 }
 if (window.Addon == 1) {
 	Addons.TouchEx =
@@ -25,40 +22,38 @@ if (window.Addon == 1) {
 		}
 	}
 
-	if (items.length) {
-		var s = item.getAttribute("MenuName");
-		if (s && s != "") {
-			Addons.TouchEx.strName = GetText(s);
-		}
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.TouchEx.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-			{
-				if (item && item.IsFileSystem) {
-					api.InsertMenu(hMenu, Addons.TouchEx.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.TouchEx.strName);
-					ExtraMenuCommand[nPos] = Addons.TouchEx.Exec;
-				}
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.TouchEx.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TouchEx.Exec, "Func");
-		}
-
-		AddTypeEx("Add-ons", "Change the Time Stamp...", Addons.TouchEx.Exec);
+	var s = item.getAttribute("MenuName");
+	if (s && s != "") {
+		Addons.TouchEx.strName = GetText(s);
 	}
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.TouchEx.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
+		{
+			if (item && item.IsFileSystem) {
+				api.InsertMenu(hMenu, Addons.TouchEx.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.TouchEx.strName);
+				ExtraMenuCommand[nPos] = Addons.TouchEx.Exec;
+			}
+			return nPos;
+		});
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.TouchEx.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TouchEx.Exec, "Func");
+	}
+
+	AddTypeEx("Add-ons", "Change the Time Stamp...", Addons.TouchEx.Exec);
 }
 if (window.Addon == 2) {
 	window.SetTimeStamp = function ()
 	{
 		for (var i = dialogArguments.Selected.Count; i-- > 0;) {
-			SetFileTime(dialogArguments.Selected.Item(i).Path, new Date(document.F.dt_1.value), new Date(document.F.dt_2.value), new Date(document.F.dt_0.value));
+			SetFileTime(dialogArguments.Selected.Item(i).Path, document.F.dt_1.value, document.F.dt_2.value, document.F.dt_0.value);
 		}
 		window.close();
 		return true;
