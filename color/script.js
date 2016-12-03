@@ -1,14 +1,11 @@
 ﻿Addon_Id = "color";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Default")) {
-		item.setAttribute("Default", GetWebColor(GetSysColor(COLOR_WINDOWTEXT)));
-	}
-	if (!item.getAttribute("Background")) {
-		item.setAttribute("Background", GetWebColor(GetSysColor(COLOR_WINDOW)));
-	}
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Default")) {
+	item.setAttribute("Default", GetWebColor(GetSysColor(COLOR_WINDOWTEXT)));
+}
+if (!item.getAttribute("Background")) {
+	item.setAttribute("Background", GetWebColor(GetSysColor(COLOR_WINDOW)));
 }
 
 if (window.Addon == 1) {
@@ -64,6 +61,8 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", Addons.Color.Arrange);
 
+	AddEvent("ChangeView", Addons.Color.Arrange);
+
 	AddEvent("Create", function (Ctrl)
 	{
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_TV) {
@@ -71,16 +70,11 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("AddonDisabled", function(Id)
+	AddEventId("AddonDisabledEx", "color", function ()
 	{
-		if (String(Id).toLowerCase() == "color") {
-			AddEventEx(window, "beforeunload", function ()
-			{
-				SetSysColor(COLOR_WINDOWTEXT, undefined);
-				SetSysColor(COLOR_WINDOW, undefined);
-				Addons.Color.Init();
-			});
-		}
+		SetSysColor(COLOR_WINDOWTEXT, undefined);
+		SetSysColor(COLOR_WINDOW, undefined);
+		Addons.Color.Init();
 	});
 
 	if (item) {
