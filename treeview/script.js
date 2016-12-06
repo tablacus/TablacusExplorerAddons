@@ -2,10 +2,8 @@ var Addon_Id = "treeview";
 var Default = "ToolBar2Left";
 
 var item = GetAddonElement(Addon_Id);
-if (item) {
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuPos", -1);
-	}
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuPos", -1);
 }
 
 if (window.Addon == 1) {
@@ -69,29 +67,27 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeView", Addons.TreeView.Expand);
 
-	if (item) {
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.TreeView.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			Addons.TreeView.strName = item.getAttribute("MenuName") || Addons.TreeView.strName;
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.TreeView.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TreeView.strName));
-				ExtraMenuCommand[nPos] = Addons.TreeView.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.TreeView.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TreeView.Exec, "Func");
-		}
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.TreeView.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		Addons.TreeView.strName = item.getAttribute("MenuName") || Addons.TreeView.strName;
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.TreeView.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TreeView.strName));
+			ExtraMenuCommand[nPos] = Addons.TreeView.Exec;
+			return nPos;
+		});
 	}
-	var h = (item && item.getAttribute("IconSize")) || window.IconSize || 24;
-	var src = (item && item.getAttribute("Icon")) || (h <= 16 ? "bitmap:ieframe.dll,216,16,43" : "bitmap:ieframe.dll,214,24,43");
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.TreeView.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TreeView.Exec, "Func");
+	}
+	var h = item.getAttribute("IconSize") || window.IconSize || (item.getAttribute("Location") == "Inner" ? 16 : 24);
+	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,43" : "bitmap:ieframe.dll,214,24,43");
 	var s = ['<span class="button" onclick="Addons.TreeView.Exec(this)" oncontextmenu="Addons.TreeView.Popup(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Tree" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
 	SetAddon(Addon_Id, Default, s);
 
