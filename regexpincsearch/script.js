@@ -1,4 +1,4 @@
-﻿Addon_Id = "regexpincsearch";
+﻿var Addon_Id = "regexpincsearch";
 
 if (window.Addon == 1) {
 	Addons.RegExpIncSearch =
@@ -130,7 +130,7 @@ if (window.Addon == 1) {
 				Addons.RegExpIncSearch.Clear();
 			}
 		} else if (msg == WM_SYSCHAR) {
-			Addons.RegExpIncSearch.str.Clear();
+			Addons.RegExpIncSearch.Clear();
 		} else if (msg == WM_KEYDOWN) {
 			if (Addons.RegExpIncSearch.nIndex >= 0) {
 				if (key >= VK_END && key <= VK_DOWN) {
