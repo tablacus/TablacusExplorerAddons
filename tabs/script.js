@@ -42,7 +42,7 @@ if (window.Addon == 1) {
 			if (!Addons.Tabs.DragTab) {
 				if (api.GetKeyState(VK_LBUTTON) < 0) {
 					if (IsDrag(pt, te.Data.pt)) {
-						g_mouse.str = "";
+						g_.mouse.str = "";
 						SetGestureText(Ctrl, "");
 						te.Data.pt = null;
 						var i = Ctrl.HitTest(pt, TCHT_ONITEM);
@@ -86,7 +86,7 @@ if (window.Addon == 1) {
 				pdwEffect[0] = (nDragTab != nIndex) ? DROPEFFECT_LINK : DROPEFFECT_NONE;
 				return S_OK;
 			}
-			else if (nIndex >= 0) {
+			if (nIndex >= 0) {
 				if (dataObj.Count) {
 					var Target = Ctrl.Item(nIndex).FolderItem;
 					if (!api.ILIsEqual(dataObj.Item(-1), Target)) {
@@ -99,7 +99,7 @@ if (window.Addon == 1) {
 				pdwEffect[0] = DROPEFFECT_NONE;
 				return S_OK;
 			}
-			else if (dataObj.Item(0) && dataObj.Item(0).IsFolder) {
+			if (dataObj.Item(0) && dataObj.Item(0).IsFolder) {
 				pdwEffect[0] = DROPEFFECT_LINK;
 				return S_OK;
 			}
@@ -117,8 +117,7 @@ if (window.Addon == 1) {
 				}
 				Addons.Tabs.DragTab.Move(Addons.Tabs.DragIndex, nIndex, Ctrl);
 				Ctrl.SelectedIndex = nIndex;
-			}
-			else if (nIndex >= 0) {
+			} else if (nIndex >= 0) {
 				var hr = S_FALSE;
 				var DropTarget = Ctrl.Item(nIndex).DropTarget;
 				if (DropTarget) {
@@ -126,8 +125,7 @@ if (window.Addon == 1) {
 					hr = DropTarget.Drop(dataObj, grfKeyState, pt, pdwEffect);
 				}
 				return hr;
-			}
-			else if (dataObj.Count) {
+			} else if (dataObj.Count) {
 				for (var i = 0; i < dataObj.Count; i++) {
 					var FV = Ctrl.Selected.Navigate(dataObj.Item(i), SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS);
 					Ctrl.Move(FV.Index, Ctrl.Count - 1);
