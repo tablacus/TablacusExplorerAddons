@@ -35,7 +35,7 @@ if (window.Addon == 1) {
 
 		Expand: function (Ctrl)
 		{
-			if (Ctrl.FolderItem) {
+			if (Ctrl.FolderItem && !/^search\-ms:/i.test(api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR))) {
 				var TV = Ctrl.TreeView;
 				if (TV) {
 					if (Addons.TreeView.tid[TV.Id]) {
