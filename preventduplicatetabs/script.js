@@ -8,9 +8,15 @@
 			if (Ctrl.hwnd != Item.hwnd && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
 				if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.hwnd == Ctrl.hwnd) {
 					(function (TC, cFV) { setTimeout(function () {
+						var Selected = cFV[0].SelectedItems();
 						for (var i = 2; i--;) {
 							if (cFV[i].Close()) {
 								TC.SelectedIndex = cFV[i ^ 1].Index;
+								if (i == 0 && Selected.Count == 1) {
+									setTimeout(function () {
+										cFV[1].SelectItem(Selected.Item(0), SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS | SVSI_DESELECTOTHERS | SVSI_SELECT);
+									}, 99);
+								}
 								break;
 							}
 						}
