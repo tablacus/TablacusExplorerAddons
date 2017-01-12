@@ -56,11 +56,10 @@
 						var hwnd = GethwndFromPid(oExec.ProcessID);
 						api.PostMessage(hwnd, WM_DROPFILES, hDrop, 0);
 						setTimeout(function () {
+							api.SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 							if (bStart) {
 								api.PostMessage(hwnd, WM_KEYDOWN, VK_RETURN, 0);
 								api.PostMessage(hwnd, WM_KEYUP, VK_RETURN, 0);
-							} else {
-								wsh.AppActivate(oExec.ProcessID);
 							}
 						}, 99);
 					}, 1);
