@@ -103,7 +103,7 @@ ChooseColor2 = function(o)
 
 SaveLocation = function ()
 {
-//		try {
+	try {
 		var ado = te.CreateObject("Adodb.Stream");
 		ado.CharSet = "utf-8";
 		ado.Open();
@@ -114,10 +114,10 @@ SaveLocation = function ()
 		}
 		ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\modifydatecolor.tsv"), adSaveCreateOverWrite);
 		ado.Close();
-//		} catch (e) {}
+	} catch (e) {}
 }
 
-//	try {
+try {
 	var ado = te.CreateObject("Adodb.Stream");
 	ado.CharSet = "utf-8";
 	ado.Open();
@@ -127,4 +127,4 @@ SaveLocation = function ()
 		Add(ar);
 	}
 	ado.Close();
-//	} catch (e) {}
+} catch (e) {}
