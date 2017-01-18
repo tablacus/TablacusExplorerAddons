@@ -113,13 +113,13 @@ SaveLocation = function ()
 		for (var i = 0; i < nRows; i++) {
 			ado.WriteText([document.E.elements['p' + i].value, document.E.elements['c' + i].value].join("\t") + "\r\n");
 		}
-		ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\modifydatecolor.tsv"), adSaveCreateOverWrite);
+		ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\createdatecolor.tsv"), adSaveCreateOverWrite);
 		ado.Close();
 	} catch (e) {}
 }
 
 try {
-	var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\modifydatecolor.tsv"));
+	var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\createdatecolor.tsv"));
 	while (!ado.EOS) {
 		var ar = ado.ReadText(adReadLine).split("\t");
 		Add(ar);
