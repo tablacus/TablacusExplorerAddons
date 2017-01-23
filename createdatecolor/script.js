@@ -28,7 +28,7 @@ if (window.Addon == 1) {
 		while (!ado.EOS) {
 			var ar = ado.ReadText(adReadLine).split("\t");
 			if (ar[0]) {
-				s = (ar[0].replace(/([\dx]+)([smhdw])/ig, function (all, re1, re2)
+				var s = (ar[0].replace(/([\dx]+)([smhdwy])/ig, function (all, re1, re2)
 				{
 					return eval(re1.replace(/x/ig, "*")) * smhdw[re2.toLowerCase()] + '+';
 				}).replace(/\+$/, "")) - tzo;
@@ -37,10 +37,12 @@ if (window.Addon == 1) {
 		}
 		ado.Close();
 	} catch (e) {}
+
 	Addons.CreateDateColor.Color = Addons.CreateDateColor.Color.sort(function (a, b)
 	{
 		return b[0] - a[0];
 	});
+
 	AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes)
 	{
 		if (pid && Addons.CreateDateColor.Enabled) {
