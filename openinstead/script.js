@@ -10,10 +10,16 @@ if (window.Addon == 1) {
 					if (exp && exp.Visible && !exp.Busy) {
 						var doc = exp.Document;
 						if (doc) {
-							if (Addons.OpenInstead.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
+							var path = api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+							var url = doc;
+							if (!path && /\\explorer\.exe$/i.test(exp.FullName)) {
+								path = api.PathCreateFromUrl(exp.LocationURL);
+								url = path;
+							}
+							if (Addons.OpenInstead.Match(path)) {
 								exp.Visible = false;
 								var FV = te.Ctrl(CTRL_FV);
-								FV = FV.Navigate(doc, SBSP_NEWBROWSER);
+								FV = FV.Navigate(api.ILCreateFromPath(url).ExtendedProperty("linktarget") || url, SBSP_NEWBROWSER);
 								if (Addons.OpenInstead.TakeOver) {
 									FV.CurrentViewMode = doc.CurrentViewMode;
 									if (doc.IconSize) {
