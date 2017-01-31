@@ -1,5 +1,6 @@
 ﻿var AddonName = "WFX";
 var g_Chg = {List: false, Data: "List"};
+var g_MP = "";
 
 function LoadFS()
 {
@@ -15,6 +16,13 @@ function LoadFS()
 			while (--i >= 0) {
 				var item = items[i];
 				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path")]);
+			}
+			items = xml.getElementsByTagName("MP");
+			if (items.length) {
+				g_MP = ED(api.base64_decode(items[0].text, true));
+				if (items[0].getAttribute("CRC") != api.CRC32(g_MP)) {
+					g_MP = "";
+				}
 			}
 		}
 		EnableSelectTag(g_x.List);
@@ -32,6 +40,12 @@ function SaveFS()
 			var a = o[i].value.split(g_sep);
 			item.setAttribute("Name", a[0]);
 			item.setAttribute("Path", a[1]);
+			root.appendChild(item);
+		}
+		if (g_MP) {
+			var item = xml.createElement("MP");
+			item.text = api.base64_encode(ED(g_MP));
+			item.setAttribute("CRC", api.CRC32(g_MP));
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
@@ -101,6 +115,46 @@ function SetProp(bName)
 		}
 	} catch(e) {}
 	document.getElementById("ver").innerHTML = ar.join(" ");
+}
+
+function SetMP()
+{
+	var s = MainWindow.InputDialog("Master Password", "");
+	if ((typeof s) == "string" && s != g_MP && confirmOk()) {
+		var dbfile = fso.BuildPath(te.Data.DataFolder, "config\\wfx_" + (wnw.ComputerName.toLowerCase()) + ".bin");
+		try {
+			var ado = new ActiveXObject("Adodb.Stream");
+			ado.Type = adTypeBinary;
+			ado.Open();
+			ado.LoadFromFile(Addons.WFX.dbfile);
+			var body = api.CryptUnprotectData(ado.Read(adReadAll), g_MP, true);
+			ado.Close();
+		} catch (e) {
+			body = "";
+		}
+		g_MP = s;
+		if (body) {
+			try {
+				var ado = new ActiveXObject("Adodb.Stream");
+				ado.Type = adTypeBinary;
+				ado.Open();
+				ado.Write(api.CryptProtectData(body, g_MP));
+				ado.SaveToFile(Addons.WFX.dbfile, adSaveCreateOverWrite);
+				ado.Close();
+			} catch (e) {}
+		}
+		Addons.WFX.bSave = false;
+		g_Chg.List = g_bChanged = true;
+	}
+}
+
+function ED(s)
+{
+	var ar = s.split("").reverse();
+	for (var i in ar) {
+		ar[i] = String.fromCharCode(ar[i].charCodeAt(0) ^ 13);
+	}
+	return ar.join("");
 }
 
 ApplyLang(document);

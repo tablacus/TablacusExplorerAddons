@@ -1,15 +1,11 @@
 ﻿var Addon_Id = "wfx";
 var item = GetAddonElement(Addon_Id);
 
-if (!te.Data.AddonsData.WFX) {
-	te.Data.AddonsData.WFX = te.Object();
-}
-
 Addons.WFX =
 {
-	tid: [], tidNotify: {}, Use: [], Cnt: [],
-
+	tid: [], tidNotify: {}, Use: [], Cnt: [], pdb: [],
 	xml: OpenXml("wfx.xml", false, true),
+	dbfile: fso.BuildPath(te.Data.DataFolder, "config\\wfx_" + (wnw.ComputerName.toLowerCase()) + ".bin"),
 
 	IsHandle: function (Ctrl)
 	{
@@ -35,9 +31,9 @@ Addons.WFX =
 			if (!Obj.X) {
 				Obj.X = Addons.WFX.DLL.open(Obj.dllPath);
 				if (Obj.X.FsInit) {
-					if (Obj.X.FsInit(lib.PluginNr, this.ArrayProc, this.ProgressProc, this.LogProc, this.RequestProc) == 0) {
+					if (Obj.X.FsInit(Obj.PluginNr, this.ArrayProc, this.ProgressProc, this.LogProc, this.RequestProc) == 0) {
 						Obj.X.FsSetDefaultParams(fso.BuildPath(te.Data.DataFolder, "config\\fsplugin.ini"));
-						Obj.X.FsSetCryptCallback(this.CryptProc, lib.PluginNr, 1);
+						Obj.X.FsSetCryptCallback(this.CryptProc, Obj.PluginNr, 1);
 					}
 				}
 			}
@@ -107,15 +103,44 @@ Addons.WFX =
 		for (var i = 0; i < items.length; i++) {
 			var dllPath = (ExtractMacro(te, items[i].getAttribute("Path")) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
 			var WFX = Addons.WFX.DLL.open(dllPath);
-			if (WFX) {
-				if (WFX.FsInit) {
-					var s = items[i].getAttribute("Name");
-					Addons.WFX.Obj[s] = 
-					{
-						dllPath: dllPath,
-						PluginNr: i + 1
+			if (WFX && WFX.FsInit) {
+				var s = items[i].getAttribute("Name");
+				Addons.WFX.Root.push(s);
+				Addons.WFX.Obj[s] = 
+				{
+					dllPath: dllPath,
+					PluginNr: Addons.WFX.Root.length
+				}
+			}
+		}
+		items = Addons.WFX.xml.getElementsByTagName("MP");
+		if (items.length) {
+			Addons.WFX.MP = Addons.WFX.ED(api.base64_decode(items[0].text, true));
+			if (items[0].getAttribute("CRC") != api.CRC32(Addons.WFX.MP)) {
+				Addons.WFX.MP = "";
+			}
+		}
+
+		try {
+			var ado = new ActiveXObject("Adodb.Stream");
+			ado.Type = adTypeBinary;
+			ado.Open();
+			ado.LoadFromFile(Addons.WFX.dbfile);
+			var s = api.CryptUnprotectData(ado.Read(adReadAll), Addons.WFX.MP, true);
+			ado.Close();
+		} catch (e) {
+			s = "";
+		}
+		if (s) {
+			var line = s.split(/\n/);
+			for (var i in line) {
+				if (line[i]) {
+					var col = line[i].split(/\t/);
+					var db = Addons.WFX.pdb[col[0]];
+					if (!db) {
+						Addons.WFX.pdb[col[0]] = db = {}
 					}
-					Addons.WFX.Root.push(s);
+					db[col[1]] = col[2];
 				}
 			}
 		}
@@ -198,10 +223,10 @@ Addons.WFX =
 			FsResult = 0;
 			var bRefresh = false;
 			Addons.WFX.Progress = te.ProgressDialog;
-			Addons.WFX.Progress.StartProgressDialog(te.hwnd, null, 1);
+			Addons.WFX.Progress.StartProgressDialog(te.hwnd, null, 0);
 			var fl = [];
 			try {
-				Addons.WFX.Progress.SetLine(1, api.LoadString(hShell32, 6478), true);
+				Addons.WFX.Progress.SetLine(1, api.LoadString(hShell32, 33260) || api.LoadString(hShell32, 6478), true);
 				Addons.WFX.Cnt = [0, 0, 0, 0, 0];
 				if (Addons.WFX.LocalList(lib, Items, "", fl) == 0) {
 					Addons.WFX.ShowLine(5954, 32946);
@@ -345,9 +370,9 @@ Addons.WFX =
 			var bRefresh = false;
 			Addons.WFX.Connect(lib);
 			Addons.WFX.Progress = te.ProgressDialog;
-			Addons.WFX.Progress.StartProgressDialog(te.hwnd, null, 1);
+			Addons.WFX.Progress.StartProgressDialog(te.hwnd, null, 0);
 			try {
-				Addons.WFX.Progress.SetLine(1, api.LoadString(hShell32, 6478), true);
+				Addons.WFX.Progress.SetLine(1, api.LoadString(hShell32, 33269) || api.LoadString(hShell32, 6478), true);
 				Addons.WFX.Cnt = [0, 0, 0, 0, 0];
 				var items = [], fl = [];
 				for (var i = Items.Count; i--;) {
@@ -582,9 +607,6 @@ Addons.WFX =
 	ProgressProc: function (PluginNr, SourceName, TargetName, PercentDone)
 	{
 		if (Addons.WFX.Progress) {
-			if (!api.IsWindowEnabled(te.hwnd)) {
-				api.EnableWindow(te.hwnd, true);
-			}
 			var i = Addons.WFX.Cnt[1] - Addons.WFX.Cnt[0];
 			if (i > 999 && document.documentMode > 8) {
 				i = i.toLocaleString();
@@ -600,9 +622,6 @@ Addons.WFX =
 			Addons.WFX.Progress.SetTitle(Math.floor(i) + "%");
 			Addons.WFX.Progress.SetProgress(i, 100);
 			Addons.WFX.Progress.SetLine(3, ar.join(""), true);
-			while (api.DoEvents()) {
-				api.Sleep(0);
-			}
 			return Addons.WFX.Progress.HasUserCancelled() ? 1 : 0;
 		}
 		return 0;
@@ -611,7 +630,7 @@ Addons.WFX =
 	LogProc: function (PluginNr, MsgType, LogString)
 	{
 		if (Addons.Debug) {
-//			Addons.Debug.alert(LogString);
+			Addons.Debug.alert(LogString);
 		} else {
 			api.OutputDebugString(LogString);
 		}
@@ -638,14 +657,14 @@ Addons.WFX =
 
 	CryptProc: function (PluginNr, CryptoNumber, mode, ConnectionName, pPassword)
 	{
-		var db = te.Data.AddonsData.WFX[Addons.WFX.Root[PluginNr - 1]];
+		var db = Addons.WFX.pdb[Addons.WFX.Root[PluginNr - 1]];
 		if (!db) {
-			db = {};
-			te.Data.AddonsData.WFX[Addons.WFX.Root[PluginNr - 1]] = db;
+			Addons.WFX.pdb[Addons.WFX.Root[PluginNr - 1]] = db = {};
 		}
 		switch (mode) {
 			case 1://FS_CRYPT_SAVE_PASSWORD
 				db[ConnectionName] = pPassword[0];
+				Addons.WFX.bSave = true;
 				return 0;
 			case 2://FS_CRYPT_LOAD_PASSWORD
 			case 3://FS_CRYPT_LOAD_PASSWORD_NO_UI
@@ -654,6 +673,7 @@ Addons.WFX =
 			case 4://FS_CRYPT_COPY_PASSWORD
 				if (db[ConnectionName]) {
 					db[pPassword[0]] = db[ConnectionName];
+					Addons.WFX.bSave = true;
 					return 0;
 				}
 				return 3;
@@ -661,17 +681,28 @@ Addons.WFX =
 				if (db[ConnectionName]) {
 					db[pPassword[0]] = db[ConnectionName];
 					delete db[ConnectionName];
+					Addons.WFX.bSave = true;
 					return 0;
 				}
 				return 3;
 			case 6://FS_CRYPT_DELETE_PASSWORD
 				if (db[ConnectionName]) {
 					delete db[ConnectionName];
+					Addons.WFX.bSave = true;
 					return 0;
 				}
 				return 3;
 		}
 		return 6;
+	},
+
+	ED: function (s)
+	{
+		var ar = s.split("").reverse();
+		for (var i in ar) {
+			ar[i] = String.fromCharCode(ar[i].charCodeAt(0) ^ 13);
+		}
+		return ar.join("");
 	},
 
 	Unix2Win: function (wfd)
@@ -751,6 +782,7 @@ if (window.Addon == 1) {
 		if (!Items.Count) {
 			return;
 		}
+		var hr = S_OK;
 		var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, "tablacus");
 		var ar = [], fl = [];
 		for (var i = Items.Count; i-- ;) {
@@ -770,9 +802,9 @@ if (window.Addon == 1) {
 			Addons.WFX.CreateFolder(root);
 			wsh.CurrentDirectory = root;
 			Addons.WFX.Progress = te.ProgressDialog;
-			Addons.WFX.Progress.StartProgressDialog(te.hwnd, null, 1);
+			Addons.WFX.Progress.StartProgressDialog(te.hwnd, null, 0);
 			try {
-				Addons.WFX.Progress.SetLine(1, api.LoadString(hShell32, 6478), true);
+				Addons.WFX.Progress.SetLine(1, api.LoadString(hShell32, 33260) || api.LoadString(hShell32, 6478), true);
 				Addons.WFX.Cnt = [0, 0, 0, 0, 0];
 				if (Addons.WFX.RemoteList(lib, fl, ar, true) == 0) {
 					Addons.WFX.ShowLine(5954, 32946);
@@ -800,12 +832,16 @@ if (window.Addon == 1) {
 				FsRerult = e;
 			}
 			Addons.WFX.Progress.StopProgressDialog();
+			if (Addons.WFX.Progress.HasUserCancelled()) {
+				hr = E_ABORT;
+			}
 			delete Addons.WFX.Progress;
 			wsh.CurrentDirectory = fso.GetSpecialFolder(2).Path;
 			if (FsResult) {
 				Addons.WFX.ShowError(FsResult);
 			}
 		}
+		return hr;
 	});
 
 	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
@@ -904,7 +940,7 @@ if (window.Addon == 1) {
 	AddEvent("AddonDisabled", function (Id)
 	{
 		if (Id.toLowerCase() == "wfx") {
-			Addons.WFX.Finalize();
+			Addons.WCX.Finalize();
 		}
 	});
 
@@ -1052,6 +1088,30 @@ if (window.Addon == 1) {
 					return image.DataURI("image/png");
 				}
 			}
+		}
+	});
+
+	AddEvent("SaveConfig", function ()
+	{
+		if (Addons.WFX.bSave) {
+			var ar = [];
+			for (var i in Addons.WFX.pdb) {
+				var db = Addons.WFX.pdb[i];
+				for (j in db) {
+					if (i && j && db[j]) {
+						ar.push([i, j, db[j]].join("\t"));
+					}
+				}
+			}
+			try {
+				var ado = new ActiveXObject("Adodb.Stream");
+				ado.Type = adTypeBinary;
+				ado.Open();
+				ado.Write(api.CryptProtectData(ar.join("\n"), Addons.WFX.MP));
+				ado.SaveToFile(Addons.WFX.dbfile, adSaveCreateOverWrite);
+				ado.Close();
+				Addons.WFX.bSave = false;
+			} catch (e) {}
 		}
 	});
 
