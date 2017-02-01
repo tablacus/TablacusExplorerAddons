@@ -151,7 +151,7 @@ if (window.Addon == 1) {
 					} else {
 						wsh.SendKeys("{F2}");
 					}
-				}, 100);
+				}, 99);
 				return S_OK;
 			},
 			
@@ -1027,7 +1027,7 @@ if (window.Addon == 1) {
 				ar.push(i.replace(/^[a-z]/g, function (s){ return s.toUpperCase();}) + ":");
 			}
 			ar.sort();
-			return g_basic.Popup(ar, s, pt);
+			return (s ? s + "\n" : "") + g_basic.Popup(ar, s, pt);
 		}
 
 	});

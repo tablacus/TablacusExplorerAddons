@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.22</Version>
+    <Version>1.00</Version>
     <MinVersion>2017.2.1</MinVersion>
     <pubDate>Wed, 01 Feb 2017 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
@@ -9,11 +9,11 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>X-Finder</Name>
-    <Description>X-Finder</Description>
+    <Name>Add-on switcher</Name>
+    <Description>Enable or disable add-ons.</Description>
   </en>
   <ja>
-    <Name>X-Finder</Name>
-    <Description>X-Finderのビルトインコマンドや環境変数が使えるようになります。</Description>
+    <Name>アドオンの切り替え(Add-on switcher)</Name>
+    <Description>アドオンの有効・無効を切り替えます。</Description>
   </ja>
 </TablacusExplorer>
