@@ -3,93 +3,97 @@
 BUF_SIZE = 32000;
 
 if (MainWindow.Exchange) {
-	g_ex = MainWindow.Exchange[arg[3]];
-	if (g_ex) {
-		g_abort = false;
-		g_FV = g_ex.FV;
-		var ar = g_ex.Path.split("|");
-		var path = ar.shift();
-		g_mask = ar.shift();
-		g_filter = ar.join("|");
-		g_length = g_filter.length * 2;
-		g_sessionId = g_ex.SessionId;
-		g_re = new RegExp(g_filter.replace(/([\+\*\.\?\^\$\[\-\]\|\(\)\\])/g, "\\$1"), "i");
-		FindFiles(path);
-		g_ex.ShowStatusText(g_FV, "", 0, g_sessionId);
+	var ex = MainWindow.Exchange[arg[3]];
+	if (ex) {
+		var ar = ex.Path.split("|");
+		var list = [ar.shift()];
+		var mask1 = ar.shift();
+		var filter1 = ar.join("|").replace(/%2F/g, "/").replace(/%25/g, "%");
+		var length1 = filter1.length * 2;
+		var Progress = te.ProgressDialog;
+		Progress.StartProgressDialog(ex.hwnd, null, 0x20);
+		try {
+			SearchFolders(list, ex.FV, ex.SessionId, ex.Locale, mask1, length1, new RegExp(filter1.replace(/([\+\*\.\?\^\$\[\-\]\|\(\)\\])/g, "\\$1"), "i"), Progress);
+		} catch (e) {}
+		Progress.StopProgressDialog();
 		delete MainWindow.Exchange[arg[3]];
 	}
 }
 
-function FindFiles(path)
+function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, Progress)
 {
-	if (g_abort || !g_ex.ShowStatusText(g_FV, path, 0, g_sessionId)) {
-		g_abort = true;
-		return;
-	}
-	var bAdd;
-	if (/^[A-Z]:\\\$Recycle\.Bin$/i.test(path)) {
-		return;
-	}
+	var bAdd, path;
+	var nItems = 0;
+	var sItem = [api.LoadString(hShell32, 12708), api.LoadString(hShell32, 38192) || String(api.LoadString(hShell32, 6466)).replace(/%1!ls!/, "%s")].join(" ");
+	Progress.SetLine(1, api.LoadString(hShell32, 13585) || api.LoadString(hShell32, 6478), true);
 	var wfd = api.Memory("WIN32_FIND_DATA");
-	var hFind = api.FindFirstFile(fso.BuildPath(path, "*"), wfd);
-	var bFind = hFind != INVALID_HANDLE_VALUE;
-	while (bFind && !g_abort) {
-		var fn = fso.BuildPath(path, wfd.cFileName);
-		if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-			if (!/^\.\.?$/.test(wfd.cFileName)) {
-				FindFiles(fn);
+	while (path = folderlist.shift()) {
+		if (Progress.HasUserCancelled()) {
+			return;
+		}
+		Progress.SetLine(2, path, true);
+		var hFind = api.FindFirstFile(fso.BuildPath(path, "*"), wfd);
+		for (var bFind = hFind != INVALID_HANDLE_VALUE; bFind && !Progress.HasUserCancelled(); bFind = api.FindNextFile(hFind, wfd)) {
+			if (/^\.\.?$/.test(wfd.cFileName)) {
+				continue;
 			}
-		} else if (api.PathMatchSpec(wfd.cFileName, g_mask)) {
-			if (g_length) {
-				bAdd = false;
-				var ado = te.CreateObject("Adodb.Stream");
-				var charset = "_autodetect_all";
-				try {
-					ado.CharSet = "iso-8859-1";
-					ado.Open();
-					ado.LoadFromFile(fn);
-					var s = ado.ReadText(3);
-					if (/^\xEF\xBB\xBF/.test(s)) {
-						charset = 'utf-8';
-					} else if (/^\xFF\xFE|^\xFE\xFF/.test(s)) {
-						charset = 'unicode';
+			var s = ++nItems;
+			if (s > loc999) {
+				s = s.toLocaleString();
+			}
+			Progress.SetTitle(api.sprintf(99, sItem, s));
+			var fn = fso.BuildPath(path, wfd.cFileName);
+			Progress.SetLine(3, wfd.cFileName, true);
+			if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+				if (!/^[A-Z]:\\\$Recycle\.Bin$/i.test(fn)) {
+					folderlist.push(fn);
+				}
+			} else if (api.PathMatchSpec(wfd.cFileName, mask1)) {
+				if (length1) {
+					bAdd = false;
+					var ado = te.CreateObject("Adodb.Stream");
+					var charset = "_autodetect_all";
+					try {
+						ado.CharSet = "iso-8859-1";
+						ado.Open();
+						ado.LoadFromFile(fn);
+						var s = ado.ReadText(3);
+						if (/^\xEF\xBB\xBF/.test(s)) {
+							charset = 'utf-8';
+						} else if (/^\xFF\xFE|^\xFE\xFF/.test(s)) {
+							charset = 'unicode';
+						}
+					} catch (e) {
+						ado.close();
+						return;
 					}
-				} catch (e) {
+					ado.Position = 0;
+					ado.CharSet = charset;
+					var n = -1;
+					while (!ado.EOS && n < 0) {
+						if (ado.Position > length1) {
+							ado.Position = ado.Position - length1;
+						}
+						var s = ado.readText(BUF_SIZE);
+						n = s.indexOf("\0");
+						if (n >= 0) {
+							s = s.substr(0, n);
+						}
+						if (re1.test(s)) {
+							bAdd = true;
+							break;
+						}
+					}
 					ado.close();
-					return;
+				} else {
+					bAdd = true;
 				}
-				ado.Position = 0;
-				ado.CharSet = charset;
-				var n = -1;
-				while (!ado.EOS && n < 0) {
-					if (ado.Position > g_length) {
-						ado.Position = ado.Position - g_length;
-					}
-					var s = ado.readText(BUF_SIZE);
-					n = s.indexOf("\0");
-					if (n >= 0) {
-						s = s.substr(0, n);
-					}
-					if (g_re.test(s)) {
-						bAdd = true;
-						break;
-					}
-				}
-				ado.close();
-			} else {
-				bAdd = true;
-			}
-			if (bAdd) {
-				var pidl = api.ILCreateFromPath(fn);
-				try {
-					g_FV.AddItem(pidl, g_sessionId);
-				} catch (e) {
-					g_abort = true;
-					return;
+				if (bAdd && FV.AddItem(api.ILCreateFromPath(fn), SessionId) == E_ACCESSDENIED) {
+					folderlist = [];
+					break;
 				}
 			}
 		}
-		bFind = api.FindNextFile(hFind, wfd);
+		api.FindClose(hFind);
 	}
-	api.FindClose(hFind);
 }

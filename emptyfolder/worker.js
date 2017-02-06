@@ -3,41 +3,49 @@
 if (MainWindow.Exchange) {
 	var ex = MainWindow.Exchange[arg[3]];
 	if (ex) {
-		var ar = ex.Path.split(/\s*;\s*/);
-		for (var i in ar) {
-			SearchEmptyFolder(ex, ar[i]);
-		}
+		var Progress = te.ProgressDialog;
+		Progress.StartProgressDialog(ex.hwnd, null, 0x20);
+		try {
+			SearchFolders(ex.Path.split(/\s*;\s*/), ex.FV, ex.SessionId, ex.Locale, Progress);
+		} catch (e) {}
+		Progress.StopProgressDialog();
 		delete MainWindow.Exchange[arg[3]];
 	}
 }
 
-function SearchEmptyFolder(ex, path)
+function SearchFolders(folderlist, FV, SessionId, loc999, Progress)
 {
-	if (/^[A-Z]:\\\$Recycle\.Bin$/i.test(path)) {
-		return;
-	}
-	var bAdd = true;
+	var path, nItems = 0;
+	var sItem = [api.LoadString(hShell32, 12708), api.LoadString(hShell32, 38192) || String(api.LoadString(hShell32, 6466)).replace(/%1!ls!/, "%s")].join(" ");
+	Progress.SetLine(1, api.LoadString(hShell32, 13585) || api.LoadString(hShell32, 6478), true);
 	var wfd = api.Memory("WIN32_FIND_DATA");
-	var hFind = api.FindFirstFile(fso.BuildPath(path, "*"), wfd);
-	var bFind = hFind != INVALID_HANDLE_VALUE;
-	while (bFind && ex.Do) {
-		if (!/^\.\.?$/.test(wfd.cFileName)) {
-			bAdd = false;
-			if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				SearchEmptyFolder(ex, fso.BuildPath(path, wfd.cFileName));
-			}
+	while (path = folderlist.shift()) {
+		if (Progress.HasUserCancelled()) {
+			return;
 		}
-		bFind = api.FindNextFile(hFind, wfd);
-	}
-	api.FindClose(hFind);
-	if (bAdd) {
-		var pidl = api.ILCreateFromPath(path);
-		if (ex.Do) {
-			try {
-				ex.FV.AddItem(pidl, ex.SessionId);
-			} catch (e) {
-				return;
+		Progress.SetLine(2, path, true);
+		var s = ++nItems;
+		if (s > loc999) {
+			s = s.toLocaleString();
+		}
+		Progress.SetTitle(api.sprintf(99, sItem, s));
+		var bAdd = true;
+		var hFind = api.FindFirstFile(fso.BuildPath(path, "*"), wfd);
+		for (var bFind = hFind != INVALID_HANDLE_VALUE; bFind && !Progress.HasUserCancelled(); bFind = api.FindNextFile(hFind, wfd)) {
+			if (/^\.\.?$/.test(wfd.cFileName)) {
+				continue;
 			}
+			var fn = fso.BuildPath(path, wfd.cFileName);
+			if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+				if (!/^[A-Z]:\\\$Recycle\.Bin$/i.test(fn)) {
+					folderlist.push(fn);
+				}
+			}
+			bAdd = false;
+		}
+		api.FindClose(hFind);
+		if (bAdd && FV.AddItem(api.ILCreateFromPath(path), SessionId) == E_ACCESSDENIED) {
+			break;
 		}
 	}
 }

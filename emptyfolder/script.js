@@ -8,7 +8,6 @@ if (window.Addon == 1) {
 		PATH: "emptyfolder:",
 		iCaret: -1,
 		strName: "",
-		uid: {},
 
 		GetSearchString: function(Ctrl)
 		{
@@ -73,16 +72,13 @@ if (window.Addon == 1) {
 	{
 		var Path = Addons.EmptyFolder.GetSearchString(Ctrl);
 		if (Path) {
-			var ex = Exchange[Addons.EmptyFolder.uid[Ctrl.Id]];
-			if (ex) {
-				ex.Do = false;
-			}
 			OpenNewProcess("addons\\emptyfolder\\worker.js",
 			{
 				FV: Ctrl,
 				Path: Path,
-				Do: true,
-				SessionId: Ctrl.SessionId
+				SessionId: Ctrl.SessionId,
+				hwnd: te.hwnd,
+				Locale: document.documentMode > 8 ? 999 : Infinity
 			});
 		}
 	});

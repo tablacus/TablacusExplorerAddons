@@ -20,7 +20,6 @@ Addons.FindFiles =
 	PATH: "findfiles:",
 	iCaret: -1,
 	strName: "",
-	uid: {},
 
 	GetSearchString: function(Ctrl)
 	{
@@ -77,20 +76,13 @@ if (window.Addon == 1) {
 	{
 		var Path = Addons.FindFiles.GetSearchString(Ctrl);
 		if (Path) {
-			var ex = Exchange[Addons.FindFiles.uid[Ctrl.Id]];
-			if (ex) {
-				ex.Do = false;
-			}
 			OpenNewProcess("addons\\findfiles\\worker.js",
 			{
 				FV: Ctrl,
 				Path: Path,
 				SessionId: Ctrl.SessionId,
-				ShowStatusText: function (Ctrl, Text, iPart, dwSessionId)
-				{
-					ShowStatusText(Ctrl, GetText(Text), iPart);
-					return Ctrl.SessionId == dwSessionId;
-				}
+				hwnd: te.hwnd,
+				Locale: document.documentMode > 8 ? 999 : Infinity
 			});
 		}
 	});
@@ -187,7 +179,7 @@ else if (window.Addon == 2) {
 	FindFiles = function ()
 	{
 		var ar = [];
-		FV.Navigate("findfiles:" + [document.F.location.value, document.F.name.value, document.F.content.value].join("|"), document.F.newtab.checked ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
+		FV.Navigate("findfiles:" + [document.F.location.value, document.F.name.value, document.F.content.value.replace(/%/g, "%25").replace(/\//g, "%2F")].join("|"), document.F.newtab.checked ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
 		window.close();
 	}
 }
