@@ -1,45 +1,31 @@
 ﻿var Addon_Id = "font";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-}
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Font =
 	{
 		Exec: function (Ctrl)
 		{
-			if (Ctrl) {
-				if (Ctrl.Type == CTRL_TE) {
-					Ctrl = te.Ctrl(CTRL_FV);
-					if (!Ctrl) {
-						return;
-					}
-				}
-				if (Ctrl.Type == CTRL_TV) {
-					Ctrl = Ctrl.FolderView;
-				}
-				var hwnd = Ctrl.hwndList;
+			var FV = GetFolderView(Ctrl);
+			if (FV) {
+				var hwnd = FV.hwndList;
 				if (hwnd) {
 					api.SendMessage(hwnd, WM_SETFONT, Addons.Font.hFont, 1);
 					var nView = api.SendMessage(hwnd, LVM_GETVIEW, 0, 0);
 					api.SendMessage(hwnd, LVM_SETVIEW, nView == 1 ? 3 : 1, 0);
 					api.SendMessage(hwnd, LVM_SETVIEW, nView, 0);
 				}
-				if (Ctrl.TreeView) {
-					hwnd = Ctrl.TreeView.hwndTree;
-					if (hwnd) {
-						api.SendMessage(hwnd, WM_SETFONT, Addons.Font.hFont, 1);
-						api.SendMessage(hwnd, TVM_SETITEMHEIGHT, -1, 0);
-					}
-				}
 				if (Ctrl.Type == CTRL_EB) {
-					hwnd = FindChildByClass(Ctrl.hwnd, WC_TREEVIEW);
-					if (hwnd) {
-						api.SendMessage(hwnd, WM_SETFONT, Addons.Font.hFont, 1);
-						api.SendMessage(hwnd, TVM_SETITEMHEIGHT, -1, 0);
-					}
+					Addons.Font.SetTV(FindChildByClass(Ctrl.hwnd, WC_TREEVIEW));
 				}
+			}
+		},
+
+		SetTV: function (hwnd)
+		{
+			if (hwnd) {
+				api.SendMessage(hwnd, WM_SETFONT, Addons.Font.hFont, 1);
+				api.SendMessage(hwnd, TVM_SETITEMHEIGHT, -1, 0);
 			}
 		},
 
@@ -55,31 +41,34 @@ if (window.Addon == 1) {
 
 	AddEvent("ViewCreated", Addons.Font.Exec);
 
-	AddEvent("AddonDisabled", function(Id)
+	AddEvent("Create", function (Ctrl)
 	{
-		if (api.strcmpi(Id, "font") == 0) {
-			AddEventEx(window, "beforeunload", function ()
-			{
-				api.SystemParametersInfo(SPI_GETICONTITLELOGFONT, DefaultFont.Size, DefaultFont, 0);
-				Addons.Font.Init();
-			});
+		if (Ctrl.Type <= CTRL_EB) {
+			Addons.Font.Exec(Ctrl);
+			return;
+		}
+		if (Ctrl.Type == CTRL_TV) {
+			Addons.Font.SetTV(Ctrl.hwndTree);
 		}
 	});
 
-	if (item) {
-		DefaultFont.lfFaceName = item.getAttribute("Name") || DefaultFont.lfFaceName;
-		var h = item.getAttribute("Size");
-		if (h >= 6 && h <= 18) {
-			DefaultFont.lfHeight = - (h * screen.logicalYDPI / 72);
-		}
-		DefaultFont.lfCharSet = 1;
-		document.body.style.fontFamily = DefaultFont.lfFaceName;
-		document.body.style.fontSize = Math.abs(DefaultFont.lfHeight) + "px";
+	AddEventId("AddonDisabledEx", "font", function(Id)
+	{
+		api.SystemParametersInfo(SPI_GETICONTITLELOGFONT, DefaultFont.Size, DefaultFont, 0);
 		Addons.Font.Init();
-		FontChanged();
+	});
+
+	DefaultFont.lfFaceName = item.getAttribute("Name") || DefaultFont.lfFaceName;
+	var h = item.getAttribute("Size");
+	if (h >= 6 && h <= 18) {
+		DefaultFont.lfHeight = - (h * screen.logicalYDPI / 72);
 	}
-}
-else {
+	DefaultFont.lfCharSet = 1;
+	document.body.style.fontFamily = DefaultFont.lfFaceName;
+	document.body.style.fontSize = Math.abs(DefaultFont.lfHeight) + "px";
+	Addons.Font.Init();
+	FontChanged();
+} else {
 	ChooseFont = function (o)
 	{
 		var lf = api.Memory("LOGFONT");

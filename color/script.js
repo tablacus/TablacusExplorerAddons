@@ -11,15 +11,12 @@ if (!item.getAttribute("Background")) {
 if (window.Addon == 1) {
 	Addons.Color =
 	{
-		tid: {},
-
 		Arrange: function (Ctrl)
 		{
 			var clrText = GetSysColor(COLOR_WINDOWTEXT);
 			var clrBk = GetSysColor(COLOR_WINDOW);
 			var FV = GetFolderView(Ctrl);
 			if (FV) {
-				delete Addons.Color.tid[FV.hwnd];
 				var hwnd = FV.hwndList;
 				if (hwnd) {
 					Addons.Color.SetColor(FV, hwnd, clrText, clrBk);
