@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.20</Version>
+    <Version>1.00</Version>
     <MinVersion>2017.2.18</MinVersion>
     <pubDate>Sat, 18 Feb 2017 00:00:00 GMT</pubDate>
-    <Options>Width: 320; Height: 150</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Favorites bar</Name>
-    <Description>Fovorites bar</Description>
+    <Name>Archive image</Name>
+    <Description>Show archive images in preview etc. (.zip)</Description>
   </en>
   <ja>
-    <Name>お気に入り バー</Name>
-    <Description>お気に入り バー</Description>
+    <Name>書庫画像</Name>
+    <Description>プレビュー等で書庫画像を表示 (.zip)</Description>
   </ja>
 </TablacusExplorer>
