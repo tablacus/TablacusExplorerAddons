@@ -12,8 +12,30 @@ if (window.Addon == 1) {
 				te.Data["Conf_" + this.Align + "BarWidth"] = 178;
 			}
 			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="sidetreeview" style="width: 100%; height: 100%"></div>']);
+			if (te.Ctrls(CTRL_FV).Count) {
+				this.Create();
+			}
+		},
+		
+		Create: function ()
+		{
 			this.TV = te.CreateCtrl(CTRL_TV);
 			this.TV.Visible = true;
+
+			AddEvent("ChangeView", Addons.SideTreeView.Expand);
+
+			AddEvent("Resize", function ()
+			{
+				var o = document.getElementById("sidetreeview");
+				var pt = GetPos(o);
+				api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
+				api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+			});
+
+			AddEvent("Finalize", function ()
+			{
+				Addons.SideTreeView.TV.Close();
+			});
 		},
 
 		Expand: function (Ctrl)
@@ -36,22 +58,13 @@ if (window.Addon == 1) {
 		}
 	};
 
+	AddEvent("Create", function (Ctrl)
+	{
+		if (Ctrl.Type == CTRL_TE) {
+			Addons.SideTreeView.Create();
+		}
+	});
 	Addons.SideTreeView.Init();
-
-	AddEvent("ChangeView", Addons.SideTreeView.Expand);
-
-	AddEvent("Finalize", function ()
-	{
-		Addons.SideTreeView.TV.Close();
-	});
-
-	AddEvent("Resize", function ()
-	{
-		var o = document.getElementById("sidetreeview");
-		var pt = GetPos(o);
-		api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
-		api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
-	});
 } else {
 	SetTabContents(0, "General", '<div><label>Align</label></div><input type="hidden" name="Align" /><input type="radio" name="_Align" id="Align=0" onclick="SetRadio(this)" /><label for="Align=0">Left</label><input type="radio" name="_Align" id="Align=1" onclick="SetRadio(this)" /><label for="Align=1">Right</label><input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label>');
 }
