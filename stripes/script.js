@@ -1,11 +1,8 @@
 ﻿var Addon_Id = "stripes";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("Color2", "#ececec");
-	}
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("Color2", "#ececec");
 }
 if (window.Addon == 1) {
 	Addons.Stripes =
@@ -35,20 +32,14 @@ if (window.Addon == 1) {
 							var hMemDC = api.CreateCompatibleDC(hdc);
 							var hBitmap = api.CreateCompatibleBitmap(hdc, 1, nHeight * 2);
 							api.ReleaseDC(hwnd, hdc);
-							api.SelectObject(hMemDC, hBitmap);
-							api.MoveToEx(hMemDC, 0, 0, null);
-							var pen1 = api.CreatePen(PS_SOLID, 1, api.SendMessage(hwnd, LVM_GETBKCOLOR, 0, 0));
-							var hOld = api.SelectObject(hMemDC, pen1);
-							api.LineTo(hMemDC, 0, nHeight);
-							api.DeleteObject(pen1);
-							pen1 = api.CreatePen(PS_SOLID, 1, Addons.Stripes.Color);
-							api.SelectObject(hMemDC, pen1);
-							api.LineTo(hMemDC, 0, nHeight * 2);
-							api.SelectObject(hMemDC, hOld);
-
 							var image = te.GdiplusBitmap();
 							image.FromHBITMAP(hBitmap);
-
+							var cl = Addons.Stripes.GetBGRA(api.SendMessage(hwnd, LVM_GETBKCOLOR, 0, 0));
+							var cl2 = Addons.Stripes.GetBGRA(Addons.Stripes.Color);
+							for (var i = nHeight; i--;) {
+								image.SetPixel(0, i, cl);
+								image.SetPixel(0, i + nHeight, cl2);
+							}
 							lvbk.pszImage = image.DataURI("image/png");
 							lvbk.ulFlags = LVBKIF_SOURCE_URL | LVBKIF_FLAG_TILEOFFSET | LVBKIF_STYLE_TILE;
 							lvbk.yOffsetPercent = WINVER >= 0x600 ? nHeight * 2 - R.Top : 0;
@@ -90,6 +81,11 @@ if (window.Addon == 1) {
 					}
 				}
 			}
+		},
+
+		GetBGRA: function (c)
+		{
+			return ((c & 0xff) << 16) | (c & 0xff00) | ((c & 0xff0000) >> 16) | 0xff000000;
 		},
 
 		SizeChanged: function (Ctrl)
