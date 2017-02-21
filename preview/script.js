@@ -71,7 +71,7 @@ if (window.Addon == 1) {
 
 		FromFile: function(Item)
 		{
-			image = te.GdiplusBitmap();
+			image = te.WICBitmap();
 			if (image.FromFile(Item.Path)) {
 				return image;
 			}
@@ -100,7 +100,7 @@ if (window.Addon == 1) {
 			var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 			api.DoDragDrop(Addons.Preview.Item, pdwEffect[0], pdwEffect);
 		},
-		
+
 		Init: function ()
 		{
 			this.Width = te.Data["Conf_" + this.Align + "BarWidth"];
@@ -110,7 +110,7 @@ if (window.Addon == 1) {
 			}
 			var s = '<div id="PreviewBar" style="width: 100%; height: auto; background-color: window; border: 1px solid WindowFrame; overflow: hidden; "></div>';
 			SetAddon(Addon_Id, this.Align + "Bar3", s);
-			setTimeout("Addons.Preview.Arrange();", 99);
+			setTimeout(Addons.Preview.Arrange, 99);
 		}
 	}
 
@@ -119,7 +119,7 @@ if (window.Addon == 1) {
 	AddEvent("SelectionChanged", function (Ctrl)
 	{
 		if (Ctrl.Type <= CTRL_EB) {
-			if (Addons.Preview.Width && !document.getElementById('PreviewBar').style.display.match(/none/i)) {
+			if (Addons.Preview.Width && !/^none$/i.test(document.getElementById('PreviewBar').style.display)) {
 				if (Addons.Preview.tid) {
 					clearTimeout(Addons.Preview.tid);
 				}
@@ -137,10 +137,7 @@ if (window.Addon == 1) {
 	{
 		var o = document.getElementById('PreviewBar');
 		var w = te.Data["Conf_" + Addons.Preview.Align + "BarWidth"];
-		if (w != Addons.Preview.Width) {
-			Addons.Preview.Width = w;
-			Resize();
-		}
+		Addons.Preview.Width = w;
 		o.style.width = w + "px";
 		o.style.height = w + "px";
 	});

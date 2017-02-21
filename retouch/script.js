@@ -74,7 +74,7 @@ if (window.Addon == 1) {
 				if (Selected.Count) {
 					Addons.Retouch.File = Selected.Item(0).Path;
 					document.title = Addons.Retouch.File;
-					Addons.Retouch.Image = te.GdiplusBitmap();
+					Addons.Retouch.Image = te.WICBitmap();
 					Addons.Retouch.Image.FromFile(Addons.Retouch.File);
 					Addons.Retouch.Width = Addons.Retouch.Image.GetWidth();
 					Addons.Retouch.Height = Addons.Retouch.Image.GetHeight();
@@ -117,12 +117,13 @@ if (window.Addon == 1) {
 				img1.style.width = document.F.width.value + "px";
 				img1.style.height = document.F.height.value + "px";
 				img1.style.filter = "progid:DXImageTransform.Microsoft.BasicImage(rotation=" + document.F.rotation.value + ");";
-			}
-			else {
+			} else {
 				var thum = Addons.Retouch.Image.GetThumbnailImage(document.F.width.value, document.F.height.value);
 				if (thum) {
-					thum.RotateFlip(document.F.rotation.value);
-					img1.src = thum.DataURI(Addons.Retouch.File);
+					if (document.F.rotation.value != 0) {
+						thum.RotateFlip(document.F.rotation.value);
+					}
+					img1.src = thum.DataURI(/\.jpe?g?$/.test(Addons.Retouch.File) ? "image/jpeg" : "image/png");
 				}
 			}
 		},
@@ -157,19 +158,14 @@ if (window.Addon == 1) {
 					if (document.F.width.value != thum.GetWidth() || document.F.height.value != thum.GetHeight()) {
 						thum = thum.GetThumbnailImage(document.F.width.value, document.F.height.value);
 					}
-					thum.RotateFlip(document.F.rotation.value);
-
-					var eps = api.Memory("EncoderParameters", 1);
-					eps.Count = 1;
-					ep = eps.Parameter(0);
-					ep.Guid = EncoderQuality;
-					ep.NumberOfValues = 1;
-					ep.Type = EncoderParameterValueTypeLong;
-					var pTrans = api.Memory("DWORD");
-					pTrans[0] = document.F.quality.value;
-					ep.Value = pTrans.P;
-					if (thum.Save(path, eps) == 0) {
-						wsh.Popup(GetText("Completed.") + "\n" + path, 0, "Tablacus Explorer", MB_ICONINFORMATION);
+					if (document.F.rotation.value != 0) {
+						thum.RotateFlip(document.F.rotation.value);
+					}
+					var hr = thum.Save(path, document.F.quality.value);
+					if (hr == 0) {
+						MessageBox(GetText("Completed.") + "\n" + path, null, MB_ICONINFORMATION);
+					} else {
+						MessageBox(api.sprintf(999, "Error: 0x%x\n%s", hr, path), null, MB_ICONSTOP);
 					}
 				}
 			}, 99);}) ();

@@ -4,17 +4,15 @@ if (window.Addon == 1) {
 	Addons.FavoritesBar =
 	{
 		Align: api.StrCmpI(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
-		Width: 0,
 		arExpand: GetAddonOptionEx("favoritesbar", "Expanded") ? [BUTTONS.opened, ''] : [BUTTONS.closed, ' style="display: none"'],
 
 		Init: function ()
 		{
-			this.Width = te.Data["Conf_" + this.Align + "BarWidth"];
-			if (!this.Width) {
-				this.Width = 178;
-				te.Data["Conf_" + this.Align + "BarWidth"] = this.Width;
+			if (!te.Data["Conf_" + this.Align + "BarWidth"]) {
+				te.Data["Conf_" + this.Align + "BarWidth"] = 178;
 			}
-			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="favoritesbar" style="width: ', this.Width, 'px; height: 100%; background-color: window; border: 1px solid WindowFrame; overflow-x: hidden; overflow-y: auto;">']);
+			this.Width = te.Data["Conf_" + this.Align + "BarWidth"];
+			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="favoritesbar" style="width: 100%; height: 100%; background-color: window; border: 1px solid WindowFrame; overflow: auto;">']);
 			this.Arrange();
 		},
 
@@ -126,7 +124,7 @@ if (window.Addon == 1) {
 						}
 					}
 					if (strName == "-") {
-						s.splice(s.length, 0, '<div style="width: ', this.Width - 8, 'px; height: 3px; background-color: ActiveBorder; border: 1px solid window; font-size: 1px"></div>');
+						s.splice(s.length, 0, '<div style="width: 90%; width: calc(100% - 8px); height: 3px; background-color: ActiveBorder; border: 1px solid window; font-size: 1px"></div>');
 						continue;
 					}
 					path = Addons.FavoritesBar.GetPath(items, i);
@@ -243,6 +241,13 @@ if (window.Addon == 1) {
 	{
 		MouseOut();
 		return S_OK;
+	});
+
+	AddEvent("Resize", function ()
+	{
+		var w = te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"];
+		Addons.FavoritesBar.Width = w;
+		document.getElementById('favoritesbar').style.width = w + "px";
 	});
 
 	AddEvent("FavoriteChanged", Addons.FavoritesBar.Arrange);
