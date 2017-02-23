@@ -43,24 +43,12 @@ if (window.Addon == 1) {
 					} else {
 						style = nWidth  > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
 					}
+					var img = {};
 					if (nWidth && nHeight) {
-						s.splice(s.length, 0, '<div align="center"><img src="', Item.Path, '" title="', Folder.GetDetailsOf(Item, 0), "\n", Folder.GetDetailsOf(Item, -1), '" style="display: block;', style, '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false"></div>');
-					} else if (image = Addons.Preview.FromFile(Item)) {
-						nWidth = image.GetWidth();
-						nHeight = image.GetHeight();
-						if (nWidth && nHeight) {
-							if (nWidth > o.offsetWidth || nHeight > o.offsetWidth) {
-								if (nWidth > nHeight) {
-									image = image.GetThumbnailImage(o.offsetWidth, o.offsetWidth * nHeight / nWidth);
-								} else {
-									image = image.GetThumbnailImage(o.offsetWidth * nWidth / nHeight, o.offsetWidth);
-								}
-							}
-							var src = image.DataURI("image/png");
-							s.push('<div align="center"><img src="', src, '" title="', Folder.GetDetailsOf(Item, 0), "\n", Folder.GetDetailsOf(Item, -1), '" /></div>');
-						}
-					}
-					else {
+						s.splice(s.length, 0, '<div align="center"><img src="', Item.Path, '" title="', Folder.GetDetailsOf(Item, 0), "\n", Folder.GetDetailsOf(Item, -1), '" style="width 80px;display: block;', style, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this.src, this)"></div>');
+					} else if (Addons.Preview.FromFile(Item.Path, img)) {
+						s.push('<div align="center"><img src="', img.src, '" title="', Folder.GetDetailsOf(Item, 0), "\n", Folder.GetDetailsOf(Item, -1), '" style="display: block;', style, '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false"/></div>');
+					} else {
 						s.push('<div style="font-size: 10px; margin-left: 4px">', Item.Path, '</div>');
 					}
 				}
@@ -69,11 +57,26 @@ if (window.Addon == 1) {
 			o.innerHTML = s.join("");
 		},
 
-		FromFile: function(Item)
+		FromFile: function(path, img)
 		{
-			image = te.WICBitmap();
-			if (image.FromFile(Item.Path)) {
-				return image;
+			var image;
+			img.onerror = null;
+			if (/^file:/i.test(path)) {
+				path = api.PathCreateFromUrl(path);
+			}
+			if (image = te.WICBitmap().FromFile(path)) {
+				var nWidth = image.GetWidth();
+				var nHeight = image.GetHeight();
+				var o = document.getElementById('PreviewBar');
+				if (image.GetFrameCount() < 2 && (nWidth > o.offsetWidth || nHeight > o.offsetWidth)) {
+					if (nWidth > nHeight) {
+						image = image.GetThumbnailImage(o.offsetWidth, o.offsetWidth * nHeight / nWidth);
+					} else {
+						image = image.GetThumbnailImage(o.offsetWidth * nWidth / nHeight, o.offsetWidth);
+					}
+				}
+				img.src = image.DataURI(/\.gif$/.test(path) ? 'image/gif' : "image/png");
+				return true;
 			}
 		},
 
@@ -127,7 +130,7 @@ if (window.Addon == 1) {
 					(function (Item) {
 						Addons.Preview.tid = setTimeout(function () {
 						Addons.Preview.Arrange(Item);
-					}, 500);}) (Ctrl.SelectedItems().Item(0));
+					}, api.GetKeyState(VK_LBUTTON) < 0 ? 0 : 500);}) (Ctrl.SelectedItems().Item(0));
 				}
 			}
 		}
