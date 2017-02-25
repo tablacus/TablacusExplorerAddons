@@ -7,52 +7,56 @@ if (window.Addon == 1) {
 		Align: api.StrCmpI(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
 		Width: 0,
 
-		Arrange: function (Item)
+		Arrange: function (Item, Ctrl)
 		{
 			Addons.Preview.Item = Item;
 			var o = document.getElementById('PreviewBar');
 			var s = [];
 			if (Item) {
 				var Folder = sha.NameSpace(Item.Parent);
-				var info = Folder.GetDetailsOf(Item, 0) + "<br>" + Folder.GetDetailsOf(Item, -1).replace(/\n/g, "<br>");
+				var info = (Folder.GetDetailsOf(Item, 0) + "\n" + Folder.GetDetailsOf(Item, -1)).replace(/"<>/g, "");
 				if (Item.IsLink) {
 					var path = Item.ExtendedProperty("linktarget");
 					if (path) {
 						Item = api.ILCreateFromPath(path);
 					}
 				}
+				var path = Item.Path;
+				if (Ctrl && path == Item.name) {
+					path = fso.BuildPath(Ctrl.FolderItem.Path, path).replace(/"<>/g, "");
+				}
 				var nWidth = 0, nHeight = 0;
-				if (api.PathMatchSpec(Item.Path, "*.txt;*.css;*.js;*.vbs;*.vba;*.ini")) {
-					var ado = OpenAdodbFromTextFile(Item.Path);
+				if (api.PathMatchSpec(path, "*.txt;*.css;*.js;*.vbs;*.vba;*.ini")) {
+					var ado = OpenAdodbFromTextFile(path);
 					if (ado) {
 						o.innerText = ado.ReadText(1024);
 						ado.Close()
 						return;
 					}
 				}
-				if (document.documentMode >= 11 && api.PathMatchSpec(Item.Path, "*.mp3;*.m4a;*.webm;*.mp4")) {
-					s.splice(s.length, 0, '<video controls width="100%" height="100%"><source src="' + Item.Path + '"></video>');
-				} else if (api.PathMatchSpec(Item.Path, "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf")) {
-					s.splice(s.length, 0, '<embed width="100%" height="100%" src="' + Item.Path + '" autoplay="false"></embed>');
+				if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4")) {
+					s.splice(s.length, 0, '<video controls width="100%" height="100%"><source src="' + path + '"></video>');
+				} else if (api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf")) {
+					s.splice(s.length, 0, '<embed width="100%" height="100%" src="' + path + '" autoplay="false"></embed>');
 				} else {
-					var image, style;
+					var style;
 					nWidth = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 3");
 					nHeight = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 4");
 					if (document.documentMode) {
-						style = nWidth  > nHeight ? "max-width: 100%" : "max-width: " + (100 * nWidth / nHeight) + "%";
+						style = "max-width: 100%; max-height: 100%";
 					} else {
 						style = nWidth  > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
 					}
 					var img = {};
 					if (nWidth && nHeight) {
-						s.splice(s.length, 0, '<div align="center"><img src="', Item.Path, '" title="', Folder.GetDetailsOf(Item, 0), "\n", Folder.GetDetailsOf(Item, -1), '" style="width 80px;display: block;', style, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this.src, this)"></div>');
-					} else if (Addons.Preview.FromFile(Item.Path, img)) {
-						s.push('<div align="center"><img src="', img.src, '" title="', Folder.GetDetailsOf(Item, 0), "\n", Folder.GetDetailsOf(Item, -1), '" style="display: block;', style, '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false"/></div>');
+						s.splice(s.length, 0, '<div align="center"><img src="', path, '" style="display: block;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this.src, this)"></div>');
+					} else if (Addons.Preview.FromFile(path, img)) {
+						s.push('<div align="center"><img src="', img.src, '" style="display: block;', style, '" title="', info, '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false"/></div>');
 					} else {
-						s.push('<div style="font-size: 10px; margin-left: 4px">', Item.Path, '</div>');
+						s.push('<div style="font-size: 10px; margin-left: 4px">', path, '</div>');
 					}
 				}
-				s.push(info);
+				s.push(info.replace(/\n/, "<br>"));
 			}
 			o.innerHTML = s.join("");
 		},
@@ -129,7 +133,7 @@ if (window.Addon == 1) {
 				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
 					(function (Item) {
 						Addons.Preview.tid = setTimeout(function () {
-						Addons.Preview.Arrange(Item);
+						Addons.Preview.Arrange(Item, Ctrl);
 					}, api.GetKeyState(VK_LBUTTON) < 0 ? 0 : 500);}) (Ctrl.SelectedItems().Item(0));
 				}
 			}
