@@ -49,7 +49,7 @@ Addons.WFX =
 	{
 		Addons.WFX.Obj = {};
 		Addons.WFX.Root = [];
-		Addons.WFX.Obj[""] = 
+		Addons.WFX.Obj[""] =
 		{
 			X:
 			{
@@ -106,7 +106,7 @@ Addons.WFX =
 			if (WFX && WFX.FsInit) {
 				var s = items[i].getAttribute("Name");
 				Addons.WFX.Root.push(s);
-				Addons.WFX.Obj[s] = 
+				Addons.WFX.Obj[s] =
 				{
 					dllPath: dllPath,
 					PluginNr: Addons.WFX.Root.length
@@ -429,7 +429,7 @@ Addons.WFX =
 		var lib =  Addons.WFX.GetObject(path);
 		if (lib) {
 			Ctrl.SortColumn = "";
-			clearTimeout(Addons.WFX.tid[Ctrl.Id]); 
+			clearTimeout(Addons.WFX.tid[Ctrl.Id]);
 			Addons.WFX.tid[Ctrl.Id] = setTimeout(function ()
 			{
 				delete Addons.WFX.tid[Ctrl.Id];
@@ -812,7 +812,7 @@ if (window.Addon == 1) {
 						var item = fl.shift();
 						var path = fso.BuildPath(lib.path, item.path);
 						var lfn = fso.BuildPath(root, item.path);
-						Addons.WFX.Cnt[4] = api.QuadPart(item.SizeLow, item.SizeHigh); 
+						Addons.WFX.Cnt[4] = api.QuadPart(item.SizeLow, item.SizeHigh);
 						Addons.WFX.Progress.SetLine(2, item.path, true);
 						if (item.Attr & FILE_ATTRIBUTE_DIRECTORY) {
 							Addons.WFX.CreateFolder(lfn);
@@ -940,7 +940,7 @@ if (window.Addon == 1) {
 	AddEvent("AddonDisabled", function (Id)
 	{
 		if (Id.toLowerCase() == "wfx") {
-			Addons.WCX.Finalize();
+			Addons.WFX.Finalize();
 		}
 	});
 
