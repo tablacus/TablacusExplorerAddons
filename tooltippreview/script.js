@@ -14,8 +14,8 @@ if (window.Addon == 1) {
 					if (hbm) {
 						var hmdc = api.CreateCompatibleDC(hdc);
 						var hOld = api.SelectObject(hmdc, hbm);
-						var x = q.x + q.image.GetFrameMetadata("/imgdesc/Left") * q.z;
-						var y = q.y + q.image.GetFrameMetadata("/imgdesc/Top") * q.z;
+						var x = q.x + api.LowPart(q.image.GetFrameMetadata("/imgdesc/Left")) * q.z;
+						var y = q.y + api.LowPart(q.image.GetFrameMetadata("/imgdesc/Top")) * q.z;
 						api.AlphaBlend(hdc, x, y, w * q.z, h * q.z, hmdc, 0, 0, w, h, 0x01ff0000);
 						api.SelectObject(hmdc, hOld);
 						api.DeleteDC(hmdc);
