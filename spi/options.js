@@ -2,7 +2,6 @@
 var g_Chg = {List: false, Data: "List"};
 var SPI;
 var tspiPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\spi\\tspi", api.sizeof("HANDLE") * 8, ".dll"].join(""));
-//var tspiPath = ['C:\\cpp\\tspi\\Debug\\tspi', api.sizeof("HANDLE") * 8, 'd.dll'].join("");
 var DLL = api.DllGetClassObject(tspiPath, "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
 
 function LoadFS()

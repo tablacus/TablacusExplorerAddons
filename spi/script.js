@@ -2,7 +2,6 @@ if (window.Addon == 1) {
 	Addons.SPI =
 	{
 		DLL: api.DllGetClassObject(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\spi\\tspi", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}"),
-//		DLL: api.DllGetClassObject(['C:\\cpp\\tspi\\Debug\\tspi', api.sizeof("HANDLE") * 8, 'd.dll'].join(""), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}"),
 		IN: [],
 		AM: [],
 
@@ -124,7 +123,7 @@ if (window.Addon == 1) {
 		if (xml) {
 			var items = xml.getElementsByTagName("Item");
 			for (var i = items.length; i-- > 0;) {
-				var SPI = Addons.SPI.DLL.open(items[i].getAttribute("Path")) || {};
+				var SPI = Addons.SPI.DLL.open(api.PathUnquoteSpaces(ExtractMacro(te, items[i].getAttribute("Path")))) || {};
 				if (SPI.GetPicture) {
 					Addons.SPI.IN.push(SPI);
 				}
