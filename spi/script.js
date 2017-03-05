@@ -123,12 +123,14 @@ if (window.Addon == 1) {
 		if (xml) {
 			var items = xml.getElementsByTagName("Item");
 			for (var i = items.length; i-- > 0;) {
-				var SPI = Addons.SPI.DLL.open(api.PathUnquoteSpaces(ExtractMacro(te, items[i].getAttribute("Path")))) || {};
-				if (SPI.GetPicture) {
-					Addons.SPI.IN.push(SPI);
-				}
-				if (SPI.GetFile) {
-					Addons.SPI.AM.push(SPI);
+				if (!items[i].getAttribute("Disabled")) {
+					var SPI = Addons.SPI.DLL.open(api.PathUnquoteSpaces(ExtractMacro(te, items[i].getAttribute("Path")))) || {};
+					if (SPI.GetPicture) {
+						Addons.SPI.IN.push(SPI);
+					}
+					if (SPI.GetFile) {
+						Addons.SPI.AM.push(SPI);
+					}
 				}
 			}
 		}
