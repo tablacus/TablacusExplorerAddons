@@ -114,7 +114,7 @@ function SetProp()
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
 	var ar = [fso.GetFileName(DLL.Path)];
-	if (DLL.CAL) {
+	if (DLL.CAL && DLL.CAL.GetVersion) {
 		var v = DLL.CAL.GetVersion();
 		if (v) {
 			ar.push(" Ver. " + v / 100)

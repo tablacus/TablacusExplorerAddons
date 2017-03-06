@@ -29,7 +29,7 @@ Addons.CAL =
 				var item = Addons.CAL.Obj[i];
 				if (item.Filter && api.PathMatchSpec(lib.file, item.Filter)) {
 					if (!need || item[need]) {
-						if ((item.X.CheckArchive && item.X.CheckArchive(lib.file, 0) !== false) || 
+						if ((item.X.CheckArchive && item.X.CheckArchive(lib.file, 0) !== false) ||
 						(item[need] && need != "wait" && item.X.Exec)) {
 							for (var j in item) {
 								lib[j] = item[j];
@@ -203,11 +203,14 @@ Addons.CAL =
 
 	Navigate: function (Ctrl)
 	{
+		if (!Ctrl || !Ctrl.FolderItem) {
+			return;
+		}
 		var path = Ctrl.FolderItem.Path;
 		var lib = Addons.CAL.GetObject(path, "wait");
 		if (lib) {
 			Ctrl.SortColumn = "";
-			clearTimeout(Addons.CAL.tid[Ctrl.Id]); 
+			clearTimeout(Addons.CAL.tid[Ctrl.Id]);
 			Addons.CAL.tid[Ctrl.Id] = setTimeout(function ()
 			{
 				delete Addons.CAL.tid[Ctrl.Id];
@@ -317,7 +320,7 @@ if (window.Addon == 1) {
 	}, true);
 
 	AddEvent("NavigateComplete", Addons.CAL.Navigate);
-	
+
 	AddEvent("BeginDrag", function (Ctrl)
 	{
 		if (Addons.CAL.IsHandle(Ctrl, "Extract")) {
