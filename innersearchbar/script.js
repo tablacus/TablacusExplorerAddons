@@ -45,7 +45,7 @@ if (window.Addon == 1) {
 			} else {
 				CancelFilterView(FV);
 			}
-			Addons.SearchBar.ShowButton(Id);
+			Addons.InnerSearchBar.ShowButton(Id);
 		},
 
 		Focus: function (o, Id)
