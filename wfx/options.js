@@ -89,7 +89,7 @@ function PathChanged()
 function SetProp(bName)
 {
 	var WFX;
-	var dllPath = (ExtractMacro(te, document.F.Path.value) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
+	var dllPath = (ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
 	var twfxPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\wfx\\twfx", api.sizeof("HANDLE") * 8, ".dll"].join(""));
 	var DLL = api.DllGetClassObject(twfxPath, "{5396F915-5592-451c-8811-87314FC0EF11}");
 	if (DLL) {
@@ -103,7 +103,7 @@ function SetProp(bName)
 	for (var i in arProp) {
 		arHtml[i % 3].push('<input type="checkbox" ', WFX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '<br / >');
 	}
-	arHtml[3].push('64bit<br /><input type="text" value="', (ExtractMacro(te, document.F.Path.value) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
+	arHtml[3].push('64bit<br /><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
 	for (var i = 4; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}

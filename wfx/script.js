@@ -101,7 +101,7 @@ Addons.WFX =
 		Addons.WFX.Root = [];
 		var items = Addons.WFX.xml.getElementsByTagName("Item");
 		for (var i = 0; i < items.length; i++) {
-			var dllPath = (ExtractMacro(te, items[i].getAttribute("Path")) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
+			var dllPath = (ExtractMacro(te, api.PathUnquoteSpaces(items[i].getAttribute("Path"))) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
 			var WFX = Addons.WFX.DLL.open(dllPath);
 			if (WFX && WFX.FsInit) {
 				var s = items[i].getAttribute("Name");

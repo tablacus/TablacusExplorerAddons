@@ -82,7 +82,7 @@ function LoadDll()
 	var twcxPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\wcx\\twcx", api.sizeof("HANDLE") * 8, ".dll"].join(""));
 	return {
 		X: api.DllGetClassObject(twcxPath, "{56297D71-E778-4dfd-8678-6F4079A2BC50}"),
-		Path: (ExtractMacro(te, document.F.Path.value) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1")
+		Path: (ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1")
 	};
 }
 
@@ -97,7 +97,7 @@ function SetProp()
 	for (var i in arProp) {
 		arHtml[i % 3].push('<input type="checkbox" ', WCX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '<br / >');
 	}
-	arHtml[3].push('64bit<br /><input type="text" value="', (ExtractMacro(te, document.F.Path.value) + "64").replace(/\.u(wcx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
+	arHtml[3].push('64bit<br /><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + "64").replace(/\.u(wcx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
 	for (var i = 4; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}

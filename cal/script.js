@@ -54,7 +54,7 @@ Addons.CAL =
 		var items = Addons.CAL.xml.getElementsByTagName("Item");
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			var dllPath = ExtractMacro(te, item.getAttribute("Path").replace(/\*/g, api.sizeof("HANDLE") * 8));
+			var dllPath = ExtractMacro(te, api.PathUnquoteSpaces(item.getAttribute("Path")).replace(/\*/g, api.sizeof("HANDLE") * 8));
 			var procName = item.getAttribute("Name").replace(/\W.*$/, "");
 			if (/\.exe"?\s*/i.test(dllPath)) {
 				CAL = Addons.CAL.OpenExe(dllPath);

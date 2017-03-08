@@ -74,7 +74,7 @@ function ReplaceFS()
 
 function LoadDll()
 {
-	var dllPath = document.F.Path.value.replace(/\*/g, api.sizeof("HANDLE") * 8);
+	var dllPath = ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)).replace(/\*/g, api.sizeof("HANDLE") * 8);
 	if (/\.exe"?\s*/i.test(dllPath)) {
 		return {};
 	}

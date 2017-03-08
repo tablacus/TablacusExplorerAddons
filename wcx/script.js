@@ -46,7 +46,7 @@ Addons.WCX =
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			var filter = item.getAttribute("Filter");
-			var dllPath = (ExtractMacro(te, item.getAttribute("Path")) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1");
+			var dllPath = (ExtractMacro(te, api.PathUnquoteSpaces(item.getAttribute("Path"))) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1");
 			var WCX = Addons.WCX.DLL.open(dllPath);
 			if (WCX && WCX.OpenArchive) {
 				Addons.WCX.Obj.push({ X: WCX, filter: filter});
@@ -222,7 +222,7 @@ Addons.WCX =
 		var lib = Addons.WCX.GetObject(path);
 		if (lib) {
 			Ctrl.SortColumn = "";
-			clearTimeout(Addons.WCX.tid[Ctrl.Id]); 
+			clearTimeout(Addons.WCX.tid[Ctrl.Id]);
 			Addons.WCX.tid[Ctrl.Id] = setTimeout(function ()
 			{
 				delete Addons.WCX.tid[Ctrl.Id];
@@ -447,7 +447,7 @@ if (window.Addon == 1) {
 		}
 		return hr;
 	});
-	
+
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
 	{
 		var hr = Addons.WCX.Command(Ctrl, wParam & 0xfff);

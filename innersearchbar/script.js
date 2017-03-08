@@ -15,7 +15,6 @@ if (window.Addon == 1) {
 			var o = document.F.elements["search_" + Id];
 			setTimeout(function ()
 			{
-				Addons.InnerSearchBar.ShowButton(o, Id);
 				if (document.F.search.value.length == 0) {
 					var FV = GetInnerFV(Id);
 					if (IsSearchPath(FV)) {
@@ -45,7 +44,6 @@ if (window.Addon == 1) {
 			} else {
 				CancelFilterView(FV);
 			}
-			Addons.InnerSearchBar.ShowButton(Id);
 		},
 
 		Focus: function (o, Id)
@@ -57,19 +55,6 @@ if (window.Addon == 1) {
 				range.move("character", this.iCaret[Id]);
 				range.select();
 				this.iCaret[Id] = -1;
-			}
-		},
-
-		Clear: function (flag, Id)
-		{
-			document.F.elements["search_" + Id].value = "";
-			this.Search(Id);
-		},
-
-		ShowButton: function (oSearch, Id)
-		{
-			if (WINVER < 0x602) {
-				document.getElementById("ButtonSearchClear_" + Id).style.display = document.F.elements["search_" + Id].value.length ? "inline" : "none";
 			}
 		},
 
@@ -86,7 +71,7 @@ if (window.Addon == 1) {
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var s = ['<input type="text" name="search_$" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(this,$)" onmouseup="Addons.InnerSearchBar.KeyDown(this,$)" onfocus="Addons.InnerSearchBar.Focus(this, $)" onblur="Addons.InnerSearchBar.ShowButton(this,$)" style="width: ', Addons.InnerSearchBar.Width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', Addons.InnerSearchBar.Icon, '" id="ButtonSearch_$" hidefocus="true" style="position: absolute; left: -18px; top: -7px" width="16px" height="16px" oncontextmenu="return false" onclick="Addons.InnerSearchBar.Search($)"><input type="image" id="ButtonSearchClear_$" src="bitmap:ieframe.dll,545,13,1" hidefocus="true" style="display: none; position: absolute; left: -17px; top: -4px" onclick="Addons.InnerSearchBar.Clear(true, $)"></span>'];
+		var s = ['<input type="text" name="search_$" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(this,$)" onmouseup="Addons.InnerSearchBar.KeyDown(this,$)" onfocus="Addons.InnerSearchBar.Focus(this, $)" style="width: ', Addons.InnerSearchBar.Width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', Addons.InnerSearchBar.Icon, '" hidefocus="true" style="position: absolute; left: -18px; top: -7px" width="16px" height="16px" oncontextmenu="return false" onclick="Addons.InnerSearchBar.Search($)"></span>'];
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
@@ -97,7 +82,6 @@ if (window.Addon == 1) {
 			var o = document.F.elements["search_" + Id];
 			if (o) {
 				o.value = IsSearchPath(Ctrl) ? api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER) : "";
-				Addons.InnerSearchBar.ShowButton(Id);
 			}
 		}
 	});
