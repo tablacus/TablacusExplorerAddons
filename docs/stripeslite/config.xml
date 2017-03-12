@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2017.3.12</MinVersion>
+    <pubDate>Sun, 12 Mar 2017 00:00:00 GMT</pubDate>
+    <Options>Common:0,5,6,7,8,9:0</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Stripes lite</Name>
+    <Description>Display alternating stripes in the background when the detail view.</Description>
+  </en>
+  <ja>
+    <Name>ストライプ ライト</Name>
+    <Description>詳細表示の際に背景を交互縞で表示します。</Description>
+  </ja>
+</TablacusExplorer>
