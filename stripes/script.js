@@ -1,9 +1,6 @@
 ﻿var Addon_Id = "stripes";
 
 var item = GetAddonElement(Addon_Id);
-if (!item.getAttribute("Set")) {
-	item.setAttribute("Color2", "#ececec");
-}
 if (window.Addon == 1) {
 	Addons.Stripes =
 	{
@@ -29,11 +26,10 @@ if (window.Addon == 1) {
 						}
 						if (pszImage[0] == 0) {
 							var hdc = api.GetDC(hwnd);
-							var hMemDC = api.CreateCompatibleDC(hdc);
 							var hBitmap = api.CreateCompatibleBitmap(hdc, 1, nHeight * 2);
 							api.ReleaseDC(hwnd, hdc);
-							var image = te.GdiplusBitmap();
-							image.FromHBITMAP(hBitmap);
+							var image = te.WICBitmap().FromHBITMAP(hBitmap);
+							api.DeleteObject(hBitmap);
 							var cl = Addons.Stripes.GetBGRA(api.SendMessage(hwnd, LVM_GETBKCOLOR, 0, 0));
 							var cl2 = Addons.Stripes.GetBGRA(Addons.Stripes.Color);
 							for (var i = nHeight; i--;) {
@@ -44,11 +40,6 @@ if (window.Addon == 1) {
 							lvbk.ulFlags = LVBKIF_SOURCE_URL | LVBKIF_FLAG_TILEOFFSET | LVBKIF_STYLE_TILE;
 							lvbk.yOffsetPercent = WINVER >= 0x600 ? nHeight * 2 - R.Top : 0;
 							api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
-							api.DeleteObject(hBitmap);
-							api.DeleteObject(hMemDC);
-						}
-						if (Addons.Stripes.NoEm) {
-							Ctrl.ViewFlags |= 8;
 						}
 					} else {
 						Addons.Stripes.Retry(Ctrl, nDog);
@@ -101,32 +92,13 @@ if (window.Addon == 1) {
 					Addons.Stripes.Arrange(Ctrl, nDog);
 				}, nDog * 100);
 			}
-		},
-
-		HideEm: function (Ctrl)
-		{
-			setTimeout(function ()
-			{
-				var hwnd = Ctrl.hwndList;
-				if (hwnd) {
-					if (api.SendMessage(hwnd, LVM_GETSELECTEDCOLUMN, 0, 0) >= 0) {
-						api.PostMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
-						Addons.Stripes.Arrange2(Ctrl);
-					}
-				}
-			}, 99);
 		}
 	}
 
-	if (item) {
-		Addons.Stripes.Color = GetWinColor(item.getAttribute("Color2"));
-		Addons.Stripes.NoEm = !api.LowPart(item.getAttribute("Em"));
-	}
-
+	Addons.Stripes.Color = GetWinColor(item.getAttribute("Color2") || "#ececec");
 	AddEvent("NavigateComplete", Addons.Stripes.Arrange);
 	AddEvent("Command", Addons.Stripes.Arrange2);
 	AddEvent("IconSizeChanged", Addons.Stripes.SizeChanged);
-
 	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
 	{
 		Addons.Stripes.Arrange2(te.CtrlFromWindow(hwnd));
@@ -141,7 +113,6 @@ if (window.Addon == 1) {
 			var hwnd = cFV[i].hwndList;
 			if (hwnd) {
 				api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
-				cFV[i].ViewFlags &= ~8;
 			}
 		}
 	});
@@ -156,4 +127,6 @@ if (window.Addon == 1) {
 			Addons.Stripes.Arrange2(cFV[i]);
 		}
 	}
+} else {
+	SetTabContents(0, "Color", '<input type="text" id="Color2" style="width: 7em" onchange="ChangeColor1(this)" /><input id="Color_Color2" type="button" value=" " class="color" onclick="ChooseColor2(this)" />');
 }

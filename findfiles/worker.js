@@ -1,6 +1,6 @@
 ﻿importScripts("..\\..\\script\\consts.js");
 
-BUF_SIZE = 32000;
+BUF_SIZE = 32768;
 
 if (MainWindow.Exchange) {
 	var ex = MainWindow.Exchange[arg[3]];
@@ -13,6 +13,7 @@ if (MainWindow.Exchange) {
 		var Progress = te.ProgressDialog;
 		Progress.StartProgressDialog(ex.hwnd, null, 0x20);
 		try {
+			Progress.SetAnimation(hShell32, 150);
 			SearchFolders(list, ex.FV, ex.SessionId, ex.Locale, mask1, length1, new RegExp(filter1.replace(/([\+\*\.\?\^\$\[\-\]\|\(\)\\])/g, "\\$1"), "i"), Progress);
 		} catch (e) {}
 		Progress.StopProgressDialog();
@@ -24,14 +25,13 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 {
 	var bAdd, path;
 	var nItems = 0;
-	var sItem = [api.LoadString(hShell32, 12708), api.LoadString(hShell32, 38192) || String(api.LoadString(hShell32, 6466)).replace(/%1!ls!/, "%s")].join(" ");
-	Progress.SetLine(1, api.LoadString(hShell32, 13585) || api.LoadString(hShell32, 6478), true);
+	var sItem = [api.LoadString(hShell32, 13585) || api.LoadString(hShell32, 6478), api.LoadString(hShell32, 38192) || String(api.LoadString(hShell32, 6466)).replace(/%1!ls!/, "%s")].join(" ");
 	var wfd = api.Memory("WIN32_FIND_DATA");
 	while (path = folderlist.shift()) {
 		if (Progress.HasUserCancelled()) {
 			return;
 		}
-		Progress.SetLine(2, path, true);
+		Progress.SetLine(1, path, true);
 		var hFind = api.FindFirstFile(fso.BuildPath(path, "*"), wfd);
 		for (var bFind = hFind != INVALID_HANDLE_VALUE; bFind && !Progress.HasUserCancelled(); bFind = api.FindNextFile(hFind, wfd)) {
 			if (/^\.\.?$/.test(wfd.cFileName)) {
@@ -41,9 +41,9 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 			if (s > loc999) {
 				s = s.toLocaleString();
 			}
-			Progress.SetTitle(api.sprintf(99, sItem, s));
+			Progress.SetTitle(api.sprintf(999, sItem, s));
 			var fn = fso.BuildPath(path, wfd.cFileName);
-			Progress.SetLine(3, wfd.cFileName, true);
+			Progress.SetLine(2, wfd.cFileName, true);
 			if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				if (!/^[A-Z]:\\\$Recycle\.Bin$/i.test(fn)) {
 					folderlist.push(fn);
@@ -63,27 +63,24 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 						} else if (/^\xFF\xFE|^\xFE\xFF/.test(s)) {
 							charset = 'unicode';
 						}
-					} catch (e) {
-						ado.close();
-						return;
-					}
-					ado.Position = 0;
-					ado.CharSet = charset;
-					var n = -1;
-					while (!ado.EOS && n < 0) {
-						if (ado.Position > length1) {
-							ado.Position = ado.Position - length1;
+						ado.Position = 0;
+						ado.CharSet = charset;
+						var n = -1;
+						while (!ado.EOS && n < 0) {
+							if (ado.Position > length1) {
+								ado.Position = ado.Position - length1;
+							}
+							var s = ado.readText(BUF_SIZE);
+							n = s.indexOf("\0");
+							if (n >= 0) {
+								s = s.substr(0, n);
+							}
+							if (re1.test(s)) {
+								bAdd = true;
+								break;
+							}
 						}
-						var s = ado.readText(BUF_SIZE);
-						n = s.indexOf("\0");
-						if (n >= 0) {
-							s = s.substr(0, n);
-						}
-						if (re1.test(s)) {
-							bAdd = true;
-							break;
-						}
-					}
+					} catch (e) {}
 					ado.close();
 				} else {
 					bAdd = true;
