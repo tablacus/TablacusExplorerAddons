@@ -8,7 +8,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes)
 	{
-		if (Ctrl.Type <= CTRL_EB && pid) {
+		if (pid && Ctrl.CurrentViewMode == FVM_DETAILS) {
 			if (nmcd.dwItemSpec & 1) {
 				return;
 			}
