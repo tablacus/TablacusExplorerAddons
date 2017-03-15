@@ -19,7 +19,7 @@ if (window.Addon == 1) {
 			NotifyData.hWnd = te.hwnd;
 			NotifyData.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
 			NotifyData.uCallbackMessage = Addons.TaskTray.WM;
-			NotifyData.hIcon = api.GetClassLongPtr(te.hwnd, GCLP_HICONSM);
+			NotifyData.hIcon = api.SendMessage(te.hwnd, WM_GETICON, ICON_SMALL, 0) || api.GetClassLongPtr(te.hwnd, GCLP_HICONSM);
 			NotifyData.szTip = TITLE;
 			for (var nDog = 5; !api.Shell_NotifyIcon(NIM_ADD, NotifyData) && nDog--;) {
 				api.Sleep(100);
@@ -125,6 +125,9 @@ if (window.Addon == 1) {
 	});
 
 	if (GetAddonOption("tasktray", "AlwaysInTray")) {
-		Addons.TaskTray.CreateIcon(true, true);
+		setTimeout(function ()
+		{
+			Addons.TaskTray.CreateIcon(true, true);
+		}, 999);
 	}
 }
