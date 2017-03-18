@@ -10,7 +10,7 @@ if (window.Addon == 1) {
 			if (FV) {
 				FV.Focus();
 				var Items = FV.SelectedItems();
-				if (Items.Count == 0 || !Items.Item(0).IsFolder) {
+				if (Items.Count == 0) {
 					Items = FV.FolderItem;
 				}
 				var hMenu = api.CreatePopupMenu();
