@@ -23,19 +23,19 @@
               <select name="Mouse" style="width: 12.5em" onchange="SwitchX('Mouse', this)">
               </select>
               <br />
-              <select name="MouseAll" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseAll" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseList" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseList" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseList_Background" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseList_Background" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseTree" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseTree" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseTabs" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseTabs" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseTabs_Background" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseTabs_Background" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
-              <select name="MouseBrowser" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
+              <select name="MouseBrowser" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Mouse')" ondblclick="EditX('Mouse')" oncontextmenu="CancelX('Mouse')">
               </select>
             </td>
             <td valign="top">
@@ -44,7 +44,7 @@
                   <td width="100%" colspan="3">
                     <table width="100%" cellspacing="0" cellpadding="0">
                       <tr>
-                        <td style="vertical-align: bottom">
+                        <td style="vertical-align: bottom; white-space: nowrap">
                           <label>Mouse</label>
                         </td>
                         <td>
@@ -114,7 +114,7 @@
                   </td>
                 </tr>
               </table>
-              <textarea name="MousePath" style="width: 100%; height: 23em; height: calc(100vh - 16.8em); min-height: 2em" onchange="ChangeX('Mouse')"></textarea>
+              <textarea name="MousePath" style="width: 100%; height: 23em; height: calc(100vh - 14em); min-height: 2em" onchange="ChangeX('Mouse')"></textarea>
             </td>
           </tr>
         </table>
@@ -143,18 +143,6 @@
         </table>
       </div>
       <!--panel_end-->
-      <table width="100%">
-        <tr>
-          <td style="width: 100%; white-space: nowrap">
-          </td>
-          <td class="buttons">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />
-          </td>
-          <td class="buttons">
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />
-          </td>
-        </tr>
-      </table>
     </form>
     <script type="text/javascript" charset="utf-8" src="options.js">
     </script>

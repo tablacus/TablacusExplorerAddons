@@ -20,14 +20,14 @@
       <div class="panel" style="display: block;">
         /<label>Regular Expression</label>/<label>Replace text</label>/<label>Options</label>
         <span style="float: right">
-          <input type="button" value="Reference..." onclick="RefX('re', true, this)" style="width: 128px" />
+          <input type="button" value="Browse..." onclick="RefX('re', true, this)" style="width: 128px" />
         </span>
         <textarea name="re" style="width: 100%; height: 400px">
         </textarea>
       </div>
       <div style="float: right; padding: 2px 20px">
-        <input type="button" value="OK" style="width: 96px;" onclick="SetAddonOptions();" />
-        <input type="button" value="Cancel" style="width: 96px;" onclick="window.close();" />
+        <input type="button" value="OK" class="ok" onclick="SetAddonOptions();" autofocus />
+        <input type="button" value="Cancel" class="cancel" onclick="window.close();" />
       </div>
       <input type="hidden" name="Set" value="1" />
     </form>

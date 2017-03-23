@@ -32,11 +32,13 @@ Addons.Flat =
 	Exec: function (Ctrl, pt)
 	{
 		var FV = GetFolderView(Ctrl, pt);
-		var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-		var pidl = api.ILCreateFromPath(path);
-		if (pidl && pidl.IsFolder) {
-			FV.Navigate(Addons.Flat.PATH + path);
-		};
+		if (api.ILGetCount(FV.FolderItem) > 1) {
+			var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+			var pidl = api.ILCreateFromPath(path);
+			if (pidl && pidl.IsFolder) {
+				FV.Navigate(Addons.Flat.PATH + path);
+			};
+		}
 		return S_OK;
 	},
 
@@ -125,6 +127,16 @@ if (window.Addon == 1) {
 	{
 		if (Addons.Flat.GetSearchString(Ctrl)) {
 			return MakeImgSrc("icon:shell32.dll,4,16", 0, false, 16);
+		}
+	});
+
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
+	{
+		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
+			if (Addons.Flat.GetSearchString(Ctrl)) {
+				pdwEffect[0] = DROPEFFECT_NONE;
+				return S_OK;
+			}
 		}
 	});
 

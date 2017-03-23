@@ -69,24 +69,5 @@ if (window.Addon == 1) {
 	Addons.Font.Init();
 	FontChanged();
 } else {
-	ChooseFont = function (o)
-	{
-		var lf = api.Memory("LOGFONT");
-		lf.lfFaceName = document.F.Name.value || MainWindow.DefaultFont.lfFaceName;
-		var h = document.F.Size.value;
-		lf.lfHeight = h >= 6 && h <= 18 ? - (h * screen.logicalYDPI / 72) : MainWindow.DefaultFont.lfHeight;
-		lf.lfCharSet = 1;
-		var cf = api.Memory("CHOOSEFONT");
-		cf.lStructSize = cf.Size;
-		cf.hwndOwner = api.GetWindow(document);
-		cf.lpLogFont = lf;
-		cf.Flags = 0x2041;
-		cf.nSizeMin = 6;
-		cf.nSizeMax = 18;
-		if (api.ChooseFont(cf) && lf.CharSet != 2) {
-			document.F.Name.value = lf.lfFaceName;
-			document.F.Size.value = Math.abs(Math.round(lf.lfHeight * 72 / screen.logicalYDPI));
-		}
-		g_bChanged = true;
-	}
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

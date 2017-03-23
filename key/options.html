@@ -21,13 +21,13 @@
               <select name="Key" style="width: 12.5em" onchange="SwitchX('Key', this)">
               </select>
               <br />
-              <select name="KeyAll" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              <select name="KeyAll" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
               </select>
-              <select name="KeyList" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              <select name="KeyList" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
               </select>
-              <select name="KeyTree" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              <select name="KeyTree" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
               </select>
-              <select name="KeyBrowser" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 7.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
+              <select name="KeyBrowser" size="18" style="width: 12.5em; height: 33em; height: calc(100vh - 5.4em); min-height: 12em; display: none" onclick="EditXEx(EditX, 'Key')" ondblclick="EditX('Key')" oncontextmenu="CancelX('Key')">
               </select>
             </td>
             <td valign="top">
@@ -54,7 +54,7 @@
                   </td>
                 </tr>
               </table>
-              <textarea name="KeyPath" style="width: 100%; height: 23em; height: calc(100vh - 17.4em); min-height: 2em" onchange="ChangeX('Key')"></textarea>
+              <textarea name="KeyPath" style="width: 100%; height: 23em; height: calc(100vh - 15em); min-height: 2em" onchange="ChangeX('Key')"></textarea>
             </td>
           </tr>
         </table>
@@ -81,18 +81,6 @@
           </tr>
         </table>
       </div>
-      <table width="100%">
-        <tr>
-          <td style="width: 100%; white-space: nowrap">
-          </td>
-          <td class="buttons">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />
-          </td>
-          <td class="buttons">
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />
-          </td>
-        </tr>
-      </table>
     </form>
     <script type="text/javascript" charset="utf-8" src="options.js">
     </script>

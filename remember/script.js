@@ -23,7 +23,7 @@ if (window.Addon == 1) {
 				}
 			}
 		},
-		
+
 		GetPath: function (pid)
 		{
 			var path = (typeof(pid) == "string" ? pid : String(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX))).toLowerCase();
@@ -138,4 +138,6 @@ if (window.Addon == 1) {
 		xml.appendChild(root);
 		SaveXmlEx("remember.xml", xml, true);
 	});
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

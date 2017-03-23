@@ -14,7 +14,6 @@ function SetKeyOptions()
 }
 
 ApplyLang(document);
-document.title = GetText("Key");
 LoadX("Key");
 MakeKeySelect();
 AddEventEx(window, "beforeunload", SetKeyOptions);

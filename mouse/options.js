@@ -6,7 +6,7 @@ g_bChanged = false;
 
 function AddMouse(o)
 {
-	document.F.elements["MouseMouse"].value += o.title;
+	document.F.MouseMouse.value += o.title;
 	ChangeX("Mouse");
 }
 
@@ -33,6 +33,5 @@ for (var i = 0; i < s.length; i++) {
 document.getElementById("__MOUSEDATA").innerHTML = ar.join("");
 LoadLang2(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\mouse\\lang\\" + te.Data.Conf_Lang + ".xml"));
 ApplyLang(document);
-document.title = GetText("Mouse");
 LoadX("Mouse");
 AddEventEx(window, "beforeunload", SetMouseOptions);
