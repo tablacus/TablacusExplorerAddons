@@ -76,7 +76,7 @@ if (window.Addon == 1) {
 				}, 99);
 			}
 		},
-		
+
 		SetActiveColor: function (Id, s)
 		{
 			this.SetActiveColor2(this.nFocused, "");
@@ -173,7 +173,7 @@ if (window.Addon == 1) {
 						style.filter = "none";
 					}
 					style.backgroundColor = cl;
-					cl = api.sscanf(cl, "#%06x") 
+					cl = api.sscanf(cl, "#%06x")
 					cl = (cl & 0xff0000) * .0045623779296875 + (cl & 0xff00) * 2.29296875 + (cl & 0xff) * 114;
 					style.color = cl > 127000 ? "black" : "white";
 				} else {
@@ -555,7 +555,7 @@ if (window.Addon == 1) {
 					return hr;
 				} else if (dataObj.Count) {
 					for (var i = 0; i < dataObj.Count; i++) {
-						var FV = TC.Selected.Navigate(dataObj.Item(i), SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS);
+						var FV = TC.Selected.Navigate(dataObj.Item(i), SBSP_NEWBROWSER);
 						TC.Move(FV.Index, TC.Count - 1);
 					}
 				}

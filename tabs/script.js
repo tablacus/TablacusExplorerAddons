@@ -127,7 +127,7 @@ if (window.Addon == 1) {
 				return hr;
 			} else if (dataObj.Count) {
 				for (var i = 0; i < dataObj.Count; i++) {
-					var FV = Ctrl.Selected.Navigate(dataObj.Item(i), SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS);
+					var FV = Ctrl.Selected.Navigate(dataObj.Item(i), SBSP_NEWBROWSER);
 					Ctrl.Move(FV.Index, Ctrl.Count - 1);
 				}
 			}
