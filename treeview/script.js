@@ -23,7 +23,7 @@ if (window.Addon == 1) {
 				if (TV) {
 					TV.Visible = !TV.Visible;
 					if (TV.Visible) {
-						if (TV.Width == 0) {
+						if (!TV.Width) {
 							TV.Width = 200;
 						}
 						Addons.TreeView.Expand(TV.FolderView);
@@ -35,7 +35,7 @@ if (window.Addon == 1) {
 
 		Expand: function (Ctrl)
 		{
-			if (Ctrl.FolderItem && !/^search\-ms:/i.test(api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR))) {
+			if (Ctrl.FolderItem && !IsSearchPath(Ctrl.FolderItem)) {
 				var TV = Ctrl.TreeView;
 				if (TV) {
 					if (Addons.TreeView.tid[TV.Id]) {
@@ -159,7 +159,6 @@ if (window.Addon == 1) {
 
 		Addons.TreeView.uRegisterId = api.SHChangeNotifyRegister(te.hwnd, SHCNRF_InterruptLevel | SHCNRF_NewDelivery, SHCNE_MKDIR | SHCNE_MEDIAINSERTED | SHCNE_DRIVEADD | SHCNE_NETSHARE | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RENAMEFOLDER | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT | SHCNE_UPDATEDIR, Addons.TreeView.WM, ssfDESKTOP, true);
 	}
-
 } else {
 	EnableInner();
 	SetTabContents(0, "General", '<input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label>');

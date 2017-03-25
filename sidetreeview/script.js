@@ -16,7 +16,7 @@ if (window.Addon == 1) {
 				this.Create();
 			}
 		},
-		
+
 		Create: function ()
 		{
 			this.TV = te.CreateCtrl(CTRL_TV);
@@ -40,7 +40,7 @@ if (window.Addon == 1) {
 
 		Expand: function (Ctrl)
 		{
-			if (Ctrl.FolderItem && !/^search\-ms:/i.test(api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR))) {
+			if (Ctrl.FolderItem && !IsSearchPath(Ctrl.FolderItem)) {
 				var TV = Addons.SideTreeView.TV;
 				if (TV) {
 					if (Addons.SideTreeView.tid) {
