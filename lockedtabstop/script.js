@@ -14,6 +14,7 @@
 					}
 					Addons.LockedTabsTop.tid[TC.id] = setTimeout(function ()
 					{
+						Addons.LockedTabsTop.Lock(TC, FV.Index, FV.Data.Lock);
 						Addons.LockedTabsTop.tid[TC.id] = null;
 						for (var j = TC.Count; j > 1; j--) {
 							for (var i = j; i-- > 1;) {
@@ -29,7 +30,7 @@
 
 		Lock: function (Ctrl, i, bLock)
 		{
-			var FV = GetFolderView(Ctrl);
+			var FV = Ctrl[i];
 			if (FV) {
 				var TC = FV.Parent;
 				if (TC) {
