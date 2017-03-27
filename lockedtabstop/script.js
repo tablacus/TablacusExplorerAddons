@@ -14,12 +14,14 @@
 					}
 					Addons.LockedTabsTop.tid[TC.id] = setTimeout(function ()
 					{
-						Addons.LockedTabsTop.Lock(TC, FV.Index, FV.Data.Lock);
-						Addons.LockedTabsTop.tid[TC.id] = null;
-						for (var j = TC.Count; j > 1; j--) {
-							for (var i = j; i-- > 1;) {
-								if ((TC[i - 1].Data.Lock ? 1 : 0) < (TC[i].Data.Lock ? 1 : 0)) {
-									TC.Move(i, i - 1);
+						if (FV && FV.Data) {
+							Addons.LockedTabsTop.Lock(TC, FV.Index, FV.Data.Lock);
+							Addons.LockedTabsTop.tid[TC.id] = null;
+							for (var j = TC.Count; j > 1; j--) {
+								for (var i = j; i-- > 1;) {
+									if ((TC[i - 1].Data.Lock ? 1 : 0) < (TC[i].Data.Lock ? 1 : 0)) {
+										TC.Move(i, i - 1);
+									}
 								}
 							}
 						}
