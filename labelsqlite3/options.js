@@ -35,7 +35,7 @@ Addons.LabelSQLite3.Export = function ()
 Addons.LabelSQLite3.Info = function ()
 {
 	SPI = null;
-	var dllPath = api.PathUnquoteSpaces(ExtractMacro(te, document.F.elements["Path" + (api.sizeof("HANDLE") * 8)].value));
+	var dllPath = api.PathUnquoteSpaces(ExtractMacro(te, document.F.elements["Path" + (api.sizeof("HANDLE") * 8)].value) || 'sqlite3.dll');
 	if (Addons.LabelSQLite3.DLL) {
 		SPI = Addons.LabelSQLite3.DLL.Open(dllPath);
 	}

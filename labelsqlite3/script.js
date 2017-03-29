@@ -40,7 +40,7 @@ Addons.LabelSQLite3 =
 
 	Open: function ()
 	{
-		Addons.LabelSQLite3.db = Addons.LabelSQLite3.DLL.Open(api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Path" + (api.sizeof("HANDLE") * 8)))));
+		Addons.LabelSQLite3.db = Addons.LabelSQLite3.DLL.Open(api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Path" + (api.sizeof("HANDLE") * 8)) || 'sqlite3.dll')));
 		if (Addons.LabelSQLite3.db && Addons.LabelSQLite3.db.sqlite3_open && Addons.LabelSQLite3.db.sqlite3_open(Addons.LabelSQLite3.DBFILE) == 0) {
 			Addons.LabelSQLite3.db.sqlite3_exec("CREATE TABLE IF NOT EXISTS labels (path TEXT, label TEXT);");
 			Addons.LabelSQLite3.Open = function () {};
@@ -143,83 +143,84 @@ if (window.Addon == 1) {
 			delete Addons.LabelSQLite3;
 			return;
 		}
-		te.Labels = function (path)
-		{
-			var s;
-			Addons.LabelSQLite3.db.sqlite3_exec('SELECT label FROM labels WHERE path="' + path + '"', function (rs)
+		if (Addons.LabelSQLite3.db && Addons.LabelSQLite3.db.sqlite3_exec) {
+			te.Labels = function (path)
 			{
-				s = rs["label"];
-			}, api.Object);
-			return s;
-		};
+				var s;
+				Addons.LabelSQLite3.db.sqlite3_exec('SELECT label FROM labels WHERE path="' + path + '"', function (rs)
+				{
+					s = rs["label"];
+				}, api.Object);
+				return s;
+			};
 
-		Addons.Label.Initd = true;
-		Addons.Label.Get = function (path)
-		{
-			return te.Labels(path) || "";
-		};
-
-		Addons.Label.ENumCB = function (fncb)
-		{
-			Addons.Debug.alert("");
-			var rs = Addons.LabelSQLite3.db.sqlite3_exec('SELECT path,label FROM labels', function (rs)
+			Addons.Label.Initd = true;
+			Addons.Label.Get = function (path)
 			{
-				fncb(rs["path"], rs["label"]);
-			}, api.Object);
-		};
+				return te.Labels(path) || "";
+			};
 
-		Addons.Label.Set = function (path, s)
-		{
-			if (path) {
-				var s1 = Addons.Label.Get(path);
-				var ar = s1.split(/\s*;\s*/);
-				s = s.replace(/[\\?\\*]|"/g, "");
-				if (s) {
-					if (s1) {
-						Addons.LabelSQLite3.db.sqlite3_exec('UPDATE labels SET label="' + s + '" WHERE path="' + path + '"');
+			Addons.Label.ENumCB = function (fncb)
+			{
+				var rs = Addons.LabelSQLite3.db.sqlite3_exec('SELECT path,label FROM labels', function (rs)
+				{
+					fncb(rs["path"], rs["label"]);
+				}, api.Object);
+			};
+
+			Addons.Label.Set = function (path, s)
+			{
+				if (path) {
+					var s1 = Addons.Label.Get(path);
+					var ar = s1.split(/\s*;\s*/);
+					s = s.replace(/[\\?\\*]|"/g, "");
+					if (s) {
+						if (s1) {
+							Addons.LabelSQLite3.db.sqlite3_exec('UPDATE labels SET label="' + s + '" WHERE path="' + path + '"');
+						} else {
+							Addons.LabelSQLite3.db.sqlite3_exec('INSERT INTO labels(path, label) VALUES ("' + path + '","' + s + '");');
+						}
 					} else {
-						Addons.LabelSQLite3.db.sqlite3_exec('INSERT INTO labels(path, label) VALUES ("' + path + '","' + s + '");');
+						Addons.LabelSQLite3.db.sqlite3_exec('DELETE FROM labels WHERE path="' + path + '"');
 					}
-				} else {
-					Addons.LabelSQLite3.db.sqlite3_exec('DELETE FROM labels WHERE path="' + path + '"');
-				}
-				var o = {};
-				var bChanged = false;
-				for (var j in ar) {
-					o[ar[j]] = 1;
-				}
-				ar = (s || "").split(/\s*;\s*/);
-				for (var j in ar) {
-					o[ar[j]] ^= 1;
-				}
-				for (var j in o) {
-					if (o[j]) {
-						Addons.Label.Changed[j] = 1;
-						Addons.Label.Redraw[fso.GetParentFolderName(path)] = true;
-						bChanged = true;
+					var o = {};
+					var bChanged = false;
+					for (var j in ar) {
+						o[ar[j]] = 1;
+					}
+					ar = (s || "").split(/\s*;\s*/);
+					for (var j in ar) {
+						o[ar[j]] ^= 1;
+					}
+					for (var j in o) {
+						if (o[j]) {
+							Addons.Label.Changed[j] = 1;
+							Addons.Label.Redraw[fso.GetParentFolderName(path)] = true;
+							bChanged = true;
+						}
+					}
+					if (bChanged) {
+						clearTimeout(Addons.Label.tid2);
+						Addons.Label.tid2 = setTimeout(Addons.Label.Notify, 500);
+						Addons.LabelSQLite3.MakeList();
 					}
 				}
-				if (bChanged) {
-					clearTimeout(Addons.Label.tid2);
-					Addons.Label.tid2 = setTimeout(Addons.Label.Notify, 500);
-					Addons.LabelSQLite3.MakeList();
-				}
-			}
-		};
+			};
 
-		Addons.Label.List = function (list)
-		{
-			Addons.LabelSQLite3.db.sqlite3_exec('SELECT label FROM list', function (rs)
+			Addons.Label.List = function (list)
 			{
-				var s = rs["label"];
-				if (s) {
-					list[s] = true;
-				}
-			}, api.Object);
-		};
+				Addons.LabelSQLite3.db.sqlite3_exec('SELECT label FROM list', function (rs)
+				{
+					var s = rs["label"];
+					if (s) {
+						list[s] = true;
+					}
+				}, api.Object);
+			};
 
-		AddEvent("Finalize", Addons.LabelSQLite3.Finalize);
-		AddEventId("AddonDisabledEx", "LabelSQLite3", Addons.LabelSQLite3.Finalize);
+			AddEvent("Finalize", Addons.LabelSQLite3.Finalize);
+			AddEventId("AddonDisabledEx", "LabelSQLite3", Addons.LabelSQLite3.Finalize);
+		}
 	}, true);
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
