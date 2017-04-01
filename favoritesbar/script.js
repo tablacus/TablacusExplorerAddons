@@ -5,6 +5,7 @@ if (window.Addon == 1) {
 	{
 		Align: api.StrCmpI(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
 		arExpand: GetAddonOptionEx("favoritesbar", "Expanded") ? [BUTTONS.opened, ''] : [BUTTONS.closed, ' style="display: none"'],
+		Height: GetAddonOption(Addon_Id, "Height") || '100%',
 
 		Init: function ()
 		{
@@ -12,7 +13,7 @@ if (window.Addon == 1) {
 				te.Data["Conf_" + this.Align + "BarWidth"] = 178;
 			}
 			this.Width = te.Data["Conf_" + this.Align + "BarWidth"];
-			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="favoritesbar" style="width: 100%; height: 100%; background-color: window; border: 1px solid WindowFrame; overflow: auto;">']);
+			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="favoritesbar" style="width: 100%; height:', EncodeSC(Addons.FavoritesBar.Height), '; background-color: window; border: 1px solid WindowFrame; overflow: auto;">']);
 			this.Arrange();
 		},
 
@@ -129,9 +130,9 @@ if (window.Addon == 1) {
 					}
 					path = Addons.FavoritesBar.GetPath(items, i);
 					if (nOpen) {
-						img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a><img src="' + (img || MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16)) + '" class="favicon">';
+						img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a><img src="' + EncodeSC(img || MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16)) + '" class="favicon">';
 					} else if (img) {
-						img = '<img src="' + img + '" class="favicon">';
+						img = '<img src="' + EncodeSC(img) + '" class="favicon">';
 					}
 					else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
 						var pidl = api.ILCreateFromPath(path);
@@ -145,7 +146,7 @@ if (window.Addon == 1) {
 					} else {
 						img = '<img src="' + MakeImgSrc("icon:shell32.dll,0,16", 0, false, 16) + '" class="favicon">';
 					}
-					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', items[i].text.replace(/"/g, "&quot;"), '" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", strName.replace(/\\t.*$|&/g, ""), '</div> ');
+					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', items[i].text.replace(/"/g, "&quot;"), '" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", EncodeSC(strName.replace(/\\t.*$/g, "")), '</div> ');
 					if (nOpen) {
 						s.push(api.sprintf(99, '<div id="fav%d_"%s>', i, Addons.FavoritesBar.arExpand[1]));
 						nLevel++;

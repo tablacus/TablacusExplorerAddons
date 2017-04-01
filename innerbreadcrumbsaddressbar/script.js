@@ -76,7 +76,7 @@ if (window.Addon == 1) {
 					if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
 						s.unshift('<span id="breadcrumbsaddressbar_' + Id + "_"  + n + '" class="button" style="line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + BUTTONS.next + '</span>');
 					}
-					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(' + n + ', ' + Id + ')" onmousedown="Addons.InnerBreadcrumbsAddressBar.GoNew(' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
+					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(' + n + ', ' + Id + ')" onmousedown="Addons.InnerBreadcrumbsAddressBar.GoNew(' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + EncodeSC(api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER)) + '</span>');
 					FolderItem = api.ILGetParent(FolderItem);
 					o.innerHTML = s.join("");
 					if (o.offsetWidth > width && n > 0) {
@@ -199,9 +199,11 @@ if (window.Addon == 1) {
 					var Items = sha.NameSpace(ssfDRIVES).Items();
 					for (var i = 0; i < Items.Count; i++) {
 						var Item = Items.Item(i);
-						var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
-						if (path && path != path0) {
-							FolderMenu.AddMenuItem(hMenu, Item, null, true);
+						if (IsFolderEx(Item)) {
+							var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
+							if (path && path != path0) {
+								FolderMenu.AddMenuItem(hMenu, Item, null, true);
+							}
 						}
 					}
 					FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfBITBUCKET), api.GetDisplayNameOf(ssfBITBUCKET, SHGDN_INFOLDER), true);

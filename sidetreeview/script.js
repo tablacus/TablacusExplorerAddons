@@ -5,13 +5,14 @@ if (window.Addon == 1) {
 	{
 		Align: GetAddonOptionEx(Addon_Id, "Align") ? "Right" : "Left",
 		Depth: GetAddonOptionEx(Addon_Id, "Depth"),
+		Height: GetAddonOption(Addon_Id, "Height") || '100%',
 
 		Init: function ()
 		{
 			if (!te.Data["Conf_" + this.Align + "BarWidth"]) {
 				te.Data["Conf_" + this.Align + "BarWidth"] = 178;
 			}
-			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="sidetreeview" style="width: 100%; height: 100%"></div>']);
+			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="sidetreeview" style="width: 100%; height: ', EncodeSC(Addons.SideTreeView.Height), '"></div>']);
 			if (te.Ctrls(CTRL_FV).Count) {
 				this.Create();
 			}
@@ -66,5 +67,5 @@ if (window.Addon == 1) {
 	});
 	Addons.SideTreeView.Init();
 } else {
-	SetTabContents(0, "General", '<div><label>Align</label></div><input type="hidden" name="Align" /><input type="radio" name="_Align" id="Align=0" onclick="SetRadio(this)" /><label for="Align=0">Left</label><input type="radio" name="_Align" id="Align=1" onclick="SetRadio(this)" /><label for="Align=1">Right</label><input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label>');
+	SetTabContents(0, "General", '<div><label>Align</label></div><input type="hidden" name="Align" /><input type="radio" name="_Align" id="Align=0" onclick="SetRadio(this)" /><label for="Align=0">Left</label><input type="radio" name="_Align" id="Align=1" onclick="SetRadio(this)" /><label for="Align=1">Right</label><input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label><br><br><label>Height</label><br><input type="text" name="Height" size="9" />');
 }

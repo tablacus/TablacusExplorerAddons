@@ -76,7 +76,7 @@ if (window.Addon == 1) {
 						if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
 							s.unshift('<span id="addressbar' + n + '" class="button" style="line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.AddressBar.Popup(this,' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + BUTTONS.next + '</span>');
 						}
-						s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Go(' + n + ')" onmousedown="Addons.AddressBar.Go(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER) + '</span>');
+						s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.AddressBar.Go(' + n + ')" onmousedown="Addons.AddressBar.Go(' + n + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.AddressBar.Exec(); return false;">' + EncodeSC(api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER)) + '</span>');
 						FolderItem = api.ILGetParent(FolderItem);
 						o.innerHTML = s.join("");
 						if (o.offsetWidth > width && n > 0) {
@@ -179,7 +179,7 @@ if (window.Addon == 1) {
 				FolderMenu.Invoke(FolderItem);
 			}
 		},
-		
+
 		Popup3: function (o)
 		{
 			if (Addons.AddressBar.CanPopup()) {
@@ -191,9 +191,11 @@ if (window.Addon == 1) {
 				var path0 = api.GetDisplayNameOf(ssfDESKTOP, SHGDN_FORPARSING);
 				for (var i = 0; i < Items.Count; i++) {
 					var Item = Items.Item(i);
-					var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
-					if (path && path != path0) {
-						FolderMenu.AddMenuItem(hMenu, Item, null, true);
+					if (IsFolderEx(Item)) {
+						var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
+						if (path && path != path0) {
+							FolderMenu.AddMenuItem(hMenu, Item, null, true);
+						}
 					}
 				}
 				FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfBITBUCKET), api.GetDisplayNameOf(ssfBITBUCKET, SHGDN_INFOLDER), true);
@@ -317,5 +319,5 @@ if (window.Addon == 1) {
 	SetAddon(Addon_Id, Default, s, "middle");
 	Addons.AddressBar.Resize();
 } else {
-	SetTabContents(0, "General", ['<table style="width: 100%"><tr><td><input type="checkbox" id="XP" /><label for="XP">XP ', GetText("Style").toLowerCase(), '</label></td></tr><tr><td><label>', GetText("Width"), '</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="', GetText("Auto"), '" onclick="document.F.Width.value=\'\'" /></td></tr></table>'].join(""));
+	SetTabContents(0, "General", ['<table style="width: 100%"><tr><td><input type="checkbox" id="XP" /><label for="XP">XP ', GetText("Style").toLowerCase(), '</label></td></tr><tr><td><label>', GetText("Width"), '</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="', GetText("Auto"), '" onclick="document.F.Width.value=\'\'" /></td></tr></table>']);
 }

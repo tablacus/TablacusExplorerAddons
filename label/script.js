@@ -1,16 +1,13 @@
 ﻿var Addon_Id = "label";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuExec", 1);
-		item.setAttribute("Menu", "Context");
-		item.setAttribute("MenuPos", 1);
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "Context");
+	item.setAttribute("MenuPos", 1);
 
-		item.setAttribute("KeyOn", "List");
-		item.setAttribute("MouseOn", "List");
-	}
+	item.setAttribute("KeyOn", "List");
+	item.setAttribute("MouseOn", "List");
 }
 
 if (window.Addon == 1) {
@@ -26,6 +23,7 @@ if (window.Addon == 1) {
 		tid: [],
 		tid2: null,
 		Initd: false,
+		Portable: api.LowPart(item.getAttribute("Portable")),
 
 		IsHandle: function (Ctrl)
 		{
@@ -209,7 +207,7 @@ if (window.Addon == 1) {
 				Addons.Label.Set(path, ar.join(";"));
 			}
 		},
-		
+
 		AppendItems: function (Items, Label)
 		{
 			if (Items) {
@@ -405,41 +403,56 @@ if (window.Addon == 1) {
 
 	AddEvent("Load", function ()
 	{
-		if (Addons.Label.Initd) {
-			return;
-		}
-		te.Labels = te.Object();
-		try {
-			var ado = te.CreateObject("Adodb.Stream");
-			ado.CharSet = "utf-8";
-			ado.Open();
-			ado.LoadFromFile(Addons.Label.CONFIG);
-			while (!ado.EOS) {
-				var ar = ado.ReadText(adReadLine).split("\t");
-				te.Labels[ar[0]] = ar[1];
-			}
-			ado.Close();
-			delete te.Labels[""];
-		} catch (e) {}
+		if (!Addons.Label.Initd) {
+			te.Labels = te.Object();
+			try {
+				var ado = te.CreateObject("Adodb.Stream");
+				ado.CharSet = "utf-8";
+				ado.Open();
+				ado.LoadFromFile(Addons.Label.CONFIG);
+				while (!ado.EOS) {
+					var ar = ado.ReadText(adReadLine).split("\t");
+					te.Labels[ar[0]] = ar[1];
+				}
+				ado.Close();
+				delete te.Labels[""];
+			} catch (e) {}
 
-		AddEvent("SaveConfig", function ()
-		{
-			if (Addons.Label.bSave) {
-				try {
-					var ado = te.CreateObject("Adodb.Stream");
-					ado.CharSet = "utf-8";
-					ado.Open();
-					delete te.Labels[""];
-					Addons.Label.ENumCB(function (path, label)
-					{
-						ado.WriteText([path, label].join("\t") + "\r\n");
-					});
-					ado.SaveToFile(Addons.Label.CONFIG, adSaveCreateOverWrite);
-					ado.Close();
-					Addons.Label.bSave = false;
-				} catch (e) {}
-			}
-		});
+			AddEvent("SaveConfig", function ()
+			{
+				if (Addons.Label.bSave) {
+					try {
+						var ado = te.CreateObject("Adodb.Stream");
+						ado.CharSet = "utf-8";
+						ado.Open();
+						delete te.Labels[""];
+						Addons.Label.ENumCB(function (path, label)
+						{
+							ado.WriteText([path, label].join("\t") + "\r\n");
+						});
+						ado.SaveToFile(Addons.Label.CONFIG, adSaveCreateOverWrite);
+						ado.Close();
+						Addons.Label.bSave = false;
+					} catch (e) {}
+				}
+			});
+		}
+
+		var Installed0 = Addons.Label.Get('%Installed%').toUpperCase();
+		var Installed1 = Addons.Label.Portable ? fso.GetDriveName(api.GetModuleFileName(null)).toUpperCase() : "";
+		if (Installed0 && Addons.Label.Portable && Installed0 != Installed1) {
+			Addons.Label.ENumCB(function (path, label)
+			{
+				var drv = fso.GetDriveName(path);
+				if (drv.toUpperCase() == Installed0) {
+					Addons.Label.Set(path, "");
+					Addons.Label.Set(Installed1 + path.substr(drv.length), label);
+				}
+			});
+		}
+		if (Addons.Label.Portable || Installed0) {
+			Addons.Label.Set('%Installed%', Installed1);
+		}
 	});
 
 	AddEvent("NavigateComplete", function (Ctrl)
@@ -631,93 +644,91 @@ if (window.Addon == 1) {
 		}
 	});
 
-	if (items.length) {
-		Addons.Label.strName = GetText(item.getAttribute("MenuName") || api.PSGetDisplayName("System.Contact.Label"));
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.Label.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-			{
-				if (item && item.IsFileSystem) {
-					var mii = api.Memory("MENUITEMINFO");
-					mii.cbSize = mii.Size;
-					mii.fMask = MIIM_STRING | MIIM_SUBMENU;
-					mii.hSubMenu = api.CreatePopupMenu();
-					mii.dwTypeData = Addons.Label.strName;
-					if (Selected && Selected.Count) {
-						var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-						if (path) {
-							var ar = [GetText("&Edit")];
-							var s = Addons.Label.Get(path);
-							if (s) {
-								ar.push(s.replace(/&/g, "&&"));
-							}
-							api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, ++nPos, ar.join(' - '));
-							ExtraMenuCommand[nPos] = Addons.Label.Edit;
+	Addons.Label.strName = GetText(item.getAttribute("MenuName") || api.PSGetDisplayName("System.Contact.Label"));
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.Label.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
+		{
+			if (item && item.IsFileSystem) {
+				var mii = api.Memory("MENUITEMINFO");
+				mii.cbSize = mii.Size;
+				mii.fMask = MIIM_STRING | MIIM_SUBMENU;
+				mii.hSubMenu = api.CreatePopupMenu();
+				mii.dwTypeData = Addons.Label.strName;
+				if (Selected && Selected.Count) {
+					var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					if (path) {
+						var ar = [GetText("&Edit")];
+						var s = Addons.Label.Get(path);
+						if (s) {
+							ar.push(s.replace(/&/g, "&&"));
+						}
+						api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, ++nPos, ar.join(' - '));
+						ExtraMenuCommand[nPos] = Addons.Label.Edit;
 
-							if (s && Selected.Count == 1) {
-								api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Path"));
-								ExtraMenuCommand[nPos] = Addons.Label.EditPath;
-							}
+						if (s && Selected.Count == 1) {
+							api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Path"));
+							ExtraMenuCommand[nPos] = Addons.Label.EditPath;
 						}
 					}
-					if (Ctrl.CurrentViewMode == FVM_DETAILS) {
-						if (!/"System\.Contact\.Label"/.test(Ctrl.Columns(1))) {
-							api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Details"));
-							ExtraMenuCommand[nPos] = Addons.Label.Details;
-						}
-					}
-					if (WINVER >= 0x600) {
-						api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 50690));
-						ExtraMenuCommand[nPos] = Addons.Label.Sort;
-					}
-					var mii2 = api.Memory("MENUITEMINFO");
-					mii2.cbSize = mii.Size;
-					mii2.fMask = MIIM_STRING | MIIM_SUBMENU;
-					mii2.hSubMenu = api.CreatePopupMenu();
-					mii2.dwTypeData = GetText("Add");
-					api.InsertMenu(mii2.hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, api.sprintf(99, '\tJScript\tAddons.Label.AddMenu("%llx", "%llx", %d)', mii2.hSubMenu, mii.hSubMenu, 1));
-					api.InsertMenuItem(mii.hSubMenu, MAXINT, true, mii2);
-
-					mii2.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_STATE;
-					mii2.fState = MFS_DISABLED;
-					mii2.hSubMenu = api.CreatePopupMenu();
-					mii2.dwTypeData = GetText("Remove");
-					var o = {};
-					for (var i = Selected.Count; i-- > 0;) {
-						var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-						if (path) {
-							var ar = Addons.Label.Get(path).split(/\s*;\s*/);
-							for (var j in ar) {
-								o[ar[j]] = 1;
-							}
-						}
-					}
-					var nPos2 = nPos;
-					delete o[""];
-					for (var s in o) {
-						api.InsertMenu(mii2.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, s.replace(/&/g, "&&"));
-						mii2.fState = MFS_ENABLED;
-						ExtraMenuData[nPos] = s;
-						ExtraMenuCommand[nPos] = Addons.Label.ExecRemove;
-					}
-					api.InsertMenuItem(mii.hSubMenu, MAXINT, true, mii2);
-
-					api.InsertMenuItem(hMenu, Addons.Label.nPos, true, mii);
 				}
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Label.Edit, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Label.Edit, "Func");
-		}
+				if (Ctrl.CurrentViewMode == FVM_DETAILS) {
+					if (!/"System\.Contact\.Label"/.test(Ctrl.Columns(1))) {
+						api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Details"));
+						ExtraMenuCommand[nPos] = Addons.Label.Details;
+					}
+				}
+				if (WINVER >= 0x600) {
+					api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 50690));
+					ExtraMenuCommand[nPos] = Addons.Label.Sort;
+				}
+				var mii2 = api.Memory("MENUITEMINFO");
+				mii2.cbSize = mii.Size;
+				mii2.fMask = MIIM_STRING | MIIM_SUBMENU;
+				mii2.hSubMenu = api.CreatePopupMenu();
+				mii2.dwTypeData = GetText("Add");
+				api.InsertMenu(mii2.hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, api.sprintf(99, '\tJScript\tAddons.Label.AddMenu("%llx", "%llx", %d)', mii2.hSubMenu, mii.hSubMenu, 1));
+				api.InsertMenuItem(mii.hSubMenu, MAXINT, true, mii2);
 
-		AddTypeEx("Add-ons", "Label", Addons.Label.Edit);
+				mii2.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_STATE;
+				mii2.fState = MFS_DISABLED;
+				mii2.hSubMenu = api.CreatePopupMenu();
+				mii2.dwTypeData = GetText("Remove");
+				var o = {};
+				for (var i = Selected.Count; i-- > 0;) {
+					var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					if (path) {
+						var ar = Addons.Label.Get(path).split(/\s*;\s*/);
+						for (var j in ar) {
+							o[ar[j]] = 1;
+						}
+					}
+				}
+				var nPos2 = nPos;
+				delete o[""];
+				for (var s in o) {
+					api.InsertMenu(mii2.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, s.replace(/&/g, "&&"));
+					mii2.fState = MFS_ENABLED;
+					ExtraMenuData[nPos] = s;
+					ExtraMenuCommand[nPos] = Addons.Label.ExecRemove;
+				}
+				api.InsertMenuItem(mii.hSubMenu, MAXINT, true, mii2);
+
+				api.InsertMenuItem(hMenu, Addons.Label.nPos, true, mii);
+			}
+			return nPos;
+		});
 	}
-
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Label.Edit, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Label.Edit, "Func");
+	}
+	AddTypeEx("Add-ons", "Label", Addons.Label.Edit);
+} else {
+	SetTabContents(0, "General", '<input type="checkbox" id="Portable" /><label for="Portable">Portable</label>');
 }
