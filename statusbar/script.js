@@ -4,7 +4,7 @@ var Default = "BottomBar3Left";
 if (window.Addon == 1) {
 	Addons.StatusBar =
 	{
-		Title: GetAddonOption(Addon_Id, "Title")
+		Title: GetAddonOptionEx(Addon_Id, "Title")
 	}
 	SetAddon(Addon_Id, Default, '<span id="statusbar">&nbsp;</span>');
 
@@ -18,12 +18,12 @@ if (window.Addon == 1) {
 				} catch (e) {}
 			}
 		}
-		document.getElementById("statusbar").innerHTML = "&nbsp;" + Text;
+		document.getElementById("statusbar").innerHTML = "&nbsp;" + EncodeSC(Text);
 		if (Addons.StatusBar.Title) {
 			api.SetWindowText(te.hwnd, Text + " - " + TITLE);
 		}
 		return S_OK;
 	});
 } else {
-	SetTabContents(0, "View", '<input type="checkbox" id="Title" /><label for="Title">Title Bar</label>');
+	SetTabContents(0, "View", '<input type="checkbox" id="Title" /><label for="Title">Title bar</label>');
 }

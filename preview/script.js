@@ -14,7 +14,7 @@ if (window.Addon == 1) {
 			var s = [];
 			if (Item) {
 				var Folder = sha.NameSpace(Item.Parent);
-				var info = (Folder.GetDetailsOf(Item, 0) + "\n" + Folder.GetDetailsOf(Item, -1)).replace(/"<>/g, "");
+				var info = EncodeSC(Folder.GetDetailsOf(Item, 0) + "\n" + Folder.GetDetailsOf(Item, -1));
 				if (Item.IsLink) {
 					var path = Item.ExtendedProperty("linktarget");
 					if (path) {
@@ -22,8 +22,8 @@ if (window.Addon == 1) {
 					}
 				}
 				var path = Item.Path;
-				if (Ctrl && path == Item.name) {
-					path = fso.BuildPath(Ctrl.FolderItem.Path, path).replace(/"<>/g, "");
+				if (Ctrl && path == Item.Name) {
+					path = EncodeSC(fso.BuildPath(Ctrl.FolderItem.Path, path));
 				}
 				var nWidth = 0, nHeight = 0;
 				if (api.PathMatchSpec(path, "*.txt;*.css;*.js;*.vbs;*.vba;*.ini")) {
@@ -79,7 +79,7 @@ if (window.Addon == 1) {
 						image = image.GetThumbnailImage(o.offsetWidth * nWidth / nHeight, o.offsetWidth);
 					}
 				}
-				img.src = image.DataURI(/\.gif$/.test(path) ? 'image/gif' : "image/png");
+				img.src = image.DataURI(/\.gif$/i.test(path) ? 'image/gif' : "image/png");
 				return true;
 			}
 		},
