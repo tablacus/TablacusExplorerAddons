@@ -1,18 +1,14 @@
 ﻿var Addon_Id = "findfiles";
 var Default = "None";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-var item = null;
-if (items.length) {
-	item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("Menu", "File");
-		item.setAttribute("MenuPos", -1);
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("Menu", "File");
+	item.setAttribute("MenuPos", -1);
 
-		item.setAttribute("KeyExec", 1);
-		item.setAttribute("KeyOn", "All");
-		item.setAttribute("Key", "$3d");
-	}
+	item.setAttribute("KeyExec", 1);
+	item.setAttribute("KeyOn", "All");
+	item.setAttribute("Key", "$3d");
 }
 
 Addons.FindFiles =
@@ -111,35 +107,33 @@ if (window.Addon == 1) {
 		}
 	});
 
-	if (item) {
-		Addons.FindFiles.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.FindFiles.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.FindFiles.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.FindFiles.strName));
-				ExtraMenuCommand[nPos] = Addons.FindFiles.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.FindFiles.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.FindFiles.Exec, "Func");
-		}
-		//Type
-		AddTypeEx("Add-ons", "Find Files", Addons.FindFiles.Exec);
+	Addons.FindFiles.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.FindFiles.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.FindFiles.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.FindFiles.strName));
+			ExtraMenuCommand[nPos] = Addons.FindFiles.Exec;
+			return nPos;
+		});
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon");
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.FindFiles.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.FindFiles.Exec, "Func");
+	}
+	//Type
+	AddTypeEx("Add-ons", "Find Files", Addons.FindFiles.Exec);
+	var h = api.LowPart(item.getAttribute("IconSize")) || window.IconSize || 24;
+	var s = item.getAttribute("Icon");
 	if (s) {
-		s = '<img title="' + Addons.FindFiles.strName.replace(/"/g, "") + '" src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px" />';
+		s = '<img title="' + EncodeSC(Addons.FindFiles.strName) + '" src="' + EncodeSC(s) + '" width="' + h + 'px" height="' + h + 'px" />';
 	} else {
-		s = Addons.FindFiles.strName;
+		s = EncodeSC(Addons.FindFiles.strName);
 	}
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FindFiles.Exec();" oncontextmenu="Addons.FindFiles.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
 }
@@ -151,7 +145,7 @@ else if (window.Addon == 2) {
 		if (ar.length > 1) {
 			document.F.location.value = ar.shift();
 			document.F.name.value = ar.shift();
-			document.F.content.value = ar.join("|");
+			document.F.content.value = ar.join("|").replace(/%2F/g, "/").replace(/%25/g, "%");
 		} else {
 			document.F.location.value = FV.FolderItem.Path;
 			document.F.newtab.checked = true;
@@ -173,7 +167,6 @@ else if (window.Addon == 2) {
 			}
 			return true;
 		}
-
 	});
 
 	FindFiles = function ()
