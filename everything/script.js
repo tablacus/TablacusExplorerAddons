@@ -219,7 +219,7 @@ if (window.Addon == 1) {
 			return S_OK;
 		}
 	});
-	
+
 	AddEvent("GetTabName", function (Ctrl)
 	{
 		var Path = Ctrl.FolderItem.Path;
@@ -268,7 +268,6 @@ if (window.Addon == 1) {
 	});
 
 	var width = "176px";
-	var icon = "bitmap:ieframe.dll,216,16,17";
 
 	var s = item.getAttribute("Folders");
 	if (s) {
@@ -278,10 +277,7 @@ if (window.Addon == 1) {
 	if (s) {
 		width = (api.QuadPart(s) == s) ? (s + "px") : s;
 	}
-	var s = item.getAttribute("Icon");
-	if (s) {
-		icon = s;
-	}
+	var icon = ExtractMacro(te, api.PathUnquoteSpaces(item.getAttribute("Icon"))) || "bitmap:ieframe.dll,216,16,17";
 	Addons.Everything.RE = api.LowPart(item.getAttribute("RE"));
 	Addons.Everything.ExePath = ExtractMacro(te, item.getAttribute("Exec"));
 	//Menu
@@ -309,8 +305,7 @@ if (window.Addon == 1) {
 	Addons.Everything.NewTab = api.QuadPart(item.getAttribute("NewTab"));
 	AddTypeEx("Add-ons", "Everything", Addons.Everything.Exec);
 
-	var s = ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', width, '; padding-right:', WINVER < 0x602 ? "32" : "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', icon, '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'];
-	SetAddon(Addon_Id, Default, s, "middle");
+	SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', WINVER < 0x602 ? "32" : "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', EncodeSC(icon), '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'], "middle");
 } else {
 	var s = ['<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr>'];
 	s.push('<tr><td><label>Action</label></td></tr>');

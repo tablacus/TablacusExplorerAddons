@@ -71,7 +71,7 @@ if (window.Addon == 1) {
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var s = ['<input type="text" name="search_$" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(this,$)" onmouseup="Addons.InnerSearchBar.KeyDown(this,$)" onfocus="Addons.InnerSearchBar.Focus(this, $)" style="width: ', Addons.InnerSearchBar.Width, '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', Addons.InnerSearchBar.Icon, '" hidefocus="true" style="position: absolute; left: -18px; top: -7px" width="16px" height="16px" oncontextmenu="return false" onclick="Addons.InnerSearchBar.Search($)"></span>'];
+		var s = ['<input type="text" name="search_$" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(this,$)" onmouseup="Addons.InnerSearchBar.KeyDown(this,$)" onfocus="Addons.InnerSearchBar.Focus(this, $)" style="width: ', EncodeSC(Addons.InnerSearchBar.Width), '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerSearchBar.Icon), '" hidefocus="true" style="position: absolute; left: -18px; top: -7px" width="16px" height="16px" oncontextmenu="return false" onclick="Addons.InnerSearchBar.Search($)"></span>'];
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
@@ -93,7 +93,7 @@ if (window.Addon == 1) {
 		}
 		var s = item.getAttribute("Icon");
 		if (s) {
-			Addons.InnerSearchBar.Icon = s;
+			Addons.InnerSearchBar.Icon = ExtractMacro(te, api.PathUnquoteSpaces(s));
 		}
 		Addons.InnerSearchBar.RE = item.getAttribute("RE");
 
