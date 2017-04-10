@@ -33,6 +33,11 @@ if (window.Addon == 1) {
 				api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 			});
 
+			AddEventEx(document, "MSFullscreenChange", function ()
+			{
+				Addons.SideTreeView.TV.Visible = !document.msFullscreenElement;
+			});
+
 			AddEvent("Finalize", function ()
 			{
 				Addons.SideTreeView.TV.Close();
@@ -43,7 +48,7 @@ if (window.Addon == 1) {
 		{
 			if (Ctrl.FolderItem && !IsSearchPath(Ctrl.FolderItem)) {
 				var TV = Addons.SideTreeView.TV;
-				if (TV) {
+				if (TV && Addons.SideTreeView.TV.Visible) {
 					if (Addons.SideTreeView.tid) {
 						clearTimeout(Addons.SideTreeView.tid);
 						delete Addons.SideTreeView.tid;
