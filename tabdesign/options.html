@@ -11,31 +11,7 @@
     </script>
     <script type="text/javascript" charset="utf-8" src="../../script/options.js">
     </script>
-    <script type="text/javascript">
-      var g_nPanel = 0;
-      function SetCss(a, b, c, d)
-      {
-         if (confirmOk("Are you sure?")) {
-           document.F.activetab.value = a;
-           document.F.elements["default"].value = b;
-           document.F.tab.value = "";
-           document.F.tab2.value = "";
-           document.F.tab3.value = "";
-         }
-      }
-      function ChangeTab(o)
-      {
-         if (/(\d+)/.test(o.id)) {
-           var nIndex = RegExp.$1;
-           if (nIndex != g_nPanel) {
-               document.getElementById("sel" + g_nPanel).className = "tab";
-               document.getElementById("panel" + g_nPanel).style.display = "none";
-               o.className = "activetab";
-               document.getElementById("panel" + nIndex).style.display = "block";
-               g_nPanel = nIndex;
-             }
-         }
-      }
+    <script type="text/javascript" charset="utf-8" src="options.js">
     </script>
   </head>
   <body>
@@ -115,11 +91,11 @@
                 </td>
             </table>
           </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
+          <td style="white-space: nowrap">
+            <input type="button" value="Load" onclick="ImportCss()" />&nbsp;
           </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
+          <td style="white-space: nowrap">
+            <input type="button" value="Save" onclick="ExportCss()" />&nbsp;
           </td>
         </tr>
       </table>

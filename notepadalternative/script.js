@@ -12,4 +12,6 @@ if (window.Addon == 1) {
 			return Addons.NotepadAlternative.path;
 		}]);
 	}
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
