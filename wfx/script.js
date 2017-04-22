@@ -964,7 +964,7 @@ if (window.Addon == 1) {
 
 	AddEvent("EndLabelEdit", function (Ctrl, Name)
 	{
-		if (Ctrl.Type <= CTRL_EB) {
+		if (Ctrl.Type <= CTRL_EB && Name) {
 			var lib = Addons.WFX.GetObject(Ctrl, lib);
 			if (lib && lib.X.FsRenMovFile) {
 				var Item = Ctrl.FocusedItem;

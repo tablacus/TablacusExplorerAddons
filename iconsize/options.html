@@ -1,0 +1,87 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META HTTP-EQUIV="MSThemeCompatible" CONTENT="Yes">
+<title>Tablcus Add-ons</title>
+<style type="text/css">
+body {
+	overflow:hidden;
+}
+.tab {
+	border-top: 1px solid #aca899;
+	border-left: 1px solid #aca899;
+	border-right: 1px solid #aca899;
+	border-bottom: 0px solid #aca899;
+	background-color: #dddddd;
+	outline-style: none;
+}
+.panel {
+	border: 1px solid #aca899;
+	padding: 8px;
+	display: none;
+	font-size: 80%;
+	line-height: 150%;
+	overflow-y: scroll;
+}
+.color {
+	border: 1px solid #7F9DB9;
+	width: 24px;
+}
+.block {
+	padding: 8px;
+	border: 1px solid gray;
+	margin-bottom: 8px;
+	display: block;
+}
+.group {
+	padding: 8px;
+	border-left: 1px solid gray;
+	border-right: 1px solid gray;
+	border-bottom: 1px solid gray;
+	margin-bottom: 8px;
+	display: none;
+}
+.groupbutton {
+	width: 100%;
+}
+.oddline {
+	background-color: #dddddd;
+}
+
+input {
+	font-size: 13px !important;
+	height: 22px !important;
+}
+td {
+	font-size: 13px;
+	height: 22px;
+}
+</style>
+<script type="text/javascript">
+var external = dialogArguments.external;
+</script>
+<script type="text/javascript" charset="utf-8" src="../../script/consts.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="../../script/common.js">
+</script>
+<script type="text/javascript" charset="utf-8" src="options.js">
+</script>
+</head>
+<body onload="InitOptions();">
+
+<form name="F" style="display: inline;">
+<div class="panel" style="display: block;">
+<input type="text" id="IconSize" style="width: 95%">
+
+<input type="button" value="Small" onclick="document.F.IconSize.value=16">
+<input type="button" value="Default" onclick="document.F.IconSize.value=''">
+
+<!-------------------------------------------->
+</div>
+<table width="95%"><tr><td align="right">
+<input type="button" value="OK" style="width: 96px;" onclick="SetOptions();">
+<input type="button" value="Cancel" style="width: 96px;" onclick="window.close();">
+</td></tr></table>
+</form>
+</body>
+</html>

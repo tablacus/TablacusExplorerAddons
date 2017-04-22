@@ -27,7 +27,7 @@ for (em.moveFirst(); !em.atEnd(); em.moveNext()) {
 	var name = em.item().Name;
 	var xml = new ActiveXObject("Msxml2.DOMDocument");
 	xml.async = false;
-	if (xml.load(name + "\\config.xml")) {
+	if (xml.load("..\\" + name + "\\config.xml")) {
 		var info = [];
 		for (var i = arLangs.length; i--;) {
 			GetAddonInfo2(xml, info, arLangs[i]);
@@ -57,7 +57,7 @@ for (var i in arSorted) {
 	var name = arSorted[i].name;
 	var xml = new ActiveXObject("Msxml2.DOMDocument");
 	xml.async = false;
-	if (xml.load(name + "\\config.xml")) {
+	if (xml.load("..\\" + name + "\\config.xml")) {
 		var item1 = xmlSave.createElement("Item");
 		item1.setAttribute("Id", name);
 		for (var k = 0; k < arLangs.length; k++) {
@@ -76,6 +76,8 @@ for (var i in arSorted) {
 			}
 		}
 		root.appendChild(item1);
+	} else {
+		WScript.Echo(name);
 	}
 }
 xmlSave.appendChild(root);

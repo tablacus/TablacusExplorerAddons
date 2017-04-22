@@ -19,7 +19,8 @@ var Default = "ToolBar2Left";
 		{
 			Popup: function (Ctrl, pt, o)
 			{
-				(function (Ctrl, pt, o) { setTimeout(function () {
+				setTimeout(function ()
+				{
 					hMenu = api.CreatePopupMenu();
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("Escape Unicode"));
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Unescape Unicode"));
@@ -49,7 +50,7 @@ var Default = "ToolBar2Left";
 					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
 					api.DestroyMenu(hMenu);
 					Addons.EscapeUnicode.Exec(FV, nVerb);
-				}, 100);}) (Ctrl, pt, o);
+				}, 100);
 			},
 
 			Escape: function (Ctrl, pt)
@@ -81,32 +82,21 @@ var Default = "ToolBar2Left";
 						var From = fso.GetFileName(Path);
 						var To = Addons.EscapeUnicode.EscapeFile(From, nVerb);
 						if (api.StrCmpI(From, To)) {
-							List.push(From + "\0" + To + "\0" + fso.GetParentFolderName(Path));
+							List.push([From, To, fso.GetParentFolderName(Path)].join("\0"));
 						}
 					}
 					if (List.length) {
-						var From = "";
-						var To = "";
-						var s = GetText("Are you sure?") + "\n";
-						for (var i = 0; i < List.length; i++) {
-							var Data = List[i].split(/\0/);
-							s += Data[0] + ' -> ' + Data[1] + "\n";
-							From += fso.BuildPath(Data[2], Data[0]) + "\0";
-							To += fso.BuildPath(Data[2], Data[1]) + "\0";
+						var From = [];
+						var To = [];
+						var s = [GetText("Are you sure?")];
+						for (var i in List) {
+							var Data = List[i].split("\0");
+							s.push(Data[0] + ' -> ' + Data[1]);
+							From.push(fso.BuildPath(Data[2], Data[0]));
+							To.push(fso.BuildPath(Data[2], Data[1]));
 						}
-						if (confirm(s)) {
-							fileop = api.Memory("SHFILEOPSTRUCT");
-							fileop.wFunc = FO_MOVE;
-							fileop.fFlags = FOF_MULTIDESTFILES | FOF_RENAMEONCOLLISION | FOF_ALLOWUNDO | FOF_NORECURSION;
-							From += "\0";
-							pFrom = api.Memory(api.SizeOf("WCHAR") * From.length);
-							pFrom.Write(0, VT_LPWSTR, From, From.length);
-							fileop.pFrom = pFrom.P;
-							To += "\0";
-							pTo = api.Memory(api.SizeOf("WCHAR") * To.length);
-							pTo.Write(0, VT_LPWSTR, To, To.length);
-							fileop.pTo = pTo.P;
-							api.SHFileOperation(fileop);
+						if (confirm(s.join("\n"))) {
+							api.SHFileOperation(FO_MOVE, From.join("\0"), To.join("\0"), FOF_MULTIDESTFILES | FOF_RENAMEONCOLLISION | FOF_ALLOWUNDO | FOF_NORECURSION, false);
 						}
 					}
 				}
@@ -117,9 +107,10 @@ var Default = "ToolBar2Left";
 				if (nMode == 2) {
 					return unescape(uni);
 				}
-				var Mem = api.Memory(MAX_PATH);
+				var nSize = uni.length * 2 + 1;
+				var Mem = api.Memory(nSize);
 				Mem.Write(0, VT_LPSTR, uni);
-				for (var i = 1; i < MAX_PATH; i++) {
+				for (var i = 1; i < nSize; i++) {
 					var c = Mem.Read(i, VT_UI1);
 					if (c == 0) {
 						break;
@@ -129,25 +120,19 @@ var Default = "ToolBar2Left";
 					}
 				}
 				var ansi = Mem.Read(0, VT_LPSTR).replace(/\\./g, "?");
-				var enc = "";
-				for (var i = 0; i < uni.length; i++) {
-					if (ansi.charCodeAt(i) == uni.charCodeAt(i)) {
-						enc += uni.charAt(i);
-					}
-					else {
-						enc += escape(uni.charAt(i));
-					}
+				var enc = new Array(uni.length);
+				for (var i = uni.length; i-- > 0;) {
+					c = uni.charAt(i);
+					enc[i] = (ansi.charAt(i) == c) ? c : escape(c);
 				}
-				return enc;
+				return enc.join("");
 			}
 
 		};
 
 		var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
 		var s = GetAddonOption(Addon_Id, "Icon") || '../addons/escape/' + (h > 16 ? 24 : 16) +  '.png';
-		s = 'src="' + s.replace(/"/g, "") + '" height="' + h + 'px"';
-		s = '<span class="button" onmousedown="Addons.EscapeUnicode.Popup(null, null, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img alt="Escape Unicode" ' + s + ' /></span> ';
-		SetAddon(Addon_Id, Default, s);
+		SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="Addons.EscapeUnicode.Popup(null, null, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Escape Unicode" src="', s.replace(/"/g, ""), '" height="', h, 'px" /></span>'].join(""));
 
 		if (items.length) {
 			Addons.EscapeUnicode.strName = GetText(item.getAttribute("MenuName") || "Escape Unicode");

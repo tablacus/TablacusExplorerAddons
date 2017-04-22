@@ -3,6 +3,7 @@ if (window.Addon == 1) {
 	{
 		tid: {},
 		pt: null,
+		bCtrl: false,
 
 		Init: function (Ctrl)
 		{
@@ -30,6 +31,15 @@ if (window.Addon == 1) {
 			}
 			api.SendMessage(Ctrl.hwndList, LVM_REDRAWITEMS, 0, nCount - 1);
 			Addons.CheckBox.tid[Ctrl.Id] = null;
+		},
+
+		SetCtrl: function (bCtrl)
+		{
+			var KeyState = api.Memory("KEYSTATE");
+			api.GetKeyboardState(KeyState);
+			KeyState.Write(VK_CONTROL, VT_UI1, bCtrl ? 0x80 : 0);
+			api.SetKeyboardState(KeyState);
+			Addons.CheckBox.bCtrl = bCtrl;
 		}
 	};
 
@@ -46,13 +56,20 @@ if (window.Addon == 1) {
 			ht.pt = ptc;
 			api.SendMessage(Ctrl.hwndList, LVM_HITTEST, 0, ht);
 			Addons.CheckBox.state = ht.iItem >= 0 ? api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_STATEIMAGEMASK) : 0;
-			if (Ctrl.ItemCount(SVGIO_SELECTION) > 1 && api.GetKeyState(VK_CONTROL) >= 0) {
-				api.SendMessage(Ctrl.hwndList, WM_LBUTTONDOWN, MK_LBUTTON | MK_CONTROL, ptc.x + ptc.y * 0x10000);
-				return S_OK;
+			if (Ctrl.ItemCount(SVGIO_SELECTION) > 1) {
+				for (var i = VK_RBUTTON; i <= VK_MENU; i++) {
+					if (api.GetKeyState(i) < 0) {
+						return;
+					}
+				}
+				Addons.CheckBox.SetCtrl(true);
 			}
 			return;
 		}
 		if (msg == WM_LBUTTONUP) {
+			if (Addons.CheckBox.bCtrl) {
+				Addons.CheckBox.SetCtrl(false);
+			}
 		 	if (!IsDrag(pt, Addons.CheckBox.pt)) {
 				var ht = api.Memory("LVHITTESTINFO");
 				var ptc = pt.Clone();
@@ -65,6 +82,11 @@ if (window.Addon == 1) {
 					item.state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_SELECTED) ? 0x1000 : LVIS_SELECTED | 0x2000;
 					api.SendMessage(Ctrl.hwndList, LVM_SETITEMSTATE, ht.iItem, item);
 				}
+			}
+		}
+		if (msg == WM_MOUSEMOVE) {
+			if (Addons.CheckBox.bCtrl) {
+				Addons.CheckBox.SetCtrl(false);
 			}
 		}
 	});
@@ -94,7 +116,7 @@ if (window.Addon == 1) {
 
 	AddEvent("AddonDisabled", function (Id)
 	{
-		if (api.strcmpi(Id, "checkbox") == 0) {
+		if (Id.toLowerCase() == "checkbox") {
 			AddEventEx(window, "beforeunload", function ()
 			{
 				var cFV = te.Ctrls(CTRL_FV);
