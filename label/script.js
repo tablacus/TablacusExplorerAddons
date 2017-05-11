@@ -22,6 +22,8 @@ if (window.Addon == 1) {
 		nPosDel: 0,
 		tid: [],
 		tid2: null,
+		tidDel: null,
+		DelItem: {},
 		Initd: false,
 		Portable: api.LowPart(item.getAttribute("Portable")),
 
@@ -619,6 +621,23 @@ if (window.Addon == 1) {
 		if (te.Labels) {
 			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
 				Addons.Label.Append(pidls[1], Addons.Label.Remove(pidls[0]));
+			}
+			if (pidls.lEvent & SHCNE_DELETE) {
+				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+				Addons.Label.DelItem[name] = pidls[0];
+				clearTimeout(Addons.Label.tidDel);
+				Addons.Label.tidDel = setTimeout(function ()
+				{
+					Addons.Label.tidDel = null;
+					Addons.Label.DelItem = {};
+				}, 500);
+			}
+			if (pidls.lEvent & SHCNE_CREATE) {
+				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+				var pidl = Addons.Label.DelItem[name];
+				if (pidl) {
+					Addons.Label.Append(pidls[0], Addons.Label.Remove(pidl));
+				}
 			}
 		}
 	});

@@ -22,7 +22,7 @@ if (window.Addon == 1) {
 
 		Set: function (FV, NewName)
 		{
-			var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
+			var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 			if (NewName && NewName.length) {
 				Addons.TabName.db[path] = NewName;
 			}
