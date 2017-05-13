@@ -26,7 +26,7 @@ if (window.Addon == 1) {
 
 	};
 	var item = GetAddonElement(Addon_Id);
-	Addons.Properties.strName = item.getAttribute("MenuName") || api.LoadString(hShell32, 33562);
+	Addons.Properties.strName = item.getAttribute("MenuName") || api.LoadString(hShell32, 33555);
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		Addons.Properties.nPos = api.LowPart(item.getAttribute("MenuPos"));

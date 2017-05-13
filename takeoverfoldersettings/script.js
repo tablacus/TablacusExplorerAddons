@@ -1,7 +1,6 @@
 var Addon_Id = "takeoverfoldersettings";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-var item = items.length ? items[0] : null;
+var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Filter")) {
 	item.setAttribute("Filter", "?:\\*;\\\\*");
 }
@@ -21,7 +20,7 @@ if (window.Addon == 1) {
 				if (PathMatchEx(path, Addons.TakeOverFolderSettings.Filter) && path == FV.Data.TakeOver) {
 					var col = FV.Columns(Addons.TakeOverFolderSettings.nFormat);
 					if (col) {
-						var db = [FV.CurrentViewMode, FV.IconSize, col, FV.SortColumn(Addons.TakeOverFolderSettings.nFormat), FV.GroupBy].join("\t");
+						var db = [FV.CurrentViewMode, FV.IconSize, col, FV.SortColumn(Addons.TakeOverFolderSettings.nFormat), FV.GroupBy, FV.SortColumns].join("\t");
 						if (db != Addons.TakeOverFolderSettings.db) {
 							Addons.TakeOverFolderSettings.db = db;
 							Addons.TakeOverFolderSettings.bSave = true;
@@ -40,7 +39,7 @@ if (window.Addon == 1) {
 				if (PathMatchEx(path, Addons.TakeOverFolderSettings.Filter)) {
 					var col = Ctrl.Columns(Addons.TakeOverFolderSettings.nFormat);
 					if (col) {
-						var db = [Ctrl.CurrentViewMode, Ctrl.IconSize, col, Ctrl.SortColumn, Ctrl.GroupBy].join("\t");
+						var db = [Ctrl.CurrentViewMode, Ctrl.IconSize, col, Ctrl.SortColumn, Ctrl.GroupBy, Ctrl.SortColumns].join("\t");
 						if (db != Addons.TakeOverFolderSettings.db) {
 							Addons.TakeOverFolderSettings.db = db;
 							Addons.TakeOverFolderSettings.bSave = true;
@@ -77,7 +76,11 @@ if (window.Addon == 1) {
 					if (Ctrl.GroupBy && ar[4]) {
 						Ctrl.GroupBy = ar[4];
 					}
-					Ctrl.SortColumn = ar[3];
+					if (Ctrl.SortColumns && ar[5]) {
+						Ctrl.SortColumns = ar[5];
+					} else {
+						Ctrl.SortColumn = ar[3];
+					}
 				}
 			}
 		}

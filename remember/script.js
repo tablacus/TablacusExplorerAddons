@@ -8,7 +8,7 @@ if (window.Addon == 1) {
 	Addons.Remember =
 	{
 		db: {},
-		ID: ["Time", "ViewMode", "IconSize", "Columns", "SortColumn", "Group", "Path"],
+		ID: ["Time", "ViewMode", "IconSize", "Columns", "SortColumn", "Group", "SortColumns", "Path"],
 		nFormat: api.QuadPart(GetAddonOption(Addon_Id, "Format")),
 
 		RememberFolder: function (FV)
@@ -18,7 +18,7 @@ if (window.Addon == 1) {
 				if (path == FV.Data.Remember) {
 					var col = FV.Columns(Addons.Remember.nFormat);
 					if (col) {
-						Addons.Remember.db[path] = [new Date().getTime(), FV.CurrentViewMode, FV.IconSize, col, FV.SortColumn(Addons.Remember.nFormat), FV.GroupBy];
+						Addons.Remember.db[path] = [new Date().getTime(), FV.CurrentViewMode, FV.IconSize, col, FV.SortColumn(Addons.Remember.nFormat), FV.GroupBy, FV.SortColumns];
 					}
 				}
 			}
@@ -55,7 +55,7 @@ if (window.Addon == 1) {
 				var path = Addons.Remember.GetPath(Prev);
 				var col = Ctrl.Columns(Addons.Remember.nFormat);
 				if (col) {
-					Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, col, Ctrl.SortColumn, Ctrl.GroupBy];
+					Addons.Remember.db[path] = [new Date().getTime(), Ctrl.CurrentViewMode, Ctrl.IconSize, col, Ctrl.SortColumn(Addons.Remember.nFormat), Ctrl.GroupBy, Ctrl.SortColumns];
 				}
 			}
 			var ar = Addons.Remember.db[Addons.Remember.GetPath(Ctrl)];
@@ -82,7 +82,11 @@ if (window.Addon == 1) {
 					if (Ctrl.GroupBy && ar[5]) {
 						Ctrl.GroupBy = ar[5];
 					}
-					Ctrl.SortColumn = ar[4];
+					if (Ctrl.SortColumns && ar[6]) {
+						Ctrl.SortColumns = ar[6];
+					} else {
+						Ctrl.SortColumn = ar[4];
+					}
 					ar[0] = new Date().getTime();
 				}
 			}
