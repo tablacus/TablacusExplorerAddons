@@ -83,4 +83,6 @@ if (window.Addon == 1) {
 		SetSysColor(COLOR_WINDOW, GetWinColor(item.getAttribute("Background")));
 		Addons.Color.Init();
 	}
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
