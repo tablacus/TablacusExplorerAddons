@@ -28,15 +28,13 @@ function createHttpRequest()
 {
 	if (window.XMLHttpRequest) {
 		return new XMLHttpRequest();
-	}
-	else if (window.ActiveXObject) {
+	} else if (window.ActiveXObject) {
 		try {
 			return new ActiveXObject("Msxml2.XMLHTTP");
 		} catch(e) {
 			return new ActiveXObject("Microsoft.XMLHTTP");
 		}
-	} 
-	else {
+	} else {
 		return null;
 	}
 }
@@ -149,8 +147,7 @@ function amp2ul(s)
 	s = s.replace(/&amp;/ig, "&");
 	if (s.match(";")) {
 		return s;
-	}
-	else {
+	} else {
 		return s.replace(/&(.)/ig, "<u>$1</u>");
 	}
 }
@@ -171,8 +168,7 @@ AddEventEx = function (w, Name, fn)
 {
 	if (w.addEventListener) {
 		w.addEventListener(Name, fn, false);
-	}
-	else if (w.attachEvent){
+	} else if (w.attachEvent){
 		w.attachEvent("on" + Name, fn);
 	}
 }
@@ -197,8 +193,7 @@ FindText = function (s)
 				} catch (e) {}
 				rng.scrollIntoView();
 				g_nFind++;
-			}
-			else {
+			} else {
 				g_nFind = 0;
 			}
 		}
