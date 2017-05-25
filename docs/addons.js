@@ -1,4 +1,3 @@
-var urlAddons = "http://tablacus.github.io/TablacusExplorerAddons/";
 nCount = 0;
 returnValue = false;
 xhr = null;
@@ -79,8 +78,7 @@ function AddonsAppend(q)
 		g_tid = setTimeout(function () {
 			AddonsAppend(q);
 		}, 1);
-	}
-	else {
+	} else {
 		document.F.b.disabled = false;
 		document.body.style.cursor = "auto";
 	}
@@ -115,25 +113,21 @@ function ArrangeAddon(xml, Id, td, ts)
 				if (installed.Version >= info.Version) {
 					s.push(GetText('Installed'));
 					bInstall = false;
-				}
-				else {
+				} else {
 					s.push('<b id="_' + Id +'" style="color: red">' + GetText('Update available') + "</b>");
 					dt2 += MAXINT * 2;
 				}
-			}
-			else {
+			} else {
 				dt2 += MAXINT;
 			}
 			if (bInstall) {
 				if (info.MinVersion && te.Version >= CalcVersion(info.MinVersion)) {
 					s.push('<input type="button" onclick="Install(this)" title="' + Id + '_' + info.Version + '" value="' + GetText("Install") + '">');
-				}
-				else {
+				} else {
 					s.push('<b style="color: red">' + info.MinVersion.replace(/^20/, "Version ").replace(/\.0/g, '.') + ' ' + GetText("is required.") + '</b>');
 				}
 			}
-		}
-		else {
+		} else {
 			s.push('<a href="' + Id + '/' + filename + '">' + 'Download' + '</a>');
 		}
 		s.push('</td></tr></table>');
@@ -163,8 +157,7 @@ function GetAddonInfo2(xml, info, Tag)
 			if (item[i].tagName) {
 				if (item[i].textContent) {
 					info[item[i].tagName] = item[i].textContent;
-				}
-				else {
+				} else {
 					info[item[i].tagName] = item[i].text;
 				}
 			}
@@ -190,8 +183,7 @@ function Search(xml)
 					var s = '';
 					if (item[i].textContent) {
 						s = item[i].textContent + "";
-					}
-					else {
+					} else {
 						s = item[i].text + "";
 					}
 					if (s.toUpperCase().match(q)) {
@@ -218,7 +210,7 @@ function Install(o)
 		DeleteItem(temp);
 		CreateFolder(temp);
 		var xml = createHttpRequest();
-		xml.open("GET", urlAddons + Id + '/' + file, false);
+		xml.open("GET", location.href + Id + '/' + file, false);
 		xml.send(null);
 
 		var zipfile = fso.BuildPath(temp, file);
@@ -290,15 +282,18 @@ AddEventEx(window, "load", function ()
 	{
 		if (xhr.readyState == 4) {
 			if (xhr.status == 200) {
-				setTimeout(AddonsList, 100);
+				setTimeout(AddonsList, 99);
 			}
 		}
 	}
-	xhr.open("GET", urlAddons + "/index.xml?" + Math.floor(new Date().getTime() / 60000));
+	xhr.open("GET", location.href + "index.xml?" + Math.floor(new Date().getTime() / 60000));
+	xhr.setRequestHeader('Content-Type', 'application/xml');
 	xhr.setRequestHeader('Pragma', 'no-cache');
-	xhr.setRequestHeader('Cache-Control', 'no-cache');
-	xhr.setRequestHeader('If-Modified-Since', 'Thu, 01 Jun 1970 00:00:00 GMT');
-	xhr.send(null);
+	xhr.setRequestHeader('Cache-Control', 'no-store');
+	xhr.setRequestHeader('Expires', '0');
+	try {
+		xhr.send(null);
+	} catch (e) {}
 });
 
 AddEventEx(window, "resize", Resize);
