@@ -287,7 +287,6 @@ AddEventEx(window, "load", function ()
 		}
 	}
 	xhr.open("GET", location.href + "index.xml?" + Math.floor(new Date().getTime() / 60000));
-	xhr.setRequestHeader('Content-Type', 'application/xml');
 	xhr.setRequestHeader('Pragma', 'no-cache');
 	xhr.setRequestHeader('Cache-Control', 'no-store');
 	xhr.setRequestHeader('Expires', '0');
