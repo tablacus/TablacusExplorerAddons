@@ -82,8 +82,12 @@ if (window.Addon == 1) {
 					if (Ctrl.GroupBy && ar[5]) {
 						Ctrl.GroupBy = ar[5];
 					}
-					if (Ctrl.SortColumns && ar[6]) {
-						Ctrl.SortColumns = ar[6];
+					if (ar[6]) {
+						try {
+							Ctrl.SortColumns = ar[6];
+						} catch (e) {
+							Ctrl.SortColumn = ar[4];
+						}
 					} else {
 						Ctrl.SortColumn = ar[4];
 					}
