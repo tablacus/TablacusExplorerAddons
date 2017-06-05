@@ -2,10 +2,17 @@
 var Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
-	g_drivebutton =
+	Addons.DriveButton =
 	{
-		Open: function (o)
+		Exec: function (o)
 		{
+			if (window.event && window.event.button == 2) {
+				return true;
+			}
+			var FV = GetFolderView(o);
+			if (FV) {
+				FV.Focus();
+			}
 			(function (o) { setTimeout(function () {
 				MouseOver(o);
 				var hMenu = api.CreatePopupMenu();
@@ -22,40 +29,21 @@ if (window.Addon == 1) {
 				}
 				var pt = GetPos(o);
 				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, screenLeft + pt.x, screenTop + pt.y + o.offsetHeight, external.hwnd, null);
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, screenLeft + pt.x, screenTop + pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, te.hwnd, null);
 				api.DestroyMenu(hMenu);
 				if (nVerb) {
-					var FolderItem = FolderMenu.Items[nVerb - 1];
-					switch (window.g_menu_button - 0) {
-						case 2:
-							PopupContextMenu(FolderItem);
-							break;
-						case 3:
-							Navigate(FolderItem, SBSP_NEWBROWSER);
-							break;
-						default:
-							Navigate(FolderItem, OpenMode);
-							break;
-					}
+					FolderMenu.Invoke(FolderMenu.Items[nVerb - 1]);
 				}
 				FolderMenu.Clear();
-			}, 100);}) (o);
+			}, 99);}) (o);
 			return false;
 		}
 	};
 
-	var sml = 'l';
-	var size = 24;
-	if (IconSize && IconSize <= 16) {
-		sml = 's';
-		size = 16;
-	}
-	else if (IconSize >= 32) {
-		size = 32;
-	}
-	var alt = 'Drive';
-	var png = '_3_8';
-	var icon = 'icon="shell32.dll,8,';
-	var cmd = 'onmousedown="return g_drivebutton.Open(this)"';
-	SetAddon(Addon_Id, Default, '<span class="button" id="' + Addon_Id + '" ' + cmd + ' onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img alt="' + alt + '" width=' + size + ' src="../image/toolbar/' + sml + png + '.png" ' + icon + size + '"></span> ');
+	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || (GetAddonLocation(Addon_Id) == "Inner" ? 16 : 24);
+	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "icon:shell32.dll,8,16" : "icon:shell32.dll,8,32");
+	h = h > 0 ? h + 'px' : EncodeSC(h);
+	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="return Addons.DriveButton.Exec(this)" oncontextmenu="PopupContextMenu(ssfDRIVES)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Drive" src="', EncodeSC(src), '" width="', h, '" height="', h, '"></span>']);
+} else {
+	EnableInner();
 }
