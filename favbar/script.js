@@ -103,7 +103,7 @@ if (window.Addon == 1) {
 					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, ContextMenu);
 					if (nVerb >= 0x1001) {
 						var s = ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
-						if (api.strcmpi(s, "delete")) {
+						if (api.StrCmpI(s, "delete")) {
 							ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
 						} else {
 							this.ShowOptions();
@@ -142,8 +142,7 @@ if (window.Addon == 1) {
 						if (menus++) {
 							continue;
 						}
-					}
-					else if (menus) {
+					} else if (menus) {
 						continue;
 					}
 					var img = '';
@@ -151,7 +150,7 @@ if (window.Addon == 1) {
 					var height = String(GetAddonOption("favbar", "Size")).replace(/\D/, "") || window.IconSize || 24;
 					var sh = (height ? ' style="height:' + height + 'px"' : '');
 					if (icon) {
-						img = '<img src="' + (icon || "").replace(/"/g, "") + '"' + sh + '>';
+						img = '<img src="' + EncodeSC(api.PathUnquoteSpaces(icon)) + '"' + sh + '>';
 					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
 						var path = Addons.FavBar.GetPath(items, i);
 						var pidl = api.ILCreateFromPath(path);
@@ -165,9 +164,9 @@ if (window.Addon == 1) {
 					} else if (strFlag == "open") {
 						img = '<img src="' + MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16) + '">';
 					}
-					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.strcmpi(item.text, "Open") ? 'onclick="Addons.FavBar.Click(' + i + ')" onmousedown="Addons.FavBar.Down('
+					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.FavBar.Click(' + i + ')" onmousedown="Addons.FavBar.Down('
  : 'onmousedown="Addons.FavBar.Open(');
-					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, GetText(item.getAttribute("Name").replace(/\\t.*$|&/g, "")), '</span> ');
+					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(item.text), '">', img, EncodeSC(ExtractMacro(te, item.getAttribute("Name").replace(/\\t.*$|&/g, ""))), '</span> ');
 				}
 				s.push('&nbsp;</label>');
 

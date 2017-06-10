@@ -128,7 +128,7 @@ if (window.Addon == 1) {
 				} else if (menus) {
 					continue;
 				}
-				var img = String(item.getAttribute("Name")).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+				var img = EncodeSC(ExtractMacro(te, item.getAttribute("Name")));
 				if (img == "/" || strFlag == "break") {
 					s.push('<br class="break" />');
 				} else if (img == "//" || strFlag == "barbreak") {
@@ -138,14 +138,14 @@ if (window.Addon == 1) {
 				} else {
 					var icon = item.getAttribute("Icon");
 					if (icon != "") {
-						icon = ExtractMacro(te, icon);
-						var h = item.getAttribute("Height").replace(/"/g, "");
+						icon = EncodeSC(api.PathUnquoteSpaces(icon));
+						var h = EncodeSC(item.getAttribute("Height"));
 						var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
 						h -= 0;
-						img = '<img src="' + icon.replace(/"/g, "") + '"' + sh + '>';
+						img = '<img src="' + icon + '"' + sh + '>';
 					}
 					s.push('<span id="_toolbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.ToolBar.Click(' + i + ')" onmousedown="Addons.ToolBar.Down(' : 'onmousedown="Addons.ToolBar.Open(');
-					s.push(i, ')" oncontextmenu="Addons.ToolBar.Popup(', i, '); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', GetText(item.getAttribute("Name").replace(/"/g, "&quot;")), '">', img, '</span>');
+					s.push(i, ')" oncontextmenu="Addons.ToolBar.Popup(', i, '); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(ExtractMacro(te, item.getAttribute("Name"))), '">', img, '</span>');
 				}
 			}
 			if (items.length == 0) {
@@ -154,7 +154,6 @@ if (window.Addon == 1) {
 			document.getElementById('_toolbar').innerHTML = s.join("");
 			Resize();
 		}
-
 	}
 	te.Data.xmlToolBar = OpenXml("toolbar.xml", false, true);
 	SetAddon(Addon_Id, Default, '<span id="_' + Addon_Id + '"></span>');

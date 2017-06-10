@@ -14,8 +14,7 @@
 				nVerb -= 0x4e00;
 				if (nVerb >= 0 && nVerb < Addons.QuickMenu.Items.Count) {
 					var DropTarget = api.DropTarget(Addons.QuickMenu.Items.Item(nVerb));
-					pdwEffect = api.Memory("DWORD");
-					pdwEffect[0] = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
+					var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 					var Selected = Ctrl.SelectedItems();
 					if (Selected) {
 						DropTarget.Drop(Selected, MK_LBUTTON, pt, pdwEffect);
@@ -45,7 +44,7 @@
 					if (arContextMenu) {
 						arContextMenu[1] = ContextMenu;
 					}
-					ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME);
+					ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME | CMF_DONOTPICKDEFAULT | CMF_ITEMMENU);
 					if (SelItem) {
 						SetRenameMenu(ContextMenu.idCmdFirst);
 					}
@@ -76,18 +75,12 @@
 				return ContextMenu;
 			case 3:
 				if (FV) {
-					ContextMenu = arContextMenu && arContextMenu[0] || FV.ViewMenu();
-					if (ContextMenu) {
-						if (arContextMenu) {
-							arContextMenu[0] = ContextMenu;
-						}
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x5001, 0x5fff, CMF_DEFAULTONLY);
-						ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
-						{
-							ExecMenu(Ctrl, Name, pt, 0x8000);
-						};
-						api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, wID++, GetText("Default"));
-					}
+					ContextMenu = GetViewMenu(arContextMenu, FV, hMenu, CMF_DEFAULTONLY | CMF_DONOTPICKDEFAULT);
+					ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
+					{
+						ExecMenu(Ctrl, Name, pt, 0x8000);
+					};
+					api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, wID++, GetText("Default"));
 				}
 				return ContextMenu;
 			case 4:
@@ -102,28 +95,21 @@
 						if (arContextMenu) {
 							arContextMenu[1] = ContextMenu;
 						}
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME);
+						ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME | CMF_DONOTPICKDEFAULT);
 						SetRenameMenu(ContextMenu.idCmdFirst);
 					}
-				}
-				else if (FV) {
-					ContextMenu = arContextMenu && arContextMenu[0] || FV.ViewMenu();
-					if (ContextMenu) {
-						if (arContextMenu) {
-							arContextMenu[0] = ContextMenu;
+				} else if (FV) {
+					ContextMenu = GetViewMenu(arContextMenu, FV, hMenu, CMF_DEFAULTONLY);
+					var mii = api.Memory("MENUITEMINFO");
+					mii.cbSize = mii.Size;
+					mii.fMask = MIIM_FTYPE | MIIM_SUBMENU;
+					for (var i = api.GetMenuItemCount(hMenu); i--;) {
+						api.GetMenuItemInfo(hMenu, 0, true, mii);
+						if (mii.hSubMenu || (mii.fType & MFT_SEPARATOR)) {
+							api.DeleteMenu(hMenu, 0, MF_BYPOSITION);
+							continue;
 						}
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x5001, 0x5fff, CMF_DEFAULTONLY);
-						var mii = api.Memory("MENUITEMINFO");
-						mii.cbSize = mii.Size;
-						mii.fMask = MIIM_FTYPE | MIIM_SUBMENU;
-						for (var i = api.GetMenuItemCount(hMenu); i--;) {
-							api.GetMenuItemInfo(hMenu, 0, true, mii);
-							if (mii.hSubMenu || (mii.fType & MFT_SEPARATOR)) {
-								api.DeleteMenu(hMenu, 0, MF_BYPOSITION);
-								continue;
-							}
-							break;
-						}
+						break;
 					}
 				}
 				ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)

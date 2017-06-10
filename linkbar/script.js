@@ -107,12 +107,12 @@ if (window.Addon == 1) {
 					s.push('<span class="separator">|</span>');
 				} else {
 					var img = '';
-					var icon = item.getAttribute("Icon");
-					if (icon != "") {
-						var h = (item.getAttribute("Height") || "").replace(/"/g, "");
+					var icon = api.PathUnquoteSpaces(item.getAttribute("Icon"));
+					if (icon) {
+						var h = EncodeSC(item.getAttribute("Height"));
 						var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
 						h -= 0;
-						img = '<img src="' + (icon || "").replace(/"/g, "") + '"' + sh + '>';
+						img = '<img src="' + EncodeSC(icon) + '"' + sh + '>';
 					} else if (/Open|Exec/i.test(item.getAttribute("Type"))) {
 						var path = this.GetPath(items, i);
 						var pidl = api.ILCreateFromPath(path);
@@ -127,7 +127,7 @@ if (window.Addon == 1) {
 						}
 					}
 					s.push('<span id="_linkbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' + i + ')" onmousedown="Addons.LinkBar.Down(' : 'onmousedown="Addons.LinkBar.Open(');
-					s.push(i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', item.text.replace(/"/g, "&quot;"), '">', img, '<span class="linklabel"> ', item.getAttribute("Name").replace(/</g, "&lt;").replace(/>/g, "&gt;"), '</span></span> ');
+					s.push(i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(ExtractMacro(te, item.text)), '">', img, '<span class="linklabel"> ', EncodeSC(ExtractMacro(te, item.getAttribute("Name"))), '</span></span> ');
 				}
 			}
 			s.push('<label id="Link', items.length, '" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
