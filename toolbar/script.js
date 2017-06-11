@@ -137,12 +137,11 @@ if (window.Addon == 1) {
 					s.push('<span class="separator">|</span>');
 				} else {
 					var icon = item.getAttribute("Icon");
-					if (icon != "") {
-						icon = EncodeSC(api.PathUnquoteSpaces(icon));
+					if (icon) {
 						var h = EncodeSC(item.getAttribute("Height"));
 						var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
 						h -= 0;
-						img = '<img src="' + icon + '"' + sh + '>';
+						img = '<img src="' + EncodeSC(api.PathUnquoteSpaces(ExtractMacro(te, icon))) + '"' + sh + '>';
 					}
 					s.push('<span id="_toolbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.ToolBar.Click(' + i + ')" onmousedown="Addons.ToolBar.Down(' : 'onmousedown="Addons.ToolBar.Open(');
 					s.push(i, ')" oncontextmenu="Addons.ToolBar.Popup(', i, '); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(ExtractMacro(te, item.getAttribute("Name"))), '">', img, '</span>');

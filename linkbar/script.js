@@ -107,12 +107,12 @@ if (window.Addon == 1) {
 					s.push('<span class="separator">|</span>');
 				} else {
 					var img = '';
-					var icon = api.PathUnquoteSpaces(item.getAttribute("Icon"));
+					var icon = item.getAttribute("Icon");
 					if (icon) {
 						var h = EncodeSC(item.getAttribute("Height"));
 						var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
 						h -= 0;
-						img = '<img src="' + EncodeSC(icon) + '"' + sh + '>';
+						img = '<img src="' + EncodeSC(api.PathUnquoteSpaces(ExtractMacro(te, icon))) + '"' + sh + '>';
 					} else if (/Open|Exec/i.test(item.getAttribute("Type"))) {
 						var path = this.GetPath(items, i);
 						var pidl = api.ILCreateFromPath(path);

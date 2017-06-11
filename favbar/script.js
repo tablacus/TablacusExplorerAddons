@@ -150,7 +150,7 @@ if (window.Addon == 1) {
 					var height = String(GetAddonOption("favbar", "Size")).replace(/\D/, "") || window.IconSize || 24;
 					var sh = (height ? ' style="height:' + height + 'px"' : '');
 					if (icon) {
-						img = '<img src="' + EncodeSC(api.PathUnquoteSpaces(icon)) + '"' + sh + '>';
+						img = '<img src="' + EncodeSC(api.PathUnquoteSpaces(ExtractMacro(te, icon))) + '"' + sh + '>';
 					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
 						var path = Addons.FavBar.GetPath(items, i);
 						var pidl = api.ILCreateFromPath(path);
