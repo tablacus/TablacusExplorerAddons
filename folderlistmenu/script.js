@@ -10,16 +10,25 @@
 			var oMenu = {'\\' : api.CreatePopupMenu()};
 			var strMenu = [];
 			var items = [];
-			s = api.PathUnquoteSpaces(s);
+			s = api.PathUnquoteSpaces(ExtractMacro(te, s));
 			var ado = OpenAdodbFromTextFile(s);
+			if (!ado) {
+				MessageBox((api.LoadString(hShell32, 8720) || "Not found %1s").replace(/%1[^s]*s!?/, s));
+				return;
+			}
 			var Parent = fso.GetParentFolderName(s);
 			var res, Name = "";
 			var mii = api.Memory("MENUITEMINFO");
 			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_ID | MIIM_BITMAP | MIIM_SUBMENU | MIIM_DATA | MIIM_STRING;
 			MenusIcon(mii, "icon:shell32.dll,3,16");
-			while (!ado.EOS) {
-				var path = api.PathUnquoteSpaces(ExtractMacro(te, ado.ReadText(adReadLine)));
+			var lines = ado.ReadText(adReadAll).split(/[\r?\n]/);
+			ado.Close();
+			for (var i in lines) {
+				var path = api.PathUnquoteSpaces(ExtractMacro(te, lines[i])).replace(/^\s*|\s$/, "");
+				if (!path) {
+					continue;
+				}
 				if (/^#/.test(path)) {
 					res = /#EXTINF:[\d\s\-]+,\s*(.*)/i.exec(path);
 					if (res) {
@@ -27,25 +36,28 @@
 					}
 					continue;
 				}
-				res = /^(.*?)[\s\-]*\t(.*)$/.exec(path);
-				if (res) {
-					if (res[1]) {
-						Name = res[1];
-						path = res[2];
-					}
-				}
-				res = /^(.*?)[\s\-]*([a-z]:\\.*)$/i.exec(path) || /^(.*?)[\s\-]*(\\\\.*)$/.exec(path) || /^(.*?)[\s\-]*(::{.*)$/.exec(path) || /^(.*?)[\s\-]*([a-z]+:\/\/.*)$/.exec(path);
+
+				res = /^(.*?)[\s\-]*\t(.*)$/.exec(path) || /^(.*?)[\s\-][ {4,}](.*)$/.exec(path);
 				if (res) {
 					if (res[1]) {
 						Name = res[1];
 						path = res[2];
 					}
 				} else {
-					path = fso.BuildPath(Parent, path.replace(/\//g, "\\"));
+					res = /^(.*?)[\s\-]*([a-z]+:.*)$/i.exec(path) || /^(.*?)[\s\-]*(\\\\.*)$/.exec(path) || /^(.*?)[\s\-]*(::{.*)$/.exec(path);
+					if (res) {
+						if (res[1]) {
+							Name = res[1];
+							path = res[2];
+						}
+					} else {
+						path = fso.BuildPath(Parent, path.replace(/\//g, "\\"));
+					}
 				}
+				path = path.replace(/^\s*|\s*$/g, "");
 				items.push(path);
 				var arName = (Name || fso.GetFileName(path) || path.replace(/\\/g, "")).split(/\\|\/|\|/);
-				var strPath = '';
+				var strPath = '', hbmpItem;
 				var hMenu = oMenu['\\'];
 				while (arName.length > 1) {
 					var s = arName.shift();
@@ -68,7 +80,6 @@
 				api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				Name = "";
 			}
-			ado.Close();
 			if (!pt) {
 				var pt = GetPos(Ctrl, true, false, false, true);
 				if (Ctrl.Type) {
@@ -81,22 +92,13 @@
 				api.DestroyMenu(oMenu[i]);
 			}
 			if (nVerb) {
-				var path = items[nVerb - 1];
-				switch (window.g_menu_button - 0) {
-					case 2:
-						PopupContextMenu(path);
-						break;
-					case 3:
-						Navigate(path, SBSP_NEWBROWSER);
-						break;
-					default:
-						Navigate(path, OpenMode);
-						break;
-				}
+				FolderMenu.Invoke(api.ILCreateFromPath(items[nVerb - 1]), GetAddonOption("folderlistmenu", "NewTab") ? SBSP_NEWBROWSER : undefined);
 			}
 			return S_OK;
 		},
 
 		Ref: OpenDialog
 	});
+} else {
+	SetTabContents(0, "General", '<table style="width: 100%"><tr><td><input type="checkbox" id="NewTab" /><label for="NewTab">New Tab</label></td></tr></table>');
 }
