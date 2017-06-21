@@ -20,7 +20,7 @@
 			var res, Name = "";
 			var mii = api.Memory("MENUITEMINFO");
 			mii.cbSize = mii.Size;
-			mii.fMask = MIIM_ID | MIIM_BITMAP | MIIM_SUBMENU | MIIM_DATA | MIIM_STRING;
+			mii.fMask = MIIM_ID | MIIM_BITMAP | MIIM_SUBMENU | MIIM_DATA | MIIM_STRING | MIIM_FTYPE;
 			MenusIcon(mii, "icon:shell32.dll,3,16");
 			var lines = ado.ReadText(adReadAll).split(/[\r?\n]/);
 			ado.Close();
@@ -36,7 +36,6 @@
 					}
 					continue;
 				}
-
 				res = /^(.*?)[\s\-]*\t(.*)$/.exec(path) || /^(.*?)[\s\-][ {4,}](.*)$/.exec(path);
 				if (res) {
 					if (res[1]) {
@@ -68,13 +67,16 @@
 						} else {
 							mii.dwTypeData = s;
 							mii.hSubMenu = api.CreateMenu();
+							mii.fType = 0;
 							oMenu[strPath] = mii.hSubMenu;
 							api.InsertMenuItem(hMenu, MAXINT, false, mii);
 							hMenu = mii.hSubMenu;
 						}
 					}
 				}
-				mii.dwTypeData = arName.pop();
+				Name = arName.pop();
+				mii.dwTypeData = Name;
+				mii.fType = (Name == "-") ? MFT_SEPARATOR : 0;
 				mii.hSubMenu = 0;
 				mii.wID = items.length;
 				api.InsertMenuItem(hMenu, MAXINT, false, mii);
