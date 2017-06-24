@@ -63,9 +63,11 @@ if (window.Addon == 1) {
 	if (h >= 6 && h <= 18) {
 		DefaultFont.lfHeight = - (h * screen.logicalYDPI / 72);
 	}
+	DefaultFont.lfWeight = item.getAttribute("Weight") || DefaultFont.lfWeight;
 	DefaultFont.lfCharSet = 1;
 	document.body.style.fontFamily = DefaultFont.lfFaceName;
 	document.body.style.fontSize = Math.abs(DefaultFont.lfHeight) + "px";
+	document.body.style.fontWeight = DefaultFont.lfWeight || 400;
 	Addons.Font.Init();
 	FontChanged();
 } else {
