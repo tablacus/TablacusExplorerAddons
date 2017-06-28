@@ -99,7 +99,7 @@ if (window.Addon == 1) {
 			var TC = te.Ctrl(CTRL_TC, Id);
 			if (TC) {
 				var FV = TC.Selected;
-				FV.Navigate(HOME_PATH ? HOME_PATH : FV ? FV.FolderItem : HOME_PATH, SBSP_NEWBROWSER);
+				NavigateFV(FV, HOME_PATH || FV, SBSP_NEWBROWSER);
 				TC.Move(TC.SelectedIndex, TC.Count - 1);
 			}
 		},
