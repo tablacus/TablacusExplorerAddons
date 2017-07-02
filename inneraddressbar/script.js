@@ -78,12 +78,6 @@ if (window.Addon == 1) {
 		{
 			Activate(o, Id);
 			o.select();
-			o.style.color = "windowtext";
-		},
-
-		Blur: function (o, Id)
-		{
-			o.style.color = "windowtext";
 		},
 
 		Go: function (n, Id)
@@ -159,9 +153,11 @@ if (window.Addon == 1) {
 					var path0 = api.GetDisplayNameOf(ssfDESKTOP, SHGDN_FORPARSING);
 					for (var i = 0; i < Items.Count; i++) {
 						var Item = Items.Item(i);
-						var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
-						if (path && path != path0) {
-							FolderMenu.AddMenuItem(hMenu, Item, null, true);
+						if (IsFolderEx(Item)) {
+							var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
+							if (path && path != path0) {
+								FolderMenu.AddMenuItem(hMenu, Item, null, true);
+							}
 						}
 					}
 					FolderMenu.AddMenuItem(hMenu, api.ILCreateFromPath(ssfBITBUCKET), api.GetDisplayNameOf(ssfBITBUCKET, SHGDN_INFOLDER), true);
@@ -245,7 +241,7 @@ if (window.Addon == 1) {
 	AddEvent("PanelCreated", function (Ctrl)
 	{
 		var s = (Addons.InnerAddressBar.path2[Ctrl.Id] || "").replace(/"/, "");
-		s = ['<div style="position: relative; width; 100px; overflow: hidden"><input id="inneraddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerAddressBar.KeyDown(this, $)" onfocus="Addons.InnerAddressBar.Focus(this, $)" onblur="Addons.InnerAddressBar.Blur(this, $)" onresize="Addons.InnerAddressBar.Resize($)" style="width: 100%; vertical-align: middle; padding-left: 20px; padding-right: 16px;"><div id="inneraddrselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</span></div>'];
+		s = ['<div style="position: relative; width; 100px; overflow: hidden"><input id="inneraddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerAddressBar.KeyDown(this, $)" onfocus="Addons.InnerAddressBar.Focus(this, $)" onresize="Addons.InnerAddressBar.Resize($)" style="width: 100%; vertical-align: middle; padding-left: 20px; padding-right: 16px;"><div id="inneraddrselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</span></div>'];
 		s.push('<img id="inneraddr_img_$" src="icon:shell32.dll,3,16"');
 		s.push(' onclick="return Addons.InnerAddressBar.ExecEx($);"');
 		s.push(' oncontextmenu="Addons.InnerAddressBar.ExecEx($); return false;"');
