@@ -98,33 +98,35 @@ if (window.Addon == 1) {
 
 		Open: function (Ctrl, ar, db)
 		{
-			var path = Ctrl.FolderItem.Path;
-			var ado = te.CreateObject("Adodb.Stream");
-			ado.CharSet = "utf-8";
-			ado.Open();
-			ado.LoadFromFile(path);
-			var Items = [];
-			while (!ado.EOS) {
-				var s = ado.ReadText(adReadLine);
-				if (s && !/^\s*#/.test(s)) {
-					if (!/^[A-Z]:\\|^\\/i.test(s) && !/:/.test(s)) {
-						s = fso.BuildPath(fso.GetParentFolderName(path), s);
-					}
-					if (ar) {
-						ar.push(s);
-					}
-					if (db) {
-						db[s] = 1;
+			if (Ctrl.FolderItem) {
+				var path = Ctrl.FolderItem.Path;
+				var ado = te.CreateObject(api.ADBSTRM);
+				ado.CharSet = "utf-8";
+				ado.Open();
+				ado.LoadFromFile(path);
+				var Items = [];
+				while (!ado.EOS) {
+					var s = ado.ReadText(adReadLine);
+					if (s && !/^\s*#/.test(s)) {
+						if (!/^[A-Z]:\\|^\\/i.test(s) && !/:/.test(s)) {
+							s = fso.BuildPath(fso.GetParentFolderName(path), s);
+						}
+						if (ar) {
+							ar.push(s);
+						}
+						if (db) {
+							db[s] = 1;
+						}
 					}
 				}
+				ado.Close();
 			}
-			ado.Close();
 		},
 
 		Save: function (Ctrl, db)
 		{
 			var path = Ctrl.FolderItem.Path;
-			var ado = te.CreateObject("Adodb.Stream");
+			var ado = te.CreateObject(api.ADBSTRM);
 			ado.CharSet = "utf-8";
 			ado.Open();
 			for (var i in db) {
@@ -182,21 +184,22 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("NavigateComplete", function (Ctrl)
+	AddEvent("BeginNavigate", function (Ctrl)
 	{
 		if (Addons.ClipFolder.IsHandle(Ctrl)) {
 			if (Addons.ClipFolder.tid[Ctrl.Id]) {
 				return;
 			}
-			Ctrl.SortColumn = "";
 			Addons.ClipFolder.tid[Ctrl.Id] = setTimeout(function ()
 			{
 				delete Addons.ClipFolder.tid[Ctrl.Id];
 				Ctrl.RemoveAll();
 				var ar = [];
 				Addons.ClipFolder.Open(Ctrl, ar);
-				Ctrl.AddItems(ar, true);
+				Ctrl.SortColumn = "System.Contact.Label";
+				Ctrl.AddItems(ar, true, true);
 			}, 99);
+			return S_FALSE;
 		}
 	});
 
