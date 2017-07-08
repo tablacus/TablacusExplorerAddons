@@ -22,6 +22,9 @@ if (window.Addon == 1) {
 				}
 				if (Enabled != item.getAttribute("Enabled")) {
 					item.setAttribute("Enabled", Enabled);
+					if (!Enabled) {
+						AddonDisabled(col[0]);
+					}
 					bChanged = true;
 				}
 			}

@@ -1,19 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
+    <Version>1.00</Version>
     <MinVersion>2017.7.7</MinVersion>
     <pubDate>Sat, 08 Jul 2017 00:00:00 GMT</pubDate>
+    <Options>Common:4:4</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Add-on switcher</Name>
-    <Description>Enable or disable add-ons.</Description>
+    <Name>Icon changer ex</Name>
+    <Description>Icon change with file extension(Small icon/List/Details)</Description>
   </en>
   <ja>
-    <Name>アドオンの切り替え(Add-on switcher)</Name>
-    <Description>アドオンの有効・無効を切り替えます。</Description>
+    <Name>拡張子でアイコン変更</Name>
+    <Description>拡張子でアイコン変更(小さいアイコン/一覧/詳細)</Description>
   </ja>
 </TablacusExplorer>
