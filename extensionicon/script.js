@@ -30,17 +30,17 @@ if (window.Addon == 1) {
 		while (!ado.EOS) {
 			var ar = ado.ReadText(adReadLine).split("\t");
 			if (ar[0]) {
-				var a2 = ar[0].toLowerCase().split(/\s*;\s*/);
+				var a2 = ar[0].toLowerCase().split(/[^\w_!~#$%&\(\)]/);
 				for (var i in a2) {
-					var s = a2[i].replace(/[\.\*]/, "");
-					if (s) {
-						Addons.ExtensionIcon.Icon[s] = Addons.ExtensionIcon.GetIconImage(ar[1]);
+					if (a2[i]) {
+						Addons.ExtensionIcon.Icon[a2[i]] = Addons.ExtensionIcon.GetIconImage(ar[1]);
 					}
 				}
 			}
 		}
 		ado.Close();
 	} catch (e) {}
+
 	AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes)
 	{
 		if (Ctrl.Type == CTRL_SB && Ctrl.CurrentViewMode >= FVM_SMALLICON && Ctrl.CurrentViewMode <= FVM_DETAILS) {
