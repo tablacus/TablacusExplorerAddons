@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2017.7.7</MinVersion>
-    <pubDate>Sun, 09 Jul 2017 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2017.7.11</MinVersion>
+    <pubDate>Tue, 11 Jul 2017 00:00:00 GMT</pubDate>
     <Options>Common:4:4</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
@@ -11,10 +11,10 @@
   </General>
   <en>
     <Name>Extension icon changer</Name>
-    <Description>Icon change with file extension(Small icon/List/Details)</Description>
+    <Description>Icon change with file extension</Description>
   </en>
   <ja>
     <Name>拡張子でアイコン変更</Name>
-    <Description>拡張子でアイコン変更(小さいアイコン/一覧/詳細)</Description>
+    <Description>拡張子でアイコン変更</Description>
   </ja>
 </TablacusExplorer>

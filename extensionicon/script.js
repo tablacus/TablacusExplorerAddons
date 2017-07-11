@@ -1,24 +1,22 @@
 ﻿Addons.ExtensionIcon = {
-	Icon: {},
-	FV: {},
+	Icon: { 0: {}, 1: {}},
 
-	GetIconImage: function (fn)
+	GetIconImage: function (fn, Large)
 	{
 		var image;
 		fn = api.PathUnquoteSpaces(ExtractMacro(te, fn));
 		if (/\.ico$|\*/.test(fn)) {
 			var sfi = api.Memory("SHFILEINFO");
-			api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+			if (Large) {
+				api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES);
+				sfi.hIcon = api.ImageList_GetIcon(te.Data.SHIL[SHIL_EXTRALARGE], sfi.iIcon, ILD_NORMAL);
+			} else {
+				api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+			}
 			image = te.WICBitmap().FromHICON(sfi.hIcon);
 			api.DestroyIcon(sfi.hIcon);
 		} else {
 			image = te.WICBitmap().FromFile(fn);
-		}
-		if (image) {
-			var w = image.GetWidth(), h = image.GetHeight(), x = api.GetSystemMetrics(SM_CXSMICON), y = api.GetSystemMetrics(SM_CYSMICON);
-			if (w && h && (w != x || h != y)) {
-				image = image.GetThumbnailImage(x, y);
-			}
 		}
 		return image;
 	}
@@ -33,7 +31,8 @@ if (window.Addon == 1) {
 				var a2 = ar[0].toLowerCase().split(/[^\w_!~#$%&\(\)]/);
 				for (var i in a2) {
 					if (a2[i]) {
-						Addons.ExtensionIcon.Icon[a2[i]] = Addons.ExtensionIcon.GetIconImage(ar[1]);
+						Addons.ExtensionIcon.Icon[0][a2[i]] = Addons.ExtensionIcon.GetIconImage(ar[1], 0);
+						Addons.ExtensionIcon.Icon[1][a2[i]] = Addons.ExtensionIcon.GetIconImage(ar[2], 1);
 					}
 				}
 			}
@@ -41,44 +40,46 @@ if (window.Addon == 1) {
 		ado.Close();
 	} catch (e) {}
 
-	AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes)
+	AddEvent("HandleIcon", function (Ctrl, pid)
 	{
-		if (Ctrl.Type == CTRL_SB && Ctrl.CurrentViewMode >= FVM_SMALLICON && Ctrl.CurrentViewMode <= FVM_DETAILS) {
-			var image =  Addons.ExtensionIcon.Icon[fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()];
-			if (image) {
-				(function (hList, image, dwItemSpec, fFlags) { setTimeout(function () {
-					var rc = api.Memory("RECT");
-					rc.Left = LVIR_ICON;
-					api.SendMessage(hList, LVM_GETITEMRECT, dwItemSpec, rc);
-					if (rc.Bottom - rc.Top <= api.GetSystemMetrics(SM_CYSMICON) * 2) {
-						var hIcon, hBM;
-						var size = api.Memory("SIZE");
-						var hdc = api.GetWindowDC(hList);
-						if (hdc) {
-							if (!(fFlags & FWF_NOCLIENTEDGE)) {
-								rc.Left += 2;
-								rc.Top += 2;
-								rc.Right += 2;
-								rc.Bottom += 2;
-							}
-							var w = image.GetWidth(), h = image.GetHeight();
-							var hbm = image.GetHBITMAP(GetSysColor(COLOR_WINDOW));
-							if (hbm) {
-								var hmdc = api.CreateCompatibleDC(hdc);
-								var hOld = api.SelectObject(hmdc, hbm);
-								api.FillRect(hdc, rc, api.CreateSolidBrush(GetSysColor(COLOR_WINDOW)));
-								api.BitBlt(hdc, rc.Right - w, rc.Top + (rc.Bottom - rc.Top - h) / 2, w, h, hmdc, 0, 0, SRCCOPY);
-								api.SelectObject(hmdc, hOld);
-								api.DeleteDC(hmdc);
-								api.DeleteObject(hbm);
-							}
-							api.ReleaseDC(hList, hdc);
-						}
-					}
-				}, 99);}) (Ctrl.hwndList, image, nmcd.dwItemSpec, Ctrl.FolderFlags);
+		if (Ctrl.Type == CTRL_SB) {
+			if (Addons.ExtensionIcon.Icon[Ctrl.IconSize < 32 ? 0 : 1][fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()]) {
+				return true;
 			}
 		}
-	}, true);
+	});
+
+	AddEvent("ItemPostPaint", function (Ctrl, pid, nmcd, vcd)
+	{
+		if (Ctrl.Type == CTRL_SB) {
+			var image =  Addons.ExtensionIcon.Icon[Ctrl.IconSize < 32 ? 0 : 1][fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()];
+			if (image) {
+				var rc = api.Memory("RECT");
+				rc.Left = LVIR_ICON;
+				api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
+				var hbm = image.GetHBITMAP(GetSysColor(COLOR_WINDOW));
+				if (hbm) {
+					var hmdc = api.CreateCompatibleDC(nmcd.hdc);
+					var hOld = api.SelectObject(hmdc, hbm);
+					var w = Ctrl.IconSize * screen.logicalYDPI / 96, h = w;
+					var w0 = image.GetWidth(), h0 = image.GetHeight();
+					if (w0 > h0) {
+						h *= h0 / w0;
+					} else if (w0 < h0) {
+						w *= w0 / h0;
+					}
+					if (w > w0 && h > h0) {
+						w = w0;
+						h = h0;
+					}
+					api.TransparentBlt(nmcd.hdc, rc.Left + (rc.Right - rc.Left - w) / 2, rc.Top + (rc.Bottom - rc.Top - h) / 2, w, h, hmdc, 0, 0, w0, h0, GetSysColor(COLOR_WINDOW));
+					api.SelectObject(hmdc, hOld);
+					api.DeleteDC(hmdc);
+					api.DeleteObject(hbm);
+				}
+			}
+		}
+	});
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }
