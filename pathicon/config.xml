@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
+    <Version>1.00</Version>
     <MinVersion>2017.7.14</MinVersion>
     <pubDate>Fri, 14 Jul 2017 00:00:00 GMT</pubDate>
     <Options>Common:4:4</Options>
@@ -10,11 +10,11 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Extension icon changer</Name>
-    <Description>Icon change with file extension</Description>
+    <Name>Path icon changer</Name>
+    <Description>Icon change with file path</Description>
   </en>
   <ja>
-    <Name>拡張子でアイコン変更</Name>
-    <Description>拡張子でアイコン変更</Description>
+    <Name>フルパスでアイコン変更</Name>
+    <Description>フルパス名でアイコン変更</Description>
   </ja>
 </TablacusExplorer>

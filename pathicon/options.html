@@ -7,9 +7,17 @@
       </td>
       <td style="width: 100%; vertical-align: top">
         <div class="panel" style="display: block">
-          <label>Extension</label>
-          <br />
-          <input type="text" name="Type" style="width: 100%" onchange="ChangeX('List')" />
+          <label>Path</label>
+          <table class="layout">
+            <tr>
+              <td style="width: 100%">
+                <input type="text" name="Path" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
+              </td>
+              <td align="right">
+                <input type="button" value="Browse..." onclick="RefX('Path', false, this, false)" />
+              </td>
+            </tr>
+          </table>
         </div>
         <div class="panel" style="display: block">
           <label>@shell32.dll,-33578</label>

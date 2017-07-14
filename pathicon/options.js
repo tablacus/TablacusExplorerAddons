@@ -1,11 +1,11 @@
-var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\extensionicon\\options.html"));
+var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\pathicon\\options.html"));
 if (ado) {
 	SetTabContents(4, "General", ado.ReadText(adReadAll));
 	ado.Close();
 }
 
-var arIndex = ["Type", "Small", "Large"];
-var fnConfig = fso.BuildPath(te.Data.DataFolder, "config\\extensionicon.tsv");
+var arIndex = ["Path", "Small", "Large"];
+var fnConfig = fso.BuildPath(te.Data.DataFolder, "config\\pathicon.tsv");
 
 function SaveIC(mode)
 {
@@ -16,7 +16,7 @@ function SaveIC(mode)
 		for (var i = 0; i < g_x.List.length; i++) {
 			ado.WriteText(g_x.List[i].value.replace(new RegExp(g_sep, "g"), "\t") + "\r\n");
 		}
-		ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\extensionicon.tsv"), adSaveCreateOverWrite);
+		ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\pathicon.tsv"), adSaveCreateOverWrite);
 		ado.Close();
 	}
 }
@@ -34,7 +34,7 @@ EditIC = function(mode)
 	for (var i = 2; i--;) {
 		ShowIconX(["Small", "Large"][i], i);
 	}
-	document.E.Type.value = document.E.Type.value;
+	document.E.Path.value = document.E.Path.value;
 }
 
 ReplaceIC = function(mode)
@@ -53,7 +53,7 @@ ReplaceIC = function(mode)
 
 ShowIconX = function(s, i)
 {
-	var image = Addons.ExtensionIcon.GetIconImage(document.E.elements[s].value, i);
+	var image = Addons.PathIcon.GetIconImage(document.E.elements[s].value, i);
 	document.getElementById('icon_' + i).src = image ? GetThumbnail(image, [16, 192][i] * screen.logicalYDPI / 96, true).DataURI("image/png") : "";
 }
 

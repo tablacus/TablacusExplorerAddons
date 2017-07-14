@@ -1,4 +1,4 @@
-﻿Addons.ExtensionIcon = {
+﻿Addons.PathIcon = {
 	Icon: {},
 	fStyle: LVIS_CUT | LVIS_SELECTED,
 
@@ -26,13 +26,13 @@
 if (window.Addon == 1) {
 	AddEvent("HandleIcon", function (Ctrl, pid)
 	{
-		if (Ctrl.Type == CTRL_SB) {
-			var i = Ctrl.IconSize < 32 ? 0 : 1, db = Addons.ExtensionIcon.Icon[fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()];
+		if (Ctrl.Type == CTRL_SB && pid) {
+			var i = Ctrl.IconSize < 32 ? 0 : 1, db = Addons.PathIcon.Icon[pid.Path.toLowerCase()];
 			if (db) {
 				var image = db[i];
 				if (image) {
 					if (/string/i.test(typeof image)) {
-						var image = Addons.ExtensionIcon.GetIconImage(image, i);
+						var image = Addons.PathIcon.GetIconImage(image, i);
 						if (image) {
 							db[i] = GetThumbnail(image, [32, 256][i] * screen.logicalYDPI / 96, true);
 							return true;
@@ -43,19 +43,19 @@ if (window.Addon == 1) {
 				}
 			}
 		}
-	});
+	}, true);
 
 	AddEvent("ItemPostPaint", function (Ctrl, pid, nmcd, vcd)
 	{
-		if (Ctrl.Type == CTRL_SB) {
-			var db = Addons.ExtensionIcon.Icon[fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()];
+		if (Ctrl.Type == CTRL_SB && pid) {
+			var db = Addons.PathIcon.Icon[pid.Path.toLowerCase()];
 			if (db) {
 				var image = db[Ctrl.IconSize < 32 ? 0 : 1];
 				if (/object/i.test(typeof image)) {
 					var cl, fStyle, rc = api.Memory("RECT");
 					rc.Left = LVIR_ICON;
 					api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
-					var state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, Addons.ExtensionIcon.fStyle);
+					var state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, Addons.PathIcon.fStyle);
 					if (state == LVIS_SELECTED) {
 						cl = CLR_DEFAULT;
 						fStyle = api.GetFocus() == Ctrl.hwndList ? ILD_SELECTED : ILD_FOCUS;
@@ -69,22 +69,20 @@ if (window.Addon == 1) {
 				}
 			}
 		}
-	});
+	}, true);
 
 	try {
-		var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\extensionicon.tsv"));
+		var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\pathicon.tsv"));
 		while (!ado.EOS) {
 			var ar = ado.ReadText(adReadLine).split("\t");
 			if (ar[0]) {
-				var a2 = ar[0].toLowerCase().split(/[^\w_!~#$%&\(\)]/);
-				for (var i in a2) {
-					if (a2[i]) {
-						var db = {};
-						Addons.ExtensionIcon.Icon[a2[i]] = db;
-						for (var j = 2; j--;) {
-							if (ar[j + 1]) {
-								db[j] = ar[j + 1];
-							}
+				var s = api.PathUnquoteSpaces(ExtractMacro(te, ar[0])).toLowerCase();
+				if (s) {
+					var db = {};
+					Addons.PathIcon.Icon[s] = db;
+					for (var j = 2; j--;) {
+						if (ar[j + 1]) {
+							db[j] = ar[j + 1];
 						}
 					}
 				}
@@ -97,7 +95,7 @@ if (window.Addon == 1) {
 		AddEvent("Load", function ()
 		{
 			if (!Addons.ClassicStyle) {
-				Addons.ExtensionIcon.fStyle = LVIS_CUT;
+				Addons.PathIcon.fStyle = LVIS_CUT;
 			}
 		});
 	}
