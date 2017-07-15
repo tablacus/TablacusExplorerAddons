@@ -82,7 +82,7 @@ if (window.Addon == 1) {
 					if (Ctrl.GroupBy && ar[5]) {
 						Ctrl.GroupBy = ar[5];
 					}
-					if (ar[6] && Ctrl.SortColumns) {
+					if ((ar[6] || "").split(/;/).length > 2 && Ctrl.SortColumns) {
 						Ctrl.SortColumns = ar[6];
 					} else {
 						Ctrl.SortColumn = ar[4];
