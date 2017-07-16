@@ -1,6 +1,4 @@
-﻿returnValue = false;
-
-var AddonName = "FolderSettings";
+﻿var AddonName = "FolderSettings";
 var g_Chg = {List: false};
 
 GetCurrentSetting = function (bForce)
@@ -10,7 +8,7 @@ GetCurrentSetting = function (bForce)
 	var path = api.GetDisplayNameOf(FV.FolderItem, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 	var s = ["FV.CurrentViewMode(", FV.CurrentViewMode, ",", FV.IconSize, ");\n"];
 	s.push("FV.Columns='", FV.Columns(nFormat), "';\n");
-	if (FV.SortColumns && !document.F.XP.checked) {
+	if ((FV.SortColumns || "").split(/;/).length > 2 && !document.F.XP.checked) {
 		s.push("FV.SortColumns='", FV.SortColumns, "';\n");
 	} else {
 		s.push("FV.SortColumn='", FV.SortColumn(nFormat), "';\n");
