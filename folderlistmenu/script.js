@@ -13,50 +13,63 @@
 			s = api.PathUnquoteSpaces(ExtractMacro(te, s));
 			var ado = OpenAdodbFromTextFile(s);
 			if (!ado) {
-				MessageBox((api.LoadString(hShell32, 8720) || "Not found %1s").replace(/%1[^s]*s!?/, s));
+				MessageBox(api.FormatMessage(api.LoadString(hShell32, 8720) || "Not found %1!ls!", s));
 				return;
 			}
 			var Parent = fso.GetParentFolderName(s);
-			var res, Name = "";
+			var res, Name = "", Img = "";
 			var mii = api.Memory("MENUITEMINFO");
 			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_ID | MIIM_BITMAP | MIIM_SUBMENU | MIIM_DATA | MIIM_STRING | MIIM_FTYPE;
 			MenusIcon(mii, "icon:shell32.dll,3,16");
+			var hbmFolder = mii.hbmpItem;
 			var lines = ado.ReadText(adReadAll).split(/[\r?\n]/);
 			ado.Close();
 			for (var i in lines) {
-				var path = api.PathUnquoteSpaces(ExtractMacro(te, lines[i])).replace(/^\s*|\s$/, "");
+				var path = ExtractMacro(te, lines[i]).replace(/^\s*|\s$/, "");
 				if (!path) {
 					continue;
 				}
 				if (/^#/.test(path)) {
-					res = /#EXTINF:[\d\s\-]+,\s*(.*)/i.exec(path);
+					res = /^#EXTINF:[\d\s\-]+,\s*(.*)/i.exec(path);
 					if (res) {
 						Name = res[1];
 					}
+					res = /^#EXTIMG:\s*(.*)/i.exec(path);
+					if (res) {
+						Img = res[1];
+					}
 					continue;
 				}
-				res = /^(.*?)[\s\-]*\t(.*)$/.exec(path) || /^(.*?)[\s\-][ {4,}](.*)$/.exec(path);
-				if (res) {
-					if (res[1]) {
-						Name = res[1];
-						path = res[2];
-					}
-				} else {
-					res = /^(.*?)[\s\-]*([a-z]+:.*)$/i.exec(path) || /^(.*?)[\s\-]*(\\\\.*)$/.exec(path) || /^(.*?)[\s\-]*(::{.*)$/.exec(path);
+				if (!Name) {
+					res = /^(.*?)\s*\t([^\s].*)$/.exec(path) || /^(.*?)\s*(["`].*)$/i.exec(path) || /^(.*?)\s{4,}([^\s].*)$/.exec(path) || /^(.*?)\s*("?[a-z]+:.*)$/i.exec(path) || /^(.*?)\s*(\\\\.*)$/.exec(path) || /^(.*?)\s*(::{.*)$/.exec(path);
 					if (res) {
 						if (res[1]) {
 							Name = res[1];
 							path = res[2];
 						}
-					} else {
-						path = fso.BuildPath(Parent, path.replace(/\//g, "\\"));
 					}
 				}
 				path = path.replace(/^\s*|\s*$/g, "");
 				items.push(path);
-				var arName = (Name || fso.GetFileName(path) || path.replace(/\\/g, "")).split(/\\|\/|\|/);
-				var strPath = '', hbmpItem;
+				var hbm = hbmFolder;
+				if (Img) {
+					if (Img == "...") {
+						Img = path;
+					}
+					var fn = api.PathUnquoteSpaces(ExtractMacro(te, Img));
+					var image = te.WICBitmap();;
+					if (!image.FromFile(fn)) {
+						var sfi = api.Memory("SHFILEINFO");
+						api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+						image.FromHICON(sfi.hIcon);
+						api.DestroyIcon(sfi.hIcon);
+					}
+					AddMenuImage(mii, image, fn);
+					hbm = mii.hbmpItem;
+				}
+				var arName = (Name || fso.GetFileName(api.PathUnquoteSpaces(path.replace(/`/g, ""))) || path.replace(/\\/g, "")).split(/\\|\/|\|/);
+				var strPath = '';
 				var hMenu = oMenu['\\'];
 				while (arName.length > 1) {
 					var s = arName.shift();
@@ -68,6 +81,7 @@
 							mii.dwTypeData = s;
 							mii.hSubMenu = api.CreateMenu();
 							mii.fType = 0;
+							mii.hbmpItem = arName.length > 1 || arName[0] ? hbmFolder : hbm;
 							oMenu[strPath] = mii.hSubMenu;
 							api.InsertMenuItem(hMenu, MAXINT, false, mii);
 							hMenu = mii.hSubMenu;
@@ -75,12 +89,16 @@
 					}
 				}
 				Name = arName.pop();
-				mii.dwTypeData = Name;
-				mii.fType = (Name == "-") ? MFT_SEPARATOR : 0;
-				mii.hSubMenu = 0;
-				mii.wID = items.length;
-				api.InsertMenuItem(hMenu, MAXINT, false, mii);
+				if (Name) {
+					mii.dwTypeData = Name;
+					mii.fType = Name == "-" ? MFT_SEPARATOR : 0;
+					mii.hbmpItem = hbm;
+					mii.hSubMenu = 0;
+					mii.wID = items.length;
+					api.InsertMenuItem(hMenu, MAXINT, false, mii);
+				}
 				Name = "";
+				Img = "";
 			}
 			if (!pt) {
 				var pt = GetPos(Ctrl, true, false, false, true);
