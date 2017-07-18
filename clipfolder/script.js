@@ -29,13 +29,18 @@ if (window.Addon == 1) {
 
 		IsHandle: function (Ctrl)
 		{
-			return api.PathMatchSpec(/string/i.test(typeof Ctrl) ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), Addons.ClipFolder.Spec);
+			return api.PathMatchSpec(Addons.ClipFolder.GetPath(Ctrl), Addons.ClipFolder.Spec);
+		},
+
+		GetPath: function (Ctrl)
+		{
+			return /string/i.test(typeof Ctrl) ? api.PathUnquoteSpaces(ExtractMacro(te, Ctrl)) : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		},
 
 		Append: function (Ctrl, Items)
 		{
 			if (/string/i.test(typeof Items)) {
-				var arg = api.CommandLineToArgv(Items);
+				var arg = api.CommandLineToArgv(api.PathUnquoteSpaces(ExtractMacro(te, Items)));
 				Items = te.FolderItems();
 				for (var i in arg) {
 					if (arg[i]) {
@@ -100,7 +105,7 @@ if (window.Addon == 1) {
 		SyncFV: function (Ctrl)
 		{
 			var arFV = [];
-			var path = /string/i.test(typeof Ctrl) ? Ctrl : Ctrl.FolderItem.Path;
+			var path = Addons.ClipFolder.GetPath(Ctrl);
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
 				if (path.toLowerCase() == cFV[i].FolderItem.Path.toLowerCase()) {
@@ -115,7 +120,7 @@ if (window.Addon == 1) {
 			if (!Addons.ClipFolder.IsHandle(Ctrl)) {
 				return;
 			}
-			var path = /string/i.test(typeof Ctrl) ? Ctrl : Ctrl.FolderItem.Path;
+			var path = Addons.ClipFolder.GetPath(Ctrl);
 			var ado = te.CreateObject(api.ADBSTRM);
 			ado.CharSet = "utf-8";
 			ado.Open();
@@ -143,7 +148,7 @@ if (window.Addon == 1) {
 			if (!Addons.ClipFolder.IsHandle(Ctrl)) {
 				return;
 			}
-			var path = /string/i.test(typeof Ctrl) ? Ctrl : Ctrl.FolderItem.Path;
+			var path = Addons.ClipFolder.GetPath(Ctrl);
 			var ado = te.CreateObject(api.ADBSTRM);
 			ado.CharSet = "utf-8";
 			ado.Open();
