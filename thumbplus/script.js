@@ -4,8 +4,7 @@ Addons.ThumbPlus = {
 	FV: {},
 	fStyle: LVIS_CUT | LVIS_SELECTED,
 	Filter: item.getAttribute("Filter") || "",
-	Priority: item.getAttribute("Priority") || "*.zip\\*",
-	Disable: api.LoadString(hShell32, 9007).replace(/^.*?#|#.*$/g, "") || "*.jpg"
+	Priority: item.getAttribute("Priority") || "*.zip\\*"
 };
 
 if (window.Addon == 1) {
@@ -49,9 +48,17 @@ if (window.Addon == 1) {
 						cl = CLR_NONE;
 						fStyle = (state & LVIS_CUT) || api.GetAttributesOf(pid, SFGAO_HIDDEN) ? ILD_SELECTED : ILD_NORMAL;
 					}
-					image = GetThumbnail(image, Ctrl.IconSize * screen.logicalYDPI / 96, true);
+					var x = Ctrl.IconSize * screen.logicalYDPI / 96;
+					if (Ctrl.CurrentViewMode == FVM_DETAILS) {
+						var i = api.SendMessage(Ctrl.hwndList, LVM_GETCOLUMNWIDTH, 0, 0);
+						if (x > i) {
+							x = i;
+							rc.Right = rc.Left + i;
+						}
+					}
+					image = GetThumbnail(image, x, true);
 					if (image) {
-						image.DrawEx(nmcd.hdc, rc.Left + (rc.Right - rc.Left - image.GetWidth()) / 2, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, cl, cl, fStyle);
+						image.DrawEx(nmcd.hdc, rc.Left + (rc.Right - rc.Left - image.GetWidth()) / 2, rc.Bottom - image.GetHeight(), 0, 0, cl, cl, fStyle);
 						return S_OK;
 					}
 				}
@@ -82,6 +89,13 @@ if (window.Addon == 1) {
 			}
 		});
 	}
+
+	var ar = [api.LoadString(hShell32, 9007).replace(/^.*?#|#.*$/g, "") || "*.jpg"];
+	var s = item.getAttribute("Disable");
+	if (s) {
+		ar.push(s);
+	}
+	Addons.ThumbPlus.Disable = ar.join(";");
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }

@@ -57,13 +57,17 @@
 					if (Img == "...") {
 						Img = path;
 					}
-					var fn = api.PathUnquoteSpaces(ExtractMacro(te, Img));
-					var image = te.WICBitmap();;
-					if (!image.FromFile(fn)) {
+					var ar = Img.split(/,/);
+					var fn = api.PathUnquoteSpaces(ExtractMacro(te, ar[0]));
+					var image = te.WICBitmap();
+					if (/\.ico$/i.test(fn) || !image.FromFile(fn)) {
 						var sfi = api.Memory("SHFILEINFO");
 						api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 						image.FromHICON(sfi.hIcon);
 						api.DestroyIcon(sfi.hIcon);
+					}
+					if (ar[1] > 0) {
+						image = GetThumbnail(image, ar[1], false);
 					}
 					AddMenuImage(mii, image, fn);
 					hbm = mii.hbmpItem;
