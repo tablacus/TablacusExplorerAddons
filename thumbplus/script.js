@@ -10,7 +10,7 @@ Addons.ThumbPlus = {
 if (window.Addon == 1) {
 	AddEvent("HandleIcon", function (Ctrl, pid)
 	{
-		if (Ctrl.Type == CTRL_SB && Ctrl.IconSize > 32) {
+		if (Ctrl.IconSize > 32) {
 			var db = Addons.ThumbPlus.FV[Ctrl.Id];
 			if (!db) {
 				Addons.ThumbPlus.FV[Ctrl.Id] = db = { "*": Ctrl.IconSize };
@@ -32,25 +32,26 @@ if (window.Addon == 1) {
 
 	AddEvent("ItemPostPaint", function (Ctrl, pid, nmcd, vcd)
 	{
-		if (Ctrl.Type == CTRL_SB && Ctrl.IconSize > 32) {
+		var hList = Ctrl.hwndList;
+		if (hList && Ctrl.IconSize > 32) {
 			var db = Addons.ThumbPlus.FV[Ctrl.Id];
 			if (db) {
 				var image = db[fso.GetFileName(pid.Path)];
 				if (/object/i.test(typeof image)) {
 					var cl, fStyle, rc = api.Memory("RECT");
 					rc.Left = LVIR_ICON;
-					api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
-					var state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, Addons.ThumbPlus.fStyle);
+					api.SendMessage(hList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
+					var state = api.SendMessage(hList, LVM_GETITEMSTATE, nmcd.dwItemSpec, Addons.ThumbPlus.fStyle);
 					if (state == LVIS_SELECTED) {
 						cl = CLR_DEFAULT;
-						fStyle = api.GetFocus() == Ctrl.hwndList ? ILD_SELECTED : ILD_FOCUS;
+						fStyle = api.GetFocus() == hList ? ILD_SELECTED : ILD_FOCUS;
 					} else {
 						cl = CLR_NONE;
 						fStyle = (state & LVIS_CUT) || api.GetAttributesOf(pid, SFGAO_HIDDEN) ? ILD_SELECTED : ILD_NORMAL;
 					}
 					var x = Ctrl.IconSize * screen.logicalYDPI / 96;
 					if (Ctrl.CurrentViewMode == FVM_DETAILS) {
-						var i = api.SendMessage(Ctrl.hwndList, LVM_GETCOLUMNWIDTH, 0, 0);
+						var i = api.SendMessage(hList, LVM_GETCOLUMNWIDTH, 0, 0);
 						if (x > i) {
 							x = i;
 							rc.Right = rc.Left + i;

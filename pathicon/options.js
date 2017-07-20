@@ -74,8 +74,25 @@ for (var i = 0; i < ar.length; i++) {
 }
 EnableSelectTag(g_x.List);
 
+if (dialogArguments.Data.FV) {
+	var FV = dialogArguments.Data.FV;
+	var Selected = FV.SelectedItems();
+	var path = Selected && Selected.Count ? Selected.Item(0).Path : FV.FolderItem.Path;
+	document.E.Path.value = path;
+	for (var i = 0; i < g_x.List.length; i++) {
+		var a = g_x.List[i].value.split(g_sep);
+		if (path.toLowerCase() == a[0].toLowerCase()) {
+			g_x.List.selectedIndex = i;
+			EditIC("List");
+			break;
+		}
+	}
+}
+
 SaveLocation = function ()
 {
-	ReplaceIC("List");
+	if (g_Chg.Data) {
+		ReplaceIC("List");
+	}
 	SaveIC("List");
 };

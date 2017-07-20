@@ -26,7 +26,7 @@
 if (window.Addon == 1) {
 	AddEvent("HandleIcon", function (Ctrl, pid)
 	{
-		if (Ctrl.Type == CTRL_SB) {
+		if (Ctrl.hwndList) {
 			var i = Ctrl.IconSize < 32 ? 0 : 1, db = Addons.ExtensionIcon.Icon[fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()];
 			if (db) {
 				var image = db[i];
@@ -47,18 +47,19 @@ if (window.Addon == 1) {
 
 	AddEvent("ItemPostPaint", function (Ctrl, pid, nmcd, vcd)
 	{
-		if (Ctrl.Type == CTRL_SB) {
+		var hList = Ctrl.hwndList;
+		if (hList) {
 			var db = Addons.ExtensionIcon.Icon[fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()];
 			if (db) {
 				var image = db[Ctrl.IconSize < 32 ? 0 : 1];
 				if (/object/i.test(typeof image)) {
 					var cl, fStyle, rc = api.Memory("RECT");
 					rc.Left = LVIR_ICON;
-					api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
-					var state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, Addons.ExtensionIcon.fStyle);
+					api.SendMessage(hList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
+					var state = api.SendMessage(hList, LVM_GETITEMSTATE, nmcd.dwItemSpec, Addons.ExtensionIcon.fStyle);
 					if (state == LVIS_SELECTED) {
 						cl = CLR_DEFAULT;
-						fStyle = api.GetFocus() == Ctrl.hwndList ? ILD_SELECTED : ILD_FOCUS;
+						fStyle = api.GetFocus() == hList ? ILD_SELECTED : ILD_FOCUS;
 					} else {
 						cl = CLR_NONE;
 						fStyle = (state & LVIS_CUT) || api.GetAttributesOf(pid, SFGAO_HIDDEN) ? ILD_SELECTED : ILD_NORMAL;
