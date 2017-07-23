@@ -569,7 +569,7 @@ if (window.Addon == 1) {
 				var rc = api.Memory("RECT");
 				rc.Left = LVIR_ICON;
 				api.SendMessage(hList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
-				if (Ctrl.CurrentViewMode == FVM_DETAILS) {
+				if (api.SendMessage(hList, LVM_GETVIEW, 0, 0) == 1) {
 					var i = api.SendMessage(hList, LVM_GETCOLUMNWIDTH, 0, 0);
 					if (rc.Right > i) {
 						rc.Right = i;
