@@ -646,9 +646,10 @@ if (window.Addon == 1) {
 		}
 		hdc = api.GetDC(te.hwnd);
 		var rc = api.Memory("RECT");
-		rc.Right = 32;
-		rc.Bottom = 32;
-		var hbm = api.CreateCompatibleBitmap(hdc, 32, 32);
+		var w = 32 * screen.logicalYDPI / 96;
+		rc.Right = w;
+		rc.Bottom = w;
+		var hbm = api.CreateCompatibleBitmap(hdc, w, w);
 		var hmdc = api.CreateCompatibleDC(hdc);
 		var hOld = api.SelectObject(hmdc, hbm);
 		var brush = api.CreateSolidBrush(159 + i * 16);
@@ -657,11 +658,11 @@ if (window.Addon == 1) {
 		api.SetBkMode(hmdc, 1);
 		var lf = api.Memory("LOGFONT");
 		lf.lfFaceName = "Arial Black",
-		lf.lfHeight = -32;
+		lf.lfHeight = -w;
 		lf.lfWeight = 700;
 		var hFont = CreateFont(lf);
 		var hfontOld = api.SelectObject(hmdc, hFont);
-		rc.Top = -7;
+		rc.Top = -w / 4;
 		api.DrawText(hmdc, i, -1, rc, DT_CENTER);
 		api.SelectObject(hmdc, hfontOld);
 		api.DeleteObject(brush);
