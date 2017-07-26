@@ -4,6 +4,7 @@ var item = GetAddonElement(Addon_Id);
 Addons.PathIcon = {
 	Icon: {},
 	fStyle: LVIS_CUT | LVIS_SELECTED,
+	CONFIG: fso.BuildPath(te.Data.DataFolder, "config\\pathicon.tsv"),
 
 	GetIconImage: function (fn, Large)
 	{
@@ -30,6 +31,57 @@ Addons.PathIcon = {
 		AddonOptions("pathicon", function ()
 		{
 		}, { FV: GetFolderView(Ctrl, pt) });
+	},
+
+	Replace: function (path, s, l)
+	{
+		path = path.toLowerCase();
+		var db = Addons.PathIcon.Icon[path];
+		if (!db) {
+			db = Addons.PathIcon.Icon[path] = {};
+		}
+		if (s) {
+			Addons.PathIcon.bSave |= db[0] != s;
+			db[0] = s;
+			delete db[2];
+		}
+		if (l) {
+			Addons.PathIcon.bSave |= db[1] != l;
+			db[1] = l;
+			delete db[3];
+		}
+		api.RedrawWindow(te.hwnd, null, 0, RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN);
+	},
+
+	Remove: function (path, mode)
+	{
+		path = path.toLowerCase();
+		var db = Addons.PathIcon.Icon[path];
+		if (db) {
+			mode = api.LowPart(mode);
+			if (mode != 0) {
+				Addons.PathIcon.bSave |= db[1] != "";
+				delete db[1];
+				delete db[3];
+			}
+			if (mode != 1) {
+				Addons.PathIcon.bSave |= db[0] != "";
+				delete db[0];
+				delete db[2];
+			}
+			if (!db[0] && !db[1]) {
+				delete Addons.PathIcon.Icon[path];
+			}
+			api.RedrawWindow(te.hwnd, null, 0, RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN);
+		}
+	},
+
+	ENumCB: function (fncb)
+	{
+		for (var path in Addons.PathIcon.Icon) {
+			var db = Addons.PathIcon.Icon[path];
+			fncb(path, db[0], db[1]);
+		}
 	}
 };
 
@@ -39,15 +91,13 @@ if (window.Addon == 1) {
 		if (Ctrl.hwndList && pid) {
 			var i = Ctrl.IconSize < 32 ? 0 : 1, db = Addons.PathIcon.Icon[pid.Path.toLowerCase()];
 			if (db) {
-				var image = db[i];
-				if (image) {
-					if (/string/i.test(typeof image)) {
-						var image = Addons.PathIcon.GetIconImage(image, i);
-						if (image) {
-							db[i] = GetThumbnail(image, [32, 256][i] * screen.logicalYDPI / 96, true);
-							return true;
-						}
-					} else {
+				if (db[i]) {
+					if (db[i + 2]) {
+						return true;
+					}
+					var image = Addons.PathIcon.GetIconImage(db[i], i);
+					if (image) {
+						db[i + 2] = GetThumbnail(image, [32, 256][i] * screen.logicalYDPI / 96, true) || 1;
 						return true;
 					}
 				}
@@ -61,7 +111,7 @@ if (window.Addon == 1) {
 		if (hList && pid) {
 			var db = Addons.PathIcon.Icon[pid.Path.toLowerCase()];
 			if (db) {
-				var image = db[Ctrl.IconSize < 32 ? 0 : 1];
+				var image = db[Ctrl.IconSize < 32 ? 2 : 3];
 				if (/object/i.test(typeof image)) {
 					var cl, fStyle, rc = api.Memory("RECT");
 					rc.Left = LVIR_ICON;
@@ -81,6 +131,24 @@ if (window.Addon == 1) {
 			}
 		}
 	}, true);
+
+	AddEvent("SaveConfig", function ()
+	{
+		if (Addons.PathIcon.bSave) {
+			try {
+				var ado = new ActiveXObject(api.ADBSTRM);
+				ado.CharSet = "utf-8";
+				ado.Open();
+				Addons.PathIcon.ENumCB(function (path, s, l)
+				{
+					ado.WriteText([path, s, l].join("\t") + "\r\n");
+				});
+				ado.SaveToFile(Addons.PathIcon.CONFIG, adSaveCreateOverWrite);
+				ado.Close();
+				Addons.PathIcon.bSave = false;
+			} catch (e) {}
+		}
+	});
 
 	Addons.PathIcon.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
 	//Menu
@@ -105,7 +173,7 @@ if (window.Addon == 1) {
 	AddTypeEx("Add-ons", "Path icon", Addons.PathIcon.Exec);
 
 	try {
-		var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\pathicon.tsv"));
+		var ado = OpenAdodbFromTextFile(Addons.PathIcon.CONFIG);
 		while (!ado.EOS) {
 			var ar = ado.ReadText(adReadLine).split("\t");
 			if (ar[0]) {

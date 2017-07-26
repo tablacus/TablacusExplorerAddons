@@ -7,11 +7,9 @@ if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuPos", -1);
 	item.setAttribute("MenuName", "&Up One Level");
 
-	item.setAttribute("KeyExec", 1);
 	item.setAttribute("KeyOn", "List");
 	item.setAttribute("Key", "$e");
 
-	item.setAttribute("MouseExec", 1);
 	item.setAttribute("MouseOn", "List");
 	item.setAttribute("Mouse", "2U");
 }
@@ -62,20 +60,20 @@ if (window.Addon == 1) {
 		}
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
-			api.InsertMenu(hMenu, Addons.Up.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Up.strName));
+			api.InsertMenu(hMenu, Addons.Up.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.Up.strName);
 			ExtraMenuCommand[nPos] = Addons.Up.Exec;
 			return nPos;
 		});
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.Up.Exec();", "JScript");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Up.Exec, "Func", true);
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.Up.Exec();", "JScript");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Up.Exec, "Func", true);
 	}
 	var h = item.getAttribute("IconSize") || window.IconSize || 24;
 	var s = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,28" : "bitmap:ieframe.dll,214,24,28");
-	SetAddon(Addon_Id, Default, '<span class="button" id="UpButton" onclick="Addons.Up.Exec();" oncontextmenu="Addons.Up.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Up" src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px"></span>');
+	SetAddon(Addon_Id, Default, '<span class="button" id="UpButton" onclick="Addons.Up.Exec();" oncontextmenu="Addons.Up.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Up" src="' + EncodeSC(s) + '" width="' + h + 'px" height="' + h + 'px"></span>');
 }
