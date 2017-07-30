@@ -22,6 +22,7 @@ if (window.Addon == 1) {
 		Exec: function ()
 		{
 			Navigate(null, SBSP_PARENT | OpenMode);
+			return S_OK;
 		},
 
 		Popup: function ()

@@ -26,6 +26,7 @@ if (window.Addon == 1) {
 		SyncItem: {},
 		Initd: false,
 		Portable: api.LowPart(item.getAttribute("Portable")),
+		Bottom: api.LowPart(item.getAttribute("Bottom")),
 		Image: [],
 
 		IsHandle: function (Ctrl)
@@ -397,7 +398,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("NavigateComplete", function (Ctrl)
+	AddEvent("BeginNavigate", function (Ctrl)
 	{
 		var Badge = Addons.Badge.BadgePath(Ctrl);
 		if (Badge && !Addons.Badge.tid[Ctrl.Id]) {
@@ -413,8 +414,9 @@ if (window.Addon == 1) {
 						arItems.push(path);
 					}
 				});
-				Ctrl.AddItems(arItems, true);
+				Ctrl.AddItems(arItems, true, true);
 			}, 99);
+			return S_FALSE;
 		}
 	});
 
@@ -576,7 +578,9 @@ if (window.Addon == 1) {
 					}
 				}
 				image = GetThumbnail(image, (rc.Bottom - rc.Top) / 2, true);
-				image.DrawEx(nmcd.hdc, rc.Right - image.GetWidth(), rc.Top, 0, 0, CLR_NONE, CLR_NONE, ILD_NORMAL);
+				if (image) {
+					image.DrawEx(nmcd.hdc, rc.Right - image.GetWidth(), Addons.Badge.Bottom ? rc.Bottom - image.GetHeight() : rc.Top, 0, 0, CLR_NONE, CLR_NONE, ILD_NORMAL);
+				}
 			}
 		}
 	});

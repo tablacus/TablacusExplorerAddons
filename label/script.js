@@ -22,8 +22,8 @@ if (window.Addon == 1) {
 		nPosDel: 0,
 		tid: [],
 		tid2: null,
-		tidDel: null,
-		DelItem: {},
+		tidSync: null,
+		SyncItem: {},
 		Initd: false,
 		Portable: api.LowPart(item.getAttribute("Portable")),
 
@@ -457,7 +457,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("NavigateComplete", function (Ctrl)
+	AddEvent("BeginNavigate", function (Ctrl)
 	{
 		var Label = Addons.Label.LabelPath(Ctrl);
 		if (Label && !Addons.Label.tid[Ctrl.Id]) {
@@ -507,8 +507,9 @@ if (window.Addon == 1) {
 						arItems.push(path);
 					}
 				});
-				Ctrl.AddItems(arItems, true);
+				Ctrl.AddItems(arItems, true, true);
 			}, 99);
+			return S_FALSE;
 		}
 	});
 
@@ -624,17 +625,17 @@ if (window.Addon == 1) {
 			}
 			if (pidls.lEvent & SHCNE_DELETE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
-				Addons.Label.DelItem[name] = pidls[0];
-				clearTimeout(Addons.Label.tidDel);
-				Addons.Label.tidDel = setTimeout(function ()
+				Addons.Label.SyncItem[name] = pidls[0];
+				clearTimeout(Addons.Label.tidSync);
+				Addons.Label.tidSync = setTimeout(function ()
 				{
-					Addons.Label.tidDel = null;
-					Addons.Label.DelItem = {};
+					Addons.Label.tidSync = null;
+					Addons.Label.SyncItem = {};
 				}, 500);
 			}
 			if (pidls.lEvent & SHCNE_CREATE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
-				var pidl = Addons.Label.DelItem[name];
+				var pidl = Addons.Label.SyncItem[name];
 				if (pidl) {
 					Addons.Label.Append(pidls[0], Addons.Label.Remove(pidl));
 				}

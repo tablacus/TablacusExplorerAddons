@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
+    <Version>1.00</Version>
     <MinVersion>2017.7.30</MinVersion>
     <pubDate>Sun, 30 Jul 2017 00:00:00 GMT</pubDate>
-    <Options>Common:0,1:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Badge</Name>
-    <Description>Badge</Description>
+    <Name>Fast list mode</Name>
+    <Description>Speed ​​up scrolling in list mode. Require Window Vista or higher.</Description>
   </en>
   <ja>
-    <Name>バッジ</Name>
-    <Description>バッジ</Description>
+    <Name>高速一覧表示</Name>
+    <Description>一覧表示でスクロールを高速化 ※Windows Vista以降</Description>
   </ja>
 </TablacusExplorer>
