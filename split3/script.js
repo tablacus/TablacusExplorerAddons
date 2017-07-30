@@ -1,8 +1,8 @@
-﻿var Addon_Id = "Split3";
+﻿var Addon_Id = "split3";
 var Default = "ToolBar1Right";
 
 if (window.Addon == 1) {
-	Addons.Split3 = 
+	Addons.Split3 =
 	{
 		Exec: function (nMax, nMode)
 		{
