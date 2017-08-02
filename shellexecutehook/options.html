@@ -1,45 +1,14 @@
-﻿<html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="MSThemeCompatible" content="Yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Shell execute hook</title>
-    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
-  </head>
-  <body>
-    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="options.js">
-    </script>
-    <form name="F" style="display: inline;">
-      <div class="panel" style="display: block; height: calc(100vh - 3em)" id="panel0">
-         <label>Registry</label>
-         <br />
-         <input type="checkbox" id="EnableShellExecuteHooks" /><label for="EnableShellExecuteHooks">EnableShellExecuteHooks</label><br />
-         <input type="checkbox" id="Reg32bit" /><label for="Reg32bit">32bit</label>&emsp;<span id="update32" style="color: red"></span><br />
-         <input type="checkbox" id="Reg64bit" /><label for="Reg64bit" id="Label64">64bit</label>&emsp;<span id="update64" style="color: red"></span><br />
-         <label>Path</label>
-         <br />
-         <input type="text" id="Path" style="width: 100%"/>
-         <input type="button" value="Browse..." onclick="RefX('Path',0,0,1)" />
-         <input type="button" value="Default" onclick="SetDefault(document.getElementById('Path'), api.GetModuleFileName(null))" />
-      </div>
-      <table id="buttons" width="100%">
-        <tr>
-          <td style="width: 100%; white-space: nowrap">
-          </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
-          </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
-          </td>
-        </tr>
-      </table>
-    </form>
-  </body>
-</html>
+﻿<form>
+  <label>Registry</label>
+  <br />
+  <input type="checkbox" id="EnableShellExecuteHooks" /><label for="EnableShellExecuteHooks">EnableShellExecuteHooks</label><br />
+  <input type="checkbox" id="Reg32bit" /><label for="Reg32bit">32bit</label>&emsp;<span id="update32" style="color: red"></span><br />
+  <input type="checkbox" id="Reg64bit" /><label for="Reg64bit" id="Label64">64bit</label>&emsp;<span id="update64" style="color: red"></span><br />
+  <label>Path</label>
+  <br />
+  <table style="width: 100%"><tr>
+  <td style="width: 100%"><input type="text" id="Path" style="width: 100%" /></td>
+  <td><input type="button" value="Browse..." onclick="RefX('Path',0,0,1)" /></td>
+  </tr></table>
+  <input type="button" value="Default" onclick="SetDefault(document.getElementById('Path'), api.GetModuleFileName(null))" />
+</form>

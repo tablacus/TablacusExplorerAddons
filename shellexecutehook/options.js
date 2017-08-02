@@ -1,31 +1,11 @@
-﻿var Addon_Id = "shellexecutehook";
-var clsid = "{E840AAD2-1EF2-4F00-8BA8-CE7B57BF8878}";
+﻿var clsid = "{E840AAD2-1EF2-4F00-8BA8-CE7B57BF8878}";
 var reg = {};
 var bit = api.sizeof("HANDLE") * 8;
 
-function DialogResize1()
-{
-	try {
-		var h = document.documentElement.clientHeight || document.body.clientHeight;
-		var i = document.getElementById("buttons").offsetHeight * screen.deviceYDPI / screen.logicalYDPI + 6;
-		h -= i > 34 ? i : 34;
-		if (h > 0) {
-			document.getElementById("panel0").style.height = h + 'px';
-		}
-	} catch (e) {}
-};
-var info = GetAddonInfo(Addon_Id);
-document.title = info.Name;
-if (document.documentMode < 9) {
-	DialogResize1();
-	AddEventEx(window, "resize", function ()
-	{
-		clearTimeout(g_tidResize);
-		g_tidResize = setTimeout(function ()
-		{
-			DialogResize1();
-		}, 500);
-	});
+var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\" + Addon_Id + "\\options.html"));
+if (ado) {
+	SetTabContents(4, "General", ado.ReadText(adReadAll));
+	ado.Close();
 }
 
 AddEventEx(window, "load", function ()
@@ -83,16 +63,14 @@ AddEventEx(window, "load", function ()
 	ApplyLang(document);
 });
 
-AddEventEx(window, "beforeunload", function ()
+SaveLocation = function ()
 {
-	SetOptions(function () {
+	if (g_bChanged) {
 		var ex = te.Object();
 		ex.EnableShellExecuteHooks = document.getElementById("EnableShellExecuteHooks").checked;
 		ex.Path = document.getElementById("Path").value;
 		ex[32] = document.getElementById("Reg32bit").checked;
 		ex[64] = document.getElementById("Reg64bit").checked;
 		OpenNewProcess("addons\\shellexecutehook\\worker.js", ex, false, WINVER >= 0x600 ? "RunAs" : null);
-		TEOk();
-	});
-});
-
+	}
+}

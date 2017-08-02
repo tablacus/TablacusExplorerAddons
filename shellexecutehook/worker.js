@@ -1,7 +1,7 @@
 importScripts("..\\..\\script\\consts.js");
+importScripts("..\\..\\script\\common.js");
 var clsid = "{E840AAD2-1EF2-4F00-8BA8-CE7B57BF8878}";
-var s, dllpath;
-var bReboot = false;
+var s, dllpath, bReboot = false, bExplorer = false;
 if (MainWindow.Exchange) {
 	var ex = MainWindow.Exchange[arg[3]];
 	if (ex) {
@@ -10,7 +10,7 @@ if (MainWindow.Exchange) {
 			s = wsh.RegRead(reg);
 		} catch (e) {}
 		if (s ^ ex.EnableShellExecuteHooks) {
-			bReboot = true;
+			bExplorer = true;
 			try {
 				if (ex.EnableShellExecuteHooks) {
 					wsh.RegWrite(reg, 1, "REG_DWORD");
@@ -40,6 +40,19 @@ if (MainWindow.Exchange) {
 			SetDll(32, "Wow6432Node\\", wsh.ExpandEnvironmentStrings("%WINDIR%\\SysWOW64"));
 		}
 		delete MainWindow.Exchange[arg[3]];
+
+		if (bExplorer && !bReboot) {
+			bReboot = true;
+			var path = wsh.ExpandEnvironmentStrings("%SystemRoot%\\explorer.exe")
+			WmiProcess(" WHERE  ExecutablePath='" + path.replace(/\\/g, "\\\\") + "'", function (item)
+			{
+				item.Terminate();
+				bReboot = false;
+			});
+			if (!bReboot) {
+				wsh.Run(api.PathQuoteSpaces(path));
+			}
+		}
 		if (bReboot) {
 			api.MessageBox(null, api.LoadString(hShell32, 61961) || "Reboot required.", TITLE, MB_OK | MB_ICONEXCLAMATION);
 		}
@@ -72,12 +85,12 @@ function SetDll(bit, wow64, sysdir)
 				DeleteFileEx(dllpath[1]);
 				fso.CopyFile(dllpath[0], dllpath[1]);
 			}
-			bReboot = true;
+			bExplorer = true;
 		}
 
 		if (!s) {
 			wsh.Run(api.PathQuoteSpaces(fso.BuildPath(sysdir, "regsvr32.exe")) + " /s " + api.PathQuoteSpaces(dllpath[1]));
-			bReboot = true;
+			bExplorer = true;
 		}
 	}
 	if (!ex[bit] && s) {
@@ -86,12 +99,13 @@ function SetDll(bit, wow64, sysdir)
 			s = false;
 		}
 		if (dllpath[2] && fso.FileExists(dllpath[2])) {
-			bReboot = true;
+			bExplorer = true;
 			wsh.Run(api.PathQuoteSpaces(fso.BuildPath(sysdir, "regsvr32.exe")) + " /u /s " + api.PathQuoteSpaces(dllpath[2]), 0, true);
 			if (s) {
 				try {
 					fso.DeleteFile(dllpath[2], true);
 				} catch (e) {
+					bReboot = true;
 					DeleteFileEx(dllpath[2]);
 				}
 			}
