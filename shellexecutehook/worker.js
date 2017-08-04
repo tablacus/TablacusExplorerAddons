@@ -1,29 +1,41 @@
 importScripts("..\\..\\script\\consts.js");
 importScripts("..\\..\\script\\common.js");
 var clsid = "{E840AAD2-1EF2-4F00-8BA8-CE7B57BF8878}";
-var s, dllpath, bReboot = false, bExplorer = false;
+var s, dllpath, Result, pnReboot = [0, 0];
+
 if (MainWindow.Exchange) {
 	var ex = MainWindow.Exchange[arg[3]];
 	if (ex) {
+		var Explorer;
+		if (ex.Explorer) {
+			Explorer = wsh.ExpandEnvironmentStrings("%SystemRoot%\\explorer.exe")
+			WmiProcess(" WHERE ExecutablePath='" + Explorer.replace(/\\/g, "\\\\") + "'", function (item)
+			{
+				item.Terminate();
+				pnReboot[1] = 1;
+			});
+		}
 		var reg = "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\EnableShellExecuteHooks";
 		try {
-			s = wsh.RegRead(reg);
-		} catch (e) {}
-		if (s ^ ex.EnableShellExecuteHooks) {
-			bExplorer = true;
+			s = !wsh.RegRead(reg);
+		} catch (e) {
+			s = true;
+		}
+		if (s == ex.EnableShellExecuteHooks && /boolean/i.test(typeof ex.EnableShellExecuteHooks)) {
 			try {
-				if (ex.EnableShellExecuteHooks) {
+				if (s) {
 					wsh.RegWrite(reg, 1, "REG_DWORD");
 				} else {
 					wsh.RegDelete(reg);
 				}
+				pnReboot[0] |= 1;
 			} catch (e) {}
 		}
 		reg = "HKCU\\SOFTWARE\\Tablacus\\ShellExecuteHook\\ExePath";
 		try {
 			s = wsh.RegRead(reg);
 		} catch (e) {}
-		if (s != ex.Path) {
+		if (s != ex.Path && /string/i.test(typeof ex.Path)) {
 			try {
 				if (ex.Path) {
 					wsh.RegWrite(reg, ex.Path, "REG_SZ");
@@ -35,35 +47,30 @@ if (MainWindow.Exchange) {
 			} catch (e) {}
 		}
 		var bit = api.sizeof("HANDLE") * 8;
-		SetDll(bit, "", system32);
+		SetDll(bit, "", system32, pnReboot);
 		if (bit == 64) {
-			SetDll(32, "Wow6432Node\\", wsh.ExpandEnvironmentStrings("%WINDIR%\\SysWOW64"));
+			SetDll(32, "Wow6432Node\\", wsh.ExpandEnvironmentStrings("%WINDIR%\\SysWOW64"), pnReboot);
 		}
 		delete MainWindow.Exchange[arg[3]];
 
-		if (bExplorer && !bReboot) {
-			bReboot = true;
-			var path = wsh.ExpandEnvironmentStrings("%SystemRoot%\\explorer.exe")
-			WmiProcess(" WHERE  ExecutablePath='" + path.replace(/\\/g, "\\\\") + "'", function (item)
-			{
-				item.Terminate();
-				bReboot = false;
-			});
-			if (!bReboot) {
-				wsh.Run(api.PathQuoteSpaces(path));
-			}
+		if (pnReboot[1]) {
+			wsh.Run(api.PathQuoteSpaces(Explorer));
 		}
-		if (bReboot) {
-			api.MessageBox(null, api.LoadString(hShell32, 61961) || "Reboot required.", TITLE, MB_OK | MB_ICONEXCLAMATION);
+		if (pnReboot[0] & (ex.Explorer ? 2 : 3)) {
+			wsh.Popup(api.LoadString(hShell32, 61961) || "Reboot required.");
 		}
 	}
 }
 
-function SetDll(bit, wow64, sysdir)
+function SetDll(bit, wow64, sysdir, pnReboot)
 {
 	var s = true;
 	var dllpath = [];
 	var ver = [];
+	if (!/boolean/.test(typeof ex[bit])) {
+		return;
+	}
+
 	try {
 		dllpath[2] = wsh.RegRead("HKCR\\" + wow64 + "CLSID\\" + clsid + "\\InprocServer32\\");
 	} catch (e) {
@@ -82,15 +89,16 @@ function SetDll(bit, wow64, sysdir)
 			try {
 				fso.CopyFile(dllpath[0], dllpath[1]);
 			} catch (e) {
+				pnReboot[0] |= 2;
 				DeleteFileEx(dllpath[1]);
 				fso.CopyFile(dllpath[0], dllpath[1]);
 			}
-			bExplorer = true;
+			pnReboot[0] |= 1;
 		}
 
 		if (!s) {
 			wsh.Run(api.PathQuoteSpaces(fso.BuildPath(sysdir, "regsvr32.exe")) + " /s " + api.PathQuoteSpaces(dllpath[1]));
-			bExplorer = true;
+			pnReboot[0] |= 1;
 		}
 	}
 	if (!ex[bit] && s) {
@@ -99,13 +107,13 @@ function SetDll(bit, wow64, sysdir)
 			s = false;
 		}
 		if (dllpath[2] && fso.FileExists(dllpath[2])) {
-			bExplorer = true;
+			pnReboot[0] |= 1;
 			wsh.Run(api.PathQuoteSpaces(fso.BuildPath(sysdir, "regsvr32.exe")) + " /u /s " + api.PathQuoteSpaces(dllpath[2]), 0, true);
 			if (s) {
 				try {
 					fso.DeleteFile(dllpath[2], true);
 				} catch (e) {
-					bReboot = true;
+					pnReboot[0] |= 2;
 					DeleteFileEx(dllpath[2]);
 				}
 			}

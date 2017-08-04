@@ -71,6 +71,7 @@ SaveLocation = function ()
 		ex.Path = document.getElementById("Path").value;
 		ex[32] = document.getElementById("Reg32bit").checked;
 		ex[64] = document.getElementById("Reg64bit").checked;
-		OpenNewProcess("addons\\shellexecutehook\\worker.js", ex, false, WINVER >= 0x600 ? "RunAs" : null);
+		ex.Explorer = document.getElementById("Explorer").checked;
+		MainWindow.OpenNewProcess("addons\\shellexecutehook\\worker.js", ex, false, WINVER >= 0x600 ? "RunAs" : null);
 	}
 }
