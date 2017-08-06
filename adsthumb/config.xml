@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
+    <Version>1.00</Version>
     <MinVersion>2017.8.5</MinVersion>
     <pubDate>Sun, 06 Aug 2017 00:00:00 GMT</pubDate>
-    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Thumbnail plus</Name>
-    <Description>Thumbnail extension</Description>
+    <Name>ADS Thumbnail</Name>
+    <Description>NTFS Alternate Data Streams thumbnails (filename.ext:thumbnail.jpg)</Description>
   </en>
   <ja>
-    <Name>サムネイル プラス</Name>
-    <Description>縮小版表示を拡張します</Description>
+    <Name>代替データストリーム サムネイル</Name>
+    <Description>NTFS代替データストリーム サムネイル (filename.ext:thumbnail.jpg)</Description>
   </ja>
 </TablacusExplorer>

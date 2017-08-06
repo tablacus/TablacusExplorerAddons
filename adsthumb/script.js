@@ -1,32 +1,26 @@
-﻿var item = GetAddonElement('thumbplus');
-
-Addons.ThumbPlus = {
+﻿Addons.ADSThumb = {
 	FV: {},
-	fStyle: LVIS_CUT | LVIS_SELECTED,
-	Filter: item.getAttribute("Filter") || "",
-	Priority: item.getAttribute("Priority") || "*.zip\\*"
+	fStyle: LVIS_CUT | LVIS_SELECTED
 };
 
 if (window.Addon == 1) {
 	AddEvent("HandleIcon", function (Ctrl, pid)
 	{
 		if (Ctrl.IconSize > 32) {
-			var db = Addons.ThumbPlus.FV[Ctrl.Id];
+			var db = Addons.ADSThumb.FV[Ctrl.Id];
 			if (!db) {
-				Addons.ThumbPlus.FV[Ctrl.Id] = db = { "*": Ctrl.IconSize };
+				Addons.ADSThumb.FV[Ctrl.Id] = db = { "*": Ctrl.IconSize };
 			}
 			var path = pid.Path;
-			if (api.PathMatchSpec(path, Addons.ThumbPlus.Priority) || (api.PathMatchSpec(path, Addons.ThumbPlus.Filter) && !api.PathMatchSpec(path, Addons.ThumbPlus.Disable))) {
-				if (db[path]) {
-					return /object/i.test(typeof db[path]) ? true : undefined;
-				}
-				var image = te.WICBitmap().FromFile(path);
-				if (image) {
-					db[path] = GetThumbnail(image, Ctrl.IconSize * screen.logicalYDPI / 96, true);
-					return true;
-				}
-				db[path] = 1;
+			if (db[path]) {
+				return /object/i.test(typeof db[path]) ? true : undefined;
 			}
+			var image = te.WICBitmap().FromFile(path + ":thumbnail.jpg");
+			if (image) {
+				db[path] = GetThumbnail(image, Ctrl.IconSize * screen.logicalYDPI / 96, true);
+				return true;
+			}
+			db[path] = 1;
 		}
 	}, true);
 
@@ -34,14 +28,14 @@ if (window.Addon == 1) {
 	{
 		var hList = Ctrl.hwndList;
 		if (hList && Ctrl.IconSize > 32) {
-			var db = Addons.ThumbPlus.FV[Ctrl.Id];
+			var db = Addons.ADSThumb.FV[Ctrl.Id];
 			if (db) {
 				var image = db[pid.Path];
 				if (/object/i.test(typeof image)) {
 					var cl, fStyle, rc = api.Memory("RECT");
 					rc.Left = LVIR_ICON;
 					api.SendMessage(hList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
-					var state = api.SendMessage(hList, LVM_GETITEMSTATE, nmcd.dwItemSpec, Addons.ThumbPlus.fStyle);
+					var state = api.SendMessage(hList, LVM_GETITEMSTATE, nmcd.dwItemSpec, Addons.ADSThumb.fStyle);
 					if (state == LVIS_SELECTED) {
 						cl = CLR_DEFAULT;
 						fStyle = api.GetFocus() == hList ? ILD_SELECTED : ILD_FOCUS;
@@ -57,7 +51,7 @@ if (window.Addon == 1) {
 							rc.Right = rc.Left + i;
 						}
 					}
-					image = GetThumbnail(image, x, true);
+					var image = GetThumbnail(image, x, true);
 					if (image) {
 						image.DrawEx(nmcd.hdc, rc.Left + (rc.Right - rc.Left - image.GetWidth()) / 2, rc.Bottom - image.GetHeight(), 0, 0, cl, cl, fStyle);
 						return S_OK;
@@ -69,15 +63,15 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		delete Addons.ThumbPlus.FV[Ctrl.Id];
+		delete Addons.ADSThumb.FV[Ctrl.Id];
 	});
 
 	AddEvent("IconSizeChanged", function (Ctrl)
 	{
-		var db = Addons.ThumbPlus.FV[Ctrl.Id];
+		var db = Addons.ADSThumb.FV[Ctrl.Id];
 		if (db) {
 			if (db["*"] < Ctrl.IconSize) {
-				delete Addons.ThumbPlus.FV[Ctrl.Id];
+				delete Addons.ADSThumb.FV[Ctrl.Id];
 			}
 		}
 	});
@@ -86,17 +80,8 @@ if (window.Addon == 1) {
 		AddEvent("Load", function ()
 		{
 			if (!Addons.ClassicStyle) {
-				Addons.ThumbPlus.fStyle = LVIS_CUT;
+				Addons.ADSThumb.fStyle = LVIS_CUT;
 			}
 		});
 	}
-
-	var ar = [api.LoadString(hShell32, 9007).replace(/^.*?#|#.*$/g, "") || "*.jpg"];
-	var s = item.getAttribute("Disable");
-	if (s) {
-		ar.push(s);
-	}
-	Addons.ThumbPlus.Disable = ar.join(";");
-} else {
-	importScript("addons\\" + Addon_Id + "\\options.js");
 }

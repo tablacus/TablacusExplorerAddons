@@ -76,7 +76,7 @@ if (window.Addon == 1) {
 					if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
 						s.unshift('<span id="breadcrumbsaddressbar_' + Id + "_"  + n + '" class="button" style="line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + BUTTONS.next + '</span>');
 					}
-					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(' + n + ', ' + Id + ')" onmousedown="Addons.InnerBreadcrumbsAddressBar.GoNew(' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + EncodeSC(api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER)) + '</span>');
+					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(this, ' + n + ', ' + Id + ')" onmousedown="return Addons.InnerBreadcrumbsAddressBar.GoEx(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + EncodeSC(api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER)) + '</span>');
 					FolderItem = api.ILGetParent(FolderItem);
 					o.innerHTML = s.join("");
 					if (o.offsetWidth > width && n > 0) {
@@ -118,17 +118,50 @@ if (window.Addon == 1) {
 			}
 		},
 
-		GoNew: function (n, Id)
+		GoEx: function (o, n, Id)
 		{
-			if (api.GetKeyState(VK_MBUTTON) < 0) {
-				Addons.InnerBreadcrumbsAddressBar.Go(n, Id);
+			if (event.button == 1) {
+				this.Go(o, n, Id);
+				return false;
+			} else if (event.button == 2) {
+				var pt = GetPos(o, true);
+				MouseOver(o);
+				var hMenu = api.CreatePopupMenu();
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, api.LoadString(hShell32, 33561));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Copy Full Path"));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 3, GetText("Open in New &Tab"));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 4, GetText("Open in Background"));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 5,  GetText("&Edit"));
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, te.hwnd, null, null);
+				api.DestroyMenu(hMenu);
+				switch (nVerb) {
+					case 1:
+						var Items = te.FolderItems();
+						Items.AddItem(this.GetPath(n, Id));
+						api.OleSetClipboard(Items);
+						break;
+					case 2:
+						clipboardData.setData("text", this.GetPath(n).Path);
+						break;
+					case 3:
+						NavigateFV(GetInnerFV(Id), this.GetPath(n, Id), SBSP_NEWBROWSER);
+						break;
+					case 4:
+						NavigateFV(GetInnerFV(Id), this.GetPath(n, Id), SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS);
+						break;
+					case 5:
+						this.Focus(Id);
+						break;
+				}
+				return false;
 			}
 		},
 
-		Go: function (n, Id)
+		Go: function (o, n, Id)
 		{
-			var FV = GetInnerFV(Id);
-			NavigateFV(FV, this.GetPath(n, Id), GetNavigateFlags());
+			NavigateFV(GetInnerFV(Id), this.GetPath(n, Id), GetNavigateFlags());
 		},
 
 		GetPath: function(n, Id)

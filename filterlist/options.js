@@ -1,16 +1,12 @@
-﻿var Addon_Id = "filterlist";
+﻿var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\" + Addon_Id + "\\options.html"));
+if (ado) {
+	var ar = ado.ReadText(adReadAll).split("<!--panel-->");
+	SetTabContents(0, "View", ar[0]);
+	SetTabContents(4, "General", ar[1]);
+	ado.Close();
+}
 
-function DialogResize1()
-{
-	var h = document.documentElement.clientHeight || document.body.clientHeight;
-	var i = document.getElementById("buttons").offsetHeight * screen.deviceYDPI / screen.logicalYDPI + 6;
-	h -= i > 34 ? i : 34;
-	if (h > 0) {
-		document.getElementById("panel0").style.height = h + 'px';
-	}
-};
-
-function Add(ar)
+AddFL = function (ar)
 {
 	var table = document.getElementById("T");
 	var nRows = table.rows.length;
@@ -19,85 +15,26 @@ function Add(ar)
 	s.push('<td style="width: 70%"><input type="text" name="f', nRows, '" style="width: 100%" placeholder="Filter" title="Filter" /></td>');
 	var tr = table.insertRow();
 	tr.innerHTML = s.join("");
-	Set(nRows, ar);
+	SetFL(nRows, ar);
 	return tr;
 }
 
-function Get(i)
+GetFL = function (i)
 {
-	var o = document.F.elements['m' + i];
-	return [document.F.elements['n' + i].value, document.F.elements['f' + i].value].join("\t");
+	var o = document.E.elements['m' + i];
+	return [document.E.elements['n' + i].value, document.E.elements['f' + i].value].join("\t");
 }
 
-function Set(i, ar)
+SetFL = function (i, ar)
 {
 	if (typeof(ar) == "string") {
 		ar = ar.split("\t");
 	}
-	document.F.elements['n' + i].value = ar[0];
-	document.F.elements['f' + i].value = ar[1];
+	document.E.elements['n' + i].value = ar[0];
+	document.E.elements['f' + i].value = ar[1];
 }
 
-try {
-	var ado = te.CreateObject("Adodb.Stream");
-	ado.CharSet = "utf-8";
-	ado.Open();
-	ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
-	var o;
-	while (!ado.EOS) {
-		o = Add(ado.ReadText(adReadLine));
-	}
-	ado.Close();
-	if (o) {
-		ApplyLang(o);
-	}
-} catch (e) {}
-
-ApplyLang(document);
-var info = GetAddonInfo(Addon_Id);
-document.title = info.Name;
-if (document.documentMode < 9) {
-	DialogResize1();
-	AddEventEx(window, "resize", function ()
-	{
-		clearTimeout(g_tidResize);
-		g_tidResize = setTimeout(function ()
-		{
-			DialogResize1();
-		}, 500);
-	});
-}
-AddEventEx(window, "beforeunload", function ()
-{
-	SetOptions(function () {
-		Save();
-		TEOk();
-	});
-});
-
-function Save()
-{
-	var table = document.getElementById("T");
-	var nRows = table.rows.length;
-	try {
-		var ado = te.CreateObject("Adodb.Stream");
-		ado.CharSet = "utf-8";
-		ado.Open();
-		var empty = ["", ""].join("\t");
-		for (var i = 0; i < nRows; i++) {
-			var s = Get(i);
-			if (s != empty) {
-				ado.WriteText(s + "\r\n");
-			}
-		}
-		ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"), adSaveCreateOverWrite);
-		ado.Close();
-	}
-	catch (e) {
-	}
-}
-
-function GetIndex()
+GetIndexFL = function ()
 {
 	var table = document.getElementById("T");
 	for (var i = table.rows.length; i--;) {
@@ -108,41 +45,102 @@ function GetIndex()
 	return -1;
 }
 
-function Up()
+UpFL = function ()
 {
-	var nPos = GetIndex();
+	var nPos = GetIndexFL();
 	if (nPos <= 0) {
 		return;
 	}
-	var s = Get(nPos);
-	Set(nPos, Get(nPos - 1));
-	Set(--nPos, s);
-	document.F.elements["i" + nPos].checked = true;
+	var s = GetFL(nPos);
+	SetFL(nPos, GetFL(nPos - 1));
+	SetFL(--nPos, s);
+	document.E.elements["i" + nPos].checked = true;
 }
 
-function Down()
+DownFL = function ()
 {
 	var table = document.getElementById("T");
-	var nPos = GetIndex();
+	var nPos = GetIndexFL();
 	if (nPos < 0 || nPos >= table.rows.length - 1) {
 		return;
 	}
-	var s = Get(nPos);
-	Set(nPos, Get(nPos + 1));
-	Set(++nPos, s);
-	document.F.elements["i" + nPos].checked = true;
+	var s = GetFL(nPos);
+	SetFL(nPos, GetFL(nPos + 1));
+	SetFL(++nPos, s);
+	document.E.elements["i" + nPos].checked = true;
 }
 
-function Remove()
+RemoveFL = function ()
 {
-	var nPos = GetIndex();
+	var nPos = GetIndexFL();
 	if (nPos < 0 || !confirmOk("Are you sure?")) {
 		return;
 	}
 	var table = document.getElementById("T");
 	var nRows = table.rows.length;
 	for (var i = nPos; i < nRows - 1; i++) {
-		Set(i, Get(i + 1));
+		SetFL(i, GetFL(i + 1));
 	}
 	table.deleteRow(nRows - 1);
+}
+
+function DialogResize1()
+{
+	var h = document.documentElement.clientHeight || document.body.clientHeight;
+	var i = 70 * screen.deviceYDPI / screen.logicalYDPI;
+	h -= i > 34 ? i : 34;
+	if (h > 0) {
+		document.getElementById("panel0f").style.height = h + 'px';
+	}
+};
+
+AddEventEx(window, "load", function ()
+{
+	try {
+		var ado = te.CreateObject("Adodb.Stream");
+		ado.CharSet = "utf-8";
+		ado.Open();
+		ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
+		var o;
+		while (!ado.EOS) {
+			o = AddFL(ado.ReadText(adReadLine));
+		}
+		ado.Close();
+		if (o) {
+			ApplyLang(o);
+		}
+	} catch (e) {}
+
+	if (document.documentMode < 9) {
+		DialogResize1();
+		AddEventEx(window, "resize", function ()
+		{
+			clearTimeout(g_tidResize);
+			g_tidResize = setTimeout(function ()
+			{
+				DialogResize1();
+			}, 500);
+		});
+	}
+});
+
+SaveLocation = function()
+{
+
+	var table = document.getElementById("T");
+	var nRows = table.rows.length;
+//	try {
+		var ado = te.CreateObject("Adodb.Stream");
+		ado.CharSet = "utf-8";
+		ado.Open();
+		var empty = ["", ""].join("\t");
+		for (var i = 0; i < nRows; i++) {
+			var s = GetFL(i);
+			if (s != empty) {
+				ado.WriteText(s + "\r\n");
+			}
+		}
+		ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"), adSaveCreateOverWrite);
+		ado.Close();
+//	} catch (e) {}
 }

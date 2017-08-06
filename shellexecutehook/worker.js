@@ -38,7 +38,7 @@ if (MainWindow.Exchange) {
 		if (s != ex.Path && /string/i.test(typeof ex.Path)) {
 			try {
 				if (ex.Path) {
-					wsh.RegWrite(reg, ex.Path, "REG_SZ");
+					wsh.RegWrite(reg, api.PathUnquoteSpaces(MainWindow.ExtractMacro(te, ex.Path)), "REG_SZ");
 				} else {
 					wsh.RegDelete(reg);
 					wsh.RegDelete("HKCU\\SOFTWARE\\Tablacus\\ShellExecuteHook\\");
@@ -57,7 +57,7 @@ if (MainWindow.Exchange) {
 			wsh.Run(api.PathQuoteSpaces(Explorer));
 		}
 		if (pnReboot[0] & (ex.Explorer ? 2 : 3)) {
-			wsh.Popup(api.LoadString(hShell32, 61961) || "Reboot required.");
+			MessageBox(api.LoadString(hShell32, 61961) || "Reboot required.", TITLE, MB_ICONINFORMATION);
 		}
 	}
 }

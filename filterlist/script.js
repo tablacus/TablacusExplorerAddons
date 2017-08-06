@@ -1,8 +1,11 @@
 ﻿var Addon_Id = "filterlist";
 
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.FilterList = {
 		Menus: [],
+		Name: api.LowPart(item.getAttribute("Name")),
+		Filter: api.LowPart(item.getAttribute("Filter")),
 
 		Exec: function (Ctrl, pt, Id)
 		{
@@ -32,7 +35,15 @@ if (window.Addon == 1) {
 			}
 			var hMenu = api.CreatePopupMenu();
 			for (var i = Addons.FilterList.Menus.length; i--;) {
-				api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, i + 1, Addons.FilterList.Menus[i]);
+				var ar = Addons.FilterList.Menus[i].split("\t");
+				if (Addons.FilterList.Name) {
+					if (!Addons.FilterList.Filter && ar[0]) {
+						ar.splice(1, 1);
+					}
+				} else if (Addons.FilterList.Filter && ar[1]) {
+					ar.splice(0, 1);
+				}
+				api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, i + 1, ar.join("\t"));
 			}
 			var Verb = api.TrackPopupMenuEx(hMenu, fuFlags, pt.x, pt.y, te.hwnd, null, null);
 			api.DestroyMenu(hMenu);
@@ -54,5 +65,6 @@ if (window.Addon == 1) {
 		}
 		ado.Close();
 	} catch (e) {}
-
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
