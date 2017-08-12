@@ -8,22 +8,8 @@ Addons.PathIcon = {
 
 	GetIconImage: function (fn, Large)
 	{
-		var image;
 		fn = api.PathUnquoteSpaces(ExtractMacro(te, fn));
-		if (/\.ico$|\*/i.test(fn)) {
-			var sfi = api.Memory("SHFILEINFO");
-			if (Large) {
-				api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES);
-				sfi.hIcon = api.ImageList_GetIcon(te.Data.SHIL[SHIL_EXTRALARGE], sfi.iIcon, ILD_NORMAL);
-			} else {
-				api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-			}
-			image = te.WICBitmap().FromHICON(sfi.hIcon);
-			api.DestroyIcon(sfi.hIcon);
-		} else {
-			image = te.WICBitmap().FromFile(fn);
-		}
-		return image;
+		return te.WICBitmap().FromFile(fn) || MakeImgData(fn, 0, Large ? 48 : 16);
 	},
 
 	Exec: function (Ctrl, pt)
@@ -174,22 +160,24 @@ if (window.Addon == 1) {
 
 	try {
 		var ado = OpenAdodbFromTextFile(Addons.PathIcon.CONFIG);
-		while (!ado.EOS) {
-			var ar = ado.ReadText(adReadLine).split("\t");
-			if (ar[0]) {
-				var s = api.PathUnquoteSpaces(ExtractMacro(te, ar[0])).toLowerCase();
-				if (s) {
-					var db = {};
-					Addons.PathIcon.Icon[s] = db;
-					for (var j = 2; j--;) {
-						if (ar[j + 1]) {
-							db[j] = ar[j + 1];
+		if (ado) {
+			while (!ado.EOS) {
+				var ar = ado.ReadText(adReadLine).split("\t");
+				if (ar[0]) {
+					var s = api.PathUnquoteSpaces(ExtractMacro(te, ar[0])).toLowerCase();
+					if (s) {
+						var db = {};
+						Addons.PathIcon.Icon[s] = db;
+						for (var j = 2; j--;) {
+							if (ar[j + 1]) {
+								db[j] = ar[j + 1];
+							}
 						}
 					}
 				}
 			}
+			ado.Close();
 		}
-		ado.Close();
 	} catch (e) {}
 
 	if (api.IsAppThemed() && WINVER >= 0x600) {

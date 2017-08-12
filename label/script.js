@@ -408,7 +408,7 @@ if (window.Addon == 1) {
 		if (!Addons.Label.Initd) {
 			te.Labels = te.Object();
 			try {
-				var ado = te.CreateObject("Adodb.Stream");
+				var ado = te.CreateObject(api.ADBSTRM);
 				ado.CharSet = "utf-8";
 				ado.Open();
 				ado.LoadFromFile(Addons.Label.CONFIG);
@@ -424,7 +424,7 @@ if (window.Addon == 1) {
 			{
 				if (Addons.Label.bSave) {
 					try {
-						var ado = te.CreateObject("Adodb.Stream");
+						var ado = te.CreateObject(api.ADBSTRM);
 						ado.CharSet = "utf-8";
 						ado.Open();
 						delete te.Labels[""];
@@ -662,6 +662,31 @@ if (window.Addon == 1) {
 			(function (FV) { setTimeout(function () {
 				Addons.Label.Sort(FV, null);
 			}, 99);}) (Ctrl);
+			return S_OK;
+		}
+	});
+
+	AddEvent("FilterChanged", function (Ctrl)
+	{
+		var res = /^\*?label:.+/i.exec(Ctrl.FilterView);
+		if (res) {
+			Ctrl.OnIncludeObject = function (Ctrl, Path1, Path2, Item)
+			{
+				var res = /^(\*)?label:\s*(.*)/i.exec(Ctrl.FilterView);
+				if (res) {
+					var s = res[2];
+					if (res[1]) {
+						s = s.substr(0, s.length - 1);
+					}
+					var ar = Addons.Label.Get(Item.Path).split(";");
+					for (var i in ar) {
+						if (PathMatchEx(ar[i], s)) {
+							return S_OK;
+						}
+					}
+					return S_FALSE;
+				}
+			}
 			return S_OK;
 		}
 	});

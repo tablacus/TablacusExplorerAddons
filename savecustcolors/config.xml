@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
+    <Version>1.00</Version>
     <MinVersion>2017.8.12</MinVersion>
     <pubDate>Sat, 12 Aug 2017 00:00:00 GMT</pubDate>
-    <Options>Common:4:4</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Extension icon changer</Name>
-    <Description>Icon change with file extension</Description>
+    <Name>Save custom colors</Name>
+    <Description>Save custom colors</Description>
   </en>
   <ja>
-    <Name>拡張子でアイコン変更</Name>
-    <Description>拡張子でアイコン変更</Description>
+    <Name>作成した色を保存</Name>
+    <Description>作成した色を保存します。</Description>
   </ja>
 </TablacusExplorer>

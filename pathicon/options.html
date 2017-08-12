@@ -7,45 +7,61 @@
       </td>
       <td style="width: 100%; vertical-align: top">
         <div class="panel" style="display: block">
-          <label>Path</label>
           <table class="layout">
             <tr>
               <td style="width: 100%">
-                <input type="text" name="Path" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
+                <label>Path</label>
               </td>
-              <td align="right">
+              <td>
+                <input type="button" value="Portable" onclick="PortableX('Path')">
+              </td>
+              <td>
                 <input type="button" value="Browse..." onclick="RefX('Path', false, this, false)" />
               </td>
             </tr>
           </table>
+          <input type="text" name="Path" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
         </div>
         <div class="panel" style="display: block">
-          <label>@shell32.dll,-33578</label>
           <table class="layout">
             <tr>
               <td style="width: 100%">
-                <input type="text" name="Small" style="width: 100%" onchange="ChangeX('List');ShowIconX('Small' , 0)" onfocus="this.select()" />
+                <label>@shell32.dll,-33578</label>
               </td>
-              <td align="right">
+              <td>
+                <input type="button" value="Portable" onclick="PortableX('Small')">
+              </td>
+              <td>
+                <input type="button" value="Select" onclick="ShowIcon(document.E.Small)">
+              </td>
+              <td>
                 <input type="button" value="Browse..." onclick="RefX('Small', false, this, true, api.LoadString(hShell32, 9007))" />
               </td>
             </tr>
           </table>
+          <input type="text" name="Small" style="width: 100%" onchange="ChangeX('List');ShowIconX('Small' , 0)" onfocus="this.select()" /><br>
           <img id="icon_0" />
         </div>
         <div class="panel" style="display: block">
-          <label>@shell32.dll,-33577</label>&nbsp;(<label>@shell32.dll,-30554</label>)
           <table class="layout">
             <tr>
               <td style="width: 100%">
-                <input type="text" name="Large" style="width: 100%" onchange="ChangeX('List');ShowIconX('Large', 1)" onfocus="this.select()" />
+                <label>@shell32.dll,-33577</label>
               </td>
-              <td align="right">
+              <td>
+                <input type="button" value="Portable" onclick="PortableX('Large')">
+              </td>
+              <td>
+                <input type="button" value="Select" onclick="ShowIcon(document.E.Large)">
+              </td>
+              <td>
                 <input type="button" value="Browse..." onclick="RefX('Large', false, this, true, api.LoadString(hShell32, 9007))" />
               </td>
             </tr>
           </table>
-          <img id="icon_1" />
+          <input type="text" name="Large" style="width: 100%" onchange="ChangeX('List');ShowIconX('Large' , 1)" onfocus="this.select()" /><br>
+          <img id="icon_1" /><br />
+          <label>@shell32.dll,-30554</label>
         </div>
       </td>
     </tr>

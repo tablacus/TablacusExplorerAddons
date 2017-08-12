@@ -4,22 +4,8 @@
 
 	GetIconImage: function (fn, Large)
 	{
-		var image;
 		fn = api.PathUnquoteSpaces(ExtractMacro(te, fn));
-		if (/\.ico$|\*/i.test(fn)) {
-			var sfi = api.Memory("SHFILEINFO");
-			if (Large) {
-				api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES);
-				sfi.hIcon = api.ImageList_GetIcon(te.Data.SHIL[SHIL_EXTRALARGE], sfi.iIcon, ILD_NORMAL);
-			} else {
-				api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-			}
-			image = te.WICBitmap().FromHICON(sfi.hIcon);
-			api.DestroyIcon(sfi.hIcon);
-		} else {
-			image = te.WICBitmap().FromFile(fn);
-		}
-		return image;
+		return te.WICBitmap().FromFile(fn) || MakeImgData(fn, 0, Large ? 48 : 16);
 	}
 };
 

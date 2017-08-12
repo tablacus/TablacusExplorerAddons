@@ -349,7 +349,7 @@ if (window.Addon == 1) {
 		if (!Addons.Badge.Initd) {
 			te.Data.Badges = te.Object();
 			try {
-				var ado = te.CreateObject("Adodb.Stream");
+				var ado = te.CreateObject(api.ADBSTRM);
 				ado.CharSet = "utf-8";
 				ado.Open();
 				ado.LoadFromFile(Addons.Badge.CONFIG);
@@ -365,7 +365,7 @@ if (window.Addon == 1) {
 			{
 				if (Addons.Badge.bSave) {
 					try {
-						var ado = te.CreateObject("Adodb.Stream");
+						var ado = te.CreateObject(api.ADBSTRM);
 						ado.CharSet = "utf-8";
 						ado.Open();
 						delete te.Data.Badges[""];
@@ -582,6 +582,32 @@ if (window.Addon == 1) {
 					image.DrawEx(nmcd.hdc, rc.Right - image.GetWidth(), Addons.Badge.Bottom ? rc.Bottom - image.GetHeight() : rc.Top, 0, 0, CLR_NONE, CLR_NONE, ILD_NORMAL);
 				}
 			}
+		}
+	});
+
+	AddEvent("FilterChanged", function (Ctrl)
+	{
+		var res = /^\*?badge:[^*]+/i.exec(Ctrl.FilterView);
+		if (res) {
+			Ctrl.OnIncludeObject = function (Ctrl, Path1, Path2, Item)
+			{
+				var res = /^\*?badge:\s*([<=>]*)(\d+)/i.exec(Ctrl.FilterView);
+				if (res) {
+					switch (res[1]) {
+						case '<':
+							return (Addons.Badge.Get(Item.Path) || 0) < res[2] ? S_OK : S_FALSE;
+						case '>':
+							return (Addons.Badge.Get(Item.Path) || 0) > res[2] ? S_OK : S_FALSE;
+						case '<=':
+							return (Addons.Badge.Get(Item.Path) || 0) <= res[2] ? S_OK : S_FALSE;
+						case '>=':
+							return (Addons.Badge.Get(Item.Path) || 0) >= res[2] ? S_OK : S_FALSE;
+						default:
+							return (Addons.Badge.Get(Item.Path) || 0) == res[2] ? S_OK : S_FALSE;
+					}
+				}
+			}
+			return S_OK;
 		}
 	});
 
