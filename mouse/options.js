@@ -4,25 +4,22 @@ g_Types = {Mouse: ["All", "List", "List_Background", "Tree", "Tabs", "Tabs_Backg
 g_nResult = 3;
 g_bChanged = false;
 
-function AddMouse(o)
+var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\mouse\\options.html"));
+if (ado) {
+	SetTabContents(4, "General", ado.ReadText(adReadAll));
+	ado.Close();
+}
+
+AddMouse = function(o)
 {
-	document.F.MouseMouse.value += o.title;
+	document.E.MouseMouse.value += o.title;
 	ChangeX("Mouse");
 }
 
-function SetRadio(o)
+SaveLocation = function ()
 {
-	var ar = o.id.split("=");
-	document.F.elements[ar[0]].value = ar[1];
-}
-
-function SetMouseOptions()
-{
-	SetOptions(function () {
-		SetChanged();
-		SaveX("Mouse");
-		TEOk();
-	});
+	SetChanged();
+	SaveX("Mouse", document.E);
 }
 
 var ar = [];
@@ -33,5 +30,4 @@ for (var i = 0; i < s.length; i++) {
 document.getElementById("__MOUSEDATA").innerHTML = ar.join("");
 LoadLang2(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\mouse\\lang\\" + te.Data.Conf_Lang + ".xml"));
 ApplyLang(document);
-LoadX("Mouse");
-AddEventEx(window, "beforeunload", SetMouseOptions);
+LoadX("Mouse", null, document.E);

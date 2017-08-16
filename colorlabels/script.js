@@ -45,7 +45,7 @@ if (window.Addon == 1) {
 				}
 				path = path.toLowerCase();
 				if (cl !== te.Data.ColorLabels[path]) {
-					if (s !== undefined) {
+					if (cl !== undefined) {
 						te.Data.ColorLabels[path] = cl;
 					} else {
 						delete te.Data.ColorLabels[path];
@@ -67,7 +67,7 @@ if (window.Addon == 1) {
 	{
 		te.Data.ColorLabels = te.Object();
 		try {
-			var ado = te.CreateObject("Adodb.Stream");
+			var ado = te.CreateObject(api.ADBSTRM);
 			ado.CharSet = "utf-8";
 			ado.Open();
 			ado.LoadFromFile(Addons.ColorLabels.CONFIG);
@@ -83,7 +83,7 @@ if (window.Addon == 1) {
 		{
 			if (Addons.ColorLabels.bSave) {
 				try {
-					var ado = te.CreateObject("Adodb.Stream");
+					var ado = te.CreateObject(api.ADBSTRM);
 					ado.CharSet = "utf-8";
 					ado.Open();
 					delete te.Data.ColorLabels[""];
@@ -105,7 +105,7 @@ if (window.Addon == 1) {
 			{
 				var drv = fso.GetDriveName(path);
 				if (drv.toUpperCase() == Installed0) {
-					Addons.ColorLabels.Set(path, "");
+					Addons.ColorLabels.Set(path);
 					Addons.ColorLabels.Set(Installed1 + path.substr(drv.length), value);
 				}
 			});

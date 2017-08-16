@@ -31,7 +31,7 @@ if (window.Addon == 1) {
 	var xml = OpenXml("mouse.xml", false, true);
 	for (var mode in eventTE.Mouse) {
 		var items = xml.getElementsByTagName(mode);
-		for (i = 0; i < items.length; i++) {
+		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			var strMouse = String(item.getAttribute("Mouse"));
 			var strType = item.getAttribute("Type");
@@ -60,7 +60,9 @@ if (window.Addon == 1) {
 				strOpt = ["Addons.Mouse.OpenMenu(Ctrl, pt,", Addons.Mouse.Menus.length, ");"].join("");
 				Addons.Mouse.Menus.push([items, arMenu]);
 			}
-			SetGestureExec(mode, strMouse, strOpt, strType);
+			SetGestureExec(mode, strMouse, strOpt, strType, false, item.getAttribute("Name"));
 		}
 	}
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
