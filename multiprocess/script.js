@@ -11,9 +11,6 @@ Addons.MultiProcess =
 		}
 		var dwEffect = pdwEffect[0];
 		if (Dest !== null) {
-			if (!(grfKeyState & MK_CONTROL) && api.ILIsEqual(Dest, Items.Item(-1))) {
-				return false;
-			}
 			if (api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
 				return false;
 			}
@@ -22,11 +19,13 @@ Addons.MultiProcess =
 				return false;
 			}
 			if (nMode == 0) {
+				if (!(grfKeyState & MK_CONTROL) && api.ILIsEqual(Dest, Items.Item(-1))) {
+					return false;
+				}
 				var DropTarget = api.DropTarget(Dest);
 				DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 			}
-		}
-		else if (/^::{/.test(api.GetDisplayNameOf(Items.Item(-1), SHGDN_FORPARSING))) {
+		} else if (/^::{/.test(api.GetDisplayNameOf(Items.Item(-1), SHGDN_FORPARSING))) {
 			return false;
 		}
 		OpenNewProcess("addons\\multiprocess\\worker.js",

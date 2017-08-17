@@ -11,7 +11,10 @@
 						api.SetWindowLongPtr(hList, GWL_STYLE, dwStyle ^ 0x800);
 					}
 					api.SendMessage(Ctrl.hwndList, LVM_SETVIEW, 2, 0);
-				} else  if (dwStyle & 0x800) {
+					if (Ctrl.GroupBy) {
+						Ctrl.GroupBy = "System.Null";
+					}
+			} else  if (dwStyle & 0x800) {
 					api.SetWindowLongPtr(hList, GWL_STYLE, dwStyle ^ 0x800);
 					var nView = api.SendMessage(Ctrl.hwndList, LVM_GETVIEW, 0, 0);
 					api.SendMessage(Ctrl.hwndList, LVM_SETVIEW, 1, 0);
