@@ -89,4 +89,10 @@ if (window.Addon == 1) {
 			Ctrl.Data.Created = new Date().getTime();
 		}
 	});
+} else {
+	var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\"+ Addon_Id + "\\options.html"));
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

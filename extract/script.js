@@ -8,22 +8,14 @@ if (window.Addon == 1) {
 			return wsh.Run(ExtractMacro(te, s.replace(/%src%/i, api.PathQuoteSpaces(Src)).replace(/%dest%|%dist%/i, api.PathQuoteSpaces(Dest))), 1, true);
 		}
 	});
-}
-else {
-	var s = [];
-	var path = 'C:\\Program Files\\7-Zip\\7zG.exe';
-	var path2 = 'C:\\Program Files (x86)\\7-Zip\\7zG.exe';
-	if (!fso.FileExists(path) && fso.FileExists(path2)) {
-		path = path2;
+} else {
+	var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\"+ Addon_Id + "\\options.html"));
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
 	}
-	document.getElementById("_7zip").innerHTML = ['<input type="button" title=\'', api.PathQuoteSpaces(path), ' x %src% -o%dest%\' value="7-Zip" onclick="SetExtract(this)"> '].join("");
-
-	path = "C:\\Program Files\\Lhaz\\Lhaz.exe";
-	path2 = "C:\\Program Files (x86)\\Lhaz\\Lhaz.exe";
-	if (!fso.FileExists(path) && fso.FileExists(path2)) {
-		path = path2;
-	}
-	document.getElementById("_lhaz").innerHTML = ['<input type="button" title=\'', api.PathQuoteSpaces(path), ' /e /d%dest% %src%\' value="Lhaz" onclick="SetExtract(this)"> '].join("");
+	document.getElementById("_7zip").value = api.sprintf(99, GetText("Get %s..."), "7-Zip");
+	document.getElementById("_lhaz").value = api.sprintf(99, GetText("Get %s..."), "Lhaz");
 
 	SetExtract = function (o)
 	{
@@ -31,5 +23,15 @@ else {
 			document.F.Path.value = o.title;
 		}
 	}
-	InitAddonOptions();
+
+	SetExe = function (o)
+	{
+		if (confirmOk(GetText("Are you sure?"))) {
+			var ar = o.title.split(" ")
+			var path = 'C:\\Program Files\\' + ar[0];
+			var path2 = 'C:\\Program Files (x86)\\' + ar[0];
+			ar[0] = api.PathQuoteSpaces(!fso.FileExists(path) && fso.FileExists(path2) ? path2 : path);
+			document.F.Path.value = ar.join(" ");
+		}
+	}
 }
