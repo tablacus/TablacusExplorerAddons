@@ -33,7 +33,7 @@ if (window.Addon == 1) {
 			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.AddFavorites.Exec, "Func");
 		}
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
+	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize;
 	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,3" : "bitmap:ieframe.dll,214,24,3");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="AddFavorite();" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Add Favorite" src="', src, '" width="', h, 'px" height="', h, 'px"></span>', window.IconSize]);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="AddFavorite();" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Add Favorite" src="', src, '" style="width:', h, 'px; height:', h, 'px"></span>']);
 }
