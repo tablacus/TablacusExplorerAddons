@@ -12,7 +12,7 @@ if (window.Addon == 1) {
 				if (hwnd) {
 					api.SendMessage(hwnd, WM_SETFONT, Addons.Font.hFont, 1);
 					var nView = api.SendMessage(hwnd, LVM_GETVIEW, 0, 0);
-					api.SendMessage(hwnd, LVM_SETVIEW, nView == 1 ? 3 : 1, 0);
+					api.SendMessage(hwnd, LVM_SETVIEW, nView == 1 ? 4 : 1, 0);
 					api.SendMessage(hwnd, LVM_SETVIEW, nView, 0);
 				}
 				if (Ctrl.Type == CTRL_EB) {
