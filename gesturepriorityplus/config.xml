@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2017.8.27</MinVersion>
+    <pubDate>Sun, 27 Aug 2017 00:00:00 GMT</pubDate>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Gesture priority plus</Name>
+    <Description>Right drag for selected items, otherwise the mouse gesture.</Description>
+  </en>
+  <ja>
+    <Name>マウスジェスチャ優先プラス</Name>
+    <Description>選択項目では右ドラッグを、そうでなければマウスジェスチャを優先します。</Description>
+  </ja>
+</TablacusExplorer>
