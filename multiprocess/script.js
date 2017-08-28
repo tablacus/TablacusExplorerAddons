@@ -1,9 +1,20 @@
 ﻿var Addon_Id = "multiprocess";
 
 var item = GetAddonElement(Addon_Id);
+if (!api.LowPart(item.getAttribute("Delete")) && !api.LowPart(item.getAttribute("Paste")) && !api.LowPart(item.getAttribute("Drop")) && !api.LowPart(item.getAttribute("RDrop"))) {
+	item.setAttribute("Delete", 1);
+	item.setAttribute("Paste", 1);
+	item.setAttribute("Drop", 1);
+	item.setAttribute("RDrop", 1);
+}
 
 Addons.MultiProcess =
 {
+	Delete: api.LowPart(item.getAttribute("Delete")),
+	Paste: api.LowPart(item.getAttribute("Paste")),
+	Drop: api.LowPart(item.getAttribute("Drop")),
+	RDrop: api.LowPart(item.getAttribute("RDrop")),
+
 	FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, nMode)
 	{
 		if (Items.Count == 0) {
@@ -28,6 +39,26 @@ Addons.MultiProcess =
 		} else if (/^::{/.test(api.GetDisplayNameOf(Items.Item(-1), SHGDN_FORPARSING))) {
 			return false;
 		}
+		if (nMode == 0) {
+			if (grfKeyState & MK_RBUTTON) {
+				if (!Addons.MultiProcess.RDrop) {
+					return false;
+				}
+			} else {
+				if (!Addons.MultiProcess.Drop) {
+					return false;
+				}
+			}
+		} else if (nMode == 1) {
+			if (!Addons.MultiProcess.Delete) {
+				return false;
+			}
+		} else if (nMode == 2) {
+			if (!Addons.MultiProcess.Paste) {
+				return false;
+			}
+		}
+
 		OpenNewProcess("addons\\multiprocess\\worker.js",
 		{
 			hwnd: api.GetForegroundWindow(),
@@ -140,7 +171,12 @@ if (window.Addon == 1) {
 	});
 	document.getElementById('None').insertAdjacentHTML("BeforeEnd", '<div id="multiprocess_player"></div>');
 } else {
-	SetTabContents(0, "General", '<table><tr><td><input type="checkbox" name="TimeOver" id="TimeOver" /><label for="TimeOver">Time over</label><input type="text" name="Sec" style="width: 3em" />s</td></tr><tr><td style="width: 100%"><label>Audio file</label></td></tr><tr><td><input type="text" name="File" style="width: 100%" onchange="Addons.MultiProcess.Player()" /></td><td><input type="button" value="Browse..." onclick="RefX(\'File\',0,0,1)" /></td><td><input type="button" value="Portable" onclick="PortableX(\'File\')" /></td></tr></table><div id="multiprocess_player" style="width: 100%"></div>');
+	SetTabContents(0, "General", '<input type="checkbox" id="Delete" /><label for="Delete">Delete</label><br />\
+	<input type="checkbox" id="Paste" /><label for="Paste">@shell32.dll,-33562</label><br />\
+	<input type="checkbox" id="Drop" /><label for="Drop">Drop</label><br />\
+	<input type="checkbox" id="RDrop" /><label for="RDrop">Right</label> <label for="RDrop">Drop</label><hr />\
+	<table><tr><td><input type="checkbox" name="TimeOver" id="TimeOver" /><label for="TimeOver">Time over</label>\
+	<input type="text" name="Sec" style="width: 3em" />s</td></tr><tr><td style="width: 100%"><label>Audio file</label></td></tr><tr><td><input type="text" name="File" style="width: 100%" onchange="Addons.MultiProcess.Player()" /></td><td><input type="button" value="Browse..." onclick="RefX(\'File\',0,0,1)" /></td><td><input type="button" value="Portable" onclick="PortableX(\'File\')" /></td></tr></table><div id="multiprocess_player" style="width: 100%"></div>');
 
 	AddEventEx(window, "load", Addons.MultiProcess.Player);
 }

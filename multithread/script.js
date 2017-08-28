@@ -1,6 +1,18 @@
-﻿if (window.Addon == 1) {
+﻿var Addon_Id = "multithread";
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("Copy", 1);
+	item.setAttribute("Move", 1);
+	item.setAttribute("Delete", 1);
+}
+
+if (window.Addon == 1) {
 	Addons.MultiThread =
 	{
+		Copy: api.LowPart(item.getAttribute("Copy")),
+		Move: api.LowPart(item.getAttribute("Move")),
+		Delete: api.LowPart(item.getAttribute("Delete")),
+
 		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bDelete)
 		{
 			var path;
@@ -30,6 +42,9 @@
 				if (pdwEffect[0]) {
 					var wFunc = 0;
 					if (bDelete) {
+						if (!Addons.MultiThread.Delete) {
+							return false;
+						}
 						wFunc = FO_DELETE;
 					} else {
 						if (bOver) {
@@ -37,8 +52,14 @@
 							DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 						}
 						if (pdwEffect[0] & DROPEFFECT_COPY) {
+							if (!Addons.MultiThread.Copy) {
+								return false;
+							}
 							wFunc = FO_COPY;
 						} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
+							if (!Addons.MultiThread.Move) {
+								return false;
+							}
 							wFunc = FO_MOVE;
 						}
 					}
@@ -129,4 +150,6 @@
 				break;
 		}
 	});
+} else {
+	SetTabContents(0, "General", '<input type="checkbox" id="Copy" /><label for="Copy">Copy</label><br /><input type="checkbox" id="Move" /><label for="Move">Move</label><br /><input type="checkbox" id="Delete" /><label for="Delete">Delete</label><br />');
 }
