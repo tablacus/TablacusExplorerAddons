@@ -3,21 +3,35 @@ if (window.Addon == 1) {
 	{
 		NextFV: function (Ctrl)
 		{
+			var cTC = te.Ctrls(CTRL_TC, true);
 			var TC = te.Ctrl(CTRL_TC);
-			var cTC = te.Ctrls(CTRL_TC);
 			var nId = TC.Id;
 			var nLen = cTC.length;
+			var ix = [];
 			for (var i = nLen; i--;) {
-				if (cTC[i].Id == nId) {
+				ix.push(i);
+			}
+			ix = ix.sort(
+				function (a, b) {
+					var rca = api.Memory("RECT");
+					var rcb = api.Memory("RECT");
+					api.GetWindowRect(cTC[a].hwnd, rca);
+					api.GetWindowRect(cTC[b].hwnd, rcb);
+					if (rca.Top > rcb.Top) {
+						return 1;
+					} else if (rca.Top < rcb.Top) {
+						return -1;
+					}
+					return rca.Left - rcb.Left;
+				}
+			);
+			for (var i = nLen; i--;) {
+				if (cTC[ix[i]].Id == nId) {
 					nId = i;
 					break;
 				}
 			}
-			for (var i = (nId + 1) % nLen; i != nId; i = (i + 1) % nLen) {
-				if (cTC[i].Visible) {
-					return cTC[i].Selected;
-				}
-			}
+			return cTC[ix[(nId + 1) % nLen]].Selected;
 		}
 	},
 
