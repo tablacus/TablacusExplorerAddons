@@ -4,6 +4,7 @@ var Default = "ToolBar2Left";
 var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuPos", -1);
+	item.setAttribute("List", 1);
 }
 
 if (window.Addon == 1) {
@@ -12,7 +13,7 @@ if (window.Addon == 1) {
 		strName: "Tree",
 		nPos: 0,
 		WM: TWM_APP++,
-		Depth: item && api.LowPart(item.getAttribute("Depth")),
+		Depth: api.LowPart(item.getAttribute("Depth")),
 		tid: {},
 
 		Exec: function (Ctrl, pt)
@@ -65,7 +66,9 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("ChangeView", Addons.TreeView.Expand);
+	if (item.getAttribute("List")) {
+		AddEvent("ChangeView", Addons.TreeView.Expand);
+	}
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
@@ -161,5 +164,5 @@ if (window.Addon == 1) {
 	}
 } else {
 	EnableInner();
-	SetTabContents(0, "General", '<input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label>');
+	SetTabContents(0, "General", '<input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label><br><input type="checkbox" id="List" value="1" /><label for="List">List</label>');
 }
