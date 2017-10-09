@@ -25,6 +25,8 @@ if (window.Addon == 1) {
 		Create: function ()
 		{
 			this.TV = te.CreateCtrl(CTRL_TV);
+			this.TV.Style = te.Data.Tree_Style;
+			this.TV.SetRoot(te.Data.Tree_Root, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle);
 			this.TV.Visible = true;
 
 			if (item.getAttribute("List")) {
