@@ -4,20 +4,22 @@
 		Exec: function (Ctrl)
 		{
 			var FV, TC;
-			if (FV = GetFolderView(Ctrl)) {
-				if (FV.Data) {
-					if (TC = FV.Parent) {
-						Addons.LockedTabsTop.Lock(TC, FV.Index, FV.Data.Lock);
-						for (var j = TC.Count; j > 1; j--) {
-							for (var i = j; i-- > 1;) {
-								if ((TC[i - 1].Data.Lock ? 1 : 0) < (TC[i].Data.Lock ? 1 : 0)) {
-									TC.Move(i, i - 1);
+			try {
+				if (FV = GetFolderView(Ctrl)) {
+					if (FV.Data) {
+						if (TC = FV.Parent) {
+							Addons.LockedTabsTop.Lock(TC, FV.Index, FV.Data.Lock);
+							for (var j = TC.Count; j > 1; j--) {
+								for (var i = j; i-- > 1;) {
+									if ((TC[i - 1].Data.Lock ? 1 : 0) < (TC[i].Data.Lock ? 1 : 0)) {
+										TC.Move(i, i - 1);
+									}
 								}
 							}
 						}
 					}
 				}
-			}
+			} catch (e) {}
 		},
 
 		Lock: function (Ctrl, i, bLock)

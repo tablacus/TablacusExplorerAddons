@@ -7,7 +7,7 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.SideTreeView =
 	{
-		Align: item.getAttribute("Align") ? "Right" : "Left",
+		Align: api.LowPart(item.getAttribute("Align")) ? "Right" : "Left",
 		Depth: api.LowPart(item.getAttribute("Depth")),
 		Height: item.getAttribute("Height") || '100%',
 
