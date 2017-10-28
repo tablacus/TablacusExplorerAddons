@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2017.10.11</MinVersion>
+    <pubDate>Sat, 28 Oct 2017 00:00:00 GMT</pubDate>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Fix Windows 10 Fall Creators Update bug</Name>
+    <Description>Fix: Mouse Cursor jumping to corner of screen on selection.</Description>
+  </en>
+  <ja>
+    <Name>Windows 10 Fall Creators Updateのバグ対策</Name>
+    <Description>選択時にマウスカーソルが画面端に飛ぶバグの対策</Description>
+  </ja>
+</TablacusExplorer>
