@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2017.11.11</MinVersion>
+    <pubDate>Sat, 11 Nov 2017 00:00:00 GMT</pubDate>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Fix Windows 10 Creators Update (RS2) bug</Name>
+    <Description>Fix: The list is deviated or vanished.</Description>
+  </en>
+  <ja>
+    <Name>Windows 10 Creators Update (RS2) のバグ対策</Name>
+    <Description>リストがずれたり消えたりするバグの対策</Description>
+  </ja>
+</TablacusExplorer>
