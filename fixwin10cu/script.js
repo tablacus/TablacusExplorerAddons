@@ -6,7 +6,7 @@
 		Exec: function (Ctrl, tm)
 		{
 			if (Addons.FixWin10CU.tids[Ctrl.Id]) {
-				clearTimeout(Addons.FixWin10CU.tids[Ctrl.Id]);			
+				clearTimeout(Addons.FixWin10CU.tids[Ctrl.Id]);
 				delete Addons.FixWin10CU.tids[Ctrl.Id];
 			}
 			if (Ctrl.Type != CTRL_SB) {
@@ -53,15 +53,30 @@
 						Addons.FixWin10CU.Exec(Ctrl, tm);
 					}, tm);
 				}
-			}						
-		}	
+			}
+		}
 	};
 
-	AddEvent("NavigateComplete", Addons.FixWin10CU.Exec);
-	AddEvent("ChangeNotify", Addons.FixWin10CU.Exec);
+	AddEvent("ChangeView", Addons.FixWin10CU.Exec);
 	AddEvent("ColumnsChanged", Addons.FixWin10CU.Exec);
-	AddEvent("VisibleChanged", Addons.FixWin10CU.Exec);
 	AddEvent("EndLabelEdit", Addons.FixWin10CU.Exec);
 	AddEvent("IconSizeChanged", Addons.FixWin10CU.Exec);
 	AddEvent("Sort", Addons.FixWin10CU.Exec);
+
+	AddEvent("ChangeNotify", function (Ctrl, pidls, wParam, lParam)
+	{
+		if (pidls.lEvent & SHCNE_DISKEVENTS) {
+			var cTC = te.Ctrls(CTRL_TC);
+			for (var i in cTC) {
+				var TC = cTC[i];
+				if (TC.Visible) {
+					var FV = TC.Selected;
+					if (api.ILIsParent(FV, pidls[0], true)) {
+						Addons.FixWin10CU.Exec(FV);
+					}
+				}
+			}
+		}
+	});
+
 }
