@@ -25,8 +25,12 @@ Addons.MultiProcess =
 			if (api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
 				return false;
 			}
-			var path = api.GetDisplayNameOf(Dest, SHGDN_FORPARSING);
-			if (/^::{/.test(path) || (/^[A-Z]:\\|^\\/i.test(path) && !fso.FolderExists(path))) {
+			var path = api.GetDisplayNameOf(Items.Item(0), SHGDN_FORPARSING);
+			if (!/^[A-Z]:\\|^\\/i.test(path)) {
+				return false;
+			}
+			path = api.GetDisplayNameOf(Dest, SHGDN_FORPARSING);
+			if (!/^[A-Z]:\\|^\\/i.test(path) || !fso.FolderExists(path)) {
 				return false;
 			}
 			if (nMode == 0) {
