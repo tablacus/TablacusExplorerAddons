@@ -9,17 +9,14 @@ if (window.Addon == 1) {
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
-				var Items = FV.SelectedItems();
-				if (Items.Count == 0 || !Items.Item(0).IsFolder) {
-					Items = FV.FolderItem;
-				}
-				var hMenu = api.CreatePopupMenu();
+				var Items = FV.FolderItem;
 				var ContextMenu = api.ContextMenu(Items, FV);
 				if (ContextMenu) {
+					var hMenu = api.CreatePopupMenu();
 					ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_DEFAULTONLY);
 					ContextMenu.InvokeCommand(0, te.hwnd, CommandID_PASTE - 1, null, null, SW_SHOWNORMAL, 0, 0);
+					api.DestroyMenu(hMenu);
 				}
-				api.DestroyMenu(hMenu);
 			}
 			return S_OK;
 		},
