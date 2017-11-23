@@ -36,7 +36,7 @@ for (em.moveFirst(); !em.atEnd(); em.moveNext()) {
 		var ver = info.Version * 100;
 		arAddon.push({
 			name: name,
-			order: ("0000000000000000000" + dt.getTime()).slice(-20) + (9999 -ver)
+			order: ("0000000000000000000" + dt.getTime()).slice(-20) + (9999 - ver)
 		});
 	}
 }
@@ -72,10 +72,15 @@ for (var i in arSorted) {
 						item2.appendChild(item3);
 					}
 				}
+				if (k == 0 && fso.FileExists('..\\..\\TablacusExplorerAddons.wiki\\' + name + '.md')) {
+					var item3 = xmlSave.createElement("Details");
+					item3.text = 'https://github.com/tablacus/TablacusExplorerAddons/wiki/' + name;
+					item2.appendChild(item3);
+			}
 				item1.appendChild(item2);
 			}
 		}
-		root.appendChild(item1);
+root.appendChild(item1);
 	} else {
 		WScript.Echo(name);
 	}

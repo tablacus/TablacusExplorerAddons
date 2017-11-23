@@ -99,37 +99,16 @@ function ArrangeAddon(xml, Id, td, ts)
 			pubDate = dt.toLocaleString() + " ";
 		}
 		s.push('<b>' + info.Name + "</b>&nbsp;" + info.Version + "&nbsp;" + info.Creator + "<br>" + info.Description + "<br>");
-
+		if (info.Details) {
+			s.push('<a href="' + info.Details + '" target="_blank">' + GetText("Details") + '</a>');			
+		}
 		s.push('<table width="100%"><tr><td>' + pubDate + '</td><td align="right">');
 		var filename = info.filename;
 		if (!filename) {
 			filename = Id + '_' + info.Version.replace(/\D/, '') + '.zip';
 		}
 		var dt2 = (dt.getTime() / (24 * 60 * 60 * 1000)) - info.Version;
-		if (fso) {
-			var bInstall = true;
-			if (CheckAddon(Id)) {
-				installed = GetAddonInfo(Id);
-				if (installed.Version >= info.Version) {
-					s.push(GetText('Installed'));
-					bInstall = false;
-				} else {
-					s.push('<b id="_' + Id +'" style="color: red">' + GetText('Update available') + "</b>");
-					dt2 += MAXINT * 2;
-				}
-			} else {
-				dt2 += MAXINT;
-			}
-			if (bInstall) {
-				if (info.MinVersion && te.Version >= CalcVersion(info.MinVersion)) {
-					s.push('<input type="button" onclick="Install(this)" title="' + Id + '_' + info.Version + '" value="' + GetText("Install") + '">');
-				} else {
-					s.push('<b style="color: red">' + info.MinVersion.replace(/^20/, "Version ").replace(/\.0/g, '.') + ' ' + GetText("is required.") + '</b>');
-				}
-			}
-		} else {
-			s.push('<a href="' + Id + '/' + filename + '">' + 'Download' + '</a>');
-		}
+		s.push('<a href="' + Id + '/' + filename + '">' + 'Download' + '</a>');
 		s.push('</td></tr></table>');
 		var nInsert = 0;
 		while (nInsert <= nCount && dt2 < ts[nInsert]) {
@@ -286,7 +265,7 @@ AddEventEx(window, "load", function ()
 			}
 		}
 	}
-	xhr.open("GET", location.href + "index.xml?" + Math.floor(new Date().getTime() / 60000));
+	xhr.open("GET", location.href.replace(/[^\/]*$/, "") + "index.xml?" + Math.floor(new Date().getTime() / 60000));
 	xhr.setRequestHeader('Pragma', 'no-cache');
 	xhr.setRequestHeader('Cache-Control', 'no-store');
 	xhr.setRequestHeader('Expires', '0');

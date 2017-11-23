@@ -19,9 +19,12 @@ te = {
 }
 
 if (Lang == "ja") {
-	te.Data.Lang.Download = "ダウンロード";
-	te.Data.Lang.Search = "検索";
-	te.Data.Lang.Filter = "フィルタ";
+	te.Data.Lang = {
+		Download: "ダウンロード",
+		Search: "検索",
+		Filter: "フィルタ",
+		Details: "詳細"
+	};
 }
 
 function createHttpRequest()
