@@ -20,13 +20,15 @@ if (window.Addon == 1) {
 		Get: function (path)
 		{
 			var drive = fso.GetDriveName(path);
-			var d = fso.GetDrive(drive);
-			if (Addons.VirtualRecycleBin.Use[d.DriveType]) {
-				var path1 = Addons.VirtualRecycleBin.Path;
-				if (!/^[A-Z]:\\|^\\\\/i.test(path1)) {
-					path1 = fso.BuildPath(drive + "\\", path1);
+			if (drive) {
+				var d = fso.GetDrive(drive);
+				if (Addons.VirtualRecycleBin.Use[d.DriveType]) {
+					var path1 = Addons.VirtualRecycleBin.Path;
+					if (!/^[A-Z]:\\|^\\\\/i.test(path1)) {
+						path1 = fso.BuildPath(drive + "\\", path1);
+					}
+					return path1;
 				}
-				return path1;
 			}
 		},
 
