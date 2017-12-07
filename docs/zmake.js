@@ -87,3 +87,16 @@ root.appendChild(item1);
 }
 xmlSave.appendChild(root);
 xmlSave.save("index.xml");
+
+var ado = new ActiveXObject("ADODB.Stream");
+ado.Mode = 3;
+ado.Type = 2;
+ado.Charset = "UTF-8";
+ado.Open();
+ado.LoadFromFile ("index.xml");
+ado.Position = 0;
+var strData = ado.ReadText().replace(/(<\/Item>)/ig, "$1\n");
+ado.Position = 0;
+ado.WriteText(strData);
+ado.SaveToFile("index.xml", 2);
+ado.Close();
