@@ -81,7 +81,7 @@ if (window.Addon == 1) {
 			var Id = Ctrl.Parent.Id;
 			var o = document.F.elements["search_" + Id];
 			if (o) {
-				o.value = IsSearchPath(Ctrl) ? api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER) : "";
+				o.value = IsSearchPath(Ctrl) ? api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER | SHGDN_ORIGINAL) : "";
 			}
 		}
 	});

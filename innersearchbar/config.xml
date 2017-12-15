@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
-    <MinVersion>2017.4.9</MinVersion>
-    <pubDate>Sun, 09 Apr 2017 00:00:00 GMT</pubDate>
+    <Version>1.04</Version>
+    <MinVersion>2017.12.15</MinVersion>
+    <pubDate>Fri, 15 Dec 2017 00:00:00 GMT</pubDate>
     <Options>Common:0,5,7,8,9:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Inner Search bar</Name>
-    <Description>Search bar of every pane</Description>
+    <Description>Search bar for each pane</Description>
   </en>
   <ja>
     <Name>Inner 検索 バー</Name>

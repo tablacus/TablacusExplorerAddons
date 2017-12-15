@@ -82,7 +82,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeView", function (Ctrl)
 	{
-		document.F.search.value = IsSearchPath(Ctrl) ? api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER) : "";
+		document.F.search.value = IsSearchPath(Ctrl) ? api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER | SHGDN_ORIGINAL) : "";
 		Addons.SearchBar.ShowButton();
 	});
 
