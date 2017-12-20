@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
-    <MinVersion>2016.3.16</MinVersion>
-    <pubDate>Thu, 17 Mar 2016 00:00:00 UTC</pubDate>
+    <Version>1.07</Version>
+    <MinVersion>2017.12.15</MinVersion>
+    <pubDate>Wed, 20 Dec 2017 00:00:00 GMT</pubDate>
     <Options>Common:6,7,8,9:6</Options>
     <Creator>Gaku</Creator>
-    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Simple Address Bar</Name>
-    <Description>Simple Address Bar</Description>
+    <Name>Simple Address bar</Name>
+    <Description>Simple Address bar</Description>
   </en>
   <ja>
     <Name>シンプル アドレス バー</Name>
