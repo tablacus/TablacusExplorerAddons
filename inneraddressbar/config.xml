@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.21</Version>
-    <MinVersion>2017.8.16</MinVersion>
-    <pubDate>Wed, 16 Aug 2017 00:00:00 GMT</pubDate>
+    <Version>1.22</Version>
+    <MinVersion>2017.12.15</MinVersion>
+    <pubDate>Thu, 21 Dec 2017 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Inner Address Bar</Name>
+    <Name>Inner Address bar</Name>
     <Description>Address bar of every pane</Description>
   </en>
   <ja>

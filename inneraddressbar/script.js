@@ -36,7 +36,7 @@ if (window.Addon == 1) {
 				window.Input = o.value;
 				if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
 					FV = GetInnerFV(Id);
-					NavigateFV(FV, o.value, OpenMode);
+					NavigateFV(FV, o.value, GetNavigateFlags());
 				}
 				return false;
 			}
