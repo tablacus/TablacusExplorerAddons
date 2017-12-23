@@ -123,6 +123,14 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
+	AddEvent("GetFolderItemName", function (pid)
+	{
+		var path = Addons.Flat.GetSearchString(pid);
+		if (path) {
+			return Addons.Flat.PATH + fso.GetFileName(path);
+		}
+	}, true);
+
 	AddEvent("GetIconImage", function (Ctrl, BGColor)
 	{
 		if (Addons.Flat.GetSearchString(Ctrl)) {

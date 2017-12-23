@@ -277,9 +277,29 @@ if (window.Addon == 1) {
 	if (s) {
 		width = (api.QuadPart(s) == s) ? (s + "px") : s;
 	}
-	var icon = ExtractMacro(te, api.PathUnquoteSpaces(item.getAttribute("Icon"))) || "bitmap:ieframe.dll,216,16,17";
-	Addons.Everything.RE = api.LowPart(item.getAttribute("RE"));
 	Addons.Everything.ExePath = ExtractMacro(te, item.getAttribute("Exec"));
+	if (!Addons.Everything.ExePath) {	
+		var path = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
+		if (!fso.FileExists(path)) {
+			path = path.replace(/ \(x86\)\\/, "\\");
+		}
+		if (fso.FileExists(path)) {
+			Addons.Everything.ExePath = api.PathQuoteSpaces(path) + " -startup";
+		}
+	}
+	var icon = ExtractMacro(te, api.PathUnquoteSpaces(item.getAttribute("Icon")));
+	if (!icon) {
+		if (Addons.Everything.ExePath) {
+			var path = ExtractMacro(te, api.PathUnquoteSpaces(Addons.Everything.ExePath.replace(/\s*\-startup$/, "")));
+			if (fso.FileExists(path)) {
+				icon = 'icon:' + path + ',0';
+			}
+		}
+		if (!icon) {
+			icon = "bitmap:ieframe.dll,216,16,17";
+		}
+	}
+	Addons.Everything.RE = api.LowPart(item.getAttribute("RE"));
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		Addons.Everything.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -317,7 +337,7 @@ if (window.Addon == 1) {
 
 	SetExe = function ()
 	{
-		var path =fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
+		var path = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
 		if (!fso.FileExists(path)) {
 			path = path.replace(/ \(x86\)\\/, "\\");
 		}
