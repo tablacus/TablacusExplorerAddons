@@ -156,7 +156,7 @@ if (window.Addon == 1) {
 						if (IsFolderEx(Item)) {
 							var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
 							if (path && path != path0) {
-								FolderMenu.AddMenuItem(hMenu, Item, null, true);
+								FolderMenu.AddMenuItem(hMenu, Item);
 							}
 						}
 					}

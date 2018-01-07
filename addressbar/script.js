@@ -111,8 +111,12 @@ if (window.Addon == 1) {
 		Focus: function ()
 		{
 			var o = document.getElementById("addressbar");
-			o.select();
-			document.getElementById("breadcrumbbuttons").style.display = "none";
+			if (Addons.AddressBar.bClose) {
+				o.blur();
+			} else {
+				o.select();
+				document.getElementById("breadcrumbbuttons").style.display = "none";
+			}
 		},
 
 		Blur: function ()
@@ -235,7 +239,7 @@ if (window.Addon == 1) {
 					if (IsFolderEx(Item)) {
 						var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING);
 						if (path && path != path0) {
-							FolderMenu.AddMenuItem(hMenu, Item, null, true);
+							FolderMenu.AddMenuItem(hMenu, Item);
 						}
 					}
 				}
