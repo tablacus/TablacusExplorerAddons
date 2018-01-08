@@ -220,11 +220,11 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("GetTabName", function (Ctrl)
+
+	AddEvent("GetFolderItemName", function (pid)
 	{
-		var Path = Ctrl.FolderItem.Path;
-		if (Addons.Everything.IsHandle(Path)) {
-			return Path.replace(Addons.Everything.PATH, "");
+		if (Addons.Everything.IsHandle(pid)) {
+			return pid.Path;
 		}
 	}, true);
 
@@ -278,7 +278,7 @@ if (window.Addon == 1) {
 		width = (api.QuadPart(s) == s) ? (s + "px") : s;
 	}
 	Addons.Everything.ExePath = ExtractMacro(te, item.getAttribute("Exec"));
-	if (!Addons.Everything.ExePath) {	
+	if (!Addons.Everything.ExePath) {
 		var path = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
 		if (!fso.FileExists(path)) {
 			path = path.replace(/ \(x86\)\\/, "\\");

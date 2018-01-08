@@ -9,9 +9,11 @@
 		try {
 			var Selected = Ctrl.SelectedItems();
 			if (Selected.Count == 0) {
-				if (api.SendMessage(Ctrl.hwndList, LVM_GETNEXTITEM, -1,  LVNI_ALL | LVNI_SELECTED)) {
-					return;
-				}
+				setTimeout(function ()
+				{
+					Ctrl.Data.Selected = Ctrl.SelectedItems();
+				}, 99);
+				return;
 			}
 			Ctrl.Data.Selected = Selected;
 		} catch (e) {}
