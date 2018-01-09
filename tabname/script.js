@@ -1,4 +1,16 @@
 var Addon_Id = "tabname";
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "Tabs");
+	item.setAttribute("MenuPos", 0);
+
+	item.setAttribute("KeyOn", "List");
+	item.setAttribute("Key", "");
+
+	item.setAttribute("MouseOn", "List");
+	item.setAttribute("Mouse", "");
+}
 
 if (window.Addon == 1) {
 	Addons.TabName =
@@ -25,8 +37,7 @@ if (window.Addon == 1) {
 			var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 			if (NewName && NewName.length) {
 				Addons.TabName.db[path] = NewName;
-			}
-			else {
+			} else {
 				delete Addons.TabName.db[path];
 				NewName = FV.FolderItem.Name;
 			}
@@ -42,42 +53,27 @@ if (window.Addon == 1) {
 		}
 	}
 
-	var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-	if (items.length) {
-		var item = items[0];
-		if (!item.getAttribute("Set")) {
-			item.setAttribute("MenuExec", 1);
-			item.setAttribute("Menu", "Tabs");
-			item.setAttribute("MenuPos", 0);
-
-			item.setAttribute("KeyOn", "List");
-			item.setAttribute("Key", "");
-
-			item.setAttribute("MouseOn", "List");
-			item.setAttribute("Mouse", "");
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.TabName.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		var s = item.getAttribute("MenuName");
+		if (s && s != "") {
+			Addons.TabName.strName = s;
 		}
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.TabName.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.TabName.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.TabName.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TabName.strName));
-				ExtraMenuCommand[nPos] = Addons.TabName.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.TabName.Exec();", "JScript");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.TabName.Exec();", "JScript");
-		}
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.TabName.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TabName.strName));
+			ExtraMenuCommand[nPos] = Addons.TabName.Exec;
+			return nPos;
+		});
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.TabName.Exec();", "JScript");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.TabName.Exec();", "JScript");
 	}
 
 	AddEvent("GetTabName", function (Ctrl)
@@ -85,7 +81,7 @@ if (window.Addon == 1) {
 		return Addons.TabName.db[api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX)];
 	}, true);
 
-	AddEvent("Finalize", function ()
+	AddEvent("SaveConfig", function ()
 	{
 		if (Addons.TabName.db[true]) {
 			delete Addons.TabName.db[true];

@@ -2,6 +2,11 @@ var Addon_Id = "restart";
 var Default = "None";
 
 var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "File");
+	item.setAttribute("MenuPos", -1);
+}
 
 if (window.Addon == 1) {
 	Addons.Restart =

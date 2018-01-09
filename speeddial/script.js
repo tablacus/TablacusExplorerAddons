@@ -121,8 +121,6 @@
 	{
 		if (Addons.SpeedDial.IsHandle(Ctrl)) {
 			RemoveCommand(hMenu, ContextMenu, "delete;rename");
-			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
-			ExtraMenuCommand[nPos] = Addons.History1.Remove;
 		}
 		return nPos;
 	});
