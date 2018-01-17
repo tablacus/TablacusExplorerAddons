@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2015.11.15</MinVersion>
-    <pubDate>Sun, 15 Nov 2015 00:00:00 UTC</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2018.1.17</MinVersion>
+    <pubDate>Wed, 17 Jan 2018 00:00:00 GMT</pubDate>
     <Options>Location</Options>
     <Creator>Gaku</Creator>
-    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
     <Name>Size status bar</Name>
-    <Description>Show Size Status</Description>
+    <Description>Show size status</Description>
   </en>
   <ja>
     <Name>サイズ情報 バー</Name>

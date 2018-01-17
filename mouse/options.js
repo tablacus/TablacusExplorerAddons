@@ -18,7 +18,7 @@ AddMouse = function(o)
 
 SaveLocation = function ()
 {
-	SetChanged();
+	SetChanged(null, document.E);
 	SaveX("Mouse", document.E);
 }
 

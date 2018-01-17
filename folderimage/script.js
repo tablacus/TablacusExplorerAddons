@@ -10,7 +10,7 @@ if (window.Addon == 1) {
 		Invalid: item.getAttribute("Invalid") || "-",
 		Name: GetAddonInfo(Addon_Id).Name,
 
-		Search: function (Item, bECM, Progress)
+		Search: function (image, Item, bECM, Progress)
 		{
 			var nDog = Addons.FolderImage.Items;
 			var List = [Item];
@@ -39,12 +39,16 @@ if (window.Addon == 1) {
 			var path = Item.Path;
 			if (PathMatchEx(path, Addons.FolderImage.Filter) && !PathMatchEx(path, Addons.FolderImage.Invalid)) {
 				var Progress = te.ProgressDialog;
-				Progress.StartProgressDialog(te.hwnd, null, 0x20);
+				var tid = setTimeout(function ()
+				{
+					Progress.StartProgressDialog(te.hwnd, null, 0x20);
+				}, 3000);
 				try {
 					Progress.SetTitle(Addons.FolderImage.Name);
 					Progress.SetLine(1, api.LoadString(hShell32, 13585) || api.LoadString(hShell32, 6478), true);
-					hr = Addons.FolderImage.Search(Item, bECM, Progress);
+					hr = Addons.FolderImage.Search(image, Item, bECM, Progress);
 				} catch (e) {}
+				clearTimeout(tid);
 				Progress.StopProgressDialog();
 			}
 		}

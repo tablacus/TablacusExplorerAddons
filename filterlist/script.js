@@ -49,14 +49,18 @@ if (window.Addon == 1) {
 			api.DestroyMenu(hMenu);
 			if (Verb) {
 				var ar = Addons.FilterList.Menus[Verb - 1].split("\t");
-				FV.FilterView = ar[1];
+				var s = ar[1];
+				if (s && !/[\*\?\/]/.test(s)) {
+					s = "*" + s + "*";
+				}
+				FV.FilterView = s;
 				FV.Refresh();
 			}
 			return S_OK;
 		}
 	};
 	try {
-		var ado = te.CreateObject("Adodb.Stream");
+		var ado = te.CreateObject(api.ADBSTRM);
 		ado.CharSet = "utf-8";
 		ado.Open();
 		ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));

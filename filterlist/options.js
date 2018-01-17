@@ -97,7 +97,7 @@ function DialogResize1()
 AddEventEx(window, "load", function ()
 {
 	try {
-		var ado = te.CreateObject("Adodb.Stream");
+		var ado = te.CreateObject(api.ADBSTRM);
 		ado.CharSet = "utf-8";
 		ado.Open();
 		ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
@@ -130,7 +130,7 @@ SaveLocation = function()
 	var table = document.getElementById("T");
 	var nRows = table.rows.length;
 //	try {
-		var ado = te.CreateObject("Adodb.Stream");
+		var ado = te.CreateObject(api.ADBSTRM);
 		ado.CharSet = "utf-8";
 		ado.Open();
 		var empty = ["", ""].join("\t");

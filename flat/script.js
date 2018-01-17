@@ -1,15 +1,11 @@
 ﻿var Addon_Id = "flat";
 var Default = "None";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-var item = null;
-if (items.length) {
-	item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuExec", -1);
-		item.setAttribute("Menu", "Tabs");
-		item.setAttribute("MenuPos", -1);
-	}
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", -1);
+	item.setAttribute("Menu", "Tabs");
+	item.setAttribute("MenuPos", -1);
 }
 
 Addons.Flat =

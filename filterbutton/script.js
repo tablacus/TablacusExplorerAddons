@@ -1,9 +1,7 @@
 ﻿var Addon_Id = "filterbutton";
 var Default = "ToolBar2Left";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-var item = items.length ? items[0] : null;
-
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.FilterButton =
 	{
@@ -15,6 +13,9 @@ if (window.Addon == 1) {
 			if (FV) {
 				var s = InputDialog("Filter", FV.FilterView);
 				if (typeof(s) == "string") {
+					if (s && !/[\*\?\/]/.test(s)) {
+						s = "*" + s + "*";
+					}
 					FV.FilterView = s;
 					FV.Refresh();
 				}

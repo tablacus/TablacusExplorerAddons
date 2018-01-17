@@ -58,6 +58,38 @@ if (window.Addon == 1) {
 					}
 				}
 			}
+		},
+
+
+		rmdir: function (Ctrl, pt)
+		{
+			if (!confirmOk()) {
+				return S_OK;
+			}
+			var Items = GetSelectedItems(Ctrl, pt);
+			var FV = GetFolderView(Ctrl, pt);
+			var oErr = {};
+			var rd = wsh.ExpandEnvironmentStrings("%ComSpec% /crd ");
+			for (var j in Items) {
+				var Item = Items.Item(j);
+				var path = Item.Path;
+				var r = api.CreateProcess(rd + api.PathQuoteSpaces(path));
+				if (r) {
+					r = r.replace(/\s$/, "");
+					oErr[r] = (oErr[r] || '') + path + "\n"
+				} else {
+					FV.RemoveItem(Item);
+				}
+			}
+			var s = [];
+			for (var i in oErr) {
+				s.push(i);
+				s.push(oErr[i]);
+			}
+			if (s.length) {
+				MessageBox(s.join("\n"), TITLE, MB_ICONSTOP | MB_OK)
+			}
+			return S_OK;
 		}
 	};
 
@@ -83,10 +115,11 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("GetTabName", function (Ctrl)
+	AddEvent("GetFolderItemName", function (pid)
 	{
-		if (new RegExp("^" + Addons.EmptyFolder.PATH, "i").test(Ctrl.FolderItem.Path)) {
-			return Addons.EmptyFolder.strName || "Empty folder";
+		var res = new RegExp("^" + Addons.EmptyFolder.PATH + ".*?([^\\\\]+)$", "i").exec(pid.Path)
+		if (res) {
+			return Addons.EmptyFolder.PATH + res[1];
 		}
 	}, true);
 
@@ -113,6 +146,8 @@ if (window.Addon == 1) {
 		if (Addons.EmptyFolder.GetSearchString(Ctrl)) {
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
 			ExtraMenuCommand[nPos] = OpenContains;
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 33553) + " rmdir");
+			ExtraMenuCommand[nPos] = Addons.EmptyFolder.rmdir;
 		}
 		return nPos;
 	});
@@ -147,5 +182,5 @@ if (window.Addon == 1) {
 	} else {
 		s = Addons.EmptyFolder.strName;
 	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyFolder.Exec();" oncontextmenu="Addons.EmptyFolder.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyFolder.Exec();" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
 }
