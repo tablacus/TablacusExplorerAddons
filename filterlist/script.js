@@ -50,10 +50,17 @@ if (window.Addon == 1) {
 			if (Verb) {
 				var ar = Addons.FilterList.Menus[Verb - 1].split("\t");
 				var s = ar[1];
-				if (s && !/[\*\?\/]/.test(s)) {
-					s = "*" + s + "*";
+				if (!/^\//.test(s)) {
+					var ar = s.split(/;/);
+					for (var i in ar) {
+						var res = /^([^\*\?]+)$/.exec(ar[i]); 
+						if (res) {
+							ar[i] = "*" + res[1] + "*";
+						}
+					}
+					s = ar.join(";");
 				}
-				FV.FilterView = s;
+				FV.FilterView = s || null;
 				FV.Refresh();
 			}
 			return S_OK;

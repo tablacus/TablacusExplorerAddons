@@ -11,12 +11,37 @@ if (window.Addon == 1) {
 		{
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
-				var s = InputDialog("Filter", FV.FilterView);
-				if (typeof(s) == "string") {
-					if (s && !/[\*\?\/]/.test(s)) {
-						s = "*" + s + "*";
+				var s = FV.FilterView
+				if (Addons.FilterButton.RE) {
+					var res = /^\/(.*)\/i/.exec(s);
+					if (res) {
+						s = res[1];
 					}
-					FV.FilterView = s;
+				} else if (!/^\//.test(s)) {
+					var ar = s.split(/;/);
+					for (var i in ar) {
+						var res = /^\*(.*)\*/.exec(ar[i]);
+						if (res) {
+							ar[i] = res[1];
+						}
+					}
+					s = ar.join(";");
+				}
+				s = InputDialog("Filter", s);
+				if (typeof(s) == "string") {
+					if (Addons.FilterButton.RE && !/^\*|\//.test(s)) {
+						s = "/" + s + "/i";
+					} else if (!/^\//.test(s)) {
+						var ar = s.split(/;/);
+						for (var i in ar) {
+							var res = /^([^\*\?]+)$/.exec(ar[i]); 
+							if (res) {
+								ar[i] = "*" + res[1] + "*";
+							}
+						}
+						s = ar.join(";");
+					}
+					FV.FilterView = s || null;
 					FV.Refresh();
 				}
 			}
@@ -35,6 +60,7 @@ if (window.Addon == 1) {
 
 	if (item) {
 		Addons.FilterButton.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
+		Addons.FilterButton.RE = item.getAttribute("RE");
 		//Menu
 		if (item.getAttribute("MenuExec")) {
 			Addons.FilterButton.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -63,4 +89,5 @@ if (window.Addon == 1) {
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FilterButton.Exec(this);" oncontextmenu="return Addons.FilterButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut();"><img id="FolderButton" title="', Addons.FilterButton.strName.replace(/"/g, ""), '" src="', s.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px" />', '</span>']);
 } else {
 	EnableInner();
+	SetTabContents(0, "General", '<input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label>');
 }

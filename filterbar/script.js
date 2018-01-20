@@ -53,12 +53,21 @@ if (window.Addon == 1) {
 			if (s) {
 				if (Addons.FilterBar.RE && !/^\*|\//.test(s)) {
 					s = "/" + s + "/i";
-				} else if (!/[\*\?\/]/.test(s)) {
-					s = "*" + s + "*";
+				} else {
+					if (!/^\//.test(s)) {
+						var ar = s.split(/;/);
+						for (var i in ar) {
+							var res = /^([^\*\?]+)$/.exec(ar[i]); 
+							if (res) {
+								ar[i] = "*" + res[1] + "*";
+							}
+						}
+						s = ar.join(";");
+					}
 				}
 			}
 			if (String(s).toLowerCase() != FV.FilterView.toLowerCase()) {
-				FV.FilterView = s ? s : null;
+				FV.FilterView = s || null;
 				FV.Refresh();
 			}
 		},
@@ -103,9 +112,20 @@ if (window.Addon == 1) {
 		{
 			clearTimeout(Addons.FilterBar.tid);
 			var s = Ctrl.FilterView;
-			var res = (Addons.FilterBar.RE ? /^\/(.*)\/i/ : /^\*(.*)\*$|^\*$/).exec(s);
-			if (res) {
-				s = res[1] || "";
+			if (Addons.FilterBar.RE) {
+				var res = /^\/(.*)\/i/.exec(s);
+				if (res) {
+					s = res[1];
+				}
+			} else if (!/^\//.test(s)) {
+				var ar = s.split(/;/);
+				for (var i in ar) {
+					var res = /^\*(.*)\*/.exec(ar[i]);
+					if (res) {
+						ar[i] = res[1];
+					}
+				}
+				s = ar.join(";");
 			}
 			document.F.filter.value = s;
 			Addons.FilterBar.ShowButton();

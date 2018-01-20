@@ -50,12 +50,21 @@ if (window.Addon == 1) {
 			if (s) {
 				if (Addons.InnerFilterBar.RE && !/^\*|\//.test(s)) {
 					s = "/" + s + "/i";
-				} else if (!/[\*\?\/]/.test(s)) {
-					s = "*" + s + "*";
+				} else {
+					if (!/^\//.test(s)) {
+						var ar = s.split(/;/);
+						for (var i in ar) {
+							var res = /^([^\*\?]+)$/.exec(ar[i]); 
+							if (res) {
+								ar[i] = "*" + res[1] + "*";
+							}
+						}
+						s = ar.join(";");
+					}
 				}
 			}
 			if (String(s).toLowerCase() != FV.FilterView.toLowerCase()) {
-				FV.FilterView = s ? s : null;
+				FV.FilterView = s || null;
 				FV.Refresh();
 			}
 		},
@@ -110,9 +119,20 @@ if (window.Addon == 1) {
 				if (o) {
 					clearTimeout(Addons.InnerFilterBar.tid[Id]);
 					var s = Ctrl.FilterView;
-					var res = (Addons.InnerFilterBar.RE ? /^\/(.*)\/i/ : /^\*(.*)\*$|^\*$/).exec(s);
-					if (res) {
-						s = res[1] || "";
+					if (Addons.InnerFilterBar.RE) {
+						var res = /^\/(.*)\/i/.exec(s);
+						if (res) {
+							s = res[1];
+						}
+					} else if (!/^\//.test(s)) {
+						var ar = s.split(/;/);
+						for (var i in ar) {
+							var res = /^\*(.*)\*/.exec(ar[i]);
+							if (res) {
+								ar[i] = res[1];
+							}
+						}
+						s = ar.join(";");
 					}
 					o.value = s;
 					Addons.InnerFilterBar.ShowButton(o, Id);
