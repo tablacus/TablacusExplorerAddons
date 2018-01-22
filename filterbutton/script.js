@@ -20,7 +20,7 @@ if (window.Addon == 1) {
 				} else if (!/^\//.test(s)) {
 					var ar = s.split(/;/);
 					for (var i in ar) {
-						var res = /^\*(.*)\*/.exec(ar[i]);
+						var res = /^\*(.+)\*$/.exec(ar[i]);
 						if (res) {
 							ar[i] = res[1];
 						}
