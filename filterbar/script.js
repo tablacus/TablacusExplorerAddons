@@ -125,7 +125,7 @@ if (window.Addon == 1) {
 				if (res) {
 					s = res[1];
 				}
-			} else if (!/^\//.test(s)) {
+			} else if (s && !/^\//.test(s)) {
 				var ar = s.split(/;/);
 				for (var i in ar) {
 					var res = /^\*([^/?/*]+)\*$/.exec(ar[i]);
