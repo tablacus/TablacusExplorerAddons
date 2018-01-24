@@ -118,26 +118,33 @@ if (window.Addon == 1) {
 				var o = document.F.elements["filter_" + Id];
 				if (o) {
 					clearTimeout(Addons.InnerFilterBar.tid[Id]);
-					var s = Ctrl.FilterView;
-					if (Addons.InnerFilterBar.RE) {
-						var res = /^\/(.*)\/i/.exec(s);
-						if (res) {
-							s = res[1];
-						}
-					} else if (!/^\//.test(s)) {
-						var ar = s.split(/;/);
-						for (var i in ar) {
-							var res = /^\*(.+)\*$/.exec(ar[i]);
-							if (res) {
-								ar[i] = res[1];
-							}
-						}
-						s = ar.join(";");
+					var s = Addons.InnerFilterBar.GetString(Ctrl.FilterView);
+					if (s != Addons.InnerFilterBar.GetString(o.value)) {
+						o.value = s;
+						Addons.InnerFilterBar.ShowButton(o, Id);
 					}
-					o.value = s;
-					Addons.InnerFilterBar.ShowButton(o, Id);
 				}
 			}
+		},
+
+		GetString: function (s)
+		{
+			if (Addons.InnerFilterBar.RE) {
+				var res = /^\/(.*)\/i/.exec(s);
+				if (res) {
+					s = res[1];
+				}
+			} else if (s && !/^\//.test(s)) {
+				var ar = s.split(/;/);
+				for (var i in ar) {
+					var res = /^\*([^/?/*]+)\*$/.exec(ar[i]);
+					if (res) {
+						ar[i] = res[1];
+					}
+				}
+				s = ar.join(";");
+			}
+			return s;
 		},
 
 		FilterList: function (o, id)

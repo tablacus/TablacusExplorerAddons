@@ -57,7 +57,7 @@ if (window.Addon == 1) {
 					if (!/^\//.test(s)) {
 						var ar = s.split(/;/);
 						for (var i in ar) {
-							var res = /^([^\*\?]+)$/.exec(ar[i]); 
+							var res = /^([^\*\?]+)$/.exec(ar[i]);
 							if (res) {
 								ar[i] = "*" + res[1] + "*";
 							}
@@ -111,7 +111,15 @@ if (window.Addon == 1) {
 		GetFilter: function (Ctrl)
 		{
 			clearTimeout(Addons.FilterBar.tid);
-			var s = Ctrl.FilterView;
+			var s = Addons.FilterBar.GetString(Ctrl.FilterView);
+			if (s != Addons.FilterBar.GetString(document.F.filter.value)) {
+				document.F.filter.value = s;
+				Addons.FilterBar.ShowButton();
+			}
+		},
+
+		GetString: function (s)
+		{
 			if (Addons.FilterBar.RE) {
 				var res = /^\/(.*)\/i/.exec(s);
 				if (res) {
@@ -120,15 +128,14 @@ if (window.Addon == 1) {
 			} else if (!/^\//.test(s)) {
 				var ar = s.split(/;/);
 				for (var i in ar) {
-					var res = /^\*(.+)\*$/.exec(ar[i]);
+					var res = /^\*([^/?/*]+)\*$/.exec(ar[i]);
 					if (res) {
 						ar[i] = res[1];
 					}
 				}
 				s = ar.join(";");
 			}
-			document.F.filter.value = s;
-			Addons.FilterBar.ShowButton();
+			return s;
 		},
 
 		FilterList: function (o)

@@ -59,9 +59,22 @@ Addons.MultiProcess =
 			}
 		}
 
+		Addons.MultiProcess.tid = setTimeout(function ()
+		{
+			Addons.MultiProcess.tid = null;
+			var hwnd = null;
+			while (hwnd = api.FindWindowEx(null, hwnd, null, null)) {
+				if (api.GetClassName(hwnd) == "OperationStatusWindow") {
+					if (!(api.GetWindowLongPtr(hwnd, GWL_EXSTYLE) & 8)) {
+						api.SetForegroundWindow(hwnd);
+						api.SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+					}
+		}
+			}
+		}, 5000);
+
 		OpenNewProcess("addons\\multiprocess\\worker.js",
 		{
-			hwnd: api.GetForegroundWindow(),
 			Items: Items,
 			Dest: Dest,
 			Mode: nMode,
@@ -77,6 +90,10 @@ Addons.MultiProcess =
 
 	Player: function (autoplay)
 	{
+		if (Addons.MultiProcess.tid) {
+			clearTimeout(Addons.MultiProcess.tid);
+			Addons.MultiProcess.tid = null;
+		}
 		var src;
 		var el = document.createElement('embed');
 		if (autoplay === true) {
@@ -89,7 +106,7 @@ Addons.MultiProcess =
 		el.src = api.PathUnquoteSpaces(ExtractMacro(te, src));
 		el.setAttribute("volume", "0");
 		el.setAttribute("style", "width: 100%; height: 3.5em");
-		var o =document.getElementById('multiprocess_player');
+		var o = document.getElementById('multiprocess_player');
 		while (o.firstChild) {
 			o.removeChild(o.firstChild);
 		}
