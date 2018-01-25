@@ -1,8 +1,8 @@
 // Tablacus Shel Execute Hook (C)2016 Gaku
 // MIT Lisence
-// Visual C++ 2008 Express Edition SP1
-// Windows SDK v7.0
-// http://www.eonet.ne.jp/~gakana/tablacus/
+// Visual C++ 2010 Express Edition SP1
+// Windows SDK v7.1
+// https://tablacus.github.io/
 
 #include "tshellexecutehook.h"
 
@@ -137,16 +137,18 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 						if (lstrcmpi(bs, szExplorer) == 0) {
 							hr = ExecuteTE(pei->lpParameters);
 						} else {
-							SFGAOF sfAttr = SFGAO_FOLDER;
+							SFGAOF sfAttr = SFGAO_FOLDER | SFGAO_FILESYSTEM;
 							if FAILED(pSF->GetAttributesOf(1, &pidlPart, &sfAttr)) {
 								sfAttr = 0;
 							}
-							if (sfAttr & SFGAO_FOLDER) {
-								if (!PathMatchSpec(bs, FILTER_CONTROLPANEL)) {
+							if ((sfAttr & (SFGAO_FOLDER | SFGAO_FILESYSTEM)) == (SFGAO_FOLDER | SFGAO_FILESYSTEM)) {
+								hr = ExecuteTE(bs);
+							} else if (!PathMatchSpec(bs, FILTER_CONTROLPANEL)) {
+								if (sfAttr & SFGAO_FOLDER) { 
 									hr = ExecuteTE(bs);
+								} else if (PathMatchSpec(bs, FILTER_SPECIAL)) {
+									hr = ExecuteTE(NULL);
 								}
-							} else if (PathMatchSpec(bs, FILTER_SPECIAL)) {
-								hr = ExecuteTE(NULL);
 							}
 						}
 						::SysFreeString(bs);
@@ -159,8 +161,7 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 			try {
 				if (lstrcmpi(pei->lpFile, szExplorer) == 0) {
 					return ExecuteTE(pei->lpParameters);
-				}
-				else if ((PathMatchSpec(pei->lpFile, FILTER_SPECIAL) && !PathMatchSpec(pei->lpFile, FILTER_CONTROLPANEL)) ||
+				} else if ((PathMatchSpec(pei->lpFile, FILTER_SPECIAL) && !PathMatchSpec(pei->lpFile, FILTER_CONTROLPANEL)) ||
 					PathIsDirectory(pei->lpFile)) {
 					return ExecuteTE(pei->lpFile);
 				}
