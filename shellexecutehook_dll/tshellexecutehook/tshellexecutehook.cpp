@@ -49,13 +49,15 @@ HRESULT ShowRegError(LSTATUS ls)
 HRESULT ExecuteTE(LPCTSTR lpParam)
 {
 	TCHAR szArg[32768];
+	TCHAR szExe[MAX_PATH];
 	HKEY hKey;
 
-	szArg[0] = NULL;
+	szExe[0] = NULL;
 	if (RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Tablacus\\ShellExecuteHook", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-		DWORD dwSize = sizeof(szArg);
-		RegQueryValueEx(hKey, L"ExePath", NULL, NULL, (LPBYTE)&szArg, &dwSize);
+		DWORD dwSize = sizeof(szExe);
+		RegQueryValueEx(hKey, L"ExePath", NULL, NULL, (LPBYTE)&szExe, &dwSize);
 		RegCloseKey(hKey);
+		ExpandEnvironmentStrings(szExe, szArg, sizeof(szArg));
 		if (!PathMatchSpec(szArg, L"\"*\"")) {
 			PathQuoteSpaces(szArg);
 		}
@@ -63,9 +65,13 @@ HRESULT ExecuteTE(LPCTSTR lpParam)
 			lstrcat(szArg, L" ");
 			lstrcat(szArg, lpParam);
 		}
-		PROCESS_INFORMATION pi = { 0 };;
 		STARTUPINFO si = { sizeof(STARTUPINFO) };
-		return CreateProcess(NULL, (LPTSTR)szArg, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi) ? S_OK : S_FALSE;
+		PROCESS_INFORMATION pi = { 0 };
+		if (CreateProcess(NULL, (LPTSTR)szArg, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi)) {
+			CloseHandle(pi.hThread);
+			CloseHandle(pi.hProcess);
+			return S_OK;
+		}
 	}
 	return S_FALSE;
 }
@@ -124,7 +130,7 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 {
 	TCHAR szExplorer[MAX_PATH];
 
-	HRESULT hr = S_FALSE;
+	HRESULT hr = E_NOTIMPL;
 	if (pei->lpVerb == NULL || PathMatchSpec(pei->lpVerb, L"opennewwindow;opennewprocess;explore;open")) {
 		ExpandEnvironmentStrings(L"%windir%\\explorer.exe", szExplorer, MAX_PATH);
 		if (pei->fMask & (SEE_MASK_IDLIST | SEE_MASK_INVOKEIDLIST)) {
@@ -141,7 +147,7 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 							if FAILED(pSF->GetAttributesOf(1, &pidlPart, &sfAttr)) {
 								sfAttr = 0;
 							}
-							if ((sfAttr & (SFGAO_FOLDER | SFGAO_FILESYSTEM)) == (SFGAO_FOLDER | SFGAO_FILESYSTEM)) {
+							if ((sfAttr & SFGAO_FOLDER) && (sfAttr & SFGAO_FILESYSTEM | SFGAO_FILESYSANCESTOR | SFGAO_STORAGEANCESTOR | SFGAO_NONENUMERATED | SFGAO_DROPTARGET)) {
 								hr = ExecuteTE(bs);
 							} else if (!PathMatchSpec(bs, FILTER_CONTROLPANEL)) {
 								if (sfAttr & SFGAO_FOLDER) { 
@@ -155,20 +161,25 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 					}
 					pSF->Release();
 				}
-			} catch (...) {}
+			} catch (...) {
+				return S_FALSE;
+			}
 		}
-		if (hr == S_FALSE && pei->lpFile) {
+		if (hr == E_NOTIMPL && pei->lpFile) {
 			try {
 				if (lstrcmpi(pei->lpFile, szExplorer) == 0) {
 					return ExecuteTE(pei->lpParameters);
-				} else if ((PathMatchSpec(pei->lpFile, FILTER_SPECIAL) && !PathMatchSpec(pei->lpFile, FILTER_CONTROLPANEL)) ||
-					PathIsDirectory(pei->lpFile)) {
+				} else if (PathMatchSpec(pei->lpFile, FILTER_SPECIAL) && !PathMatchSpec(pei->lpFile, FILTER_CONTROLPANEL)) {
+					return ExecuteTE(pei->lpFile);
+				} else if (PathIsDirectory(pei->lpFile)) {
 					return ExecuteTE(pei->lpFile);
 				}
-			} catch (...) {}
+			} catch (...) {
+				return S_FALSE;
+			}
 		}
 	}
-	return hr;
+	return hr == S_OK ? S_OK : S_FALSE;
 }
 
 
