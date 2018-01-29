@@ -220,7 +220,6 @@ if (window.Addon == 1) {
 		}
 	});
 
-
 	AddEvent("GetFolderItemName", function (pid)
 	{
 		if (Addons.Everything.IsHandle(pid)) {
@@ -228,6 +227,13 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
+	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	{
+		if (Addons.Everything.IsHandle(Ctrl)) {
+			return MakeImgSrc(Addons.Everything.Icon, 0, false, 16);
+		}
+	});
+	
 	AddEvent("ChangeView", function (Ctrl)
 	{
 		document.F.everythingsearch.value = Addons.Everything.GetSearchString(Ctrl);
@@ -299,6 +305,7 @@ if (window.Addon == 1) {
 			icon = "bitmap:ieframe.dll,216,16,17";
 		}
 	}
+	Addons.Everything.Icon = icon;
 	Addons.Everything.RE = api.LowPart(item.getAttribute("RE"));
 	//Menu
 	if (item.getAttribute("MenuExec")) {
