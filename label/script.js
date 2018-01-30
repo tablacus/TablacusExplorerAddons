@@ -20,7 +20,6 @@ if (window.Addon == 1) {
 		Redraw: {},
 		nPosAdd: 0,
 		nPosDel: 0,
-		tid: [],
 		tid2: null,
 		tidSync: null,
 		SyncItem: {},
@@ -457,16 +456,14 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("BeginNavigate", function (Ctrl)
+	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
-		var Label = Addons.Label.LabelPath(Ctrl);
-		if (Label && !Addons.Label.tid[Ctrl.Id]) {
-			Ctrl.SortColumn = "";
-			Addons.Label.tid[Ctrl.Id] = setTimeout(function ()
+		if (Addons.Label.IsHandle(Path)) {
+			Ctrl.ENum = function (pid, Ctrl, fncb)
 			{
-				delete Addons.Label.tid[Ctrl.Id];
+				var Items = te.FolderItems();
 				var b, ar;
-				var arItems = [];
+				var Label = Addons.Label.LabelPath(pid);
 				var bWC = /[\*\?]/.test(Label);
 				Addons.Label.ENumCB(function (path, s)
 				{
@@ -503,27 +500,22 @@ if (window.Addon == 1) {
 							}
 						}
 					}
-					if (b) {
-						arItems.push(path);
+					if (b && path !="%Installed%") {
+						Items.AddItem(path);
 					}
 				});
-				Ctrl.AddItems(arItems, true, true);
-			}, 99);
-			return S_FALSE;
-		}
-	});
-
-	AddEvent("TranslatePath", function (Ctrl, Path)
-	{
-		if (Addons.Label.IsHandle(Path)) {
+				return Items;
+			};
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
 
-	AddEvent("GetTabName", function (Ctrl)
+	AddEvent("GetFolderItemName", function (pid)
 	{
-		var arg = api.CommandLineToArgv(Addons.Label.LabelPath(Ctrl));
-		return fso.GetFileName(arg[0]) || undefined;
+		var Label = Addons.Label.LabelPath(pid);
+		if (Label) {
+			return "label:" + Label;
+		}
 	}, true);
 
 	AddEvent("GetIconImage", function (Ctrl, BGColor)

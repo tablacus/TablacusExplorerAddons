@@ -13,8 +13,6 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.ClipFolder =
 	{
-		tid: [],
-
 		FindItemIndex: function (FV, Item)
 		{
 			var Items = FV.Items();
@@ -37,7 +35,7 @@ if (window.Addon == 1) {
 			return /string/i.test(typeof Ctrl) ? api.PathUnquoteSpaces(ExtractMacro(te, Ctrl)) : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		},
 
-		Append: function (Ctrl, Items)
+		Add: function (Ctrl, Items)
 		{
 			if (/string/i.test(typeof Items)) {
 				var arg = api.CommandLineToArgv(api.PathUnquoteSpaces(ExtractMacro(te, Items)));
@@ -52,27 +50,35 @@ if (window.Addon == 1) {
 				return;
 			}
 			var db = {};
-			var bSave = false;
 			Addons.ClipFolder.Open(Ctrl, null, db);
-			var arFV = Addons.ClipFolder.SyncFV(Ctrl);
-			for (var i in arFV) {
-				arFV[i].SelectItem(null, SVSI_DESELECTOTHERS);
-			}
+
+			var AddItems = te.FolderItems();
 			for (var j = 0; j < Items.Count; j++) {
 				var Item = Items.Item(j);
-				for (var i in arFV) {
-					var nIndex = Addons.ClipFolder.FindItemIndex(arFV[i], Item);
-					var Item1 = nIndex < 0 ? arFV[i].AddItem(Item) : arFV[i].Items.Item(nIndex);
-					arFV[i].SelectItem(Item1, SVSI_SELECT | SVSI_FOCUSED | SVSI_ENSUREVISIBLE);
-				}
 				var path = Item.Path;
 				if (!db[path]) {
 					db[path] = 1;
-					bSave = true;
+					AddItems.AddItem(Item);
 				}
 			}
-			if (bSave) {
+			if (AddItems.Count) {
 				Addons.ClipFolder.Save(Ctrl, db);
+				var arFV = Addons.ClipFolder.SyncFV(Ctrl);
+				for (var i in arFV) {
+					arFV[i].AddItems(AddItems, true, function (FV, Items, ProgressDialog)
+					{
+						FV.SelectItem(null, SVSI_DESELECTOTHERS);
+						var FVItems = FV.Items;
+						if (Items.Count < 9) {
+							for (var k = 0; k < Items.Count; k++) {
+								var l = Addons.ClipFolder.FindItemIndex(FV, Items.Item(k));
+								if (l >= 0) {
+									FV.SelectItem(FVItems.Item(l), SVSI_SELECT | SVSI_FOCUSED | SVSI_ENSUREVISIBLE);
+								}
+							}
+						}
+					});
+				}
 			}
 		},
 
@@ -83,39 +89,48 @@ if (window.Addon == 1) {
 			}
 			var ar = GetSelectedArray(Ctrl, pt, true);
 			var Selected = ar[0];
-			var arFV = Addons.ClipFolder.SyncFV(ar[2]);
+			FV = ar[2];
 			var db = {};
 			var bSave = false;
-			Addons.ClipFolder.Open(ar[2], null, db);
-			for (var j = Selected.Count; j--;) {
-				for (var i in arFV) {
-					arFV[i].RemoveItem(Selected.Item(j));
-				}
-				var path = Selected.Item(j).Path;
-				if (db[path]) {
-					delete db[path];
-					bSave = true;
-				}
+			Addons.ClipFolder.Open(FV, null, db);
+			var arFV = Addons.ClipFolder.SyncFV(FV);
+			for (var i in arFV) {
+				arFV[i].Parent.LockUpdate();
+				try {
+					for (var j = Selected.Count; j--;) {
+						arFV[i].RemoveItem(Selected.Item(j));
+						var path = Selected.Item(j).Path;
+						if (db[path]) {
+							delete db[path];
+							bSave = true;
+						}
+					}
+				} catch (e) {}
+				arFV[i].Parent.UnlockUpdate();
 			}
 			if (bSave) {
-				Addons.ClipFolder.Save(ar[2], db);
+				Addons.ClipFolder.Save(FV, db);
 			}
 		},
 
 		SyncFV: function (Ctrl)
 		{
-			var arFV = [];
+			var arFV = [Ctrl];
 			var path = Addons.ClipFolder.GetPath(Ctrl);
-			var cFV = te.Ctrls(CTRL_FV);
-			for (var i in cFV) {
-				if (path.toLowerCase() == cFV[i].FolderItem.Path.toLowerCase()) {
-					arFV.push(cFV[i]);
+			if (path) {
+				var cFV = te.Ctrls(CTRL_FV);
+				for (var i in cFV) {
+					if (Ctrl.Id != cFV[i].Id) {
+						if (path.toLowerCase() == (cFV[i].FolderItem.Path || "").toLowerCase()) {
+							arFV.push(cFV[i]);
+						}
+					}
 				}
 			}
 			return arFV;
 		},
 
-		Open: function (Ctrl, ar, db)
+		Open: function (Ctrl, Items, db)
 		{
 			if (!Addons.ClipFolder.IsHandle(Ctrl)) {
 				return;
@@ -125,15 +140,14 @@ if (window.Addon == 1) {
 			ado.CharSet = "utf-8";
 			ado.Open();
 			ado.LoadFromFile(path);
-			var Items = [];
 			while (!ado.EOS) {
 				var s = ado.ReadText(adReadLine);
 				if (s && !/^\s*#/.test(s)) {
 					if (!/^[A-Z]:\\|^\\/i.test(s) && !/:/.test(s)) {
 						s = fso.BuildPath(fso.GetParentFolderName(path), s);
 					}
-					if (ar) {
-						ar.push(s);
+					if (Items) {
+						Items.AddItem(s);
 					}
 					if (db) {
 						db[s] = 1;
@@ -171,8 +185,7 @@ if (window.Addon == 1) {
 						db[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR)] = 1;
 					}
 					Addons.ClipFolder.Save(FV, db);
-				}
-				else {
+				} else {
 					var path2 = InputDialog(GetText("Create clip folder"), "");
 					if (path2) {
 						if (!/^[A-Z]:\\|^\\/i.test(path2)) {
@@ -190,7 +203,7 @@ if (window.Addon == 1) {
 			if (Ctrl && Ctrl.Type <= CTRL_EB && Addons.ClipFolder.IsHandle(Ctrl)) {
 				switch (Verb + 1) {
 					case CommandID_PASTE:
-						Addons.ClipFolder.Append(Ctrl, api.OleGetClipboard());
+						Addons.ClipFolder.Add(Ctrl, api.OleGetClipboard());
 						return S_OK;
 					case CommandID_DELETE:
 						Addons.ClipFolder.Remove(Ctrl);
@@ -203,28 +216,15 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.ClipFolder.IsHandle(Path)) {
+			Ctrl.ENum = function (pid, Ctrl, fncb)
+			{
+				var Items = te.FolderItems();
+				Addons.ClipFolder.Open(pid, Items);
+				return Items;
+			};
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
-
-	AddEvent("BeginNavigate", function (Ctrl)
-	{
-		if (Addons.ClipFolder.IsHandle(Ctrl)) {
-			if (Addons.ClipFolder.tid[Ctrl.Id]) {
-				return;
-			}
-			Addons.ClipFolder.tid[Ctrl.Id] = setTimeout(function ()
-			{
-				delete Addons.ClipFolder.tid[Ctrl.Id];
-				Ctrl.RemoveAll();
-				var ar = [];
-				Addons.ClipFolder.Open(Ctrl, ar);
-				Ctrl.SortColumn = "System.Contact.Label";
-				Ctrl.AddItems(ar, true, true);
-			}, 99);
-			return S_FALSE;
-		}
-	});
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
@@ -263,7 +263,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 			if (nIndex < 0) {
-				Addons.ClipFolder.Append(Ctrl, dataObj);
+				Addons.ClipFolder.Add(Ctrl, dataObj);
 			}
 			return S_OK;
 		}
@@ -306,6 +306,13 @@ if (window.Addon == 1) {
 		var path = FolderItem.Path;
 		if (Addons.ClipFolder.IsHandle(path)) {
 			return fso.GetParentFolderName(path);
+		}
+	});
+
+	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	{
+		if (Addons.ClipFolder.IsHandle(Ctrl)) {
+			return MakeImgSrc("bitmap:ieframe.dll,699,16,15", 0, false, 16);
 		}
 	});
 

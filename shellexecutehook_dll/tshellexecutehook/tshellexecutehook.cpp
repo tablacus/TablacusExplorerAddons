@@ -147,7 +147,7 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 							if FAILED(pSF->GetAttributesOf(1, &pidlPart, &sfAttr)) {
 								sfAttr = 0;
 							}
-							if ((sfAttr & SFGAO_FOLDER) && (sfAttr & SFGAO_FILESYSTEM | SFGAO_FILESYSANCESTOR | SFGAO_STORAGEANCESTOR | SFGAO_NONENUMERATED | SFGAO_DROPTARGET)) {
+							if ((sfAttr & (SFGAO_FOLDER | SFGAO_FILESYSTEM)) == (SFGAO_FOLDER | SFGAO_FILESYSTEM)) {
 								hr = ExecuteTE(bs);
 							} else if (!PathMatchSpec(bs, FILTER_CONTROLPANEL)) {
 								if (sfAttr & SFGAO_FOLDER) { 
@@ -168,11 +168,11 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 		if (hr == E_NOTIMPL && pei->lpFile) {
 			try {
 				if (lstrcmpi(pei->lpFile, szExplorer) == 0) {
-					return ExecuteTE(pei->lpParameters);
+					hr = ExecuteTE(pei->lpParameters);
 				} else if (PathMatchSpec(pei->lpFile, FILTER_SPECIAL) && !PathMatchSpec(pei->lpFile, FILTER_CONTROLPANEL)) {
-					return ExecuteTE(pei->lpFile);
+					hr = ExecuteTE(pei->lpFile);
 				} else if (PathIsDirectory(pei->lpFile)) {
-					return ExecuteTE(pei->lpFile);
+					hr = ExecuteTE(pei->lpFile);
 				}
 			} catch (...) {
 				return S_FALSE;

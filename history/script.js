@@ -89,7 +89,7 @@ if (window.Addon == 1) {
 		}
 	}
 	try {
-		var ado = te.CreateObject("Adodb.Stream");
+		var ado = te.CreateObject(api.ADBSTRM);
 		ado.CharSet = "utf-8";
 		ado.Open();
 		ado.LoadFromFile(Addons.History1.CONFIG);
@@ -104,7 +104,7 @@ if (window.Addon == 1) {
 	{
 		if (Addons.History1.bSave) {
 			try {
-				var ado = te.CreateObject("Adodb.Stream");
+				var ado = te.CreateObject(api.ADBSTRM);
 				ado.CharSet = "utf-8";
 				ado.Open();
 				var keys = [];
@@ -121,16 +121,7 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		if (Addons.History1.IsHandle(Ctrl) && !Addons.History1.tid[Ctrl.Id]) {
-			Ctrl.SortColumn = "";
-			Addons.History1.tid[Ctrl.Id] = setTimeout(function () {
-				delete Addons.History1.tid[Ctrl.Id];
-				Ctrl.RemoveAll();
-				var keys = [];
-				Addons.History1.GetList(keys);
-				Ctrl.AddItems(keys);
-			}, 99);
-		} else {
+		if (!Addons.History1.IsHandle(Ctrl)) {
 			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 			if (path != "" && IsSavePath(path)) {
 				Addons.History1.db[path] = new Date().getTime();
@@ -142,16 +133,29 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.History1.IsHandle(Path)) {
+			Ctrl.ENum = function (pid, Ctrl, fncb)
+			{
+				var keys = [];
+				Addons.History1.GetList(keys);
+				return keys;
+			};
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
 
-	AddEvent("GetTabName", function (Ctrl)
+	AddEvent("GetFolderItemName", function (pid)
 	{
-		if (Addons.History1.IsHandle(Ctrl)) {
+		if (Addons.History1.IsHandle(pid)) {
 			return Addons.History1.strName;
 		}
 	}, true);
+	
+	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	{
+		if (Addons.History1.IsHandle(Ctrl)) {
+			return MakeImgSrc("icon:shell32.dll,19", 0, false, 16);
+		}
+	});
 
 	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
 	{

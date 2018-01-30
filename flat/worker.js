@@ -17,10 +17,16 @@ if (MainWindow.Exchange) {
 					GetList(Item);
 				}
 			}
-			SetList();
 		} catch (e) {}
 		Progress.StopProgressDialog();
 		delete MainWindow.Exchange[arg[3]];
+		if (g_List.length) {
+			g_FV.AddItems(g_List, true, function (FV, Items, ProgressDialog)
+			{
+				api.PostMessage(te.hwnd, WM_CLOSE, 0, 0);
+			});
+			return "wait";
+		}
 	}
 }
 
@@ -42,24 +48,6 @@ function GetList(Item)
 			if (GetList(Item)) {
 				return 1;
 			}
-		}
-	}
-}
-
-function SetList()
-{
-	var Item;
-	Progress.Timer(1);
-	while (Item = g_List.shift()) {
-		if (Progress.HasUserCancelled()) {
-			break;
-		}
-		var i = Math.floor((g_Total - g_List.length) * 100 / g_Total);
-		Progress.SetProgress(i, 100);
-		Progress.SetTitle(i + "%");
-		Progress.SetLine(2, Item.Name, true);
-		if (g_FV.AddItem(Item, g_sessionId) == E_ACCESSDENIED) {
-			break;
 		}
 	}
 }

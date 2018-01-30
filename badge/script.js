@@ -20,7 +20,6 @@ if (window.Addon == 1) {
 		Redraw: {},
 		nPosAdd: 0,
 		nPosDel: 0,
-		tid: [],
 		tid2: null,
 		tidSync: null,
 		SyncItem: {},
@@ -81,32 +80,32 @@ if (window.Addon == 1) {
 
 		Open0: function (Ctrl, pt)
 		{
-			Navigate("Badge:*");
+			Navigate("badge:*");
 		},
 
 		Open1: function (Ctrl, pt)
 		{
-			Navigate("Badge:1");
+			Navigate("badge:1");
 		},
 
 		Open2: function (Ctrl, pt)
 		{
-			Navigate("Badge:2");
+			Navigate("badge:2");
 		},
 
 		Open3: function (Ctrl, pt)
 		{
-			Navigate("Badge:3");
+			Navigate("badge:3");
 		},
 
 		Open4: function (Ctrl, pt)
 		{
-			Navigate("Badge:4");
+			Navigate("badge:4");
 		},
 
 		Open5: function (Ctrl, pt)
 		{
-			Navigate("Badge:5");
+			Navigate("badge:5");
 		},
 
 		EditPath: function (Ctrl, pt)
@@ -117,7 +116,7 @@ if (window.Addon == 1) {
 					var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 					if (path) {
 						var Badge = Addons.Badge.Get(path);
-						var s = InputDialog("Badge:" + Badge + "\n" + path, path);
+						var s = InputDialog("badge:" + Badge + "\n" + path, path);
 						if (typeof(s) == "string") {
 						 	api.SHParseDisplayName(function (pid, s, path, Badge)
 						 	{
@@ -398,45 +397,38 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("BeginNavigate", function (Ctrl)
+	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
-		var Badge = Addons.Badge.BadgePath(Ctrl);
-		if (Badge && !Addons.Badge.tid[Ctrl.Id]) {
-			Ctrl.SortColumn = "";
-			Addons.Badge.tid[Ctrl.Id] = setTimeout(function ()
+		if (Addons.Badge.IsHandle(Path)) {
+			Ctrl.ENum = function (pid, Ctrl, fncb)
 			{
-				delete Addons.Badge.tid[Ctrl.Id];
-				var arItems = [];
+				var Items = te.FolderItems();
+				var Badge = Addons.Badge.BadgePath(pid);
 				Addons.Badge.ENumCB(function (path, s)
 				{
 					var parent = fso.GetParentFolderName(path);
 					if (api.PathMatchSpec(Badge, s) || api.PathMatchSpec(parent, Badge)) {
-						arItems.push(path);
+						Items.AddItem(path);
 					}
 				});
-				Ctrl.AddItems(arItems, true, true);
-			}, 99);
-			return S_FALSE;
-		}
-	});
-
-	AddEvent("TranslatePath", function (Ctrl, Path)
-	{
-		if (Addons.Badge.IsHandle(Path)) {
+				return Items;
+			}
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
 
-	AddEvent("GetTabName", function (Ctrl)
+	AddEvent("GetFolderItemName", function (pid)
 	{
-		var arg = api.CommandLineToArgv(Addons.Badge.BadgePath(Ctrl));
-		return fso.GetFileName(arg[0]) || undefined;
+		var Badge = Addons.Badge.BadgePath(pid);
+		if (Badge) {
+			return "badge:" + Badge;
+		}
 	}, true);
 
 	AddEvent("GetIconImage", function (Ctrl, BGColor)
 	{
 		if (Addons.Badge.IsHandle(Ctrl)) {
-			return MakeImgSrc("icon:shell32.dll,4,16", 0, false, 16);
+			return MakeImgSrc("bitmap:ieframe.dll,699,16,28", 0, false, 16);
 		}
 	});
 
