@@ -8,7 +8,6 @@
 		db: [],
 		bSave: false,
 		Prev: null,
-		tid: [],
 
 		IsHandle: function (Ctrl)
 		{
@@ -17,7 +16,7 @@
 
 		IsDisp: function (path)
 		{
-			if (!api.PathMatchSpec("\\\\")) {
+			if (!api.PathMatchSpec(path, "\\\\*")) {
 				if (api.PathMatchSpec(path, "?:\\*")) {
 					try {
 						var d = fso.GetDrive(fso.GetDriveName(path));
@@ -61,13 +60,21 @@
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		if (Addons.SpeedDial.IsHandle(Ctrl)) {
-			if (Addons.SpeedDial.tid[Ctrl.Id]) {
-				return;
+		if (!Addons.SpeedDial.IsHandle(Ctrl)) {
+			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			if (path != "" && IsSavePath(path) && Addons.SpeedDial.IsDisp(path)) {
+				Addons.SpeedDial.db.unshift(path);
+				Addons.SpeedDial.db.splice(Addons.SpeedDial.SAVE, MAXINT);
+				Addons.SpeedDial.bSave = true;
 			}
-			Ctrl.SortColumn = "";
-			Addons.SpeedDial.tid[Ctrl.Id] = setTimeout(function () {
-				delete Addons.SpeedDial.tid[Ctrl.Id];
+		}
+	});
+
+	AddEvent("TranslatePath", function (Ctrl, Path)
+	{
+		if (Addons.SpeedDial.IsHandle(Path)) {
+			Ctrl.ENum = function (pid, Ctrl, fncb)
+			{
 				var keys = [];
 				var hash = {};
 				for (var i in Addons.SpeedDial.db) {
@@ -90,22 +97,8 @@
 						delete keys[i];
 					}
 				}
-				Ctrl.RemoveAll();
-				Ctrl.AddItems(keys.slice(0, Addons.SpeedDial.DISP));
-			}, 99);
-		} else {
-			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-			if (path != "" && IsSavePath(path) && Addons.SpeedDial.IsDisp(path)) {
-				Addons.SpeedDial.db.unshift(path);
-				Addons.SpeedDial.db.splice(Addons.SpeedDial.SAVE, MAXINT);
-				Addons.SpeedDial.bSave = true;
-			}
-		}
-	});
-
-	AddEvent("TranslatePath", function (Ctrl, Path)
-	{
-		if (Addons.SpeedDial.IsHandle(Path)) {
+				return keys.slice(0, Addons.SpeedDial.DISP);
+			};
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
@@ -116,6 +109,13 @@
 			return GetText("New Tab");
 		}
 	}, true);
+
+	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	{
+		if (Addons.SpeedDial.IsHandle(Ctrl)) {
+			return MakeImgSrc("bitmap:ieframe.dll,216,16,31", 0, false, 16);
+		}
+	});
 
 	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
 	{
