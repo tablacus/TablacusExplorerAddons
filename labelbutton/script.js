@@ -48,7 +48,7 @@ if (window.Addon == 1) {
 					}
 					Addons.LabelButton.Popup(hMenu, arList, pt)
 				}
-			}, 100);}) (o);
+			}, 99);}) (o);
 			return false;
 		},
 
@@ -165,7 +165,7 @@ if (window.Addon == 1) {
 		}
 	};
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var src = GetAddonOption(Addon_Id, "Icon") || h <= 16 ? "../addons/label/label16.png" : "../addons/label/label32.png";
-	var s = ['<span class="button" onclick="return Addons.LabelButton.Exec(this, 0);" oncontextmenu="return Addons.LabelButton.Exec(this, 1);" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', api.PSGetDisplayName("System.Contact.Label"), '" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="' + h, 'px"></span>'];
+	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "../addons/label/label16.png" : "../addons/label/label32.png");
+	var s = ['<span class="button" onclick="return Addons.LabelButton.Exec(this, 0);" oncontextmenu="return Addons.LabelButton.Exec(this, 1);" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', api.PSGetDisplayName("System.Contact.Label"), '" src="', EncodeSC(src), '" width="', h, 'px" height="' + h, 'px"></span>'];
 	SetAddon(Addon_Id, Default, s);
 }

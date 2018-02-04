@@ -1,20 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
+    <Version>1.00</Version>
     <MinVersion>2018.2.4</MinVersion>
     <pubDate>Sun, 04 Feb 2018 00:00:00 GMT</pubDate>
-    <Options>Common:5,6,7,8,9:5</Options>
+    <Options>Common:0:0</Options>
+    <DllVersion>1.0.0.0</DllVersion>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Run</Name>
-    <Description>Run dialog</Description>
+    <Name>GFL SDK</Name>
+    <Description>GFL SDK</Description>
   </en>
-  <ja>
-    <Name>ファイル名を指定して実行</Name>
-    <Description>ファイル名を指定して実行</Description>
-  </ja>
 </TablacusExplorer>

@@ -20,9 +20,10 @@ if (window.Addon == 1) {
 				if (db[path]) {
 					return /object/i.test(typeof db[path]) ? true : undefined;
 				}
-				var image = te.WICBitmap().FromFile(path);
+				var cx = Ctrl.IconSize * screen.logicalYDPI / 96;
+				var image = te.WICBitmap().FromFile(path, cx);
 				if (image) {
-					db[path] = GetThumbnail(image, Ctrl.IconSize * screen.logicalYDPI / 96, true);
+					db[path] = GetThumbnail(image, cx, true);
 					return true;
 				}
 				db[path] = 1;

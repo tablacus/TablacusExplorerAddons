@@ -14,7 +14,7 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("FromFile", function (image, file, alt)
+	AddEvent("FromFile", function (image, file, alt, cx)
 	{
 		var i, j, path, arc, path2, hFind, dw, SPI, ado;
 		if (Addons.SPI.IN.length && /^[A-Z]:\\.+|^\\.+\\.+/i.test(file)) {
@@ -33,6 +33,13 @@ if (window.Addon == 1) {
 					SPI = Addons.SPI.IN[i];
 					if (SPI.IsSupported(file, dw)) {
 						var phbm = [];
+						if ((cx || 999) <= 256 && SPI.GetPreview) {
+							if (SPI.GetPreview(file, 0, 0, null, phbm, null, 0) == 0) {
+								image.FromHBITMAP(phbm[0], 0, 0);
+								api.DeleteObject(phbm[0]);
+								return S_OK;
+							}
+						}
 						if (SPI.GetPicture(file, 0, 0, null, phbm, null, 0) == 0) {
 							image.FromHBITMAP(phbm[0], 0, 0);
 							api.DeleteObject(phbm[0]);
@@ -93,7 +100,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("FromStream", function (image, stream, filename)
+	AddEvent("FromStream", function (image, stream, filename, cx)
 	{
 		var dw;
 		if (Addons.SPI.IN.length) {
@@ -101,6 +108,13 @@ if (window.Addon == 1) {
 				var SPI = Addons.SPI.IN[i];
 				if (SPI.IsSupported(filename, stream)) {
 					var phbm = [];
+					if ((cx || 999) <= 256 && SPI.GetPreview) {
+						if (SPI.GetPreview(stream, 0, 1, null, phbm, null, 0) == 0) {
+							image.FromHBITMAP(phbm[0]);
+							api.DeleteObject(phbm[0]);
+							return S_OK;
+						}
+					}
 					if (SPI.GetPicture(stream, 0, 1, null, phbm, null, 0) == 0) {
 						image.FromHBITMAP(phbm[0]);
 						api.DeleteObject(phbm[0]);

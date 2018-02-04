@@ -20,7 +20,7 @@ if (window.Addon == 1) {
 		Get: function (path)
 		{
 			if (!/string/i.test(typeof path)) {
-				path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+				path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING) || "";
 			}
 			return te.Data.ColorLabels && te.Data.ColorLabels[path.toLowerCase()];
 		},

@@ -25,6 +25,7 @@ if (window.Addon == 1) {
 		SyncItem: {},
 		Initd: false,
 		Portable: api.LowPart(item.getAttribute("Portable")),
+		Icon: "../addons/label/label16.png",
 
 		IsHandle: function (Ctrl)
 		{
@@ -521,7 +522,7 @@ if (window.Addon == 1) {
 	AddEvent("GetIconImage", function (Ctrl, BGColor)
 	{
 		if (Addons.Label.IsHandle(Ctrl)) {
-			return "../addons/label/label16.png";
+			return Addons.Label.Icon;
 		}
 	});
 
@@ -768,6 +769,12 @@ if (window.Addon == 1) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Label.Edit, "Func");
 	}
 	AddTypeEx("Add-ons", "Label", Addons.Label.Edit);
+
+	var icon = item.getAttribute("Icon");
+	if (icon) {
+		Addons.Label.Icon = MakeImgSrc(icon, 0, false, 16);
+	}
 } else {
 	SetTabContents(0, "General", '<input type="checkbox" id="Portable" /><label for="Portable">Portable</label>');
+	ChangeForm([["__IconSize", "style/display", "none"]]);
 }

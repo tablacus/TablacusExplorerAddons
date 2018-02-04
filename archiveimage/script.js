@@ -1,5 +1,5 @@
 if (window.Addon == 1) {
-	AddEvent("FromFile", function (image, file, alt)
+	AddEvent("FromFile", function (image, file, alt, cx)
 	{
 		var i, j, path, arc, hFind;
 		var wfd = api.Memory("WIN32_FIND_DATA");
@@ -17,7 +17,7 @@ if (window.Addon == 1) {
 					if (hFind == INVALID_HANDLE_VALUE || wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 						continue;
 					}
-					if (image.FromArchive(fso.BuildPath(system32, "zipfldr.dll"), "{E88DCCE0-B7B3-11d1-A9F0-00AA0060FA31}", arc, path.slice(j).join("\\"))) {
+					if (image.FromArchive(fso.BuildPath(system32, "zipfldr.dll"), "{E88DCCE0-B7B3-11d1-A9F0-00AA0060FA31}", arc, path.slice(j).join("\\"), cx)) {
 						return S_OK;
 					}
 					break;
