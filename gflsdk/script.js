@@ -24,29 +24,32 @@ if (window.Addon == 1) {
 	});
 
 	if (Addons.GFLSDK.DLL) {
-		var item = GetAddonElement(Addon_Id);
-		var bit = api.sizeof("HANDLE") * 8;
-		Addons.GFLSDK.GFL = Addons.GFLSDK.DLL.Open(ExtractMacro(te, item.getAttribute('dll' + bit)), ExtractMacro(te, item.getAttribute('dlle' + bit)));
-		if (Addons.GFLSDK.GFL  && Addons.GFLSDK.GFL.gflLibraryInit && Addons.GFLSDK.GFL.gflLibraryExit && Addons.GFLSDK.GFL.gflLoadBitmap && Addons.GFLSDK.GFL.gflConvertBitmapIntoDDB) {
-			Addons.GFLSDK.GFL.gflLibraryInit();
-			AddEvent("FromFile", function (image, file, alt, cx)
-			{
-				var phbm = [];
-				if ((cx && Addons.GFLSDK.GFL.gflLoadThumbnail ? Addons.GFLSDK.GFL.gflLoadThumbnail(file, cx, cx, phbm) : Addons.GFLSDK.GFL.gflLoadBitmap(file, phbm)) == 0) {
-					image.FromHBITMAP(phbm[0]);
-					return S_OK;
-				}
-			});
+		AddEvent("Load", function ()
+		{
+			var item = GetAddonElement(Addon_Id);
+			var bit = api.sizeof("HANDLE") * 8;
+			Addons.GFLSDK.GFL = Addons.GFLSDK.DLL.Open(ExtractMacro(te, item.getAttribute('dll' + bit)), ExtractMacro(te, item.getAttribute('dlle' + bit)));
+			if (Addons.GFLSDK.GFL  && Addons.GFLSDK.GFL.gflLibraryInit && Addons.GFLSDK.GFL.gflLibraryExit && Addons.GFLSDK.GFL.gflLoadBitmap && Addons.GFLSDK.GFL.gflConvertBitmapIntoDDB) {
+				Addons.GFLSDK.GFL.gflLibraryInit();
+				AddEvent("FromFile", function (image, file, alt, cx)
+				{
+					var phbm = [];
+					if ((cx && Addons.GFLSDK.GFL.gflLoadThumbnail ? Addons.GFLSDK.GFL.gflLoadThumbnail(file, cx, cx, phbm) : Addons.GFLSDK.GFL.gflLoadBitmap(file, phbm)) == 0) {
+						image.FromHBITMAP(phbm[0]);
+						return S_OK;
+					}
+				});
 
-			AddEvent("FromStream", function (image, stream, filename, cx)
-			{
-				var phbm = [];
-				if ((cx && Addons.GFLSDK.GFL.gflLoadThumbnailFromHandle ? Addons.GFLSDK.GFL.gflLoadThumbnailFromHandle(stream, cx, cx, phbm) : Addons.GFLSDK.GFL.gflLoadBitmapFromHandle(stream, phbm)) == 0) {
-					image.FromHBITMAP(phbm[0]);
-					return S_OK;
-				}
-			});
-		}
+				AddEvent("FromStream", function (image, stream, filename, cx)
+				{
+					var phbm = [];
+					if ((cx && Addons.GFLSDK.GFL.gflLoadThumbnailFromHandle ? Addons.GFLSDK.GFL.gflLoadThumbnailFromHandle(stream, cx, cx, phbm) : Addons.GFLSDK.GFL.gflLoadBitmapFromHandle(stream, phbm)) == 0) {
+						image.FromHBITMAP(phbm[0]);
+						return S_OK;
+					}
+				});
+			}
+		});
 	}
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
