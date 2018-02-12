@@ -13,6 +13,10 @@ if (window.Addon == 1) {
 				}
 				Addons.AutoRestart.tid = setTimeout(function ()
 				{
+					if (te.CmdShow != SW_SHOWNOACTIVATE && !api.IsZoomed(te.hwnd) && !api.IsChild(te.hwnd, api.GetFocus())) {
+						te.CmdShow = SW_SHOWNOACTIVATE;
+						te.Data.bSaveConfig = true;
+					}
 					SaveConfig();
 					te.Reload(true);
 				}, Addons.AutoRestart.Interval);
