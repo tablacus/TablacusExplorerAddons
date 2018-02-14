@@ -15,6 +15,9 @@ if (window.Addon == 1) {
 					api.SendMessage(hwnd, LVM_SETVIEW, nView == 1 ? 4 : 1, 0);
 					api.SendMessage(hwnd, LVM_SETVIEW, nView, 0);
 				}
+				if (Ctrl.TreeView && Ctrl.TreeView) {
+					Addons.Font.SetTV(Ctrl.TreeView.hwndTree);
+				}
 				if (Ctrl.Type == CTRL_EB) {
 					Addons.Font.SetTV(FindChildByClass(Ctrl.hwnd, WC_TREEVIEW));
 				}
