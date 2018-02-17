@@ -1,15 +1,15 @@
-﻿importScripts("..\\..\\script\\consts.js");
+﻿importScripts("\\script\\consts.js");
 
 if (MainWindow.Exchange) {
 	var ex = MainWindow.Exchange[arg[3]];
 	if (ex) {
+		delete MainWindow.Exchange[arg[3]];
 		var Progress = te.ProgressDialog;
 		Progress.StartProgressDialog(ex.hwnd, null, 0x20);
 		try {
 			SearchFolders(ex.Path.split(/\s*;\s*/), ex.FV, ex.SessionId, ex.Locale, Progress);
 		} catch (e) {}
 		Progress.StopProgressDialog();
-		delete MainWindow.Exchange[arg[3]];
 	}
 }
 

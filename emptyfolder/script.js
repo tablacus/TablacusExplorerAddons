@@ -115,6 +115,13 @@ if (window.Addon == 1) {
 		}
 	});
 
+	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	{
+		if (Addons.EmptyFolder.GetSearchString(Ctrl)) {
+			return MakeImgSrc("icon:shell32.dll,3", 0, false, 16);
+		}
+	});
+
 	AddEvent("GetFolderItemName", function (pid)
 	{
 		var res = new RegExp("^" + Addons.EmptyFolder.PATH + ".*?([^\\\\]+)$", "i").exec(pid.Path)
