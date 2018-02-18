@@ -18,9 +18,6 @@ if (window.Addon == 1) {
 				if (Ctrl.TreeView && Ctrl.TreeView) {
 					Addons.Font.SetTV(Ctrl.TreeView.hwndTree);
 				}
-				if (Ctrl.Type == CTRL_EB) {
-					Addons.Font.SetTV(FindChildByClass(Ctrl.hwnd, WC_TREEVIEW));
-				}
 			}
 		},
 
