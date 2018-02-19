@@ -74,7 +74,7 @@ if (window.Addon == 1) {
 			for (var j = Selected.Count; j--;) {
 				var item = Selected.Item(j);
 				Ctrl.RemoveItem(item);
-				var path = api.GetDisplayNameOf(item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+				var path = GetSavePath(item);
 				if (Addons.History1.db[path]) {
 					delete Addons.History1.db[path];
 				} else {
@@ -122,8 +122,8 @@ if (window.Addon == 1) {
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
 		if (!Addons.History1.IsHandle(Ctrl)) {
-			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
-			if (path != "" && IsSavePath(path)) {
+			var path = GetSavePath(Ctrl.FolderItem);
+			if (path && IsSavePath(path)) {
 				Addons.History1.db[path] = new Date().getTime();
 				Addons.History1.bSave = true;
 			}
@@ -149,7 +149,7 @@ if (window.Addon == 1) {
 			return Addons.History1.strName;
 		}
 	}, true);
-	
+
 	AddEvent("GetIconImage", function (Ctrl, BGColor)
 	{
 		if (Addons.History1.IsHandle(Ctrl)) {
@@ -227,9 +227,9 @@ if (window.Addon == 1) {
 	}
 	AddTypeEx("Add-ons", "History", Addons.History1.Exec);
 
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,12" : "bitmap:ieframe.dll,204,24,12");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.History1.Exec(this);" oncontextmenu="Addons.History1.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.History1.strName, '" src="' + s.replace(/"/g, "") + '" width="', h, 'px" height="', h, 'px" /></span>']);
+	var h = api.LowPart(item.getAttribute("IconSize")) || window.IconSize || 24;
+	var s = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,12" : "bitmap:ieframe.dll,204,24,12");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.History1.Exec(this);" oncontextmenu="Addons.History1.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', EncodeSC(Addons.History1.strName), '" src="', EncodeSC(s), '" width="', h, 'px" height="', h, 'px" /></span>']);
 } else {
 	EnableInner();
 	SetTabContents(0, "General", '<label>Folders</label><br /><input type="text" name="Save" size="4" />');

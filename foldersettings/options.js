@@ -127,5 +127,11 @@ if (dialogArguments.GetCurrent) {
 SetOnChangeHandler();
 AddEventEx(window, "beforeunload", function ()
 {
-	SetOptions(SaveFS);
+	SetOptions(function ()
+	{
+		if (g_Chg.Data) {
+			ReplaceFS();
+		}
+		SaveFS();
+	});
 });

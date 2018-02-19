@@ -76,6 +76,8 @@ EnableSelectTag(g_x.List);
 
 SaveLocation = function ()
 {
-	ReplaceIC("List");
+	if (g_Chg.Data) {
+		ReplaceIC("List");
+	}
 	SaveIC("List");
 };

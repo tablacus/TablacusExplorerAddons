@@ -27,7 +27,8 @@ if (window.Addon == 1) {
 
 		IsHandle: function (Ctrl)
 		{
-			return api.PathMatchSpec(Addons.ClipFolder.GetPath(Ctrl), Addons.ClipFolder.Spec);
+			var path = Addons.ClipFolder.GetPath(Ctrl);
+			return /^[A-Z]:\\|^\\\\/i.test(path) && api.PathMatchSpec(path, Addons.ClipFolder.Spec) && fso.FileExists(path);
 		},
 
 		GetPath: function (Ctrl)
