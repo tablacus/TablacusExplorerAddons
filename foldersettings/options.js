@@ -129,7 +129,7 @@ AddEventEx(window, "beforeunload", function ()
 {
 	SetOptions(function ()
 	{
-		if (g_Chg.Data) {
+		if (g_Chg.Data || g_bChanged) {
 			ReplaceFS();
 		}
 		SaveFS();

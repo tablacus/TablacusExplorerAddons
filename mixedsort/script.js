@@ -16,17 +16,17 @@ if (window.Addon == 1) {
 		CreateMenu: function (hMenu, nIndex)
 		{
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, api.PSGetDisplayName("Name"));
-			ExtraMenuCommand[nIndex] = function ()
+			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
 			{
 				Addons.MixedSort.CalcSort(Ctrl, pt, 0);
 			};
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, api.PSGetDisplayName("Write"));
-			ExtraMenuCommand[nIndex] = function ()
+			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
 			{
 				Addons.MixedSort.CalcSort(Ctrl, pt, 1);
 			};
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, GetText("Reverse order"));
-			ExtraMenuCommand[nIndex] = function ()
+			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
 			{
 				Addons.MixedSort.CalcSort(Ctrl, pt, -1);
 			};
