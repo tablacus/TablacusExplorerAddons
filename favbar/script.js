@@ -166,7 +166,7 @@ if (window.Addon == 1) {
 					}
 					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.FavBar.Click(' + i + ')" onmousedown="Addons.FavBar.Down('
  : 'onmousedown="Addons.FavBar.Open(');
-					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(item.text), '">', img, EncodeSC(ExtractMacro(te, item.getAttribute("Name").replace(/\\t.*$|&/g, ""))), '</span> ');
+					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(item.text), '">', img, EncodeSC(ExtractMacro(te, item.getAttribute("Name").replace(/\\t.*$/g, "").replace(/&(.)/g, "$1"))), '</span> ');
 				}
 				s.push('&nbsp;</label>');
 
