@@ -10,7 +10,7 @@ if (window.Addon == 1) {
 		{
 			if (Ctrl && Ctrl.Type <= CTRL_EB) {
 				var Items = Ctrl.SelectedItems();
-				var s = Items.Count > 0 ? Items.Item(0).Path : Ctrl.FolderItem.Path;
+				var s = api.GetDisplayNameOf(Items.Item(0) || Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				try {
 					document.getElementById("fullpathbar").innerHTML = "&nbsp;" + s;
 					if (Addons.FullPathBar.Title) {

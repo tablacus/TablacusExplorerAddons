@@ -20,13 +20,13 @@
 			 	if (api.SendMessage(hList, LVM_GETEDITCONTROL, 0, 0)) {
 					tm = 498;
 				} else {
-					tm = 0;
 					if (Ctrl.CurrentViewMode == FVM_DETAILS) {
 						var pt = api.Memory("POINT");
 						api.SendMessage(hList, LVM_GETORIGIN, 0, pt);
 						if (pt.y < 0) {
 							api.SendMessage(hList, LVM_SETVIEW, 2, 0);
 							api.SendMessage(hList, LVM_SETVIEW, 1, 0);
+							tm = 0;
 						}
 					}
 					if (!(Ctrl.FolderFlags & FWF_NOCOLUMNHEADER)) {
@@ -36,6 +36,7 @@
 								var rc = api.Memory("RECT");
 								if (api.GetWindowRect(hHeader, rc) && rc.top == rc.bottom) {
 									api.SendMessage(hList, LVM_SCROLL, 0, 0);
+									tm = 0;
 								}
 								if (api.GetWindowRect(hHeader, rc) && rc.top == rc.bottom) {
 									api.ShowWindow(hList, SW_HIDE);

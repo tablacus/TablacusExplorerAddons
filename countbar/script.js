@@ -11,22 +11,29 @@ if (window.Addon == 1) {
 	AddEvent("StatusText", function (Ctrl, Text, iPart)
 	{
 		if (Ctrl.Type <= CTRL_EB) {
-			var s = [];
-			var nCount = Ctrl.ItemCount(SVGIO_SELECTION);
-			if (nCount) {
-				var s1 = nCount > 1 ? Addons.CountBar.Item[2] : Addons.CountBar.Item[3];
-				if (nCount > 999 && document.documentMode > 8) {
-					nCount = nCount.toLocaleString();
+			var s;
+			if (Text) {
+				s = [];
+				var nCount = Ctrl.ItemCount(SVGIO_SELECTION);
+				if (nCount) {
+					var s1 = nCount > 1 ? Addons.CountBar.Item[2] : Addons.CountBar.Item[3];
+					if (nCount > 999 && document.documentMode > 8) {
+						nCount = nCount.toLocaleString();
+					}
+					s.push(api.sprintf(s1.length + 9, s1, nCount));
 				}
-				s.push(api.sprintf(s1.length + 9, s1, nCount));
+				var nCount = Ctrl.ItemCount();
+				if (nCount || !api.ILIsEqual(Ctrl.FolderItem.Alt, ssfRESULTSFOLDER)) {
+					var s1 = nCount > 1 ? Addons.CountBar.Item[0] : Addons.CountBar.Item[1];
+					if (nCount > 999 && document.documentMode > 8) {
+						nCount = nCount.toLocaleString();
+					}
+					s.push(api.sprintf(s1.length + 9, s1, nCount));
+				}
+				s = s.join(" / ") + " ";
+			} else {
+				s = "";
 			}
-			var nCount = Ctrl.ItemCount();
-			var s1 = nCount > 1 ? Addons.CountBar.Item[0] : Addons.CountBar.Item[1];
-			if (nCount > 999 && document.documentMode > 8) {
-				nCount = nCount.toLocaleString();
-			}
-			s.push(api.sprintf(s1.length + 9, s1, nCount));
-			s = s.join(" / ") + " ";
 			document.getElementById("countbar").innerHTML = "&nbsp;" + s;
 			if (Addons.CountBar.Title) {
 				api.SetWindowText(te.hwnd, s + " - " + TITLE);
