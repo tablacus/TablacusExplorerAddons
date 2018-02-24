@@ -1,4 +1,6 @@
-﻿var item = GetAddonElement("tabplus");
+﻿var Addon_Id = "tabplus";
+
+var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Icon", 1);
 	item.setAttribute("New", 1);
@@ -312,11 +314,11 @@ if (window.Addon == 1) {
 		{
 			if (TC) {
 				if (TC.HitTest(pt, TCHT_ONITEM) < 0) {
-					if (GestureExec(TC, "Tabs_Background", GetGestureKey() + s, pt) === S_OK) {;
+					if (GestureExec(TC, "Tabs_Background", GetGestureKey() + s, pt, TC.hwnd) === S_OK) {;
 						return;
 					}
 				}
-				GestureExec(TC, "Tabs", GetGestureKey() + s, pt);
+				GestureExec(TC, "Tabs", GetGestureKey() + s, pt, TC.hwnd);
 			}
 		},
 
@@ -410,8 +412,9 @@ if (window.Addon == 1) {
 			if (TC) {
 				var o = document.getElementById("tabplus_" + Id);
 				if (o.clientWidth == o.offsetWidth) {
-					var i = TC.selectedIndex + (event.wheelDelta > 0 ? -1 : 1);
-					TC.selectedIndex = i < 0 ? TC.Count - 1 : i < TC.Count ? i : 0;
+					var pt = api.Memory("POINT");
+					api.GetCursorPos(pt);
+					Addons.TabPlus.GestureExec(TC, Id, event.wheelDelta > 0 ? "8" : "9", pt)
 				}
 			}
 		},
@@ -655,5 +658,11 @@ if (window.Addon == 1) {
 	Addons.TabPlus.ImgClose = MakeImgSrc(item.getAttribute("IconClose") || "bitmap:ieframe.dll,545,13,1", 0, true, 13);
 	if (Addons.TabPlus.opt.NewTab) {
 		window.OpenMode = SBSP_NEWBROWSER;
+	}
+} else {
+	var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\"+ Addon_Id + "\\options.html"));
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
 	}
 }
