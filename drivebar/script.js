@@ -34,14 +34,14 @@ if (window.Addon == 1) {
 	AddEvent("DeviceChanged", function (Ctrl)
 	{
 		var icon = [53, 7, 8, 9, 11, 12];
-		var image = te.GdiplusBitmap;
+		var image = te.WICBitmap();
 		var arDrive = [];
 		var Items = sha.NameSpace(ssfDRIVES).Items();
 		for (var i = 0; i < Items.Count; i++) {
 			var Item = Items.Item(i);
 			var path = Item.Path;
 			var letter = path.charAt(0);
-			if (path.length == 3 || letter.match(/^[:;]/)) {
+			if (path.length == 3 || (letter.match(/^[:;]/) && !IsUseExplorer(Item))) {
 				var vol = api.GetDisplayNameOf(Item, SHGDN_INFOLDER);
 				var src = '';
 				if (document.documentMode) { //IE8-

@@ -2,6 +2,7 @@
 	Addons.FixWin10CU =
 	{
 		tids: {},
+		cl: {},
 
 		Exec: function (Ctrl, tm)
 		{
@@ -14,6 +15,7 @@
 			}
 			if (isNaN(tm) || !tm) {
 				tm = 31;
+				Addons.FixWin10CU.cl[Ctrl.Id] = true;
 			}
 			var hList = Ctrl.hwndList;
 			if (hList && api.IsWindowVisible(hList)) {
@@ -43,6 +45,19 @@
 									api.ShowWindow(hList, SW_SHOWNA);
 								}
 							}
+						}
+					}
+					if (Addons.FixWin10CU.cl[Ctrl.Id]) {
+						delete Addons.FixWin10CU.cl[Ctrl.Id];
+						if (tm) {
+							Ctrl.Parent.LockUpdate();
+							try {
+								api.ShowWindow(hList, SW_HIDE);
+								api.ShowWindow(hList, SW_SHOWNA);
+								api.SendMessage(hList, LVM_SETVIEW, 2, 0);
+								api.SendMessage(hList, LVM_SETVIEW, 1, 0);
+							} catch (e) {}
+							Ctrl.Parent.UnlockUpdate();
 						}
 					}
 				}

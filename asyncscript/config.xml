@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.10</Version>
+    <Version>1.00</Version>
     <MinVersion>2018.2.25</MinVersion>
     <pubDate>Sun, 25 Feb 2018 00:00:00 GMT</pubDate>
-    <Options>Common:0,6:6</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Status Bar</Name>
-    <Description>Status Bar</Description>
+    <Name>Async script</Name>
+    <Description>Async external script</Description>
   </en>
   <ja>
-    <Name>ステータス バー</Name>
-    <Description>ステータス バー</Description>
+    <Name>非同期スクリプト</Name>
+    <Description>非同期外部スクリプト</Description>
   </ja>
 </TablacusExplorer>

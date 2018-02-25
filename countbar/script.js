@@ -12,7 +12,7 @@ if (window.Addon == 1) {
 	{
 		if (Ctrl.Type <= CTRL_EB) {
 			var s;
-			if (/^\d/.test(Text)) {
+			if (Text) {
 				s = [];
 				var nCount = Ctrl.ItemCount(SVGIO_SELECTION);
 				if (nCount) {
@@ -23,6 +23,9 @@ if (window.Addon == 1) {
 					s.push(api.sprintf(s1.length + 9, s1, nCount));
 				}
 				var nCount = Ctrl.ItemCount();
+				if (!nCount && !/^0/.test(Text)) {
+					return;
+				}
 				var s1 = nCount > 1 ? Addons.CountBar.Item[0] : Addons.CountBar.Item[1];
 				if (nCount > 999 && document.documentMode > 8) {
 					nCount = nCount.toLocaleString();

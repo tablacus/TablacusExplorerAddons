@@ -7,6 +7,8 @@ if (window.Addon == 1) {
 	Addons.SizeStatus =
 	{
 		SessionId: 0,
+		Folder: GetAddonOption(Addon_Id, "Folder"),
+
 		Show: function (nSize, SessionId)
 		{
 			if (SessionId == Addons.SizeStatus.SessionId) {
@@ -41,7 +43,7 @@ if (window.Addon == 1) {
 				var ar = [];
 				for (var i = nCount; i--;) {
 					var Item = Selected.Item(i);
-					if (IsFolderEx(Item)) {
+					if (Addons.SizeStatus.Folder && IsFolderEx(Item)) {
 						var wfd = api.Memory("WIN32_FIND_DATA");
 						var hr = api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size);
 						var nTFS = FV.TotalFileSize[wfd.cFileName];
@@ -81,4 +83,7 @@ if (window.Addon == 1) {
 		document.getElementById("size_statusbar").innerHTML = "&nbsp;" + s;
 		return S_OK;
 	});
+} else {
+	SetTabContents(0, "General", '<input type="checkbox" id="Folder" /><label for="Folder">Folder</label>');
 }
+

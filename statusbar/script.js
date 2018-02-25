@@ -14,7 +14,7 @@ if (window.Addon == 1) {
 			var Items = Ctrl.SelectedItems();
 			if (Items.Count == 1) {
 				try {
-					Text = Ctrl.Folder.GetDetailsOf(Items.Item(0), -1);
+					Text = Ctrl.Folder.GetDetailsOf(Items.Item(0), -1) || Text;
 				} catch (e) {}
 			}
 		}
