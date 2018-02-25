@@ -54,8 +54,6 @@
 							try {
 								api.ShowWindow(hList, SW_HIDE);
 								api.ShowWindow(hList, SW_SHOWNA);
-								api.SendMessage(hList, LVM_SETVIEW, 2, 0);
-								api.SendMessage(hList, LVM_SETVIEW, 1, 0);
 							} catch (e) {}
 							Ctrl.Parent.UnlockUpdate();
 						}
