@@ -12,6 +12,7 @@ if (window.Addon == 1) {
 	{
 		nPos: 0,
 		strName: "",
+		cue: {},
 
 		Exec: function (Ctrl, pt)
 		{
@@ -21,18 +22,16 @@ if (window.Addon == 1) {
 			}
 			return S_OK;
 		},
-		
+
 		Exec2: function (FV, FolderItem)
 		{
+			delete Addons.TotalFileSizeSort.cue[FV.Id];
 			if (!api.ILIsEqual(FV.FolderItem, FolderItem)) {
 				return S_OK;
 			}
 			var col = FV.Columns(1);
 			if (!col) {
 				return S_OK;
-			}
-			if (!/"System\.TotalFileSize"/i.test(col)) {
-				FV.Columns = col + ' "System.TotalFileSize" -1';
 			}
 			var Items = FV.Items();
 			var List = [];
@@ -43,19 +42,16 @@ if (window.Addon == 1) {
 				if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 					var n = FV.TotalFileSize[wfd.cFileName];
 					if (n === undefined) {
-						FV.Notify(Items.Item(i), 1);
+						FV.Notify(0, Items.Item(i), null, 1);
 						bYet = true;
-					}
-					if (n === "") {
+					} else if (n === "") {
 						bYet = true;
 					}
 				}
 			}
 			if (bYet) {
 				if (FV.hwndList) {
-					(function (FV, FolderItem) { setTimeout(function () {
-						Addons.TotalFileSizeSort.Exec2(FV, FolderItem);
-					}, 999);}) (FV, FolderItem);
+					Addons.TotalFileSizeSort.cue[FV.Id] = FolderItem;
 				}
 				return S_OK;
 			}
@@ -109,6 +105,13 @@ if (window.Addon == 1) {
 			args.FV.Parent.UnlockUpdate(true);
 		}
 	};
+
+	AddEvent("StatusText", function (Ctrl, Text, iPart)
+	{
+		for (var i in Addons.TotalFileSizeSort.cue) {
+			Addons.TotalFileSizeSort.Exec2(te.Ctrl(CTRL_FV, i), Addons.TotalFileSizeSort.cue[i]);
+		}
+	});
 
 	AddEvent("ColumnClick", function (Ctrl, iItem)
 	{
