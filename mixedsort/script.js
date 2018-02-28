@@ -1,12 +1,7 @@
-Addon_Id = "mixedsort";
-Default = "ToolBar2Left";
+var Addon_Id = "mixedsort";
+var Default = "ToolBar2Left";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-	}
-}
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.MixedSort =
 	{
@@ -73,45 +68,27 @@ if (window.Addon == 1) {
 					}
 				}
 				List.sort(fn);
-			}
-			else {
+			} else {
 				List = List.reverse();
 			}
 			FV.Parent.LockUpdate();
 			try {
 				var args = { FV: FV, Items: Items, List: List};
-				args.ViewMode = FV.CurrentViewMode;
-				if (args.ViewMode == FVM_DETAILS || args.ViewMode == FVM_LIST) {
-					FV.CurrentViewMode = FVM_TILE;
+				args.ViewMode = api.SendMessage(FV.hwndList, LVM_GETVIEW, 0, 0);
+				if (args.ViewMode == 1 || args.ViewMode == 3) {
+					api.SendMessage(FV.hwndList, LVM_SETVIEW, 4, 0);
 				}
 				args.FolderFlags = FV.FolderFlags;
 				FV.FolderFlags = args.FolderFlags | FWF_AUTOARRANGE;
 				FV.GroupBy = "System.Null";
-				var f = ((2 ^ FV.CurrentViewMode) | (2 ^ args.ViewMode)) * 2;
-				if (te.Layout & f) {
-					te.Layout &= ~f;
-					FV.Suspend();
-				}
-			}
-			catch (e) {}
-			(function (args) { setTimeout(function () {
-				Addons.MixedSort.Order(args);
-			}, 99);}) (args);
-		},
-
-		Order: function (args)
-		{
-			try  {
 				var pt = api.Memory("POINT");
-				args.FV.GetItemPosition(args.Items.Item(0), pt);
+				FV.GetItemPosition(args.Items.Item(0), pt);
 				for (var i in args.List) {
-					args.FV.SelectAndPositionItem(args.Items.Item(args.List[i][0]), 0, pt);
+					FV.SelectAndPositionItem(args.Items.Item(args.List[i][0]), 0, pt);
 				}
-				args.FV.CurrentViewMode = args.ViewMode;
-				args.FV.FolderFlags = args.FolderFlags;
-				te.Layout = te.Data.Conf_Layout;
-			}
-			catch (e) {}
+				api.SendMessage(FV.hwndList, LVM_SETVIEW, args.ViewMode, 0);
+				FV.FolderFlags = args.FolderFlags;
+			} catch (e) {}
 			args.FV.Parent.UnlockUpdate(true);
 		}
 	};

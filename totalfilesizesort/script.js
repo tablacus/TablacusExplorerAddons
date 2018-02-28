@@ -1,12 +1,7 @@
-Addon_Id = "totalfilesizesort";
-Default = "ToolBar2Left";
+var Addon_Id = "totalfilesizesort";
+var Default = "ToolBar2Left";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-	}
-}
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.TotalFileSizeSort =
 	{
@@ -33,6 +28,9 @@ if (window.Addon == 1) {
 			if (!col) {
 				return S_OK;
 			}
+			if (!/"System\.TotalFileSize"/i.test(col)) {
+				FV.Columns = col + ' "System.TotalFileSize" -1';
+			}
 			var Items = FV.Items();
 			var List = [];
 			var wfd = api.Memory("WIN32_FIND_DATA");
@@ -40,7 +38,7 @@ if (window.Addon == 1) {
 			for (var i = Items.Count; i--;) {
 				api.SHGetDataFromIDList(Items.Item(i), SHGDFIL_FINDDATA, wfd, wfd.Size);
 				if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-					var n = FV.TotalFileSize[wfd.cFileName];
+					var n = FV.TotalFileSize[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL)];
 					if (n === undefined) {
 						FV.Notify(0, Items.Item(i), null, 1);
 						bYet = true;
@@ -57,7 +55,7 @@ if (window.Addon == 1) {
 			}
 			for (var i = Items.Count; i--;) {
 				api.SHGetDataFromIDList(Items.Item(i), SHGDFIL_FINDDATA, wfd, wfd.Size);
-				var n = wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? FV.TotalFileSize[wfd.cFileName] : Items.Item(i).ExtendedProperty("Size");
+				var n = wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? FV.TotalFileSize[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL)] : Items.Item(i).ExtendedProperty("Size");
 				List.push([i, api.QuadPart(n)]);
 			}
 			if (!List.length) {
@@ -70,36 +68,20 @@ if (window.Addon == 1) {
 			FV.Parent.LockUpdate();
 			try {
 				var args = { FV: FV, Items: Items, List: List};
-				args.ViewMode = FV.CurrentViewMode;
-				if (args.ViewMode == FVM_DETAILS || args.ViewMode == FVM_LIST) {
-					FV.CurrentViewMode = FVM_TILE;
+				args.ViewMode = api.SendMessage(FV.hwndList, LVM_GETVIEW, 0, 0);
+				if (args.ViewMode == 1 || args.ViewMode == 3) {
+					api.SendMessage(FV.hwndList, LVM_SETVIEW, 4, 0);
 				}
 				args.FolderFlags = FV.FolderFlags;
 				FV.FolderFlags = args.FolderFlags | FWF_AUTOARRANGE;
-				FV.GroupBy = "System.Null";
-				var f = ((2 ^ FV.CurrentViewMode) | (2 ^ args.ViewMode)) * 2;
-				if (te.Layout & f) {
-					te.Layout &= ~f;
-					FV.Suspend();
-				}
-			}
-			catch (e) {}
-			(function (args) { setTimeout(function () {
-				Addons.TotalFileSizeSort.Order(args);
-			}, 99);}) (args);
-		},
 
-		Order: function (args)
-		{
-			try  {
 				var pt = api.Memory("POINT");
-				args.FV.GetItemPosition(args.Items.Item(0), pt);
+				FV.GetItemPosition(args.Items.Item(0), pt);
 				for (var i in args.List) {
-					args.FV.SelectAndPositionItem(args.Items.Item(args.List[i][0]), 0, pt);
+					FV.SelectAndPositionItem(args.Items.Item(args.List[i][0]), 0, pt);
 				}
-				args.FV.CurrentViewMode = args.ViewMode;
-				args.FV.FolderFlags = args.FolderFlags;
-				te.Layout = te.Data.Conf_Layout;
+				api.SendMessage(FV.hwndList, LVM_SETVIEW, args.ViewMode, 0);
+				FV.FolderFlags = args.FolderFlags;
 			}
 			catch (e) {}
 			args.FV.Parent.UnlockUpdate(true);

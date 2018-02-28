@@ -75,11 +75,12 @@
 				return ContextMenu;
 			case 3:
 				if (FV) {
-					ContextMenu = GetViewMenu(arContextMenu, FV, hMenu, CMF_DEFAULTONLY | CMF_DONOTPICKDEFAULT);
+					ContextMenu = GetViewMenu(arContextMenu, FV, hMenu, CMF_DEFAULTONLY);
 					ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
 					{
 						ExecMenu(Ctrl, Name, pt, 0x8000);
 					};
+					api.SetMenuDefaultItem(hMenu, -1, true);
 					api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, wID++, GetText("Default"));
 				}
 				return ContextMenu;
@@ -100,6 +101,7 @@
 					}
 				} else if (FV) {
 					ContextMenu = GetViewMenu(arContextMenu, FV, hMenu, CMF_DEFAULTONLY);
+					api.SetMenuDefaultItem(hMenu, -1, true);
 					var mii = api.Memory("MENUITEMINFO");
 					mii.cbSize = mii.Size;
 					mii.fMask = MIIM_FTYPE | MIIM_SUBMENU;

@@ -30,9 +30,7 @@ if (window.Addon == 1) {
 				for (var i = nCount; i--;) {
 					var Item = Selected.Item(i);
 					if (Addons.SizeStatus.Folder && IsFolderEx(Item)) {
-						var wfd = api.Memory("WIN32_FIND_DATA");
-						api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size);
-						var n = FV.TotalFileSize[wfd.cFileName];
+						var n = FV.TotalFileSize[api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_ORIGINAL)];
 						if (n === undefined) {
 							FV.Notify(0, Item, null, 1);
 							bYet = true;
@@ -69,13 +67,6 @@ if (window.Addon == 1) {
 		{
 			if (SessionId == Addons.SizeStatus.SessionId) {
 				document.getElementById("size_statusbar").innerHTML = '&nbsp' + api.StrFormatByteSize(nSize);
-			}
-		},
-
-		Set: function (FV, cFileName, SessionId, nSize)
-		{
-			if (SessionId == Addons.SizeStatus.SessionId) {
-				FV.TotalFileSize[cFileName] = nSize;
 			}
 		}
 	}
