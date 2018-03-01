@@ -367,39 +367,22 @@ if (window.Addon == 1) {
 
 			FV.Parent.LockUpdate();
 			try {
-				var args = { FV: FV, Items: Items, List: List};
-				args.ViewMode = FV.CurrentViewMode;
-				if (args.ViewMode == FVM_DETAILS || args.ViewMode == FVM_LIST) {
-					FV.CurrentViewMode = FVM_TILE;
+				var ViewMode = api.SendMessage(FV.hwndList, LVM_GETVIEW, 0, 0);
+				if (ViewMode == 1 || ViewMode == 3) {
+					api.SendMessage(FV.hwndList, LVM_SETVIEW, 4, 0);
 				}
-				args.FolderFlags = FV.FolderFlags;
-				FV.FolderFlags = args.FolderFlags | FWF_AUTOARRANGE;
+				var FolderFlags = FV.FolderFlags;
+				FV.FolderFlags = FolderFlags | FWF_AUTOARRANGE;
 				FV.GroupBy = "System.Null";
-				var f = ((2 ^ FV.CurrentViewMode) | (2 ^ args.ViewMode)) * 2;
-				if (te.Layout & f) {
-					te.Layout &= ~f;
-					FV.Suspend();
-				}
-			}
-			catch (e) {}
-			(function (args) { setTimeout(function () {
-				Addons.Label.Order(args);
-			}, 99);}) (args);
-		},
-
-		Order: function (args)
-		{
-			try  {
 				var pt = api.Memory("POINT");
-				args.FV.GetItemPosition(args.Items.Item(0), pt);
-				for (var i in args.List) {
-					args.FV.SelectAndPositionItem(args.Items.Item(args.List[i][0]), 0, pt);
+				FV.GetItemPosition(Items.Item(0), pt);
+				for (var i in List) {
+					FV.SelectAndPositionItem(Items.Item(List[i][0]), 0, pt);
 				}
-				args.FV.CurrentViewMode = args.ViewMode;
-				args.FV.FolderFlags = args.FolderFlags;
-				te.Layout = te.Data.Conf_Layout;
+				api.SendMessage(FV.hwndList, LVM_SETVIEW, ViewMode, 0);
+				FV.FolderFlags = FolderFlags;
 			} catch (e) {}
-			args.FV.Parent.UnlockUpdate(true);
+			FV.Parent.UnlockUpdate(true);
 		}
 	}
 

@@ -73,23 +73,22 @@ if (window.Addon == 1) {
 			}
 			FV.Parent.LockUpdate();
 			try {
-				var args = { FV: FV, Items: Items, List: List};
-				args.ViewMode = api.SendMessage(FV.hwndList, LVM_GETVIEW, 0, 0);
-				if (args.ViewMode == 1 || args.ViewMode == 3) {
+				var ViewMode = api.SendMessage(FV.hwndList, LVM_GETVIEW, 0, 0);
+				if (ViewMode == 1 || ViewMode == 3) {
 					api.SendMessage(FV.hwndList, LVM_SETVIEW, 4, 0);
 				}
-				args.FolderFlags = FV.FolderFlags;
-				FV.FolderFlags = args.FolderFlags | FWF_AUTOARRANGE;
+				var FolderFlags = FV.FolderFlags;
+				FV.FolderFlags = FolderFlags | FWF_AUTOARRANGE;
 				FV.GroupBy = "System.Null";
 				var pt = api.Memory("POINT");
-				FV.GetItemPosition(args.Items.Item(0), pt);
-				for (var i in args.List) {
-					FV.SelectAndPositionItem(args.Items.Item(args.List[i][0]), 0, pt);
+				FV.GetItemPosition(Items.Item(0), pt);
+				for (var i in List) {
+					FV.SelectAndPositionItem(Items.Item(List[i][0]), 0, pt);
 				}
-				api.SendMessage(FV.hwndList, LVM_SETVIEW, args.ViewMode, 0);
-				FV.FolderFlags = args.FolderFlags;
+				api.SendMessage(FV.hwndList, LVM_SETVIEW, ViewMode, 0);
+				FV.FolderFlags = FolderFlags;
 			} catch (e) {}
-			args.FV.Parent.UnlockUpdate(true);
+			FV.Parent.UnlockUpdate(true);
 		}
 	};
 
