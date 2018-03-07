@@ -1,7 +1,5 @@
 if (window.Addon == 1) {
 	Addons.AutoUpdate = {
-		tid: null,
-		time: new Date().getTime(),
 		checked: 0,
 		CONFIG: fso.BuildPath(te.Data.DataFolder, "config\\autoupdate.txt"),
 
@@ -11,15 +9,17 @@ if (window.Addon == 1) {
 				clearTimeout(Addons.AutoUpdate.tid);
 			}
 			var t = Addons.AutoUpdate.Day - new Date().getTime() + Addons.AutoUpdate.checked;
-			if (t <= 0) {
+			if (t <= 0 && !Addons.AutoUpdate.busy) {
 				Addons.AutoUpdate.tid = setTimeout(function ()
 				{
+					Addons.AutoUpdate.busy = true;
 					Addons.AutoUpdate.checked = new Date().getTime();
 					Addons.AutoUpdate.bSave = true;
 					CheckUpdate({ silent: true, noconfirm: GetAddonOptionEx("autoupdate", "auto") });
+					Addons.AutoUpdate.busy = false;
 				}, Addons.AutoUpdate.Interval);
 			} else {
-				Addons.AutoUpdate.tid = setTimeout(Addons.AutoUpdate.Exec, t);
+				Addons.AutoUpdate.tid = setTimeout(Addons.AutoUpdate.Exec, Addons.AutoUpdate.busy ? 60000 : t);
 			}
 		}
 	};
