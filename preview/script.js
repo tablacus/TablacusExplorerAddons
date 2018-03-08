@@ -3,12 +3,16 @@ var Addon_Id = "preview";
 if (window.Addon == 1) {
 	Addons.Preview =
 	{
-		tid: null,
 		Align: api.StrCmpI(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
+		Height: GetAddonOption(Addon_Id, "Height"),
+		TextFilter: GetAddonOption(Addon_Id, "TextFilter") || "*.txt;*.css;*.js;*.vbs;*.vba;*.ini",
 		Width: 0,
 
 		Arrange: function (Item, Ctrl)
 		{
+			if (api.ILIsEqual(Addons.Preview.Item, Item)) {
+				return;
+			}
 			Addons.Preview.Item = Item;
 			var o = document.getElementById('PreviewBar');
 			var s = [];
@@ -26,7 +30,7 @@ if (window.Addon == 1) {
 					path = EncodeSC(fso.BuildPath(Ctrl.FolderItem.Path, path));
 				}
 				var nWidth = 0, nHeight = 0;
-				if (api.PathMatchSpec(path, "*.txt;*.css;*.js;*.vbs;*.vba;*.ini")) {
+				if (PathMatchEx(path, Addons.Preview.TextFilter)) {
 					var ado = OpenAdodbFromTextFile(path);
 					if (ado) {
 						o.innerText = ado.ReadText(1024);
@@ -34,27 +38,25 @@ if (window.Addon == 1) {
 						return;
 					}
 				}
-				if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4")) {
+				var style;
+				nWidth = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 3");
+				nHeight = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 4");
+				if (document.documentMode) {
+					style = "max-width: 100%; max-height: 100%";
+				} else {
+					style = nWidth  > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
+				}
+				var img = {};
+				if (nWidth && nHeight) {
+					s.splice(s.length, 0, '<div align="center"><img src="', path, '" style="display: block;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this.src, this)"></div>');
+				} else if (Addons.Preview.FromFile(path, img)) {
+					s.push('<div align="center"><img src="', img.src, '" style="display: block;', style, '" title="', info, '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false"/></div>');
+				} else if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4")) {
 					s.splice(s.length, 0, '<video controls width="100%" height="100%"><source src="' + path + '"></video>');
 				} else if (api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf")) {
 					s.splice(s.length, 0, '<embed width="100%" height="100%" src="' + path + '" autoplay="false"></embed>');
 				} else {
-					var style;
-					nWidth = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 3");
-					nHeight = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 4");
-					if (document.documentMode) {
-						style = "max-width: 100%; max-height: 100%";
-					} else {
-						style = nWidth  > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
-					}
-					var img = {};
-					if (nWidth && nHeight) {
-						s.splice(s.length, 0, '<div align="center"><img src="', path, '" style="display: block;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this.src, this)"></div>');
-					} else if (Addons.Preview.FromFile(path, img)) {
-						s.push('<div align="center"><img src="', img.src, '" style="display: block;', style, '" title="', info, '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false"/></div>');
-					} else {
-						s.push('<div style="font-size: 10px; margin-left: 4px">', path, '</div>');
-					}
+					s.push('<div style="font-size: 10px; margin-left: 4px">', path, '</div>');
 				}
 				s.push(info.replace(/\n/, "<br>"));
 			}
@@ -123,18 +125,12 @@ if (window.Addon == 1) {
 
 	Addons.Preview.Init();
 
-	AddEvent("SelectionChanged", function (Ctrl)
+	AddEvent("StatusText", function (Ctrl, Text, iPart)
 	{
-		if (Ctrl.Type <= CTRL_EB) {
+		if (Ctrl.Type <= CTRL_EB && Text) {
 			if (Addons.Preview.Width && !/^none$/i.test(document.getElementById('PreviewBar').style.display)) {
-				if (Addons.Preview.tid) {
-					clearTimeout(Addons.Preview.tid);
-				}
 				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
-					(function (Item) {
-						Addons.Preview.tid = setTimeout(function () {
-						Addons.Preview.Arrange(Item, Ctrl);
-					}, api.GetKeyState(VK_LBUTTON) < 0 ? 0 : 500);}) (Ctrl.SelectedItems().Item(0));
+					Addons.Preview.Arrange(Ctrl.SelectedItems().Item(0), Ctrl);
 				}
 			}
 		}
@@ -146,6 +142,12 @@ if (window.Addon == 1) {
 		var w = te.Data["Conf_" + Addons.Preview.Align + "BarWidth"];
 		Addons.Preview.Width = w;
 		o.style.width = w + "px";
-		o.style.height = w + "px";
+		o.style.height = Addons.Preview.Height || w + "px";
 	});
+} else {
+	var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\"+ Addon_Id + "\\options.html"));
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

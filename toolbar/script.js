@@ -216,7 +216,7 @@ if (window.Addon == 1) {
 							root.appendChild(item);
 						}
 						SaveXmlEx("toolbar.xml", xml);
-						ArrangeToolBar();
+						Addons.ToolBar.Arrange();
 						ApplyLang(document);
 					}
 					return S_OK;

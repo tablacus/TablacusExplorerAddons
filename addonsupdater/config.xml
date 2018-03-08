@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
+    <Version>1.01</Version>
     <MinVersion>2018.3.6</MinVersion>
-    <pubDate>Tue, 06 Mar 2018 00:00:00 GMT</pubDate>
+    <pubDate>Thu, 08 Mar 2018 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
     <Name>Add-ons updater</Name>
-    <Description>Update Add-ons</Description>
+    <Description>Update add-ons when checking for updates of Tablacus Explorer</Description>
   </en>
   <ja>
     <Name>アドオンの更新</Name>
-    <Description>アドオンを更新</Description>
+    <Description>Tablacus Explorerの更新確認時にアドオンを更新します</Description>
   </ja>
 </TablacusExplorer>

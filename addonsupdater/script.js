@@ -19,7 +19,7 @@ if (window.Addon == 1) {
 						api.DoEvents();
 					}
 					if (arg.Updated) {
-						api.SHFileOperation(FO_MOVE, arg.addons, fso.GetParentFolderName(api.GetModuleFileName(null)), FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR, false);
+						api.SHFileOperation(FO_MOVE, arg.addons + "\\*", fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons"), FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR, false);
 						te.Reload();
 					}
 				}
@@ -47,8 +47,7 @@ if (window.Addon == 1) {
 								if (AddonBeforeRemove(Id) < 0) {
 									return;
 								}
-								var file = Id + '_' + (info.Version.replace(/\./, "")) + '.zip';
-								OpenHttpRequest(Addons.AddonsUpdater.url + Id + '/' + file, "http", Addons.AddonsUpdater.Save, arg);
+								OpenHttpRequest(Addons.AddonsUpdater.url + Id + '/' + Id + '_' + (info.Version.replace(/\./, "")) + '.zip', "http", Addons.AddonsUpdater.Save, arg);
 							}
 						}
 					}
@@ -74,8 +73,7 @@ if (window.Addon == 1) {
 					return;
 				}
 				var configxml = dest + "\\config.xml";
-				var nDog = 300;
-				while (!fso.FileExists(configxml)) {
+				for (var nDog = 300; !fso.FileExists(configxml);) {
 					if (wsh.Popup(GetText("Please wait."), 1, TITLE, MB_ICONINFORMATION | MB_OKCANCEL) == IDCANCEL || nDog-- == 0) {
 						return;
 					}
@@ -98,7 +96,7 @@ if (window.Addon == 1) {
 			api.Sleep(500);
 			api.DoEvents();
 		}
-	});
-	
+	}, true);
+
 	AddTypeEx("Add-ons", "Addons updater", Addons.AddonsUpdater.Exec);
 }
