@@ -215,3 +215,6 @@ pip-log.txt
 
 #GFL SDK
 libgfl.h
+
+#Total Commander plug-in
+listplug.h

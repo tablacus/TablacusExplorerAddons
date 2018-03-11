@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2018.3.11</MinVersion>
+    <pubDate>Sun, 11 Mar 2018 00:00:00 GMT</pubDate>
+    <Options>Common:4,5,6,7,8,9:4</Options>
+    <DllVersion>1.0.0.0</DllVersion>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Total Commander Lister Plug-in</Name>
+    <Description>Total Commander Lister Plug-in</Description>
+  </en>
+  <ja>
+    <Name>Total Commander リスタープラグイン</Name>
+    <Description>Total Commander リスタープラグイン</Description>
+  </ja>
+</TablacusExplorer>

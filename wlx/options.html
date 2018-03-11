@@ -1,0 +1,58 @@
+﻿<form name="E" style="display: inline;">
+  <div class="panel" style="display: block;">
+    <table style="width: 100%">
+      <tr>
+        <td style="width: 12.5em; vertical-align: top">
+          <select name="List" size="19" style="width: 12.5em; height: 34em; height: calc(100vh - 5.7em); min-height: 16em" onclick="EditXEx(EditLS)" ondblclick="EditLS()">
+          </select>
+        </td>
+        <td valign="top">
+          <label>Name</label>
+          <br />
+          <input type="text" name="Name" style="width: 100%" />
+          <br />
+          <table style="width: 100%"><tr>
+            <td style="width: 100%; vertical-align: bottom"><label>Path</label> (wlx)</td>
+            <td><input type="button" value="Portable" title="Path" onclick="PortableX('Path')" /></td>
+            <td><input type="button" value="Browse..." title="Path" onclick="RefX('Path',0,0,1,'LS Plugin (wlx)|*.wlx;*.uwlx;*.wlx64')" /></td>
+          </tr></table>
+          <input type="text" name="Path" style="width: 100%" onchange="PathChanged()" />
+          <br /><br />
+          <label>Information</label>&emsp;<span id="ver"></span>
+          <table style="width: 100%"><tr><td id="prop0" style="width: 33%"></td><td id="prop1" style="width: 33%"></td></table>
+          <div id="prop2"></div>
+          DetectString
+          <textarea id="prop3" style="width: 100%; height: 8em"></textarea>
+          <br />
+          <label>Size</label><br />
+          <input type="checkbox" id="Fit"><label for="Fit">Auto</label>
+        </td>
+      </tr>
+    </table>
+    <table style="width: 100%">
+      <tr>
+        <td>
+          <input type="button" value="Remove" onclick="RemoveX('List')" />
+          <input type="button" value="Up" onclick="MoveX('List', -1)" />
+          <input type="button" value="Down" onclick="MoveX('List', 1)" />
+          <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
+        </td>
+        <td align="right">
+          <input type="button" value="Add" onclick="AddX('List', ReplaceLS)" />
+          <input type="button" value="Replace" onclick="ReplaceLS()" />
+        </td>
+      </tr>
+    </table>
+    <!-- -->
+  </div>
+  <table width="100%">
+    <tr>
+      <td style="width: 100px; white-space: nowrap">
+        <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />&nbsp;
+      </td>
+      <td style="width: 100px; white-space: nowrap">
+        <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
+      </td>
+    </tr>
+  </table>
+</form>
