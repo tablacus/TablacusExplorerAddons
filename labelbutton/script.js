@@ -7,48 +7,45 @@ if (window.Addon == 1) {
 		Exec: function (o, mode)
 		{
 			var pt;
-			(function (o) { setTimeout(function () {
-				MouseOver(o);
-				if (Addons.Label) {
-					var oList = {};
-					Addons.Label.List(oList);
-					var hMenu = api.CreatePopupMenu();
-					var arList = [];
-					var oListPos = {};
-					var i = 0;
-					for (var s in oList) {
-						arList.push(s);
-						oListPos[s] = ++i;
-					}
-					if (Addons.LabelButton.Add(hMenu, oList, arList, oListPos) && !mode && arList.length) {
-						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-					}
-					if (mode) {
-						pt = api.Memory("POINT");
-						api.GetCursorPos(pt);
-					}
-					else {
-						pt = GetPos(o);
-						pt.x += screenLeft;
-						pt.y += screenTop + o.offsetHeight;
-						var FV = te.Ctrl(CTRL_FV);
-						if (FV && FV.CurrentViewMode == FVM_DETAILS) {
-							if (!/"System\.Contact\.Label"/.test(FV.Columns(1))) {
-								api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Details"));
-							}
-						}
-						var nRes = Addons.LabelButton.LabelGroup(hMenu, oList, arList, oListPos, 10000);
-						for (var s in oList) {
-							if (nRes) {
-								api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-								nRes = 0;
-							}
-							api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, oListPos[s] + 10000, s);
-						}
-					}
-					Addons.LabelButton.Popup(hMenu, arList, pt)
+			MouseOver(o);
+			if (Addons.Label) {
+				var oList = {};
+				Addons.Label.List(oList);
+				var hMenu = api.CreatePopupMenu();
+				var arList = [];
+				var oListPos = {};
+				var i = 0;
+				for (var s in oList) {
+					arList.push(s);
+					oListPos[s] = ++i;
 				}
-			}, 99);}) (o);
+				if (Addons.LabelButton.Add(hMenu, oList, arList, oListPos) && !mode && arList.length) {
+					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+				}
+				if (mode) {
+					pt = api.Memory("POINT");
+					api.GetCursorPos(pt);
+				} else {
+					pt = GetPos(o);
+					pt.x += screenLeft;
+					pt.y += screenTop + o.offsetHeight;
+					var FV = te.Ctrl(CTRL_FV);
+					if (FV && FV.CurrentViewMode == FVM_DETAILS) {
+						if (!/"System\.Contact\.Label"/.test(FV.Columns(1))) {
+							api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Details"));
+						}
+					}
+					var nRes = Addons.LabelButton.LabelGroup(hMenu, oList, arList, oListPos, 10000);
+					for (var s in oList) {
+						if (nRes) {
+							api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+							nRes = 0;
+						}
+						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, oListPos[s] + 10000, s);
+					}
+				}
+				Addons.LabelButton.Popup(hMenu, arList, pt)
+			}
 			return false;
 		},
 
@@ -75,7 +72,7 @@ if (window.Addon == 1) {
 					mii2.dwTypeData = GetText("Remove");
 					var oExists = {};
 					for (var i = Selected.Count; i-- > 0;) {
-						var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+						var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 						if (path) {
 							var ar = Addons.Label.Get(path).split(/\s*;\s*/);
 							for (var j in ar) {
@@ -117,21 +114,25 @@ if (window.Addon == 1) {
 				Addons.Label.Edit(te.Ctrl(CTRL_FV), pt);
 			}
 			if (nVerb == 2) {
-				var FV = te.Ctrl(CTRL_FV);
-				FV.Columns = FV.Columns + ' "System.Contact.Label" -1';
+				te.Ctrl(CTRL_FV).Columns = FV.Columns + ' "System.Contact.Label" -1';
 			}
 			if (nVerb > 30000) {
-				if (confirmOk("Are you sure?")) {
+				if (confirmOk()) {
 					Addons.Label.RemoveItems(Selected, arList[nVerb - 30001]);
 				}
-			}
-			else if (nVerb > 20000) {
-				if (confirmOk("Are you sure?")) {
+			} else if (nVerb > 20000) {
+				if (confirmOk()) {
 					Addons.Label.AppendItems(Selected, arList[nVerb - 20001]);
 				}
-			}
-			else if (nVerb > 10000) {
-				Navigate("label:" + arList[nVerb - 10001], GetOpenMode());
+			} else if (nVerb > 10000) {
+				var path = "label:";
+				if (api.GetKeyState(VK_SHIFT) < 0) {
+					var res = /^(label:.*)$/.exec(api.GetDisplayNameOf(te.Ctrl(CTRL_FV), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					if (res) {
+						path = res[1] + ";";
+					}
+				}
+				Navigate(path + arList[nVerb - 10001], GetOpenMode());
 			}
 			api.DestroyMenu(hMenu);
 		},

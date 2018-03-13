@@ -9,22 +9,25 @@ if (window.Addon == 1) {
 				clearTimeout(Addons.AutoUpdate.tid);
 			}
 			var t = Addons.AutoUpdate.Day - new Date().getTime() + Addons.AutoUpdate.checked;
-			if (t <= 0 && !Addons.AutoUpdate.busy) {
+			if (t <= 0) {
 				Addons.AutoUpdate.tid = setTimeout(function ()
 				{
-					Addons.AutoUpdate.busy = true;
-					Addons.AutoUpdate.checked = new Date().getTime();
-					Addons.AutoUpdate.bSave = true;
-					CheckUpdate({ silent: true, noconfirm: GetAddonOptionEx("autoupdate", "auto") });
-					Addons.AutoUpdate.busy = false;
+					if (Addons.AutoUpdate.Day - new Date().getTime() + Addons.AutoUpdate.checked <= 0) {
+						Addons.AutoUpdate.checked = new Date().getTime();
+						Addons.AutoUpdate.bSave = true;
+						CheckUpdate({ silent: true, noconfirm: GetAddonOptionEx("autoupdate", "auto") });
+					}
 				}, Addons.AutoUpdate.Interval);
 			} else {
-				Addons.AutoUpdate.tid = setTimeout(Addons.AutoUpdate.Exec, Addons.AutoUpdate.busy ? 60000 : t);
+				Addons.AutoUpdate.tid = setTimeout(Addons.AutoUpdate.Exec, t < 60000 ? 60000 : t);
 			}
 		}
 	};
 	var smhdw = { m: 1, h:60 };
-	Addons.AutoUpdate.Day = (GetAddonOptionEx("autoupdate", "day") || 1) * 86400000 - 900000;
+	Addons.AutoUpdate.Day = GetAddonOptionEx("autoupdate", "day") * 86400000 - 900000;
+	if (Addons.AutoUpdate.Day < 86400000 - 900000) {
+		Addons.AutoUpdate.Day = 86400000 - 900000;
+	}
 	Addons.AutoUpdate.Interval = ((GetAddonOption("autoupdate", "background") || "10m").replace(/([\dx]+)([mh])/ig, function (all, re1, re2)
 	{
 		return eval(re1.replace(/x/ig, "*")) * smhdw[re2.toLowerCase()] + '+';

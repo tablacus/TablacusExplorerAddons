@@ -16,9 +16,9 @@ if (window.Addon == 1) {
 				var arBM = [];
 				for (var i = Log.Index; i-- > 0;) {
 					var FolderItem = Log.Item(i);
+					AddMenuIconFolderItem(mii, FolderItem);
 					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
 					mii.wID = i + 1;
-					AddMenuIconFolderItem(mii, FolderItem);
 					api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				}
 				var pt = api.Memory("POINT");

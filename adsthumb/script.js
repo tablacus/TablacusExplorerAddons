@@ -1,6 +1,13 @@
 ﻿Addons.ADSThumb = {
 	FV: {},
-	fStyle: LVIS_CUT | LVIS_SELECTED
+	fStyle: LVIS_CUT | LVIS_SELECTED,
+
+	Clear: function (Ctrl)
+	{
+		if (Ctrl.type <= CTRL_SB) {
+			delete Addons.ADSThumb.FV[Ctrl.Id];
+		}
+	}
 };
 
 if (window.Addon == 1) {
@@ -61,17 +68,16 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("NavigateComplete", function (Ctrl)
-	{
-		delete Addons.ADSThumb.FV[Ctrl.Id];
-	});
+	AddEvent("NavigateComplete", Addons.ADSThumb.Clear);
+
+	AddEvent("Command", Addons.ADSThumb.Clear);
 
 	AddEvent("IconSizeChanged", function (Ctrl)
 	{
 		var db = Addons.ADSThumb.FV[Ctrl.Id];
 		if (db) {
 			if (db["*"] < Ctrl.IconSize) {
-				delete Addons.ADSThumb.FV[Ctrl.Id];
+				Addons.ADSThumb.Clear(Ctrl);
 			}
 		}
 	});

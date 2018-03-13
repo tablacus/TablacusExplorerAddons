@@ -4,7 +4,14 @@ Addons.ThumbPlus = {
 	FV: {},
 	fStyle: LVIS_CUT | LVIS_SELECTED,
 	Filter: item.getAttribute("Filter") || "",
-	Priority: item.getAttribute("Priority") || "*.zip\\*"
+	Priority: item.getAttribute("Priority") || "*.zip\\*",
+
+	Clear: function (Ctrl)
+	{
+		if (Ctrl.type <= CTRL_SB) {
+			delete Addons.ThumbPlus.FV[Ctrl.Id];
+		}
+	}
 };
 
 if (window.Addon == 1) {
@@ -68,17 +75,16 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("NavigateComplete", function (Ctrl)
-	{
-		delete Addons.ThumbPlus.FV[Ctrl.Id];
-	});
+	AddEvent("NavigateComplete", Addons.ThumbPlus.Clear);
+
+	AddEvent("Command", Addons.ThumbPlus.Clear);
 
 	AddEvent("IconSizeChanged", function (Ctrl)
 	{
 		var db = Addons.ThumbPlus.FV[Ctrl.Id];
 		if (db) {
 			if (db["*"] < Ctrl.IconSize) {
-				delete Addons.ThumbPlus.FV[Ctrl.Id];
+				Addons.ThumbPlus.Clear(Ctrl);
 			}
 		}
 	});

@@ -448,17 +448,16 @@ if (window.Addon == 1) {
 				var Items = te.FolderItems();
 				var b, ar;
 				var Label = Addons.Label.LabelPath(pid);
-				var bWC = /[\*\?]/.test(Label);
+				var bWC = /[\*\?;]/.test(Label);
 				Addons.Label.ENumCB(function (path, s)
 				{
-					var parent = fso.GetParentFolderName(path);
-					if (bWC || (Label.indexOf(" ") >= 0 && Label.indexOf(";") < 0)) {
+					if (bWC || Label.indexOf(" ") >= 0) {
 						b = true;
 						ar = null;
 						var ar2 = Label.split(/\s+/);
 						for (var j in ar2) {
 							var s2 = ar2[j];
-							if (s2 && !api.PathMatchSpec(s2, s) && !api.PathMatchSpec(parent, s2)) {
+							if (s2 && !api.PathMatchSpec(s2, s)) {
 								b = false;
 								if (bWC) {
 									ar = s.split(/\s*;\s*/);
@@ -473,16 +472,7 @@ if (window.Addon == 1) {
 							}
 						}
 					} else {
-						b = api.PathMatchSpec(Label, s) || api.PathMatchSpec(parent, Label);
-					}
-					if (!b && bWC) {
-						ar = ar || s.split(/\s*;\s*/);
-						for (var i in ar) {
-							if (api.PathMatchSpec(ar[i], Label) || api.PathMatchSpec(parent, Label)) {
-								b = true;
-								break;
-							}
-						}
+						b = api.PathMatchSpec(Label, s);
 					}
 					if (b && path !="%Installed%") {
 						Items.AddItem(path);
