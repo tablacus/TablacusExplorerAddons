@@ -16,7 +16,7 @@ if (window.Addon == 1) {
 			var List = [Item];
 			while (List.length && !Progress.HasUserCancelled() && nDog) {
 				var Items = List.shift().GetFolder.Items();
-				for (var i = 0; i < Items.Count && !Progress.HasUserCancelled() && nDog--; i++) {
+				for (var i = 0; i < Items.Count && !Progress.HasUserCancelled() && nDog; i++) {
 					Item = Items.Item(i);
 					Progress.SetLine(2, Item.Path, true);
 					if (Item.IsFolder) {
@@ -26,6 +26,7 @@ if (window.Addon == 1) {
 					} else if (image.FromFile(Item.Path, bECM)) {
 						return S_OK;
 					}
+					nDog--;
 				}
 			}
 		}
@@ -39,16 +40,12 @@ if (window.Addon == 1) {
 			var path = Item.Path;
 			if (PathMatchEx(path, Addons.FolderImage.Filter) && !PathMatchEx(path, Addons.FolderImage.Invalid)) {
 				var Progress = te.ProgressDialog;
-				var tid = setTimeout(function ()
-				{
-					Progress.StartProgressDialog(te.hwnd, null, 0x20);
-				}, 3000);
+				Progress.StartProgressDialog(te.hwnd, null, 0x20);
 				try {
 					Progress.SetTitle(Addons.FolderImage.Name);
 					Progress.SetLine(1, api.LoadString(hShell32, 13585) || api.LoadString(hShell32, 6478), true);
 					hr = Addons.FolderImage.Search(image, Item, bECM, Progress);
 				} catch (e) {}
-				clearTimeout(tid);
 				Progress.StopProgressDialog();
 			}
 		}
