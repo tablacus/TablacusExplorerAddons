@@ -26,9 +26,7 @@ function LoadFS()
 {
 	if (!g_x.List) {
 		var arFunc = [];
-		for (var i in MainWindow.eventTE.AddType) {
-			MainWindow.eventTE.AddType[i](arFunc);
-		}
+		MainWindow.RunEvent1("AddType", arFunc);
 		var oa = document.F.Type;
 		for (var i = 0; i < arFunc.length; i++) {
 			var o = oa[++oa.length - 1];

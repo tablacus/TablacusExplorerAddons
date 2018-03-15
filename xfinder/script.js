@@ -13,7 +13,7 @@ if (window.Addon == 1) {
 				}
 				return Exec(Ctrl, "New Tab", "Tabs", hwnd, pt);
 			},
-			
+
 			close: function (Ctrl, hwnd, pt, line)
 			{
 				var p = ExtractMacro(Ctrl, line);
@@ -77,7 +77,7 @@ if (window.Addon == 1) {
 						return Exec(Ctrl, "Close Tabs on Right", "Tabs", hwnd, pt);
 				}
 			},
-			
+
 			closed: function (Ctrl, hwnd, pt, line)
 			{
 				if (Addons.UndoCloseTab) {
@@ -141,7 +141,7 @@ if (window.Addon == 1) {
 			{
 				return Exec(Ctrl, "Refresh", "Tabs", hwnd, pt);
 			},
-			
+
 			rename: function (Ctrl, hwnd, pt, line)
 			{
 				var FV = GetFolderView(Ctrl, pt);
@@ -154,7 +154,7 @@ if (window.Addon == 1) {
 				}, 99);
 				return S_OK;
 			},
-			
+
 			go: function (Ctrl, hwnd, pt, line)
 			{
 				var p = api.QuadPart(ExtractMacro(Ctrl, line));
@@ -166,7 +166,7 @@ if (window.Addon == 1) {
 				}
 				return S_OK;
 			},
-			
+
 			newfolder: function (Ctrl, hwnd, pt, line)
 			{
 				var p = ExtractMacro(Ctrl, line);
@@ -180,7 +180,7 @@ if (window.Addon == 1) {
 				}
 				return S_OK;
 			},
-			
+
 			folder: function (Ctrl, hwnd, pt, line)
 			{
 				var p = ExtractMacro(Ctrl, line);
@@ -234,12 +234,12 @@ if (window.Addon == 1) {
 				}
 				return S_OK;
 			},
-			
+
 			command: function (Ctrl, hwnd, pt, line)
 			{
 				return Exec(Ctrl, "Run Dialog", "Tools", hwnd, pt);
 			},
-			
+
 			clippath: function (Ctrl, hwnd, pt, line)
 			{
 				var FV = GetFolderView(Ctrl, pt);
@@ -270,12 +270,12 @@ if (window.Addon == 1) {
 				clipboardData.setData("text", a.join("\n"));
 				return S_OK;
 			},
-			
+
 			preview: function (Ctrl, hwnd, pt, line)
 			{
 				return S_OK;
 			},
-			
+
 			viewstyle: function (Ctrl, hwnd, pt, line)
 			{
 				var FV = GetFolderView(Ctrl, pt);
@@ -356,7 +356,7 @@ if (window.Addon == 1) {
 				AddEnv(a, d);
 			 	return S_OK;
 			},
-			
+
 			swap: function (Ctrl, hwnd, pt, line)
 			{
 				var ar = line.toLowerCase().split(",");
@@ -390,7 +390,7 @@ if (window.Addon == 1) {
 				}
 				return S_FALSE;
 			},
-			
+
 			lock: function (Ctrl, hwnd, pt, line)
 			{
 				var p = ExtractMacro(Ctrl, line);
@@ -406,7 +406,7 @@ if (window.Addon == 1) {
 				}
 			 	return S_OK;
 			},
-			
+
 			foreach: function (Ctrl, hwnd, pt, line)
 			{
 				var FV = GetFolderView(Ctrl, pt);
@@ -558,6 +558,61 @@ if (window.Addon == 1) {
 				try {
 					wsh.CurrentDirectory = fso.GetSpecialFolder(2).Path;
 				} catch (e) {}
+			},
+
+			thumbnail: function (Ctrl, hwnd, pt, line)
+			{
+				var hFind;
+				var ar = api.CommandLineToArgv(ExtractMacro(Ctrl, line));
+				var Size = (WScript.Env("ImageSize") || "96").split(/,/);
+				if (Size[1] > Size[0]) {
+					Size[0] = Size[1];
+				}
+				var wfd = api.Memory("WIN32_FIND_DATA");
+				if (ar[0].toLowerCase() == "create") {
+					for (var i = ar.length; i-- > 1;) {
+						hFind = api.FindFirstFile(ar[i], wfd);
+						if (hFind != INVALID_HANDLE_VALUE) {
+							var image = te.WICBitmap().FromFile(ar[i]);
+							if (image) {
+								image = GetThumbnail(image, Size[0], true);
+								image.Save(ar[i] + ":thumbnail.jpg");
+								SetFileTime(ar[i], wfd.ftCreationTime, wfd.ftLastAccessTime, wfd.ftLastWriteTime);
+								api.FindClose(hFind);
+							}
+						}
+					}
+				} else if (ar[0].toLowerCase() == "delete") {
+					for (var i = ar.length; i-- > 1;) {
+						hFind = api.FindFirstFile(ar[i], wfd);
+						if (hFind != INVALID_HANDLE_VALUE) {
+							if (api.DeleteFile(ar[i] + ":thumbnail.jpg")) {
+								SetFileTime(ar[i], wfd.ftCreationTime, wfd.ftLastAccessTime, wfd.ftLastWriteTime);
+							}
+							api.FindClose(hFind);
+						}
+					}
+				} else {
+					var image = te.WICBitmap().FromFile(ar[0]);
+					if (image) {
+						Size = (ar[2] || Size[0]).split(/,/);
+						if (Size[1] > Size[0]) {
+							Size[0] = Size[1];
+						}
+						image = GetThumbnail(image, Size[0], true);
+						var res = /^(.+):[^\\]+$/.exec(ar[1]);
+						if (res) {
+							hFind = api.FindFirstFile(res[1], wfd);
+						}
+						image.Save(ar[1]);
+						if (res && hFind != INVALID_HANDLE_VALUE) {
+							SetFileTime(res[1], wfd.ftCreationTime, wfd.ftLastAccessTime, wfd.ftLastWriteTime);
+							api.FindClose(hFind);
+						}
+					}
+				}
+				var FV = GetFolderView(Ctrl, pt);
+				te.OnCommand(FV, FV.hwnd, WM_NULL, 0, 0);
 			}
 /*
 			: function (Ctrl, hwnd, pt, line)
@@ -710,13 +765,13 @@ if (window.Addon == 1) {
 			{
 				return Addons.XFinder.Command.viewstyle(Ctrl, hwnd, pt, s);
 			},
-			
+
 			columns:  function (Ctrl, hwnd, pt, s)
 			{
 				return Addons.XFinder.Command.columns(Ctrl, hwnd, pt, s);
 			}
 		},
-		
+
 		Exec: function (Ctrl, hwnd, pt, line)
 		{
 			if (/^\/\//.test(line)) {
@@ -796,7 +851,7 @@ if (window.Addon == 1) {
 			}
 			api.DestroyMenu(hMenu);
 		},
-		
+
 		ExecEx: function (s, nMode, Ctrl, hwnd, pt)
 		{
 			if (!Ctrl) {
@@ -999,6 +1054,8 @@ if (window.Addon == 1) {
 			return RunEvent4("GetTabColor", FV);
 		}
 	});
+
+	AddEnv("ImageSize", "96,96");
 
 	AddEvent("ReplaceMacroEx", [/%DateTime:([^%]*)%/ig, function (strMatch, ref1)
 	{

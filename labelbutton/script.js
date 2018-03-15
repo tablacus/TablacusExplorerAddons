@@ -129,7 +129,7 @@ if (window.Addon == 1) {
 				if (api.GetKeyState(VK_SHIFT) < 0) {
 					var res = /^(label:.*)$/.exec(api.GetDisplayNameOf(te.Ctrl(CTRL_FV), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 					if (res) {
-						path = res[1] + ";";
+						path = res[1] + (/;/.test(res[1]) ? ";" : " ");
 					}
 				}
 				Navigate(path + arList[nVerb - 10001], GetOpenMode());
