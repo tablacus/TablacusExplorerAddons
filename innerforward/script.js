@@ -24,9 +24,9 @@
 				var arBM = [];
 				for (var i = Log.Index; i-- > 0;) {
 					var FolderItem = Log.Item(i);
-					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
-					mii.wID = i + 1;
 					AddMenuIconFolderItem(mii, FolderItem);
+					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER | SHGDN_ORIGINAL);
+					mii.wID = i + 1;
 					api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				}
 				var pt = api.Memory("POINT");
@@ -39,7 +39,7 @@
 				}
 			}
 		},
-		
+
 		ChangeView: function (Ctrl)
 		{
 			var TC = Ctrl.Parent;

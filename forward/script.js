@@ -17,7 +17,7 @@ if (window.Addon == 1) {
 				for (var i = Log.Index; i-- > 0;) {
 					var FolderItem = Log.Item(i);
 					AddMenuIconFolderItem(mii, FolderItem);
-					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
+					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER | SHGDN_ORIGINAL);
 					mii.wID = i + 1;
 					api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				}

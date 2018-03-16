@@ -24,9 +24,9 @@
 				var arBM = [];
 				for (var i = Log.Index + 1; i < Log.Count; i++) {
 					var FolderItem = Log.Item(i);
-					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
-					mii.wID = i;
 					AddMenuIconFolderItem(mii, FolderItem);
+					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER | SHGDN_ORIGINAL);
+					mii.wID = i;
 					api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				}
 				var pt = api.Memory("POINT");
