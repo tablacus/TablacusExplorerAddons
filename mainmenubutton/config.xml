@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2016.5.19</MinVersion>
-    <pubDate>Fri, 27 May 2016 00:00:00 UTC</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2018.3.17</MinVersion>
+    <pubDate>Sat, 17 Mar 2018 00:00:00 GMT</pubDate>
     <Options>Common:5,6,8,9:5</Options>
     <Creator>Gaku</Creator>
-    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Main Menu Button</Name>
-    <Description>Main Menu Button</Description>
+    <Name>Main menu button</Name>
+    <Description>Main menu button</Description>
   </en>
   <ja>
     <Name>メイン メニュー ボタン</Name>
