@@ -47,17 +47,17 @@ if (window.Addon == 1) {
 			if (Addons.UndoCloseTab && Addons.UndoCloseTab.Get) {
 				for (var i = 0; i < Addons.UndoCloseTab.db.length; i++) {
 					var Items = Addons.UndoCloseTab.Get(i);
+					var mii = api.Memory("MENUITEMINFO");
+					mii.cbSize = mii.Size;
+					mii.fMask = MIIM_STRING | MIIM_ID | MIIM_BITMAP;
+					AddMenuIconFolderItem(mii, Items.Item(Items.Index));
 					var s = [api.GetDisplayNameOf(Items.Item(Items.Index), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)];
 					if (Items.Count > 1) {
 						s.unshift(Items.Count)
 						s.push("...");
 					}
-					var mii = api.Memory("MENUITEMINFO");
-					mii.cbSize = mii.Size;
-					mii.fMask = MIIM_STRING | MIIM_ID | MIIM_BITMAP;
 					mii.dwTypeData = s.join(" ");
 					mii.wId = i + this.nCommand;
-					AddMenuIconFolderItem(mii, Items.Item(Items.Index));
 					api.InsertMenuItem(hMenu, MAXINT, true, mii);
 				}
 			}

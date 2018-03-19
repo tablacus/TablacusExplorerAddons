@@ -17,7 +17,7 @@ Addons.Flat =
 	GetSearchString: function(Ctrl)
 	{
 		if (Ctrl) {
-			var res = new RegExp("^" + Addons.Flat.PATH + "\\s*(.*)" , "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+			var res = new RegExp("^" + Addons.Flat.PATH + "\\s*(.*)" , "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 			if (res) {
 				return res[1];
 			}
@@ -29,7 +29,7 @@ Addons.Flat =
 	{
 		var FV = GetFolderView(Ctrl, pt);
 		if (api.ILGetCount(FV.FolderItem) > 1) {
-			var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+			var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			var pidl = api.ILCreateFromPath(path);
 			if (pidl && pidl.IsFolder) {
 				FV.Navigate(Addons.Flat.PATH + path);
@@ -38,15 +38,18 @@ Addons.Flat =
 		return S_OK;
 	},
 
-	AddItem: function (pidl, bRecreate)
+	AddItem: function (pid)
 	{
 		var cFV = te.Ctrls(CTRL_FV);
 		for (var i in cFV) {
 			var FV = cFV[i];
 			var path = Addons.Flat.GetSearchString(FV);
 			if (path) {
-				if (api.ILIsParent(path, pidl, false)) {
-					FV.AddItem(bRecreate ? api.GetDisplayNameOf(pidl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING) : pidl);
+				if (api.ILIsParent(path, pid, false)) {
+					if (pid.ExtendedProperty("Access") == undefined && pid.ExtendedProperty("Write") == undefined && pid.ExtendedProperty("Size") == 0) {
+						pid = api.GetDisplayNameOf(pidl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+					}
+					FV.AddItem(pid);
 				}
 			}
 		}
@@ -95,7 +98,7 @@ if (window.Addon == 1) {
 			Addons.Flat.RemoveItem(pidls[0]);
 		}
 		if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
-			Addons.Flat.AddItem(pidls[1], true);
+			Addons.Flat.AddItem(pidls[1]);
 		}
 		if (pidls.lEvent & (SHCNE_CREATE | SHCNE_DRIVEADD | SHCNE_MEDIAINSERTED | SHCNE_NETSHARE | SHCNE_MKDIR)) {
 			Addons.Flat.AddItem(pidls[0]);

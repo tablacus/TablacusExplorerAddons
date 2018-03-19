@@ -15,7 +15,7 @@ if (window.Addon == 1) {
 
 		IsHandle: function (Ctrl)
 		{
-			return api.PathMatchSpec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), Addons.Everything.PATH + "*");
+			return api.PathMatchSpec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), Addons.Everything.PATH + "*");
 		},
 
 		Change: function (o)
@@ -103,19 +103,7 @@ if (window.Addon == 1) {
 					var Path = Addons.Everything.GetSearchString(FV);
 					if (Path) {
 						if (FV.RemoveItem(pidl) == S_OK) {
-							if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
-								Path = ((window.migemo && (migemo.query(Path) + '|' + Path)) || Path);
-								if (new RegExp(Path, "i").test(fn)) {
-									FV.AddItem(api.GetDisplayNameOf(pidl2, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
-								}
-							} else {
-								if (!/[\*\?]/.test(Path)) {
-									Path = "*" + Path + "*";
-								}
-								if (api.PathMatchSpec(fn, Path)) {
-									FV.AddItem(api.GetDisplayNameOf(pidl2, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
-								}
-							}
+							FV.AddItem(api.GetDisplayNameOf(pidl2, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 						}
 					}
 				}
@@ -253,7 +241,7 @@ if (window.Addon == 1) {
 	{
 		if (!Verb || Verb == CommandID_STORE - 1) {
 			if (ContextMenu.Items.Count >= 1) {
-				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				if (Addons.Everything.IsHandle(path)) {
 					var FV = te.Ctrl(CTRL_FV);
 					FV.Navigate(path, SBSP_SAMEBROWSER);
@@ -273,6 +261,13 @@ if (window.Addon == 1) {
 		}
 	});
 
+	AddEvent("ILGetParent", function (FolderItem)
+	{
+		if (Addons.Everything.IsHandle(FolderItem)) {
+			return ssfDESKTOP;
+		}
+	});
+	
 	var width = "176px";
 
 	var s = item.getAttribute("Folders");
