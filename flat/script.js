@@ -47,7 +47,7 @@ Addons.Flat =
 			if (path) {
 				if (api.ILIsParent(path, pid, false)) {
 					if (pid.ExtendedProperty("Access") == undefined && pid.ExtendedProperty("Write") == undefined && pid.ExtendedProperty("Size") == 0) {
-						pid = api.GetDisplayNameOf(pidl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+						pid = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 					}
 					FV.AddItem(pid);
 				}
