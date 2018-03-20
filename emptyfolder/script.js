@@ -12,7 +12,7 @@ if (window.Addon == 1) {
 		GetSearchString: function(Ctrl)
 		{
 			if (Ctrl) {
-				var res = new RegExp("^" + Addons.EmptyFolder.PATH + "\\s*(.*)" , "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+				var res = new RegExp("^" + Addons.EmptyFolder.PATH + "\\s*(.*)" , "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				if (res) {
 					return res[1];
 				}
@@ -28,13 +28,13 @@ if (window.Addon == 1) {
 				var Selected = FV.SelectedItems();
 				if (Selected && Selected.Count) {
 					for (var i = Selected.Count; i--;) {
-						var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING);
+						var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL);
 						if (/^[A-Z]:\\|^\\/i.test(path)) {
 							ar.unshift(path);
 						}
 					}
 				} else {
-					var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING);
+					var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_ORIGINAL);
 					if (/^[A-Z]:\\|^\\/i.test(path)) {
 						ar.push(path);
 					}
@@ -53,13 +53,12 @@ if (window.Addon == 1) {
 					var FV = TC[j];
 					if (this.GetSearchString(FV)) {
 						if (FV.RemoveItem(pid) == S_OK && pid2) {
-							FV.AddItem(api.GetDisplayNameOf(pid2, SHGDN_FORPARSING));
+							FV.AddItem(api.GetDisplayNameOf(pid2, SHGDN_FORPARSING | SHGDN_ORIGINAL));
 						}
 					}
 				}
 			}
 		},
-
 
 		rmdir: function (Ctrl, pt)
 		{
@@ -110,6 +109,7 @@ if (window.Addon == 1) {
 				Path: Path,
 				SessionId: Ctrl.SessionId,
 				hwnd: te.hwnd,
+				ProgressDialog: te.ProgressDialog,
 				Locale: document.documentMode > 8 ? 999 : Infinity
 			});
 		}

@@ -10,7 +10,7 @@ if (MainWindow.Exchange) {
 		var mask1 = ar.shift();
 		var filter1 = ar.join("|").replace(/%2F/g, "/").replace(/%25/g, "%");
 		var length1 = filter1.length * 2;
-		var Progress = te.ProgressDialog;
+		var Progress = ex.ProgressDialog;
 		Progress.StartProgressDialog(ex.hwnd, null, 0x20);
 		try {
 			Progress.SetAnimation(hShell32, 150);
@@ -51,7 +51,7 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 			} else if (api.PathMatchSpec(wfd.cFileName, mask1)) {
 				if (length1) {
 					bAdd = false;
-					var ado = te.CreateObject("Adodb.Stream");
+					var ado = te.CreateObject(api.ADBSTRM);
 					var charset = "_autodetect_all";
 					try {
 						ado.CharSet = "iso-8859-1";

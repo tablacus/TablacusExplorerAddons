@@ -7,7 +7,7 @@ if (window.Addon == 1) {
 	{
 		for (var i = 0; i < 16; i++) {
 			if (te.Data.CustColors[i] != Addons.SaveCustColors.ar[i]) {
-				//try {
+				try {
 					var ado = new ActiveXObject(api.ADBSTRM);
 					ado.CharSet = "utf-8";
 					ado.Open();
@@ -16,13 +16,13 @@ if (window.Addon == 1) {
 					}
 					ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\custcolors.txt"), adSaveCreateOverWrite);
 					ado.Close();
-				//} catch (e) {}
+				} catch (e) {}
 				break;
 			}
 		}
 	});
 
-//	try {
+	try {
 		var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\custcolors.txt"));
 		if (ado) {
 			Addons.SaveCustColors.ar = ado.ReadText(adReadAll).split(/[\s,]+/);
@@ -31,5 +31,5 @@ if (window.Addon == 1) {
 			}
 			ado.Close();
 		}
-//	} catch (e) {}
+	} catch (e) {}
 }

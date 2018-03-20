@@ -20,7 +20,7 @@ Addons.FindFiles =
 	GetSearchString: function(Ctrl)
 	{
 		if (Ctrl) {
-			var res = new RegExp("^" + Addons.FindFiles.PATH + "\\s*(.*)" , "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+			var res = new RegExp("^" + Addons.FindFiles.PATH + "\\s*(.*)" , "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 			if (res) {
 				return res[1];
 			}
@@ -42,13 +42,13 @@ Addons.FindFiles =
 			var Selected = FV.SelectedItems();
 			if (Selected && Selected.Count) {
 				for (var i = Selected.Count; i--;) {
-					var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING);
+					var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL);
 					if (/^[A-Z]:\\|^\\/i.test(path)) {
 						ar.unshift(path);
 					}
 				}
 			} else {
-				var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING);
+				var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				if (/^[A-Z]:\\|^\\/i.test(path)) {
 					ar.push(path);
 				}
@@ -56,8 +56,23 @@ Addons.FindFiles =
 			FV.Navigate(Addons.FindFiles.PATH + ar.join(";"), SBSP_NEWBROWSER);
 		}
 		return S_OK;
-	}
+	},
 
+	Notify: function (pid, pid2)
+	{
+		var cTC = te.Ctrls(CTRL_TC);
+		for (var i in cTC) {
+			var TC = cTC[i];
+			for (var j in TC) {
+				var FV = TC[j];
+				if (this.GetSearchString(FV)) {
+					if (FV.RemoveItem(pid) == S_OK && pid2) {
+						FV.AddItem(api.GetDisplayNameOf(pid2, SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					}
+				}
+			}
+		}
+	}
 };
 
 if (window.Addon == 1) {
@@ -78,6 +93,7 @@ if (window.Addon == 1) {
 				Path: Path,
 				SessionId: Ctrl.SessionId,
 				hwnd: te.hwnd,
+				ProgressDialog: te.ProgressDialog,
 				Locale: document.documentMode > 8 ? 999 : Infinity
 			});
 		}
@@ -104,6 +120,16 @@ if (window.Addon == 1) {
 	{
 		if (Addons.FindFiles.GetSearchString(Ctrl)) {
 			return MakeImgSrc("bitmap:ieframe.dll,216,16,14", 0, false, 16);
+		}
+	});
+
+	AddEvent("ChangeNotify", function (Ctrl, pidls)
+	{
+		if (pidls.lEvent & (SHCNE_DELETE | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT)) {
+			Addons.FindFiles.Notify(pidls[0]);
+		}
+		if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
+			Addons.FindFiles.Notify(pidls[0], pidls[1]);
 		}
 	});
 
