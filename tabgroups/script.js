@@ -356,7 +356,10 @@ if (window.Addon == 1) {
 			this.WheelButton = api.GetKeyState(VK_MBUTTON);
 			if (api.GetKeyState(VK_LBUTTON) < 0) {
 				api.GetCursorPos(this.pt);
-				this.Change(o.id.replace(/\D/g, '') - 0);
+				var n = o.id.replace(/\D/g, '') - 0;
+				if (te.Data.Tabgroups.Click != n) {
+					this.Change(n);
+				}
 			}
 			return true;
 		},

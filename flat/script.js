@@ -46,10 +46,7 @@ Addons.Flat =
 			var path = Addons.Flat.GetSearchString(FV);
 			if (path) {
 				if (api.ILIsParent(path, pid, false)) {
-					if (pid.ExtendedProperty("Access") == undefined && pid.ExtendedProperty("Write") == undefined && pid.ExtendedProperty("Size") == 0) {
-						pid = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
-					}
-					FV.AddItem(pid);
+					FV.AddItem(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX));
 				}
 			}
 		}
@@ -82,13 +79,23 @@ if (window.Addon == 1) {
 	{
 		var path = Addons.Flat.GetSearchString(Ctrl);
 		if (path) {
-			OpenNewProcess("addons\\flat\\worker.js",
-			{
-				FV: Ctrl,
-				Path: path,
-				SessionId: Ctrl.SessionId,
-				hwnd: te.hwnd
-			});
+			var v = {
+				ex: {
+					FV: Ctrl,
+					Path: path,
+					hwnd: te.hwnd,
+					SessionId: Ctrl.SessionId,
+					hShell32: hShell32,
+					List: api.CreateObject("FolderItems")
+				}, api: api
+			}
+
+			var fn = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\flat\\worker.js");
+			var ado = OpenAdodbFromTextFile(fn);
+			if (ado) {
+				api.ExecScript(ado.ReadText(), "JScript", v, true);
+				ado.Close();
+			}
 		}
 	});
 

@@ -4,12 +4,14 @@ if (window.Addon == 1) {
 		tid: {},
 		pt: null,
 		bCtrl: false,
+		FWF: WINVER < 0x600 ? FWF_CHECKSELECT : FWF_AUTOCHECKSELECT,
+		All: GetAddonOptionEx("checkbox", "All"),
 
 		Init: function (Ctrl)
 		{
 			var fFlags = Ctrl.FolderFlags;
-			if (!(fFlags & FWF_CHECKSELECT)) {
-				Ctrl.FolderFlags = fFlags | FWF_CHECKSELECT;
+			if (!(fFlags & Addons.CheckBox.FWF)) {
+				Ctrl.FolderFlags = fFlags & (~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) | Addons.CheckBox.FWF;
 			}
 		},
 
@@ -43,54 +45,56 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo)
-	{
-		if (Ctrl.Type > CTRL_EB) {
-			return;
-		}
-		if (msg == WM_LBUTTONDOWN) {
-			Addons.CheckBox.pt = pt.Clone();
-			var ptc = pt.Clone();
-			api.ScreenToClient(Ctrl.hwndList, ptc);
-			var ht = api.Memory("LVHITTESTINFO");
-			ht.pt = ptc;
-			api.SendMessage(Ctrl.hwndList, LVM_HITTEST, 0, ht);
-			Addons.CheckBox.state = ht.iItem >= 0 ? api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_STATEIMAGEMASK) : 0;
-			if (Ctrl.ItemCount(SVGIO_SELECTION) > 1) {
-				for (var i = VK_RBUTTON; i <= VK_MENU; i++) {
-					if (api.GetKeyState(i) < 0) {
-						return;
-					}
-				}
-				Addons.CheckBox.SetCtrl(true);
+	if (Addons.CheckBox.All || WINVER < 0x600) {
+		AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo)
+		{
+			if (Ctrl.Type > CTRL_EB) {
+				return;
 			}
-			return;
-		}
-		if (msg == WM_LBUTTONUP) {
-			if (Addons.CheckBox.bCtrl) {
-				Addons.CheckBox.SetCtrl(false);
-			}
-		 	if (!IsDrag(pt, Addons.CheckBox.pt)) {
-				var ht = api.Memory("LVHITTESTINFO");
+			if (msg == WM_LBUTTONDOWN) {
+				Addons.CheckBox.pt = pt.Clone();
 				var ptc = pt.Clone();
 				api.ScreenToClient(Ctrl.hwndList, ptc);
+				var ht = api.Memory("LVHITTESTINFO");
 				ht.pt = ptc;
 				api.SendMessage(Ctrl.hwndList, LVM_HITTEST, 0, ht);
-				if (ht.iItem >= 0 && ht.flags & LVHT_ABOVE) {
-					var item = api.Memory("LVITEM");
-					item.stateMask = LVIS_SELECTED | LVIS_STATEIMAGEMASK;
-					item.state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_SELECTED) ? 0x1000 : LVIS_SELECTED | 0x2000;
-					api.SendMessage(Ctrl.hwndList, LVM_SETITEMSTATE, ht.iItem, item);
+				Addons.CheckBox.state = ht.iItem >= 0 ? api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_STATEIMAGEMASK) : 0;
+				if (Addons.CheckBox.All && Ctrl.ItemCount(SVGIO_SELECTION) > 1) {
+					for (var i = VK_RBUTTON; i <= VK_MENU; i++) {
+						if (api.GetKeyState(i) < 0) {
+							return;
+						}
+					}
+					Addons.CheckBox.SetCtrl(true);
+				}
+				return;
+			}
+			if (msg == WM_LBUTTONUP) {
+				if (Addons.CheckBox.bCtrl) {
+					Addons.CheckBox.SetCtrl(false);
+				}
+				if (!IsDrag(pt, Addons.CheckBox.pt)) {
+					var ht = api.Memory("LVHITTESTINFO");
+					var ptc = pt.Clone();
+					api.ScreenToClient(Ctrl.hwndList, ptc);
+					ht.pt = ptc;
+					api.SendMessage(Ctrl.hwndList, LVM_HITTEST, 0, ht);
+					if (WINVER < 0x600 && ht.iItem >= 0 && ht.flags & LVHT_ABOVE) {
+						var item = api.Memory("LVITEM");
+						item.stateMask = LVIS_SELECTED | LVIS_STATEIMAGEMASK;
+						item.state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_SELECTED) ? 0x1000 : LVIS_SELECTED | 0x2000;
+						api.SendMessage(Ctrl.hwndList, LVM_SETITEMSTATE, ht.iItem, item);
+					}
 				}
 			}
-		}
-		if (msg == WM_MOUSEMOVE) {
-			if (Addons.CheckBox.bCtrl) {
-				Addons.CheckBox.SetCtrl(false);
+			if (msg == WM_MOUSEMOVE) {
+				if (Addons.CheckBox.bCtrl) {
+					Addons.CheckBox.SetCtrl(false);
+				}
 			}
-		}
-	});
-
+		});
+	}
+	
 	AddEvent("SelectionChanged", function (Ctrl, uChange)
 	{
 		if (Ctrl.Type <= CTRL_EB) {
@@ -111,7 +115,8 @@ if (window.Addon == 1) {
 		for (i in cFV) {
 			Addons.CheckBox.Init(cFV[i]);
 		}
-		te.Data.View_fFlags |= FWF_CHECKSELECT;
+		te.Data.View_fFlags &= ~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT);
+		te.Data.View_fFlags |= Addons.CheckBox.FWF;
 	});
 
 	AddEvent("AddonDisabled", function (Id)
@@ -123,12 +128,14 @@ if (window.Addon == 1) {
 				for (i in cFV) {
 					var FV = cFV[i];
 					var fFlags = FV.FolderFlags;
-					if (fFlags & FWF_CHECKSELECT) {
-						FV.FolderFlags = fFlags & ~FWF_CHECKSELECT;
+					if (fFlags & (FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) {
+						FV.FolderFlags = fFlags & ~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT);
 					}
 				}
-				te.Data.View_fFlags &= ~FWF_CHECKSELECT;
+				te.Data.View_fFlags &= ~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT);
 			});
 		}
 	});
+} else {
+	SetTabContents(0, "General", '<input type="checkbox" id="All" /><label for="All">All</label>');
 }
