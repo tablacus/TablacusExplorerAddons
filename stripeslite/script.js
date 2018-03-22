@@ -9,7 +9,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes)
 	{
-		if (pid && Ctrl.CurrentViewMode == FVM_DETAILS) {
+		if (pid && api.SendMessage(Ctrl.hwndList, LVM_GETVIEW, 0, 0) == 1) {
 			if (nmcd.dwItemSpec & 1) {
 				return;
 			}
