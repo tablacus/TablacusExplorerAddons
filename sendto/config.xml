@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
+    <Version>1.00</Version>
     <MinVersion>2018.3.21</MinVersion>
     <pubDate>Fri, 23 Mar 2018 00:00:00 GMT</pubDate>
-    <Options>Default</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Startup settings</Name>
-    <Description>Startup settings of Tablacus Explorer.</Description>
+    <Name>Send to</Name>
+    <Description>Add "Send to" to the type.</Description>
   </en>
   <ja>
-    <Name>開始時の設定</Name>
-    <Description>Tablacus Explorer開始時の設定</Description>
+    <Name>送る</Name>
+    <Description>タイプに「送る」を追加します。</Description>
   </ja>
 </TablacusExplorer>

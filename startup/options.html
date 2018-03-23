@@ -15,7 +15,6 @@
     </script>
   </head>
   <body>
-
     <form name="F">
       <div class="panel" style="display: block;">
           <label>Type</label>
@@ -36,11 +35,11 @@
                 <label>Options</label>
               </td>
               <td align="right">
-                <input type="button" value="Reference..." onclick="RefX('Path', true, this)" style="min-width: 160px" />
+                <input type="button" value="Browse..." onclick="RefX('Path', true, this)" style="min-width: 160px" />
               </td>
             </tr>
           </table>
-          <textarea name="Path" style="width: 100%; height: 200px"></textarea>
+          <textarea name="Path" style="width: 100%; height: 200px; min-height: calc(100vh - 9em)"></textarea>
       </div>
       <table width="95%">
         <tr>
@@ -56,14 +55,12 @@
       AddEventEx(window, "load", function ()
       {
         var arFunc = [];
-        for (var i in MainWindow.eventTE.AddType) {
-            MainWindow.eventTE.AddType[i](arFunc);
-        }
+        MainWindow.RunEvent1("AddType", arFunc);
         var oa = document.F.Type;
         for (var i = 0; i < arFunc.length; i++) {
-            var o = oa[++oa.length - 1];
-            o.value = arFunc[i];
-			o.innerText = GetText(arFunc[i]).replace(/&|\.\.\.$/g, "").replace(/\(\w\)/, "");
+          var o = oa[++oa.length - 1];
+          o.value = arFunc[i];
+			    o.innerText = GetText(arFunc[i]).replace(/&|\.\.\.$/g, "").replace(/\(\w\)/, "");
         }
         InitAddonOptions();
     });

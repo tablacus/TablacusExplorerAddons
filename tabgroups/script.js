@@ -182,7 +182,7 @@ if (window.Addon == 1) {
 					style.filter = "none";
 				}
 				style.backgroundColor = cl;
-				cl = api.sscanf(cl, "#%06x") 
+				cl = api.sscanf(cl, "#%06x")
 				cl = (cl & 0xff0000) * .0045623779296875 + (cl & 0xff00) * 2.29296875 + (cl & 0xff) * 114;
 				style.color = cl > 127000 ? "black" : "white";
 			} else {
@@ -602,7 +602,7 @@ if (window.Addon == 1) {
 	{
 		if (Ctrl.Type == CTRL_WB) {
 			var i = Addons.Tabgroups.FromPt(pt);
-			if (i >= 0) { 
+			if (i >= 0) {
 				if (i != te.Data.Tabgroups.Index) {
 					if (IsDrag(pt, Addons.Tabgroups.pt)) {
 						clearTimeout(Addons.Tabgroups.tid);
@@ -647,8 +647,20 @@ if (window.Addon == 1) {
 		}
 	});
 
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt)
+	{
+		if (msg == WM_LBUTTONDOWN && Ctrl.Type == CTRL_TE) {
+			if (!IsDrag(pt, Addons.Tabgroups.pt)) {
+				setTimeout(function ()
+				{
+					FireEvent(document.getElementById("tabgroups" + te.Data.Tabgroups.Click), "dblclick");
+				}, 99);
+			}
+		}
+	});
+
 	AddEventId("AddonDisabledEx", "tabgroups", function ()
 	{
-		te.Data.Tabgroups = null;
+		delete te.Data.Tabgroups;
 	});
 }
