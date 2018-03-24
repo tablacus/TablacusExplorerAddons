@@ -662,6 +662,10 @@ if (window.Addon == 1) {
 } else {
 	var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\"+ Addon_Id + "\\options.html"));
 	if (ado) {
+		var Icon = document.F.Icon;
+		if (Icon) {
+			Icon.name = "Icon_0";
+		}
 		SetTabContents(0, "General", ado.ReadText(adReadAll));
 		ado.Close();
 	}

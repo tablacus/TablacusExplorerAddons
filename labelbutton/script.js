@@ -10,14 +10,14 @@ if (window.Addon == 1) {
 			MouseOver(o);
 			if (Addons.Label) {
 				var oList = {};
-				Addons.Label.List(oList);
+				var oList2 = {};
+				Addons.Label.List(oList, oList2);
 				var hMenu = api.CreatePopupMenu();
 				var arList = [];
 				var oListPos = {};
-				var i = 0;
 				for (var s in oList) {
 					arList.push(s);
-					oListPos[s] = ++i;
+					oListPos[s] = arList.length;
 				}
 				if (Addons.LabelButton.Add(hMenu, oList, arList, oListPos) && !mode && arList.length) {
 					api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
@@ -36,11 +36,38 @@ if (window.Addon == 1) {
 						}
 					}
 					var nRes = Addons.LabelButton.LabelGroup(hMenu, oList, arList, oListPos, 10000);
-					for (var s in oList) {
-						if (nRes) {
-							api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-							nRes = 0;
+					if (nRes) {
+						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+						nRes = 0;
+					}
+
+					var nSingle = arList.length;
+					var arList2 = [];
+					for (var s in oList2) {
+						var ar = api.CommandLineToArgv(s);
+						if (ar.length > 1) {
+							arList2.push(s);
 						}
+					}
+					if (arList2.length) {
+						arList2 = arList2.sort(function (a, b) {
+							return api.StrCmpLogical(a, b);
+						});
+						var mii = api.Memory("MENUITEMINFO");
+						mii.cbSize = mii.Size;
+						mii.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_STATE;
+						mii.hSubMenu = api.CreatePopupMenu();
+						mii.dwTypeData = GetText("Filter");
+						for (var i in arList2) {
+							var s = arList2[i];
+							arList.push(s);
+							oListPos[s] = arList.length;
+							api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, oListPos[s] + 10000, s);
+						}
+						api.InsertMenuItem(hMenu, MAXINT, false, mii);
+					}
+
+					for (var s in oList) {
 						api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, oListPos[s] + 10000, s);
 					}
 				}

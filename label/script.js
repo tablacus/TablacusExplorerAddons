@@ -263,7 +263,7 @@ if (window.Addon == 1) {
 		{
 			if (path) {
 				var ar = Addons.Label.Get(path).split(/\s*;\s*/);
-				s = s.replace(/[\\?\\*]/g, "");
+				s = s.replace(/[\\?\\*"]|^ | $/g, "");
 				if (s) {
 					te.Labels[path] = s;
 				} else {
@@ -322,21 +322,27 @@ if (window.Addon == 1) {
 			Addons.Label.Redraw = {};
 		},
 
-		List: function (list)
+		List: function (list, all)
 		{
 			var ix = [];
 			Addons.Label.ENumCB(function (path, s)
 			{
 				var ar = s.split(/\s*;\s*/);
 				for (var i in ar) {
-					var s = ar[i];
+					var s = api.PathQuoteSpaces(ar[i]);
 					if (s) {
 						ix.push(s);
+						ar[i] = s;
 					}
+				}
+				if (all) {
+					all[ar.sort(function (a, b) {
+						return api.StrCmpLogical(a, b);
+					}).join(" ")] = true;
 				}
 			});
 			var ix = ix.sort(function (a, b) {
-				return api.StrCmpLogical(b, a)
+				return api.StrCmpLogical(b, a);
 			});
 			for (var i = ix.length; i--;) {
 				list[ix[i]] = true;
@@ -451,10 +457,11 @@ if (window.Addon == 1) {
 				var bWC = /[\*\?;]/.test(Label);
 				Addons.Label.ENumCB(function (path, s)
 				{
-					if (bWC || Label.indexOf(" ") >= 0) {
+					var ar3 = Label.split(/;/);
+					for (k in ar3) {
+						var ar2 = api.CommandLineToArgv(ar3[k]);
 						b = true;
 						ar = null;
-						var ar2 = Label.split(/\s+/);
 						for (var j in ar2) {
 							var s2 = ar2[j];
 							if (s2 && !api.PathMatchSpec(s2, s)) {
@@ -471,8 +478,9 @@ if (window.Addon == 1) {
 								break;
 							}
 						}
-					} else {
-						b = api.PathMatchSpec(Label, s);
+						if (b) {
+							break;
+						}
 					}
 					if (b && path !="%Installed%") {
 						Items.AddItem(path);

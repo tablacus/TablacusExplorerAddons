@@ -111,9 +111,9 @@ if (window.Addon == 1) {
 					var strName = items[i].getAttribute("Name");
 					if (!items[i].getAttribute("Org")) {
 						strName = GetText(strName);
-					}		
+					}
 					var strType = items[i].getAttribute("Type");
-					var img = EncodeSC(items[i].getAttribute("Icon"));
+					var img = items[i].getAttribute("Icon");
 					var path = items[i].text;
 					var nOpen = 0;
 					if (api.StrCmpI(strType, "Menus") == 0) {
