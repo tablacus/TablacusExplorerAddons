@@ -263,7 +263,7 @@ if (window.Addon == 1) {
 		{
 			if (path) {
 				var ar = Addons.Label.Get(path).split(/\s*;\s*/);
-				s = s.replace(/[\\?\\*"]|^ | $/g, "");
+				s = s.replace(/[\\?\\*"]|^ +| +$/g, "");
 				if (s) {
 					te.Labels[path] = s;
 				} else {

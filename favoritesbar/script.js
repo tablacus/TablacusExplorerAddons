@@ -113,7 +113,7 @@ if (window.Addon == 1) {
 						strName = GetText(strName);
 					}
 					var strType = items[i].getAttribute("Type");
-					var img = items[i].getAttribute("Icon");
+					var img = api.PathUnquoteSpaces(items[i].getAttribute("Icon"));
 					var path = items[i].text;
 					var nOpen = 0;
 					if (api.StrCmpI(strType, "Menus") == 0) {
