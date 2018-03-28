@@ -2,9 +2,11 @@ if (window.Addon == 1) {
 	AddEvent("Create", function (Ctrl)
 	{
 		if (Ctrl.Type == CTRL_TE) {
-			var items = te.Data.Addons.getElementsByTagName("startup");
-			if (items.length) {
-				var item = items[0];
+			var item = GetAddonElement('startup');
+			if (item) {
+				if (item.getAttribute("Shift") && api.GetKeyState(VK_SHIFT) < 0) {
+					return;
+				}
 				var s = item.getAttribute("Type");
 				if (api.PathMatchSpec(s, "Open;Open in New Tab;Open in Background")) {
 					(function (strPath, strType) { setTimeout(function () {

@@ -17,29 +17,25 @@
   <body>
     <form name="F">
       <div class="panel" style="display: block;">
-          <label>Type</label>
+          <label>Type</label><br />
+          <select name="Type">
+          </select><br />
           <table class="layout">
             <tr>
-              <td valign="bottom">
-                <select name="Type">
-                </select>
-              </td>
-              <td align="right">
-                <input type="button" value="Portable" onclick="PortableX('Path')" />
-              </td>
-            </tr>
-          </table>
-          <table class="layout">
-            <tr>
-              <td>
+              <td style="vertical-align: bottom; width: 100%">
                 <label>Options</label>
               </td>
-              <td align="right">
-                <input type="button" value="Browse..." onclick="RefX('Path', true, this)" style="min-width: 160px" />
+              <td>
+                <input type="button" value="Portable" onclick="PortableX('Path')" />
+              </td>
+              <td>
+                <input type="button" value="Browse..." onclick="RefX('Path', true, this)" />
               </td>
             </tr>
           </table>
-          <textarea name="Path" style="width: 100%; height: 200px; min-height: calc(100vh - 9em)"></textarea>
+          <textarea name="Path" style="width: 100%; height: 200px; min-height: calc(100vh - 11em)"></textarea><br />
+          <label>Cancel</label><br />
+          <input type="checkbox" id="Shift"><label for="Shift">Shift</label>
       </div>
       <table width="95%">
         <tr>

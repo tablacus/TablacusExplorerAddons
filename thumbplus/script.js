@@ -98,12 +98,17 @@ if (window.Addon == 1) {
 		});
 	}
 
-	var ar = [api.LoadString(hShell32, 9007).replace(/^.*?#|#.*$/g, "") || "*.jpg"];
-	var s = item.getAttribute("Disable");
-	if (s) {
-		ar.push(s);
+	var ar = [];
+	te.WICBitMap().GetCodecInfo(1, 0, ar);
+	var s = "";
+	for (var i in ar) {
+		var ar2 = ar[i].split(/,/);
+		for (var j in ar2) {
+			s += "*" + ar2[j] + ";";
+		}
 	}
-	Addons.ThumbPlus.Disable = ar.join(";");
+	s += item.getAttribute("Disable") || "";
+	Addons.ThumbPlus.Disable = s.replace(/;$/, "");
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }
