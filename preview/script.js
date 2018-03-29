@@ -5,7 +5,8 @@ if (window.Addon == 1) {
 	{
 		Align: api.StrCmpI(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
 		Height: GetAddonOption(Addon_Id, "Height"),
-		TextFilter: GetAddonOption(Addon_Id, "TextFilter") || "*.txt;*.css;*.js;*.vbs;*.vba;*.ini",
+		TextFilter: GetAddonOption(Addon_Id, "TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
+		Embed: GetAddonOption(Addon_Id, "Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
 		Width: 0,
 
 		Arrange: function (Item, Ctrl)
@@ -17,8 +18,8 @@ if (window.Addon == 1) {
 			var o = document.getElementById('PreviewBar');
 			var s = [];
 			if (Item) {
-				var Folder = sha.NameSpace(Item.Parent);
-				var info = EncodeSC(Folder.GetDetailsOf(Item, 0) + "\n" + Folder.GetDetailsOf(Item, -1));
+				var Folder = sha.NameSpace(api.ILRemoveLastID(Item));
+				var info = EncodeSC(Folder.GetDetailsOf(Item, 0) + "\n" + Folder.GetDetailsOf(Item, -1)) +"\n";
 				if (Item.IsLink) {
 					var path = Item.ExtendedProperty("linktarget");
 					if (path) {
@@ -51,10 +52,12 @@ if (window.Addon == 1) {
 					s.splice(s.length, 0, '<div align="center"><img src="', path, '" style="display: block;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this.src, this)"></div>');
 				} else if (Addons.Preview.FromFile(path, img)) {
 					s.push('<div align="center"><img src="', img.src, '" style="display: block;', style, '" title="', info, '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false"/></div>');
-				} else if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4")) {
-					s.splice(s.length, 0, '<video controls width="100%" height="100%"><source src="' + path + '"></video>');
-				} else if (api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf")) {
-					s.splice(s.length, 0, '<embed width="100%" height="100%" src="' + path + '" autoplay="false"></embed>');
+				} else if (api.PathMatchSpec(path, Addons.Preview.Embed)) {
+					if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4")) {
+						s.splice(s.length, 0, '<video controls width="100%" height="100%"><source src="' + path + '"></video>');
+					} else {
+						s.splice(s.length, 0, '<embed width="100%" height="100%" src="' + path + '" autoplay="false"></embed>');
+					}
 				} else {
 					s.push('<div style="font-size: 10px; margin-left: 4px">', path, '</div>');
 				}

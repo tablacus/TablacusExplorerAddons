@@ -1,14 +1,12 @@
-<div class="panel" style="display: block;">
-  <div>
-    <label>Position</label>
-  </div>
-  <input type="text" name="Align" />
-  <input type="radio" name="_Align" id="Align=Left" onclick="SetRadio(this)" />
-  <label for="Align=Left">Left</label>
-  <input type="radio" name="_Align" id="Align=Right" onclick="SetRadio(this)" />
-  <label for="Align=Right">Right</label>
+<div>
+  <label>Position</label>
 </div>
-<br />
+<input type="hidden" name="Align" />
+<input type="radio" name="_Align" id="Align=Left" onclick="SetRadio(this)" />
+<label for="Align=Left">Left</label>
+<input type="radio" name="_Align" id="Align=Right" onclick="SetRadio(this)" />
+<label for="Align=Right">Right</label>
+<br /><br />
 <div>
   <label>Height</label>
 </div>
@@ -18,4 +16,10 @@
 <div>
   <label>Text</label> <label>Filter</label>
 </div>
-<input type="text" name="TextFilter" style="width: 100%" />
+<input type="text" name="TextFilter" placeholder="*.txt;*.ini;*.css;*.js;*.vba;*.vbs" style="width: 100%" />
+<br />
+<br />
+<div>
+  <label>Embed</label>
+</div>
+<input type="text" name="Embed" placeholder="*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf" style="width: 100%" />
