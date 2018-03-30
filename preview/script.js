@@ -50,14 +50,14 @@ if (window.Addon == 1) {
 				var img = {};
 				if (nWidth && nHeight) {
 					s.splice(s.length, 0, '<div align="center"><img src="', path, '" style="display: block;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this.src, this)"></div>');
-				} else if (Addons.Preview.FromFile(path, img)) {
-					s.push('<div align="center"><img src="', img.src, '" style="display: block;', style, '" title="', info, '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false"/></div>');
 				} else if (api.PathMatchSpec(path, Addons.Preview.Embed)) {
 					if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4")) {
 						s.splice(s.length, 0, '<video controls width="100%" height="100%"><source src="' + path + '"></video>');
 					} else {
 						s.splice(s.length, 0, '<embed width="100%" height="100%" src="' + path + '" autoplay="false"></embed>');
 					}
+				} else if (Addons.Preview.FromFile(path, img)) {
+					s.push('<div align="center"><img src="', img.src, '" style="display: block;', style, '" title="', info, '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false"/></div>');
 				} else {
 					s.push('<div style="font-size: 10px; margin-left: 4px">', path, '</div>');
 				}

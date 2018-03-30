@@ -231,8 +231,6 @@ if (window.Addon == 1) {
 
 		Change: function (n)
 		{
-			te.LockUpdate();
-			setTimeout("te.UnlockUpdate();", 200);
 			var oShow = {};
 			if (n > 0) {
 				te.Data.Tabgroups.Click = n;
@@ -243,6 +241,8 @@ if (window.Addon == 1) {
 				te.Data.Tabgroups.Index = te.Data.Tabgroups.Click;
 				this.Arrange();
 			}
+			te.LockUpdate();
+			setTimeout("te.UnlockUpdate();", 200);
 			var bDisp = false;
 			var freeTC = [];
 			var preTC = [];
@@ -357,9 +357,7 @@ if (window.Addon == 1) {
 			if (api.GetKeyState(VK_LBUTTON) < 0) {
 				api.GetCursorPos(this.pt);
 				var n = o.id.replace(/\D/g, '') - 0;
-				if (te.Data.Tabgroups.Click != n) {
-					this.Change(n);
-				}
+				this.Change(n);
 			}
 			return true;
 		},
