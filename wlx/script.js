@@ -4,6 +4,9 @@ if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", -1);
 	item.setAttribute("Menu", "Context");
 	item.setAttribute("MenuPos", -1);
+	item.setAttribute("KeyExec", 1);
+	item.setAttribute("KeyOn", "List");
+	item.setAttribute("Key", "Ctrl+Q");
 }
 if (window.Addon == 1) {
 	Addons.WLX =
@@ -25,7 +28,9 @@ if (window.Addon == 1) {
 					var WLX = Addons.WLX.DLL.open(dllPath);
 					if (WLX && WLX.ListLoad) {
 						if (WLX.ListGetDetectString) {
-							Addons.WLX.X.unshift({X: WLX, CC: WLX.ListGetDetectString(), Fit: item1.getAttribute("Fit") });
+							Addons.WLX.X.unshift({X: WLX, CC: WLX.ListGetDetectString() || "force", Fit: item1.getAttribute("Fit") });
+						} else {
+							Addons.WLX.X.unshift({X: WLX, CC: "force", Fit: item1.getAttribute("Fit") });
 						}
 						if (WLX.ListSetDefaultParams) {
 							WLX.ListSetDefaultParams(fso.BuildPath(te.Data.DataFolder, "config\\lsplugin.ini"));
