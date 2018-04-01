@@ -1,21 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
+    <Version>1.00</Version>
     <MinVersion>2018.4.1</MinVersion>
     <pubDate>Sun, 01 Apr 2018 00:00:00 GMT</pubDate>
-    <Options>Default</Options>
-    <DllVersion>1.0.0.0</DllVersion>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Susie Plug-in</Name>
-    <Description>Susie Plug-in</Description>
+    <Name>Hot button</Name>
+    <Description>Hot button</Description>
   </en>
   <ja>
-    <Name>Susie プラグイン</Name>
-    <Description>Susie プラグイン</Description>
+    <Name>ホットボタン</Name>
+    <Description>ホットボタン</Description>
   </ja>
 </TablacusExplorer>

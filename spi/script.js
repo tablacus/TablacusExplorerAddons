@@ -5,6 +5,13 @@ if (window.Addon == 1) {
 		IN: [],
 		AM: [],
 
+		GetHeader: function (file)
+		{
+			var ppStream = [];
+			api.SHCreateStreamOnFileEx(file, STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, false, null, ppStream);
+			return ppStream[0];
+		},
+
 		Finalize: function ()
 		{
 			delete Addons.SPI.IN;
@@ -16,22 +23,22 @@ if (window.Addon == 1) {
 
 	AddEvent("FromFile", function (image, file, alt, cx)
 	{
-		var i, j, path, arc, path2, hFind, dw, SPI, ado;
+		var i, j, path, arc, path2, hFind, dw, SPI, o;
 		if (Addons.SPI.IN.length && /^[A-Z]:\\.+|^\\.+\\.+/i.test(file)) {
-			ado = te.CreateObject(api.ADBSTRM);
-			try {
-				ado.Type = adTypeBinary;
-				ado.Open();
-				ado.LoadFromFile(file);
-				dw = ado.Read(2048);
-			} catch (e) {
-				dw = undefined;
-			}
-			ado.Close();
-			if (dw !== undefined) {
-				for (i = Addons.SPI.IN.length; i-- > 0;) {
-					SPI = Addons.SPI.IN[i];
+			dw = null;
+			for (i = Addons.SPI.IN.length; i-- > 0;) {
+				o = Addons.SPI.IN[i];
+				if (api.PathMatchSpec(file, o.Filter)) {
+					if (dw === null) {
+						dw = Addons.SPI.GetHeader(file);
+						if (dw === undefined) {
+							break;
+						}
+					}
+					SPI = o.SPI;
 					if (SPI.IsSupported(file, dw)) {
+						dw.Free();
+						dw = null;
 						var phbm = [];
 						if ((cx || 999) <= 256 && SPI.GetPreview) {
 							if (SPI.GetPreview(file, 0, 0, null, phbm, null, 0) == 0) {
@@ -65,22 +72,21 @@ if (window.Addon == 1) {
 						if (hFind == INVALID_HANDLE_VALUE || wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 							continue;
 						}
-						ado = te.CreateObject(api.ADBSTRM);
-						try {
-							ado.Type = adTypeBinary;
-							ado.Open();
-							ado.LoadFromFile(arc);
-							dw = ado.Read(2048);
-						} catch (e) {
-							dw = undefined;
-						}
-						ado.Close();
-
-						if (dw !== undefined) {
-							path2 = path.slice(j).join("\\");
-							for (i = Addons.SPI.AM.length; i-- > 0;) {
-								SPI = Addons.SPI.AM[i];
+						dw = null;
+						path2 = path.slice(j).join("\\");
+						for (i = Addons.SPI.AM.length; i-- > 0;) {
+							o = Addons.SPI.AM[i];
+							if (api.PathMatchSpec(arc, o.Filter)) {
+								if (dw === null) {
+									dw = Addons.SPI.GetHeader(arc);
+									if (dw === undefined) {
+										break;
+									}
+								}
+								SPI = o.SPI;
 								if (SPI.IsSupported(arc, dw)) {
+									dw.Free();
+									dw = null;
 									var fileinfo = {};
 									if (SPI.GetFileInfo(arc, 0, path2, 0x80, fileinfo) == 0) {
 										var ppStream = [];
@@ -105,8 +111,9 @@ if (window.Addon == 1) {
 		var dw;
 		if (Addons.SPI.IN.length) {
 			for (var i = Addons.SPI.IN.length; i-- > 0;) {
-				var SPI = Addons.SPI.IN[i];
-				if (SPI.IsSupported(filename, stream)) {
+				var o = Addons.SPI.IN[i];
+				SPI = o.SPI;
+				if (api.PathMatchSpec(filename, o.Filter) && SPI.IsSupported(filename, stream)) {
 					var phbm = [];
 					if ((cx || 999) <= 256 && SPI.GetPreview) {
 						if (SPI.GetPreview(stream, 0, 1, null, phbm, null, 0) == 0) {
@@ -139,11 +146,17 @@ if (window.Addon == 1) {
 			for (var i = items.length; i-- > 0;) {
 				if (!items[i].getAttribute("Disabled")) {
 					var SPI = Addons.SPI.DLL.open(api.PathUnquoteSpaces(ExtractMacro(te, items[i].getAttribute("Path")))) || {};
+					var ar = [];
+					if (SPI.GetPluginInfo) {
+						SPI.GetPluginInfo(ar);
+					}
+					var Filter = items[i].getAttribute("Filter") ? ar[2] || "*" : "*";
+					var o = { SPI : SPI, Filter: Filter };
 					if (SPI.GetPicture) {
-						Addons.SPI.IN.push(SPI);
+						Addons.SPI.IN.push(o);
 					}
 					if (SPI.GetFile) {
-						Addons.SPI.AM.push(SPI);
+						Addons.SPI.AM.push(o);
 					}
 				}
 			}

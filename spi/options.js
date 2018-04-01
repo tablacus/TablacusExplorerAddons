@@ -17,7 +17,7 @@ function LoadFS()
 			g_x.List.length = i;
 			while (--i >= 0) {
 				var item = items[i];
-				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Disabled")], !item.getAttribute("Disabled"));
+				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Disabled"), item.getAttribute("Filter")], !item.getAttribute("Disabled"));
 			}
 		}
 		EnableSelectTag(g_x.List);
@@ -36,6 +36,7 @@ function SaveFS()
 			item.setAttribute("Name", a[0]);
 			item.setAttribute("Path", a[1]);
 			item.setAttribute("Disabled", a[2]);
+			item.setAttribute("Filter", a[3]);
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
@@ -52,6 +53,7 @@ function EditFS()
 	document.F.Name.value = a[0];
 	document.F.Path.value = a[1];
 	document.F.Enable.checked = !a[2];
+	document.F.Filter.checked = a[3];
 	SetProp();
 }
 
@@ -64,7 +66,7 @@ function ReplaceFS()
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
 	o = document.F.Type;
-	SetData(sel, [document.F.Name.value, document.F.Path.value, !document.F.Enable.checked], document.F.Enable.checked);
+	SetData(sel, [document.F.Name.value, document.F.Path.value, !document.F.Enable.checked, document.F.Filter.checked], document.F.Enable.checked);
 	g_Chg.List = true;
 }
 
@@ -109,6 +111,7 @@ function SetProp(bName)
 	}
 	s.push('</table>')
 	document.getElementById("ext").innerHTML = s.join("");
+	document.F.elements["_Filter"].value = ar[2] || "*";		
 }
 
 function ED(s)

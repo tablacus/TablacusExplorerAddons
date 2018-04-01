@@ -94,17 +94,28 @@ Addons.MultiProcess =
 			clearTimeout(Addons.MultiProcess.tid);
 			Addons.MultiProcess.tid = null;
 		}
-		var src;
-		var el = document.createElement('embed');
-		if (autoplay === true) {
-			src = item.getAttribute("File");
-			el.setAttribute("autoplay", "true");
-		} else {
-			src = document.F.File.value;
-			el.setAttribute("autoplay", "false");
+		var el;
+		var src = api.PathUnquoteSpaces(ExtractMacro(te, (autoplay === true) ? item.getAttribute("File") : document.F.File.value));
+		if (autoplay === true && api.PathMatchSpec(src, "*.wav")) {
+			api.PlaySound(src, null, 1);
+			return;
 		}
-		el.src = api.PathUnquoteSpaces(ExtractMacro(te, src));
-		el.setAttribute("volume", "0");
+		if (document.documentMode >= 11 && api.PathMatchSpec(src, "*.mp3;*.m4a;*.webm;*.mp4")) {
+			el = document.createElement('audio');
+			if (autoplay === true) {
+				el.setAttribute("autoplay", "true");
+			} else {
+				el.setAttribute("controls", "true");
+			}
+			if (autoplay === true) {
+				el.setAttribute("autoplay", "true");
+			}
+		} else {
+			el = document.createElement('embed');
+			el.setAttribute("volume", "0");
+			el.setAttribute("autoplay", autoplay === true);
+		}
+		el.src = src;
 		el.setAttribute("style", "width: 100%; height: 3.5em");
 		var o = document.getElementById('multiprocess_player');
 		while (o.firstChild) {

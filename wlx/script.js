@@ -152,17 +152,13 @@ if (window.Addon == 1) {
 
 		GetHeader: function (path)
 		{
-			ado = te.CreateObject(api.ADBSTRM);
-			try {
-				ado.Type = adTypeBinary;
-				ado.Open();
-				ado.LoadFromFile(path);
-				dw = ado.Read(8192);
-			} catch (e) {
-				dw = undefined;
+			var ppStream = [];
+			api.SHCreateStreamOnFileEx(path, STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, false, null, ppStream);
+			if (ppStream[0]) {
+				var dw = api.Memory(ppStream[0], 8192);
+				ppStream[0].Free();
+				return dw;
 			}
-			ado.Close();
-			return api.Memory(dw);
 		},
 
 		Exec: function (Ctrl, pt)
