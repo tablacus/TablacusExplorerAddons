@@ -537,12 +537,12 @@ BSTR teGetMemoryFromVariant(VARIANT *pv, BOOL *pbDelete, LONG_PTR *pLen)
 				pStream->Seek(liOffset, STREAM_SEEK_END, &uliSize);
 				pStream->Seek(liOffset, STREAM_SEEK_SET, NULL);
 			} else {
-				uliSize.QuadPart = 2048;
+				uliSize.QuadPart = BUFF_SIZE;
 			}
-			pMemory = ::SysAllocStringByteLen(NULL, uliSize.LowPart > 2048 ? uliSize.LowPart : 2048);
+			pMemory = ::SysAllocStringByteLen(NULL, uliSize.LowPart > BUFF_SIZE ? uliSize.LowPart : BUFF_SIZE);
 			if (pMemory) {
-				if (uliSize.LowPart < 2048) {
-					::ZeroMemory(pMemory, 2048);
+				if (uliSize.LowPart < BUFF_SIZE) {
+					::ZeroMemory(pMemory, BUFF_SIZE);
 				}
 				*pbDelete = TRUE;
 				ULONG cbRead;
@@ -561,10 +561,10 @@ BSTR teGetMemoryFromVariant(VARIANT *pv, BOOL *pbDelete, LONG_PTR *pLen)
 			SafeArrayGetUBound(psa, 1, &lUBound);
 			SafeArrayGetLBound(psa, 1, &lLBound);
 			nSize = lUBound - lLBound + 1;
-			pMemory = ::SysAllocStringByteLen(NULL, nSize > 2048 ? nSize : 2048);
+			pMemory = ::SysAllocStringByteLen(NULL, nSize > BUFF_SIZE ? nSize : BUFF_SIZE);
 			if (pMemory) {
-				if (nSize < 2048) {
-					::ZeroMemory(pMemory, 2048);
+				if (nSize < BUFF_SIZE) {
+					::ZeroMemory(pMemory, BUFF_SIZE);
 				}
 				::CopyMemory(pMemory, pvData, nSize);
 				if (pLen) {
@@ -871,7 +871,7 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 			//ListGetDetectString
 			case 0x60010006:
 				if (wFlags & DISPATCH_METHOD) {
-					char pszDetectString[2048];
+					char pszDetectString[BUFF_SIZE];
 					pszDetectString[0] = NULL;
 					if (m_ListGetDetectString) {
 						m_ListGetDetectString(pszDetectString, sizeof(pszDetectString));

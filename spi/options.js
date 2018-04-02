@@ -111,7 +111,11 @@ function SetProp(bName)
 	}
 	s.push('</table>')
 	document.getElementById("ext").innerHTML = s.join("");
-	document.F.elements["_Filter"].value = ar[2] || "*";		
+	var filter = [];
+	for (var j = 2; j < ar.length; j += 2) {
+		filter.push(ar[j]);
+	}
+	document.F.elements["_Filter"].value = filter.join(";") || "*";
 }
 
 function ED(s)

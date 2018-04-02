@@ -6,6 +6,8 @@
 #include "listplug.h"
 
 #define MAX_OBJ 64
+#define BUFF_SIZE 8192
+
 
 struct TEmethod
 {

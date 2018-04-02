@@ -152,11 +152,10 @@ if (window.Addon == 1) {
 
 		GetHeader: function (path)
 		{
-			var ppStream = [];
-			api.SHCreateStreamOnFileEx(path, STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, false, null, ppStream);
-			if (ppStream[0]) {
-				var dw = api.Memory(ppStream[0], 8192);
-				ppStream[0].Free();
+			var pStream = api.SHCreateStreamOnFileEx(path, STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, false, null);
+			if (pStream) {
+				var dw = api.Memory(pStream, 8192);
+				pStream.Free();
 				return dw;
 			}
 		},
@@ -211,19 +210,12 @@ if (window.Addon == 1) {
 		if (Addons.WLX.IN.length) {
 			AddEvent("FromFile", function (image, file, alt, cx)
 			{
-				var i, dw, ado, hbm;
+				var i, data, ado, hbm, dw;
 				if (Addons.WLX.IN.length && /^[A-Z]:\\.+|^\\.+\\.+/i.test(file)) {
-					ado = te.CreateObject(api.ADBSTRM);
-					try {
-						ado.Type = adTypeBinary;
-						ado.Open();
-						ado.LoadFromFile(file);
-						dw = ado.Read(8192);
-					} catch (e) {
-						dw = undefined;
-					}
-					ado.Close();
-					if (dw !== undefined) {
+					data = Addons.WLX.GetHeader(file);
+					if (data) {
+						dw = data.Read(0, VT_ARRAY | VT_I1, 8192);
+						delete data;
 						for (i = Addons.WLX.IN.length; i-- > 0;) {
 							hbm = Addons.WLX.IN[i].ListGetPreviewBitmap(file, cx || 1024, cx || 1024, dw);
 							if (hbm) {

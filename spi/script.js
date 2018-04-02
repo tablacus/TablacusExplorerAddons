@@ -7,9 +7,7 @@ if (window.Addon == 1) {
 
 		GetHeader: function (file)
 		{
-			var ppStream = [];
-			api.SHCreateStreamOnFileEx(file, STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, false, null, ppStream);
-			return ppStream[0];
+			return api.SHCreateStreamOnFileEx(file, STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, false, null);
 		},
 
 		Finalize: function ()
@@ -37,6 +35,20 @@ if (window.Addon == 1) {
 					}
 					SPI = o.SPI;
 					if (SPI.IsSupported(file, dw)) {
+						if ((cx || 999) <= 256 && SPI.GetPreview) {
+							if (SPI.GetPreview(dw, 0, 1, null, phbm, null, 0) == 0) {
+								image.FromHBITMAP(phbm[0]);
+								api.DeleteObject(phbm[0]);
+								dw.Free();
+								return S_OK;
+							}
+						}
+						if (SPI.GetPicture(dw, 0, 1, null, phbm, null, 0) == 0) {
+							image.FromHBITMAP(phbm[0]);
+							api.DeleteObject(phbm[0]);
+							dw.Free();
+							return S_OK;
+						}
 						dw.Free();
 						dw = null;
 						var phbm = [];
@@ -55,6 +67,10 @@ if (window.Addon == 1) {
 					}
 				}
 			}
+			if (dw) {
+				dw.Free();
+				dw = null;
+			}
 		}
 		if (Addons.SPI.AM.length) {
 			var wfd = api.Memory("WIN32_FIND_DATA");
@@ -71,6 +87,9 @@ if (window.Addon == 1) {
 						api.FindClose(hFind);
 						if (hFind == INVALID_HANDLE_VALUE || wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 							continue;
+						}
+						if (dw) {
+							dw.Free();
 						}
 						dw = null;
 						path2 = path.slice(j).join("\\");
@@ -98,6 +117,10 @@ if (window.Addon == 1) {
 									}
 								}
 							}
+						}
+						if (dw) {
+							dw.Free();
+							dw = null;
 						}
 						break;
 					}
@@ -150,8 +173,11 @@ if (window.Addon == 1) {
 					if (SPI.GetPluginInfo) {
 						SPI.GetPluginInfo(ar);
 					}
-					var Filter = items[i].getAttribute("Filter") ? ar[2] || "*" : "*";
-					var o = { SPI : SPI, Filter: Filter };
+					var filter = [];
+					for (var j = 2; j < ar.length; j += 2) {
+						filter.push(ar[j]);
+					}
+					var o = { SPI : SPI, Filter: items[i].getAttribute("Filter") ? filter.join(";") || "*" : "*" };
 					if (SPI.GetPicture) {
 						Addons.SPI.IN.push(o);
 					}
