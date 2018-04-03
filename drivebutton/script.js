@@ -28,9 +28,9 @@ if (window.Addon == 1) {
 				mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
 				FolderMenu.Clear();
 				for (var i = 0; i < Items.Count; i++) {
-					var path = api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING);
-					if (path.length <= 3) {
-						FolderMenu.AddMenuItem(hMenu, Items.Item(i));
+					var Item = Items.Item(i);
+					if (api.PathIsRoot(api.GetDisplayNameOf(Item, SHGDN_FORPARSING))) {
+						FolderMenu.AddMenuItem(hMenu, Item);
 					}
 				}
 				if (!pt) {
