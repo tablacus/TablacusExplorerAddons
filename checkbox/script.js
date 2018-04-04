@@ -10,7 +10,10 @@ if (window.Addon == 1) {
 		Init: function (Ctrl)
 		{
 			var fFlags = Ctrl.FolderFlags;
-			if (!(fFlags & Addons.CheckBox.FWF)) {
+			if (fFlags & FWF_SINGLECLICKACTIVATE) {
+				Addons.CheckBox.FWF = FWF_CHECKSELECT;
+			}
+			if ((fFlags & (FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) != Addons.CheckBox.FWF) {
 				Ctrl.FolderFlags = fFlags & (~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) | Addons.CheckBox.FWF;
 			}
 		},
@@ -73,6 +76,7 @@ if (window.Addon == 1) {
 				Addons.CheckBox.SetCtrl(false);
 			}
 			if (!IsDrag(pt, Addons.CheckBox.pt)) {
+				Addons.CheckBox.pt.x = MAXINT;
 				var ht = api.Memory("LVHITTESTINFO");
 				var ptc = pt.Clone();
 				api.ScreenToClient(Ctrl.hwndList, ptc);
@@ -83,6 +87,8 @@ if (window.Addon == 1) {
 					item.stateMask = LVIS_SELECTED | LVIS_STATEIMAGEMASK;
 					item.state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_SELECTED) ? 0x1000 : LVIS_SELECTED | 0x2000;Ctrl.SelectItem(ht.iItem, SVSI_FOCUSED | (Boolean(Addons.CheckBox.FWF & FWF_CHECKSELECT) ^ Boolean(item.state & LVIS_SELECTED) ? SVSI_DESELECT : SVSI_SELECT));
 					api.SendMessage(Ctrl.hwndList, 0x1000 + 67, 0, ht.iItem);
+					clearTimeout(Addons.CheckBox.tid[Ctrl.Id]);
+					Addons.CheckBox.tid[Ctrl.Id] = setTimeout("Addons.CheckBox.Arrange(" + Ctrl.Id + ")", 99);
 				}
 			}
 		}
