@@ -18,6 +18,7 @@ if (MainWindow.Exchange) {
 		} catch (e) {}
 		Progress.StopProgressDialog();
 		delete MainWindow.Exchange[arg[3]];
+		ex.NavigateComplete(ex.FV);
 	}
 }
 
@@ -25,7 +26,7 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 {
 	var bAdd, path;
 	var nItems = 0;
-	var sItem = [api.LoadString(hShell32, 13585) || api.LoadString(hShell32, 6478), api.LoadString(hShell32, 38192) || String(api.LoadString(hShell32, 6466)).replace(/%1!ls!/, "%s")].join(" ");
+	var sItem = String(api.LoadString(hShell32, 38192) || api.LoadString(hShell32, 6466)).replace(/%1!ls!/, "%s");
 	var wfd = api.Memory("WIN32_FIND_DATA");
 	while (path = folderlist.shift()) {
 		if (Progress.HasUserCancelled()) {

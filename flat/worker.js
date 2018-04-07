@@ -1,4 +1,6 @@
-﻿var GetList = function(Item)
+﻿var sitems = (api.LoadString(hShell32, 38192) || api.LoadString(hShell32, 6466) || "%s items").replace(/%1[^ ]*/, "%s");
+
+var GetList = function(Item)
 {
 	if (Item.IsFolder) {
 		var link = Item.ExtendedProperty("linktarget");
@@ -12,6 +14,7 @@
 			}
 			Item = Items.Item(i);
 			ex.List.AddItem(Item);
+			Progress.SetTitle(sitems.replace("%s", ex.List.Count));
 			if (GetList(Item)) {
 				return 1;
 			}
@@ -31,6 +34,6 @@ try {
 	}
 } catch (e) {}
 Progress.StopProgressDialog();
-if (List.length && !Progress.HasUserCancelled()) {
-	ex.FV.AddItems(ex.List, true);
+if (ex.List.Count && !Progress.HasUserCancelled()) {
+	ex.fncb(ex.FV, ex.List);
 }

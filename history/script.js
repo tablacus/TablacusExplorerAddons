@@ -121,16 +121,7 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		if (Addons.History1.IsHandle(Ctrl) && !Addons.History1.tid[Ctrl.Id]) {
-			Ctrl.SortColumn = "";
-			Addons.History1.tid[Ctrl.Id] = setTimeout(function () {
-				delete Addons.History1.tid[Ctrl.Id];
-				Ctrl.RemoveAll();
-				var keys = [];
-				Addons.History1.GetList(keys);
-				Ctrl.AddItems(keys);
-			}, 99);
-		} else {
+		if (!Addons.History1.IsHandle(Ctrl)) {
 			var path = GetSavePath(Ctrl.FolderItem);
 			if (path && IsSavePath(path)) {
 				Addons.History1.db[path] = new Date().getTime();
@@ -142,6 +133,12 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.History1.IsHandle(Path)) {
+			Ctrl.ENum = function (pid, Ctrl, fncb)
+			{
+				var keys = [];
+				Addons.History1.GetList(keys);
+				return keys;
+			};
 			return ssfRESULTSFOLDER;
 		}
 	}, true);

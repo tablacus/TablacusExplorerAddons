@@ -11,7 +11,7 @@ if (window.Addon == 1) {
 			return {
 				open: function (method, url)
 				{
-					this.URL = url
+					this.URL = url;
 				},
 
 				send: function ()
@@ -20,7 +20,7 @@ if (window.Addon == 1) {
 					CreateFolder(temp);
 					this.fn = temp + "\\" + fso.GetTempName();
 					DeleteItem(this.fn);
-					wsh.Run(Addons.Download.Path.replace(/%url%/ig, this.URL).replace(/%file%/ig, this.fn), Addons.Download.Show, true);
+					wsh.Run(ExtractMacro(te, Addons.Download.Path.replace(/%url%/ig, this.URL).replace(/%file%/ig, this.fn)), Addons.Download.Show, true);
 					this.readyState = 4;
 					var wfd = api.Memory("WIN32_FIND_DATA");
 					var hFind = api.FindFirstFile(this.fn, wfd);
@@ -34,7 +34,7 @@ if (window.Addon == 1) {
 					}
 				},
 
-				get responseText()
+				get_responseText: function ()
 				{
 					var s;
 					var ado = OpenAdodbFromTextFile(this.fn);
@@ -45,7 +45,7 @@ if (window.Addon == 1) {
 					return s;
 				},
 
-				get responseXML()
+				get_responseXML: function ()
 				{
 					var xml = te.CreateObject("Msxml2.DOMDocument");
 					xml.async = false;

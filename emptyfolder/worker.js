@@ -10,6 +10,7 @@ if (MainWindow.Exchange) {
 			SearchFolders(ex.Path.split(/\s*;\s*/), ex.FV, ex.SessionId, ex.Locale, Progress);
 		} catch (e) {}
 		Progress.StopProgressDialog();
+		ex.NavigateComplete(ex.FV);
 	}
 }
 

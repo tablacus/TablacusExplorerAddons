@@ -83,7 +83,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("NavigateComplete", function (Ctrl)
+	AddEvent("BeginNavigate", function (Ctrl)
 	{
 		var Path = Addons.FindFiles.GetSearchString(Ctrl);
 		if (Path) {
@@ -94,8 +94,10 @@ if (window.Addon == 1) {
 				SessionId: Ctrl.SessionId,
 				hwnd: te.hwnd,
 				ProgressDialog: te.ProgressDialog,
-				Locale: document.documentMode > 8 ? 999 : Infinity
+				Locale: document.documentMode > 8 ? 999 : Infinity,
+				NavigateComplete: te.OnNavigateComplete
 			});
+			return S_FALSE;
 		}
 	});
 
@@ -162,8 +164,7 @@ if (window.Addon == 1) {
 		s = EncodeSC(Addons.FindFiles.strName);
 	}
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FindFiles.Exec();" oncontextmenu="Addons.FindFiles.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
-}
-else if (window.Addon == 2) {
+} else if (window.Addon == 2) {
 	AddEventEx(window, "load", function ()
 	{
 		FV = te.Ctrl(CTRL_FV);

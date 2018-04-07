@@ -2,7 +2,7 @@ if (window.Addon == 1) {
 	Addons.CheckBox =
 	{
 		tid: {},
-		pt: null,
+		pt: api.Memory("POINT"),
 		bCtrl: false,
 		FWF: WINVER < 0x600 ? FWF_CHECKSELECT : FWF_AUTOCHECKSELECT,
 		All: GetAddonOptionEx("checkbox", "All"),

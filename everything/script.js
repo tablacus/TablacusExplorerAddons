@@ -11,7 +11,7 @@ if (window.Addon == 1) {
 		strName: "Everything",
 		Max: 1000,
 		RE: false,
-		tid: [],
+		fncb: [],
 
 		IsHandle: function (Ctrl)
 		{
@@ -141,34 +141,24 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.Everything.IsHandle(Path)) {
+			Ctrl.ENum = function (pid, Ctrl, fncb)
+			{
+				var Path = Addons.Everything.GetSearchString(Ctrl);
+				if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
+					Path = 'regex:' + ((window.migemo && (migemo.query(Path) + '|' + Path)) || Path);
+				}
+				if (Path) {
+					var hwndView = Ctrl.hwndView;
+					Addons.Everything.fncb[Ctrl.dwSessionId] = fncb;
+					if (!Addons.Everything.Open(Path, hwndView) && Addons.Everything.ExePath) {
+						wsh.Run(ExtractMacro(te, Addons.Everything.ExePath), SW_SHOWNORMAL, true);
+						Addons.Everything.Open(Path, hwndView);
+					}
+				}
+			};
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
-
-	AddEvent("NavigateComplete", function (Ctrl)
-	{
-		if (!Addons.Everything.IsHandle(Ctrl) || Addons.Everything.tid[Ctrl.Id]) {
-			return;
-		}
-		Ctrl.SortColumn = "";
-		Addons.Everything.tid[Ctrl.Id] = setTimeout(function () {
-			delete Addons.Everything.tid[Ctrl.Id];
-			var Path = Addons.Everything.GetSearchString(Ctrl);
-			if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
-				Path = 'regex:' + ((window.migemo && (migemo.query(Path) + '|' + Path)) || Path);
-			}
-			if (Path) {
-				var hwndView = Ctrl.hwndView;
-				if (!Addons.Everything.Open(Path, hwndView) && Addons.Everything.ExePath) {
-					wsh.Run(ExtractMacro(te, Addons.Everything.ExePath));
-					setTimeout(function ()
-					{
-						Addons.Everything.Open(Path , hwndView);
-					}, 500);
-				}
-			}
-		}, 99);
-	});
 
 	AddEvent("CopyData", function (Ctrl, cd, wParam)
 	{
@@ -202,8 +192,8 @@ if (window.Addon == 1) {
 				var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4, api.Memory("BYTE", itemSize, cd.lpData + list.Size + list.Read("offset") + itemSize * i));
 				arItems.push(data.Read(item.Read("path_offset"), VT_LPWSTR) + "\\" + data.Read(item.Read("filename_offset"), VT_LPWSTR));
 			}
-			Ctrl.RemoveAll();
-			Ctrl.AddItems(arItems);
+			Addons.Everything.fncb[Ctrl.dwSessionId](Ctrl, arItems);
+			delete Addons.Everything.fncb[Ctrl.dwSessionId];
 			return S_OK;
 		}
 	});
@@ -221,7 +211,7 @@ if (window.Addon == 1) {
 			return MakeImgSrc(Addons.Everything.Icon, 0, false, 16);
 		}
 	});
-	
+
 	AddEvent("ChangeView", function (Ctrl)
 	{
 		document.F.everythingsearch.value = Addons.Everything.GetSearchString(Ctrl);
@@ -267,7 +257,7 @@ if (window.Addon == 1) {
 			return ssfDESKTOP;
 		}
 	});
-	
+
 	var width = "176px";
 
 	var s = item.getAttribute("Folders");

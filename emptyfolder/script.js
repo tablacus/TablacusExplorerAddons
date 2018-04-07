@@ -99,7 +99,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("NavigateComplete", function (Ctrl)
+	AddEvent("BeginNavigate", function (Ctrl)
 	{
 		var Path = Addons.EmptyFolder.GetSearchString(Ctrl);
 		if (Path) {
@@ -110,8 +110,10 @@ if (window.Addon == 1) {
 				SessionId: Ctrl.SessionId,
 				hwnd: te.hwnd,
 				ProgressDialog: te.ProgressDialog,
-				Locale: document.documentMode > 8 ? 999 : Infinity
+				Locale: document.documentMode > 8 ? 999 : Infinity,
+				NavigateComplete: te.OnNavigateComplete
 			});
+			return S_FALSE;
 		}
 	});
 

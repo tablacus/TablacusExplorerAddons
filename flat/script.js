@@ -71,33 +71,33 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (api.PathMatchSpec(Path, Addons.Flat.PATH + "*")) {
+			Ctrl.ENum = function (pid, Ctrl, fncb)
+			{
+				var path = Addons.Flat.GetSearchString(Ctrl);
+				if (path) {
+					var v = {
+						ex: {
+							FV: Ctrl,
+							Path: path,
+							hwnd: te.hwnd,
+							SessionId: Ctrl.SessionId,
+							hShell32: hShell32,
+							List: api.CreateObject("FolderItems"),
+							fncb: fncb
+						}, api: api
+					}
+
+					var fn = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\flat\\worker.js");
+					var ado = OpenAdodbFromTextFile(fn);
+					if (ado) {
+						api.ExecScript(ado.ReadText(), "JScript", v, true);
+						ado.Close();
+					}
+				}
+			};
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
-
-	AddEvent("NavigateComplete", function (Ctrl)
-	{
-		var path = Addons.Flat.GetSearchString(Ctrl);
-		if (path) {
-			var v = {
-				ex: {
-					FV: Ctrl,
-					Path: path,
-					hwnd: te.hwnd,
-					SessionId: Ctrl.SessionId,
-					hShell32: hShell32,
-					List: api.CreateObject("FolderItems")
-				}, api: api
-			}
-
-			var fn = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\flat\\worker.js");
-			var ado = OpenAdodbFromTextFile(fn);
-			if (ado) {
-				api.ExecScript(ado.ReadText(), "JScript", v, true);
-				ado.Close();
-			}
-		}
-	});
 
 	AddEvent("ChangeNotify", function (Ctrl, pidls)
 	{
