@@ -16,7 +16,7 @@ Addons.CAL =
 			return;
 		}
 		var lib = {
-			file: typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING),
+			file: typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL),
 			path: ""
 		}
 		if (!Addons.CAL.Obj) {
@@ -201,66 +201,62 @@ Addons.CAL =
 		}
 	},
 
-	Navigate: function (Ctrl)
+	Enum: function (pid, Ctrl, fncb, SessionId)
 	{
-		if (!Ctrl || !Ctrl.FolderItem) {
-			return;
-		}
 		var path = Ctrl.FolderItem.Path;
-		var lib = Addons.CAL.GetObject(path, "wait");
+		var lib = Addons.CAL.GetObject(pid.Path, "wait");
 		if (lib) {
-			Ctrl.SortColumn = "";
-			clearTimeout(Addons.CAL.tid[Ctrl.Id]);
-			Addons.CAL.tid[Ctrl.Id] = setTimeout(function ()
-			{
-				delete Addons.CAL.tid[Ctrl.Id];
-				Ctrl.RemoveAll();
-				var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
-				var harc = lib.X.OpenArchive(te.hwnd, lib.file, 1);
-				if (harc) {
-					var info = {};
-					var iFind = lib.X.FindFirst(harc, "", info);
-					var Folder = {}, Folder2 = {};
-					while (iFind == 0) {
-						var fn = info.szFileName.replace(/\//g, "\\");
-						if (/\.\.\\|:/.test(fn)) {
-							continue;
+			if (lib.busy) {
+				setTimeout(function ()
+				{
+					Addons.CAL.Enum(pid, Ctrl, fncb);
+				}, 500);
+				return;
+			}
+			var Items = te.FolderItems();
+			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
+			var harc = lib.X.OpenArchive(te.hwnd, lib.file, 1);
+			if (harc) {
+				var info = {};
+				var iFind = lib.X.FindFirst(harc, "", info);
+				var Folder = {}, Folder2 = {};
+				while (iFind == 0) {
+					var fn = info.szFileName.replace(/\//g, "\\");
+					if (/\.\.\\|:/.test(fn)) {
+						continue;
+					}
+					var strParent = fso.GetParentFolderName(fn).toLowerCase();
+					if (strParent == lib.path.toLowerCase()) {
+						var dwAttr = 0;
+						if (/\\$/.test(fn)) {
+							dwAttr = FILE_ATTRIBUTE_DIRECTORY;
+							Folder[fn.replace(/\\$/, "")] = 1;
 						}
+						Items.AddItem(api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), dwAttr, info.DateTime, info.dwOriginalSize));
+					}
+					while (/[\\|\/]/.test(fn)) {
+						fn = fso.GetParentFolderName(fn);
+						if (!fn) {
+							break;
+						}
+						Folder2[fn] = 1;
+					}
+					iFind = lib.X.FindNext(harc, info);
+				}
+				lib.X.CloseArchive(harc);
+				for (fn in Folder2) {
+					if (!Folder[fn]) {
 						var strParent = fso.GetParentFolderName(fn).toLowerCase();
 						if (strParent == lib.path.toLowerCase()) {
-							var dwAttr = 0;
-							if (/\\$/.test(fn)) {
-								dwAttr = FILE_ATTRIBUTE_DIRECTORY;
-								Folder[fn.replace(/\\$/, "")] = 1;
-							}
-							Ctrl.AddItem(api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), dwAttr, info.DateTime, info.dwOriginalSize));
-						}
-						while (/[\\|\/]/.test(fn)) {
-							fn = fso.GetParentFolderName(fn);
-							if (!fn) {
-								break;
-							}
-							Folder2[fn] = 1;
-						}
-						iFind = lib.X.FindNext(harc, info);
-					}
-					lib.X.CloseArchive(harc);
-					for (fn in Folder2) {
-						if (!Folder[fn]) {
-							var strParent = fso.GetParentFolderName(fn).toLowerCase();
-							if (strParent == lib.path.toLowerCase()) {
-								var pidl = api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), FILE_ATTRIBUTE_DIRECTORY, new Date(), 0);
-								Ctrl.AddItem(pidl);
-							}
+							var pidl = api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), FILE_ATTRIBUTE_DIRECTORY, new Date(), 0);
+							Items.AddItem(pidl);
 						}
 					}
 				}
-			}, 500);
-		} else if (lib && lib.busy) {
-			setTimeout(function ()
-			{
-				Addons.CAL.Navigate(Ctrl);
-			}, 500);
+			}
+			if (fncb) {
+				fncb(Ctrl, Items)
+			}
 		}
 	},
 
@@ -315,11 +311,10 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.CAL.IsHandle(Path)) {
+			Ctrl.ENum = Addons.CAL.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
-
-	AddEvent("NavigateComplete", Addons.CAL.Navigate);
 
 	AddEvent("BeginDrag", function (Ctrl)
 	{
@@ -377,7 +372,7 @@ if (window.Addon == 1) {
 	AddEvent("DefaultCommand", function (Ctrl, Selected)
 	{
 		if (Selected.Count == 1) {
-			var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 			if (Addons.CAL.IsHandle(path)) {
 				Ctrl.Navigate(path);
 				return S_OK;
@@ -404,7 +399,7 @@ if (window.Addon == 1) {
 
 	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
 	{
-		var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+		var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 		if (Addons.CAL.IsHandle(path)) {
 			RemoveCommand(hMenu, ContextMenu, "rename");
 		}

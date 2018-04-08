@@ -11,7 +11,7 @@ if (window.Addon == 1) {
 		strName: "Everything",
 		Max: 1000,
 		RE: false,
-		fncb: [],
+		fncb: {},
 
 		IsHandle: function (Ctrl)
 		{
@@ -67,11 +67,9 @@ if (window.Addon == 1) {
 
 		GetSearchString: function(Ctrl)
 		{
-			if (Ctrl.FolderItem) {
-				var Path = Ctrl.FolderItem.Path;
-				if (Addons.Everything.IsHandle(Path)) {
-					return Path.replace(new RegExp("^" + Addons.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
-				}
+			var Path = typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+			if (Addons.Everything.IsHandle(Path)) {
+				return Path.replace(new RegExp("^" + Addons.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
 			}
 			return "";
 		},
@@ -110,6 +108,24 @@ if (window.Addon == 1) {
 			}
 		},
 
+		Enum: function (pid, Ctrl, fncb, SessionId)
+		{
+			if (fncb) {
+				var Path = Addons.Everything.GetSearchString(pid);
+				if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
+					Path = 'regex:' + ((window.migemo && (migemo.query(Path) + '|' + Path)) || Path);
+				}
+				if (Path) {
+					var hwndView = Ctrl.hwndView;
+					Addons.Everything.fncb[Ctrl.Id] = fncb;
+					if (!Addons.Everything.Open(Path, hwndView) && Addons.Everything.ExePath) {
+						wsh.Run(ExtractMacro(te, Addons.Everything.ExePath), SW_SHOWNORMAL, true);
+						Addons.Everything.Open(Path, hwndView);
+					}
+				}
+			}
+		},
+
 		Open: function (Path, hwndView)
 		{
 			var hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
@@ -141,21 +157,7 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.Everything.IsHandle(Path)) {
-			Ctrl.ENum = function (pid, Ctrl, fncb)
-			{
-				var Path = Addons.Everything.GetSearchString(Ctrl);
-				if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
-					Path = 'regex:' + ((window.migemo && (migemo.query(Path) + '|' + Path)) || Path);
-				}
-				if (Path) {
-					var hwndView = Ctrl.hwndView;
-					Addons.Everything.fncb[Ctrl.dwSessionId] = fncb;
-					if (!Addons.Everything.Open(Path, hwndView) && Addons.Everything.ExePath) {
-						wsh.Run(ExtractMacro(te, Addons.Everything.ExePath), SW_SHOWNORMAL, true);
-						Addons.Everything.Open(Path, hwndView);
-					}
-				}
-			};
+			Ctrl.Enum = Addons.Everything.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
@@ -192,8 +194,8 @@ if (window.Addon == 1) {
 				var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4, api.Memory("BYTE", itemSize, cd.lpData + list.Size + list.Read("offset") + itemSize * i));
 				arItems.push(data.Read(item.Read("path_offset"), VT_LPWSTR) + "\\" + data.Read(item.Read("filename_offset"), VT_LPWSTR));
 			}
-			Addons.Everything.fncb[Ctrl.dwSessionId](Ctrl, arItems);
-			delete Addons.Everything.fncb[Ctrl.dwSessionId];
+			Addons.Everything.fncb[Ctrl.Id](Ctrl, arItems);
+			delete Addons.Everything.fncb[Ctrl.Id];
 			return S_OK;
 		}
 	});

@@ -123,7 +123,7 @@ function SetMP()
 	if ((typeof s) == "string" && s != g_MP && confirmOk()) {
 		var dbfile = fso.BuildPath(te.Data.DataFolder, "config\\wfx_" + (wnw.ComputerName.toLowerCase()) + ".bin");
 		try {
-			var ado = new ActiveXObject("Adodb.Stream");
+			var ado = new ActiveXObject(api.ADBSTRM);
 			ado.Type = adTypeBinary;
 			ado.Open();
 			ado.LoadFromFile(Addons.WFX.dbfile);
@@ -135,7 +135,7 @@ function SetMP()
 		g_MP = s;
 		if (body) {
 			try {
-				var ado = new ActiveXObject("Adodb.Stream");
+				var ado = new ActiveXObject(api.ADBSTRM);
 				ado.Type = adTypeBinary;
 				ado.Open();
 				ado.Write(api.CryptProtectData(body, g_MP));

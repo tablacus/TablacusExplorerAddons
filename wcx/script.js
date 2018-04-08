@@ -3,7 +3,6 @@ var item = GetAddonElement(Addon_Id);
 
 Addons.WCX =
 {
-	tid: [],
 	xml: OpenXml("wcx.xml", false, true),
 
 	IsHandle: function (Ctrl)
@@ -17,7 +16,7 @@ Addons.WCX =
 			return;
 		}
 		var lib = {
-			file: typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING),
+			file: typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL),
 			path: ""
 		}
 		if (!Addons.WCX.Obj) {
@@ -213,64 +212,55 @@ Addons.WCX =
 		}
 	},
 
-	Navigate: function (Ctrl)
+	Enum: function (pid, Ctrl, fncb)
 	{
-		if (!Ctrl || !Ctrl.FolderItem) {
-			return;
-		}
-		var path = Ctrl.FolderItem.Path;
-		var lib = Addons.WCX.GetObject(path);
-		if (lib) {
-			Ctrl.SortColumn = "";
-			clearTimeout(Addons.WCX.tid[Ctrl.Id]);
-			Addons.WCX.tid[Ctrl.Id] = setTimeout(function ()
-			{
-				delete Addons.WCX.tid[Ctrl.Id];
-				Ctrl.RemoveAll();
-				var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
-				var OpenData = {
-					ArcName: lib.file,
-					OpenMode: 0
-				}
-				var harc = lib.X.OpenArchive(OpenData);
-				if (harc) {
-					var Folder = {}, Folder2 = {};
-					do {
-						var info = {};
-						if (lib.X.ReadHeaderEx(harc, info)) {
+		var lib = Addons.WCX.GetObject(pid.Path);
+		if (Ctrl && lib) {
+			var Items = te.FolderItems();
+			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
+			var OpenData = {
+				ArcName: lib.file,
+				OpenMode: 0
+			}
+			var harc = lib.X.OpenArchive(OpenData);
+			if (harc) {
+				var Folder = {}, Folder2 = {};
+				do {
+					var info = {};
+					if (lib.X.ReadHeaderEx(harc, info)) {
+						break;
+					}
+					var fn = info.FileName.replace(/\//g, "\\");
+					if (/\.\.\\|:/.test(fn)) {
+						continue;
+					}
+					var strParent = fso.GetParentFolderName(fn).toLowerCase();
+					if (strParent == lib.path.toLowerCase()) {
+						if (info.FileAttr & FILE_ATTRIBUTE_DIRECTORY) {
+							Folder[fn.replace(/\\$/, "")] = 1;
+						}
+						Items.AddItem(api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), info.FileAttr, info.FileTime, info.UnpSize));
+					}
+					while (/[\\|\/]/.test(fn)) {
+						fn = fso.GetParentFolderName(fn);
+						if (!fn) {
 							break;
 						}
-						var fn = info.FileName.replace(/\//g, "\\");
-						if (/\.\.\\|:/.test(fn)) {
-							continue;
-						}
+						Folder2[fn] = 1;
+					}
+				} while (lib.X.ProcessFile(harc, 0) == 0);
+				lib.X.CloseArchive(harc);
+				for (fn in Folder2) {
+					if (!Folder[fn]) {
 						var strParent = fso.GetParentFolderName(fn).toLowerCase();
 						if (strParent == lib.path.toLowerCase()) {
-							if (info.FileAttr & FILE_ATTRIBUTE_DIRECTORY) {
-								Folder[fn.replace(/\\$/, "")] = 1;
-							}
-							Ctrl.AddItem(api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), info.FileAttr, info.FileTime, info.UnpSize));
-						}
-						while (/[\\|\/]/.test(fn)) {
-							fn = fso.GetParentFolderName(fn);
-							if (!fn) {
-								break;
-							}
-							Folder2[fn] = 1;
-						}
-					} while (lib.X.ProcessFile(harc, 0) == 0);
-					lib.X.CloseArchive(harc);
-					for (fn in Folder2) {
-						if (!Folder[fn]) {
-							var strParent = fso.GetParentFolderName(fn).toLowerCase();
-							if (strParent == lib.path.toLowerCase()) {
-								var pidl = api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), FILE_ATTRIBUTE_DIRECTORY, new Date(), 0);
-								Ctrl.AddItem(pidl);
-							}
+							var pidl = api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), FILE_ATTRIBUTE_DIRECTORY, new Date(), 0);
+							Items.AddItem(pidl);
 						}
 					}
 				}
-			}, 500);
+			}
+			return Items;
 		}
 	},
 
@@ -348,11 +338,10 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.WCX.IsHandle(Path)) {
+			Ctrl.Enum = Addons.WCX.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
-
-	AddEvent("NavigateComplete", Addons.WCX.Navigate);
 
 	AddEvent("BeginDrag", function (Ctrl)
 	{
@@ -467,7 +456,7 @@ if (window.Addon == 1) {
 	AddEvent("DefaultCommand", function (Ctrl, Selected)
 	{
 		if (Selected.Count == 1) {
-			var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 			if (Addons.WCX.IsHandle(path)) {
 				Ctrl.Navigate(path);
 				return S_OK;
@@ -494,7 +483,7 @@ if (window.Addon == 1) {
 
 	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
 	{
-		var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+		var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 		if (Addons.WCX.IsHandle(path)) {
 			RemoveCommand(hMenu, ContextMenu, "rename");
 		}
