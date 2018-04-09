@@ -21,14 +21,16 @@ if (window.Addon == 1) {
 		{
 			var drive = fso.GetDriveName(path);
 			if (drive) {
-				var d = fso.GetDrive(drive);
-				if (Addons.VirtualRecycleBin.Use[d.DriveType]) {
-					var path1 = Addons.VirtualRecycleBin.Path;
-					if (!/^[A-Z]:\\|^\\\\/i.test(path1)) {
-						path1 = fso.BuildPath(drive + "\\", path1);
+				try {
+					var d = fso.GetDrive(drive);
+					if (d.IsReady && Addons.VirtualRecycleBin.Use[d.DriveType]) {
+						var path1 = Addons.VirtualRecycleBin.Path;
+						if (!/^[A-Z]:\\|^\\\\/i.test(path1)) {
+							path1 = fso.BuildPath(drive + "\\", path1);
+						}
+						return path1;
 					}
-					return path1;
-				}
+				} catch (e) {}
 			}
 		},
 
@@ -86,6 +88,26 @@ if (window.Addon == 1) {
 					return S_OK;
 				}
 			}
+		},
+
+		EmptyRecycleBin: function ()
+		{
+			var s, ar = [], hash = {};
+			for (var i = "A".charCodeAt(0); i <= "Z".charCodeAt(0); i++) {
+				s = this.Get(String.fromCharCode(i) + ":\\");
+				if (s && fso.FolderExists(s)) {
+					hash[s] = 1;
+				}
+			}
+			s = this.Get(te.Ctrl(CTRL_FV).FolderItem.Path);
+			if (s && fso.FolderExists(s)) {
+				hash[s] = 1;
+			}
+			for (s in hash) {
+				ar.push(s)
+			}
+			ar.push("");
+			api.SHFileOperation(FO_DELETE, ar.join("\\*\0"), null, 0, false);
 		}
 	};
 
@@ -105,6 +127,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
+	AddEvent("EmptyRecycleBin", Addons.VirtualRecycleBin.EmptyRecycleBin);
 
 	Addons.VirtualRecycleBin.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
 	//Menu

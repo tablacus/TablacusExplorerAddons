@@ -16,9 +16,9 @@ if (window.Addon == 1) {
 		FindItemIndex: function (FV, Item)
 		{
 			var Items = FV.Items();
-			var path = String(api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR));
+			var path = String(api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL));
 			for (var i = Items.Count; i-- > 0;) {
-				if (path.toLowerCase() == String(api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR)).toLowerCase()) {
+				if (path.toLowerCase() == String(api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL)).toLowerCase()) {
 					return i;
 				}
 			}
@@ -34,6 +34,13 @@ if (window.Addon == 1) {
 		GetPath: function (Ctrl)
 		{
 			return /string/i.test(typeof Ctrl) ? api.PathUnquoteSpaces(ExtractMacro(te, Ctrl)) : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+		},
+
+		Enum: function (pid, Ctrl, fncb, SessionId)
+		{
+			var Items = te.FolderItems();
+			Addons.ClipFolder.Open(pid, Items);
+			return Items;
 		},
 
 		Add: function (Ctrl, Items)
@@ -177,13 +184,13 @@ if (window.Addon == 1) {
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
-			var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 			if (/^[A-Z]:\\|^\\/i.test(path)) {
 				if (Addons.ClipFolder.IsHandle(path)) {
 					var db = {};
 					var Items = FV.Items();
 					for (var i = 0; i < Items.Count; i++) {
-						db[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR)] = 1;
+						db[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL)] = 1;
 					}
 					Addons.ClipFolder.Save(FV, db);
 				} else {
@@ -217,12 +224,7 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.ClipFolder.IsHandle(Path)) {
-			Ctrl.ENum = function (pid, Ctrl, fncb)
-			{
-				var Items = te.FolderItems();
-				Addons.ClipFolder.Open(pid, Items);
-				return Items;
-			};
+			Ctrl.ENum = Addons.ClipFolder.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
@@ -294,7 +296,7 @@ if (window.Addon == 1) {
 	AddEvent("DefaultCommand", function (Ctrl, Selected)
 	{
 		if (Selected.Count == 1) {
-			var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 			if (Addons.ClipFolder.IsHandle(path)) {
 				Ctrl.Navigate(path);
 				return S_OK;
@@ -352,7 +354,7 @@ if (window.Addon == 1) {
 		Addons.ClipFolder.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
 		{
-			var path = api.GetDisplayNameOf(item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			var path = api.GetDisplayNameOf(item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 			if (/^[A-Z]:\\|^\\/i.test(path)) {
 				api.InsertMenu(hMenu, Addons.ClipFolder.nPos, MF_BYPOSITION | MF_STRING, ++nPos, api.PathMatchSpec(path, Addons.ClipFolder.Spec) ? Addons.ClipFolder.strName2 : Addons.ClipFolder.strName);
 				ExtraMenuCommand[nPos] = Addons.ClipFolder.Exec;

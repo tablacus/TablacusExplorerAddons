@@ -27,7 +27,14 @@ if (window.Addon == 1) {
 
 		IsHandle: function (Ctrl)
 		{
-			return api.PathMatchSpec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), Addons.History1.PATH + "*");
+			return api.PathMatchSpec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), Addons.History1.PATH + "*");
+		},
+
+		Enum: function (pid, Ctrl, fncb, SessionId)
+		{
+			var keys = [];
+			Addons.History1.GetList(keys);
+			return keys;
 		},
 
 		GetList: function (keys)
@@ -133,12 +140,7 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.History1.IsHandle(Path)) {
-			Ctrl.ENum = function (pid, Ctrl, fncb)
-			{
-				var keys = [];
-				Addons.History1.GetList(keys);
-				return keys;
-			};
+			Ctrl.Enum = Addons.History1.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
@@ -190,7 +192,7 @@ if (window.Addon == 1) {
 		}
 		if (!Verb || Verb == CommandID_STORE - 1) {
 			if (ContextMenu.Items.Count >= 1) {
-				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				if (Addons.History1.IsHandle(path)) {
 					var FV = te.Ctrl(CTRL_FV);
 					FV.Navigate(path, SBSP_SAMEBROWSER);

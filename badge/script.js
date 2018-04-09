@@ -30,7 +30,7 @@ if (window.Addon == 1) {
 
 		IsHandle: function (Ctrl)
 		{
-			return Addons.Badge.RE.exec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+			return Addons.Badge.RE.exec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 		},
 
 		Get: function (path)
@@ -43,7 +43,7 @@ if (window.Addon == 1) {
 			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
 			if (Selected && Selected.Count) {
 				for (var i = Selected.Count; i-- > 0;) {
-					Addons.Badge.Set(api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), s);
+					Addons.Badge.Set(api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), s);
 				}
 			}
 		},
@@ -108,12 +108,26 @@ if (window.Addon == 1) {
 			Navigate("badge:5");
 		},
 
+		Enum: function (pid, Ctrl, fncb, SessionId)
+		{
+			var Items = te.FolderItems();
+			var Badge = Addons.Badge.BadgePath(pid);
+			Addons.Badge.ENumCB(function (path, s)
+			{
+				var parent = fso.GetParentFolderName(path);
+				if (api.PathMatchSpec(Badge, s) || api.PathMatchSpec(parent, Badge)) {
+					Items.AddItem(path);
+				}
+			});
+			return Items;
+		},
+
 		EditPath: function (Ctrl, pt)
 		{
 			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
 			if (Selected && Selected.Count == 1) {
 				try {
-					var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 					if (path) {
 						var Badge = Addons.Badge.Get(path);
 						var s = InputDialog("badge:" + Badge + "\n" + path, path);
@@ -121,7 +135,7 @@ if (window.Addon == 1) {
 						 	api.SHParseDisplayName(function (pid, s, path, Badge)
 						 	{
 								if (pid) {
-									s = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+									s = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 								}
 								if (s != path) {
 									if (Addons.Badge.Get(s)) {
@@ -208,7 +222,7 @@ if (window.Addon == 1) {
 		Remove: function (Item, Badge)
 		{
 			var s = "";
-			var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+			var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			if (path) {
 				s = Addons.Badge.Get(path);
 				Addons.Badge.Set(path, 0);
@@ -220,7 +234,7 @@ if (window.Addon == 1) {
 		{
 			if (path) {
 				if (!/string/i.test(typeof path)) {
-					path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				}
 				s = api.LowPart(s);
 				if (s != te.Data.Badges[path]) {
@@ -243,7 +257,7 @@ if (window.Addon == 1) {
 			for (var i in cFV) {
 				var FV = cFV[i];
 				if (FV.hwnd) {
-					var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 					if (Addons.Badge.Redraw[path]) {
 						api.InvalidateRect(FV.hwndList || FV.hwndView || FV.hwnd, null, false);
 					}
@@ -299,7 +313,7 @@ if (window.Addon == 1) {
 			var Items = FV.Items();
 			var List = [];
 			for (var i = Items.Count; i--;) {
-				List.push([i, Addons.Badge.Get(api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))]);
+				List.push([i, Addons.Badge.Get(api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL))]);
 			}
 			var bRev = FV.SortColumn == "" && !Addons.Badge.bRev;
 			List.sort(bRev ? function (a, b) { return api.StrCmpLogical(a[1], b[1]); } : function (b, a) { return api.StrCmpLogical(a[1], b[1]); });
@@ -383,19 +397,7 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.Badge.IsHandle(Path)) {
-			Ctrl.ENum = function (pid, Ctrl, fncb)
-			{
-				var Items = te.FolderItems();
-				var Badge = Addons.Badge.BadgePath(pid);
-				Addons.Badge.ENumCB(function (path, s)
-				{
-					var parent = fso.GetParentFolderName(path);
-					if (api.PathMatchSpec(Badge, s) || api.PathMatchSpec(parent, Badge)) {
-						Items.AddItem(path);
-					}
-				});
-				return Items;
-			}
+			Ctrl.Enum = Addons.Badge.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
@@ -437,7 +439,7 @@ if (window.Addon == 1) {
 		}
 		if (!Verb || Verb == CommandID_STORE - 1) {
 			if (ContextMenu.Items.Count >= 1) {
-				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				if (Addons.Badge.IsHandle(path)) {
 					var FV = te.Ctrl(CTRL_FV);
 					FV.Navigate(path, SBSP_SAMEBROWSER);
@@ -506,7 +508,7 @@ if (window.Addon == 1) {
 				Addons.Badge.Set(pidls[1], Addons.Badge.Remove(pidls[0]));
 			}
 			if (pidls.lEvent & SHCNE_DELETE) {
-				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				Addons.Badge.SyncItem[name] = pidls[0];
 				clearTimeout(Addons.Badge.tidSync);
 				Addons.Badge.tidSync = setTimeout(function ()
@@ -516,7 +518,7 @@ if (window.Addon == 1) {
 				}, 500);
 			}
 			if (pidls.lEvent & SHCNE_CREATE) {
-				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				var pidl = Addons.Badge.SyncItem[name];
 				if (pidl) {
 					Addons.Badge.Set(pidls[0], Addons.Badge.Remove(pidl));
@@ -603,7 +605,7 @@ if (window.Addon == 1) {
 				mii.hSubMenu = api.CreatePopupMenu();
 				mii.dwTypeData = Addons.Badge.strName;
 				if (Selected && Selected.Count) {
-					var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 					if (path) {
 						var mii2 = api.Memory("MENUITEMINFO");
 						mii2.cbSize = mii.Size;

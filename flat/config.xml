@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.08</Version>
-    <MinVersion>2018.4.7</MinVersion>
-    <pubDate>Sat, 07 Apr 2018 00:00:00 GMT</pubDate>
+    <Version>1.09</Version>
+    <MinVersion>2018.4.8</MinVersion>
+    <pubDate>Mon, 09 Apr 2018 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Flat</Name>
-    <Description>Display items and their subfolders items in a folder at once.</Description>
+    <Description>Display items and their subfolders items as a flat list.</Description>
   </en>
   <ja>
     <Name>フラット</Name>
