@@ -135,9 +135,14 @@ if (window.Addon == 1) {
 						w -= 2;
 					}
 					if (this.opt.Icon) {
-						path = GetIconImage(FV, api.GetSysColor(COLOR_BTNFACE));
-						if (path) {
-							s.push('<td style="padding-right: 3px; vertical-align: middle; width: 20px"><img src="', path, '" /></td>');
+						var img = GetIconImage(FV, api.GetSysColor(COLOR_BTNFACE));
+						if (img) {
+							s.push('<td style="padding-right: 3px; vertical-align: middle; width: 20px">');
+							var res = /^([A-Z]):/i.exec(path);
+							if (res) {
+								s.push('<span class="drive">', res[1], '</span>');
+							}
+							s.push('<img src="', img, '" /></td>');
 							w -= 20;
 						}
 					}
@@ -656,9 +661,6 @@ if (window.Addon == 1) {
 	}
 	Addons.TabPlus.ImgLock = MakeImgSrc(item.getAttribute("IconLock") || "bitmap:ieframe.dll,545,13,2", 0, true, 13);
 	Addons.TabPlus.ImgClose = MakeImgSrc(item.getAttribute("IconClose") || "bitmap:ieframe.dll,545,13,1", 0, true, 13);
-	if (Addons.TabPlus.opt.NewTab) {
-		window.OpenMode = SBSP_NEWBROWSER;
-	}
 } else {
 	var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\"+ Addon_Id + "\\options.html"));
 	if (ado) {

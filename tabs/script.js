@@ -22,9 +22,6 @@ if (window.Addon == 1) {
 			}
 		}
 	};
-	if (GetAddonOption("tabs", "NewTab")) {
-		window.OpenMode = SBSP_NEWBROWSER;
-	}
 
 	AddEvent("ToolTip", function (Ctrl, Index)
 	{
@@ -182,5 +179,5 @@ if (window.Addon == 1) {
 	}
 	Addons.Tabs.hFont = CreateFont(DefaultFont);
 } else {
-	SetTabContents(0, "General", '<input type="checkbox" id="NewTab" value="2" /><label for="NewTab">Open in New Tab</label>');
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

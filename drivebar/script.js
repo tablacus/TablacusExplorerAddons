@@ -66,7 +66,7 @@ if (window.Addon == 1) {
 					}
 					src = MakeImgSrc('icon:shell32.dll,' + nIcon + ',16', 0, false, 16);
 				}
-				arDrive.push('<span class="button" title="', vol, '" path="', path, '" onclick="Addons.DriveBar.Open(this)" oncontextmenu="Addons.DriveBar.Popup(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><span style="position: absolute; font-weight: bold; font-size: 9px; text-shadow: 1px 1px 0px buttonface, -1px 1px 0px buttonface, 1px -1px 0px buttonface, -1px -1px 0px buttonface; filter: glow(color=white,strength=1);">', letter, '</span><img width=16 height=16 src="', src, '" /></span>');
+				arDrive.push('<span class="button" title="', vol, '" path="', path, '" onclick="Addons.DriveBar.Open(this)" oncontextmenu="Addons.DriveBar.Popup(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><span class="drive">', letter, '</span><img style="width: 12pt; height: 12pt" src="', src, '" /></span>');
 			}
 		}
 		document.getElementById("drivebar").innerHTML = arDrive.join("");
