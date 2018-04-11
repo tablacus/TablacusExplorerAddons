@@ -16,7 +16,11 @@ if (window.Addon == 1) {
 			if (!te.Data["Conf_" + this.Align + "BarWidth"]) {
 				te.Data["Conf_" + this.Align + "BarWidth"] = 178;
 			}
-			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="sidetreeview" style="width: 100%; height: ', EncodeSC(Addons.SideTreeView.Height), '"></div>']);
+			var h = Addons.SideTreeView.Height;
+			if (h == Number(h)) {
+				h += 'px';
+			}
+			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="sidetreeview" style="width: 100%; height: ', EncodeSC(h), '"></div>']);
 			if (te.Ctrls(CTRL_FV).Count) {
 				this.Create();
 			}

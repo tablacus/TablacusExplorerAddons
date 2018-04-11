@@ -13,7 +13,7 @@ if (window.Addon == 1) {
 		{
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
-				var s = InputDialog("Path", api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+				var s = InputDialog("Path", api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				if (s) {
 					FV.Navigate(s, GetNavigateFlags(FV));
 				}
@@ -43,11 +43,10 @@ if (window.Addon == 1) {
 				this.bDrag = false;
 				var TC = te.Ctrl(CTRL_TC);
 				if (TC && TC.SelectedIndex >= 0) {
-					var pdwEffect = api.Memory("DWORD");
-					pdwEffect.Item(0) = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
+					var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 					te.Data.DragTab = TC;
 					te.Data.DragIndex = TC.SelectedIndex;
-					api.DoDragDrop(TC.Item(TC.SelectedIndex).FolderItem, pdwEffect.Item(0), pdwEffect);
+					api.SHDoDragDrop(null, TC.Item(TC.SelectedIndex).FolderItem, te, pdwEffect[0], pdwEffect);
 					te.Data.DragTab = null;
 				}
 			}

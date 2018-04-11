@@ -161,6 +161,19 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
+	{
+		if (!Verb || Verb == CommandID_STORE - 1) {
+			if (ContextMenu.Items.Count >= 1) {
+				var path = Addons.EmptyFolder.GetSearchString(ContextMenu.Items.Item(0));
+				if (path) {
+					Navigate(Addons.EmptyFolder.PATH + path, SBSP_SAMEBROWSER);
+					return S_OK;
+				}
+			}
+		}
+	}, true);
+
 	if (item) {
 		Addons.EmptyFolder.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
 		//Menu

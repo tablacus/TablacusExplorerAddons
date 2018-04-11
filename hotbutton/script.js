@@ -60,7 +60,11 @@ if (window.Addon == 1) {
 					{
 						var Items = Ctrl.Items();
 						var Item = Items.Item(iItem);
+						Addons.HotButton.MenuLoop = true;
+						Addons.HotButton.MenuSelect = -1;
+						Addons.HotButton.ptDown = null;
 						var FolderItem = FolderMenu.Open(api.ILIsEqual(Ctrl.FolderItem.Alt, ssfRESULTSFOLDER) ? Item.Path : Item, pt.x, pt.y, "*");
+						Addons.HotButton.MenuLoop = false;
 						if (FolderItem) {
 							FolderMenu.Invoke(FolderItem);
 						}
@@ -68,6 +72,28 @@ if (window.Addon == 1) {
 					return S_OK;
 				}
 			}
+		}
+		if (Addons.HotButton.MenuLoop) {
+			if (msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN) {
+				Addons.HotButton.ptDown = pt;
+				Addons.HotButton.MenuDown = Addons.HotButton.MenuSelect;
+			} else if (msg == WM_LBUTTONUP || msg == WM_RBUTTONUP) {
+				delete Addons.HotButton.ptDown;
+			} else if (msg == WM_MOUSEMOVE && Addons.HotButton.ptDown && IsDrag(pt, Addons.HotButton.ptDown)) {
+				delete Addons.HotButton.ptDown;
+				var FolderItem = FolderMenu.Items[Addons.HotButton.MenuDown - 1];
+				if (FolderItem) {
+					var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
+					api.SHDoDragDrop(null, FolderItem, te, pdwEffect[0], pdwEffect, true);
+				}
+			}
+		}
+	});
+
+	AddEvent("MenuMessage", function (Ctrl, hwnd, msg, wParam, lParam)
+	{
+		if (Addons.HotButton.MenuLoop && msg == WM_MENUSELECT) {
+			Addons.HotButton.MenuSelect = wParam & 0xffff;
 		}
 	});
 

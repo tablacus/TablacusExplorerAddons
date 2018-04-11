@@ -1,5 +1,5 @@
-﻿Addon_Id = "clipboard";
-Default = "ToolBar2Left";
+﻿var Addon_Id = "clipboard";
+var Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
 	Addons.ClipBoard =
@@ -51,19 +51,10 @@ if (window.Addon == 1) {
 				var mii = api.Memory("MENUITEMINFO");
 				mii.cbSize = mii.Size;
 				mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
-				var arBM = [];
 				for (var i = 0; i < Items.Count; i++) {
 					var FolderItem = Items.Item(i);
-					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER);
-					var image = te.GdiplusBitmap;
-					var info = api.Memory("SHFILEINFO");
-					api.SHGetFileInfo(FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
-					var hIcon = info.hIcon;
-					var cl = api.GetSysColor(COLOR_BTNFACE);
-					image.FromHICON(hIcon, cl);
-					api.DestroyIcon(hIcon);
-					mii.hbmpItem = image.GetHBITMAP(cl);
-					arBM.push(mii.hbmpItem);
+					AddMenuIconFolderItem(mii, FolderItem);
+					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER | SHGDN_ORIGINAL);
 					mii.wID = 0;
 					api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				}
@@ -99,7 +90,7 @@ if (window.Addon == 1) {
 		{
 			var Items = api.OleGetClipboard();
 			if (Items && Items.Count) {
-				api.DoDragDrop(Items, DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK, Items.pdwEffect);
+				api.SHDoDragDrop(null, Items, te, DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK, Items.pdwEffect);
 			}
 			MouseOut();
 		}
