@@ -110,7 +110,7 @@ if (window.Addon == 1) {
 		Drag: function ()
 		{
 			var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
-			api.DoDragDrop(Addons.Preview.Item, pdwEffect[0], pdwEffect);
+			api.SHDoDragDrop(null, Addons.Preview.Item, te, pdwEffect[0], pdwEffect);
 		},
 
 		Init: function ()

@@ -1149,8 +1149,7 @@ if (window.Addon == 1) {
 
 	WScript.DoDragDrop = function (Items)
 	{
-		var pdwEffect = api.Memory("DWORD");
-		pdwEffect[0] = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
+		var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 		return api.SHDoDragDrop(null, Items, te, pdwEffect[0], pdwEffect);
 	}
 

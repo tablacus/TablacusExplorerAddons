@@ -130,34 +130,37 @@ if (window.Addon == 1) {
 	Addons.HotButton.Image = image.FromHBITMAP(hbm);
 	api.DeleteObject(hbm);
 	api.ReleaseDC(te.hwnd, hdc);
-	if (WINVER < 0x600 || !api.IsAppThemed() || Addons.ClassicStyle) {
-		Addons.HotButton.IsHot = function (nmcd, hList)
-		{
-			var rc = api.Memory("RECT");
-			Addons.HotButton.GetRect2(hList, nmcd.dwItemSpec, rc);
-			var pt = api.Memory("POINT");
-			api.GetCursorPos(pt);
-			api.ScreenToClient(hList, pt);
-			return PtInRect(rc, pt);
-		}
-
-		Addons.HotButton.GetRect2 = function (hList, iItem, rc)
-		{
-			var vm = api.SendMessage(hList, LVM_GETVIEW, 0, 0);
-			if (vm != 3) {
-				rc.Left = LVIR_SELECTBOUNDS;
-				api.SendMessage(hList, LVM_GETITEMRECT, iItem, rc);
-				return;
+	AddEvent("Load", function ()
+	{
+		if (WINVER < 0x600 || !api.IsAppThemed() || Addons.ClassicStyle) {
+			Addons.HotButton.IsHot = function (nmcd, hList)
+			{
+				var rc = api.Memory("RECT");
+				Addons.HotButton.GetRect2(hList, nmcd.dwItemSpec, rc);
+				var pt = api.Memory("POINT");
+				api.GetCursorPos(pt);
+				api.ScreenToClient(hList, pt);
+				return PtInRect(rc, pt);
 			}
-			rc.Left = LVIR_ICON;
-			api.SendMessage(hList, LVM_GETITEMRECT, iItem, rc);
-			var item = api.Memory("LVITEM");
-			item.mask = LVIF_TEXT;
-			item.pszText = api.Memory("WCHAR", 260);
-			item.cchTextMax = 260;
-			item.iItem = iItem;
-			api.SendMessage(hList, 0x104B, 0, item);
-			rc.Right += api.SendMessage(hList, LVM_GETSTRINGWIDTH, 0, item.pszText) + 4;
+
+			Addons.HotButton.GetRect2 = function (hList, iItem, rc)
+			{
+				var vm = api.SendMessage(hList, LVM_GETVIEW, 0, 0);
+				if (vm != 3) {
+					rc.Left = LVIR_SELECTBOUNDS;
+					api.SendMessage(hList, LVM_GETITEMRECT, iItem, rc);
+					return;
+				}
+				rc.Left = LVIR_ICON;
+				api.SendMessage(hList, LVM_GETITEMRECT, iItem, rc);
+				var item = api.Memory("LVITEM");
+				item.mask = LVIF_TEXT;
+				item.pszText = api.Memory("WCHAR", 260);
+				item.cchTextMax = 260;
+				item.iItem = iItem;
+				api.SendMessage(hList, 0x104B, 0, item);
+				rc.Right += api.SendMessage(hList, LVM_GETSTRINGWIDTH, 0, item.pszText) + 4;
+			}
 		}
-	}
+	});
 }

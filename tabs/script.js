@@ -44,11 +44,10 @@ if (window.Addon == 1) {
 						te.Data.pt = null;
 						var i = Ctrl.HitTest(pt, TCHT_ONITEM);
 						if (i >= 0) {
-							var pdwEffect = api.Memory("DWORD");
-							pdwEffect[0] = DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK;
+							var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 							Addons.Tabs.DragTab = Ctrl;
 							Addons.Tabs.DragIndex = i;
-							api.DoDragDrop(Ctrl.Item(i).FolderItem, pdwEffect[0], pdwEffect);
+							api.SHDoDragDrop(null, Ctrl.Item(i).FolderItem, te, pdwEffect[0], pdwEffect);
 							Addons.Tabs.DragTab = null;
 						}
 					}

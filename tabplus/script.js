@@ -3,6 +3,7 @@
 var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Icon", 1);
+	item.setAttribute("Drive", 1);
 	item.setAttribute("New", 1);
 }
 if (window.Addon == 1) {
@@ -120,6 +121,7 @@ if (window.Addon == 1) {
 
 		Style: function (TC, i)
 		{
+			var img;
 			var FV = TC.Item(i);
 			var o = document.getElementById("tabplus_" + TC.Id + "_" + i);
 			if (FV && o) {
@@ -134,17 +136,24 @@ if (window.Addon == 1) {
 						s.push('<td style="padding-right: 2px; vertical-align: middle; width: 13px"><img src="', this.ImgLock, '" style="width: 13px"></td>');
 						w -= 2;
 					}
-					if (this.opt.Icon) {
-						var img = GetIconImage(FV, api.GetSysColor(COLOR_BTNFACE));
-						if (img) {
-							s.push('<td style="padding-right: 3px; vertical-align: middle; width: 20px">');
+					if (this.opt.Icon && (img = GetIconImage(FV, api.GetSysColor(COLOR_BTNFACE)))) {
+						s.push('<td style="padding-right: 3px; vertical-align: middle; width: 20px">');
+						if (this.opt.Drive) {
 							var res = /^([A-Z]):/i.exec(path);
 							if (res) {
 								s.push('<span class="drive">', res[1], '</span>');
 							}
-							s.push('<img src="', img, '" /></td>');
-							w -= 20;
 						}
+						s.push('<img src="', img, '" /></td>');
+						w -= 20;
+					} else if (this.opt.Drive) {
+						s.push('<td style="padding-right: 3px; vertical-align: middle; width: 12px">');
+						var res = /^([A-Z]):/i.exec(path);
+						if (res) {
+							s.push('<span class="drive">', res[1], '</span>');
+						}
+						s.push('&nbsp;</td>');
+						w -= 12;
 					}
 					s.push('<td style="vertical-align: middle;"><div style="overflow: hidden; white-space: nowrap;');
 					if (this.opt.Close && !FV.Data.Lock && this.opt.Align > 1 && this.opt.Width) {
@@ -670,5 +679,6 @@ if (window.Addon == 1) {
 		}
 		SetTabContents(0, "General", ado.ReadText(adReadAll));
 		ado.Close();
+		document.getElementById("_Drive").innerHTML = api.LoadString(hShell32, 4122).replace(/ %c:?/, "");
 	}
 }

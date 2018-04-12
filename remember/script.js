@@ -13,7 +13,7 @@ if (window.Addon == 1) {
 
 		RememberFolder: function (FV)
 		{
-			if (FV && FV.FolderItem && !FV.FolderItem.Unvailable && FV.Data && FV.Data.Remember) {
+			if (FV && FV.FolderItem && !FV.FolderItem.Unavailable && FV.Data && FV.Data.Remember) {
 				var path = Addons.Remember.GetPath(FV);
 				if (path == FV.Data.Remember) {
 					var col = FV.Columns(Addons.Remember.nFormat);
@@ -51,7 +51,7 @@ if (window.Addon == 1) {
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
 	{
 		if (Ctrl.Type <= CTRL_EB) {
-			if (Prev && !Prev.Unvailable) {
+			if (Prev && !Prev.Unavailable) {
 				var path = Addons.Remember.GetPath(Prev);
 				var col = Ctrl.Columns(Addons.Remember.nFormat);
 				if (col) {
@@ -98,6 +98,7 @@ if (window.Addon == 1) {
 	AddEvent("Command", Addons.Remember.RememberFolder);
 	AddEvent("ViewModeChanged", Addons.Remember.RememberFolder);
 	AddEvent("ColumnsChanged", Addons.Remember.RememberFolder);
+
 	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
 	{
 		var Ctrl = te.Ctrl(CTRL_FV);
