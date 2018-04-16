@@ -83,6 +83,78 @@ if (window.Addon == 1) {
 		}
 	});
 	Addons.SideTreeView.Init();
+
+
+	AddEvent("Load", function ()
+	{
+		if (Addons.TreeView) {
+			return;
+		}
+		SetGestureExec("Tree", "1", function ()
+		{
+			var Item = Ctrl.HitTest(pt);
+			if (Item) {
+				var FV = Ctrl.FolderView;
+				if (!api.ILIsEqual(FV.FolderItem, Item)) {
+					setTimeout(function ()
+					{
+						FV.Navigate(Item, GetNavigateFlags(FV));
+					}, 99);
+				}
+			}
+			return S_OK;
+		}, "Func", true);
+
+		SetGestureExec("Tree", "3", function ()
+		{
+			var Item = Ctrl.HitTest(pt);
+			if (Item) {
+				setTimeout(function ()
+				{
+					Ctrl.FolderView.Navigate(Item, SBSP_NEWBROWSER);
+				}, 99);
+			}
+			return S_OK;
+		}, "Func", true);
+
+		//Tab
+		SetKeyExec("Tree", "$f", function (Ctrl, pt)
+		{
+			var FV = GetFolderView(Ctrl, pt);
+			FV.focus();
+			return S_OK;
+		}, "Func", true);
+		//Enter
+		SetKeyExec("Tree", "$1c", function (Ctrl, pt)
+		{
+			var FV = GetFolderView(Ctrl, pt);
+			FV.Navigate(Ctrl.SelectedItem, GetNavigateFlags(FV));
+			return S_OK;
+		}, "Func", true);
+
+		if (WINVER >= 0x600) {
+			AddEvent("AppMessage", function (Ctrl, hwnd, msg, wParam, lParam)
+			{
+				if (msg == Addons.SideTreeView.WM) {
+					var pidls = {};
+					var hLock = api.SHChangeNotification_Lock(wParam, lParam, pidls);
+					if (hLock) {
+						api.SHChangeNotification_Unlock(hLock);
+						Addons.SideTreeView.TV.Notify(pidls.lEvent, pidls[0], pidls[1], wParam, lParam);
+					}
+					return S_OK;
+				}
+			});
+	
+			AddEvent("Finalize", function ()
+			{
+				api.SHChangeNotifyDeregister(Addons.SideTreeView.uRegisterId);
+			});
+	
+			Addons.SideTreeView.WM = TWM_APP++;
+			Addons.SideTreeView.uRegisterId = api.SHChangeNotifyRegister(te.hwnd, SHCNRF_InterruptLevel | SHCNRF_NewDelivery, SHCNE_MKDIR | SHCNE_MEDIAINSERTED | SHCNE_DRIVEADD | SHCNE_NETSHARE | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RENAMEFOLDER | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT | SHCNE_UPDATEDIR, Addons.SideTreeView.WM, ssfDESKTOP, true);
+		}
+	});
 } else {
 	SetTabContents(0, "General", '<div><label>Align</label></div><input type="hidden" name="Align" /><input type="radio" name="_Align" id="Align=0" onclick="SetRadio(this)" /><label for="Align=0">Left</label><input type="radio" name="_Align" id="Align=1" onclick="SetRadio(this)" /><label for="Align=1">Right</label><br><br><label>Style</label><br><input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label><br><input type="checkbox" id="List" value="1" /><label for="List">List</label><br><br><label>Height</label><br><input type="text" name="Height" size="9" />');
 }
