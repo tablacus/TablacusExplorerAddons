@@ -69,7 +69,6 @@ if (window.Addon == 1) {
 		FromFile: function(path, img)
 		{
 			var image;
-			img.onerror = null;
 			if (/^file:/i.test(path)) {
 				path = api.PathCreateFromUrl(path);
 			}
@@ -84,8 +83,11 @@ if (window.Addon == 1) {
 						image = image.GetThumbnailImage(o.offsetWidth * nWidth / nHeight, o.offsetWidth);
 					}
 				}
-				img.src = image.DataURI(/\.gif$/i.test(path) ? 'image/gif' : "image/png");
-				return true;
+				if (image) {
+					img.onerror = null;
+					img.src = image.DataURI(/\.gif$/i.test(path) ? 'image/gif' : "image/png");
+					return true;
+				}
 			}
 		},
 
@@ -148,7 +150,7 @@ if (window.Addon == 1) {
 		o.style.height = Addons.Preview.Height || w + "px";
 	});
 } else {
-	var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\"+ Addon_Id + "\\options.html"));
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 	if (ado) {
 		SetTabContents(0, "General", ado.ReadText(adReadAll));
 		ado.Close();
