@@ -91,8 +91,7 @@ if (window.Addon == 1) {
 					if (!bRoot) {
 						o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.next + '</span>');
 					}
-				}
-				else {
+				} else {
 					o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup2(this, ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.parent + '</span>');
 				}
 				this.nLevel = n;
@@ -182,6 +181,21 @@ if (window.Addon == 1) {
 
 		Popup: function (o, n, Id)
 		{
+			var TC = te.Ctrl(CTRL_TC);
+			if (TC && TC.Id != Id) {
+				if (!Addons.InnerBreadcrumbsAddressBar.tidPopup) {
+					Activate(o, Id);
+					Addons.InnerBreadcrumbsAddressBar.tidPopup = setTimeout(function ()
+					{
+						var o2 = document.getElementById('breadcrumbsaddressbar_' + Id + "_"  + n);
+						if (o2) {
+							FireEvent(o2, "click");
+						}
+					}, 200);
+				}
+				return;
+			}
+			delete Addons.InnerBreadcrumbsAddressBar.tidPopup;
 			if (Addons.InnerBreadcrumbsAddressBar.CanPopup(o, Id)) {
 				Addons.InnerBreadcrumbsAddressBar.Item = o;
 				var pt = GetPos(o, true);

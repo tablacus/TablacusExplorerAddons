@@ -4,15 +4,13 @@ if (window.Addon == 1) {
 		tid: {},
 		pt: api.Memory("POINT"),
 		bCtrl: false,
-		FWF: WINVER < 0x600 ? FWF_CHECKSELECT : FWF_AUTOCHECKSELECT,
+		FWF: WINVER < 0x600 || GetAddonOptionEx("checkbox", "XP") ? FWF_CHECKSELECT : FWF_AUTOCHECKSELECT,
 		All: GetAddonOptionEx("checkbox", "All"),
+		Background: GetAddonOptionEx("checkbox", "Background"),
 
 		Init: function (Ctrl)
 		{
 			var fFlags = Ctrl.FolderFlags;
-			if (fFlags & FWF_SINGLECLICKACTIVATE) {
-				Addons.CheckBox.FWF = FWF_CHECKSELECT;
-			}
 			if ((fFlags & (FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) != Addons.CheckBox.FWF) {
 				Ctrl.FolderFlags = fFlags & (~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) | Addons.CheckBox.FWF;
 			}
@@ -62,12 +60,14 @@ if (window.Addon == 1) {
 			api.SendMessage(Ctrl.hwndList, LVM_HITTEST, 0, ht);
 			Addons.CheckBox.state = ht.iItem >= 0 ? api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_STATEIMAGEMASK) : 0;
 			if (Addons.CheckBox.All && Ctrl.ItemCount(SVGIO_SELECTION) > 1) {
-				for (var i = VK_RBUTTON; i <= VK_MENU; i++) {
-					if (api.GetKeyState(i) < 0) {
-						return;
+				if (Addons.CheckBox.Background || ht.iItem >= 0) {
+					for (var i = VK_RBUTTON; i <= VK_MENU; i++) {
+						if (api.GetKeyState(i) < 0) {
+							return;
+						}
 					}
+					Addons.CheckBox.SetCtrl(true);
 				}
-				Addons.CheckBox.SetCtrl(true);
 			}
 			return;
 		}
@@ -141,5 +141,5 @@ if (window.Addon == 1) {
 		}
 	});
 } else {
-	SetTabContents(0, "General", '<input type="checkbox" id="All" /><label for="All">All</label>');
+	SetTabContents(0, "General", '<input type="checkbox" id="All" /><label for="All">All</label> (<input type="checkbox" id="Background" /><label for="Background">Background</label>)<br /><input type="checkbox" id="XP" /><label for="XP">XP ' + (GetText("Style").toLowerCase()) + '</label>');
 }
