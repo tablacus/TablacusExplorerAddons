@@ -19,7 +19,7 @@ if (window.Addon == 1) {
 						api.DoEvents();
 					}
 					if (arg.Updated) {
-						api.SHFileOperation(FO_MOVE, arg.addons + "\\*", fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons"), FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR, false);
+						api.SHFileOperation(FO_MOVE, arg.addons + "\\*", fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons"), FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR | FOF_NOERRORUI, false);
 						te.Reload();
 					}
 				}
