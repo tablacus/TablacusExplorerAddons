@@ -12,6 +12,7 @@ if (window.Addon == 1) {
 		Max: 1000,
 		RE: false,
 		fncb: {},
+		nDog: 0,
 
 		IsHandle: function (Ctrl)
 		{
@@ -36,6 +37,12 @@ if (window.Addon == 1) {
 			var FV = te.Ctrl(CTRL_FV);
 			var s = s || document.F.everythingsearch.value;
 			if (s.length) {
+				if (!/path:.+/.test(s) && ((api.GetAsyncKeyState(VK_SHIFT) < 0 ? 1: 0) ^ Addons.Everything.Subfolders)) {
+					var path = FV.FolderItem.Path;
+					if (/^[A-Z]:\\|^\\\\/i.test(path)) {
+						s += " path:" + api.PathQuoteSpaces(path);
+					}
+				}
 				FV.Navigate(Addons.Everything.PATH + s, Addons.Everything.NewTab ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
 			}
 		},
@@ -119,8 +126,17 @@ if (window.Addon == 1) {
 					var hwndView = Ctrl.hwndView;
 					Addons.Everything.fncb[Ctrl.Id] = fncb;
 					if (!Addons.Everything.Open(Path, hwndView) && Addons.Everything.ExePath) {
-						wsh.Run(ExtractMacro(te, Addons.Everything.ExePath), SW_SHOWNORMAL, true);
-						Addons.Everything.Open(Path, hwndView);
+						if (Addons.Everything.nDog++ < 9) {
+							try {
+								wsh.Run(ExtractMacro(te, Addons.Everything.ExePath), SW_SHOWNORMAL);
+								setTimeout(function()
+								{
+									Addons.Everything.Enum(pid, Ctrl, fncb, SessionId);
+								}, Addons.Everything.nDog * 99);
+							} catch (e) {}
+						} else {
+							Addons.Everything.nDog = 0;
+						}
 					}
 				}
 			}
@@ -196,6 +212,7 @@ if (window.Addon == 1) {
 			}
 			Addons.Everything.fncb[Ctrl.Id](Ctrl, arItems);
 			delete Addons.Everything.fncb[Ctrl.Id];
+			Addons.Everything.nDog = 0;
 			return S_OK;
 		}
 	});
@@ -256,7 +273,8 @@ if (window.Addon == 1) {
 	AddEvent("ILGetParent", function (FolderItem)
 	{
 		if (Addons.Everything.IsHandle(FolderItem)) {
-			return ssfDESKTOP;
+			var res = /path:"?(.+)"?/.exec(Addons.Everything.GetSearchString(FolderItem));
+			return res ? res[1] : ssfDESKTOP;
 		}
 	});
 
@@ -294,6 +312,7 @@ if (window.Addon == 1) {
 	}
 	Addons.Everything.Icon = icon;
 	Addons.Everything.RE = api.LowPart(item.getAttribute("RE"));
+	Addons.Everything.Subfolders = api.LowPart(item.getAttribute("Subfolders")) ? 1 : 0;
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		Addons.Everything.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -321,22 +340,5 @@ if (window.Addon == 1) {
 
 	SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', WINVER < 0x602 ? "32" : "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', EncodeSC(icon), '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'], "middle");
 } else {
-	var s = ['<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr>'];
-	s.push('<tr><td><label>Action</label></td></tr>');
-	s.push('<tr><td><input type="checkbox" name="NewTab" id="NewTab"><label for="NewTab">Open in New Tab</label>&emsp;<input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr>');
-	s.push('<tr><td style="width: 100%"><label>Number of items</label></td></tr><tr><td><input type="text" name="Folders" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Folders.value=1000" /></td></tr>');
-	s.push('<tr><td style="width: 100%"><label>Exec</label></td></tr><tr><td><input type="text" name="Exec" style="width: 100%" /></td><td><input type="button" value="Default" onclick="SetExe()" /></td></tr></table>');
-	s.push('<br /><br /><input type="button" value="', api.sprintf(999, GetText("Get %s..."), "Everything"), '" title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">');
-	SetTabContents(0, "General", s.join(""));
-
-	SetExe = function ()
-	{
-		var path = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
-		if (!fso.FileExists(path)) {
-			path = path.replace(/ \(x86\)\\/, "\\");
-		}
-		if (fso.FileExists(path) && confirmOk("Are you sure?")) {
-			document.F.Exec.value = api.PathQuoteSpaces(path) + " -startup";
-		}
-	}
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
