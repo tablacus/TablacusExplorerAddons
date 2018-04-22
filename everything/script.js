@@ -40,7 +40,7 @@ if (window.Addon == 1) {
 				if (!/path:.+/.test(s) && ((api.GetAsyncKeyState(VK_SHIFT) < 0 ? 1: 0) ^ Addons.Everything.Subfolders)) {
 					var path = FV.FolderItem.Path;
 					if (/^[A-Z]:\\|^\\\\/i.test(path)) {
-						s += " path:" + api.PathQuoteSpaces(path);
+						s += " path:" + api.PathQuoteSpaces((path + "\\").replace(/\\\\$/, "\\"));
 					}
 				}
 				FV.Navigate(Addons.Everything.PATH + s, Addons.Everything.NewTab ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
@@ -220,7 +220,8 @@ if (window.Addon == 1) {
 	AddEvent("GetFolderItemName", function (pid)
 	{
 		if (Addons.Everything.IsHandle(pid)) {
-			return pid.Path;
+			var res = /(.*?) *path:"?.+?"?/.exec(pid.Path);
+			return res ? res[1] : pid.Path;
 		}
 	}, true);
 
@@ -273,7 +274,7 @@ if (window.Addon == 1) {
 	AddEvent("ILGetParent", function (FolderItem)
 	{
 		if (Addons.Everything.IsHandle(FolderItem)) {
-			var res = /path:"?(.+)"?/.exec(Addons.Everything.GetSearchString(FolderItem));
+			var res = /path:"?(.+?)"?/.exec(Addons.Everything.GetSearchString(FolderItem));
 			return res ? res[1] : ssfDESKTOP;
 		}
 	});

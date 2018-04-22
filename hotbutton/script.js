@@ -5,6 +5,7 @@ var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.HotButton =
 	{
+		Up: GetAddonOptionEx("hotbutton", "Up"),
 		rc: api.Memory("RECT"),
 
 		IsHot: function (nmcd, hList, pt)
@@ -33,14 +34,16 @@ if (window.Addon == 1) {
 	{
 		var hList = Ctrl.hwndList;
 		if (hList && pid && Addons.HotButton.IsHot(nmcd, hList)) {
-			if (Addons.HotButton.Image) {
-				var rc = api.Memory("RECT");
-				Addons.HotButton.GetRect(hList, nmcd.dwItemSpec, rc);
-				if (rc.Left != Addons.HotButton.rc.Left || rc.Top != Addons.HotButton.rc.Top) {
-					api.InvalidateRect(hList, Addons.HotButton.rc, true);
-					Addons.HotButton.rc = rc;
+			if (Addons.HotButton.Up || pid.IsFolder) {
+				if (Addons.HotButton.Image) {
+					var rc = api.Memory("RECT");
+					Addons.HotButton.GetRect(hList, nmcd.dwItemSpec, rc);
+					if (rc.Left != Addons.HotButton.rc.Left || rc.Top != Addons.HotButton.rc.Top) {
+						api.InvalidateRect(hList, Addons.HotButton.rc, true);
+						Addons.HotButton.rc = rc;
+					}
+					Addons.HotButton.Image.DrawEx(nmcd.hdc, rc.Left, rc.Top, 0, 0, CLR_NONE, CLR_NONE, ILD_NORMAL);
 				}
-				Addons.HotButton.Image.DrawEx(nmcd.hdc, rc.Left, rc.Top, 0, 0, CLR_NONE, CLR_NONE, ILD_NORMAL);
 			}
 		}
 	});
@@ -63,7 +66,7 @@ if (window.Addon == 1) {
 						Addons.HotButton.MenuLoop = true;
 						Addons.HotButton.MenuSelect = -1;
 						Addons.HotButton.ptDown = null;
-						var FolderItem = FolderMenu.Open(api.ILIsEqual(Ctrl.FolderItem.Alt, ssfRESULTSFOLDER) ? Item.Path : Item, pt.x, pt.y, "*");
+						var FolderItem = FolderMenu.Open(api.ILIsEqual(Ctrl.FolderItem.Alt, ssfRESULTSFOLDER) ? Item.Path : Item, pt.x, pt.y, "*", !Addons.HotButton.Up);
 						Addons.HotButton.MenuLoop = false;
 						if (FolderItem) {
 							FolderMenu.Invoke(FolderItem);
@@ -163,4 +166,6 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+} else {
+	SetTabContents(0, "General", '<input type="checkbox" id="Up" /><label for="Up">Up</label>');
 }

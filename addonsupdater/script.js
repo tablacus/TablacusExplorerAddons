@@ -9,7 +9,7 @@ if (window.Addon == 1) {
 		{
 			var arg = {
 				pcRef: [0],
-				Updated: 0,
+				Updated: api.CreateObject("FolderItems"),
 				addons: fso.BuildPath(wsh.ExpandEnvironmentStrings("%TEMP%"), "tablacus\\addons"),
 
 				fn: function (arg)
@@ -18,8 +18,8 @@ if (window.Addon == 1) {
 						api.Sleep(500);
 						api.DoEvents();
 					}
-					if (arg.Updated) {
-						api.SHFileOperation(FO_MOVE, arg.addons + "\\*", fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons"), FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR | FOF_NOERRORUI, false);
+					if (arg.Updated.Count) {
+						sha.NameSpace(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons")).CopyHere(arg.Updated, FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR);
 						te.Reload();
 					}
 				}
@@ -78,7 +78,7 @@ if (window.Addon == 1) {
 						return;
 					}
 				}
-				arg.Updated++;
+				arg.Updated.AddItem(dest);
 			}
 		}
 	};
@@ -88,7 +88,7 @@ if (window.Addon == 1) {
 	AddEvent("CreateUpdater", function (arg)
 	{
 		arg.pcRef = [0];
-		arg.Updated = 0;
+		arg.Updated = api.CreateObject("FolderItems");
 		arg.addons = fso.BuildPath(arg.temp, "addons");
 		arg.all = true;
 		OpenHttpRequest(Addons.AddonsUpdater.url + "index.xml", "http", Addons.AddonsUpdater.List, arg);
