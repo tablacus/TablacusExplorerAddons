@@ -19,7 +19,7 @@ if (window.Addon == 1) {
 						api.DoEvents();
 					}
 					if (arg.Updated.Count) {
-						sha.NameSpace(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons")).CopyHere(arg.Updated, FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR);
+						sha.NameSpace(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons")).MoveHere(arg.Updated, FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR);
 						te.Reload();
 					}
 				}
@@ -65,7 +65,8 @@ if (window.Addon == 1) {
 				var Id = res[1];
 				var file = res[2];
 				var temp = arg.addons;
-				CreateFolder(temp);
+				CreateFolder2(fso.GetParentFolderName(temp));
+				CreateFolder2(temp);
 				var dest = fso.BuildPath(temp, Id);
 				var hr = Extract(fso.BuildPath(wsh.ExpandEnvironmentStrings("%TEMP%"), "tablacus\\" + file), temp, xhr);
 				if (hr) {
