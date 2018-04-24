@@ -141,10 +141,10 @@ if (window.Addon == 1) {
 				MouseOver(o);
 				var hMenu = api.CreatePopupMenu();
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, api.LoadString(hShell32, 33561));
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Copy Full Path"));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Copy full path"));
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 3, GetText("Open in New &Tab"));
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 4, GetText("Open in Background"));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 3, GetText("Open in new &tab"));
+				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 4, GetText("Open in background"));
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 5,  GetText("&Edit"));
 				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, te.hwnd, null, null);
@@ -174,12 +174,13 @@ if (window.Addon == 1) {
 
 		GetPath: function(n)
 		{
+			var FolderItem = 0;
 			var FV = te.Ctrl(CTRL_FV);
 			if (FV) {
 				FolderItem = FV.FolderItem;
-			}
-			while (n--) {
-				FolderItem = api.ILGetParent(FolderItem);
+				while (n--) {
+					FolderItem = api.ILGetParent(FolderItem);
+				}
 			}
 			return FolderItem;
 		},
@@ -190,7 +191,7 @@ if (window.Addon == 1) {
 				Addons.AddressBar.Item = o;
 				var pt = GetPos(o, true);
 				MouseOver(o);
-				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n), pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI));
+				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n), pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, null, 1));
 			}
 		},
 
