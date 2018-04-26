@@ -5,7 +5,6 @@ var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.HotButton =
 	{
-		Up: GetAddonOptionEx("hotbutton", "Up"),
 		rc: api.Memory("RECT"),
 
 		IsHot: function (nmcd, hList, pt)
@@ -34,7 +33,7 @@ if (window.Addon == 1) {
 	{
 		var hList = Ctrl.hwndList;
 		if (hList && pid && Addons.HotButton.IsHot(nmcd, hList)) {
-			if (Addons.HotButton.Up || pid.IsFolder) {
+			if (pid.IsFolder || api.ILCreateFromPath(pid.Path).Enum) {
 				if (Addons.HotButton.Image) {
 					var rc = api.Memory("RECT");
 					Addons.HotButton.GetRect(hList, nmcd.dwItemSpec, rc);
@@ -66,7 +65,7 @@ if (window.Addon == 1) {
 						Addons.HotButton.MenuLoop = true;
 						Addons.HotButton.MenuSelect = -1;
 						Addons.HotButton.ptDown = null;
-						var FolderItem = FolderMenu.Open(api.ILIsEqual(Ctrl.FolderItem.Alt, ssfRESULTSFOLDER) ? Item.Path : Item, pt.x, pt.y, "*", !Addons.HotButton.Up);
+						var FolderItem = FolderMenu.Open(Item, pt.x, pt.y, "*", 1);
 						Addons.HotButton.MenuLoop = false;
 						if (FolderItem) {
 							FolderMenu.Invoke(FolderItem);
@@ -166,6 +165,4 @@ if (window.Addon == 1) {
 			}
 		}
 	});
-} else {
-	SetTabContents(0, "General", '<input type="checkbox" id="Up" /><label for="Up">Up</label>');
 }
