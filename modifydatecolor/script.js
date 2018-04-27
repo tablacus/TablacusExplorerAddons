@@ -91,5 +91,6 @@ if (window.Addon == 1) {
 	}
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.ModifyDateColor.Exec();" oncontextmenu="Addons.ModifyDateColor.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
 } else {
+	hint = "1s 1m 1h 1d 1w 1y";
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }

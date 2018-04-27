@@ -5,7 +5,7 @@
 	};
 	var re = /^\/(.*)\/(.*)/;
 	try {
-		var ado = te.CreateObject("Adodb.Stream");
+		var ado = api.CreateObject("ads");
 		ado.CharSet = "utf-8";
 		ado.Open();
 		ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\tabcolorplus.tsv"));
@@ -33,4 +33,7 @@
 			}
 		}
 	});
+} else {
+	hint = "";
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

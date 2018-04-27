@@ -1,6 +1,8 @@
 SetTabContents(4, "Color",'<form name="E" id="data1"><table id="T" style="width: 100%"></table></form>');
 document.getElementById("toolbar").innerHTML = '<input type="button" value="Add" onclick=\'Add(["",""])\' />&emsp;<input type="button" value="Up" onclick="Up()" /><input type="button" value="Down" onclick="Down()" />&emsp;<input type="button" value="Remove" onclick="Remove()" />';
 
+ConfigTSV = fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv");
+
 Get = function (i)
 {
 	return [document.E.elements['p' + i].value, document.E.elements['c' + i].value];
@@ -18,7 +20,7 @@ Add = function(ar)
 	var table = document.getElementById("T");
 	var nRows = table.rows.length;
 	s = ['<td style="width: 1em"><input type="radio" name="sel" id="i', nRows, '" /></td>'];
-	s.push('<td><input type="text" name="p', nRows, '" style="width: 100%" onchange="FilterChanged(this)" placeholder="time 1s 1m 1h 1d 1w 1y" title="time 1s 1m 1h 1d 1w 1y" /></td>');
+	s.push('<td><input type="text" name="p', nRows, '" style="width: 100%" onchange="FilterChanged(this)" placeholder="', hint, '" title="', hint ,'" /></td>');
 	var cl = GetText("Color");
 	s.push('<td style="width: 7em"><input type="text" name="c', nRows, '" style="width: 100%" placeholder="', cl, '" title="', cl, '" onchange="FilterChanged()"  /></td>');
 	s.push('<td style="width: 1em"><input type="button" name="b', nRows, '" value=" " class="color" style="width: 100%" onclick="ChooseColor2(this)" title="', cl, '" /></td>');
@@ -105,7 +107,7 @@ ChooseColor2 = function(o)
 SaveLocation = function ()
 {
 	try {
-		var ado = new ActiveXObject(api.ADBSTRM);
+		var ado = api.CreateObject("ads");
 		ado.CharSet = "utf-8";
 		ado.Open();
 		var table = document.getElementById("T");
@@ -113,13 +115,13 @@ SaveLocation = function ()
 		for (var i = 0; i < nRows; i++) {
 			ado.WriteText([document.E.elements['p' + i].value, document.E.elements['c' + i].value].join("\t") + "\r\n");
 		}
-		ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\modifydatecolor.tsv"), adSaveCreateOverWrite);
+		ado.SaveToFile(ConfigTSV, adSaveCreateOverWrite);
 		ado.Close();
 	} catch (e) {}
 }
 
 try {
-	var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\modifydatecolor.tsv"));
+	var ado = OpenAdodbFromTextFile(ConfigTSV);
 	while (!ado.EOS) {
 		var ar = ado.ReadText(adReadLine).split("\t");
 		Add(ar);

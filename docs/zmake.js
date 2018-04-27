@@ -25,7 +25,7 @@ var arLangs = ["General", "en", "ja"];
 var arAddon = [];
 for (em.moveFirst(); !em.atEnd(); em.moveNext()) {
 	var name = em.item().Name;
-	if (/^migemo$/i.test(name)) {
+	if (/^migemo$|^iconsize$/i.test(name)) {
 		continue;
 	}
 	var xml = new ActiveXObject("Msxml2.DOMDocument");

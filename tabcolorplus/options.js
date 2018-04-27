@@ -1,44 +1,102 @@
-﻿var g_nLast = 0;
+SetTabContents(4, "Color",'<form name="E" id="data1"><table id="T" style="width: 100%"></table></form>');
+document.getElementById("toolbar").innerHTML = '<input type="button" value="Add" onclick=\'Add(["",""])\' />&emsp;<input type="button" value="Up" onclick="Up()" /><input type="button" value="Down" onclick="Down()" />&emsp;<input type="button" value="Remove" onclick="Remove()" />';
 
-function DialogResize1()
-{
-	var h = document.documentElement.clientHeight || document.body.clientHeight;
-	var i = document.getElementById("buttons").offsetHeight * screen.deviceYDPI / screen.logicalYDPI + 6;
-	h -= i > 34 ? i : 34;
-	if (h > 0) {
-		document.getElementById("panel0").style.height = h + 'px';
-	}
-};
+ConfigTSV = fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv");
 
-function AddFilter(strPath, strColor)
+Get = function (i)
 {
-	s = ['<table style="width: 100%"><tr><td><input type="text" name="p', g_nLast, '" value="', strPath, '" style="width: 100%" onchange="ChangeFilter(this)" placeholder="Filter" title="Filter" /></td>'];
-	s.push('<td style="width: 7em"><input type="text" name="c', g_nLast, '" value="', strColor, '"  style="width: 100%" placeholder="Color" title="Color" /></td>');
-	s.push('<td style="width: 1em"><input type="button" name="b', g_nLast, '" class="color" style="background-color:', strColor, '; width: 100%" onclick="ChooseColor2(this)" title="Color" /></td>');
-	s.push('</tr></table>');
-	var o = document.getElementById("panel0");
-	o.insertAdjacentHTML("BeforeEnd", s.join(""));
-	ApplyLang(o);
-	g_nLast++;
+	return [document.E.elements['p' + i].value, document.E.elements['c' + i].value];
 }
 
-function ChangeFilter(o)
+Set = function (i, ar)
 {
-	if (o.name.replace(/\D/, "") == g_nLast - 1) {
-		AddFilter("", "");
-	}
+	document.E.elements['p' + i].value = ar[0];
+	document.E.elements['c' + i].value = ar[1];
+	document.E.elements['b' + i].style.backgroundColor = ar[1];
 }
 
-function ChangeColor(o)
+Add = function(ar)
+{
+	var table = document.getElementById("T");
+	var nRows = table.rows.length;
+	s = ['<td style="width: 1em"><input type="radio" name="sel" id="i', nRows, '" /></td>'];
+	s.push('<td><input type="text" name="p', nRows, '" style="width: 100%" onchange="FilterChanged(this)" placeholder="', hint, '" title="', hint ,'" /></td>');
+	var cl = GetText("Color");
+	s.push('<td style="width: 7em"><input type="text" name="c', nRows, '" style="width: 100%" placeholder="', cl, '" title="', cl, '" onchange="FilterChanged()"  /></td>');
+	s.push('<td style="width: 1em"><input type="button" name="b', nRows, '" value=" " class="color" style="width: 100%" onclick="ChooseColor2(this)" title="', cl, '" /></td>');
+	var tr = table.insertRow();
+	tr.innerHTML = s.join("");
+	Set(nRows, ar);
+	return tr;
+}
+
+
+function GetIndex()
+{
+	var table = document.getElementById("T");
+	for (var i = table.rows.length; i--;) {
+		if (document.getElementById("i" + i).checked) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+Up = function ()
+{
+	var nPos = GetIndex();
+	if (nPos <= 0) {
+		return;
+	}
+	var s = Get(nPos);
+	Set(nPos, Get(nPos - 1));
+	Set(--nPos, s);
+	document.E.elements["i" + nPos].checked = true;
+}
+
+Down = function ()
+{
+	var table = document.getElementById("T");
+	var nPos = GetIndex();
+	if (nPos < 0 || nPos >= table.rows.length - 1) {
+		return;
+	}
+	var s = Get(nPos);
+	Set(nPos, Get(nPos + 1));
+	Set(++nPos, s);
+	document.E.elements["i" + nPos].checked = true;
+}
+
+Remove = function ()
+{
+	var nPos = GetIndex();
+	if (nPos < 0 || !confirmOk("Are you sure?")) {
+		return;
+	}
+	var table = document.getElementById("T");
+	var nRows = table.rows.length;
+	for (var i = nPos; i < nRows - 1; i++) {
+		Set(i, Get(i + 1));
+	}
+	table.deleteRow(nRows - 1);
+}
+
+FilterChanged = function(o)
+{
+	g_bChanged = true;
+}
+
+ChangeColor = function(o)
 {
 	var n = o.name.replace(/\D/, "");
-	document.F.elements["b" + n].style.backgroundColor = o.value;
+	document.E.elements["b" + n].style.backgroundColor = o.value;
+	g_bChanged = true;
 }
 
-function ChooseColor2(o)
+ChooseColor2 = function(o)
 {
 	var n = o.name.replace(/\D/, "");
-	var oc = document.F.elements["c" + n];
+	var oc = document.E.elements["c" + n];
 	var c = ChooseWebColor(oc.value);
 	if (c) {
 		oc.value = c;
@@ -46,56 +104,27 @@ function ChooseColor2(o)
 	}
 }
 
-try {
-	var ado = te.CreateObject("Adodb.Stream");
-	ado.CharSet = "utf-8";
-	ado.Open();
-	ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\tabcolorplus.tsv"));
-	while (!ado.EOS) {
-		var ar = ado.ReadText(adReadLine).split("\t");
-		AddFilter(ar[0], ar[1]);
-	}
-	ado.Close();
-}
-catch (e) {
-}
-AddFilter("", "");
-
-ApplyLang(document);
-DialogResize1();
-
-AddEventEx(window, "resize", function ()
-{
-	clearTimeout(g_tidResize);
-	g_tidResize = setTimeout(function ()
-	{
-		DialogResize1();
-	}, 500);
-});
-
-AddEventEx(window, "beforeunload", function ()
-{
-	SetOptions(function () {
-		Save();
-		TEOk();
-	});
-});
-
-function Save()
+SaveLocation = function ()
 {
 	try {
-		var ado = te.CreateObject("Adodb.Stream");
+		var ado = api.CreateObject("ads");
 		ado.CharSet = "utf-8";
 		ado.Open();
-		for (var i = 0; i < g_nLast; i++) {
-			var s = document.F.elements['p' + i].value;
-			if (s) {
-				ado.WriteText([s, document.F.elements['c' + i].value].join("\t") + "\r\n");
-			}
+		var table = document.getElementById("T");
+		var nRows = table.rows.length;
+		for (var i = 0; i < nRows; i++) {
+			ado.WriteText([document.E.elements['p' + i].value, document.E.elements['c' + i].value].join("\t") + "\r\n");
 		}
-		ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\tabcolorplus.tsv"), adSaveCreateOverWrite);
+		ado.SaveToFile(ConfigTSV, adSaveCreateOverWrite);
 		ado.Close();
-	}
-	catch (e) {
-	}
+	} catch (e) {}
 }
+
+try {
+	var ado = OpenAdodbFromTextFile(ConfigTSV);
+	while (!ado.EOS) {
+		var ar = ado.ReadText(adReadLine).split("\t");
+		Add(ar);
+	}
+	ado.Close();
+} catch (e) {}
