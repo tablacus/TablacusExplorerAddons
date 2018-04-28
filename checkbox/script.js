@@ -60,7 +60,7 @@ if (window.Addon == 1) {
 			api.SendMessage(Ctrl.hwndList, LVM_HITTEST, 0, ht);
 			Addons.CheckBox.state = ht.iItem >= 0 ? api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_STATEIMAGEMASK) : 0;
 			if (Addons.CheckBox.All && Ctrl.ItemCount(SVGIO_SELECTION) > 1) {
-				if (Addons.CheckBox.Background || ht.iItem >= 0) {
+				if (Addons.CheckBox.Background || ht.flags & (LVHT_ONITEMICON | LVHT_ONITEMLABEL)) {
 					for (var i = VK_RBUTTON; i <= VK_MENU; i++) {
 						if (api.GetKeyState(i) < 0) {
 							return;
