@@ -26,7 +26,7 @@ if (window.Addon == 1) {
 				var type = item.getAttribute("Type");
 				if (api.StrCmpI(type, "Open") == 0) {
 					if (api.GetKeyState(VK_CONTROL) < 0 || GetAddonOption("favoritesbar", "NewTab")) {
-						type = "Open in New Tab";
+						type = "Open in new tab";
 					}
 				}
 				if (api.StrCmpI(type, "Menus") == 0) {
@@ -51,7 +51,8 @@ if (window.Addon == 1) {
 				var menus = te.Data.xmlMenus.getElementsByTagName("Favorites");
 				if (menus && menus.length) {
 					var items = menus[0].getElementsByTagName("Item");
-					Exec(te, items[i].text, "Open in New Tab", te.hwnd);
+					var type = items[i].getAttribute("Type");
+					Exec(te, items[i].text, api.PathMatchSpec(type, "Open;Open in background") ? "Open in new tab" : type, te.hwnd);
 					return false;
 				}
 			}

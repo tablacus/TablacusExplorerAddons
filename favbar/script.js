@@ -4,7 +4,7 @@ var Default = "ToolBar4Center";
 if (window.Addon == 1) {
 	Addons.FavBar =
 	{
-		Click: function (i)
+		Click: function (i, bNew)
 		{
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
 			if (menus && menus.length) {
@@ -12,24 +12,16 @@ if (window.Addon == 1) {
 				var item = items[i];
 				if (item) {
 					var type = item.getAttribute("Type");
-					if (type == "Open" && GetAddonOption("favbar", "NewTab")) {
-						type = "Open in New Tab";
-					}
-					Exec(te, item.text, type, te.hwnd, null);
+					Exec(te, item.text, ((bNew && api.PathMatchSpec(s, "Open;Open in background")) || (type == "Open" && GetAddonOption("favbar", "NewTab"))) ? "Open in new tab" : type, te.hwnd, null);
 				}
-				return S_OK;
+				return false;
 			}
 		},
 
 		Down: function (i)
 		{
 			if (api.GetKeyState(VK_MBUTTON) < 0) {
-				var menus = te.Data.xmlMenus.getElementsByTagName("Favorites");
-				if (menus && menus.length) {
-					var items = menus[0].getElementsByTagName("Item");
-					Exec(te, items[i].text, "Open in New Tab", te.hwnd);
-					return false;
-				}
+				return this.Click(i, true);
 			}
 		},
 
