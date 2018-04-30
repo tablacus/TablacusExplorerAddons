@@ -17,19 +17,19 @@ if (window.Addon == 1) {
 			this.Arrange();
 		},
 
-		Open: function (i)
+		Open: function (i, bNew)
 		{
 			var menus = te.Data.xmlMenus.getElementsByTagName("Favorites");
 			if (menus && menus.length) {
 				var items = menus[0].getElementsByTagName("Item");
 				var item = items[i];
 				var type = item.getAttribute("Type");
-				if (api.StrCmpI(type, "Open") == 0) {
-					if (api.GetKeyState(VK_CONTROL) < 0 || GetAddonOption("favoritesbar", "NewTab")) {
+				if (/^Open$/i.test(type)) {
+					if (bNew || api.GetKeyState(VK_CONTROL) < 0 || GetAddonOption("favoritesbar", "NewTab")) {
 						type = "Open in new tab";
 					}
 				}
-				if (api.StrCmpI(type, "Menus") == 0) {
+				if (/^Menus$/i.test(type)) {
 					var o = document.getElementById("fav" + i + "_button");
 					var oChild = document.getElementById("fav" + i + "_");
 					if (oChild.style.display == "none") {
@@ -48,13 +48,7 @@ if (window.Addon == 1) {
 		Down: function (i)
 		{
 			if (api.GetKeyState(VK_MBUTTON) < 0) {
-				var menus = te.Data.xmlMenus.getElementsByTagName("Favorites");
-				if (menus && menus.length) {
-					var items = menus[0].getElementsByTagName("Item");
-					var type = items[i].getAttribute("Type");
-					Exec(te, items[i].text, api.PathMatchSpec(type, "Open;Open in background") ? "Open in new tab" : type, te.hwnd);
-					return false;
-				}
+				return this.Open(i, true);
 			}
 		},
 
