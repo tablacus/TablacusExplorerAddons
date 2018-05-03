@@ -29,29 +29,34 @@
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
 	{
-		var item = Addons.FolderSettings.Get(Ctrl);
-		if (item) {
-			var res = /CurrentViewMode\(\s*(\d+)\s*,\s*(\d+)/i.exec(item.text);
-			if (res) {
-				fs.ViewMode = res[1];
-				fs.ImageSize = res[2];
-			}
-			res = /CurrentViewMode\s*=\s*(\d+)/i.exec(item.text);
-			if (res) {
-				fs.ViewMode = res[1];
-			}
-			res = /IconSize\s*=\s*(\d+)/i.exec(item.text);
-			if (res) {
-				fs.ImageSize = res[1];
+		if (Ctrl.Data && !Ctrl.Data.Setting) {
+			var item = Addons.FolderSettings.Get(Ctrl);
+			if (item) {
+				var res = /CurrentViewMode\(\s*(\d+)\s*,\s*(\d+)/i.exec(item.text);
+				if (res) {
+					fs.ViewMode = res[1];
+					fs.ImageSize = res[2];
+				}
+				res = /CurrentViewMode\s*=\s*(\d+)/i.exec(item.text);
+				if (res) {
+					fs.ViewMode = res[1];
+				}
+				res = /IconSize\s*=\s*(\d+)/i.exec(item.text);
+				if (res) {
+					fs.ImageSize = res[1];
+				}
 			}
 		}
 	});
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		var item = Addons.FolderSettings.Get(Ctrl);
-		if (item && item.text) {
-			Exec(Ctrl, item.text, item.getAttribute("Type"), null);
+		if (Ctrl.Data && !Ctrl.Data.Setting) {
+			var item = Addons.FolderSettings.Get(Ctrl);
+			if (item && item.text) {
+				Ctrl.Data.Setting = 'FolderSettings';
+				Exec(Ctrl, item.text, item.getAttribute("Type"), null);
+			}
 		}
 	});
 

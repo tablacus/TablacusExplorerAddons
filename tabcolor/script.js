@@ -31,12 +31,16 @@ if (window.Addon == 1) {
 			var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
 			if (s) {
 				Addons.TabColor.db[path] = s;
-			}
-			else {
+			} else {
 				delete Addons.TabColor.db[path];
 			}
 			Addons.TabColor.db[true] = true;
-			ChangeView(FV);
+			var cTC = te.Ctrls(CTRL_TC);
+			for (var i in cTC) {
+				if (cTC[i].Visible) {
+					RunEvent3("SelectionChanged", cTC[i]);
+				}
+			}
 			return S_OK;
 		}
 	};

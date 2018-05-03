@@ -33,7 +33,7 @@ if (window.Addon == 1) {
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
 	{
-		if (Ctrl.Type <= CTRL_EB) {
+		if (Ctrl.Type <= CTRL_EB && Ctrl.Data && !Ctrl.Data.Setting) {
 			if (Prev && !Prev.Unvailable) {
 				var path = String(api.GetDisplayNameOf(Prev, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
 				if (PathMatchEx(path, Addons.TakeOverFolderSettings.Filter)) {
@@ -53,7 +53,6 @@ if (window.Addon == 1) {
 				if (ar) {
 					fs.ViewMode = ar[0];
 					fs.ImageSize = ar[1];
-					Ctrl.Data.Setting = 'TakeOver';
 				}
 				else if (Ctrl && Ctrl.Items) {
 					fs.ViewMode = Ctrl.CurrentViewMode;
@@ -65,7 +64,8 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		if (Ctrl.Data && Ctrl.Data.Setting == 'TakeOver') {
+		if (Ctrl.Data && !Ctrl.Data.Setting) {
+			Ctrl.Data.Setting = 'TakeOver';
 			var path = String(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
 			if (PathMatchEx(path, Addons.TakeOverFolderSettings.Filter)) {
 				Ctrl.Data.TakeOver = path;
@@ -98,7 +98,7 @@ if (window.Addon == 1) {
 	});
 
 	try {
-		var ado = te.CreateObject("Adodb.Stream");
+		var ado = api.CreateObject("ads");
 		ado.CharSet = "utf-8";
 		ado.Open();
 		ado.LoadFromFile(Addons.TakeOverFolderSettings.CONFIG);
@@ -111,7 +111,7 @@ if (window.Addon == 1) {
 		Addons.TakeOverFolderSettings.RememberFolder(te.Ctrl(CTRL_FV));
 			if (Addons.TakeOverFolderSettings.bSave) {
 			try {
-				var ado = te.CreateObject("Adodb.Stream");
+				var ado = api.CreateObject("ads");
 				ado.CharSet = "utf-8";
 				ado.Open();
 				ado.WriteText(Addons.TakeOverFolderSettings.db);
