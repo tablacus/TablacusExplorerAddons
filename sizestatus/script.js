@@ -27,7 +27,7 @@ if (window.Addon == 1) {
 			}
 			if (nCount) {
 				var Selected = FV.SelectedItems();
-				for (var i = nCount; i--;) {
+				for (var i = Selected.Count; i-- > 0;) {
 					var Item = Selected.Item(i);
 					if (Addons.SizeStatus.Folder && IsFolderEx(Item)) {
 						var n = FV.TotalFileSize[api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_ORIGINAL)];
