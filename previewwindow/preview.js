@@ -20,32 +20,46 @@ Addons.PreviewWindow =
 
 	Change: function (hwnd)
 	{
+		var desc = document.getElementById("desc1");
+		var img1 = document.getElementById("img1");
+		img1.style.display = "none";
 		if (MainWindow.Addons.PreviewWindow.File) {
-			document.title = MainWindow.Addons.PreviewWindow.File;
 			var Item = MainWindow.Addons.PreviewWindow.Item;
+			var wh = "{6444048F-4C8B-11D1-8B70-080036B11A03} 13";
+			var s = api.PSFormatForDisplay(wh, Item.ExtendedProperty(wh), PDFF_DEFAULT);
+			if (s) {
+				s = ' (' + s + ')';
+			}
+			document.title = MainWindow.Addons.PreviewWindow.File + s;
 			var ar = [];
-			var col = ["name", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13", "size"];
+			var col = ["name", "write", wh];
+			if (!IsFolderEx(Item)) {
+				col.push("size");
+			}
 			for (var i = col.length; i--;) {
-				var s = api.PSFormatForDisplay(col[i], Item.ExtendedProperty(col[i]), PDFF_DEFAULT);
+				s = api.PSFormatForDisplay(col[i], Item.ExtendedProperty(col[i]), PDFF_DEFAULT);
 				if (s) {
 					ar.unshift(" " + api.PSGetDisplayName(col[i]) + ": " + s);
 				}
 			}
-			var desc = document.getElementById("desc1");
 			desc.innerHTML = ar.join("<br />");
-			var img1 = document.getElementById("img1");
-			img1.style.display = "none";
 			img1.onload = Addons.PreviewWindow.Loaded;
 			img1.onerror = Addons.PreviewWindow.FromFile;
 			img1.src = MainWindow.Addons.PreviewWindow.File;
 			img1.style.maxWidth = "100%";
 			img1.style.maxHeight = "100vh";
+		} else {
+			document.title = MainWindow.Addons.PreviewWindow.strName;
+			desc.innerHTML = "";
 		}
-		api.SetForegroundWindow(hwnd);
+		if (!MainWindow.Addons.PreviewWindow.Focus) {
+			api.SetForegroundWindow(hwnd);
+		}
 	},
 
-	Move: function (nMove)
+	Move: function (nMove, bFocus)
 	{
+		MainWindow.Addons.PreviewWindow.Focus = bFocus;
 		var FV = te.Ctrl(CTRL_FV);
 		var nCount = FV.ItemCount(SVGIO_ALLVIEW);
 		var nIndex = (FV.GetFocusedItem() + nMove + nCount) % nCount;
@@ -62,6 +76,8 @@ AddEventEx(window, "load", function ()
 AddEventEx(window, "beforeunload", function ()
 {
 	delete MainWindow.Addons.PreviewWindow.dlg;
+	MainWindow.Addons.PreviewWindow.Width = window.innerWidth;
+	MainWindow.Addons.PreviewWindow.Height = window.innerHeight;
 });
 
 AddEventEx(window, "keydown", function (e)
@@ -70,19 +86,11 @@ AddEventEx(window, "keydown", function (e)
 		e = event;
 	}
 	if (e.keyCode == VK_LEFT || e.keyCode == VK_UP || e.keyCode == VK_BACK) {
-		Addons.PreviewWindow.Move(1);
-		setTimeout(function ()
-		{
-			api.SetForegroundWindow(api.GetParent(api.GetWindow(document)));
-		}, 500);
+		Addons.PreviewWindow.Move(-1, true);
 		return true;
 	}
 	if (e.keyCode == VK_RIGHT || e.keyCode == VK_DOWN || e.keyCode == VK_RETURN || e.keyCode == VK_SPACE) {
-		Addons.PreviewWindow.Move(1);
-		setTimeout(function ()
-		{
-			api.SetForegroundWindow(api.GetParent(api.GetWindow(doccument)));
-		}, 500);
+		Addons.PreviewWindow.Move(1, true);
 		return true;
 	}
 });

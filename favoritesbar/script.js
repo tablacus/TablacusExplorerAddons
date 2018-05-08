@@ -48,7 +48,8 @@ if (window.Addon == 1) {
 		Down: function (i)
 		{
 			if (api.GetKeyState(VK_MBUTTON) < 0) {
-				return this.Open(i, true);
+				this.Open(i, true);
+				return false;
 			}
 		},
 

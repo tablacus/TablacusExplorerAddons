@@ -20,10 +20,11 @@ if (window.Addon == 1) {
 
 		Exec: function (Ctrl, pt)
 		{
-			if (this.dlg) {
-				this.Arrange(GetFolderView(Ctrl, pt));
+			if (Addons.PreviewWindow.dlg) {
+				Addons.PreviewWindow.dlg.Window.close();
+				delete Addons.PreviewWindow.dlg;
 			} else {
-				this.dlg = ShowDialog("../addons/previewwindow/preview.html", {MainWindow: window, width: 800, height: 600});
+				Addons.PreviewWindow.dlg = ShowDialog("../addons/previewwindow/preview.html", {MainWindow: window, width: Addons.PreviewWindow.Width || 800, height: Addons.PreviewWindow.Height || 600 });
 			}
 		},
 
@@ -33,11 +34,17 @@ if (window.Addon == 1) {
 				Ctrl = te.Ctrl(CTRL_FV);
 			}
 			if (this.dlg) {
+				delete this.Item;
+				delete this.File;
 				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
-					Addons.PreviewWindow.Item = Ctrl.SelectedItems().Item(0);
-					Addons.PreviewWindow.File = api.GetDisplayNameOf(Addons.PreviewWindow.Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+					this.Item = Ctrl.SelectedItems().Item(0);
+					this.File = api.GetDisplayNameOf(this.Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				}
 				this.dlg.Window.Addons.PreviewWindow.Change(te.hwnd);
+				if (this.Focus) {
+					delete this.Focus;
+					this.dlg.focus();
+				}
 			}
 		}
 	};
@@ -45,9 +52,33 @@ if (window.Addon == 1) {
 	AddEvent("StatusText", function (Ctrl, Text, iPart)
 	{
 		if (Ctrl.Type <= CTRL_EB && Text) {
-			if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
-				Addons.PreviewWindow.Arrange(Ctrl);
-			}
+			Addons.PreviewWindow.Arrange(Ctrl);
+		}
+	});
+
+	AddEvent("Finalize", function ()
+	{
+		if (Addons.PreviewWindow.dlg) {
+			Addons.PreviewWindow.dlg.Window.close();
+		}
+	});
+
+	AddEvent("LoadWindow", function (xml)
+	{
+		var items = xml ? xml.getElementsByTagName("PreviewWindow") : {};
+		if (items.length) {
+			Addons.PreviewWindow.Width = items[0].getAttribute("Width");
+			Addons.PreviewWindow.Height = items[0].getAttribute("Height");
+		}
+	});
+
+	AddEvent("SaveWindow", function (xml, all)
+	{
+		if (Addons.PreviewWindow.Width && Addons.PreviewWindow.Height) {
+			var item = xml.createElement("PreviewWindow");
+			item.setAttribute("Width", Addons.PreviewWindow.Width);
+			item.setAttribute("Height", Addons.PreviewWindow.Height);
+			xml.documentElement.appendChild(item);
 		}
 	});
 
