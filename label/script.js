@@ -307,8 +307,7 @@ if (window.Addon == 1) {
 					if (s) {
 						var b = false;
 						for (var j in Addons.Label.Changed) {
-							b = api.PathMatchSpec(j, s);
-							if (b) {
+							if (b = api.PathMatchSpec(j, s)) {
 								break;
 							}
 						}
@@ -388,7 +387,7 @@ if (window.Addon == 1) {
 			});
 			return Items;
 		},
-	
+
 		ENumCB: function (fncb)
 		{
 			for (var path in te.Labels) {
@@ -569,7 +568,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 		}
-	});
+	}, true);
 
 	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
@@ -586,7 +585,7 @@ if (window.Addon == 1) {
 			}
 			return S_OK;
 		}
-	});
+	}, true);
 
 	AddEvent("DragLeave", function (Ctrl)
 	{
@@ -601,7 +600,7 @@ if (window.Addon == 1) {
 			}
 			if (pidls.lEvent & SHCNE_DELETE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-				Addons.Label.SyncItem[name] = pidls[0];
+				Addons.Label.SyncItem[name] = Addons.Label.Remove(pidls[0]);
 				clearTimeout(Addons.Label.tidSync);
 				Addons.Label.tidSync = setTimeout(function ()
 				{
@@ -611,9 +610,9 @@ if (window.Addon == 1) {
 			}
 			if (pidls.lEvent & SHCNE_CREATE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-				var pidl = Addons.Label.SyncItem[name];
-				if (pidl) {
-					Addons.Label.Append(pidls[0], Addons.Label.Remove(pidl));
+				var Item = Addons.Label.SyncItem[name];
+				if (Item) {
+					Addons.Label.Append(pidls[0], Item);
 				}
 			}
 		}
@@ -630,6 +629,15 @@ if (window.Addon == 1) {
 		}
 		return nPos;
 	});
+
+	AddEvent("BeginLabelEdit", function (Ctrl, Name)
+	{
+		if (Ctrl.Type <= CTRL_EB) {
+			if (Addons.Label.IsHandle(Ctrl)) {
+				return 1;
+			}
+		}
+	}, true);
 
 	AddEvent("ColumnClick", function (Ctrl, iItem)
 	{

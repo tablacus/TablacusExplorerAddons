@@ -210,16 +210,16 @@ if (window.Addon == 1) {
 			}
 		},
 
-		RemoveItems: function (Items, Badge)
+		RemoveItems: function (Items)
 		{
 			if (Items) {
 				for (var i = Items.Count; i-- > 0;) {
-					Addons.Badge.Remove(Items.Item(i), Badge);
+					Addons.Badge.Remove(Items.Item(i));
 				}
 			}
 		},
 
-		Remove: function (Item, Badge)
+		Remove: function (Item)
 		{
 			var s = "";
 			var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
@@ -237,7 +237,8 @@ if (window.Addon == 1) {
 					path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				}
 				s = api.LowPart(s);
-				if (s != te.Data.Badges[path]) {
+				var old = te.Data.Badges[path];
+				if (s != old) {
 					if (s) {
 						te.Data.Badges[path] = s;
 					} else {
@@ -247,6 +248,8 @@ if (window.Addon == 1) {
 					Addons.Badge.tid2 = setTimeout(Addons.Badge.Notify, 500);
 					Addons.Badge.bSave = true;
 					Addons.Badge.Redraw[fso.GetParentFolderName(path)] = true;
+					Addons.Badge.Changed[s] = true;
+					Addons.Badge.Changed[old] = true;
 				}
 			}
 		},
@@ -265,8 +268,7 @@ if (window.Addon == 1) {
 					if (s) {
 						var b = false;
 						for (var j in Addons.Badge.Changed) {
-							b = api.PathMatchSpec(j, s);
-							if (b) {
+							if (b = api.PathMatchSpec(j, s)) {
 								break;
 							}
 						}
@@ -453,7 +455,7 @@ if (window.Addon == 1) {
 	{
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
 			var Badge = Addons.Badge.BadgePath(Ctrl);
-			if (Badge && !/[\?\*;]/.test(Badge)) {
+			if (api.LowPart(Badge)) {
 				return S_OK;
 			}
 		}
@@ -463,7 +465,7 @@ if (window.Addon == 1) {
 	{
 		if (Ctrl.Type <= CTRL_EB) {
 			var Badge = Addons.Badge.BadgePath(Ctrl);
-			if (Badge && !/[\?\*;]/.test(Badge)) {
+			if (api.LowPart(Badge)) {
 				if (Ctrl.HitTest(pt, LVHT_ONITEM) < 0) {
 					pdwEffect[0] = DROPEFFECT_LINK;
 					return S_OK;
@@ -472,17 +474,17 @@ if (window.Addon == 1) {
 		}
 		if (Ctrl.Type == CTRL_DT) {
 			var Badge = Addons.Badge.BadgePath(Ctrl);
-			if (Badge && !/[\?\*;]/.test(Badge)) {
+			if (api.LowPart(Badge)) {
 				pdwEffect[0] = DROPEFFECT_LINK;
 				return S_OK;
 			}
 		}
-	});
+	}, true);
 
 	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		var Badge = Addons.Badge.BadgePath(Ctrl);
-		if (Badge && !/[\?\*;]/.test(Badge)) {
+		if (api.LowPart(Badge)) {
 			var nIndex = -1;
 			if (Ctrl.Type <= CTRL_EB) {
 				nIndex = Ctrl.HitTest(pt, LVHT_ONITEM);
@@ -494,7 +496,7 @@ if (window.Addon == 1) {
 			}
 			return S_OK;
 		}
-	});
+	}, true);
 
 	AddEvent("DragLeave", function (Ctrl)
 	{
@@ -509,7 +511,7 @@ if (window.Addon == 1) {
 			}
 			if (pidls.lEvent & SHCNE_DELETE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-				Addons.Badge.SyncItem[name] = pidls[0];
+				Addons.Badge.SyncItem[name] = Addons.Badge.Remove(pidls[0]);
 				clearTimeout(Addons.Badge.tidSync);
 				Addons.Badge.tidSync = setTimeout(function ()
 				{
@@ -519,9 +521,9 @@ if (window.Addon == 1) {
 			}
 			if (pidls.lEvent & SHCNE_CREATE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-				var pidl = Addons.Badge.SyncItem[name];
-				if (pidl) {
-					Addons.Badge.Set(pidls[0], Addons.Badge.Remove(pidl));
+				var Item = Addons.Badge.SyncItem[name];
+				if (Item) {
+					Addons.Badge.Set(pidls[0], Item);
 				}
 			}
 		}
@@ -538,6 +540,15 @@ if (window.Addon == 1) {
 		}
 		return nPos;
 	});
+
+	AddEvent("BeginLabelEdit", function (Ctrl, Name)
+	{
+		if (Ctrl.Type <= CTRL_EB) {
+			if (Addons.Badge.IsHandle(Ctrl)) {
+				return 1;
+			}
+		}
+	}, true);
 
 	AddEvent("ItemPostPaint2", function (Ctrl, pid, nmcd, vcd)
 	{

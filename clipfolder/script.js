@@ -224,7 +224,7 @@ if (window.Addon == 1) {
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.ClipFolder.IsHandle(Path)) {
-			Ctrl.ENum = Addons.ClipFolder.Enum;
+			Ctrl.Enum = Addons.ClipFolder.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
@@ -329,6 +329,15 @@ if (window.Addon == 1) {
 			ExtraMenuCommand[nPos] = Addons.ClipFolder.Remove;
 		}
 		return nPos;
+	});
+
+	AddEvent("BeginLabelEdit", function (Ctrl, Name)
+	{
+		if (Ctrl.Type <= CTRL_EB) {
+			if (Addons.ClipFolder.IsHandle(Ctrl)) {
+				return 1;
+			}
+		}
 	});
 
 	AddEvent("Edit", function (Ctrl, hMenu, nPos, Selected, item)
