@@ -62,11 +62,7 @@ if (window.Addon == 1) {
 					{
 						var Items = Ctrl.Items();
 						var Item = Items.Item(iItem);
-						Addons.HotButton.MenuLoop = true;
-						Addons.HotButton.MenuSelect = -1;
-						Addons.HotButton.ptDown = null;
 						var FolderItem = FolderMenu.Open(Item, pt.x, pt.y, "*", 1);
-						Addons.HotButton.MenuLoop = false;
 						if (FolderItem) {
 							FolderMenu.Invoke(FolderItem);
 						}
@@ -75,63 +71,8 @@ if (window.Addon == 1) {
 				}
 			}
 		}
-		if (Addons.HotButton.MenuLoop) {
-			if (msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN) {
-				Addons.HotButton.ptDown = pt;
-				Addons.HotButton.MenuDown = Addons.HotButton.MenuSelect;
-			} else if (msg == WM_LBUTTONUP || msg == WM_RBUTTONUP) {
-				delete Addons.HotButton.ptDown;
-			} else if (msg == WM_MOUSEMOVE && Addons.HotButton.ptDown && IsDrag(pt, Addons.HotButton.ptDown)) {
-				delete Addons.HotButton.ptDown;
-				var FolderItem = FolderMenu.Items[Addons.HotButton.MenuDown - 1];
-				if (FolderItem) {
-					var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
-					api.SHDoDragDrop(null, FolderItem, te, pdwEffect[0], pdwEffect, true);
-				}
-			}
-		}
 	});
 
-	AddEvent("MenuMessage", function (Ctrl, hwnd, msg, wParam, lParam)
-	{
-		if (Addons.HotButton.MenuLoop && msg == WM_MENUSELECT) {
-			Addons.HotButton.MenuSelect = wParam & 0xffff;
-		}
-	});
-
-	//Image
-	var image = te.WICBitmap();
-	var s = api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Img")));
-	if (s) {
-		Addons.HotButton.Image = image.FromFile(s);
-		if (Addons.HotButton.Image) {
-			return;
-		}
-	}
-	var hdc = api.GetDC(te.hwnd);
-	var rc = api.Memory("RECT");
-	var w = 14 * screen.logicalYDPI / 96;
-	rc.Right = w;
-	rc.Bottom = w;
-	var hbm = api.CreateCompatibleBitmap(hdc, w, w);
-	var hmdc = api.CreateCompatibleDC(hdc);
-	var hOld = api.SelectObject(hmdc, hbm);
-	api.Rectangle(hmdc, rc.Left, rc.Top, rc.Right, rc.Bottom);
-	api.SetTextColor(hmdc, 0x333333);
-	api.SetBkMode(hmdc, 1);
-	var lf = api.Memory("LOGFONT");
-	lf.lfFaceName = "Arial Black",
-	lf.lfHeight = - w;
-	var hFont = CreateFont(lf);
-	var hfontOld = api.SelectObject(hmdc, hFont);
-	rc.Top = -w / 4;
-	api.DrawText(hmdc, "▼", -1, rc, DT_CENTER);
-	api.SelectObject(hmdc, hfontOld);
-	api.DeleteDC(hmdc);
-	api.SelectObject(hmdc, hOld);
-	Addons.HotButton.Image = image.FromHBITMAP(hbm);
-	api.DeleteObject(hbm);
-	api.ReleaseDC(te.hwnd, hdc);
 	AddEvent("Load", function ()
 	{
 		if (WINVER < 0x600 || !api.IsAppThemed() || Addons.ClassicStyle) {
@@ -165,4 +106,40 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+
+	//Image
+	var s = api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Icon")));
+	if (s) {
+		Addons.HotButton.Image = MakeImgData(s, 0, 14) || api.CreateObject("WICBitmap").FromFile(s);
+	}
+	if (Addons.HotButton.Image) {
+		Addons.HotButton.Image = GetThumbnail(Addons.HotButton.Image, 14);
+	} else {
+		var hdc = api.GetDC(te.hwnd);
+		var rc = api.Memory("RECT");
+		var w = 14 * screen.logicalYDPI / 96;
+		rc.Right = w;
+		rc.Bottom = w;
+		var hbm = api.CreateCompatibleBitmap(hdc, w, w);
+		var hmdc = api.CreateCompatibleDC(hdc);
+		var hOld = api.SelectObject(hmdc, hbm);
+		api.Rectangle(hmdc, rc.Left, rc.Top, rc.Right, rc.Bottom);
+		api.SetTextColor(hmdc, 0x333333);
+		api.SetBkMode(hmdc, 1);
+		var lf = api.Memory("LOGFONT");
+		lf.lfFaceName = "Arial Black",
+		lf.lfHeight = - w;
+		var hFont = CreateFont(lf);
+		var hfontOld = api.SelectObject(hmdc, hFont);
+		rc.Top = -w / 4;
+		api.DrawText(hmdc, "▼", -1, rc, DT_CENTER);
+		api.SelectObject(hmdc, hfontOld);
+		api.DeleteDC(hmdc);
+		api.SelectObject(hmdc, hOld);
+		Addons.HotButton.Image = api.CreateObject("WICBitmap").FromHBITMAP(hbm);
+		api.DeleteObject(hbm);
+		api.ReleaseDC(te.hwnd, hdc);
+	}
+} else {
+	ChangeForm([["__IconSize", "style/display", "none"]]);
 }
