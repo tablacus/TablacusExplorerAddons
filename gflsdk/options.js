@@ -24,7 +24,7 @@ SetProp = function ()
 	var arProp = ["gflLibraryInit", "gflLibraryExit", "gflLoadBitmap", "gflLoadThumbnail", "gflLoadBitmapFromHandle", "gflLoadThumbnailFromHandle", "gflGetVersion", "gflGetErrorString", "gflConvertBitmapIntoDDB", "IsUnicode"];
 	var DLL = api.DllGetClassObject(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\gflsdk\\tgflsdk", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{04D5F147-2A06-4760-9120-7CAE154FBB21}");
 	if (DLL) {
-		GFL = DLL.Open(ExtractMacro(te, document.F.elements["dll" + bit].value), ExtractMacro(te, document.F.elements["dlle" + bit].value)) || {};
+		GFL = DLL.Open(api.PathUnquoteSpaces(ExtractMacro(te, document.F.elements["dll" + bit].value)), api.PathUnquoteSpaces(ExtractMacro(te, document.F.elements["dlle" + bit].value))) || {};
 	}
 	document.getElementById("ver").innerText = (GFL.gflGetVersion ? 'Ver. ' + GFL.gflGetVersion(): "") + '(' + bit + "bit)" ;
 	var arHtml = [[], []];

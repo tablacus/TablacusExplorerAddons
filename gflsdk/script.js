@@ -28,7 +28,7 @@ if (window.Addon == 1) {
 		{
 			var item = GetAddonElement(Addon_Id);
 			var bit = api.sizeof("HANDLE") * 8;
-			Addons.GFLSDK.GFL = Addons.GFLSDK.DLL.Open(ExtractMacro(te, item.getAttribute('dll' + bit)), ExtractMacro(te, item.getAttribute('dlle' + bit)));
+			Addons.GFLSDK.GFL = Addons.GFLSDK.DLL.Open(api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute('dll' + bit))), api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute('dlle' + bit))));
 			if (Addons.GFLSDK.GFL  && Addons.GFLSDK.GFL.gflLibraryInit && Addons.GFLSDK.GFL.gflLibraryExit && Addons.GFLSDK.GFL.gflLoadBitmap && Addons.GFLSDK.GFL.gflConvertBitmapIntoDDB) {
 				Addons.GFLSDK.GFL.gflLibraryInit();
 				AddEvent("FromFile", function (image, file, alt, cx)

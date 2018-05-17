@@ -141,12 +141,12 @@ if (window.Addon == 1) {
 				api.DestroyMenu(hMenu);
 				switch (nVerb) {
 					case 1:
-						var Items = te.FolderItems();
+						var Items = api.CreateObject("FolderItems");
 						Items.AddItem(this.GetPath(n, Id));
 						api.OleSetClipboard(Items);
 						break;
 					case 2:
-						clipboardData.setData("text", this.GetPath(n).Path);
+						clipboardData.setData("text", this.GetPath(n, Id).Path);
 						break;
 					case 3:
 						NavigateFV(GetInnerFV(Id), this.GetPath(n, Id), SBSP_NEWBROWSER);
