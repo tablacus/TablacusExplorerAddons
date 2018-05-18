@@ -6,7 +6,7 @@ if (window.Addon == 1) {
 	{
 		Items: api.LowPart(item.getAttribute("Items")) || 10,
 		Expanded: api.LowPart(item.getAttribute("Expanded")),
-		Filter: item.getAttribute("Filter") || "*",
+		Filter: item.getAttribute("Filter") || FILTER_IMAGE,
 		Invalid: item.getAttribute("Invalid") || "-",
 		Name: GetAddonInfo(Addon_Id).Name,
 
@@ -52,5 +52,5 @@ if (window.Addon == 1) {
 		return hr;
 	});
 } else {
-	SetTabContents(0, "General", ['<label>Number of items</label><br><input type="text" name="Items" style="width: 100%" /><br><input type="checkbox" name="Expanded" id="Expanded" /><label for="Expanded">Expanded</label><br><label>Filter</label><br><input type="text" name="Filter" style="width: 100%" /><br><label>', api.LoadString(hShell32, 6438), '</label><br><input type="text" name="Invalid" style="width: 100%" />'].join(""));
+	SetTabContents(0, "General", ['<label>Number of items</label><br><input type="text" name="Items" style="width: 100%" /><br><input type="checkbox" name="Expanded" id="Expanded" /><label for="Expanded">Expanded</label><br><label>Filter</label><br><input type="text" name="Filter" placeholder="', EncodeSC(FILTER_IMAGE), '" style="width: 100%" /><br><label>', api.LoadString(hShell32, 6438), '</label><br><input type="text" name="Invalid" style="width: 100%" />'].join(""));
 }

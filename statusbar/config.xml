@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.10</Version>
-    <MinVersion>2018.2.25</MinVersion>
-    <pubDate>Sun, 25 Feb 2018 00:00:00 GMT</pubDate>
+    <Version>1.11</Version>
+    <MinVersion>2018.5.16</MinVersion>
+    <pubDate>Fri, 18 May 2018 00:00:00 GMT</pubDate>
     <Options>Common:0,6:6</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Status Bar</Name>
-    <Description>Status Bar</Description>
+    <Name>Status bar</Name>
+    <Description>Status bar</Description>
   </en>
   <ja>
     <Name>ステータス バー</Name>
