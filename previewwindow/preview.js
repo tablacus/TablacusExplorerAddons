@@ -2,14 +2,16 @@ Addons = {};
 Addons.PreviewWindow =
 {
 	tid: null,
+	r: 1,
 
 	FromFile: function ()
 	{
 		var img1 = document.getElementById("img1");
 		img1.onerror = null;
-		var Image = api.CreateObject("WICBitmap").FromFile(MainWindow.Addons.PreviewWindow.File);
+		var o = document.documentElement || document.body;
+		var Image = api.CreateObject("WICBitmap").FromFile(te.Data.window.Addons.PreviewWindow.File, o.offsetWidth < o.offsetHeight ? o.offsetWidth : o.offsetHeight);
 		if (Image) {
-			img1.src = Image.DataURI(/\.jpe?g?$/.test(MainWindow.Addons.PreviewWindow.File) ? "image/jpeg" : "image/png");
+			img1.src = Image.DataURI("image/png");
 		}
 	},
 
@@ -23,14 +25,14 @@ Addons.PreviewWindow =
 		var desc = document.getElementById("desc1");
 		var img1 = document.getElementById("img1");
 		img1.style.display = "none";
-		if (MainWindow.Addons.PreviewWindow.File) {
-			var Item = MainWindow.Addons.PreviewWindow.Item;
+		if (te.Data.window.Addons.PreviewWindow.File) {
+			var Item = te.Data.window.Addons.PreviewWindow.Item;
 			var wh = "{6444048F-4C8B-11D1-8B70-080036B11A03} 13";
 			var s = api.PSFormatForDisplay(wh, Item.ExtendedProperty(wh), PDFF_DEFAULT);
 			if (s) {
 				s = ' (' + s + ')';
 			}
-			document.title = MainWindow.Addons.PreviewWindow.File + s;
+			document.title = te.Data.window.Addons.PreviewWindow.File + s;
 			var ar = [];
 			var col = ["name", "write", wh];
 			if (!IsFolderEx(Item)) {
@@ -45,40 +47,69 @@ Addons.PreviewWindow =
 			desc.innerHTML = ar.join("<br />");
 			img1.onload = Addons.PreviewWindow.Loaded;
 			img1.onerror = Addons.PreviewWindow.FromFile;
-			img1.src = MainWindow.Addons.PreviewWindow.File;
+			img1.src = te.Data.window.Addons.PreviewWindow.File;
 			img1.style.maxWidth = "100%";
 			img1.style.maxHeight = "100vh";
 		} else {
-			document.title = MainWindow.Addons.PreviewWindow.strName;
+			document.title = te.Data.window.Addons.PreviewWindow.strName;
 			desc.innerHTML = "";
 		}
-		if (!MainWindow.Addons.PreviewWindow.Focus) {
+		if (!te.Data.window.Addons.PreviewWindow.Focus) {
 			api.SetForegroundWindow(hwnd);
 		}
 	},
 
 	Move: function (nMove, bFocus)
 	{
-		MainWindow.Addons.PreviewWindow.Focus = bFocus;
+		te.Data.window.Addons.PreviewWindow.Focus = bFocus;
 		var FV = te.Ctrl(CTRL_FV);
 		var nCount = FV.ItemCount(SVGIO_ALLVIEW);
 		var nIndex = (FV.GetFocusedItem() + nMove + nCount) % nCount;
 		FV.SelectItem(nIndex, SVSI_SELECT | SVSI_DESELECTOTHERS | SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS);
+	},
+
+	GetRect: function ()
+	{
+		var rc = api.Memory("RECT");
+		var hwnd = api.GetWindow(document);
+		var hwnd1 = hwnd;
+		while (hwnd1 = api.GetParent(hwnd)) {
+			hwnd = hwnd1;
+		}
+		api.GetWindowRect(hwnd, rc);
+		if (te.Data.AddonsData.PreviewWindow.left != rc.Left) {
+			te.Data.AddonsData.PreviewWindow.left = rc.Left;
+			te.Data.bSaveConfig = true;
+		}
+		if (te.Data.AddonsData.PreviewWindow.top != rc.Top) {
+			te.Data.AddonsData.PreviewWindow.top = rc.Top;
+			te.Data.bSaveConfig = true;
+		}
+		var o = document.documentElement || document.body;
+		if (te.Data.AddonsData.PreviewWindow.width != o.offsetWidth) {
+			te.Data.AddonsData.PreviewWindow.width = o.offsetWidth;
+			te.Data.bSaveConfig = true;
+		}
+		if (te.Data.AddonsData.PreviewWindow.height != o.offsetHeight) {
+			te.Data.AddonsData.PreviewWindow.height = o.offsetHeight;
+			te.Data.bSaveConfig = true;
+		}
 	}
 };
 
 AddEventEx(window, "load", function ()
 {
 	ApplyLang(document);
-	MainWindow.Addons.PreviewWindow.Arrange()
+	te.Data.window.Addons.PreviewWindow.Arrange()
 });
 
 AddEventEx(window, "beforeunload", function ()
 {
-	delete MainWindow.Addons.PreviewWindow.dlg;
-	MainWindow.Addons.PreviewWindow.Width = window.innerWidth;
-	MainWindow.Addons.PreviewWindow.Height = window.innerHeight;
+	delete te.Data.window.Addons.PreviewWindow.dlg;
+	Addons.PreviewWindow.GetRect();
 });
+
+AddEventEx(window, "resize", Addons.PreviewWindow.GetRect);
 
 AddEventEx(window, "keydown", function (e)
 {

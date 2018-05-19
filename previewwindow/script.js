@@ -13,6 +13,10 @@ if (!item.getAttribute("Set")) {
 }
 
 if (window.Addon == 1) {
+	if (!te.Data.AddonsData.PreviewWindow) {
+		te.Data.AddonsData.PreviewWindow = api.CreateObject("Object");
+		te.Data.AddonsData.PreviewWindow.r = 1;
+	}
 	Addons.PreviewWindow =
 	{
 		nPos: 0,
@@ -24,7 +28,7 @@ if (window.Addon == 1) {
 				Addons.PreviewWindow.dlg.Window.close();
 				delete Addons.PreviewWindow.dlg;
 			} else {
-				Addons.PreviewWindow.dlg = ShowDialog("../addons/previewwindow/preview.html", {MainWindow: window, width: Addons.PreviewWindow.Width || 800, height: Addons.PreviewWindow.Height || 600 });
+				Addons.PreviewWindow.dlg = ShowDialog("../addons/previewwindow/preview.html", te.Data.AddonsData.PreviewWindow );
 			}
 		},
 
@@ -56,28 +60,25 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Finalize", function ()
-	{
-		if (Addons.PreviewWindow.dlg) {
-			Addons.PreviewWindow.dlg.Window.close();
-		}
-	});
-
 	AddEvent("LoadWindow", function (xml)
 	{
 		var items = xml ? xml.getElementsByTagName("PreviewWindow") : {};
 		if (items.length) {
-			Addons.PreviewWindow.Width = items[0].getAttribute("Width");
-			Addons.PreviewWindow.Height = items[0].getAttribute("Height");
+			te.Data.AddonsData.PreviewWindow.width = items[0].getAttribute("Width");
+			te.Data.AddonsData.PreviewWindow.height = items[0].getAttribute("Height");
+			te.Data.AddonsData.PreviewWindow.top = items[0].getAttribute("Top");
+			te.Data.AddonsData.PreviewWindow.bottom = items[0].getAttribute("Bottom");
 		}
 	});
 
 	AddEvent("SaveWindow", function (xml, all)
 	{
-		if (Addons.PreviewWindow.Width && Addons.PreviewWindow.Height) {
+		if (te.Data.AddonsData.PreviewWindow.width && te.Data.AddonsData.PreviewWindow.height) {
 			var item = xml.createElement("PreviewWindow");
-			item.setAttribute("Width", Addons.PreviewWindow.Width);
-			item.setAttribute("Height", Addons.PreviewWindow.Height);
+			item.setAttribute("Width", te.Data.AddonsData.PreviewWindow.width);
+			item.setAttribute("Height", te.Data.AddonsData.PreviewWindow.height);
+			item.setAttribute("Top", te.Data.AddonsData.PreviewWindow.top);
+			item.setAttribute("Bottom", te.Data.AddonsData.PreviewWindow.bottom);
 			xml.documentElement.appendChild(item);
 		}
 	});

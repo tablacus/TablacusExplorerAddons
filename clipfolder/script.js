@@ -123,7 +123,7 @@ if (window.Addon == 1) {
 
 		SyncFV: function (Ctrl)
 		{
-			var arFV = [Ctrl];
+			var arFV = Ctrl.Id ? [Ctrl] : [];
 			var path = Addons.ClipFolder.GetPath(Ctrl);
 			if (path) {
 				var cFV = te.Ctrls(CTRL_FV);
