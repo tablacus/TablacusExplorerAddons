@@ -66,8 +66,8 @@ if (window.Addon == 1) {
 		if (items.length) {
 			te.Data.AddonsData.PreviewWindow.width = items[0].getAttribute("Width");
 			te.Data.AddonsData.PreviewWindow.height = items[0].getAttribute("Height");
+			te.Data.AddonsData.PreviewWindow.left = items[0].getAttribute("Left");
 			te.Data.AddonsData.PreviewWindow.top = items[0].getAttribute("Top");
-			te.Data.AddonsData.PreviewWindow.bottom = items[0].getAttribute("Bottom");
 		}
 	});
 
@@ -77,8 +77,8 @@ if (window.Addon == 1) {
 			var item = xml.createElement("PreviewWindow");
 			item.setAttribute("Width", te.Data.AddonsData.PreviewWindow.width);
 			item.setAttribute("Height", te.Data.AddonsData.PreviewWindow.height);
+			item.setAttribute("Left", te.Data.AddonsData.PreviewWindow.left);
 			item.setAttribute("Top", te.Data.AddonsData.PreviewWindow.top);
-			item.setAttribute("Bottom", te.Data.AddonsData.PreviewWindow.bottom);
 			xml.documentElement.appendChild(item);
 		}
 	});

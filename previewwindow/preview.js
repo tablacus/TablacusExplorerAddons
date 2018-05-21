@@ -57,6 +57,7 @@ Addons.PreviewWindow =
 		if (!te.Data.window.Addons.PreviewWindow.Focus) {
 			api.SetForegroundWindow(hwnd);
 		}
+		Addons.PreviewWindow.GetRect();
 	},
 
 	Move: function (nMove, bFocus)
