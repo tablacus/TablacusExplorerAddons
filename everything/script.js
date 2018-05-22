@@ -120,7 +120,14 @@ if (window.Addon == 1) {
 			if (fncb) {
 				var Path = Addons.Everything.GetSearchString(pid);
 				if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
-					Path = 'regex:' + ((window.migemo && (migemo.query(Path) + '|' + Path)) || Path);
+					if (window.migemo) {
+						var res = /(.*?)( *path:"?.+"?)/.exec(Path) || [Path, Path, ""];
+						var s = migemo.query(res[1]);
+						if (s) {
+							Path = s + '|' + res[1] + res[2];
+						}
+					}
+					Path = 'regex:' + Path;
 				}
 				if (Path) {
 					var hwndView = Ctrl.hwndView;
