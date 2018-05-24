@@ -121,7 +121,7 @@ if (window.Addon == 1) {
 				var Path = Addons.Everything.GetSearchString(pid);
 				if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
 					if (window.migemo) {
-						var res = /(.*?)( *path:"?.+"?)/.exec(Path) || [Path, Path, ""];
+						var res = /(.*?)\s+(.*)/.exec(Path) || [Path, Path, ""];
 						var s = migemo.query(res[1]);
 						if (s) {
 							Path = s + '|' + res[1] + res[2];
