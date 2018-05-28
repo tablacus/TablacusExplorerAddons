@@ -121,11 +121,11 @@ if (window.Addon == 1) {
 				var Path = Addons.Everything.GetSearchString(pid);
 				if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
 					if (window.migemo) {
-						var res = /(.*?)\s+(.*)/.exec(Path) || [Path, Path, ""];
-						var s = migemo.query(res[1]);
-						if (s) {
-							Path = s + '|' + res[1] + res[2];
+						for (var ar = [], ar2 = Path.split(" "); ar2.length;) {
+							var s = ar2.shift();
+							ar.push(/^\\\\|:/.test(s) ? s : migemo.query(s) || s);
 						}
+						Path = ar.join(" ");
 					}
 					Path = 'regex:' + Path;
 				}

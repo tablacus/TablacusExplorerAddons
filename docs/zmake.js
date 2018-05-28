@@ -89,7 +89,7 @@ root.appendChild(item1);
 	}
 }
 xmlSave.appendChild(root);
-xmlSave.save("index.xml");
+xmlSave.save("N:\\github\\TablacusExplorerAddons\\docs\\index.xml");
 
 var ado = new ActiveXObject("ADODB.Stream");
 ado.Mode = 3;
