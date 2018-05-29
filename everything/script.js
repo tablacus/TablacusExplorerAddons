@@ -119,15 +119,25 @@ if (window.Addon == 1) {
 		{
 			if (fncb) {
 				var Path = Addons.Everything.GetSearchString(pid);
-				if (Addons.Everything.RE && !/^regex:/i.test(Path)) {
-					if (window.migemo) {
-						for (var ar = [], ar2 = Path.split(" "); ar2.length;) {
-							var s = ar2.shift();
-							ar.push(/^\\\\|:/.test(s) ? s : migemo.query(s) || s);
+				if (Addons.Everything.RE) {
+					for (var ar = [], ar2 = Path.split(" "); ar2.length;) {
+						var s = ar2.shift();
+						if (/^\\\\|:/.test(s)) {
+							if (/"/.test(s)) {
+								while (ar2.length) {
+									var s2 = ar2.shift();
+									s += " " + s2;
+									if (/"/.test(s2)) {
+										break;
+									}
+								}
+							}
+						} else {
+							s = 'regex:' + ((window.migemo && migemo.query(s)) || s);
 						}
-						Path = ar.join(" ");
+						ar.push(s);
 					}
-					Path = 'regex:' + Path;
+					Path = ar.join(" ");
 				}
 				if (Path) {
 					var hwndView = Ctrl.hwndView;
