@@ -129,7 +129,7 @@ if (window.Addon == 1) {
 				if (items) {
 					var x = g_nPos;
 					arMenu = OpenMenu(items, Addons.MainMenuButton.SelItem);
-					g_nPos = MakeMenus(hMenu, menus, arMenu, items, Ctrl, pt, g_nPos, Addons.MainMenuButton.arItem);
+					g_nPos = MakeMenus(hMenu, menus, arMenu, items, Ctrl, pt, g_nPos, Addons.MainMenuButton.arItem, true);
 
 					var eo = eventTE[Name.toLowerCase()];
 					for (var i in eo) {

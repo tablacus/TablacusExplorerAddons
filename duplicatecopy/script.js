@@ -18,11 +18,11 @@ if (window.Addon == 1) {
 			}
 			var Parent = Items.Item(-1);
 			try {
-				path = Dest.ExtendedProperty("linktarget") || Dest.Path || Dest;
+				path = Dest.ExtendedProperty("linktarget") || api.GetDisplayNameOf(Dest, SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			} catch (e) {
-				path = Dest.Path || Dest;
+				path = api.GetDisplayNameOf(Dest, SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			}
-			if (path && api.ILIsEqual(path, Parent) && fso.FolderExists(path)) {
+			if (path && path == api.GetDisplayNameOf(Parent, SHGDN_FORPARSING | SHGDN_ORIGINAL) && fso.FolderExists(path)) {
 				var arFrom = [];
 				for (i = Items.Count - 1; i >= 0; i--) {
 					var path1 = Items.Item(i).Path;

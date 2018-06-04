@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
+    <Version>1.00</Version>
     <MinVersion>2018.6.2</MinVersion>
     <pubDate>Mon, 04 Jun 2018 00:00:00 UTC</pubDate>
-    <Options>Common:5,6,7,8,9:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Duplicate copy</Name>
-    <Description>Duplicate copy</Description>
+    <Name>Close tab when deleting</Name>
+    <Description>Close tab when folder is deleted.</Description>
   </en>
   <ja>
-    <Name>重複コピー</Name>
-    <Description>重複コピー</Description>
+    <Name>削除時にタブを閉じる</Name>
+    <Description>フォルダが削除されると、タブを閉じます。</Description>
   </ja>
 </TablacusExplorer>
