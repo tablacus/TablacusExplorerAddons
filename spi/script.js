@@ -35,6 +35,7 @@ if (window.Addon == 1) {
 					}
 					SPI = o.SPI;
 					if (SPI.IsSupported(file, dw)) {
+						var phbm = [];
 						if ((cx || 999) <= 256 && SPI.GetPreview) {
 							if (SPI.GetPreview(dw, 0, 1, null, phbm, null, 0) == 0) {
 								image.FromHBITMAP(phbm[0]);
@@ -49,19 +50,18 @@ if (window.Addon == 1) {
 							dw.Free();
 							return S_OK;
 						}
-						dw.Free();
-						dw = null;
-						var phbm = [];
 						if ((cx || 999) <= 256 && SPI.GetPreview) {
 							if (SPI.GetPreview(file, 0, 0, null, phbm, null, 0) == 0) {
 								image.FromHBITMAP(phbm[0], 0, 0);
 								api.DeleteObject(phbm[0]);
+								dw.Free();
 								return S_OK;
 							}
 						}
 						if (SPI.GetPicture(file, 0, 0, null, phbm, null, 0) == 0) {
 							image.FromHBITMAP(phbm[0], 0, 0);
 							api.DeleteObject(phbm[0]);
+							dw.Free();
 							return S_OK;
 						}
 					}
