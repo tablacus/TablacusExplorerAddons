@@ -23,7 +23,7 @@ if (window.Addon == 1) {
 						if (Addons.FolderImage.Expanded) {
 							List.push(Item);
 						}
-					} else if (image.FromFile(Item.Path, bECM)) {
+					} else if (PathMatchEx(Item.Path, Addons.FolderImage.Filter) && !PathMatchEx(Item.Path, Addons.FolderImage.Invalid) && image.FromFile(Item.Path, bECM)) {
 						return S_OK;
 					}
 					nDog--;
@@ -38,16 +38,14 @@ if (window.Addon == 1) {
 		var Item = api.ILCreateFromPath(file);
 		if (Item.IsFolder) {
 			var path = Item.Path;
-			if (PathMatchEx(path, Addons.FolderImage.Filter) && !PathMatchEx(path, Addons.FolderImage.Invalid)) {
-				var Progress = te.ProgressDialog;
-				Progress.StartProgressDialog(te.hwnd, null, 0x20);
-				try {
-					Progress.SetTitle(Addons.FolderImage.Name);
-					Progress.SetLine(1, api.LoadString(hShell32, 13585) || api.LoadString(hShell32, 6478), true);
-					hr = Addons.FolderImage.Search(image, Item, bECM, Progress);
-				} catch (e) {}
-				Progress.StopProgressDialog();
-			}
+			var Progress = te.ProgressDialog;
+			Progress.StartProgressDialog(te.hwnd, null, 0x20);
+			try {
+				Progress.SetTitle(Addons.FolderImage.Name);
+				Progress.SetLine(1, api.LoadString(hShell32, 13585) || api.LoadString(hShell32, 6478), true);
+				hr = Addons.FolderImage.Search(image, Item, bECM, Progress);
+			} catch (e) {}
+			Progress.StopProgressDialog();
 		}
 		return hr;
 	});
