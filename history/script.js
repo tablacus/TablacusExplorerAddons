@@ -155,7 +155,7 @@ if (window.Addon == 1) {
 	AddEvent("GetIconImage", function (Ctrl, BGColor)
 	{
 		if (Addons.History1.IsHandle(Ctrl)) {
-			return MakeImgSrc("icon:shell32.dll,19", 0, false, 16);
+			return MakeImgSrc("icon:shell32.dll,20", 0, false, 16);
 		}
 	});
 
@@ -201,6 +201,15 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+
+	AddEvent("BeginLabelEdit", function (Ctrl, Name)
+	{
+		if (Ctrl.Type <= CTRL_EB) {
+			if (Addons.History1.IsHandle(Ctrl)) {
+				return 1;
+			}
+		}
+	}, true);
 
 	Addons.History1.Save = item.getAttribute("Save") || Addons.History1.Save;
 	//Menu
