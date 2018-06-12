@@ -128,11 +128,11 @@ Addons.WCX =
 				if (lib.X.ReadHeaderEx(harc, info)) {
 					break;
 				}
-				var fn = info.FileName;
+				var fn = info.FileName.replace(/\//g, "\\");;
 				if (!/\.\.\\|:/.test(fn)) {
-					var ar = fn.split(/\/|\\/);
-					if (ar.slice(0, nlp).join("\\").toLowerCase() == lib.path.toLowerCase()) {
-						var fn1 = ar[nlp].toLowerCase();
+					var ar = fn.split(/\\/);
+					if (api.StrCmpI(ar.slice(0, nlp).join("\\"), lib.path) == 0) {
+						var fn1 = String(ar[nlp]).toLowerCase();
 						if (!fh[fn1]) {
 							fh[fn1] = [];
 							sh[fn1] = 0;
@@ -403,6 +403,7 @@ if (window.Addon == 1) {
 				Addons.WCX.ShowLine(5954, 32946, fl.length);
 				var harc = lib.X.OpenArchive(OpenData);
 				if (harc) {
+					var op;
 					do {
 						var dest = null;
 						var info = [];
@@ -411,9 +412,10 @@ if (window.Addon == 1) {
 						}
 						var fn = info.FileName.replace(/\//g, "\\");
 						if (/\.\.\\|:/.test(fn)) {
+							op = 0;
 							continue;
 						}
-						var op = o[fn];
+						op = o[fn];
 						if (op) {
 							dest = fso.BuildPath(root, fn);
 							if (info.FileAttr & FILE_ATTRIBUTE_DIRECTORY) {
@@ -426,7 +428,9 @@ if (window.Addon == 1) {
 					lib.X.CloseArchive(harc);
 				}
 				wsh.CurrentDirectory = fso.GetSpecialFolder(2).Path;
-			} catch (e) {}
+			} catch (e) {
+				ShowError(e, "WCX");
+			}
 			Addons.WCX.Progress.StopProgressDialog();
 			if (Addons.WCX.Progress.HasUserCancelled()) {
 				hr = E_ABORT;
