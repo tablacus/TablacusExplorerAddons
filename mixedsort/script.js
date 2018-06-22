@@ -113,7 +113,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 			if (s == "System.DateModified") {
-				Ctrl.SortColumn = (Ctrl.SortColumn != 'Tablacus.Write') ? 'Tablacus.Write' : '-Tablacus.Write';
+				Ctrl.SortColumn = (Ctrl.SortColumn != '-Tablacus.Write') ? '-Tablacus.Write' : 'Tablacus.Write';
 				return S_OK;
 			}
 		}
