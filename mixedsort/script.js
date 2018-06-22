@@ -13,22 +13,26 @@ if (window.Addon == 1) {
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, api.PSGetDisplayName("Name"));
 			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
 			{
-				Ctrl.SortColumn = 'Tablacus.Name';
+				var FV = GetFolderView(Ctrl, pt);
+				FV.SortColumn = 'Tablacus.Name';
 			};
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, '-' + api.PSGetDisplayName("Name"));
 			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
 			{
-				Ctrl.SortColumn = '-Tablacus.Name';
+				var FV = GetFolderView(Ctrl, pt);
+				FV.SortColumn = '-Tablacus.Name';
 			};
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, api.PSGetDisplayName("Write"));
 			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
 			{
-				Ctrl.SortColumn = 'Tablacus.Write';
+				var FV = GetFolderView(Ctrl, pt);
+				FV.SortColumn = 'Tablacus.Write';
 			};
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, '-' + api.PSGetDisplayName("Write"));
 			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
 			{
-				Ctrl.SortColumn = '-Tablacus.Write';
+				var FV = GetFolderView(Ctrl, pt);
+				FV.SortColumn = '-Tablacus.Write';
 			};
 			return nIndex;
 		},
@@ -71,7 +75,7 @@ if (window.Addon == 1) {
 			} else {
 				fn = function (a, b)
 				{
-					return (a[1] - b[1]);
+					return (b[1] - a[1]);
 				}
 			}
 			List.sort(fn);
