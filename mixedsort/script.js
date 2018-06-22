@@ -13,17 +13,22 @@ if (window.Addon == 1) {
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, api.PSGetDisplayName("Name"));
 			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
 			{
-				Addons.MixedSort.CalcSort(Ctrl, pt, 0);
+				Ctrl.SortColumn = 'Tablacus.Name';
+			};
+			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, '-' + api.PSGetDisplayName("Name"));
+			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
+			{
+				Ctrl.SortColumn = '-Tablacus.Name';
 			};
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, api.PSGetDisplayName("Write"));
 			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
 			{
-				Addons.MixedSort.CalcSort(Ctrl, pt, 1);
+				Ctrl.SortColumn = 'Tablacus.Write';
 			};
-			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, GetText("Reverse order"));
+			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, '-' + api.PSGetDisplayName("Write"));
 			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
 			{
-				Addons.MixedSort.CalcSort(Ctrl, pt, -1);
+				Ctrl.SortColumn = '-Tablacus.Write';
 			};
 			return nIndex;
 		},
@@ -40,35 +45,37 @@ if (window.Addon == 1) {
 			}
 		},
 
-		CalcSort: function (Ctrl, pt, nCol)
+		CalcSort: function (Ctrl, pt, strProp)
 		{
 			var FV = GetFolderView(Ctrl, pt);
 			if (!FV) {
 				return S_OK;
 			}
 			var Items = FV.Items();
-			var List = [];
-			var ar = ["Name", "Write"];
-			var n, strProp = ar[nCol];
+			var n, List = [], r = false;
+			strProp = strProp.replace(/Tablacus\./i, "");
+			var res = /^-(.*)/.exec(strProp);
+			if (res) {
+				r = true;
+				strProp = res[1];
+			}
 			for (var i = Items.Count; i--;) {
 				List.push([i, Items.Item(i).ExtendedProperty(strProp)]);
 			}
 			var fn;
-			if (nCol >= 0) {
-				if (nCol == 0) {
-					fn = function (a, b)
-					{
-						return api.StrCmpLogical(b[1], a[1]);
-					}
+			if (/Name/i.test(strProp)) {
+				fn = function (a, b)
+				{
+					return api.StrCmpLogical(b[1], a[1]);
 				}
-				else {
-					fn = function (a, b)
-					{
-						return a[1] - b[1];
-					}
-				}
-				List.sort(fn);
 			} else {
+				fn = function (a, b)
+				{
+					return (a[1] - b[1]);
+				}
+			}
+			List.sort(fn);
+			if (r) {
 				List = List.reverse();
 			}
 			FV.Parent.LockUpdate();
@@ -98,17 +105,21 @@ if (window.Addon == 1) {
 			var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
 			var s = cColumns[iItem * 2];
 			if (s == "System.ItemNameDisplay") {
-				(function (FV) { setTimeout(function () {
-					Addons.MixedSort.CalcSort(FV, null, 0);
-				}, 99);}) (Ctrl);
+				Ctrl.SortColumn = (Ctrl.SortColumn != 'Tablacus.Name') ? 'Tablacus.Name' : '-Tablacus.Name';
 				return S_OK;
 			}
 			if (s == "System.DateModified") {
-				(function (FV) { setTimeout(function () {
-					Addons.MixedSort.CalcSort(FV, null, 1);
-				}, 99);}) (Ctrl);
+				Ctrl.SortColumn = (Ctrl.SortColumn != 'Tablacus.Write') ? 'Tablacus.Write' : '-Tablacus.Write';
 				return S_OK;
 			}
+		}
+	});
+
+	AddEvent("Sorting", function (Ctrl, Name)
+	{
+		if (/-?Tablacus\.Name$|-?Tablacus\.Write$/i.test(Name)) {
+			Addons.MixedSort.CalcSort(Ctrl, null, Name);
+			return true;
 		}
 	});
 

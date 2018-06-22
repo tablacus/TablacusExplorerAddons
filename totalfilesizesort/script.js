@@ -12,9 +12,7 @@ if (window.Addon == 1) {
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
-			if (FV) {
-				Addons.TotalFileSizeSort.Exec2(FV, FV.FolderItem);
-			}
+			FV.SortColumn = "-Tablacus.TotalFileSize";
 			return S_OK;
 		},
 
@@ -98,10 +96,16 @@ if (window.Addon == 1) {
 		var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
 		var s = cColumns[iItem * 2];
 		if (s == "System.TotalFileSize" || (s == "System.Size" && api.GetKeyState(VK_SHIFT) < 0)) {
-			(function (FV) { setTimeout(function () {
-				Addons.TotalFileSizeSort.Exec(FV);
-			}, 99);}) (Ctrl);
+			Addons.TotalFileSizeSort.Exec(Ctrl);
 			return S_OK;
+		}
+	});
+
+	AddEvent("Sorting", function (Ctrl, Name)
+	{
+		if (/-?Tablacus\.TotalFileSize$/i.test(Name)) {
+			Addons.TotalFileSizeSort.Exec2(Ctrl, Ctrl.FolderItem);
+			return true;
 		}
 	});
 
@@ -141,7 +145,6 @@ if (window.Addon == 1) {
 
 	var s = ['<span class="button" onclick="return Addons.TotalFileSizeSort.Exec(this);" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.TotalFileSizeSort.strName.replace(/"/g, ""), '" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="' + h, 'px"></span>'];
 	SetAddon(Addon_Id, Default, s);
-}
-else {
+} else {
 	EnableInner();
 }

@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
+    <Version>1.00</Version>
     <MinVersion>2018.6.21</MinVersion>
     <pubDate>Fri, 22 Jun 2018 00:00:00 GMT</pubDate>
-    <Options>Common:5,6,7,8,9:5</Options>
+    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Mixed sort</Name>
-    <Description>Sort by files and folders. Require Window Vista or higher.</Description>
+    <Name>Folder menu settings</Name>
+    <Description>Folder menu settings.</Description>
   </en>
   <ja>
-    <Name>混在ソート</Name>
-    <Description>ファイルとフォルダを混在して並べ替える。 ※Window Vista 以降</Description>
+    <Name>フォルダメニュー設定</Name>
+    <Description>フォルダメニュー設定</Description>
   </ja>
 </TablacusExplorer>
