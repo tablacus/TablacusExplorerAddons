@@ -4,39 +4,13 @@ Addons.ThumbPlus = {
 	FV: {},
 	fStyle: LVIS_CUT | LVIS_SELECTED,
 	Filter: item.getAttribute("Filter") || "",
-	Disable: item.getAttribute("Disable") || "",
+	Disable: item.getAttribute("Disable") || "-",
 
 	Clear: function (Ctrl)
 	{
 		if (Ctrl.type <= CTRL_SB) {
 			delete Addons.ThumbPlus.FV[Ctrl.Id];
 		}
-	},
-
-	CheckEnable: function (path)
-	{
-		if (api.PathMatchSpec(path, Addons.ThumbPlus.Disable)) {
-			return false;
-		}
-		var ext = "." + fso.GetExtensionName(path).toLowerCase();
-		if (ext == ".") {
-			return true;
-		}
-		try {
-			var keys = RegEnumKey(HKEY_CLASSES_ROOT, ext + "\\ShellEx");
-			for (var i in keys) {
-				if (api.PathMatchSpec(keys[i], "{E357FCCD-A995-4576-B01F-234630154E96};{BB2E617C-0920-11D1-9A0B-00C04FC2D6C1}")) {
-					if (Addons.ThumbPlus.Disable != "") {
-						Addons.ThumbPlus.Disable += ";*" + ext;
-					} else {
-						Addons.ThumbPlus.Disable = "*" + ext;
-					}
-					return false;
-				}
-			}
-		} catch (e) {}
-		Addons.ThumbPlus.Priority += ";*" + ext;
-		return true;
 	}
 };
 
@@ -49,7 +23,7 @@ if (window.Addon == 1) {
 				Addons.ThumbPlus.FV[Ctrl.Id] = db = { "*": Ctrl.IconSize };
 			}
 			var path = pid.Path;
-			if (api.PathMatchSpec(path, Addons.ThumbPlus.Priority) || (api.PathMatchSpec(path, Addons.ThumbPlus.Filter) && Addons.ThumbPlus.CheckEnable(path))) {
+			if (api.PathMatchSpec(path, Addons.ThumbPlus.Priority) || (api.PathMatchSpec(path, Addons.ThumbPlus.Filter) && !api.PathMatchSpec(path, Addons.ThumbPlus.Disable) && !api.HasThumbnail(pid))) {
 				if (db[path]) {
 					return /object/i.test(typeof db[path]) ? true : undefined;
 				}
@@ -126,21 +100,6 @@ if (window.Addon == 1) {
 
 	var s = item.getAttribute("Priority");
 	Addons.ThumbPlus.Priority = s ? "*.zip\\*;" + s : "*.zip\\*";
-	var ar = [];
-	te.WICBitMap().GetCodecInfo(1, 0, ar);
-	for (var i in ar) {
-		var ar2 = ar[i].split(/,/);
-		for (var j in ar2) {
-			var ext = ar2[j].toLowerCase();
-			if (!new RegExp("\\*\\" + ext, "i").test(Addons.ThumbPlus.Disable)) {
-				if (Addons.ThumbPlus.Disable != "") {
-					Addons.ThumbPlus.Disable += ";*" + ext;
-				} else {
-					Addons.ThumbPlus.Disable = "*" + ext;
-				}
-			}
-		}
-	}
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }
