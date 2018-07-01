@@ -350,41 +350,49 @@ if (window.Addon == 1) {
 
 		Enum: function (pid, Ctrl, fncb, SessionId)
 		{
-			var Items = te.FolderItems();
+			var Items = api.CreateObject("FolderItems");
 			var b, ar;
 			var Label = Addons.Label.LabelPath(pid);
-			var bWC = /[\*\?;]/.test(Label);
-			Addons.Label.ENumCB(function (path, s)
-			{
-				var ar3 = Label.split(/;/);
-				for (k in ar3) {
-					var ar2 = api.CommandLineToArgv(ar3[k]);
-					b = true;
-					ar = null;
-					for (var j in ar2) {
-						var s2 = ar2[j];
-						if (s2 && !api.PathMatchSpec(s2, s)) {
-							b = false;
-							if (bWC) {
-								ar = s.split(/\s*;\s*/);
-								for (var i in ar) {
-									if (api.PathMatchSpec(ar[i], s2)) {
-										b = true;
-										break;
+			if (Label) {
+				var bWC = /[\*\?;]/.test(Label);
+				Addons.Label.ENumCB(function (path, s)
+				{
+					var ar3 = Label.split(/;/);
+					for (k in ar3) {
+						var ar2 = api.CommandLineToArgv(ar3[k]);
+						b = true;
+						ar = null;
+						for (var j in ar2) {
+							var s2 = ar2[j];
+							if (s2 && !api.PathMatchSpec(s2, s)) {
+								b = false;
+								if (bWC) {
+									ar = s.split(/\s*;\s*/);
+									for (var i in ar) {
+										if (api.PathMatchSpec(ar[i], s2)) {
+											b = true;
+											break;
+										}
 									}
 								}
+								break;
 							}
+						}
+						if (b) {
 							break;
 						}
 					}
-					if (b) {
-						break;
+					if (b && path !="%Installed%") {
+						Items.AddItem(path);
 					}
+				});
+			} else {
+				var oList = {};
+				Addons.Label.List(oList);
+				for (var s in oList) {
+					Items.AddItem("label:" + s);
 				}
-				if (b && path !="%Installed%") {
-					Items.AddItem(path);
-				}
-			});
+			}
 			return Items;
 		},
 
