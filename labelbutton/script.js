@@ -137,11 +137,12 @@ if (window.Addon == 1) {
 		{
 			window.g_menu_click = true;
 			var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
+			var FV = te.Ctrl(CTRL_FV);
 			if (nVerb == 1) {
-				Addons.Label.Edit(te.Ctrl(CTRL_FV), pt);
+				Addons.Label.Edit(FV, pt);
 			}
 			if (nVerb == 2) {
-				te.Ctrl(CTRL_FV).Columns = FV.Columns + ' "System.Contact.Label" -1';
+				FV.Columns = FV.Columns + ' "System.Contact.Label" -1';
 			}
 			if (nVerb > 30000) {
 				if (confirmOk()) {
@@ -154,7 +155,7 @@ if (window.Addon == 1) {
 			} else if (nVerb > 10000) {
 				var path = "label:";
 				if (api.GetKeyState(VK_SHIFT) < 0) {
-					var res = /^(label:.*)$/.exec(api.GetDisplayNameOf(te.Ctrl(CTRL_FV), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					var res = /^(label:.*)$/.exec(api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 					if (res) {
 						path = res[1] + (/;/.test(res[1]) ? ";" : " ");
 					}
