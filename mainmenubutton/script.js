@@ -171,11 +171,17 @@ if (window.Addon == 1) {
 	AddEvent("KeyMessage", function (Ctrl, hwnd, msg, key, keydata)
 	{
 		if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN) {
-			Addons.MainMenuButton.key = key;
-		}
-		else if (key == VK_MENU && msg == WM_SYSKEYUP && key == Addons.MainMenuButton.key) {
+			Addons.MainMenuButton.key = Addons.MainMenuButton.key != VK_MENU && (keydata & 0x40000000) ? 0 : key;
+		} else if (key == VK_MENU && msg == WM_SYSKEYUP && key == Addons.MainMenuButton.key) {
 			Addons.MainMenuButton.Popup(null, null, document.getElementById("mainmenubutton1"));
 			return S_OK;
+		}
+	});
+
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt)
+	{
+		if (msg != WM_MOUSEMOVE) {
+			Addons.MainMenuButton.key = 0;
 		}
 	});
 }
