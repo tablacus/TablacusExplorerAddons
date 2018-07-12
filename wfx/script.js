@@ -266,69 +266,59 @@ Addons.WFX =
 		}
 	},
 
-	RemoteList1: function (lib, fl, wfd, path, bff)
+	RemoteList: function (lib, fl, items)
 	{
-		path = fso.BuildPath(path, unescape(wfd.cFileName));
-		var fn = fso.BuildPath(lib.path, path);
-		if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-			if (bff) {
-				fl.push({
-					path: path,
-					SizeLow: wfd.nFileSizeLow,
-					SizeHigh: wfd.nFileSizeHigh,
-					LastWriteTime: wfd.ftLastWriteTime,
-					Attr: wfd.dwFileAttributes
-				});
-			}
-			var wfd2 = {};
-			var hFind = lib.X.FsFindFirst(fn, wfd2);
-			if (hFind != -1) {
-				do {
-					if (!api.PathMatchSpec(wfd2.cFileName, ".;..")) {
-						Addons.WFX.Cnt[1]++;
-						Addons.WFX.Unix2Win(wfd2);
-						var fn = fso.BuildPath(path, wfd2.cFileName);
-						var hr = this.RemoteList1(lib, fl, wfd2, path, bff);
-						if (hr) {
-							return hr;
-						}
-					}
-				} while (!(Addons.WFX.Progress && Addons.WFX.Progress.HasUserCancelled()) && lib.X.FsFindNext(hFind, wfd2));
-				lib.X.FsFindClose(hFind);
-			}
-			if (!bff) {
-				fl.push({
-					path: path,
-					SizeLow: wfd.nFileSizeLow,
-					SizeHigh: wfd.nFileSizeHigh,
-					LastWriteTime: wfd.ftLastWriteTime,
-					Attr: wfd.dwFileAttributes
-				});
-			}
-			return 0;
-		}
-		fl.push({
-			path: path,
-			SizeLow: wfd.nFileSizeLow,
-			SizeHigh: wfd.nFileSizeHigh,
-			LastWriteTime: wfd.ftLastWriteTime,
-			Attr: wfd.dwFileAttributes
-		});
-		Addons.WFX.Cnt[3] += api.QuadPart(wfd.nFileSizeLow, wfd.nFileSizeHigh);
-		return 0;
-	},
-
-	RemoteList: function (lib, fl, items, bff)
-	{
+		var Result = Addons.WFX.Progress.HasUserCancelled();
 		Addons.WFX.Cnt[1] += items.length;
-		while (items.length && !Addons.WFX.Progress.HasUserCancelled()) {
+		while (items.length && !Result) {
 			var wfd = api.Memory("WIN32_FIND_DATA");
-			var hr = api.SHGetDataFromIDList(items.shift(), SHGDFIL_FINDDATA, wfd, wfd.Size);
-			if (Addons.WFX.RemoteList1(lib, fl, wfd, "", bff)) {
-				return 1;
+			api.SHGetDataFromIDList(items.shift(), SHGDFIL_FINDDATA, wfd, wfd.Size);
+			var nDog = 99999;
+			var arDir = [{ path: "", wfd: wfd }];
+			while (arDir.length && !Result) {
+				var o = arDir.pop();
+				var path = fso.BuildPath(o.path, unescape(o.wfd.cFileName));
+				fl.push({
+					path: path,
+					SizeLow: o.wfd.nFileSizeLow,
+					SizeHigh: o.wfd.nFileSizeHigh,
+					LastWriteTime: o.wfd.ftLastWriteTime,
+					Attr: o.wfd.dwFileAttributes
+				});
+				if (o.wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+					wfd = {};
+					var hFind = lib.X.FsFindFirst(fso.BuildPath(lib.path, path), wfd);
+					if (hFind != -1) {
+						do {
+							if (!api.PathMatchSpec(wfd.cFileName, ".;..")) {
+								Addons.WFX.Cnt[1]++;
+								Addons.WFX.Unix2Win(wfd);
+								if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+									arDir.push({ path: path, wfd: wfd });
+								} else {
+									fl.push({
+										path: fso.BuildPath(path, wfd.cFileName),
+										SizeLow: wfd.nFileSizeLow,
+										SizeHigh: wfd.nFileSizeHigh,
+										LastWriteTime: wfd.ftLastWriteTime,
+										Attr: wfd.dwFileAttributes
+									});
+								}
+							}
+							Result = Addons.WFX.Progress && Addons.WFX.Progress.HasUserCancelled();
+							wfd = {};
+						} while (!Result && lib.X.FsFindNext(hFind, wfd));
+						lib.X.FsFindClose(hFind);
+					}
+				} else {
+					Addons.WFX.Cnt[3] += api.QuadPart(wfd.nFileSizeLow, wfd.nFileSizeHigh);
+				}
+				if (nDog-- <= 0) {
+					Result = true;
+				}
 			}
 		}
-		return 0;
+		return Result ? 1 : 0;
 	},
 
 	LocalList: function (lib, Items, path, fl)
@@ -378,11 +368,11 @@ Addons.WFX =
 				for (var i = Items.Count; i--;) {
 					items.unshift(Items.Item(i));
 				}
-				if (Addons.WFX.RemoteList(lib, fl, items, false) == 0) {
+				if (Addons.WFX.RemoteList(lib, fl, items) == 0) {
 					Addons.WFX.ShowLine(5955, 32947);
 					Addons.WFX.Cnt[3] = 0;
 					for (;fl.length && !Addons.WFX.Progress.HasUserCancelled(); Addons.WFX.Cnt[0]++) {
-						var item = fl.shift();
+						var item = fl.pop();
 						var path = fso.BuildPath(lib.path, item.path);
 						Addons.WFX.Progress.SetLine(2, item.path, true);
 						if (item.Attr & FILE_ATTRIBUTE_DIRECTORY) {
@@ -795,7 +785,7 @@ if (window.Addon == 1) {
 			try {
 				Addons.WFX.Progress.SetLine(1, api.LoadString(hShell32, 33260) || api.LoadString(hShell32, 6478), true);
 				Addons.WFX.Cnt = [0, 0, 0, 0, 0];
-				if (Addons.WFX.RemoteList(lib, fl, ar, true) == 0) {
+				if (Addons.WFX.RemoteList(lib, fl, ar) == 0) {
 					Addons.WFX.ShowLine(5954, 32946);
 					for (;fl.length && !Addons.WFX.Progress.HasUserCancelled(); Addons.WFX.Cnt[0]++) {
 						var item = fl.shift();
