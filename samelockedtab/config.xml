@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.07</Version>
+    <Version>1.00</Version>
     <MinVersion>2018.7.26</MinVersion>
     <pubDate>Thu, 26 Jul 2018 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
@@ -9,11 +9,11 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Prevent duplicate tabs</Name>
-    <Description>Prevent duplicate tabs</Description>
+    <Name>Open the same locked tab instead</Name>
+    <Description>Open the same locked tab instead</Description>
   </en>
   <ja>
-    <Name>重複タブ禁止</Name>
-    <Description>重複タブを禁止します。</Description>
+    <Name>同一のロックされたタブがあれば開く</Name>
+    <Description>同一のロックされたタブがあれば開く</Description>
   </ja>
 </TablacusExplorer>
