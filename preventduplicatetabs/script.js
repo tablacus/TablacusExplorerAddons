@@ -9,13 +9,12 @@
 			if (Ctrl.hwnd != Item.hwnd && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
 				if (Item.Data.Lock) {
 					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.hwnd == Ctrl.hwnd) {
-						var Selected = Ctrl.SelectedItems();
-						TC.SelectedIndex = i;
-						if (Selected.Count == 1) {
-							setTimeout(function () {
+						(function (TC, i, Item, Selected) { setTimeout(function () {
+							TC.SelectedIndex = i;
+							if (Selected.Count == 1) {
 								Item.SelectItem(Selected.Item(0), SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS | SVSI_DESELECTOTHERS | SVSI_SELECT);
-							}, 99);
-						}
+							}
+						}, 99);}) (TC, i, Item, Ctrl.SelectedItems());
 					}
 					hr = E_ABORT;
 				} else if (!hr) {
