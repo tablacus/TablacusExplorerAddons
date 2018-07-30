@@ -11,10 +11,10 @@
 					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.hwnd == Ctrl.hwnd) {
 						(function (TC, i, Item, Selected) { setTimeout(function () {
 							TC.SelectedIndex = i;
-							if (Selected.Count == 1) {
+							if (Selected && Selected.Count == 1) {
 								Item.SelectItem(Selected.Item(0), SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS | SVSI_DESELECTOTHERS | SVSI_SELECT);
 							}
-						}, 99);}) (TC, i, Item, Ctrl.SelectedItems());
+						}, 99);}) (TC, Ctrl.Index < i ? i - 1 : i, Item, Ctrl.SelectedItems());
 					}
 					hr = E_ABORT;
 				} else if (!hr) {

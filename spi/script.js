@@ -12,8 +12,8 @@ if (window.Addon == 1) {
 
 		Finalize: function ()
 		{
-			delete Addons.SPI.IN;
-			delete Addons.SPI.AM;
+			Addons.SPI.IN = [];
+			Addons.SPI.AM = [];
 			CollectGarbage();
 			delete Addons.SPI.DLL;
 		}
@@ -131,11 +131,10 @@ if (window.Addon == 1) {
 
 	AddEvent("FromStream", function (image, stream, filename, cx)
 	{
-		var dw;
 		if (Addons.SPI.IN.length) {
 			for (var i = Addons.SPI.IN.length; i-- > 0;) {
 				var o = Addons.SPI.IN[i];
-				SPI = o.SPI;
+				var SPI = o.SPI;
 				if (api.PathMatchSpec(filename, o.Filter) && SPI.IsSupported(filename, stream)) {
 					var phbm = [];
 					if ((cx || 999) <= 256 && SPI.GetPreview) {
@@ -188,5 +187,6 @@ if (window.Addon == 1) {
 			}
 		}
 		delete xml;
+		delete SPI;
 	}
 }

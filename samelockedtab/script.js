@@ -3,7 +3,7 @@ var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.SameLockedTab =
 	{
-		hr: api.LowPart(item.getAttribute("Close")) ? E_ABORT : E_FAIL
+		Close: api.LowPart(item.getAttribute("Close"))
 	}
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
@@ -16,12 +16,12 @@ if (window.Addon == 1) {
 				if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.hwnd == Ctrl.hwnd) {
 					(function (TC, i, Item, Selected) { setTimeout(function () {
 						TC.SelectedIndex = i;
-						if (Selected.Count == 1) {
+						if (Selected && Selected.Count == 1) {
 							Item.SelectItem(Selected.Item(0), SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS | SVSI_DESELECTOTHERS | SVSI_SELECT);
 						}
-					}, 99);}) (TC, i, Item, Ctrl.SelectedItems());
+					}, 99);}) (TC, Addons.SameLockedTab.Close && Ctrl.Index < i ? i - 1 : i, Item, Ctrl.SelectedItems());
 				}
-				hr = Addons.SameLockedTab.hr;
+				hr = Addons.SameLockedTab.Close ? E_ABORT : E_FAIL;
 			}
 		}
 		return hr;

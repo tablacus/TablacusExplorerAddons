@@ -153,10 +153,6 @@ AddEventEx(window, "beforeunload", function ()
 	if (g_nResult == 2 || !g_bChanged) {
 		return;
 	}
-	if (ConfirmX(true, ReplaceFS)) {
-		SaveFS();
-		TEOk();
-		return;
-	}
-	event.returnValue = GetText('Close');
+	SaveFS();
+	TEOk();
 });

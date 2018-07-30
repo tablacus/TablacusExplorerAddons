@@ -12,7 +12,7 @@ const TCHAR g_szClsid[] = TEXT("{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
 HINSTANCE	g_hinstDll = NULL;
 LONG		g_lLocks = 0;
 CteBase		*g_pBase = NULL;
-CteSPI		*g_ppObject[MAX_OBJ];
+std::vector<CteSPI *> g_ppObject;
 IDispatch	*g_pdispProgressProc = NULL;
 
 TEmethod methodBASE[] = {
@@ -678,19 +678,14 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
-			for (int i = MAX_OBJ; i--;) {
-				g_ppObject[i] = NULL;
-			}
 			g_pBase = new CteBase();
 			g_hinstDll = hinstDll;
 			break;
 		case DLL_PROCESS_DETACH:
-			for (int i = MAX_OBJ; i--;) {
-				if (g_ppObject[i]) {
-					g_ppObject[i]->Close();
-					SafeRelease(&g_ppObject[i]);
-				}
+			for (int i = g_ppObject.size(); i--;) {
+				SafeRelease(&g_ppObject[i]);
 			}
+			g_ppObject.clear();
 			SafeRelease(&g_pBase);
 			SafeRelease(&g_pdispProgressProc);
 			break;
@@ -792,9 +787,9 @@ CteSPI::CteSPI(HMODULE hDll, LPWSTR lpLib)
 CteSPI::~CteSPI()
 {
 	Close();
-	for (int i = MAX_OBJ; i--;) {
+	for (int i = g_ppObject.size(); i--;) {
 		if (this == g_ppObject[i]) {
-			g_ppObject[i] = NULL;
+			g_ppObject.erase(g_ppObject.begin() + i);
 			break;
 		}
 	}
@@ -1352,26 +1347,19 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 
-				int nEmpty = -1;
 				CteSPI *pItem;
-				for (int i = MAX_OBJ; i--;) {
+				for (int i = g_ppObject.size(); i--;) {
 					pItem = g_ppObject[i];
-					if (pItem) {
-						if (lstrcmpi(lpLib, pItem->m_bsLib) == 0) {
-							teSetObject(pVarResult, pItem);
-							return S_OK;
-						}
-					} else if (nEmpty < 0) {
-						nEmpty = i;
+					if (lstrcmpi(lpLib, pItem->m_bsLib) == 0) {
+						teSetObject(pVarResult, pItem);
+						return S_OK;
 					}
 				}
-				if (nEmpty >= 0) {
-					HMODULE hDll = LoadLibrary(lpLib);
-					if (hDll) {
-						pItem = new CteSPI(hDll, lpLib);
-						g_ppObject[nEmpty] = pItem;
-						teSetObjectRelease(pVarResult, pItem);
-					}
+				HMODULE hDll = LoadLibrary(lpLib);
+				if (hDll) {
+					pItem = new CteSPI(hDll, lpLib);
+					g_ppObject.push_back(pItem);
+					teSetObjectRelease(pVarResult, pItem);
 				}
 			}
 			return S_OK;
@@ -1380,13 +1368,12 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 
-				for (int i = MAX_OBJ; i--;) {
-					if (g_ppObject[i]) {
-						if (lstrcmpi(lpLib, g_ppObject[i]->m_bsLib) == 0) {
-							g_ppObject[i]->Close();
-							SafeRelease(&g_ppObject[i]);
-							break;
-						}
+				for (int i = g_ppObject.size(); i--;) {
+					if (lstrcmpi(lpLib, g_ppObject[i]->m_bsLib) == 0) {
+						g_ppObject[i]->Close();
+						SafeRelease(&g_ppObject[i]);
+						g_ppObject.erase(g_ppObject.begin() + i);
+						break;
 					}
 				}
 			}

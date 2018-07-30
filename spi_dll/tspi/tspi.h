@@ -1,10 +1,10 @@
 #include "resource.h"
 #include <windows.h>
 #include <dispex.h>
+#include <vector>
 #include <shlwapi.h>
 #pragma comment (lib, "shlwapi.lib")
 
-#define MAX_OBJ 256
 #define SIZE_BUFF 32768
 
 struct TEmethod
