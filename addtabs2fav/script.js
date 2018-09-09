@@ -23,6 +23,7 @@ if (window.Addon == 1) {
 				var s = InputDialog(GetText("Name"), "");
 				if (s) {
 					item.setAttribute("Name", s);
+					item.setAttribute("Org", 1);
 					item.setAttribute("Filter", "");
 					var TC = te.Ctrl(CTRL_TC);
 					s = [];
@@ -44,32 +45,31 @@ if (window.Addon == 1) {
 			return false;
 		}
 	};
-	if (items.length) {
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.AddTabs2Fav.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.AddTabs2Fav.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.AddTabs2Fav.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.AddTabs2Fav.strName));
-				ExtraMenuCommand[nPos] = Addons.AddTabs2Fav.Exec;
-				return nPos;
-			});
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.AddTabs2Fav.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		var s = item.getAttribute("MenuName");
+		if (s && s != "") {
+			Addons.AddTabs2Fav.strName = s;
 		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.AddTabs2Fav.Exec();", "JScript");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.AddTabs2Fav.Exec();", "JScript");
-		}
-		
-		AddTypeEx("Add-ons", "Add all tabs to favorite...", Addons.AddTabs2Fav.Exec);
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.AddTabs2Fav.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.AddTabs2Fav.strName));
+			ExtraMenuCommand[nPos] = Addons.AddTabs2Fav.Exec;
+			return nPos;
+		});
 	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.AddTabs2Fav.Exec();", "JScript");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.AddTabs2Fav.Exec();", "JScript");
+	}
+	
+	AddTypeEx("Add-ons", "Add all tabs to favorite...", Addons.AddTabs2Fav.Exec);
+
 	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
 	var s = GetAddonOption(Addon_Id, "Icon") || h > 16 ? "bitmap:ieframe.dll,214,24,3" : "bitmap:ieframe.dll,216,16,3";
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.AddTabs2Fav.Exec();" oncontextmenu="Addons.AddTabs2Fav.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', '<img title="Add all tabs to favorite..." src="', EncodeSC(s), '" width="', h, 'px" height="', h, 'px" />', '</span>']);
