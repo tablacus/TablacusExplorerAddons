@@ -75,7 +75,7 @@ if (window.Addon == 1) {
 	AddEvent("HandleIcon", function (Ctrl, pid)
 	{
 		if (Ctrl.hwndList && pid) {
-			var i = Ctrl.IconSize < 32 ? 0 : 1, db = Addons.PathIcon.Icon[pid.Path.toLowerCase()];
+			var i = Ctrl.IconSize < 32 ? 0 : 1, db = Addons.PathIcon.Icon[api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL).toLowerCase()];
 			if (db) {
 				if (db[i]) {
 					if (db[i + 2]) {
@@ -95,7 +95,7 @@ if (window.Addon == 1) {
 	{
 		var hList = Ctrl.hwndList;
 		if (hList && pid) {
-			var db = Addons.PathIcon.Icon[pid.Path.toLowerCase()];
+			var db = Addons.PathIcon.Icon[api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL).toLowerCase()];
 			if (db) {
 				var image = db[Ctrl.IconSize < 32 ? 2 : 3];
 				if (/object/i.test(typeof image)) {
@@ -117,6 +117,14 @@ if (window.Addon == 1) {
 			}
 		}
 	}, true);
+
+	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	{
+		var db = Addons.PathIcon.Icon[(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL) || "").toLowerCase()];
+		if (db && db[0]) {
+			return MakeImgSrc(db[0], 0, false, 16);
+		}
+	});
 
 	AddEvent("SaveConfig", function ()
 	{

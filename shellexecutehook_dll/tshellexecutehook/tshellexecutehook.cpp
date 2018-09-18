@@ -152,7 +152,7 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 							} else if (!PathMatchSpec(bs, FILTER_CONTROLPANEL)) {
 								if (sfAttr & SFGAO_FOLDER) { 
 									hr = ExecuteTE(bs);
-								} else if (PathMatchSpec(bs, FILTER_SPECIAL)) {
+								} else if (PathMatchSpec(bs, FILTER_WINE10)) {
 									hr = ExecuteTE(NULL);
 								}
 							}
@@ -169,7 +169,7 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 			try {
 				if (lstrcmpi(pei->lpFile, szExplorer) == 0) {
 					hr = ExecuteTE(pei->lpParameters);
-				} else if (PathMatchSpec(pei->lpFile, FILTER_SPECIAL) && !PathMatchSpec(pei->lpFile, FILTER_CONTROLPANEL)) {
+				} else if (PathMatchSpec(pei->lpFile, FILTER_WINE10)) {
 					hr = ExecuteTE(pei->lpFile);
 				} else if (PathIsDirectory(pei->lpFile)) {
 					hr = ExecuteTE(pei->lpFile);

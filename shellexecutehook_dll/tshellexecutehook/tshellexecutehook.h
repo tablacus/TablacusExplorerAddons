@@ -5,7 +5,7 @@
 #pragma comment (lib, "shlwapi.lib")
 
 #define FILTER_CONTROLPANEL L"::{26EE0668-A00A-44D7-9371-BEB064C98683}*"
-#define FILTER_SPECIAL	L"*::{*"
+#define FILTER_WINE10	L"*::{52205FD8-5DFB-447D-801A-D0B52F2E83E1}"
 
 class CShellExecuteHook : public IShellExecuteHook
 {
