@@ -16,6 +16,7 @@ if (window.Addon == 1) {
 		CONFIG: fso.BuildPath(te.Data.DataFolder, "config\\colorlabels.tsv"),
 		bSave: false,
 		Portable: api.LowPart(item.getAttribute("Portable")),
+		SyncItem: {},
 
 		Get: function (path)
 		{
@@ -41,7 +42,7 @@ if (window.Addon == 1) {
 		{
 			if (path) {
 				if (!/string/i.test(typeof path)) {
-					path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING) || "";
 				}
 				path = path.toLowerCase();
 				if (cl !== te.Data.ColorLabels[path]) {
@@ -65,9 +66,9 @@ if (window.Addon == 1) {
 
 	AddEvent("Load", function ()
 	{
-		te.Data.ColorLabels = te.Object();
+		te.Data.ColorLabels = api.CreateObject("Object");
 		try {
-			var ado = te.CreateObject(api.ADBSTRM);
+			var ado = api.CreateObject("ads");
 			ado.CharSet = "utf-8";
 			ado.Open();
 			ado.LoadFromFile(Addons.ColorLabels.CONFIG);
@@ -83,7 +84,7 @@ if (window.Addon == 1) {
 		{
 			if (Addons.ColorLabels.bSave) {
 				try {
-					var ado = te.CreateObject(api.ADBSTRM);
+					var ado = api.CreateObject("ads");
 					ado.CharSet = "utf-8";
 					ado.Open();
 					delete te.Data.ColorLabels[""];
@@ -127,6 +128,34 @@ if (window.Addon == 1) {
 				if (vcd.clrText == GetSysColor(COLOR_WINDOWTEXT)) {
 					cl = (cl & 0xff) * 299 + (cl & 0xff00) * 2.29296875 + (cl &0xff0000) * 0.001739501953125;
 					vcd.clrText = cl > 127000 ? 0 : 0xffffff;
+				}
+			}
+		}
+	});
+
+	AddEvent("ChangeNotify", function (Ctrl, pidls)
+	{
+		if (te.Data.ColorLabels) {
+			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
+				Addons.ColorLabels.Set(pidls[1], Addons.ColorLabels.Get(pidls[0]));
+				Addons.ColorLabels.Set(pidls[0], "");
+			}
+			if (pidls.lEvent & SHCNE_DELETE) {
+				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				Addons.ColorLabels.SyncItem[name] = Addons.ColorLabels.Get(pidls[0])
+				Addons.ColorLabels.Set(pidls[0], "");
+				clearTimeout(Addons.ColorLabels.tidSync);
+				Addons.ColorLabels.tidSync = setTimeout(function ()
+				{
+					Addons.ColorLabels.tidSync = null;
+					Addons.ColorLabels.SyncItem = {};
+				}, 500);
+			}
+			if (pidls.lEvent & SHCNE_CREATE) {
+				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				var Item = Addons.ColorLabels.SyncItem[name];
+				if (Item) {
+					Addons.ColorLabels.Set(pidls[0], Item);
 				}
 			}
 		}

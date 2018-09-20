@@ -93,10 +93,10 @@ if (window.Addon == 1) {
 
 	AddEvent("ItemPostPaint", function (Ctrl, pid, nmcd, vcd)
 	{
-		var hList = Ctrl.hwndList;
-		if (hList && pid) {
-			var db = Addons.PathIcon.Icon[api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL).toLowerCase()];
-			if (db) {
+		var db = Addons.PathIcon.Icon[api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL).toLowerCase()];
+		if (db) {
+			var hList = Ctrl.hwndList;
+			if (hList) {
 				var image = db[Ctrl.IconSize < 32 ? 2 : 3];
 				if (/object/i.test(typeof image)) {
 					var cl, fStyle, rc = api.Memory("RECT");
@@ -113,6 +113,24 @@ if (window.Addon == 1) {
 					image = GetThumbnail(image, Ctrl.IconSize * screen.logicalYDPI / 96, Ctrl.IconSize >= 32);
 					image.DrawEx(nmcd.hdc, rc.Left + (rc.Right - rc.Left - image.GetWidth()) / 2, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, cl, cl, fStyle);
 					return S_OK;
+				}
+				return;
+			}
+			var hTree = Ctrl.hwndTree;
+			if (hTree) {
+				var image = db[2], cx = api.GetSystemMetrics(SM_CYSMICON) * screen.logicalYDPI / 96;
+				if (!image) {
+					if (image === 1) {
+						return;
+					}
+					image = GetThumbnail(Addons.PathIcon.GetIconImage(db[0]), cx, true) || 1;
+					db[i + 2] = image;
+				}
+				if (/object/i.test(typeof image)) {
+					var rc = api.Memory("RECT");
+					rc.Left = nmcd.dwItemSpec;
+					api.SendMessage(hTree, TVM_GETITEMRECT, true, rc);
+					image.DrawEx(nmcd.hdc, rc.Left - cx - 4 * screen.logicalYDPI / 96, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, cl, CLR_NONE, ILD_NORMAL);
 				}
 			}
 		}
