@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
+    <Version>1.00</Version>
     <MinVersion>2018.9.22</MinVersion>
     <pubDate>Sat, 22 Sep 2018 00:00:00 GMT</pubDate>
-    <Options>Common:4,7,8,9:4</Options>
+    <Options>Common:0,7,8,9:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Path icon changer</Name>
-    <Description>Icon change with file path</Description>
+    <Name>Virtual name</Name>
+    <Description>Virtual name</Description>
   </en>
   <ja>
-    <Name>フルパスでアイコン変更</Name>
-    <Description>フルパス名でアイコン変更</Description>
+    <Name>仮想名</Name>
+    <Description>仮想名</Description>
   </ja>
 </TablacusExplorer>
