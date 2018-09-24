@@ -138,12 +138,12 @@ if (window.Addon == 1) {
 		if (te.Data.ColorLabels) {
 			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
 				Addons.ColorLabels.Set(pidls[1], Addons.ColorLabels.Get(pidls[0]));
-				Addons.ColorLabels.Set(pidls[0], "");
+				Addons.ColorLabels.Set(pidls[0]);
 			}
 			if (pidls.lEvent & SHCNE_DELETE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				Addons.ColorLabels.SyncItem[name] = Addons.ColorLabels.Get(pidls[0])
-				Addons.ColorLabels.Set(pidls[0], "");
+				Addons.ColorLabels.Set(pidls[0]);
 				clearTimeout(Addons.ColorLabels.tidSync);
 				Addons.ColorLabels.tidSync = setTimeout(function ()
 				{
