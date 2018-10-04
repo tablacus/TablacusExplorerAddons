@@ -61,6 +61,17 @@ if (window.Addon == 1) {
 			for (var path in te.Data.ColorLabels) {
 				fncb(path, te.Data.ColorLabels[path]);
 			}
+		},
+
+		SetSync: function (name, s)
+		{
+			this.SyncItem[name] = s;
+			clearTimeout(this.tidSync);
+			this.tidSync = setTimeout(function ()
+			{
+				Addons.ColorLabels.tidSync = null;
+				Addons.ColorLabels.SyncItem = {};
+			}, 500);
 		}
 	}
 
@@ -137,19 +148,23 @@ if (window.Addon == 1) {
 	{
 		if (te.Data.ColorLabels) {
 			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
-				Addons.ColorLabels.Set(pidls[1], Addons.ColorLabels.Get(pidls[0]));
+				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				var s = Addons.ColorLabels.Get(pidls[0]);
+				if (s) {
+					Addons.ColorLabels.SetSync(name, s);
+				} else {
+					name = fso.GetFileName(api.GetDisplayNameOf(pidls[1], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					s = Addons.ColorLabels.SyncItem[name];
+				}
+				if (s) {
+					Addons.ColorLabels.Set(pidls[1], s);
+				}
 				Addons.ColorLabels.Set(pidls[0]);
 			}
 			if (pidls.lEvent & SHCNE_DELETE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-				Addons.ColorLabels.SyncItem[name] = Addons.ColorLabels.Get(pidls[0])
+				Addons.ColorLabels.SetSync(name, Addons.ColorLabels.Get(pidls[0]));
 				Addons.ColorLabels.Set(pidls[0]);
-				clearTimeout(Addons.ColorLabels.tidSync);
-				Addons.ColorLabels.tidSync = setTimeout(function ()
-				{
-					Addons.ColorLabels.tidSync = null;
-					Addons.ColorLabels.SyncItem = {};
-				}, 500);
 			}
 			if (pidls.lEvent & SHCNE_CREATE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));

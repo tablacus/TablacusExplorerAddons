@@ -436,6 +436,17 @@ if (window.Addon == 1) {
 				FV.FolderFlags = FolderFlags;
 			} catch (e) {}
 			FV.Parent.UnlockUpdate(true);
+		},
+
+		SetSync: function (name, s)
+		{
+			this.SyncItem[name] = s;
+			clearTimeout(this.tidSync);
+			this.tidSync = setTimeout(function ()
+			{
+				Addons.Label.tidSync = null;
+				Addons.Label.SyncItem = {};
+			}, 500);
 		}
 	}
 
@@ -604,17 +615,21 @@ if (window.Addon == 1) {
 	{
 		if (te.Labels) {
 			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
-				Addons.Label.Append(pidls[1], Addons.Label.Remove(pidls[0]));
+				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				var s = Addons.Label.Remove(pidls[0]);
+				if (s) {
+					Addons.Label.SetSync(name, s);
+				} else {
+					name = fso.GetFileName(api.GetDisplayNameOf(pidls[1], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					s = Addons.Label.SyncItem[name];
+				}
+				if (s) {
+					Addons.Label.Append(pidls[1], s);
+				}
 			}
 			if (pidls.lEvent & SHCNE_DELETE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-				Addons.Label.SyncItem[name] = Addons.Label.Remove(pidls[0]);
-				clearTimeout(Addons.Label.tidSync);
-				Addons.Label.tidSync = setTimeout(function ()
-				{
-					Addons.Label.tidSync = null;
-					Addons.Label.SyncItem = {};
-				}, 500);
+				Addons.Label.SetSync(name, Addons.Label.Remove(pidls[0]));
 			}
 			if (pidls.lEvent & SHCNE_CREATE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));

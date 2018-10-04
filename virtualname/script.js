@@ -65,13 +65,24 @@ if (window.Addon == 1) {
 			}
 		},
 
-		SetFilters: function(s)
+		SetFilters: function (s)
 		{
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
 				var FV = cFV[i];
 				FV.VirtualName = PathMatchEx(FV.FolderItem.Path, s) ? te.Data.VirtualName : null;
 			}
+		},
+
+		SetSync: function (name, s)
+		{
+			this.SyncItem[name] = s;
+			clearTimeout(this.tidSync);
+			this.tidSync = setTimeout(function ()
+			{
+				Addons.VirtualName.tidSync = null;
+				Addons.VirtualName.SyncItem = {};
+			}, 500);
 		}
 	}
 
@@ -132,19 +143,23 @@ if (window.Addon == 1) {
 	{
 		if (te.Data.VirtualName) {
 			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
-				Addons.VirtualName.Set(pidls[1], Addons.VirtualName.Get(pidls[0]));
+				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				var s = Addons.VirtualName.Get(pidls[0]);
+				if (s) {
+					Addons.VirtualName.SetSync(name, s);
+				} else {
+					name = fso.GetFileName(api.GetDisplayNameOf(pidls[1], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					s = Addons.VirtualName.SyncItem[name];
+				}
+				if (s) {
+					Addons.VirtualName.Set(pidls[1], s);
+				}
 				Addons.VirtualName.Set(pidls[0], "");
 			}
 			if (pidls.lEvent & SHCNE_DELETE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-				Addons.VirtualName.SyncItem[name] = Addons.VirtualName.Get(pidls[0])
+				Addons.VirtualName.SetSync(name, Addons.VirtualName.Get(pidls[0]));
 				Addons.VirtualName.Set(pidls[0], "");
-				clearTimeout(Addons.VirtualName.tidSync);
-				Addons.VirtualName.tidSync = setTimeout(function ()
-				{
-					Addons.VirtualName.tidSync = null;
-					Addons.VirtualName.SyncItem = {};
-				}, 500);
 			}
 			if (pidls.lEvent & SHCNE_CREATE) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
