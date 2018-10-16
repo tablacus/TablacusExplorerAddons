@@ -130,7 +130,7 @@ if (window.Addon == 1) {
 					var rc = api.Memory("RECT");
 					rc.Left = nmcd.dwItemSpec;
 					api.SendMessage(hTree, TVM_GETITEMRECT, true, rc);
-					image.DrawEx(nmcd.hdc, rc.Left - cx - 4 * screen.logicalYDPI / 96, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, GetSysColor(COLOR_WINDOW), CLR_NONE, ILD_NORMAL);
+					image.DrawEx(nmcd.hdc, rc.Left - cx - 3 * screen.logicalYDPI / 96, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, GetSysColor(COLOR_WINDOW), CLR_NONE, ILD_NORMAL);
 				}
 			}
 		}

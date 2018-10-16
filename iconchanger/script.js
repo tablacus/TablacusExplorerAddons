@@ -18,7 +18,7 @@ if (window.Addon == 1) {
 		var iUndef = info.iIcon;
 
 		for (var i = ar.length; i--;) {
-			var image = te.GdiplusBitmap();
+			var image = api.CreateObject("WICBitmap");
 			var a = ar[i].split(/\t/);
 			var type = a.shift();
 			var typelc = String(type).toLowerCase();
@@ -36,7 +36,7 @@ if (window.Addon == 1) {
 			} else if (typelc == "shortcut") {
 				iIcon = api.ImageList_GetOverlayImage(te.Data.SHIL[0], 2);
 			} else {
-				if (api.SHGetFileInfo(type, 0, info, info.Size, SHGFI_SYSICONINDEX | (/\*/.test(typelc) ? SHGFI_USEFILEATTRIBUTES : 0))) {
+				if (api.SHGetFileInfo(ExtractMacro(te, type), 0, info, info.Size, SHGFI_SYSICONINDEX | (/\*/.test(typelc) ? SHGFI_USEFILEATTRIBUTES : 0))) {
 					if (info.iIcon != iUndef) {
 						iIcon = info.iIcon;
 					}
@@ -46,7 +46,7 @@ if (window.Addon == 1) {
 				var hIcon;
 				for (var j in te.Data.SHIL) {
 					if (a[j] && te.Data.SHIL[j]) {
-						var fn = api.PathUnquoteSpaces(a[j]);
+						var fn = api.PathUnquoteSpaces(ExtractMacro(te, a[j]));
 						if (api.PathMatchSpec(fn, "*.ico")) {
 							api.SHGetFileInfo(fn, 0, info, info.Size, SHGFI_SYSICONINDEX);
 							hIcon = api.ImageList_GetIcon(te.Data.SHIL[j], info.iIcon, ILD_NORMAL);
