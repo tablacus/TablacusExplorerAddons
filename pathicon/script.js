@@ -192,6 +192,11 @@ if (window.Addon == 1) {
 				if (ar[0]) {
 					var s = api.PathUnquoteSpaces(ExtractMacro(te, ar[0])).toLowerCase();
 					if (s) {
+						if (/^shell:|^::{/.test(s)) {
+							s = api.ILCreateFromPath(s);
+							s.IsFileSystem; 
+							s = api.GetDisplayNameOf(s, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL).toLowerCase();
+						}
 						var db = {};
 						Addons.PathIcon.Icon[s] = db;
 						for (var j = 2; j--;) {
