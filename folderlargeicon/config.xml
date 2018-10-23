@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2018.10.20</MinVersion>
+    <pubDate>Tue, 23 Oct 2018 00:00:00 GMT</pubDate>
+    <Options>Common:5:5</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Folder large icon changer</Name>
+    <Description>Change folder large icon</Description>
+  </en>
+  <ja>
+    <Name>フォルダの大アイコン変更</Name>
+    <Description>フォルダの大アイコンを変更します</Description>
+  </ja>
+</TablacusExplorer>
