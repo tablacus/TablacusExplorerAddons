@@ -38,7 +38,7 @@ if (window.Addon == 1) {
 				} else if (api.IsWow64Process(api.GetCurrentProcess())) {
 					dir.push(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING).replace(/\s*\(x86\)$/i, ""));
 				}
-				dir.push(ssfCOMMONAPPDATA, fso.GetSpecialFolder(2).Path, "shell:libraries", ssfPERSONAL, "shell:downloads", ssfSTARTMENU, ssfPROGRAMS, ssfSTARTUP, ssfSENDTO, ssfLOCALAPPDATA, ssfAPPDATA, ssfFAVORITES, ssfRECENT, ssfHISTORY, ssfDESKTOPDIRECTORY, ssfCONTROLS, ssfTEMPLATES, ssfFONTS, ssfPRINTERS, ssfBITBUCKET);
+				dir.push(ssfCOMMONAPPDATA, fso.GetSpecialFolder(2).Path, "shell:libraries", ssfPERSONAL, "shell:downloads", ssfSTARTMENU, ssfPROGRAMS, ssfSTARTUP, ssfSENDTO, ssfLOCALAPPDATA, ssfAPPDATA, ssfFAVORITES, ssfRECENT, ssfHISTORY, ssfDESKTOPDIRECTORY, ssfCONTROLS, "shell:Common Administrative Tools", ssfTEMPLATES, ssfFONTS, ssfPRINTERS, ssfBITBUCKET);
 				for (var i = dir.length; i--;) {
 					try {
 						dir[i] = sha.NameSpace(dir[i]);
