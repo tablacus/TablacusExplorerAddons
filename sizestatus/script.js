@@ -18,9 +18,17 @@ if (window.Addon == 1) {
 			if (!FV) {
 				return;
 			}
-			var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
+			var pid = FV.FolderItem;
+			if (!pid) {
+				return;
+			}
+			for (var nDog = 99; !api.PathIsRoot(pid.Path) && nDog--;) {
+				var link = pid.ExtendedProperty("linktarget");
+				pid = link && api.ILCreateFromPath(link) || api.ILGetParent(pid) || api.ILCreateFromPath(0);
+			}
+			var strDrive = pid.Path.replace(/\\$/, "");
+
 			var nCount = FV.ItemCount(SVGIO_SELECTION);
-			var strDrive = fso.GetDriveName(path);
 			var SessionId = api.CRC32(nCount ? ExtractMacro(te, '%Selected%') : strDrive);
 			if (SessionId == Addons.SizeStatus.SessionId) {
 				return;
