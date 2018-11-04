@@ -22,14 +22,8 @@ if (window.Addon == 1) {
 			if (!pid) {
 				return;
 			}
-			for (var nDog = 99; !api.PathIsRoot(pid.Path) && nDog--;) {
-				var link = pid.ExtendedProperty("linktarget");
-				pid = link && api.ILCreateFromPath(link) || api.ILGetParent(pid) || api.ILCreateFromPath(0);
-			}
-			var strDrive = pid.Path.replace(/\\$/, "");
-
 			var nCount = FV.ItemCount(SVGIO_SELECTION);
-			var SessionId = api.CRC32(nCount ? ExtractMacro(te, '%Selected%') : strDrive);
+			var SessionId = api.CRC32(nCount ? ExtractMacro(te, '%Selected%') : pid.Path);
 			if (SessionId == Addons.SizeStatus.SessionId) {
 				return;
 			}
@@ -58,12 +52,10 @@ if (window.Addon == 1) {
 				Addons.SizeStatus.SessionId = SessionId;
 			}
 			if (api.UQuadCmp(nSize, 0) == 0 && !FV.FolderItem.Unavailable) {
-				try {
-					var oDrive = fso.GetDrive(strDrive);
-					if (oDrive.IsReady) {
-						s = strDrive + " " + api.StrFormatByteSize(oDrive.AvailableSpace);
-					}
-				} catch (e) {}
+				var oDrive = api.GetDiskFreeSpaceEx(pid.Path);
+				if (oDrive) {
+					s = (api.LoadString(hShell32, 9394) || api.LoadString(hShell32, 9307)) + " " + api.StrFormatByteSize(oDrive.FreeBytesOfAvailable);
+				}
 			}
 			if (!s && api.UQuadCmp(nSize, 0)) {
 				s = api.StrFormatByteSize(nSize);
