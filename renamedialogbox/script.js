@@ -1,15 +1,13 @@
 ﻿var Addon_Id = "renamedialogbox";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("KeyExec", true);
-		item.setAttribute("KeyOn", "List");
-		item.setAttribute("Key", "F2");
-		item.setAttribute("MouseOn", "List");
-	}
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("KeyExec", true);
+	item.setAttribute("KeyOn", "List");
+	item.setAttribute("Key", "F2");
+	item.setAttribute("MouseOn", "List");
 }
+
 if (window.Addon == 1) {
 	Addons.RenameDialogBox =
 	{
@@ -22,12 +20,21 @@ if (window.Addon == 1) {
 				if (Focused) {
 					if (api.GetAttributesOf(Focused, SFGAO_CANRENAME)) {
 						var s = api.GetDisplayNameOf(Focused, SHGDN_FOREDITING);
-						var r = InputDialog(s, s);
+						var r = s;
+						var bLoop = false;
+						for (;;) {
+							var r = InputDialog(s, r);
+							if (/[\\\/:,;\*\?"<>\|]/.test(r)) {
+								MessageBox(api.LoadString(hShell32, 4109), null, MB_ICONSTOP | MB_OK);
+							} else {
+								break;
+							}
+						};
 						if (r && s != r) {
 							try {
 								Focused.Name = r;
-							}
-							catch (e) {
+							} catch (e) {
+								MessageBox(api.LoadString(hShell32, 6020).replace("%1!ls!", api.sprintf(99, "0x%x", e.number)).replace("%2!ls!", s), null, MB_ICONSTOP | MB_OK);
 							}
 						}
 					}
@@ -46,7 +53,7 @@ if (window.Addon == 1) {
 			Addons.RenameDialogBox.nPos = api.LowPart(item.getAttribute("MenuPos"));
 			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
 			{
-				if (item && item.IsFileSystem) {
+				if (item && item.IsFileSystem && api.GetAttributesOf(item, SFGAO_CANRENAME)) {
 					api.InsertMenu(hMenu, Addons.RenameDialogBox.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.RenameDialogBox.strName);
 					ExtraMenuCommand[nPos] = Addons.RenameDialogBox.Exec;
 				}
@@ -61,7 +68,6 @@ if (window.Addon == 1) {
 		if (item.getAttribute("MouseExec")) {
 			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.RenameDialogBox.Exec, "Func");
 		}
-
 		AddTypeEx("Add-ons", "Rename Dialog Box...", Addons.RenameDialogBox.Exec);
 	}
 }
