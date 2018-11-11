@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.24</Version>
+    <Version>1.00</Version>
     <MinVersion>2018.11.11</MinVersion>
     <pubDate>Sun, 11 Nov 2018 00:00:00 GMT</pubDate>
-    <Options>Common:7,8,9:7</Options>
+    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Inner address bar</Name>
-    <Description>Address bar of every pane</Description>
+    <Name>Overlay label</Name>
+    <Description>Overlay label  * Require "Label"</Description>
   </en>
   <ja>
-    <Name>Inner アドレス バー</Name>
-    <Description>ペイン毎のアドレス バー</Description>
+    <Name>オーバーレイ ラベル</Name>
+    <Description>オーバーレイ ラベル ※"ラベル"が必要</Description>
   </ja>
 </TablacusExplorer>

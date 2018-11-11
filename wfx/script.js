@@ -148,17 +148,15 @@ Addons.WFX =
 
 	GetObjectEx: function (Path)
 	{
-		var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, "tablacus\\");
-		if (api.PathMatchSpec(Path, root + "*")) {
-			var ar = Path.replace(root, "").split("\\");
-			var dwSessionId = parseInt(ar[0], 16);
+		var dwSessionId = api.sscanf(Path, fso.BuildPath(fso.GetSpecialFolder(2).Path, "tablacus\\%llx"));
+		if (dwSessionId) {
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
 				var FV = cFV[i];
 				if (FV.SessionId == dwSessionId) {
 					var lib = Addons.WFX.GetObject(FV);
 					if (lib) {
-						lib.file = unescape(ar[1]);
+						lib.file = unescape(fso.GetFileName(Path));
 						return lib;
 					}
 				}
@@ -417,7 +415,7 @@ Addons.WFX =
 			Ctrl.NameFormat = 1;
 			var Items = te.FolderItems();
 			Addons.WFX.Connect(lib);
-			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
+			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(999, "tablacus\\%x", Ctrl.SessionId));
 			var wfd = {};
 			var hFind = lib.X.FsFindFirst(lib.path, wfd);
 			if (hFind != -1) {
@@ -553,6 +551,38 @@ Addons.WFX =
 				}
 				return S_OK;
 			}
+		}
+	},
+
+	SetName: function (pid, Name)
+	{
+		var lib = Addons.WFX.GetObjectEx(pid.Path);
+		if (lib && lib.X.FsRenMovFile) {
+			Addons.WFX.Connect(lib);
+			var wfd = api.Memory("WIN32_FIND_DATA");
+			api.SHGetDataFromIDList(pid, SHGDFIL_FINDDATA, wfd, wfd.Size);
+			var fn = fso.BuildPath(lib.path, lib.file);
+			var ri =
+			{
+				SizeLow: wfd.nFileSizeLow,
+				SizeHigh: wfd.nFileSizeHigh,
+				LastWriteTime: wfd.ftLastWriteTime,
+				Attr: wfd.dwFileAttributes
+			}
+			if (ri.Attr & FILE_ATTRIBUTE_DIRECTORY) {
+				ri.SizeLow = 0;
+				ri.SizeHigh = 0xFFFFFFFF;
+			}
+			var r = lib.X.FsRenMovFile(fn, fso.BuildPath(lib.path, Name), true, false, ri);
+			if (r == 0) {
+				Addons.WFX.ChangeNotify(fso.BuildPath(lib.root, lib.path));
+			} else {
+				setTimeout(function ()
+				{
+					Addons.WFX.ShowError(r, fn);
+				}, 99);
+			}
+			return r;
 		}
 	},
 
@@ -926,7 +956,7 @@ if (window.Addon == 1) {
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
 	{
 		if (Ctrl.Type <= CTRL_EB && Addons.WFX.IsHandle(Prev)) {
-			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
+			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(999, "tablacus\\%x", Ctrl.SessionId));
 			DeleteItem(root);
 		}
 	});
@@ -948,37 +978,14 @@ if (window.Addon == 1) {
 			if (lib && lib.X.FsRenMovFile) {
 				var Item = Ctrl.FocusedItem;
 				if (Item) {
-					var wfd = api.Memory("WIN32_FIND_DATA");
-					api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size);
-					var fn = unescape(wfd.cFileName);
-					if (fn != unescape(Name)) {
-						fn = fso.BuildPath(lib.path, fn);
-						var ri =
-						{
-							SizeLow: wfd.nFileSizeLow,
-							SizeHigh: wfd.nFileSizeHigh,
-							LastWriteTime: wfd.ftLastWriteTime,
-							Attr: wfd.dwFileAttributes
-						}
-						if (ri.Attr & FILE_ATTRIBUTE_DIRECTORY) {
-							ri.SizeLow = 0;
-							ri.SizeHigh = 0xFFFFFFFF;
-						}
-						var r = lib.X.FsRenMovFile(fn, fso.BuildPath(lib.path, unescape(Name)), true, false, ri);
-						setTimeout(function ()
-						{
-							if (r == 0) {
-								Ctrl.Refresh();
-							} else {
-								Addons.WFX.ShowError(r, fn);
-							}
-						}, 99);
-					}
+					Addons.WFX.SetName(Item, Name);
 				}
 				return 1;
 			}
 		}
 	}, true);
+
+	AddEvent("SetName", Addons.WFX.SetName);
 
 	AddEvent("CreateFolder", function (path)
 	{
@@ -998,7 +1005,7 @@ if (window.Addon == 1) {
 		var lib = Addons.WFX.GetObject(path);
 		if (lib) {
 			if (lib.X.FsPutFile) {
-				var sLocal = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\n%x", Math.random() * MAXINT));
+				var sLocal = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(999, "tablacus\\n%x", Math.random() * MAXINT));
 				fso.CreateTextFile(sLocal).Close();
 				if (lib.X.FsPutFile(sLocal, lib.path, 0) == 0) {
 					DeleteItem(sLocal);
@@ -1055,18 +1062,26 @@ if (window.Addon == 1) {
 	{
 		if (document.documentMode) {
 			var lib = Addons.WFX.GetObject(Ctrl);
-			if (lib && lib.X.FsExtractCustomIcon) {
-				var phIcon = [0];
-				var r = lib.X.FsExtractCustomIcon(lib.path + "\\", 1, phIcon);
-				if (r == 1 || r == 2) {
-					var image = te.GdiplusBitmap();
-					image.FromHICON(phIcon[0], BGColor);
-					if (r == 2) {
-						api.DestroyIcon(phIcon[0]);
+			if (lib) {
+				if (lib.X.FsExtractCustomIcon) {
+					var phIcon = [0];
+					var r = lib.X.FsExtractCustomIcon(lib.path + "\\", 1, phIcon);
+					if (r == 1 || r == 2) {
+						var image = te.WICBitmap().FromHICON(phIcon[0], BGColor);
+						if (r == 2) {
+							api.DestroyIcon(phIcon[0]);
+						}
+						return image.DataURI("image/png");
 					}
-					return image.DataURI("image/png");
 				}
 			}
+		}
+	});
+
+	AddEvent("AddItems", function (Items, pid)
+	{
+		if (api.ILIsEqual(pid, ssfDRIVES)) {
+			Items.AddItem("\\\\\\");
 		}
 	});
 
