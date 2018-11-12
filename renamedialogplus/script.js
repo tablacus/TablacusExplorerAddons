@@ -87,7 +87,7 @@ if (window.Addon == 1) {
 				MessageBox(api.LoadString(hShell32, 4109), null, MB_ICONSTOP | MB_OK);
 				return;
 			}
-			if (IsFileHideExt() && !dialogArguments.ResultsFolder) {
+			if (IsFileHideExt(Focused) && !dialogArguments.ResultsFolder) {
 				if (api.SHFileOperation(FO_RENAME, api.GetDisplayNameOf(Focused, SHGDN_FORPARSING), r, FOF_ALLOWUNDO, false)) {
 					return;
 				}
@@ -105,10 +105,6 @@ if (window.Addon == 1) {
 
 	IsFileHideExt = function (Item)
 	{
-		try {
-			return wsh.RegRead("HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\HideFileExt");
-		} catch (e) {
-			return false;
-		}
+		return api.StrCmpI(fso.GetExtensionName(api.GetDisplayNameOf(Item, SHGDN_FOREDITING)), fso.GetExtensionName(api.GetDisplayNameOf(Item, SHGDN_FORPARSING))) && IsExists(api.GetDisplayNameOf(Item, SHGDN_FORPARSING));
 	}
 }
