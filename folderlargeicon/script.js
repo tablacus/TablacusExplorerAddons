@@ -64,12 +64,9 @@ if (window.Addon == 1) {
 		});
 
 		if (api.IsAppThemed() && WINVER >= 0x600) {
-			AddEvent("Load", function ()
-			{
-				if (!Addons.ClassicStyle) {
-					Addons.FolderLargeIcon.fStyle = LVIS_CUT;
-				}
-			});
+			if (!Addons.ClassicStyle) {
+				Addons.FolderLargeIcon.fStyle = LVIS_CUT;
+			}
 		}
 	});
 }

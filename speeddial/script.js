@@ -1,4 +1,7 @@
-﻿if (window.Addon == 1) {
+﻿var Addon_Id = "speeddial";
+var item = GetAddonElement(Addon_Id);
+
+if (window.Addon == 1) {
 	Addons.SpeedDial =
 	{
 		SAVE: 512,
@@ -73,7 +76,7 @@
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{
 		if (Addons.SpeedDial.IsHandle(Path)) {
-			Ctrl.ENum = function (pid, Ctrl, fncb)
+			Ctrl.Enum = function (pid, Ctrl, fncb)
 			{
 				var keys = [];
 				var hash = {};
@@ -156,5 +159,17 @@
 		}
 	}, true);
 
-	HOME_PATH = Addons.SpeedDial.PATH;
+	if (!item.getAttribute("NoHome")) {
+		HOME_PATH = Addons.SpeedDial.PATH;
+	}
+	if (item.getAttribute("AddToMenu")) {
+		AddEvent("AddItems", function (Items, pid)
+		{
+			if (api.ILIsEqual(pid, ssfDRIVES)) {
+				Items.AddItem(Addons.SpeedDial.PATH);
+			}
+		});
+	}
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
