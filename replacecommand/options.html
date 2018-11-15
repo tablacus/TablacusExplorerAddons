@@ -1,35 +1,24 @@
-﻿<html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="MSThemeCompatible" content="Yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Tablcus Add-ons</title>
-    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
-    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="script.js">
-    </script>
-  </head>
-  <body onload="InitAddonOptions();">
-
-    <form name="F" style="display: inline;">
-      <div class="panel" style="display: block;">
-        /<label>Regular Expression</label>/<label>Replace text</label>/<label>Options</label>
-        <span style="float: right">
-          <input type="button" value="Browse..." onclick="RefX('re', true, this)" style="width: 128px" />
-        </span>
-        <textarea name="re" style="width: 100%; height: 400px">
-        </textarea>
-      </div>
-      <div style="float: right; padding: 2px 20px">
-        <input type="button" value="OK" class="ok" onclick="SetAddonOptions();" autofocus />
-        <input type="button" value="Cancel" class="cancel" onclick="window.close();" />
-      </div>
-      <input type="hidden" name="Set" value="1" />
-    </form>
-  </body>
-</html>
+﻿<label>Regular Expression</label>/<label>Replace text</label>/<label>Options</label>
+<span style="float: right">
+  <input type="button" value="Browse..." onclick="Addons.ReplaceCommand.BrowseFile1()" style="width: 128px" />
+</span>
+<textarea name="re" style="width: 100%;  height: 250pt; height: calc(100vh - 12em);">
+</textarea>
+<table style="width: 100%">
+  <tr>
+    <td style="vertical-align: middle; white-space: nowrap"><label>Path</label></td>
+    <td style="width: 100%"><input type="text" id="_file" style="width: 100%"></td>
+    <td><input type="button" value="..." onclick="Addons.ReplaceCommand.BrowseFile()"></td>
+  </tr>
+</table>
+<table style="width: 100%">
+    <tr>
+      <td style="vertical-align: middle; white-space: nowrap"><label>Verb</label></td>
+      <td style="width: 100%"><input type="text" id="_verb" value="default" style="width: 100%"></td>
+      <td><input type="button" value="..." onclick="Addons.ReplaceCommand.BrowseVerb(this)"></td>
+      <td><input type="button" value="Get" onclick="Addons.ReplaceCommand.Get()"></td>
+      <td><input type="button" value="Regular Expression" onclick="Addons.ReplaceCommand.SetRE()"></td>
+    <td><input type="button" value="Add" onclick="Addons.ReplaceCommand.Add()"></td>
+  </tr>
+</table>
+<input type="text" name="_aqs" style="width: 100%">
