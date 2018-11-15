@@ -11,12 +11,7 @@ Addons.ReplaceCommand =
 		var FV = GetFolderView();
 		var path = OpenDialog(fso.GetParentFolderName(document.F.elements["_file"].value) || FV.FolderItem.Path);
 		if (path) {
-			var s = document.F.re.value;
-			if (s.indexOf("$1") < 0) {
-				AddPath("re", path);
-			} else {
-				document.F.re.value = s.replace("$1", path);
-			}
+			document.F.elements["_aqs"].value = document.F.elements["_aqs"].value.replace("$1", path);
 		}
 	},
 

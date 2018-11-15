@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
+    <Version>1.03</Version>
     <MinVersion>2018.11.15</MinVersion>
     <pubDate>Thu, 15 Nov 2018 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
@@ -10,7 +10,7 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Replace Command</Name>
+    <Name>Replace command</Name>
     <Description>Replace the command with the regular expression.</Description>
   </en>
   <ja>
