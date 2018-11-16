@@ -5,7 +5,7 @@ if (!item.getAttribute("Set")) {
 	item.setAttribute("re", "/^(notepad\\.exe)/$1/i");
 }
 Addons.ReplaceCommand = {
-	lines: GetAddonOption("replacecommand", "re").split("\n")
+	lines: (GetAddonOption("replacecommand", "re") || "").split("\n")
 }
 
 if (window.Addon == 1) {

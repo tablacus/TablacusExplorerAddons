@@ -8,10 +8,13 @@ Addons.ReplaceCommand =
 {
 	BrowseFile1: function ()
 	{
-		var FV = GetFolderView();
-		var path = OpenDialog(fso.GetParentFolderName(document.F.elements["_file"].value) || FV.FolderItem.Path);
-		if (path) {
-			document.F.elements["_aqs"].value = document.F.elements["_aqs"].value.replace("$1", path);
+		var s = document.F.elements["_aqs"].value;
+		if (s.indexOf("$1") >= 0) {
+			var FV = GetFolderView();
+			var path = OpenDialog(fso.GetParentFolderName(document.F.elements["_file"].value) || FV.FolderItem.Path);
+			if (path) {
+				document.F.elements["_aqs"].value = s.replace("$1", path);
+			}
 		}
 	},
 
