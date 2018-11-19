@@ -6,17 +6,19 @@
 
 	AddEvent("SelectionChanged", function (Ctrl, uChange)
 	{
-		try {
+		if (Ctrl.Type <= CTRL_EB && Ctrl.Data) {
 			var Selected = Ctrl.SelectedItems();
 			if (Selected.Count == 0) {
 				setTimeout(function ()
 				{
-					Ctrl.Data.Selected = Ctrl.SelectedItems();
+					if (Ctrl.Data) {
+						Ctrl.Data.Selected = Ctrl.SelectedItems();
+					}
 				}, 99);
 				return;
 			}
 			Ctrl.Data.Selected = Selected;
-		} catch (e) {}
+		}
 	});
 
 	AddEvent("Sort", function (Ctrl)
