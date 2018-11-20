@@ -37,6 +37,26 @@ if (window.Addon == 1) {
 			return false;
 		}
 	};
+
+	AddEvent("Resize", function()
+	{
+		if (Addons.HideTitleBar.Enabled && api.IsZoomed(te.hwnd) && !document.msFullscreenElement) {
+			var rc = api.Memory("RECT");
+			api.GetWindowRect(te.hwnd, rc);
+			var pt = {x: (rc.left + rc.right) / 2, y: (rc.top + rc.bottom)};
+			if (!api.MonitorFromPoint(pt, MONITOR_DEFAULTTONULL)) {
+				var hMonitor = api.MonitorFromPoint(pt, MONITOR_DEFAULTTOPRIMARY);
+				var mi = api.Memory("MONITORINFOEX");
+				mi.cbSize = mi.Size;
+				api.GetMonitorInfo(hMonitor, mi);
+				var h = mi.rcWork.top + mi.rcWork.bottom - rc.top * 2;
+				if (h != rc.bottom - rc.top) {
+					api.MoveWindow(te.hwnd, rc.left, rc.top, rc.right - rc.Left, h, true);
+				}
+			}
+		}
+	});
+
 	AddEventId("AddonDisabledEx", Addon_Id, function ()
 	{
 		Addons.HideTitleBar.Enabled = false;
