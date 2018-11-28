@@ -306,39 +306,10 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Sort: function (Ctrl, pt)
+		SetSort: function (Ctrl, pt)
 		{
-			var FV = GetFolderView(Ctrl, pt);
-			if (!FV) {
-				return S_OK;
-			}
-			var Items = FV.Items();
-			var List = [];
-			for (var i = Items.Count; i--;) {
-				List.push([i, Addons.Badge.Get(api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL))]);
-			}
-			var bRev = FV.SortColumn == "" && !Addons.Badge.bRev;
-			List.sort(bRev ? function (a, b) { return api.StrCmpLogical(a[1], b[1]); } : function (b, a) { return api.StrCmpLogical(a[1], b[1]); });
-			Addons.Badge.bRev = bRev;
-
-			FV.Parent.LockUpdate();
-			try {
-				var ViewMode = api.SendMessage(FV.hwndList, LVM_GETVIEW, 0, 0);
-				if (ViewMode == 1 || ViewMode == 3) {
-					api.SendMessage(FV.hwndList, LVM_SETVIEW, 4, 0);
-				}
-				var FolderFlags = FV.FolderFlags;
-				FV.FolderFlags = FolderFlags | FWF_AUTOARRANGE;
-				FV.GroupBy = "System.Null";
-				var pt = api.Memory("POINT");
-				FV.GetItemPosition(Items.Item(0), pt);
-				for (var i in List) {
-					FV.SelectAndPositionItem(Items.Item(List[i][0]), 0, pt);
-				}
-				api.SendMessage(FV.hwndList, LVM_SETVIEW, ViewMode, 0);
-				FV.FolderFlags = FolderFlags;
-			} catch (e) {}
-			FV.Parent.UnlockUpdate(true);
+			(GetFolderView(Ctrl, pt) || {}).SortColumn = "Tablacus.Badge";
+			return S_OK;
 		},
 
 		SetSync: function (name, s)
@@ -614,6 +585,23 @@ if (window.Addon == 1) {
 		}
 	});
 
+	AddEvent("Sorting", function (Ctrl, Name)
+	{
+		if (/-?Tablacus\.Badge$/i.test(Name)) {
+			CustomSort(Ctrl, Addons.Badge.strName, /^-/.test(Name),
+				function (pid, FV)
+				{
+					return  Addons.Badge.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				},
+				function (a, b)
+				{
+					return api.StrCmpLogical(b[1], a[1]);
+				}
+			);
+			return true;
+		}
+	});
+
 	Addons.Badge.strName = item.getAttribute("MenuName");
 	if (!Addons.Badge.strName) {
 		var info = GetAddonInfo(Addon_Id);
@@ -657,8 +645,8 @@ if (window.Addon == 1) {
 				}
 
 				if (WINVER >= 0x600) {
-					api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 50690));
-					ExtraMenuCommand[nPos] = Addons.Badge.Sort;
+					api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 50690) + Addons.Badge.strName);
+					ExtraMenuCommand[nPos] = Addons.Badge.SetSort;
 				}
 
 				api.InsertMenuItem(hMenu, Addons.Badge.nPos, true, mii);

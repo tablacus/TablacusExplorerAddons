@@ -16,10 +16,10 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
-		Exec2: function (FV, FolderItem)
+		DoSort: function (FV, ar)
 		{
 			delete Addons.TotalFileSizeSort.cue[FV.Id];
-			if (!api.ILIsEqual(FV.FolderItem, FolderItem)) {
+			if (!api.ILIsEqual(FV.FolderItem, ar[0])) {
 				return S_OK;
 			}
 			var col = FV.Columns(1);
@@ -30,7 +30,6 @@ if (window.Addon == 1) {
 				FV.Columns = col + ' "System.TotalFileSize" -1';
 			}
 			var Items = FV.Items();
-			var List = [];
 			var wfd = api.Memory("WIN32_FIND_DATA");
 			var bYet = false;
 			for (var i = Items.Count; i--;) {
@@ -47,47 +46,29 @@ if (window.Addon == 1) {
 			}
 			if (bYet) {
 				if (FV.hwndList) {
-					Addons.TotalFileSizeSort.cue[FV.Id] = FolderItem;
+					Addons.TotalFileSizeSort.cue[FV.Id] = ar;
 				}
 				return S_OK;
 			}
-			for (var i = Items.Count; i--;) {
-				api.SHGetDataFromIDList(Items.Item(i), SHGDFIL_FINDDATA, wfd, wfd.Size);
-				var n = wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? FV.TotalFileSize[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL)] : Items.Item(i).ExtendedProperty("Size");
-				List.push([i, api.QuadPart(n)]);
-			}
-			if (!List.length) {
-				return S_OK;
-			}
-			List.sort(function (a, b)
-			{
-				return api.UQuadCmp(a[1], b[1]);
-			});
-			FV.Parent.LockUpdate();
-			try {
-				var ViewMode = api.SendMessage(FV.hwndList, LVM_GETVIEW, 0, 0);
-				if (ViewMode == 1 || ViewMode == 3) {
-					api.SendMessage(FV.hwndList, LVM_SETVIEW, 4, 0);
+			CustomSort(FV, "System.TotalFileSize", ar[1],
+				function (pid, FV)
+				{
+					var wfd = api.Memory("WIN32_FIND_DATA");
+					api.SHGetDataFromIDList(pid, SHGDFIL_FINDDATA, wfd, wfd.Size);
+					return wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? FV.TotalFileSize[api.GetDisplayNameOf(pid, SHGDN_FORPARSING | SHGDN_ORIGINAL)] : pid.ExtendedProperty("Size");
+				},
+				function (a, b)
+				{
+					return api.UQuadCmp(b[1], a[1]);
 				}
-				var FolderFlags = FV.FolderFlags;
-				FV.FolderFlags = FolderFlags | FWF_AUTOARRANGE;
-				FV.GroupBy = "System.Null";
-				var pt = api.Memory("POINT");
-				FV.GetItemPosition(Items.Item(0), pt);
-				for (var i in List) {
-					FV.SelectAndPositionItem(Items.Item(List[i][0]), 0, pt);
-				}
-				api.SendMessage(FV.hwndList, LVM_SETVIEW, ViewMode, 0);
-				FV.FolderFlags = FolderFlags;
-			} catch (e) {}
-			FV.Parent.UnlockUpdate(true);
+			);
 		}
 	};
 
 	AddEvent("StatusText", function (Ctrl, Text, iPart)
 	{
 		for (var i in Addons.TotalFileSizeSort.cue) {
-			Addons.TotalFileSizeSort.Exec2(te.Ctrl(CTRL_FV, i), Addons.TotalFileSizeSort.cue[i]);
+			Addons.TotalFileSizeSort.DoSort(te.Ctrl(CTRL_FV, i), Addons.TotalFileSizeSort.cue[i]);
 		}
 	});
 
@@ -96,15 +77,26 @@ if (window.Addon == 1) {
 		var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
 		var s = cColumns[iItem * 2];
 		if (s == "System.TotalFileSize" || (s == "System.Size" && api.GetKeyState(VK_SHIFT) < 0)) {
-			Addons.TotalFileSizeSort.Exec(Ctrl);
+			Ctrl.SortColumn = (Ctrl.SortColumn != '-System.TotalFileSize') ? '-System.TotalFileSize' : 'System.TotalFileSize';
 			return S_OK;
+		}
+	});
+
+	AddEvent("Sort", function (Ctrl)
+	{
+		var res = /^prop:(\-?System\.TotalFileSize);$/.exec(Ctrl.SortColumns);
+		if (res) {
+			setTimeout(function ()
+			{
+				Ctrl.SortColumn = res[1];
+			}, 99);
 		}
 	});
 
 	AddEvent("Sorting", function (Ctrl, Name)
 	{
-		if (/-?Tablacus\.TotalFileSize$/i.test(Name)) {
-			Addons.TotalFileSizeSort.Exec2(Ctrl, Ctrl.FolderItem);
+		if (/-?[Tablacus|System]\.TotalFileSize$/i.test(Name)) {
+			Addons.TotalFileSizeSort.DoSort(Ctrl, [Ctrl.FolderItem, /^-/.test(Name)]);
 			return true;
 		}
 	});

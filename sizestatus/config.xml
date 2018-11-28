@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2018.11.4</MinVersion>
-    <pubDate>Sun, 04 Nov 2018 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2018.11.28</MinVersion>
+    <pubDate>Wed, 28 Nov 2018 00:00:00 GMT</pubDate>
     <Options>Common:0,6:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>

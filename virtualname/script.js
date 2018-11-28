@@ -69,9 +69,13 @@ if (window.Addon == 1) {
 		{
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
-				var FV = cFV[i];
-				FV.VirtualName = PathMatchEx(FV.FolderItem.Path, s) ? te.Data.VirtualName : null;
+				ColumnsReplace(cFV[i], "Name", HDF_LEFT, Addons.VirtualName.ReplaceColumns);
 			}
+		},
+
+		ReplaceColumns: function (FV, pid, s)
+		{
+			return Addons.VirtualName.Get(pid);
 		},
 
 		SetSync: function (name, s)
@@ -136,7 +140,7 @@ if (window.Addon == 1) {
 		if (Addons.VirtualName.Portable || Installed0) {
 			Addons.VirtualName.Set('%Installed%', Installed1);
 		}
-		Addons.VirtualName.SetFilters(Addons.VirtualName.Filter);
+		Addons.VirtualName.SetFilters();
 	});
 
 	AddEvent("ChangeNotify", function (Ctrl, pidls)
@@ -171,15 +175,11 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("NavigateComplete", function (Ctrl)
+	AddEvent("ViewCreated", function (Ctrl)
 	{
-		Ctrl.VirtualName = PathMatchEx(Ctrl.FolderItem.Path, Addons.VirtualName.Filter) ? te.Data.VirtualName : null;
-		Ctrl.VirtualName = te.Data.VirtualName;
-	});
-
-	AddEventId("AddonDisabledEx", "virtualname", function ()
-	{
-		Addons.VirtualName.SetFilters("-");
+		if (Ctrl.FolderItem && PathMatchEx(Ctrl.FolderItem.Path, Addons.VirtualName.Filter)) {
+			ColumnsReplace(Ctrl, "Name", HDF_LEFT, Addons.VirtualName.ReplaceColumns);
+		}
 	});
 
 	Addons.VirtualName.strName = item.getAttribute("MenuName");

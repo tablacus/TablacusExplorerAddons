@@ -47,59 +47,6 @@ if (window.Addon == 1) {
 			if (nVerb) {
 				ExtraMenuCommand[nVerb](Ctrl, pt);
 			}
-		},
-
-		CalcSort: function (Ctrl, pt, strProp)
-		{
-			var FV = GetFolderView(Ctrl, pt);
-			if (!FV) {
-				return S_OK;
-			}
-			var Items = FV.Items();
-			var n, List = [], r = false;
-			strProp = strProp.replace(/Tablacus\./i, "");
-			var res = /^-(.*)/.exec(strProp);
-			if (res) {
-				r = true;
-				strProp = res[1];
-			}
-			for (var i = Items.Count; i--;) {
-				List.push([i, Items.Item(i).ExtendedProperty(strProp)]);
-			}
-			var fn;
-			if (/Name/i.test(strProp)) {
-				fn = function (a, b)
-				{
-					return api.StrCmpLogical(b[1], a[1]);
-				}
-			} else {
-				fn = function (a, b)
-				{
-					return (b[1] - a[1]);
-				}
-			}
-			List.sort(fn);
-			if (r) {
-				List = List.reverse();
-			}
-			FV.Parent.LockUpdate();
-			try {
-				var ViewMode = api.SendMessage(FV.hwndList, LVM_GETVIEW, 0, 0);
-				if (ViewMode == 1 || ViewMode == 3) {
-					api.SendMessage(FV.hwndList, LVM_SETVIEW, 4, 0);
-				}
-				var FolderFlags = FV.FolderFlags;
-				FV.FolderFlags = FolderFlags | FWF_AUTOARRANGE;
-				FV.GroupBy = "System.Null";
-				var pt = api.Memory("POINT");
-				FV.GetItemPosition(Items.Item(0), pt);
-				for (var i in List) {
-					FV.SelectAndPositionItem(Items.Item(List[i][0]), 0, pt);
-				}
-				api.SendMessage(FV.hwndList, LVM_SETVIEW, ViewMode, 0);
-				FV.FolderFlags = FolderFlags;
-			} catch (e) {}
-			FV.Parent.UnlockUpdate(true);
 		}
 	};
 
@@ -122,7 +69,32 @@ if (window.Addon == 1) {
 	AddEvent("Sorting", function (Ctrl, Name)
 	{
 		if (/-?Tablacus\.Name$|-?Tablacus\.Write$/i.test(Name)) {
-			Addons.MixedSort.CalcSort(Ctrl, null, Name);
+			var strProp = Name.replace(/Tablacus\./i, "");
+			var res = /^-(.*)/.exec(strProp);
+			if (res) {
+				strProp = res[1];
+			}
+			var fnAdd, fnComp;
+			if (/Name/i.test(strProp)) {
+				fnAdd = function (pid, FV)
+				{
+					return pid.ExtendedProperty("Name");
+				};
+				fnComp = function (a, b)
+				{
+					return api.StrCmpLogical(b[1], a[1]);
+				};
+			} else {
+				fnAdd = function (pid, FV)
+				{
+					return pid.ExtendedProperty("Write");
+				};
+				fnComp = function (a, b)
+				{
+					return (b[1] - a[1]);
+				};
+			}
+			CustomSort(Ctrl, strProp, res, fnAdd, fnComp);
 			return true;
 		}
 	});

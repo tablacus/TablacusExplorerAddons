@@ -54,7 +54,7 @@ if (window.Addon == 1) {
 			if (api.UQuadCmp(nSize, 0) == 0 && !FV.FolderItem.Unavailable) {
 				var oDrive = api.GetDiskFreeSpaceEx(pid.Path);
 				if (oDrive) {
-					s = (api.LoadString(hShell32, 9394) || api.LoadString(hShell32, 9307)) + " " + api.StrFormatByteSize(oDrive.FreeBytesOfAvailable);
+					s = api.PSGetDisplayName("{9B174B35-40FF-11D2-A27E-00C04FC30871} 2") + " " + api.StrFormatByteSize(oDrive.FreeBytesOfAvailable);
 				}
 			}
 			if (!s && api.UQuadCmp(nSize, 0)) {

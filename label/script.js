@@ -403,39 +403,10 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Sort: function (Ctrl, pt)
+		DoSort: function (Ctrl, pt, strProp)
 		{
-			var FV = GetFolderView(Ctrl, pt);
-			if (!FV) {
-				return S_OK;
-			}
-			var Items = FV.Items();
-			var List = [];
-			for (var i = Items.Count; i--;) {
-				List.push([i, Addons.Label.Get(api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL))]);
-			}
-			var bRev = FV.SortColumn == "" && !Addons.Label.bRev;
-			List.sort(bRev ? function (a, b) { return api.StrCmpLogical(a[1], b[1]); } : function (b, a) { return api.StrCmpLogical(a[1], b[1]); });
-			Addons.Label.bRev = bRev;
-
-			FV.Parent.LockUpdate();
-			try {
-				var ViewMode = api.SendMessage(FV.hwndList, LVM_GETVIEW, 0, 0);
-				if (ViewMode == 1 || ViewMode == 3) {
-					api.SendMessage(FV.hwndList, LVM_SETVIEW, 4, 0);
-				}
-				var FolderFlags = FV.FolderFlags;
-				FV.FolderFlags = FolderFlags | FWF_AUTOARRANGE;
-				FV.GroupBy = "System.Null";
-				var pt = api.Memory("POINT");
-				FV.GetItemPosition(Items.Item(0), pt);
-				for (var i in List) {
-					FV.SelectAndPositionItem(Items.Item(List[i][0]), 0, pt);
-				}
-				api.SendMessage(FV.hwndList, LVM_SETVIEW, ViewMode, 0);
-				FV.FolderFlags = FolderFlags;
-			} catch (e) {}
-			FV.Parent.UnlockUpdate(true);
+			(GetFolderView(Ctrl, pt) || {}).SortColumn = "System.Contact.Label";
+			return S_OK;
 		},
 
 		SetSync: function (name, s)
@@ -666,10 +637,36 @@ if (window.Addon == 1) {
 	{
 		var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
 		if (cColumns[iItem * 2] == "System.Contact.Label") {
-			(function (FV) { setTimeout(function () {
-				Addons.Label.Sort(FV, null);
-			}, 99);}) (Ctrl);
+			Ctrl.SortColumn = (Ctrl.SortColumn != 'System.Contact.Label') ? 'System.Contact.Label' : '-System.Contact.Label';
 			return S_OK;
+		}
+	});
+
+	AddEvent("Sort", function (Ctrl)
+	{
+		var res = /^prop:(\-?System\.Contact\.Label);$/.exec(Ctrl.SortColumns);
+		if (res) {
+			setTimeout(function ()
+			{
+				Ctrl.SortColumn = res[1];
+			}, 99);
+		}
+	});
+
+	AddEvent("Sorting", function (Ctrl, Name)
+	{
+		if (/-?System.Contact.Label$/i.test(Name)) {
+			CustomSort(Ctrl, 'System.Contact.Label', /^-/.test(Name),
+				function (pid, FV)
+				{
+					return  Addons.Label.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				},
+				function (a, b)
+				{
+					return api.StrCmpLogical(b[1], a[1]);
+				}
+			);
+			return true;
 		}
 	});
 
@@ -734,8 +731,8 @@ if (window.Addon == 1) {
 					}
 				}
 				if (WINVER >= 0x600) {
-					api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 50690));
-					ExtraMenuCommand[nPos] = Addons.Label.Sort;
+					api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 50690) + api.PSGetDisplayName("System.Contact.Label"));
+					ExtraMenuCommand[nPos] = Addons.Label.DoSort;
 				}
 				var mii2 = api.Memory("MENUITEMINFO");
 				mii2.cbSize = mii.Size;

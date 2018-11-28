@@ -412,8 +412,7 @@ Addons.WFX =
 	{
 		var lib =  Addons.WFX.GetObject(pid.Path);
 		if (Ctrl && lib) {
-			Ctrl.NameFormat = 1;
-			var Items = te.FolderItems();
+			var Items = api.CreateObject("FolderItems");
 			Addons.WFX.Connect(lib);
 			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(999, "tablacus\\%x", Ctrl.SessionId));
 			var wfd = {};
@@ -432,6 +431,13 @@ Addons.WFX =
 				lib.X.FsFindClose(hFind);
 			}
 			return Items;
+		}
+	},
+
+	ReplaceColumns: function (Ctrl, pid, s)
+	{
+		if (s.indexOf("%") >= 0) {
+			return unescape(s);
 		}
 	},
 
@@ -630,7 +636,7 @@ Addons.WFX =
 			} else {
 				i = (Addons.WFX.Cnt[0] * 100 + PercentDone) / Addons.WFX.Cnt[1];
 			}
-			Addons.WFX.Progress.SetTitle(Math.floor(i) + "%");
+			Addons.WFX.Progress.SetTitle(i.toFixed(1) + "%");
 			Addons.WFX.Progress.SetProgress(i, 100);
 			Addons.WFX.Progress.SetLine(3, ar.join(""), true);
 			return Addons.WFX.Progress.HasUserCancelled() ? 1 : 0;
@@ -961,6 +967,11 @@ if (window.Addon == 1) {
 		}
 	});
 
+	AddEvent("ViewCreated", function (Ctrl)
+	{
+		ColumnsReplace(Ctrl, "Name", HDF_LEFT, Addons.WFX.ReplaceColumns);
+	});
+
 	AddEvent("BeginLabelEdit", function (Ctrl)
 	{
 		if (Ctrl.Type <= CTRL_EB) {
@@ -1111,4 +1122,9 @@ if (window.Addon == 1) {
 
 	AddEvent("CloseView", Addons.WFX.CheckDisconnect);
 	AddEvent("ChangeView", Addons.WFX.CheckDisconnect);
+
+	var cFV = te.Ctrls(CTRL_FV);
+	for (var i in cFV) {
+		ColumnsReplace(cFV[i], "Name", HDF_LEFT, Addons.WFX.ReplaceColumns);
+	}
 }
