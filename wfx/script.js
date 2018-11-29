@@ -636,7 +636,7 @@ Addons.WFX =
 			} else {
 				i = (Addons.WFX.Cnt[0] * 100 + PercentDone) / Addons.WFX.Cnt[1];
 			}
-			Addons.WFX.Progress.SetTitle(i.toFixed(1) + "%");
+			Addons.WFX.Progress.SetTitle(i.toFixed(0) + "%");
 			Addons.WFX.Progress.SetProgress(i, 100);
 			Addons.WFX.Progress.SetLine(3, ar.join(""), true);
 			return Addons.WFX.Progress.HasUserCancelled() ? 1 : 0;
