@@ -33,7 +33,7 @@ if (window.Addon == 1) {
 		AddEvent("HandleIcon", function (Ctrl, pid)
 		{
 			if (Ctrl.hwndList && Ctrl.IconSize >= 32 && Addons.FolderLargeIcon.IsFolder(pid)) {
-				if (Addons.FolderLargeIcon.Icon) {
+				if (Addons.FolderLargeIcon.Icon && Addons.FolderLargeIcon.Icon.GetWidth) {
 					return true;
 				}
 			}
@@ -44,7 +44,7 @@ if (window.Addon == 1) {
 			var hList = Ctrl.hwndList;
 			if (hList && Ctrl.IconSize >= 32 && Addons.FolderLargeIcon.IsFolder(pid))  {
 				var image = Addons.FolderLargeIcon.Icon;
-				if (/object/i.test(typeof image)) {
+				if (image.GetWidth) {
 					var cl, fStyle, rc = api.Memory("RECT");
 					rc.Left = LVIR_ICON;
 					api.SendMessage(hList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
@@ -57,10 +57,8 @@ if (window.Addon == 1) {
 						fStyle = (state & LVIS_CUT) || api.GetAttributesOf(pid, SFGAO_HIDDEN) ? ILD_SELECTED : ILD_NORMAL;
 					}
 					image = GetThumbnail(image, Ctrl.IconSize * screen.logicalYDPI / 96, Ctrl.IconSize >= 32);
-					if (image) {
-						image.DrawEx(nmcd.hdc, rc.Left + (rc.Right - rc.Left - image.GetWidth()) / 2, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, cl, cl, fStyle);
-						return S_OK;
-					}
+					image.DrawEx(nmcd.hdc, rc.Left + (rc.Right - rc.Left - image.GetWidth()) / 2, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, cl, cl, fStyle);
+					return S_OK;
 				}
 			}
 		});
