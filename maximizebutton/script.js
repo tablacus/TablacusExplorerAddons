@@ -10,6 +10,11 @@ if (window.Addon == 1) {
 		{
 			api.SendMessage(te.hwnd, WM_SYSCOMMAND, api.IsZoomed(te.hwnd) ? SC_RESTORE : SC_MAXIMIZE, 0);
 			return S_OK;
+		},
+
+		Popup: function (o)
+		{
+			wsh.SendKeys("% ");
 		}
 	};
 
@@ -26,12 +31,12 @@ if (window.Addon == 1) {
 	if (src) {
 		src = '<img title="' + api.LoadString(hShell32, 9841) + '" src="' + EncodeSC(src) + '"';
 		if (h) {
-			h = h > 0 ? h + 'px' : EncodeSC(h);
+			h = Number(h) ? h + 'px' : EncodeSC(h);
 			src += ' width="' + h + '" height="' + h + '"';
 		}
 		src += '>';
 	} else {
 		src = '<span id="maximizebutton" style="font-family: marlett">&#x31;</span>';
 	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="return Addons.MaximizeButton.Exec(this)" oncontextmenu="PopupContextMenu(ssfDRIVES)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' ,src ,'</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.MaximizeButton.Exec(this)" oncontextmenu="Addons.MaximizeButton.Popup(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' ,src ,'</span>']);
 }
