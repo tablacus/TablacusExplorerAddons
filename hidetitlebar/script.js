@@ -18,10 +18,10 @@ if (window.Addon == 1) {
 			}
 			if (dwStyle != dwStyle0) {
 				api.SetWindowLongPtr(te.hWnd, GWL_STYLE, dwStyle);
-				if (!api.IsIconic(te.hwnd) && api.IsWindowVisible(te.hwnd)) {
-					api.ShowWindow(te.hwnd, SW_SHOWMINNOACTIVE);
-					api.ShowWindow(te.hwnd, SW_RESTORE);
-				}
+				var rc = api.Memory("RECT");
+				api.GetWindowRect(te.hwnd, rc);
+				api.MoveWindow(te.hwnd, rc.left, rc.top, rc.right - rc.Left, rc.bottom - rc.top - 1, false);
+				api.MoveWindow(te.hwnd, rc.left, rc.top, rc.right - rc.Left, rc.bottom - rc.top, false);
 			}
 			Addons.HideTitleBar.Resize();
 		},
@@ -57,6 +57,7 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("Resize", Addons.HideTitleBar.Resize);
+	AddEvent("Load", Addons.HideTitleBar.Set);
 
 	AddEventId("AddonDisabledEx", Addon_Id, function ()
 	{
@@ -94,5 +95,4 @@ if (window.Addon == 1) {
 		s = EncodeSC(Addons.HideTitleBar.strName);
 	}
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.HideTitleBar.Exec();" oncontextmenu="return Addons.HideTitleBar.Popup()" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
-	Addons.HideTitleBar.Set();
 }
