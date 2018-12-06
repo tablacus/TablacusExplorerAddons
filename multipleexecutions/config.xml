@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2018.12.5</MinVersion>
+    <pubDate>Thu, 06 Dec 2018 00:00:00 GMT</pubDate>
+    <Options>Common:5,6,7,8,9:5</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Multiple executions</Name>
+    <Description>Multiple executions</Description>
+  </en>
+  <ja>
+    <Name>複数起動</Name>
+    <Description>複数起動</Description>
+  </ja>
+</TablacusExplorer>
