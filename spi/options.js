@@ -90,7 +90,7 @@ function SetProp(bName)
 	var arProp = ["IsUnicode", "GetPluginInfo", "IsSupported", "GetPictureInfo", "GetPicture", "GetPreview", "GetArchiveInfo", "GetFileInfo", "GetFile", "ConfigurationDlg"];
 	var arHtml = [[], [], [], []];
 	for (var i in arProp) {
-		arHtml[i % 3].push('<input type="checkbox" ', SPI[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '<br / >');
+		arHtml[i % 3].push('<div style="white-space: nowrap"><input type="checkbox" ', SPI[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 	}
 	for (var i = 4; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");

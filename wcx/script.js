@@ -562,6 +562,6 @@ if (window.Addon == 1) {
 				}
 			}
 		}
-	});
+	}, true);
 
 }

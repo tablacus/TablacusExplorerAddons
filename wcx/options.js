@@ -95,7 +95,7 @@ function SetProp()
 	var arProp = ["IsUnicode", "OpenArchive", "ReadHeaderEx", "ProcessFile", "CloseArchive", "PackFiles", "DeleteFiles", "CanYouHandleThisFile", "ConfigurePacker", "SetChangeVolProc", "SetProcessDataProc", "PackSetDefaultParams"];
 	var arHtml = [[], [], [], []];
 	for (var i in arProp) {
-		arHtml[i % 2].push('<input type="checkbox" ', WCX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '<br / >');
+		arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', WCX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 	}
 	arHtml[2].push('64bit<br /><input type="text" value="', EncodeSC(ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + "64").replace(/\.u(wcx64)$/, ".$1"), '" style="width: 100%" readonly /><br />');
 	for (var i = 3; i--;) {

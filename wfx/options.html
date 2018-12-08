@@ -22,25 +22,27 @@
       <div class="panel" style="display: block;">
         <table style="width: 100%">
           <tr>
-            <td style="width: 12.5em; vatical-align: top">
-              <select name="List" size="19" style="width: 12.5em; height: 34em; height: calc(100vh - 5.7em); min-height: 16em" onclick="EditXEx(EditFS)" ondblclick="EditFS()">
+            <td style="width: 12.5em; vertical-align: top">
+              <select name="List" size="19" style="width: 12.5em; height: 34em; height: calc(100vh - 5.7em); min-height: 16em" onchange="EditXEx(EditFS)" ondblclick="EditFS()">
               </select>
             </td>
             <td valign="top">
-              <label>Name</label>
-              <br />
-              <input type="text" name="Name" style="width: 100%" />
-              <br />
-              <table style="width: 100%"><tr>
-                <td style="width: 100%; vertical-align: bottom"><label>Path</label> (wfx)</td>
-                <td><input type="button" value="Portable" title="Path" onclick="PortableX('Path')" /></td>
-                <td><input type="button" value="Browse..." title="Path" onclick="RefX('Path',0,0,1,'FS Plugin (wfx)|*.wfx;*.uwfx;*.wfx64')" /></td>
-              </tr></table>
-              <input type="text" name="Path" style="width: 100%" onchange="PathChanged()" />
-              <br /><br />
-              <label>Information</label>&emsp;<span id="ver"></span>
-              <table style="width: 100%"><tr><td id="prop0" style="width: 33%"></td><td id="prop1" style="width: 33%"></td><td id="prop2"></td></table>
-              <div id="prop3"></div>
+              <div style="height: 34em; height: calc(100vh - 5.7em); min-height: 16em; overflow: auto">
+                <label>Name</label>
+                <br />
+                <input type="text" name="Name" style="width: 100%" />
+                <br />
+                <table style="width: 100%"><tr>
+                  <td style="width: 100%; vertical-align: bottom"><label>Path</label> (wfx)</td>
+                  <td><input type="button" value="Portable" title="Path" onclick="PortableX('Path')" /></td>
+                  <td><input type="button" value="Browse..." title="Path" onclick="RefX('Path',0,0,1,'FS Plugin (wfx)|*.wfx;*.uwfx;*.wfx64')" /></td>
+                </tr></table>
+                <input type="text" name="Path" style="width: 100%" onchange="PathChanged()" />
+                <br />
+                <div id="prop2"></div>
+                <label>Information</label>&emsp;<span id="ver"></span>
+                <table style="width: 100%"><tr><td id="prop0" style="width: 50%"></td><td id="prop1" style="width: 50%"></td></table>
+              </div>
             </td>
           </tr>
         </table>
@@ -64,6 +66,7 @@
         <tr>
           <td style="width: 100%; white-space: nowrap">
             &nbsp;<input type="button" value="Master Password" onclick="SetMP()" />
+            &nbsp;<input type="checkbox" id="!ExSort" /><label for="!ExSort">@shell32.dll,-50690[Arrange by:]</label> <label for="!ExSort">@shell32.dll,-4131</label> <label for="!ExSort">Top</label> (*)
           </td>
           <td style="width: 100px; white-space: nowrap">
             <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />&nbsp;

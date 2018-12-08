@@ -1,7 +1,7 @@
 ﻿var AddonName = "WLX";
 var g_Chg = {List: false, Data: "List"};
 
-var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\wlx\\options.html"));
+var ado = OpenAdodbFromTextFile("addons\\wlx\\options.html");
 if (ado) {
 	SetTabContents(4, "General", ado.ReadText(adReadAll));
 	ado.Close();
@@ -93,7 +93,7 @@ SetProp = function (bName)
 	var arProp = ["IsUnicode", "ListLoad", "ListLoadNext", "ListCloseWindow", "ListGetDetectString", "ListSetDefaultParams", "ListGetPreviewBitmap"];
 	var arHtml = [[], [], [], []];
 	for (var i in arProp) {
-		arHtml[i % 2].push('<input type="checkbox" ', WLX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '<br / >');
+		arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', WLX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 	}
 	arHtml[2].push('64bit<br /><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + "64").replace(/\.u(wlx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
 	if (WLX.ListGetDetectString) {

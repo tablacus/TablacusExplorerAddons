@@ -19,63 +19,65 @@
   </head>
   <body>
     <form name="F" style="display: inline;">
-      <div class="panel" style="display: block;">
+      <div class="panel" style="display: block">
         <table width="100%">
           <tr>
             <td style="width: 10em" valign="top">
-              <select name="List" size="19" style="width: 10em; height: 33em; height: calc(100vh - 5.7em)" onclick="EditXEx(EditFS)" ondblclick="EditFS()">
+              <select name="List" size="19" style="width: 10em; height: 33em; height: calc(100vh - 5em)" onchange="EditXEx(EditFS)" ondblclick="EditFS()">
               </select>
             </td>
             <td valign="top">
-              <label>Name</label>
-              <br />
-              <input type="text" name="Name" style="width: 100%" />
-              <br />
-              <label>Path</label>
-              <br />
-              <input type="text" name="Path" style="width: 100%" onchange="SetProp();" />
-              <br />
-              <input type="button" value="Browse..." onclick="RefX('Path',0,0,1)" />
-              <input type="button" value="Portable" onclick="PortableX('Path')" />
-              <br />
-              <label>Filter</label>
-              <br />
-              <input type="text" name="Filter" style="width: 100%" />
-              <br />
-              <label>Extract</label>
-              <br />
-              <input type="text" name="Extract" style="width: 100%" />
-              <br />
-              <label>Add</label>
-              <br />
-              <input type="text" name="Add" style="width: 100%" />
-              <br />
-              <label>Delete</label>
-              <br />
-              <input type="text" name="Delete" style="width: 100%" />
-              <br />
-              <input type="button" value="Options..." onclick="ConfigDialog()" /><br />
-              <label>Information</label>&emsp;<span id="ver"></span>
-              <table style="width: 100%"><tr><td id="prop0" style="width: 33%"></td><td id="prop1" style="width: 33%"><td id="prop2"></td></table>
+              <div style="height: 33em; height: calc(100vh - 5em); overflow: auto">
+                <label>Name</label>
+                <br />
+                <input type="text" name="Name" style="width: 100%" />
+                <br />
+                <label>Path</label>
+                <br />
+                <input type="text" name="Path" style="width: 100%" onchange="SetProp();" />
+                <br />
+                <input type="button" value="Browse..." onclick="RefX('Path',0,0,1)" />
+                <input type="button" value="Portable" onclick="PortableX('Path')" />
+                <br />
+                <label>Filter</label>
+                <br />
+                <input type="text" name="Filter" style="width: 100%" />
+                <br />
+                <label>Extract</label>
+                <br />
+                <input type="text" name="Extract" style="width: 100%" />
+                <br />
+                <label>Add</label>
+                <br />
+                <input type="text" name="Add" style="width: 100%" />
+                <br />
+                <label>Delete</label>
+                <br />
+                <input type="text" name="Delete" style="width: 100%" />
+                <br />
+                <input type="button" value="Options..." onclick="ConfigDialog()" /><br />
+                <label>Information</label>&emsp;<span id="ver"></span>
+                <table style="width: 100%"><tr><td id="prop0" style="width: 50%"></td><td id="prop1" style="width: 50%"></table>
+              </div>
             </td>
           </tr>
         </table>
-        <table width="97%">
-          <tr>
-            <td>
-              <input type="button" value="Remove" onclick="RemoveX('List')" />
-              <input type="button" value="Up" onclick="MoveX('List', -1)" />
-              <input type="button" value="Down" onclick="MoveX('List', 1)" />
-              <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
-            </td>
-            <td align="right">
-              <input type="button" value="Add" onclick="AddX('List', ReplaceFS)" />
-              <input type="button" value="Replace" onclick="ReplaceFS()" />
-            </td>
-          </tr>
-        </table>
-        <!-- -->
       </div>
+      <table width="97%">
+        <tr>
+          <td>
+            <input type="button" value="Remove" onclick="RemoveX('List')" />
+            <input type="button" value="Up" onclick="MoveX('List', -1)" />
+            <input type="button" value="Down" onclick="MoveX('List', 1)" />
+            <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
+          </td>
+          <td align="right">
+            <input type="button" value="Add" onclick="AddX('List', ReplaceFS)" />
+            <input type="button" value="Replace" onclick="ReplaceFS()" />
+          </td>
+        </tr>
+      </table>
+      <!-- -->
       <table width="100%">
         <tr>
           <td style="width: 100%; white-space: nowrap">

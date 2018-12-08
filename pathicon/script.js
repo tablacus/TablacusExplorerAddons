@@ -131,6 +131,7 @@ if (window.Addon == 1) {
 					rc.Left = nmcd.dwItemSpec;
 					api.SendMessage(hTree, TVM_GETITEMRECT, true, rc);
 					image.DrawEx(nmcd.hdc, rc.Left - cx - 3 * screen.logicalYDPI / 96, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, GetSysColor(COLOR_WINDOW), CLR_NONE, ILD_NORMAL);
+					return S_OK;
 				}
 			}
 		}
@@ -148,7 +149,7 @@ if (window.Addon == 1) {
 	{
 		if (Addons.PathIcon.bSave) {
 			try {
-				var ado = new ActiveXObject(api.ADBSTRM);
+				var ado = api.CreateObject("ads");
 				ado.CharSet = "utf-8";
 				ado.Open();
 				Addons.PathIcon.ENumCB(function (path, s, l)

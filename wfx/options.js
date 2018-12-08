@@ -24,6 +24,14 @@ function LoadFS()
 					g_MP = "";
 				}
 			}
+			var b = true;
+			items = xml.getElementsByTagName("Conf");
+			if (items.length) {
+				if (items[0].getAttribute("NoExSort")) {
+					b = false;
+				}
+			}
+			document.getElementById("!ExSort").checked = b;			
 		}
 		EnableSelectTag(g_x.List);
 	}
@@ -46,6 +54,11 @@ function SaveFS()
 			var item = xml.createElement("MP");
 			item.text = api.base64_encode(ED(g_MP));
 			item.setAttribute("CRC", api.CRC32(g_MP));
+			root.appendChild(item);
+		}
+		if (!document.getElementById("!ExSort").checked) {
+			var item = xml.createElement("Conf");
+			item.setAttribute("NoExSort", true);
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
@@ -99,12 +112,12 @@ function SetProp(bName)
 		document.F.Name.value = WFX.FsGetDefRootName ? WFX.FsGetDefRootName() : fso.GetBaseName(document.F.Path.value);
 	}
 	var arProp = ["IsUnicode", "FsInit", "FsFindFirst", "FsFindNext", "FsFindClose", "FsSetCryptCallback", "FsGetDefRootName", "FsGetFile", "FsPutFile", "FsRenMovFile", "FsDeleteFile", "FsRemoveDir", "FsMkDir", "FsExecuteFile", "FsSetAttr", "FsSetTime", "FsDisconnect", "FsExtractCustomIcon", "FsSetDefaultParams"];
-	var arHtml = [[], [], [], []];
+	var arHtml = [[], [], []];
 	for (var i in arProp) {
-		arHtml[i % 3].push('<input type="checkbox" ', WFX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '<br / >');
+		arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', WFX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 	}
-	arHtml[3].push('64bit<br /><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
-	for (var i = 4; i--;) {
+	arHtml[2].push('64bit<br /><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
+	for (var i = arHtml.length; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
 	var ar = [fso.GetFileName(dllPath)];
@@ -123,7 +136,7 @@ function SetMP()
 	if ((typeof s) == "string" && s != g_MP && confirmOk()) {
 		var dbfile = fso.BuildPath(te.Data.DataFolder, "config\\wfx_" + (wnw.ComputerName.toLowerCase()) + ".bin");
 		try {
-			var ado = new ActiveXObject(api.ADBSTRM);
+			var ado = api.CreateObject("ads");;
 			ado.Type = adTypeBinary;
 			ado.Open();
 			ado.LoadFromFile(Addons.WFX.dbfile);
@@ -135,7 +148,7 @@ function SetMP()
 		g_MP = s;
 		if (body) {
 			try {
-				var ado = new ActiveXObject(api.ADBSTRM);
+				var ado = api.CreateObject("ads");
 				ado.Type = adTypeBinary;
 				ado.Open();
 				ado.Write(api.CryptProtectData(body, g_MP));

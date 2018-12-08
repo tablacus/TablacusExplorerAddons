@@ -1,4 +1,4 @@
-var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\filtericon\\options.html"));
+var ado = OpenAdodbFromTextFile("addons\\filtericon\\options.html");
 if (ado) {
 	SetTabContents(4, "General", ado.ReadText(adReadAll));
 	ado.Close();
@@ -10,7 +10,7 @@ var fnConfig = fso.BuildPath(te.Data.DataFolder, "config\\filtericon.tsv");
 function SaveIC(mode)
 {
 	if (g_Chg[mode]) {
-		var ado = new ActiveXObject(api.ADBSTRM);
+		var ado = api.CreateObject("ads");
 		ado.CharSet = "utf-8";
 		ado.Open();
 		for (var i = 0; i < g_x.List.length; i++) {

@@ -97,20 +97,20 @@ function LoadDll()
 
 function SetProp()
 {
-	var arHtml = [[], [], []];
+	var arHtml = [[], []];
 	var DLL = LoadDll();
 	if (DLL.CAL) {
 		var CAL = DLL.CAL;
 		var arProp = ["Exec", "GetVersion", "GetRunning", "CheckArchive", "ConfigDialog", "OpenArchive", "CloseArchive", "FindFirst", "FindNext"];
 		for (var i in arProp) {
-			arHtml[i % 3].push('<input type="checkbox" ', CAL[arProp[i]] ? "checked" : "", ' onclick="return false;">', DLL.Name, arProp[i].replace(/^Exec$/, ""), '<br / >');
+			arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', CAL[arProp[i]] ? "checked" : "", ' onclick="return false;">', DLL.Name, arProp[i].replace(/^Exec$/, ""), '</div>');
 		}
 		arHtml[0].push('<input type="checkbox" ', CAL.IsUnicode ? "checked" : "", ' onclick="return false;">Unicode<br / >');
 		if (DLL.Unbypass) {
 			arHtml[1].push('<input type="checkbox" checked onclick="return false;">Unbypass<br / >');
 		}
 	}
-	for (var i = 3; i--;) {
+	for (var i = arHtml.length; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
 	var ar = [fso.GetFileName(DLL.Path)];

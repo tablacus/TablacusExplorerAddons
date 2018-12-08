@@ -120,9 +120,13 @@ Addons.WFX =
 				Addons.WFX.MP = "";
 			}
 		}
+		items = Addons.WFX.xml.getElementsByTagName("Conf");
+		if (items.length) {
+			Addons.WFX.NoExSort = items[0].getAttribute("NoExSort");
+		}
 
 		try {
-			var ado = new ActiveXObject(api.ADBSTRM);
+			var ado = api.CreateObject("ads");
 			ado.Type = adTypeBinary;
 			ado.Open();
 			ado.LoadFromFile(Addons.WFX.dbfile);
@@ -1067,7 +1071,7 @@ if (window.Addon == 1) {
 				}
 			}
 		}
-	});
+	}, true);
 
 	AddEvent("GetIconImage", function (Ctrl, BGColor)
 	{
@@ -1109,7 +1113,7 @@ if (window.Addon == 1) {
 				}
 			}
 			try {
-				var ado = new ActiveXObject(api.ADBSTRM);
+				var ado = api.CreateObject("ads");
 				ado.Type = adTypeBinary;
 				ado.Open();
 				ado.Write(api.CryptProtectData(ar.join("\n"), Addons.WFX.MP));
@@ -1122,6 +1126,38 @@ if (window.Addon == 1) {
 
 	AddEvent("CloseView", Addons.WFX.CheckDisconnect);
 	AddEvent("ChangeView", Addons.WFX.CheckDisconnect);
+
+	AddEvent("ColumnClick", function (Ctrl, iItem)
+	{
+		if (Ctrl.Type <= CTRL_EB && !Addons.WFX.NoExSort) {
+			if (Addons.WFX.IsHandle(Ctrl)) {
+				var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
+				var s = cColumns[iItem * 2];
+				if (api.PathMatchSpec(s, "System.ItemNameDisplay;System.DateModified")) {
+					var s1 = Ctrl.SortColumns;
+					var s2 = 'prop:' + s + ';System.ItemTypeText;';
+					var s3 = s2.replace(":", ":-");
+					if (s1 != s2 && s1 != s3) {
+						Ctrl.SortColumns = (s1 == s2) ? s3 : s2;
+						return S_OK;
+					}
+				}
+			}
+		}
+	});
+
+	AddEvent("Sort", function (Ctrl)
+	{
+		if (Ctrl.Type <= CTRL_EB && !Addons.WFX.NoExSort) {
+			var s1 = Ctrl.SortColumns;
+			if (/^prop:\-?System\.ItemNameDisplay;$|^prop:\-?System\.DateModified;$/.test(s1)) {
+				setTimeout(function ()
+				{
+					Ctrl.SortColumns = s1 + 'System.ItemTypeText;';
+				}, 99);
+			}
+		}
+	});
 
 	var cFV = te.Ctrls(CTRL_FV);
 	for (var i in cFV) {
