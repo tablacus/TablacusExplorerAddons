@@ -1149,12 +1149,14 @@ if (window.Addon == 1) {
 	AddEvent("Sort", function (Ctrl)
 	{
 		if (Ctrl.Type <= CTRL_EB && !Addons.WFX.NoExSort) {
-			var s1 = Ctrl.SortColumns;
-			if (/^prop:\-?System\.ItemNameDisplay;$|^prop:\-?System\.DateModified;$/.test(s1)) {
-				setTimeout(function ()
-				{
-					Ctrl.SortColumns = s1 + 'System.ItemTypeText;';
-				}, 99);
+			if (Addons.WFX.IsHandle(Ctrl)) {
+				var s1 = Ctrl.SortColumns;
+				if (/^prop:\-?System\.ItemNameDisplay;$|^prop:\-?System\.DateModified;$/.test(s1)) {
+					setTimeout(function ()
+					{
+						Ctrl.SortColumns = s1 + 'System.ItemTypeText;';
+					}, 99);
+				}
 			}
 		}
 	});
