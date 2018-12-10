@@ -6,7 +6,7 @@ if (window.Addon == 1) {
 	{
 		Grab: function ()
 		{
-			if (event.button == 0 && !api.IsZoomed(te.hwnd)) {
+			if (event.button < 2 && !api.IsZoomed(te.hwnd)) {
 				Addons.GrabBar.pt = api.Memory("POINT");
 				api.GetCursorPos(Addons.GrabBar.pt);
 				api.SetCapture(te.hwnd);
