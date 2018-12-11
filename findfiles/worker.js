@@ -52,7 +52,7 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 			} else if (api.PathMatchSpec(wfd.cFileName, mask1)) {
 				if (length1) {
 					bAdd = false;
-					var ado = te.CreateObject(api.ADBSTRM);
+					var ado = api.CreateObject("ads");
 					var charset = "_autodetect_all";
 					try {
 						ado.CharSet = "iso-8859-1";

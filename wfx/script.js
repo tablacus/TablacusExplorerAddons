@@ -790,8 +790,8 @@ if (window.Addon == 1) {
 	AddEvent("BeginDrag", function (Ctrl)
 	{
 		if (Addons.WFX.IsHandle(Ctrl)) {
-			var pdwEffect = { 0: DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK };
-			api.SHDoDragDrop(Ctrl.hwndView, Ctrl.SelectedItems(), Ctrl, pdwEffect[0], pdwEffect, true);
+			var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
+			api.SHDoDragDrop(null, Ctrl.SelectedItems(), Ctrl, pdwEffect[0], pdwEffect, true);
 			return false;
 		}
 	});
