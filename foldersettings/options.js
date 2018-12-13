@@ -8,12 +8,12 @@ GetCurrentSetting = function (bForce)
 	var path = api.GetDisplayNameOf(FV.FolderItem, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 	var s = ["FV.CurrentViewMode(", FV.CurrentViewMode, ",", FV.IconSize, ");\n"];
 	s.push("FV.Columns='", FV.Columns(nFormat), "';\n");
+	s.push("FV.GroupBy='", FV.GroupBy, "';\n");
 	if ((FV.SortColumns || "").split(/;/).length > 2 && !document.F.XP.checked && FV.SortColumn != "System.Null") {
 		s.push("FV.SortColumns='", FV.SortColumns, "';\n");
 	} else {
 		s.push("FV.SortColumn='", FV.SortColumn(nFormat), "';\n");
 	}
-	s.push("FV.GroupBy='", FV.GroupBy, "';\n");
 	s = s.join("");
 	if (bForce || confirmOk([path, s].join("\n"))) {
 		document.F.Filter.value = path;

@@ -1,5 +1,4 @@
 ﻿var AddonName = "WLX";
-var g_Chg = {List: false, Data: "List"};
 
 var ado = OpenAdodbFromTextFile("addons\\wlx\\options.html");
 if (ado) {
@@ -24,25 +23,6 @@ LoadLS = function ()
 			}
 		}
 		EnableSelectTag(g_x.List);
-	}
-}
-
-SaveLS = function ()
-{
-	if (g_Chg.List) {
-		var xml = CreateXml();
-		var root = xml.createElement("TablacusExplorer");
-		var o = document.E.List;
-		for (var i = 0; i < o.length; i++) {
-			var item = xml.createElement("Item");
-			var a = o[i].value.split(g_sep);
-			item.setAttribute("Name", a[0]);
-			item.setAttribute("Path", a[1]);
-			item.setAttribute("Fit", a[2]);
-			root.appendChild(item);
-		}
-		xml.appendChild(root);
-		SaveXmlEx(AddonName.toLowerCase() + ".xml", xml);
 	}
 }
 
@@ -118,15 +98,21 @@ document.title = info.Name;
 LoadLS();
 SetOnChangeHandler();
 
-AddEventEx(window, "beforeunload", function ()
+SaveLocation = function ()
 {
-	if (g_nResult == 2 || !g_bChanged) {
-		return;
+	if (g_Chg.List) {
+		var xml = CreateXml();
+		var root = xml.createElement("TablacusExplorer");
+		var o = document.E.List;
+		for (var i = 0; i < o.length; i++) {
+			var item = xml.createElement("Item");
+			var a = o[i].value.split(g_sep);
+			item.setAttribute("Name", a[0]);
+			item.setAttribute("Path", a[1]);
+			item.setAttribute("Fit", a[2]);
+			root.appendChild(item);
+		}
+		xml.appendChild(root);
+		SaveXmlEx(AddonName.toLowerCase() + ".xml", xml);
 	}
-	if (ConfirmX(true, ReplaceLS)) {
-		SaveLS();
-		TEOk();
-		return;
-	}
-	event.returnValue = GetText('Close');
-});
+}
