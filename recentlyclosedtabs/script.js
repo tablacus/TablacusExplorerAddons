@@ -44,21 +44,31 @@ if (window.Addon == 1) {
 		CreateMenu: function ()
 		{
 			var hMenu = api.CreatePopupMenu();
+			var db = {};
 			if (Addons.UndoCloseTab && Addons.UndoCloseTab.Get) {
+				var seed = new Date().getTime();
 				for (var i = 0; i < Addons.UndoCloseTab.db.length; i++) {
 					var Items = Addons.UndoCloseTab.Get(i);
-					var mii = api.Memory("MENUITEMINFO");
-					mii.cbSize = mii.Size;
-					mii.fMask = MIIM_STRING | MIIM_ID | MIIM_BITMAP;
-					AddMenuIconFolderItem(mii, Items.Item(Items.Index));
-					var s = [api.GetDisplayNameOf(Items.Item(Items.Index), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)];
-					if (Items.Count > 1) {
-						s.unshift(Items.Count)
-						s.push("...");
+					s = [seed];
+					for (var j = Items.length; j--;) {
+						s.unshift(api.PathQuoteSpaces(api.GetDisplayNameOf(Items.Item(j), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL)));
 					}
-					mii.dwTypeData = s.join(" ");
-					mii.wId = i + this.nCommand;
-					api.InsertMenuItem(hMenu, MAXINT, true, mii);
+					s = api.CRC32(s.join(" "));
+					var Item = Items.Item(Items.Index);
+					if (Item && !db[s]) {
+						db[s] = 1;
+						var mii = api.Memory("MENUITEMINFO");
+						mii.cbSize = mii.Size;
+						mii.fMask = MIIM_STRING | MIIM_ID | MIIM_BITMAP;
+						AddMenuIconFolderItem(mii, Item);
+						var s = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+						if (Items.Count > 1) {
+							s += "...\t" + Items.Count;
+						}
+						mii.dwTypeData = s;
+						mii.wId = i + this.nCommand;
+						api.InsertMenuItem(hMenu, MAXINT, true, mii);
+					}
 				}
 			}
 			return hMenu;
@@ -100,9 +110,14 @@ if (window.Addon == 1) {
 		}
 		AddTypeEx("Add-ons", "Recently closed tabs", Addons.RecentlyClosedTabs.Exec);
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon") || "icon:dsuiext.dll,0," + (h <= 16 ? 16 : h <= 24 ? 24 : h <= 32 ? 32 : 48);
-	s = '<img title="' + Addons.RecentlyClosedTabs.strName + '" src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px" />';
+	var h = item.getAttribute("IconSize") || window.IconSize;
+	if (h == Number(h)) {
+		h += 'px';
+	} else {
+		h = EncodeSC(h);
+	}
+	var s = item.getAttribute("Icon") || "icon:dsuiext.dll,0";
+	s = '<img title="' + Addons.RecentlyClosedTabs.strName + '" src="' + EncodeSC(s) + '" style="width: ' + h + '; height: ' + h + '" />';
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.RecentlyClosedTabs.Exec(this);" oncontextmenu="Addons.RecentlyClosedTabs.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
 } else {
 	EnableInner();
