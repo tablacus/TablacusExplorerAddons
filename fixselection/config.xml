@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2018.11.15</MinVersion>
-    <pubDate>Mon, 19 Nov 2018 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2018.12.14</MinVersion>
+    <pubDate>Fri, 14 Dec 2018 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Fix selection on sort</Name>
-    <Description>Fix selection on sort. (It becomes heavy when there are many selections.)</Description>
+    <Name>Fix selection on sort and update dir</Name>
+    <Description>Fix selection on sort and update directory. (It becomes heavy when there are many selections on fix.)</Description>
   </en>
   <ja>
-    <Name>並べ替え時の選択を修正</Name>
-    <Description>並べ替え時の選択を修正 (選択が多いと重くなります)</Description>
+    <Name>並べ替え時等の選択を修正</Name>
+    <Description>並べ替え時や更新時の選択を修正 (修正時に選択が多いと重くなります)</Description>
   </ja>
 </TablacusExplorer>
