@@ -11,6 +11,7 @@
 					for (var i = Selected.Count; i--;) {
 						FV.SelectItem(Selected.Item(i), SVSI_SELECT);
 					}
+					delete FV.Data.Selected;
 				}
 			}
 		},
@@ -58,10 +59,11 @@
 
 	AddEvent("ChangeNotify", function (Ctrl, pidls, wParam, lParam)
 	{
-		if (pidls.lEvent == SHCNE_UPDATEDIR) {
+		if (pidls.lEvent & (SHCNE_UPDATEDIR | SHCNE_UPDATEITEM)) {
+			var pid = pidls.lEvent & SHCNE_UPDATEITEM ? api.ILRemoveLastID(pidls[0]) : pidls[0];
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
-				Addons.FixSelection.ChangeNotify(cFV[i], pidls[0]);
+				Addons.FixSelection.ChangeNotify(cFV[i], pid);
 			}
 		}
 	});
