@@ -4,6 +4,7 @@
 
 		Exec: function (FV)
 		{
+			delete Addons.FixSelection.tid[FV.Id];
 			if (FV.Type == CTRL_SB && FV.Data) {
 				var Selected = FV.Data.Selected;
 				if (Selected && Selected.Count != FV.ItemCount(SVGIO_SELECTION)) {
@@ -16,19 +17,16 @@
 			}
 		},
 
-		ChangeNotify: function (FV, pid)
+		ChangeNotify: function (FV)
 		{
-			if (FV.Type == CTRL_SB && FV.Data) {
-				if (FV.Data.Selected && api.ILIsEqual(FV.FolderItem, pid)) {
-					if (Addons.FixSelection.tid[FV.Id]) {
-						clearTimeout(Addons.FixSelection.tid[FV.Id]);
-					}
-					Addons.FixSelection.tid[FV.Id] = setTimeout(function ()
-					{
-						delete Addons.FixSelection.tid[FV.Id];
-						Addons.FixSelection.Exec(FV);
-					}, 99)
+			if (FV.Type == CTRL_SB && FV.Data && FV.Data.Selected) {
+				if (Addons.FixSelection.tid[FV.Id]) {
+					clearTimeout(Addons.FixSelection.tid[FV.Id]);
 				}
+				Addons.FixSelection.tid[FV.Id] = setTimeout(function ()
+				{
+					Addons.FixSelection.Exec(FV);
+				}, 99)
 			}
 		}
 	}
@@ -59,12 +57,9 @@
 
 	AddEvent("ChangeNotify", function (Ctrl, pidls, wParam, lParam)
 	{
-		if (pidls.lEvent & (SHCNE_UPDATEDIR | SHCNE_UPDATEITEM)) {
-			var pid = pidls.lEvent & SHCNE_UPDATEITEM ? api.ILRemoveLastID(pidls[0]) : pidls[0];
-			var cFV = te.Ctrls(CTRL_FV);
-			for (var i in cFV) {
-				Addons.FixSelection.ChangeNotify(cFV[i], pid);
-			}
+		var cFV = te.Ctrls(CTRL_FV);
+		for (var i in cFV) {
+			Addons.FixSelection.ChangeNotify(cFV[i]);
 		}
 	});
 }
