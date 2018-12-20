@@ -1,4 +1,4 @@
-﻿var item = GetAddonElement("clipfolder");
+var item = GetAddonElement("clipfolder");
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Filter", "*.cfu");
 	item.setAttribute("MenuExec", 1);
@@ -144,16 +144,13 @@ if (window.Addon == 1) {
 				return;
 			}
 			var path = Addons.ClipFolder.GetPath(Ctrl);
-			var ado = te.CreateObject(api.ADBSTRM);
+			var ado = api.CreateObject("ads");
 			ado.CharSet = "utf-8";
 			ado.Open();
 			ado.LoadFromFile(path);
 			while (!ado.EOS) {
 				var s = ado.ReadText(adReadLine);
 				if (s && !/^\s*#/.test(s)) {
-					if (!/^[A-Z]:\\|^\\/i.test(s) && !/:/.test(s)) {
-						s = fso.BuildPath(fso.GetParentFolderName(path), s);
-					}
 					if (Items) {
 						Items.AddItem(s);
 					}
@@ -171,7 +168,7 @@ if (window.Addon == 1) {
 				return;
 			}
 			var path = Addons.ClipFolder.GetPath(Ctrl);
-			var ado = te.CreateObject(api.ADBSTRM);
+			var ado = api.CreateObject("ads");
 			ado.CharSet = "utf-8";
 			ado.Open();
 			for (var i in db) {
