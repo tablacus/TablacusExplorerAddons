@@ -1,10 +1,15 @@
-﻿var AddonName = "WCX";
-var g_Chg = {List: false, Data: "List"};
+var AddonName = "WCX";
 
-function LoadFS()
+var ado = OpenAdodbFromTextFile("addons\\" + AddonName.toLowerCase() + "\\options.html");
+if (ado) {
+	SetTabContents(4, "General", ado.ReadText(adReadAll));
+	ado.Close();
+}
+
+LoadFS = function ()
 {
 	if (!g_x.List) {
-		g_x.List = document.F.List;
+		g_x.List = document.E.List;
 		g_x.List.length = 0;
 		var nSelectSize = g_x.List.size;
 		var xml = OpenXml(AddonName.toLowerCase() + ".xml", false, false);
@@ -21,12 +26,12 @@ function LoadFS()
 	}
 }
 
-function SaveFS()
+SaveFS = function ()
 {
 	if (g_Chg.List) {
 		var xml = CreateXml();
 		var root = xml.createElement("TablacusExplorer");
-		var o = document.F.List;
+		var o = document.E.List;
 		for (var i = 0; i < o.length; i++) {
 			var item = xml.createElement("Item");
 			var a = o[i].value.split(g_sep);
@@ -40,19 +45,19 @@ function SaveFS()
 	}
 }
 
-function EditFS()
+EditFS = function ()
 {
 	if (g_x.List.selectedIndex < 0) {
 		return;
 	}
 	var a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
-	document.F.Name.value = a[0];
-	document.F.Path.value = a[1];
-	document.F.Filter.value = a[2];
+	document.E.Name.value = a[0];
+	document.E.Path.value = a[1];
+	document.E.Filter.value = a[2];
 	SetProp();
 }
 
-function ReplaceFS()
+ReplaceFS = function ()
 {
 	ClearX();
 	if (g_x.List.selectedIndex < 0) {
@@ -60,44 +65,46 @@ function ReplaceFS()
 		EnableSelectTag(g_x.List);
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
-	o = document.F.Type;
-	SetData(sel, [document.F.Name.value, document.F.Path.value, document.F.Filter.value]);
+	o = document.E.Type;
+	SetData(sel, [document.E.Name.value, document.E.Path.value, document.E.Filter.value]);
 	g_Chg.List = true;
 }
 
-function PathChanged()
+PathChanged = function ()
 {
-	var re = /^(.*)64$/.exec(document.F.Path.value);
+	var re = /^(.*)64$/.exec(document.E.Path.value);
 	if (re) {
-		document.F.Path.value = re[1];
+		document.E.Path.value = re[1];
 	}
-	if (document.F.Name.value === "") {
-		document.F.Name.value = fso.GetBaseName(document.F.Path.value);
-	}
+	document.E.Name.value = fso.GetBaseName(document.E.Path.value);
 	SetProp();
 }
 
-function LoadDll()
+LoadDll = function ()
 {
 	var twcxPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\wcx\\twcx", api.sizeof("HANDLE") * 8, ".dll"].join(""));
 	return {
 		X: api.DllGetClassObject(twcxPath, "{56297D71-E778-4dfd-8678-6F4079A2BC50}"),
-		Path: (ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1")
+		Path: (ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1"),
+		WCXPATH: twcxPath
 	};
 }
 
-function SetProp()
+SetProp = function ()
 {
 	var DLL = LoadDll();
 	if (DLL.X) {
 		var WCX = DLL.X.open(DLL.Path) || {};
+	}
+	if (!WCX) {
+		return;
 	}
 	var arProp = ["IsUnicode", "OpenArchive", "ReadHeaderEx", "ProcessFile", "CloseArchive", "PackFiles", "DeleteFiles", "CanYouHandleThisFile", "ConfigurePacker", "SetChangeVolProc", "SetProcessDataProc", "PackSetDefaultParams"];
 	var arHtml = [[], [], [], []];
 	for (var i in arProp) {
 		arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', WCX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 	}
-	arHtml[2].push('64bit<br /><input type="text" value="', EncodeSC(ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + "64").replace(/\.u(wcx64)$/, ".$1"), '" style="width: 100%" readonly /><br />');
+	arHtml[2].push('64bit<br /><input type="text" value="', EncodeSC(ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + "64").replace(/\.u(wcx64)$/, ".$1"), '" style="width: 100%" readonly /><br />');
 	for (var i = 3; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
@@ -111,36 +118,32 @@ function SetProp()
 	document.getElementById("ver").innerHTML = ar.join(" ");
 }
 
-function ConfigDialog()
+ConfigDialog = function ()
 {
 	var DLL = LoadDll();
 	if (!DLL.X) {
-		MessageBox(api.LoadString(hShell32, 8720).replace(/%1[!ls]*/, twcxPath) , TITLE, MB_OK);
+		MessageBox(api.LoadString(hShell32, 8720).replace(/%1[!ls]*/, DLL.WCXPATH) , TITLE, MB_OK);
 		return;
 	}
 	var WCX = DLL.X.open(DLL.Path);
 	if (!WCX) {
-		MessageBox(api.LoadString(hShell32, 8720).replace(/%1[!ls]*/, DLL.Path) , TITLE, MB_OK);
+		if (DLL.Path) {
+			MessageBox(api.LoadString(hShell32, 8720).replace(/%1[!ls]*/, DLL.Path) , TITLE, MB_OK);
+		}
 		return;
 	}
 	WCX.ConfigurePacker(api.GetWindowLongPtr(api.GetWindow(document), GWLP_HWNDPARENT));
 }
 
-ApplyLang(document);
-var info = GetAddonInfo(AddonName.toLowerCase());
-document.title = info.Name;
 LoadFS();
 SetOnChangeHandler();
 
-AddEventEx(window, "beforeunload", function ()
+SaveLocation = function ()
 {
-	if (g_nResult == 2 || !g_bChanged) {
-		return;
+	if (g_bChanged) {
+		ReplaceFS();
 	}
-	if (ConfirmX(true, ReplaceFS)) {
+	if (g_Chg.List) {
 		SaveFS();
-		TEOk();
-		return;
 	}
-	event.returnValue = GetText('Close');
-});
+};

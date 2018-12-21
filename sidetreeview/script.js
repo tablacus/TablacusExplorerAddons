@@ -90,9 +90,9 @@ if (window.Addon == 1) {
 		if (Addons.TreeView) {
 			return;
 		}
-		SetGestureExec("Tree", "1", function ()
+		SetGestureExec("Tree", "1", function (Ctrl, pt)
 		{
-			var Item = Ctrl.HitTest(pt);
+			var Item = Ctrl.SelectedItem;
 			if (Item) {
 				var FV = Ctrl.FolderView;
 				if (!api.ILIsEqual(FV.FolderItem, Item)) {
@@ -105,9 +105,9 @@ if (window.Addon == 1) {
 			return S_OK;
 		}, "Func", true);
 
-		SetGestureExec("Tree", "3", function ()
+		SetGestureExec("Tree", "3", function (Ctrl, pt)
 		{
-			var Item = Ctrl.HitTest(pt);
+			var Item = Ctrl.SelectedItem;
 			if (Item) {
 				setTimeout(function ()
 				{
@@ -145,12 +145,12 @@ if (window.Addon == 1) {
 					return S_OK;
 				}
 			});
-	
+
 			AddEvent("Finalize", function ()
 			{
 				api.SHChangeNotifyDeregister(Addons.SideTreeView.uRegisterId);
 			});
-	
+
 			Addons.SideTreeView.WM = TWM_APP++;
 			Addons.SideTreeView.uRegisterId = api.SHChangeNotifyRegister(te.hwnd, SHCNRF_InterruptLevel | SHCNRF_NewDelivery, SHCNE_MKDIR | SHCNE_MEDIAINSERTED | SHCNE_DRIVEADD | SHCNE_NETSHARE | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RENAMEFOLDER | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT | SHCNE_UPDATEDIR, Addons.SideTreeView.WM, ssfDESKTOP, true);
 		}

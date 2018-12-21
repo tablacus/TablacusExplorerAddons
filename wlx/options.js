@@ -1,6 +1,6 @@
-﻿var AddonName = "WLX";
+var AddonName = "WLX";
 
-var ado = OpenAdodbFromTextFile("addons\\wlx\\options.html");
+var ado = OpenAdodbFromTextFile("addons\\" + AddonName.toLowerCase() + "\\options.html");
 if (ado) {
 	SetTabContents(4, "General", ado.ReadText(adReadAll));
 	ado.Close();
@@ -92,14 +92,14 @@ SetProp = function (bName)
 	document.getElementById("ver").innerHTML = ar.join(" ");
 }
 
-ApplyLang(document);
-var info = GetAddonInfo(AddonName.toLowerCase());
-document.title = info.Name;
 LoadLS();
 SetOnChangeHandler();
 
 SaveLocation = function ()
 {
+	if (g_bChanged) {
+		ReplaceLS();
+	}
 	if (g_Chg.List) {
 		var xml = CreateXml();
 		var root = xml.createElement("TablacusExplorer");

@@ -1,4 +1,4 @@
-﻿var Addon_Id = "wfx";
+var Addon_Id = "wfx";
 var item = GetAddonElement(Addon_Id);
 
 Addons.WFX =
@@ -1165,4 +1165,6 @@ if (window.Addon == 1) {
 	for (var i in cFV) {
 		ColumnsReplace(cFV[i], "Name", HDF_LEFT, Addons.WFX.ReplaceColumns);
 	}
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

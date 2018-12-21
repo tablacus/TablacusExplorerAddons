@@ -1,11 +1,21 @@
-﻿var AddonName = "WFX";
-var g_Chg = {List: false, Data: "List"};
+var AddonName = "WFX";
+var g_MP0 = "";
 var g_MP = "";
 
-function LoadFS()
+var ado = OpenAdodbFromTextFile("addons\\" + AddonName.toLowerCase() + "\\options.html");
+if (ado) {
+	SetTabContents(3, "General", ado.ReadText(adReadAll));
+	ado.Close();
+}
+var s = [];
+s.push('<p><input form="E" type="checkbox" id="!ExSort" /><label for="!ExSort">@shell32.dll,-50690[Arrange by:]</label> <label for="!ExSort">@shell32.dll,-4131</label> <label for="!ExSort">Top</label> (*)</p>');
+s.push('<p><input form="E" type="button" value="Master Password" onclick="SetMP()" /></p>');
+SetTabContents(4, "Advanced", s);
+
+LoadFS = function ()
 {
 	if (!g_x.List) {
-		g_x.List = document.F.List;
+		g_x.List = document.E.List;
 		g_x.List.length = 0;
 		var nSelectSize = g_x.List.size;
 		var xml = OpenXml(AddonName.toLowerCase() + ".xml", false, false);
@@ -23,6 +33,7 @@ function LoadFS()
 				if (items[0].getAttribute("CRC") != api.CRC32(g_MP)) {
 					g_MP = "";
 				}
+				g_MP0 = g_MP;
 			}
 			var b = true;
 			items = xml.getElementsByTagName("Conf");
@@ -31,18 +42,18 @@ function LoadFS()
 					b = false;
 				}
 			}
-			document.getElementById("!ExSort").checked = b;			
+			document.getElementById("!ExSort").checked = b;
 		}
 		EnableSelectTag(g_x.List);
 	}
 }
 
-function SaveFS()
+SaveFS = function ()
 {
 	if (g_Chg.List) {
 		var xml = CreateXml();
 		var root = xml.createElement("TablacusExplorer");
-		var o = document.F.List;
+		var o = document.E.List;
 		for (var i = 0; i < o.length; i++) {
 			var item = xml.createElement("Item");
 			var a = o[i].value.split(g_sep);
@@ -63,21 +74,44 @@ function SaveFS()
 		}
 		xml.appendChild(root);
 		SaveXmlEx(AddonName.toLowerCase() + ".xml", xml);
+		if (g_MP != g_MP0) {
+			var dbfile = fso.BuildPath(te.Data.DataFolder, "config\\wfx_" + (wnw.ComputerName.toLowerCase()) + ".bin");
+			try {
+				var ado = api.CreateObject("ads");;
+				ado.Type = adTypeBinary;
+				ado.Open();
+				ado.LoadFromFile(dbfile);
+				var body = api.CryptUnprotectData(ado.Read(adReadAll), g_MP0, true);
+				ado.Close();
+			} catch (e) {
+				body = "";
+			}
+			if (body) {
+				try {
+					var ado = api.CreateObject("ads");
+					ado.Type = adTypeBinary;
+					ado.Open();
+					ado.Write(api.CryptProtectData(body, g_MP));
+					ado.SaveToFile(dbfile, adSaveCreateOverWrite);
+					ado.Close();
+				} catch (e) {}
+			}
+		}
 	}
 }
 
-function EditFS()
+EditFS = function ()
 {
 	if (g_x.List.selectedIndex < 0) {
 		return;
 	}
 	var a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
-	document.F.Name.value = a[0];
-	document.F.Path.value = a[1];
+	document.E.Name.value = a[0];
+	document.E.Path.value = a[1];
 	SetProp();
 }
 
-function ReplaceFS()
+ReplaceFS = function ()
 {
 	ClearX();
 	if (g_x.List.selectedIndex < 0) {
@@ -85,38 +119,38 @@ function ReplaceFS()
 		EnableSelectTag(g_x.List);
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
-	o = document.F.Type;
-	SetData(sel, [document.F.Name.value, document.F.Path.value]);
+	o = document.E.Type;
+	SetData(sel, [document.E.Name.value, document.E.Path.value]);
 	g_Chg.List = true;
 }
 
-function PathChanged()
+PathChanged = function ()
 {
-	var re = /^(.*)64$/.exec(document.F.Path.value);
+	var re = /^(.*)64$/.exec(document.E.Path.value);
 	if (re) {
-		document.F.Path.value = re[1];
+		document.E.Path.value = re[1];
 	}
 	SetProp(true);
 }
 
-function SetProp(bName)
+SetProp = function (bName)
 {
 	var WFX;
-	var dllPath = (ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
+	var dllPath = (ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
 	var twfxPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\wfx\\twfx", api.sizeof("HANDLE") * 8, ".dll"].join(""));
 	var DLL = api.DllGetClassObject(twfxPath, "{5396F915-5592-451c-8811-87314FC0EF11}");
 	if (DLL) {
 		WFX = DLL.open(dllPath) || {};
 	}
 	if (bName) {
-		document.F.Name.value = WFX.FsGetDefRootName ? WFX.FsGetDefRootName() : fso.GetBaseName(document.F.Path.value);
+		document.E.Name.value = WFX.FsGetDefRootName ? WFX.FsGetDefRootName() : fso.GetBaseName(document.E.Path.value);
 	}
 	var arProp = ["IsUnicode", "FsInit", "FsFindFirst", "FsFindNext", "FsFindClose", "FsSetCryptCallback", "FsGetDefRootName", "FsGetFile", "FsPutFile", "FsRenMovFile", "FsDeleteFile", "FsRemoveDir", "FsMkDir", "FsExecuteFile", "FsSetAttr", "FsSetTime", "FsDisconnect", "FsExtractCustomIcon", "FsSetDefaultParams"];
 	var arHtml = [[], [], []];
 	for (var i in arProp) {
 		arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', WFX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 	}
-	arHtml[2].push('64bit<br /><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
+	arHtml[2].push('64bit<br /><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
 	for (var i = arHtml.length; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
@@ -130,38 +164,16 @@ function SetProp(bName)
 	document.getElementById("ver").innerHTML = ar.join(" ");
 }
 
-function SetMP()
+SetMP = function ()
 {
 	var s = MainWindow.InputDialog("Master Password", "");
 	if ((typeof s) == "string" && s != g_MP && confirmOk()) {
-		var dbfile = fso.BuildPath(te.Data.DataFolder, "config\\wfx_" + (wnw.ComputerName.toLowerCase()) + ".bin");
-		try {
-			var ado = api.CreateObject("ads");;
-			ado.Type = adTypeBinary;
-			ado.Open();
-			ado.LoadFromFile(Addons.WFX.dbfile);
-			var body = api.CryptUnprotectData(ado.Read(adReadAll), g_MP, true);
-			ado.Close();
-		} catch (e) {
-			body = "";
-		}
 		g_MP = s;
-		if (body) {
-			try {
-				var ado = api.CreateObject("ads");
-				ado.Type = adTypeBinary;
-				ado.Open();
-				ado.Write(api.CryptProtectData(body, g_MP));
-				ado.SaveToFile(Addons.WFX.dbfile, adSaveCreateOverWrite);
-				ado.Close();
-			} catch (e) {}
-		}
-		Addons.WFX.bSave = false;
-		g_Chg.List = g_bChanged = true;
+		g_Chg.List = true;
 	}
 }
 
-function ED(s)
+ED = function (s)
 {
 	var ar = s.split("").reverse();
 	for (var i in ar) {
@@ -170,21 +182,16 @@ function ED(s)
 	return ar.join("");
 }
 
-ApplyLang(document);
-var info = GetAddonInfo(AddonName.toLowerCase());
-document.title = info.Name;
 LoadFS();
 SetOnChangeHandler();
 
-AddEventEx(window, "beforeunload", function ()
+SaveLocation = function ()
 {
-	if (g_nResult == 2 || !g_bChanged) {
-		return;
+	if (g_bChanged) {
+		ReplaceFS();
 	}
-	if (ConfirmX(true, ReplaceFS)) {
+	if (g_Chg.List) {
 		SaveFS();
-		TEOk();
-		return;
 	}
-	event.returnValue = GetText('Close');
-});
+};
+
