@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2018.12.22</MinVersion>
+    <pubDate>Sun, 23 Dec 2018 00:00:00 GMT</pubDate>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+  </General>
+  <en>
+    <Name>No edit labels</Name>
+    <Description>No edit labels</Description>
+  </en>
+  <ja>
+    <Name>名前の編集禁止</Name>
+    <Description>名前の編集禁止</Description>
+  </ja>
+</TablacusExplorer>
