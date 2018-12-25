@@ -136,7 +136,7 @@ if (window.Addon == 1) {
 		var hFont = CreateFont(lf);
 		var hfontOld = api.SelectObject(hmdc, hFont);
 		rc.Top = -w / 4;
-		api.DrawText(hmdc, "▼", -1, rc, DT_CENTER);
+		api.DrawText(hmdc, "\u25bc", -1, rc, DT_CENTER);
 		api.SelectObject(hmdc, hfontOld);
 		api.DeleteDC(hmdc);
 		api.SelectObject(hmdc, hOld);
