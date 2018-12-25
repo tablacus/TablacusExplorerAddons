@@ -1,4 +1,4 @@
-﻿var Addon_Id = "hotbutton";
+var Addon_Id = "hotbutton";
 
 var item = GetAddonElement(Addon_Id);
 
@@ -6,8 +6,9 @@ if (window.Addon == 1) {
 	Addons.HotButton =
 	{
 		rc: api.Memory("RECT"),
+		Select: item.getAttribute("Select"),
 
-		IsHot: function (nmcd, hList, pt)
+		IsHot: function (nmcd, hList)
 		{
 			if (nmcd.uItemState & CDIS_HOT) {
 				return true;
@@ -62,6 +63,9 @@ if (window.Addon == 1) {
 					{
 						var Items = Ctrl.Items();
 						var Item = Items.Item(iItem);
+						if (Addons.HotButton.Select) {
+							Ctrl.SelectItem(Item, SVSI_SELECT | (api.GetKeyState(VK_CONTROL) < 0 ? 0 :SVSI_DESELECTOTHERS));
+						}
 						var FolderItem = FolderMenu.Open(Item, pt.x, pt.y, "*", 1);
 						if (FolderItem) {
 							FolderMenu.Invoke(FolderItem);
@@ -101,7 +105,7 @@ if (window.Addon == 1) {
 				item.pszText = api.Memory("WCHAR", 260);
 				item.cchTextMax = 260;
 				item.iItem = iItem;
-				api.SendMessage(hList, 0x104B, 0, item);
+				api.SendMessage(hList, LVM_GETITEM, 0, item);
 				rc.Right += api.SendMessage(hList, LVM_GETSTRINGWIDTH, 0, item.pszText) + 4;
 			}
 		}
@@ -141,5 +145,6 @@ if (window.Addon == 1) {
 		api.ReleaseDC(te.hwnd, hdc);
 	}
 } else {
+	SetTabContents(0, "General", '<label><input type="checkbox" id="Select" />Select</label>');
 	ChangeForm([["__IconSize", "style/display", "none"]]);
 }

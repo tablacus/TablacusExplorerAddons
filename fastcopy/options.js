@@ -4,12 +4,12 @@ var arChecks = ["CopyStart", "MoveStart", "DeleteStart", "DiffDriveOnly"];
 function InitOptionsZ()
 {
 	ApplyLang(document);
-
-	var path = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), 'FastCopy\\FastCopy.exe');
-	if (!fso.FileExists(path)) {
-		var path2 = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILESx86, SHGDN_FORPARSING), 'FastCopy\\FastCopy.exe');
-		if (fso.FileExists(path2)) {
-			path = path2;
+	var arPath = [wsh.ExpandEnvironmentStrings("%USERPROFILE%"), api.GetDisplayNameOf(ssfPROGRAMFILESx86, SHGDN_FORPARSING), api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), wsh.ExpandEnvironmentStrings("%USERPROFILE%")];
+	var path;
+	for (var i = arPath.length; i--;) {
+		path = fso.BuildPath(arPath[i], 'FastCopy\\FastCopy.exe');
+		if (!i || fso.FileExists(path)) {
+			break;
 		}
 	}
 	document.getElementById("defalut_path").title = path;

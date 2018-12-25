@@ -1,4 +1,4 @@
-﻿var Addon_Id = "favbar";
+var Addon_Id = "favbar";
 var Default = "ToolBar4Center";
 
 if (window.Addon == 1) {
@@ -42,7 +42,7 @@ if (window.Addon == 1) {
 					}
 					var o = document.getElementById("_favbar" + i);
 					var pt = GetPos(o, true);
-					pt.y += o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
+					pt.y += o.offsetHeight;
 					MakeMenus(hMenu, null, arMenu, items, te, pt);
 					AdjustMenuBreak(hMenu);
 					AddEvent("ExitMenuLoop", function () {
@@ -139,22 +139,24 @@ if (window.Addon == 1) {
 					}
 					var img = '';
 					var icon = item.getAttribute("Icon");
-					var height = String(GetAddonOption("favbar", "Size")).replace(/\D/, "") || window.IconSize || 24;
-					var sh = (height ? ' style="height:' + height + 'px"' : '');
-					if (icon) {
-						img = '<img src="' + EncodeSC(api.PathUnquoteSpaces(ExtractMacro(te, icon))) + '"' + sh + '>';
-					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
-						var path = Addons.FavBar.GetPath(items, i);
-						var pidl = api.ILCreateFromPath(path);
-						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
-							var res = /"([^"]*)"/.exec(path) || /([^ ]*)/.exec(path);
-							if (res) {
-								pidl = api.ILCreateFromPath(res[1]);
+					if (icon != "-") {
+						var height = (item.getAttribute("Height") * screen.logicalYDPI / 96) || String(GetAddonOption("favbar", "Size")).replace(/\D/, "") || window.IconSize;
+						var sh = (height ? ' style="height:' + height + 'px"' : '');
+						if (icon) {
+							img = '<img src="' + EncodeSC(api.PathUnquoteSpaces(ExtractMacro(te, icon))) + '"' + sh + '>';
+						} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
+							var path = Addons.FavBar.GetPath(items, i);
+							var pidl = api.ILCreateFromPath(path);
+							if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
+								var res = /"([^"]*)"/.exec(path) || /([^ ]*)/.exec(path);
+								if (res) {
+									pidl = api.ILCreateFromPath(res[1]);
+								}
 							}
+							img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '">';
+						} else if (strFlag == "open") {
+							img = '<img src="' + MakeImgSrc("icon:shell32.dll,3", 0, false, api.GetSystemMetrics(SM_CYSMICON)) + '">';
 						}
-						img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '">';
-					} else if (strFlag == "open") {
-						img = '<img src="' + MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16) + '">';
 					}
 					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.FavBar.Click(' + i + ')" onmousedown="Addons.FavBar.Down('
  : 'onmousedown="Addons.FavBar.Open(');
