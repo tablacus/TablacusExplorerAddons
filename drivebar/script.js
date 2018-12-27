@@ -1,4 +1,4 @@
-﻿var Addon_Id = "drivebar";
+var Addon_Id = "drivebar";
 var Default = "ToolBar1Right";
 
 if (window.Addon == 1) {
@@ -30,8 +30,8 @@ if (window.Addon == 1) {
 		}
 
 	};
-
-	AddEvent("DeviceChanged", function (Ctrl)
+	
+	function updateDeviceList(Ctrl)
 	{
 		var icon = [53, 7, 8, 9, 11, 12];
 		var image = te.WICBitmap();
@@ -70,7 +70,10 @@ if (window.Addon == 1) {
 			}
 		}
 		document.getElementById("drivebar").innerHTML = arDrive.join("");
-	});
+	}
+	
+	AddEvent("AppMessage", updateDeviceList);
+	AddEvent("DeviceChanged", updateDeviceList);
 
 	SetAddon(Addon_Id, Default, '<span id="drivebar"></span>');
 }
