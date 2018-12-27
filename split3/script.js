@@ -1,6 +1,7 @@
 ﻿var Addon_Id = "split3";
 var Default = "ToolBar1Right";
 
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Split3 =
 	{
@@ -116,6 +117,16 @@ if (window.Addon == 1) {
 			return TC;
 		}
 	};
-
-	SetAddon(Addon_Id, Default, '<span class="button" onclick="Addons.Split3.Exec(3, 1)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="3x1" src="../addons/Split3/3x1.png"></span><span class="button" onclick="Addons.Split3.Exec(3, 2)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="1x3" src="../addons/Split3/1x3.png"></span>');
+	Addons.Split.SetButtons(Addon_Id, Default, item, 3,
+	[
+		{ id: "3x1", exec: "3, 1" },
+		{ id: "1x3", exec: "3, 2" }
+	]);
+} else {
+	var s = ['<label>View</label><br>'];
+	var ar = ["3x1", "1x3"];
+	for (var i = 0; i < ar.length; i++) {
+		s.push('<label><input type="checkbox" id="!No', ar[i], '" />', ar[i], '</label>&nbsp;');
+	}
+	SetTabContents(0, "General", s);
 }

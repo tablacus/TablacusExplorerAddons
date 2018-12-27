@@ -1,8 +1,9 @@
-﻿var Addon_Id = "split";
+var Addon_Id = "split";
 var Default = "ToolBar1Right";
 
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
-	Addons.Split = 
+	Addons.Split =
 	{
 		Exec: function (nMax, nMode)
 		{
@@ -16,16 +17,13 @@ if (window.Addon == 1) {
 				if (TC1.Data.Group == 0 || TC1.Data.Group == Group) {
 					if (TC1.Count == 0) {
 						TC1.Close();
-					}
-					else if (nTC && TC[0] == TC1) {
+					} else if (nTC && TC[0] == TC1) {
 						TC1.Visible = true;
-					}
-					else if (nTC < nMax) {
+					} else if (nTC < nMax) {
 						TC1.Visible = true;
 						TC1.Data.Group = Group;
 						TC[nTC++] = TC1;
-					}
-					else {
+					} else {
 						TC1.Visible = false;
 						TC1.Data.Group = 0;
 						freeTC.push(TC1);
@@ -120,19 +118,37 @@ if (window.Addon == 1) {
 				TC.TabWidth = TabWidth;
 				TC.TabHeight = TabHeight;
 				TC.Visible = true;
-			}
-			else {
+			} else {
 				var TC = te.CreateCtrl(CTRL_TC, Left, Top, Width, Height, Style, Align, TabWidth, TabHeight);
 			}
 			TC.Data.Group = Group;
 			return TC;
+		},
+
+		SetButtons: function (Addon_Id, Default, item, n, ar)
+		{
+			var s = [];
+			for (var i = 0; i < ar.length; i++) {
+				if (!item.getAttribute("No" + ar[i].id)) {
+					s.push('<span class="button" onclick="Addons.Split', n, '.Exec(', ar[i].exec, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', ar[i].id, '" src="../addons/split', n, '/', ar[i].img || ar[i].id, '.png" style="width: 12pt"></span>');
+				}
+			}
+			SetAddon(Addon_Id, Default, s);
 		}
 	};
 
-	var s = ['<span class="button" onclick="Addons.Split.Exec(1, 1)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="1x1" src="../addons/split/1tab.png"></span>'];
-	s.push('<span class="button" onclick="Addons.Split.Exec(2, 2)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="1x2" src="../addons/split/h2tabs.png"></span>');
-	s.push('<span class="button" onclick="Addons.Split.Exec(2, 3)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="2x1" src="../addons/split/v2tabs.png"></span>');
-	s.push('<span class="button" onclick="Addons.Split.Exec(4, 4)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="2x2" src="../addons/split/4tabs.png"></span>');
-	SetAddon(Addon_Id, Default, s.join(""));
+	Addons.Split.SetButtons(Addon_Id, Default, item, "",
+	[
+		{ id: "1x1", exec: "1, 1", img: "1tab" },
+		{ id: "1x2", exec: "2, 2", img: "h2tabs" },
+		{ id: "2x1", exec: "2, 3", img: "v2tabs" },
+		{ id: "2x2", exec: "4, 4", img: "4tabs" }
+	]);
+} else {
+	var s = ['<label>View</label><br>'];
+	var ar = ["1x1", "1x2", "2x1", "2x2"];
+	for (var i = 0; i < ar.length; i++) {
+		s.push('<label><input type="checkbox" id="!No', ar[i], '" />', ar[i], '</label>&nbsp;');
+	}
+	SetTabContents(0, "General", s);
 }
-

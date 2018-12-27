@@ -1,21 +1,17 @@
-﻿var Addon_Id = "emptyrecyclebin";
+var Addon_Id = "emptyrecyclebin";
 var Default = "None";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("MenuExec", 1);
-		item.setAttribute("Menu", "File");
-		item.setAttribute("MenuPos", -1);
-		item.setAttribute("MenuName", "Empty Recycle Bin");
-	}
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "File");
+	item.setAttribute("MenuPos", -1);
 }
 if (window.Addon == 1) {
 	Addons.EmptyRecycleBin =
 	{
 		nPos: 0,
-		strName: "Empty Recycle Bin",
+		strName: GetText("Empty Recycle Bin"),
 
 		Exec: function ()
 		{
@@ -25,36 +21,47 @@ if (window.Addon == 1) {
 
 		Popup: function ()
 		{
+			var hMenu = api.CreatePopupMenu();
+			var ContextMenu = api.ContextMenu(ssfBITBUCKET);
+			if (ContextMenu) {
+				ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_EXTENDEDVERBS);
+				var pt = api.Memory("POINT");
+				api.GetCursorPos(pt);
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, ContextMenu);
+				if (nVerb) {
+					ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 1, null, null, SW_SHOWNORMAL, 0, 0);
+				}
+			}
+			api.DestroyMenu(hMenu);
 			return false;
 		}
 	};
-	if (items.length) {
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.EmptyRecycleBin.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.EmptyRecycleBin.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.EmptyRecycleBin.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.EmptyRecycleBin.strName));
-				ExtraMenuCommand[nPos] = Addons.EmptyRecycleBin.Exec;
-				return nPos;
-			});
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.EmptyRecycleBin.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		var s = item.getAttribute("MenuName");
+		if (s) {
+			Addons.EmptyRecycleBin.strName = s;
 		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.EmptyRecycleBin.Exec();", "JScript");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.EmptyRecycleBin.Exec();", "JScript");
-		}
-		//Type
-		AddTypeEx("Add-ons", "Empty Recycle Bin", Addons.EmptyRecycleBin.Exec);
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.EmptyRecycleBin.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.EmptyRecycleBin.strName);
+			ExtraMenuCommand[nPos] = Addons.EmptyRecycleBin.Exec;
+			return nPos;
+		});
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon") || (h < 16 ? "icon:shell32.dll,31,16" : "icon:shell32.dll,31,32");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyRecycleBin.Exec();" oncontextmenu="Addons.EmptyRecycleBin.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Empty Recycle Bin" src="', s.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px" /></span>']);
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.EmptyRecycleBin.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.EmptyRecycleBin.Exec, "Func");
+	}
+	//Type
+	AddTypeEx("Add-ons", "Empty Recycle Bin", Addons.EmptyRecycleBin.Exec);
+
+	var h = GetIconSize(GetAddonOption(Addon_Id, "IconSize"));
+	var s = GetAddonOption(Addon_Id, "Icon") || "icon:shell32.dll,31";
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyRecycleBin.Exec();" oncontextmenu="return Addons.EmptyRecycleBin.Popup();" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.EmptyRecycleBin.strName, src: s }, h), '</span>']);
 }
