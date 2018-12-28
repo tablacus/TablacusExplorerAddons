@@ -1,4 +1,4 @@
-﻿var Addon_Id = "linkbar";
+var Addon_Id = "linkbar";
 var Default = "ToolBar4Center";
 var AddonName = "LinkBar";
 
@@ -105,23 +105,21 @@ if (window.Addon == 1) {
 					s.push('<span class="separator">|</span>');
 				} else {
 					var img = '';
+					var h = GetIconSize(item.getAttribute("Height"), 16);
 					var icon = item.getAttribute("Icon");
 					if (icon) {
-						var h = EncodeSC(item.getAttribute("Height"));
-						var sh = (h != "" ? ' style="height:' + h + 'px"' : '');
-						h -= 0;
-						img = '<img src="' + EncodeSC(api.PathUnquoteSpaces(ExtractMacro(te, icon))) + '"' + sh + '>';
-					} else if (/Open|Exec/i.test(item.getAttribute("Type"))) {
-						var path = this.GetPath(items, i);
+						img = GetImgTag({ src: ExtractMacro(te, icon) }, h);
+					} else if (api.PathMatchSpec(item.getAttribute("Type"), "Open;Open in New Tab;Open in Background;Exec")) {
+						var path = Addons.LinkBar.GetPath(items, i);
 						var pidl = api.ILCreateFromPath(path);
 						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
-							var res = /"([^"]*)"/.exec(path) || /([^ ]*)/.exec(path);
+							var res = /"([^"]*)"/.exec(path) || /([^\s]*)/.exec(path);
 							if (res) {
 								pidl = api.ILCreateFromPath(res[1]);
 							}
 						}
 						if (pidl) {
-							img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '">';
+							img = GetImgTag({ src: GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) }, h);
 						}
 					}
 					s.push('<span id="_linkbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' + i + ')" onmousedown="Addons.LinkBar.Down(' : 'onmousedown="Addons.LinkBar.Open(');
@@ -192,7 +190,8 @@ if (window.Addon == 1) {
 	};
 	te.Data.xmlLinkBar = OpenXml("linkbar.xml", false, true);
 	Addons.LinkBar.Parent = document.getElementById(SetAddon(Addon_Id, Default, '<span id="_linkbar"></span>'));
-	Addons.LinkBar.Arrange();
+
+	AddEvent("Load", Addons.LinkBar.Arrange);
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{

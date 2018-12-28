@@ -9,12 +9,12 @@ if (window.Addon == 1) {
 
 		Init: function ()
 		{
-			if (!te.Data["Conf_" + this.Align + "BarWidth"]) {
-				te.Data["Conf_" + this.Align + "BarWidth"] = 178;
+			if (!te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"]) {
+				te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"] = 178;
 			}
-			this.Width = te.Data["Conf_" + this.Align + "BarWidth"];
-			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="favoritesbar" style="width: 100%; height:', EncodeSC(Addons.FavoritesBar.Height), '; background-color: window; border: 1px solid WindowFrame; overflow: auto;">']);
-			this.Arrange();
+			Addons.FavoritesBar.Width = te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"];
+			SetAddon(Addon_Id, Addons.FavoritesBar.Align + "Bar2", ['<div id="favoritesbar" style="width: 100%; height:', EncodeSC(Addons.FavoritesBar.Height), '; background-color: window; border: 1px solid WindowFrame; overflow: auto;">']);
+			Addons.FavoritesBar.Arrange();
 		},
 
 		Open: function (i, bNew)
@@ -129,9 +129,9 @@ if (window.Addon == 1) {
 					}
 					path = Addons.FavoritesBar.GetPath(items, i);
 					if (nOpen) {
-						img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a><img src="' + EncodeSC(img || MakeImgSrc("icon:shell32.dll,3,16", 0, false, 16)) + '" class="favicon">';
+						img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a>' + GetImgTag({ src: img || "icon:shell32.dll,3", class: "favicon" });
 					} else if (img) {
-						img = '<img src="' + EncodeSC(img) + '" class="favicon">';
+						img = GetImgTag({ src: img, class: "favicon" });
 					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
 						var pidl = api.ILCreateFromPath(path);
 						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
@@ -140,9 +140,9 @@ if (window.Addon == 1) {
 								pidl = api.ILCreateFromPath(res[1]);
 							}
 						}
-						img = '<img src="' + GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) + '" class="favicon">';
+						img = GetImgTag({ src: GetIconImage(pidl, GetSysColor(COLOR_WINDOW)), class: "favicon" });
 					} else {
-						img = '<img src="' + MakeImgSrc("icon:shell32.dll,0,16", 0, false, 16) + '" class="favicon">';
+						img = GetImgTag({ src: "icon:shell32.dll,0", class: "favicon" });
 					}
 					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(items[i].text), '" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", EncodeSC(strName.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")), '</div> ');
 					if (nOpen) {
@@ -255,5 +255,6 @@ if (window.Addon == 1) {
 	});
 
 	AddEvent("FavoriteChanged", Addons.FavoritesBar.Changed);
-	Addons.FavoritesBar.Init();
+
+	AddEvent("Load", Addons.FavoritesBar.Init);
 }

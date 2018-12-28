@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) {
+if (window.Addon == 1) {
 	Addons.InnerUp =
 	{
 		Exec: function (Id)
@@ -38,9 +38,9 @@
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var h = GetAddonOption("innerup", "IconSize") || 16;
+		var h = GetIconSize(GetAddonOption("innerup", "IconSize"), 16);
 		var s = GetAddonOption("innerup", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,28" : "bitmap:ieframe.dll,214,24,28");
-		s = ['<span class="button" onclick="return Addons.InnerUp.Exec($)" oncontextmenu="Addons.InnerUp.Popup(this, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Up" src="', s.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
+		s = ['<span class="button" onclick="return Addons.InnerUp.Exec($)" oncontextmenu="Addons.InnerUp.Popup(this, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: "Up", src: s }, h), '</span>'];
 		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 }

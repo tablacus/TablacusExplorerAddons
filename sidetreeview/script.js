@@ -70,7 +70,7 @@ if (window.Addon == 1) {
 					{
 						delete Addons.SideTreeView.tid;
 						TV.Expand(Ctrl.FolderItem, 0);
-					}, 500);
+					}, 99);
 				}
 			}
 		}

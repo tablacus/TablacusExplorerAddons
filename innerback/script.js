@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) {
+if (window.Addon == 1) {
 	Addons.InnerBack =
 	{
 		Click: function (Id)
@@ -50,8 +50,7 @@
 					var Log = Ctrl.History;
 					DisableImage(o, Log && Log.Index >= Log.Count - 1);
 				}
-			}
-			else {
+			} else {
 				(function (Ctrl) { setTimeout(function () {
 					Addons.InnerBack.ChangeView(Ctrl);
 				}, 1000);}) (Ctrl);
@@ -61,9 +60,9 @@
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var h = GetAddonOption("innerback", "IconSize") || 16;
+		var h = GetIconSize(GetAddonOption("innerback", "IconSize"), 16);
 		var src = GetAddonOption("innerback", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,0" : "bitmap:ieframe.dll,214,24,0");
-		var s = ['<span class="button" onclick="return Addons.InnerBack.Click($)" oncontextmenu="Addons.InnerBack.Popup(this, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img id="ImgBack_$" title="Back" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
+		var s = ['<span class="button" onclick="return Addons.InnerBack.Click($)" oncontextmenu="return Addons.InnerBack.Popup(this, $)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ id: "ImgBack_$", title: "Back", src: src }, h), '</span>'];
 		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 

@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) {
+if (window.Addon == 1) {
 	Addons.InnerForward =
 	{
 		Click: function (Id)
@@ -38,6 +38,7 @@
 					FV.History = Log;
 				}
 			}
+			return false;
 		},
 
 		ChangeView: function (Ctrl)
@@ -49,8 +50,7 @@
 					var Log = Ctrl.History;
 					DisableImage(o, Log && Log.Index == 0);
 				}
-			}
-			else {
+			} else {
 				(function (Ctrl) { setTimeout(function () {
 					Addons.InnerForward.ChangeView(Ctrl);
 				}, 1000);}) (Ctrl);
@@ -60,9 +60,9 @@
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var h = GetAddonOption("innerforward", "IconSize") || 16;
+		var h = GetIconSize(GetAddonOption("innerforward", "IconSize"), 16);
 		var src = GetAddonOption("innerforward", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,1" : "bitmap:ieframe.dll,214,24,1");
-		var s = ['<span class="button" onclick="return Addons.InnerForward.Click($)" oncontextmenu="Addons.InnerForward.Popup(this, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img id="ImgForward_$" title="Forward" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>'];
+		var s = ['<span class="button" onclick="return Addons.InnerForward.Click($)" oncontextmenu="return Addons.InnerForward.Popup(this, $)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', , GetImgTag({ id: "ImgForward_$", title: "Forward", src: src }, h), '</span>'];
 		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
