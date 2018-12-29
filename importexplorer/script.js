@@ -11,7 +11,7 @@ if (window.Addon == 1) {
 	Addons.ImportExplorer =
 	{
 		nPos: 0,
-		strName: "",
+		strName: item.getAttribute("MenuName") || GetAddonInfoName(Addon_Id),
 
 		Exec: function ()
 		{
@@ -22,7 +22,7 @@ if (window.Addon == 1) {
 					if (exp && exp.Visible && !exp.Busy) {
 						var doc = exp.Document;
 						if (doc) {
-							if (Addons.ImportExplorer.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
+							if (Addons.ImportExplorer.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL))) {
 								exp.Visible = false;
 								var FV = te.Ctrl(CTRL_FV);
 								FV = FV.Navigate(doc, SBSP_NEWBROWSER);
@@ -84,16 +84,11 @@ if (window.Addon == 1) {
 		AddTypeEx("Add-ons", "Import Explorer", Addons.ImportExplorer.Exec);
 	}
 
-	if (Addons.ImportExplorer.strName == "") {
-		var info = GetAddonInfo(Addon_Id);
-		Addons.ImportExplorer.strName = GetText(info.Name);
-	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var src = ExtractMacro(te, GetAddonOption(Addon_Id, "Icon") || "%windir%\\explorer.exe");
-	var s = ['<span class="button" onclick="return Addons.ImportExplorer.Exec(this, 0);" oncontextmenu="return Addons.ImportExplorer.Exec(this, 1);" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.ImportExplorer.strName.replace(/"/g, ""), '" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="' + h, 'px"></span>'];
-	SetAddon(Addon_Id, Default, s);
-}
-else {
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	var src = ExtractMacro(te, item.getAttribute("Icon") || "%windir%\\explorer.exe");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="return Addons.ImportExplorer.Exec(this, 0);" oncontextmenu="return Addons.ImportExplorer.Exec(this, 1);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.ImportExplorer.strName, src: src }, h), '</span>']);
+} else {
+	EnableInner();
 	var s = ['<input type="checkbox" id="RealFolders" /><label for="RealFolders">Real Folders</label><br />'];
 	s.push('<input type="checkbox" id="SpecialFolders" /><label for="SpecialFolders">Special Folders</label><br />');
 	s.push('<input type="checkbox" id="TakeOver" /><label for="TakeOver">Take over the Explorer view</label>');

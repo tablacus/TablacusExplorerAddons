@@ -973,7 +973,9 @@ if (window.Addon == 1) {
 
 	AddEvent("ViewCreated", function (Ctrl)
 	{
-		ColumnsReplace(Ctrl, "Name", HDF_LEFT, Addons.WFX.ReplaceColumns);
+		if (Addons.WFX.IsHandle(Ctrl)) {
+			ColumnsReplace(Ctrl, "Name", HDF_LEFT, Addons.WFX.ReplaceColumns);
+		}
 	});
 
 	AddEvent("BeginLabelEdit", function (Ctrl)
@@ -1163,7 +1165,9 @@ if (window.Addon == 1) {
 
 	var cFV = te.Ctrls(CTRL_FV);
 	for (var i in cFV) {
-		ColumnsReplace(cFV[i], "Name", HDF_LEFT, Addons.WFX.ReplaceColumns);
+		if (Addons.WFX.IsHandle(cFV[i])) {
+			ColumnsReplace(cFV[i], "Name", HDF_LEFT, Addons.WFX.ReplaceColumns);
+		}
 	}
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");

@@ -14,7 +14,6 @@ if (window.Addon == 1) {
 			}
 			Addons.FavoritesBar.Width = te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"];
 			SetAddon(Addon_Id, Addons.FavoritesBar.Align + "Bar2", ['<div id="favoritesbar" style="width: 100%; height:', EncodeSC(Addons.FavoritesBar.Height), '; background-color: window; border: 1px solid WindowFrame; overflow: auto;">']);
-			Addons.FavoritesBar.Arrange();
 		},
 
 		Open: function (i, bNew)
@@ -241,11 +240,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("DragLeave", function (Ctrl)
-	{
-		MouseOut();
-		return S_OK;
-	});
+	AddEvent("DragLeave", MouseOut);
 
 	AddEvent("Resize", function ()
 	{
@@ -256,5 +251,7 @@ if (window.Addon == 1) {
 
 	AddEvent("FavoriteChanged", Addons.FavoritesBar.Changed);
 
-	AddEvent("Load", Addons.FavoritesBar.Init);
+	AddEvent("Load", Addons.FavoritesBar.Arrange);
+
+	Addons.FavoritesBar.Init();
 }

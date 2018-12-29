@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.18</Version>
-    <MinVersion>2018.12.21</MinVersion>
-    <pubDate>Fri, 21 Dec 2018 00:00:00 GMT</pubDate>
+    <Version>1.19</Version>
+    <MinVersion>2018.12.29</MinVersion>
+    <pubDate>Sat, 29 Dec 2018 00:00:00 GMT</pubDate>
     <Options>Common:3,4:3</Options>
     <DllVersion>1.0.1.0</DllVersion>
     <Creator>Gaku</Creator>

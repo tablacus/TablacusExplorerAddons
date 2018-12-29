@@ -1,4 +1,4 @@
-﻿var Addon_Id = "cut";
+var Addon_Id = "cut";
 var Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
@@ -70,9 +70,9 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Cut.Exec, "Func");
 	}
-	var h = item.getAttribute("IconSize") || window.IconSize || (item.getAttribute("Location") == "Inner" ? 16 : 24);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,5" : "bitmap:ieframe.dll,214,24,5");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Cut.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.Cut.strName.replace(/"/g, "") ,'" id="ImgCut_$" src="', src, '" width="', h, 'px" height="', h, 'px"></span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Cut.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Cut.strName, id: "ImgCut_$", src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

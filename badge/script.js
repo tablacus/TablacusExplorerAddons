@@ -1,4 +1,4 @@
-﻿var Addon_Id = "badge";
+var Addon_Id = "badge";
 
 var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
@@ -15,7 +15,7 @@ if (window.Addon == 1) {
 	{
 		RE: /badge:(.*)/i,
 		CONFIG: fso.BuildPath(te.Data.DataFolder, "config\\badge.tsv"),
-		bSave: false,
+		strName: item.getAttribute("MenuName") || GetAddonInfoName(Addon_Id),
 		Changed: {},
 		Redraw: {},
 		nPosAdd: 0,
@@ -280,6 +280,7 @@ if (window.Addon == 1) {
 			}
 			Addons.Badge.Changed = {};
 			Addons.Badge.Redraw = {};
+			Addons.Badge.Save();
 		},
 
 		List: function (list)
@@ -321,15 +322,14 @@ if (window.Addon == 1) {
 				Addons.Badge.tidSync = null;
 				Addons.Badge.SyncItem = {};
 			}, 500);
-		}
-	}
+		},
 
-	AddEvent("Load", function ()
-	{
-		if (!Addons.Badge.Initd) {
-			te.Data.Badges = te.Object();
+		Load: function ()
+		{
+			Addons.Badge.bSave = false;
+			te.Data.Badges = api.CreateObject("Object");
 			try {
-				var ado = te.CreateObject(api.ADBSTRM);
+				var ado = api.CreateObject("ads");
 				ado.CharSet = "utf-8";
 				ado.Open();
 				ado.LoadFromFile(Addons.Badge.CONFIG);
@@ -339,26 +339,36 @@ if (window.Addon == 1) {
 				}
 				ado.Close();
 				delete te.Data.Badges[""];
+				Addons.Badge.ModifyDate = api.ILCreateFromPath(Addons.Badge.CONFIG).ModifyDate;
 			} catch (e) {}
+		},
 
-			AddEvent("SaveConfig", function ()
-			{
-				if (Addons.Badge.bSave) {
-					try {
-						var ado = te.CreateObject(api.ADBSTRM);
-						ado.CharSet = "utf-8";
-						ado.Open();
-						delete te.Data.Badges[""];
-						Addons.Badge.ENumCB(function (path, badge)
-						{
-							ado.WriteText([path, badge].join("\t") + "\r\n");
-						});
-						ado.SaveToFile(Addons.Badge.CONFIG, adSaveCreateOverWrite);
-						ado.Close();
-						Addons.Badge.bSave = false;
-					} catch (e) {}
-				}
-			});
+		Save: function ()
+		{
+			if (Addons.Badge.bSave) {
+				try {
+					var ado = api.CreateObject("ads");
+					ado.CharSet = "utf-8";
+					ado.Open();
+					delete te.Data.Badges[""];
+					Addons.Badge.ENumCB(function (path, badge)
+					{
+						ado.WriteText([path, badge].join("\t") + "\r\n");
+					});
+					ado.SaveToFile(Addons.Badge.CONFIG, adSaveCreateOverWrite);
+					ado.Close();
+					Addons.Badge.ModifyDate = api.ILCreateFromPath(Addons.Badge.CONFIG).ModifyDate;
+					Addons.Badge.bSave = false;
+				} catch (e) {}
+			}
+		}
+	}
+
+	AddEvent("Load", function ()
+	{
+		if (!Addons.Badge.Initd) {
+			Addons.Badge.Load();
+			AddEvent("SaveConfig", Addons.Badge.Save);
 		}
 
 		var Installed0 = Addons.Badge.Get('%Installed%').toUpperCase();
@@ -375,6 +385,13 @@ if (window.Addon == 1) {
 		}
 		if (Addons.Badge.Portable || Installed0) {
 			Addons.Badge.Set('%Installed%', Installed1);
+		}
+	});
+
+	AddEvent("ChangeNotifyItem:" + Addons.Badge.CONFIG, function (pid)
+	{
+		if (pid.ModifyDate - Addons.Badge.ModifyDate) {
+			Addons.Badge.Load();
 		}
 	});
 
@@ -602,11 +619,6 @@ if (window.Addon == 1) {
 		}
 	});
 
-	Addons.Badge.strName = item.getAttribute("MenuName");
-	if (!Addons.Badge.strName) {
-		var info = GetAddonInfo(Addon_Id);
-		Addons.Badge.strName = info.Name;
-	}
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		Addons.Badge.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -627,7 +639,7 @@ if (window.Addon == 1) {
 						mii2.hSubMenu = api.CreatePopupMenu();
 						mii2.dwTypeData = api.LoadString(hShell32, 12850);
 						var s = Addons.Badge.Get(path);
-						var str1 = '★★★★★☆☆☆☆☆';
+						var str1 = '\2605\2605\2605\2605\2605\2606\2606\2606\2606\2606';
 						for (var i = 6; i--;) {
 							api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING | (s == i ? MF_CHECKED : 0), ++nPos, ["&" + i, " - ", str1.substr(5 - i, 5)].join(""));
 							ExtraMenuCommand[nPos] = Addons.Badge["Set" + i];

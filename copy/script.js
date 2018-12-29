@@ -1,4 +1,4 @@
-﻿var Addon_Id = "copy";
+var Addon_Id = "copy";
 var Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
@@ -70,9 +70,9 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Copy.Exec, "Func");
 	}
-	var h = item.getAttribute("IconSize") || window.IconSize || (item.getAttribute("Location") == "Inner" ? 16 : 24);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,6" : "bitmap:ieframe.dll,214,24,6");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Copy.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.Copy.strName.replace(/"/g, "") ,'" id="ImgCopy_$" src="', src, '" width="', h, 'px" height="', h, 'px"></span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Copy.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Copy.strName, id: "ImgCopy_$", src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }
