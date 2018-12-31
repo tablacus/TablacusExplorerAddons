@@ -117,11 +117,17 @@ if (window.Addon == 1) {
 			return TC;
 		}
 	};
-	Addons.Split.SetButtons(Addon_Id, Default, item, 3,
-	[
-		{ id: "3x1", exec: "3, 1" },
-		{ id: "1x3", exec: "3, 2" }
-	]);
+
+	SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></split>');
+
+	AddEvent("load", function ()
+	{
+		Addons.Split.SetButtons(Addon_Id, Default, item, 3,
+		[
+			{ id: "3x1", exec: "3, 1" },
+			{ id: "1x3", exec: "3, 2" }
+		]);
+	});
 } else {
 	var s = ['<label>View</label><br>'];
 	var ar = ["3x1", "1x3"];

@@ -133,17 +133,22 @@ if (window.Addon == 1) {
 					s.push('<span class="button" onclick="Addons.Split', n, '.Exec(', ar[i].exec, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', ar[i].id, '" src="../addons/split', n, '/', ar[i].img || ar[i].id, '.png" style="width: 12pt"></span>');
 				}
 			}
-			SetAddon(Addon_Id, Default, s);
+			document.getElementById(Addon_Id).innerHTML = s.join("");
 		}
 	};
 
-	Addons.Split.SetButtons(Addon_Id, Default, item, "",
-	[
-		{ id: "1x1", exec: "1, 1", img: "1tab" },
-		{ id: "1x2", exec: "2, 2", img: "h2tabs" },
-		{ id: "2x1", exec: "2, 3", img: "v2tabs" },
-		{ id: "2x2", exec: "4, 4", img: "4tabs" }
-	]);
+	SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></split>');
+
+	AddEvent("load", function ()
+	{
+		Addons.Split.SetButtons(Addon_Id, Default, item, "",
+		[
+			{ id: "1x1", exec: "1, 1", img: "1tab" },
+			{ id: "1x2", exec: "2, 2", img: "h2tabs" },
+			{ id: "2x1", exec: "2, 3", img: "v2tabs" },
+			{ id: "2x2", exec: "4, 4", img: "4tabs" }
+		]);
+	});
 } else {
 	var s = ['<label>View</label><br>'];
 	var ar = ["1x1", "1x2", "2x1", "2x2"];

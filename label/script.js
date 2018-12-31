@@ -25,7 +25,7 @@ if (window.Addon == 1) {
 		SyncItem: {},
 		Initd: false,
 		Portable: api.LowPart(item.getAttribute("Portable")),
-		Icon: "../addons/label/label16.png",
+		Icon: fso.BuildPath(te.Data.Installed, "/addons/label/label16.png"),
 
 		IsHandle: function (Ctrl)
 		{
@@ -319,6 +319,7 @@ if (window.Addon == 1) {
 			}
 			Addons.Label.Changed = {};
 			Addons.Label.Redraw = {};
+			Addons.Label.Save();
 		},
 
 		List: function (list, all)
@@ -418,15 +419,14 @@ if (window.Addon == 1) {
 				Addons.Label.tidSync = null;
 				Addons.Label.SyncItem = {};
 			}, 500);
-		}
-	}
+		},
 
-	AddEvent("Load", function ()
-	{
-		if (!Addons.Label.Initd) {
-			te.Labels = te.Object();
+		Load: function ()
+		{
+			Addons.Label.bSave = false;
+			te.Labels = api.CreateObject("Object");
 			try {
-				var ado = te.CreateObject(api.ADBSTRM);
+				var ado = api.CreateObject("ads");
 				ado.CharSet = "utf-8";
 				ado.Open();
 				ado.LoadFromFile(Addons.Label.CONFIG);
@@ -436,28 +436,45 @@ if (window.Addon == 1) {
 				}
 				ado.Close();
 				delete te.Labels[""];
+				te.Data.LabelModifyDate = api.ILCreateFromPath(Addons.Label.CONFIG).ModifyDate;
 			} catch (e) {}
+		},
 
-			AddEvent("SaveConfig", function ()
+		Save: function ()
+		{
+			if (Addons.Label.bSave && !Addons.Label.Initd) {
+				try {
+					var ado = api.CreateObject("ads");
+					ado.CharSet = "utf-8";
+					ado.Open();
+					delete te.Labels[""];
+					Addons.Label.ENumCB(function (path, label)
+					{
+						ado.WriteText([path, label].join("\t") + "\r\n");
+					});
+					ado.SaveToFile(Addons.Label.CONFIG, adSaveCreateOverWrite);
+					ado.Close();
+					te.Data.LabelModifyDate = api.ILCreateFromPath(Addons.Label.CONFIG).ModifyDate;
+					Addons.Label.bSave = false;
+				} catch (e) {}
+			}
+		}
+	}
+
+	AddEvent("Load", function ()
+	{
+		if (!Addons.Label.Initd) {
+			if (!te.Data.LabelModifyDate) {
+				Addons.Label.Load();
+			}
+			AddEvent("SaveConfig", Addons.Label.Save);
+			AddEvent("ChangeNotifyItem:" + Addons.Label.CONFIG, function (pid)
 			{
-				if (Addons.Label.bSave) {
-					try {
-						var ado = te.CreateObject(api.ADBSTRM);
-						ado.CharSet = "utf-8";
-						ado.Open();
-						delete te.Labels[""];
-						Addons.Label.ENumCB(function (path, label)
-						{
-							ado.WriteText([path, label].join("\t") + "\r\n");
-						});
-						ado.SaveToFile(Addons.Label.CONFIG, adSaveCreateOverWrite);
-						ado.Close();
-						Addons.Label.bSave = false;
-					} catch (e) {}
+				if (pid.ModifyDate - te.Data.LabelModifyDate) {
+					Addons.Label.Load();
 				}
 			});
 		}
-
 		var Installed0 = Addons.Label.Get('%Installed%').toUpperCase();
 		var Installed1 = Addons.Label.Portable ? fso.GetDriveName(api.GetModuleFileName(null)).toUpperCase() : "";
 		if (Installed0 && Addons.Label.Portable && Installed0 != Installed1) {
@@ -474,6 +491,7 @@ if (window.Addon == 1) {
 			Addons.Label.Set('%Installed%', Installed1);
 		}
 	});
+
 
 	AddEvent("TranslatePath", function (Ctrl, Path)
 	{

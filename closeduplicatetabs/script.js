@@ -11,7 +11,7 @@ if (window.Addon == 1) {
 	Addons.CloseDuplicateTabs =
 	{
 		nPos: 0,
-		strName: "",
+		strName: item.getAttribute("MenuName") || GetAddonInfoName(Addon_Id),
 
 		Exec: function (Ctrl, pt)
 		{
@@ -47,23 +47,12 @@ if (window.Addon == 1) {
 				}
 			}, 99);
 			return S_OK;
-		},
-
-		Popup: function ()
-		{
-			return false;
 		}
 	};
 	if (item) {
 		//Menu
 		if (item.getAttribute("MenuExec")) {
 			Addons.CloseDuplicateTabs.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (!s) {
-				var info = GetAddonInfo(Addon_Id);
-				s = info.Name;
-			}
-			Addons.CloseDuplicateTabs.strName = s;
 
 			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 			{
@@ -82,14 +71,8 @@ if (window.Addon == 1) {
 		}
 		AddTypeEx("Add-ons", "Close duplicate tabs", Addons.CloseDuplicateTabs.Exec);
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon");
-	if (s) {
-		s = '<img title="' + Addons.CloseDuplicateTabs.strName + '" src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px" />';
-	} else {
-		s = Addons.CloseDuplicateTabs.strName;
-	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.CloseDuplicateTabs.Exec(this);" oncontextmenu="Addons.CloseDuplicateTabs.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.CloseDuplicateTabs.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.CloseDuplicateTabs.strName, src: GetAddonOption(Addon_Id, "Icon") }, h), '</span>']);
 } else {
 	EnableInner();
 }

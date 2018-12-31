@@ -1,9 +1,12 @@
 ﻿var Addon_Id = "favorites";
 var Default = "ToolBar2Left";
 
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Favorites =
 	{
+		strName: item.getAttribute("MenuName") || GetText("Favorites"),
+
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
@@ -23,8 +26,6 @@ if (window.Addon == 1) {
 		}
 	};
 
-	var item = GetAddonElement(Addon_Id);
-	Addons.Favorites.strName = item.getAttribute("MenuName") || GetText("Favorites");
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		Addons.Favorites.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -43,9 +44,9 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Favorites.Exec, "Func");
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,2" : "bitmap:ieframe.dll,214,24,2");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Favorites.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.Favorites.strName.replace(/"/g, ""), '" src="', src, '" width="', h, 'px" height="', h, 'px"></span>']);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,2" : "bitmap:ieframe.dll,214,24,2");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Favorites.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Favorites.strName, src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

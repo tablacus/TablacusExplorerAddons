@@ -339,13 +339,13 @@ if (window.Addon == 1) {
 				}
 				ado.Close();
 				delete te.Data.Badges[""];
-				Addons.Badge.ModifyDate = api.ILCreateFromPath(Addons.Badge.CONFIG).ModifyDate;
+				te.Data.BadgeModifyDate = api.ILCreateFromPath(Addons.Badge.CONFIG).ModifyDate;
 			} catch (e) {}
 		},
 
 		Save: function ()
 		{
-			if (Addons.Badge.bSave) {
+			if (Addons.Badge.bSave && !Addons.Badge.Initd) {
 				try {
 					var ado = api.CreateObject("ads");
 					ado.CharSet = "utf-8";
@@ -357,7 +357,7 @@ if (window.Addon == 1) {
 					});
 					ado.SaveToFile(Addons.Badge.CONFIG, adSaveCreateOverWrite);
 					ado.Close();
-					Addons.Badge.ModifyDate = api.ILCreateFromPath(Addons.Badge.CONFIG).ModifyDate;
+					te.Data.BadgeModifyDate = api.ILCreateFromPath(Addons.Badge.CONFIG).ModifyDate;
 					Addons.Badge.bSave = false;
 				} catch (e) {}
 			}
@@ -367,8 +367,16 @@ if (window.Addon == 1) {
 	AddEvent("Load", function ()
 	{
 		if (!Addons.Badge.Initd) {
-			Addons.Badge.Load();
+			if (!te.Data.BadgeModifyDate) {
+				Addons.Badge.Load();
+			}
 			AddEvent("SaveConfig", Addons.Badge.Save);
+			AddEvent("ChangeNotifyItem:" + Addons.Badge.CONFIG, function (pid)
+			{
+				if (pid.ModifyDate - te.Data.BadgeModifyDate) {
+					Addons.Badge.Load();
+				}
+			});
 		}
 
 		var Installed0 = Addons.Badge.Get('%Installed%').toUpperCase();
@@ -385,13 +393,6 @@ if (window.Addon == 1) {
 		}
 		if (Addons.Badge.Portable || Installed0) {
 			Addons.Badge.Set('%Installed%', Installed1);
-		}
-	});
-
-	AddEvent("ChangeNotifyItem:" + Addons.Badge.CONFIG, function (pid)
-	{
-		if (pid.ModifyDate - Addons.Badge.ModifyDate) {
-			Addons.Badge.Load();
 		}
 	});
 
@@ -639,7 +640,7 @@ if (window.Addon == 1) {
 						mii2.hSubMenu = api.CreatePopupMenu();
 						mii2.dwTypeData = api.LoadString(hShell32, 12850);
 						var s = Addons.Badge.Get(path);
-						var str1 = '\2605\2605\2605\2605\2605\2606\2606\2606\2606\2606';
+						var str1 = unescape('\%u2605%u2605%u2605%u2605%u2605%u2606%u2606%u2606%u2606%u2606%u2606');
 						for (var i = 6; i--;) {
 							api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING | (s == i ? MF_CHECKED : 0), ++nPos, ["&" + i, " - ", str1.substr(5 - i, 5)].join(""));
 							ExtraMenuCommand[nPos] = Addons.Badge["Set" + i];
