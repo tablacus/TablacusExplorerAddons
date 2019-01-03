@@ -1,9 +1,12 @@
-﻿var Addon_Id = "delete";
+var Addon_Id = "delete";
 var Default = "ToolBar2Left";
 
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Delete =
 	{
+		strName: item.getAttribute("MenuName") || GetText("Delete"),
+
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
@@ -56,8 +59,6 @@ if (window.Addon == 1) {
 		}
 	});
 
-	var item = GetAddonElement(Addon_Id);
-	Addons.Delete.strName = item.getAttribute("MenuName") || GetText("Delete");
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		Addons.Delete.nPos = api.LowPart(item.getAttribute("MenuPos"));
@@ -76,9 +77,9 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Delete.Exec, "Func");
 	}
-	var h = item.getAttribute("IconSize") || window.IconSize || (item.getAttribute("Location") == "Inner" ? 16 : 24);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,10" : "bitmap:ieframe.dll,214,24,10");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Delete.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.Delete.strName.replace(/"/g, "") ,'" id="ImgDelete_$" src="', src, '" width="', h, 'px" height="', h, 'px"></span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Delete.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Delete.strName, id: "ImgDelete_$", src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }
