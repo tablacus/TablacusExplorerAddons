@@ -20,7 +20,8 @@ if (window.Addon == 1) {
 	Addons.UndoCloseTab =
 	{
 		Items: item.getAttribute("Save") || 30,
-		strName: item.getAttribute("MenuName") || GetAddonInfoName(Addon_Id),
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 		CONFIG: fso.BuildPath(te.Data.DataFolder, "config\\closedtabs.xml"),
 
 		Exec: function (Ctrl, pt)
@@ -150,7 +151,6 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.UndoCloseTab.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.UndoCloseTab.nPos, MF_BYPOSITION | MF_STRING | ((Addons.UndoCloseTab.db.length) ? MF_ENABLED : MF_DISABLED), ++nPos, GetText(Addons.UndoCloseTab.strName));

@@ -15,7 +15,8 @@ if (window.Addon == 1) {
 	{
 		RE: /badge:(.*)/i,
 		CONFIG: fso.BuildPath(te.Data.DataFolder, "config\\badge.tsv"),
-		strName: item.getAttribute("MenuName") || GetAddonInfoName(Addon_Id),
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 		Changed: {},
 		Redraw: {},
 		nPosAdd: 0,
@@ -622,7 +623,6 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.Badge.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
 		{
 			if (item && item.IsFileSystem) {

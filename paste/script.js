@@ -1,9 +1,14 @@
-﻿var Addon_Id = "paste";
+var Addon_Id = "paste";
 var Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
+	var item = GetAddonElement(Addon_Id);
+
 	Addons.Paste =
 	{
+		strName: item.getAttribute("MenuName") || api.LoadString(hShell32, 33562),
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
+
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
@@ -49,11 +54,8 @@ if (window.Addon == 1) {
 
 	AddEvent("Resize", Addons.Paste.State);
 
-	var item = GetAddonElement(Addon_Id);
-	Addons.Paste.strName = item.getAttribute("MenuName") || api.LoadString(hShell32, 33562);
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.Paste.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.Paste.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Paste.strName));
@@ -69,9 +71,9 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Paste.Exec, "Func");
 	}
-	var h = item.getAttribute("IconSize") || window.IconSize || (item.getAttribute("Location") == "Inner" ? 16 : 24);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,7" : "bitmap:ieframe.dll,214,24,7");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Paste.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.Paste.strName.replace(/"/g, "") ,'" id="ImgPaste_$" src="', src, '" width="', h, 'px" height="', h, 'px"></span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Paste.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Paste.strName, id: "ImgPaste_$", src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

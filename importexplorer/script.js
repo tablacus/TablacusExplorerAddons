@@ -10,8 +10,8 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.ImportExplorer =
 	{
-		nPos: 0,
-		strName: item.getAttribute("MenuName") || GetAddonInfoName(Addon_Id),
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
 		Exec: function ()
 		{
@@ -60,7 +60,6 @@ if (window.Addon == 1) {
 		Addons.ImportExplorer.TakeOver = item.getAttribute("TakeOver");
 		//Menu
 		if (item.getAttribute("MenuExec")) {
-			Addons.ImportExplorer.nPos = api.LowPart(item.getAttribute("MenuPos"));
 			var s = item.getAttribute("MenuName");
 			if (s && s != "") {
 				Addons.ImportExplorer.strName = s;

@@ -1,4 +1,4 @@
-﻿importScripts("\\script\\consts.js");
+importScripts("\\script\\consts.js");
 
 if (MainWindow.Exchange) {
 	var ex = MainWindow.Exchange[arg[3]];

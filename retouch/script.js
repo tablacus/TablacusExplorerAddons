@@ -1,4 +1,4 @@
-﻿var Addon_Id = "retouch";
+var Addon_Id = "retouch";
 var Default = "ToolBar2Left";
 
 var item = GetAddonElement(Addon_Id);
@@ -6,7 +6,6 @@ if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Edit");
 	item.setAttribute("MenuPos", -1);
-	item.setAttribute("MenuName", "Retouch...");
 
 	item.setAttribute("KeyOn", "List");
 
@@ -16,32 +15,28 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.Retouch =
 	{
-		nPos: 0,
-		strName: "Retouch...",
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
-		Exec: function ()
+		Exec: function (Ctrl, pt)
 		{
-			var FV = te.Ctrl(CTRL_FV);
+			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				var Selected = FV.SelectedItems();
 				if (Selected.Count) {
-					ShowDialog("../addons/retouch/preview.html", {MainWindow: window, width: 800, height: 600});
+					FV.Focus();
+					ShowDialog("../addons/retouch/preview.html", { MainWindow: window, width: 800, height: 600 });
 				}
 			}
 		}
 	};
-	var h = item.getAttribute("IconSize") || window.IconSize || 24;
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var s = item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,141,16" : "icon:shell32.dll,141,32");
-	s = ['<span class="button" id="RetouchButton" onclick="Addons.Retouch.Exec()" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="return false;"><img title="Retouch..." src="', s.replace(/"/g, ""), '" style="width:', h, 'px; height:', h, 'px"' ,'></span>'];
+	s = ['<span class="button" id="RetouchButton" onclick="Addons.Retouch.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Retouch.strName, src: s }, h), '</span>'];
 	SetAddon(Addon_Id, Default, s);
 
-	var s = item.getAttribute("MenuName");
-	if (s && s != "") {
-		Addons.Retouch.strName = s;
-	}
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.Retouch.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.Retouch.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Retouch.strName));
@@ -51,11 +46,11 @@ if (window.Addon == 1) {
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), "Addons.Retouch.Exec();", "JScript");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Retouch.Exec, "Func");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), "Addons.Retouch.Exec();", "JScript");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Retouch.Exec, "Func");
 	}
 
 	AddTypeEx("Add-ons", "Retouch", Addons.Retouch.Exec);
@@ -171,4 +166,6 @@ if (window.Addon == 1) {
 			}, 99);}) ();
 		}
 	};
+} else {
+	EnableInner();
 }

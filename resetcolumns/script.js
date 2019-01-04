@@ -10,8 +10,8 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.ResetColumns =
 	{
-		nPos: 0,
-		strName: item.getAttribute("MenuName") || GetAddonInfoName(Addon_Id),
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
 		Exec: function (Ctrl, pt)
 		{
@@ -23,8 +23,6 @@ if (window.Addon == 1) {
 	};
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.ResetColumns.nPos = api.LowPart(item.getAttribute("MenuPos"));
-
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.ResetColumns.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.ResetColumns.strName));
@@ -43,7 +41,7 @@ if (window.Addon == 1) {
 	AddTypeEx("Add-ons", "Reset Columns", Addons.ResetColumns.Exec);
 
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var s = GetAddonOption(Addon_Id, "Icon");
+	var s = item.getAttribute("Icon");
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.ResetColumns.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.ResetColumns.strName, src: s }, h), '</span>']);
 } else {
 	EnableInner();

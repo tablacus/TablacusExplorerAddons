@@ -7,7 +7,8 @@ if (window.Addon == 1) {
 	{
 		PATH: "emptyfolder:",
 		iCaret: -1,
-		strName: "",
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
 		GetSearchString: function(Ctrl)
 		{
@@ -175,10 +176,8 @@ if (window.Addon == 1) {
 	}, true);
 
 	if (item) {
-		Addons.EmptyFolder.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
 		//Menu
 		if (item.getAttribute("MenuExec")) {
-			Addons.EmptyFolder.nPos = api.LowPart(item.getAttribute("MenuPos"));
 			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 			{
 				api.InsertMenu(hMenu, Addons.EmptyFolder.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.EmptyFolder.strName));
@@ -197,12 +196,8 @@ if (window.Addon == 1) {
 		//Type
 		AddTypeEx("Add-ons", "Empty folder", Addons.EmptyFolder.Exec);
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon");
-	if (s) {
-		s = '<img title="' + Addons.EmptyFolder.strName.replace(/"/g, "") + '" src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px" />';
-	} else {
-		s = Addons.EmptyFolder.strName;
-	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyFolder.Exec();" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyFolder.Exec(this)" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.EmptyFolder.strName, src: item.getAttribute("Icon") }, h), '</span>']);
+} else {
+	EnableInner();
 }

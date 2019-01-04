@@ -1,9 +1,14 @@
-﻿var Addon_Id = "properties";
+var Addon_Id = "properties";
 var Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
+	var item = GetAddonElement(Addon_Id);
+
 	Addons.Properties =
 	{
+		strName: item.getAttribute("MenuName") || api.LoadString(hShell32, 33555),
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
+
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
@@ -25,11 +30,8 @@ if (window.Addon == 1) {
 		}
 
 	};
-	var item = GetAddonElement(Addon_Id);
-	Addons.Properties.strName = item.getAttribute("MenuName") || api.LoadString(hShell32, 33555);
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.Properties.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.Properties.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Properties.strName));
@@ -45,9 +47,9 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Properties.Exec, "Func");
 	}
-	var h = item.getAttribute("IconSize") || window.IconSize || (GetAddonLocation(Addon_Id) == "Inner" ? 16 : 24);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,15" : "bitmap:ieframe.dll,214,24,15");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Properties.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.Properties.strName.replace(/"/g, "") ,'" src="', src, '" width="', h, 'px" height="', h, 'px"></span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Properties.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Properties.strName, src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

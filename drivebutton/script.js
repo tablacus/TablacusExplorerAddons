@@ -1,11 +1,14 @@
-﻿var Addon_Id = "drivebutton";
+var Addon_Id = "drivebutton";
 var Default = "ToolBar2Left";
 
-var item = GetAddonElement(Addon_Id);
-
 if (window.Addon == 1) {
+	var item = GetAddonElement(Addon_Id);
+
 	Addons.DriveButton =
 	{
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
+
 		Exec: function (Ctrl, pt)
 		{
 			var o;
@@ -55,14 +58,8 @@ if (window.Addon == 1) {
 		}
 	};
 
-	Addons.DriveButton.strName = item.getAttribute("MenuName");
-	if (!Addons.DriveButton.strName) {
-		var info = GetAddonInfo(Addon_Id);
-		Addons.DriveButton.strName = info.Name;
-	}
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.DriveButton.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.DriveButton.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.DriveButton.strName));
@@ -81,10 +78,9 @@ if (window.Addon == 1) {
 
 	AddTypeEx("Add-ons", "Drive button", Addons.DriveButton.Exec);
 
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || (GetAddonLocation(Addon_Id) == "Inner" ? 16 : 24);
-	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "icon:shell32.dll,8,16" : "icon:shell32.dll,8,32");
-	h = h > 0 ? h + 'px' : EncodeSC(h);
-	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="return Addons.DriveButton.Exec(this)" oncontextmenu="PopupContextMenu(ssfDRIVES)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Drive" src="', EncodeSC(src), '" width="', h, '" height="', h, '"></span>']);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	var src = item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,8,16" : "icon:shell32.dll,8,32");
+	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="return Addons.DriveButton.Exec(this)" oncontextmenu="PopupContextMenu(ssfDRIVES)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: "Drive", src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

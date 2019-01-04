@@ -10,8 +10,8 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.CloseDuplicateTabs =
 	{
-		nPos: 0,
-		strName: item.getAttribute("MenuName") || GetAddonInfoName(Addon_Id),
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
 		Exec: function (Ctrl, pt)
 		{
@@ -52,8 +52,6 @@ if (window.Addon == 1) {
 	if (item) {
 		//Menu
 		if (item.getAttribute("MenuExec")) {
-			Addons.CloseDuplicateTabs.nPos = api.LowPart(item.getAttribute("MenuPos"));
-
 			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 			{
 				api.InsertMenu(hMenu, Addons.CloseDuplicateTabs.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.CloseDuplicateTabs.strName));
