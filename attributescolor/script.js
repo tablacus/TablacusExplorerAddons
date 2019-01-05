@@ -1,31 +1,15 @@
-﻿var Addon_Id = "attributescolor";
-var Default = "None";
+var Addon_Id = "attributescolor";
 
 var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.AttributesColor = {
 		Color: {},
-		nPos: 0,
-		strName: "",
-		Enabled: true,
-		attrs: ["root", FILE_ATTRIBUTE_REPARSE_POINT, FILE_ATTRIBUTE_ENCRYPTED, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_COMPRESSED, FILE_ATTRIBUTE_DIRECTORY],
-
-		Exec: function ()
-		{
-			Addons.AttributesColor.Enabled = !Addons.AttributesColor.Enabled;
-			api.RedrawWindow(te.hwnd, null, 0, RDW_NOERASE | RDW_INVALIDATE | RDW_ALLCHILDREN);
-			return S_OK;
-		},
-
-		Popup: function ()
-		{
-			return false;
-		}
+		attrs: ["root", FILE_ATTRIBUTE_REPARSE_POINT, FILE_ATTRIBUTE_ENCRYPTED, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_COMPRESSED, FILE_ATTRIBUTE_DIRECTORY]
 	};
 
 	AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes)
 	{
-		if (pid && Addons.AttributesColor.Enabled) {
+		if (pid) {
 			if (api.PathIsRoot(pid.Path)) {
 				var i = Addons.AttributesColor.Color["root"];
 				if (isFinite(i)) {
@@ -45,51 +29,16 @@ if (window.Addon == 1) {
 		}
 	});
 
-	if (item) {
-		Addons.AttributesColor.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.AttributesColor.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.AttributesColor.nPos, MF_BYPOSITION | MF_STRING | Addons.AttributesColor.Enabled ? MF_CHECKED : 0, ++nPos, GetText(Addons.AttributesColor.strName));
-				ExtraMenuCommand[nPos] = Addons.AttributesColor.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.AttributesColor.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.AttributesColor.Exec, "Func");
-		}
-		//Type
-		AddTypeEx("Add-ons", "Attributes color", Addons.AttributesColor.Exec);
-
-		for (var i = Addons.AttributesColor.attrs.length; i--;) {
-			var j = Addons.AttributesColor.attrs[i];
-			var s = GetWinColor(item.getAttribute("c" + j));
-			if (isFinite(s) && s !== null) {
-				Addons.AttributesColor.Color[j] = s;
-			}
-			else {
-				delete Addons.AttributesColor.attrs[i];
-			}
+	for (var i = Addons.AttributesColor.attrs.length; i--;) {
+		var j = Addons.AttributesColor.attrs[i];
+		var s = GetWinColor(item.getAttribute("c" + j));
+		if (isFinite(s) && s !== null) {
+			Addons.AttributesColor.Color[j] = s;
+		} else {
+			delete Addons.AttributesColor.attrs[i];
 		}
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon");
-	if (s) {
-		s = '<img title="' + Addons.AttributesColor.strName.replace(/"/g, "") + '" src="' + s.replace(/"/g, "") + '" width="' + h + 'px" height="' + h + 'px" />';
-	}
-	else {
-		s = Addons.AttributesColor.strName;
-	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.AttributesColor.Exec();" oncontextmenu="Addons.AttributesColor.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
-}
-else {
+} else {
 	var s = ['<table>'];
 	var attrs = [FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_COMPRESSED, FILE_ATTRIBUTE_ENCRYPTED, FILE_ATTRIBUTE_REPARSE_POINT, FILE_ATTRIBUTE_DIRECTORY, "root"];
 	var names = [8768, 8769, 8770, 8771, 8772, "Junction", WINVER >= 0x600 ? 33017 : 4131, GetText("Root")];

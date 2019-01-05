@@ -2,12 +2,12 @@
 var Default = "ToolBar2Left";
 
 var item = GetAddonElement(Addon_Id);
-
 if (window.Addon == 1) {
 	Addons.FolderButton =
 	{
 		bDrag: false,
-		strName: "",
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
 		Exec: function (Ctrl, pt)
 		{
@@ -37,8 +37,10 @@ if (window.Addon == 1) {
 			this.bDrag = b;
 		},
 
-		Drag: function ()
+		Drag: function (o)
 		{
+			var FV = GetFolderView(o);
+			FV.Focus();
 			if (this.bDrag) {
 				this.bDrag = false;
 				var TC = te.Ctrl(CTRL_TC);
@@ -53,10 +55,8 @@ if (window.Addon == 1) {
 		}
 	};
 
-	Addons.FolderButton.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.FolderButton.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.FolderButton.nPos, MF_BYPOSITION | MF_STRING | Addons.FolderButton.Enabled ? MF_CHECKED : 0, ++nPos, GetText(Addons.FolderButton.strName));
@@ -75,14 +75,16 @@ if (window.Addon == 1) {
 	//Type
 	AddTypeEx("Add-ons", "Folder button", Addons.FolderButton.Exec);
 
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon");
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	var s = item.getAttribute("Icon");
 	if (!s) {
 		s = "icon:shell32.dll,4,16";
 		AddEvent("ChangeView", function (Ctrl)
 		{
-			document.getElementById("FolderButton").src = GetIconImage(Ctrl, api.GetSysColor(COLOR_BTNFACE));
+			(document.getElementById("FolderButton") || {}).src = GetIconImage(Ctrl, api.GetSysColor(COLOR_BTNFACE));
 		});
 	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FolderButton.Exec(this);" oncontextmenu="Addons.FolderButton.Popup(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut(); Addons.FolderButton.Drag()" onmousedown="Addons.FolderButton.Button(true)" onmouseup="Addons.FolderButton.Button(false)"><img id="FolderButton" title="', Addons.FolderButton.strName.replace(/"/g, ""), '" src="', s.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px" />', '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FolderButton.Exec(this)" oncontextmenu="return Addons.FolderButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()" Addons.FolderButton.Drag()" onmousedown="Addons.FolderButton.Button(true)" onmouseup="Addons.FolderButton.Button(false)">', GetImgTag({ id: "FolderButton", title:  Addons.FolderButton.strName, src: s }, h), '</span>']);
+} else {
+	EnableInner();
 }

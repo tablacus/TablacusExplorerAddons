@@ -1,4 +1,4 @@
-﻿var Addon_Id = "innerfilterbar";
+var Addon_Id = "innerfilterbar";
 
 var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
@@ -54,7 +54,7 @@ if (window.Addon == 1) {
 					if (!/^\//.test(s)) {
 						var ar = s.split(/;/);
 						for (var i in ar) {
-							var res = /^([^\*\?]+)$/.exec(ar[i]); 
+							var res = /^([^\*\?]+)$/.exec(ar[i]);
 							if (res) {
 								ar[i] = "*" + res[1] + "*";
 							}
@@ -158,7 +158,7 @@ if (window.Addon == 1) {
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var s = ['<input type="text" name="filter_$" placeholder="Filter" onkeydown="return Addons.InnerFilterBar.KeyDown(this,$)"  onkeyup="return Addons.InnerFilterBar.KeyUp(this, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this,$)" onfocus="Addons.InnerFilterBar.Focus(this, $)" onblur="Addons.InnerFilterBar.ShowButton(this,$)" ondblclick="return Addons.InnerFilterBar.FilterList(this,$)" style="width: ', EncodeSC(Addons.InnerFilterBar.Width), '; padding-right: 16px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerFilterBar.Icon), '" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -18px; top: -7px" width="16px" height="16px" onclick="return Addons.InnerFilterBar.FilterList(this,$)" oncontextmenu="return Addons.InnerFilterBar.FilterList(this,$)"><input type="image" id="ButtonFilterClear_$" src="bitmap:ieframe.dll,545,13,1" hidefocus="true" style="display: none; position: absolute; left: -32px; top: -4px" onclick="Addons.InnerFilterBar.Clear(true, $)"></span>'];
+		var s = ['<input type="text" name="filter_$" placeholder="Filter" onkeydown="return Addons.InnerFilterBar.KeyDown(this,$)"  onkeyup="return Addons.InnerFilterBar.KeyUp(this, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this,$)" onfocus="Addons.InnerFilterBar.Focus(this, $)" onblur="Addons.InnerFilterBar.ShowButton(this,$)" ondblclick="return Addons.InnerFilterBar.FilterList(this,$)" style="width: ', EncodeSC(Addons.InnerFilterBar.Width), '; padding-right: 12pt; vertical-align: middle"><span class="button" style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerFilterBar.Icon), '" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -13.5pt; top: -5.25pt; width: 12pt; height: 12pt" onclick="return Addons.InnerFilterBar.FilterList(this,$)" oncontextmenu="return Addons.InnerFilterBar.FilterList(this,$)"><input type="image" id="ButtonFilterClear_$" src="bitmap:ieframe.dll,545,13,1" hidefocus="true" style="display: none; position: absolute; left: -24pt; top: -3pt" onclick="Addons.InnerFilterBar.Clear(true, $)"></span>'];
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
