@@ -16,7 +16,7 @@ if (window.Addon == 1) {
 		}
 	}
 
-	var h = item.getAttribute("IconSize") || window.IconSize || 24;
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,21,16" : "icon:shell32.dll,21,32");
 	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="Addons.ControlPanelButton.Open(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: api.LoadString(hShell32, 4161), src: src }, h), '</span>']);
 } else {

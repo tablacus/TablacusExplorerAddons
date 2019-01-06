@@ -1,14 +1,14 @@
-﻿var Addon_Id = "everything";
+var Addon_Id = "everything";
 var Default = "ToolBar2Right";
 
 var item = GetAddonElement(Addon_Id);
-
 if (window.Addon == 1) {
 	Addons.Everything =
 	{
 		PATH: "es:",
 		iCaret: -1,
-		strName: "Everything",
+		strName: item.getAttribute("MenuName") || "Everything",
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 		Max: 1000,
 		RE: false,
 		fncb: {},
@@ -333,11 +333,6 @@ if (window.Addon == 1) {
 	Addons.Everything.Subfolders = api.LowPart(item.getAttribute("Subfolders")) ? 1 : 0;
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.Everything.nPos = api.LowPart(item.getAttribute("MenuPos"));
-		var s = item.getAttribute("MenuName");
-		if (s && s != "") {
-			Addons.Everything.strName = s;
-		}
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.Everything.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Everything.strName));
@@ -356,7 +351,7 @@ if (window.Addon == 1) {
 	Addons.Everything.NewTab = api.QuadPart(item.getAttribute("NewTab"));
 	AddTypeEx("Add-ons", "Everything", Addons.Everything.Exec);
 
-	SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', WINVER < 0x602 ? "32" : "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -33px; top: -5px" hidefocus="true"><input type="image" src="', EncodeSC(icon), '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -7px; width 16px; height: 16px"></span>'], "middle");
+	SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(this)" onmouseup="Addons.Everything.Change(this)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', WINVER < 0x602 ? "24" : "12", 'pt; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" style="display: none; position: absolute; left: -24.75pt; top: -3.75pt" hidefocus="true"><input type="image" src="', EncodeSC(icon), '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -13.5pt; top: -5.25pt; width 12pt; height: 12pt"></span>'], "middle");
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }

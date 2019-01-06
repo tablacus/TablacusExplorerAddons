@@ -1,7 +1,9 @@
-﻿var Addon_Id = "labelbutton";
+var Addon_Id = "labelbutton";
 var Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
+	var item = GetAddonElement(Addon_Id);
+
 	Addons.LabelButton =
 	{
 		Exec: function (o, mode)
@@ -193,8 +195,8 @@ if (window.Addon == 1) {
 			return nRes;
 		}
 	};
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "../addons/label/label16.png" : "../addons/label/label32.png");
-	var s = ['<span class="button" onclick="return Addons.LabelButton.Exec(this, 0);" oncontextmenu="return Addons.LabelButton.Exec(this, 1);" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', api.PSGetDisplayName("System.Contact.Label"), '" src="', EncodeSC(src), '" width="', h, 'px" height="' + h, 'px"></span>'];
-	SetAddon(Addon_Id, Default, s);
+
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	var src = item.getAttribute("Icon") || (h <= 16 ? "../addons/label/label16.png" : "../addons/label/label32.png");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="return Addons.LabelButton.Exec(this, 0)" oncontextmenu="return Addons.LabelButton.Exec(this, 1)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: api.PSGetDisplayName("System.Contact.Label"), src:src }, h), '</span>']);
 }

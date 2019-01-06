@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2018.12.30</MinVersion>
-    <pubDate>Sun, 30 Dec 2018 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2019.1.5</MinVersion>
+    <pubDate>Sun, 06 Jan 2019 00:00:00 GMT</pubDate>
     <Options>Common:0,6:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -11,10 +11,10 @@
   </General>
   <en>
     <Name>Split6</Name>
-    <Description>Split a window into 6 frames.</Description>
+    <Description>Split a window into 6 frames. *Require "Split"</Description>
   </en>
   <ja>
     <Name>6分割</Name>
-    <Description>画面の6分割</Description>
+    <Description>画面の6分割 ※"分割"が必要</Description>
   </ja>
 </TablacusExplorer>

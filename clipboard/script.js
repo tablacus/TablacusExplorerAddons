@@ -1,17 +1,12 @@
-﻿var Addon_Id = "clipboard";
+var Addon_Id = "clipboard";
 var Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
+	var item = GetAddonElement(Addon_Id);
+
 	Addons.ClipBoard =
 	{
-		Init: function ()
-		{
-			var n = window.IconSize == 16 ? 16 : 24;
-			s = ['<span id="Clipboard" class="button" onclick="Addons.ClipBoard.Click(this)" oncontextmenu="Addons.ClipBoard.Popup(this); return false;" ondrag="Addons.ClipBoard.Drag(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()" draggable="true"><img alt="Clipboard" src="../addons/clipboard/', n, '.png"></span>'];
-			SetAddon(Addon_Id, Default, s);
-		},
-
-		Click: function (o) { (function (o) { setTimeout(function () 
+		Exec: function (o) 
 		{
 			var Items = api.OleGetClipboard();
 			var hMenu = te.MainMenu(FCIDM_MENU_EDIT);
@@ -66,9 +61,9 @@ if (window.Addon == 1) {
 			if (FV && nVerb) {
 				api.SendMessage(FV.hwndView, WM_COMMAND, nVerb, 0);
 			}
-		}, 99);}) (o); },
+		},
 
-		Popup: function (o) { (function (o) { setTimeout(function () 
+		Popup: function (o)
 		{
 			var Items = api.OleGetClipboard();
 			if (Items && Items.Count) {
@@ -84,7 +79,8 @@ if (window.Addon == 1) {
 					ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
 				}
 			}
-		}, 99);}) (o); },
+			return false;
+		},
 
 		Drag: function (o)
 		{
@@ -93,6 +89,7 @@ if (window.Addon == 1) {
 				api.SHDoDragDrop(null, Items, te, DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK, Items.pdwEffect);
 			}
 			MouseOut();
+			return false;
 		}
 
 	};
@@ -126,10 +123,9 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("DragLeave", function (Ctrl)
-	{
-		MouseOut();
-	});
+	AddEvent("DragLeave", MouseOut);
 
-	Addons.ClipBoard.Init();
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	var src = item.getAttribute("Icon") || "../addons/clipboard/" + (h == 16 ? 16 : 24) + ".png";
+	SetAddon(Addon_Id, Default, ['<span id="Clipboard" class="button" onclick="Addons.ClipBoard.Exec(this)" oncontextmenu="return Addons.ClipBoard.Popup(this)" ondrag="return Addons.ClipBoard.Drag(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()" draggable="true">', GetImgTag({ title: "Clipboard", src: src }, h),'</span>']);
 }
