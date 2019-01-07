@@ -1,17 +1,17 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
-    <MinVersion>2018.10.26</MinVersion>
-    <pubDate>Wed, 31 Oct 2018 00:00:00 GMT</pubDate>
+    <Version>1.02</Version>
+    <MinVersion>2019.1.5</MinVersion>
+    <pubDate>Mon, 07 Jan 2019 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>System folder</Name>
-    <Description>System folder</Description>
+    <Name>System folders</Name>
+    <Description>System folders</Description>
   </en>
   <ja>
     <Name>システム フォルダ</Name>

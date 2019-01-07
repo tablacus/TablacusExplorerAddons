@@ -9,7 +9,10 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.SystemFolders =
 	{
-		nPos: 0, dir: [], Flat: api.LowPart(item.getAttribute("Flat")),
+		dir: [],
+		Flat: api.LowPart(item.getAttribute("Flat")),
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
 		Exec: function (Ctrl, pt)
 		{
@@ -22,7 +25,7 @@ if (window.Addon == 1) {
 				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
 				api.DestroyMenu(hMenu);
 				if (nVerb) {
-					Navigate(Addons.SystemFolders.dir[nVerb - 1], SBSP_NEWBROWSER);
+					NavigateFV(GetFolderView(Ctrl, pt), Addons.SystemFolders.dir[nVerb - 1], SBSP_NEWBROWSER);
 				}
 			}, 99);
 			return S_OK;
@@ -73,14 +76,7 @@ if (window.Addon == 1) {
 	};
 
 	//Menu
-	var s = item.getAttribute("MenuName");
-	if (!s || s == "") {
-		var info = GetAddonInfo(Addon_Id);
-		s = info.Name;
-	}
-	Addons.SystemFolders.strName = s;
 	if (item.getAttribute("MenuExec")) {
-		Addons.SystemFolders.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			Addons.SystemFolders.nCommand = nPos + 1;
@@ -109,9 +105,9 @@ if (window.Addon == 1) {
 	}
 	AddTypeEx("Add-ons", "System folders", Addons.SystemFolders.Exec);
 
-	var h = item.getAttribute("IconSize") || window.IconSize || (item.getAttribute("Location") == "Inner" ? 16 : 24);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,42,16" : "icon:shell32.dll,42,32");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SystemFolders.Exec(this)" oncontextmenu="Addons.SystemFolders.Exec(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.SystemFolders.strName.replace(/"/g, "&quot;"), '" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="', h, 'px"></span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SystemFolders.Exec(this)" oncontextmenu="Addons.SystemFolders.Exec(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.SystemFolders.strName, src: src}, h), '</span>']);
 } else {
 	EnableInner();
 	document.getElementById("panel7").innerHTML += '<div><input type="checkbox" name="Flat"><label>Flat</label></div>';

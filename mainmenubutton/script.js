@@ -1,13 +1,10 @@
-﻿var Addon_Id = "mainmenubutton";
+var Addon_Id = "mainmenubutton";
 var Default = "ToolBar1Left";
 
-var items = te.Data.Addons.getElementsByTagName(Addon_Id);
-if (items.length) {
-	var item = items[0];
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("KeyOn", "List");
-		item.setAttribute("MouseOn", "List");
-	}
+var item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("KeyOn", "List");
+	item.setAttribute("MouseOn", "List");
 }
 if (window.Addon == 1) {
 	Addons.MainMenuButton =
@@ -19,6 +16,11 @@ if (window.Addon == 1) {
 		{
 			if (Addons.MainMenuButton.bClose) {
 				return;
+			}
+			if (!pt && o) {
+				pt = GetPos(o, true);
+				pt.y += o.offsetHeight;
+				Ctrl = GetFolderView(o);
 			}
 			Addons.MainMenuButton.bLoop = true;
 			AddEvent("ExitMenuLoop", function () {
@@ -47,10 +49,6 @@ if (window.Addon == 1) {
 			ExtraMenuData = [];
 			eventTE.menucommand = [];
 
-			if (!pt && o) {
-				pt = GetPos(o, true);
-				pt.y = pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;;
-			}
 			if (!pt) {
 				pt = api.Memory("POINT");
 				var hwnd = api.FindWindowEx(FV.hwndView, 0, WC_LISTVIEW, null);
@@ -125,7 +123,6 @@ if (window.Addon == 1) {
 					AdjustMenuBreak(hMenu);
 				}
 				var arMenu;
-				var item;
 				if (items) {
 					var x = g_nPos;
 					arMenu = OpenMenu(items, Addons.MainMenuButton.SelItem);
@@ -151,21 +148,19 @@ if (window.Addon == 1) {
 		}
 	};
 
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var s = GetAddonOption(Addon_Id, "Icon") || '../addons/mainmenubutton/menu.png';
-	SetAddon(Addon_Id, Default, ['<span id="mainmenubutton1" class="button" onmousedown="Addons.MainMenuButton.Popup(null, null, this)" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="Main Menu" src="', s.replace(/"/g, ""), '" height="', h, 'px" /></span> ']);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	var s = item.getAttribute("Icon") || '../addons/mainmenubutton/menu.png';
+	SetAddon(Addon_Id, Default, ['<span id="mainmenubutton1" class="button" onmousedown="Addons.MainMenuButton.Popup(null, null, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: "Main menu", src: s }, h), '</span>']);
 
-	if (items.length) {
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.MainMenuButton.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.MainMenuButton.Exec, "Func");
-		}
-
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.MainMenuButton.Exec, "Func");
 	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.MainMenuButton.Exec, "Func");
+	}
+
 	AddTypeEx("Add-ons", "Main Menu", Addons.MainMenuButton.Exec);
 
 	AddEvent("KeyMessage", function (Ctrl, hwnd, msg, key, keydata)
@@ -184,4 +179,6 @@ if (window.Addon == 1) {
 			Addons.MainMenuButton.key = 0;
 		}
 	});
+} else {
+	EnableInner();
 }

@@ -5,8 +5,8 @@ var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.MixedSort =
 	{
-		nPos: 0,
-		strName: "",
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
 		CreateMenu: function (hMenu, nIndex)
 		{
@@ -99,45 +99,39 @@ if (window.Addon == 1) {
 		}
 	});
 
-	if (item) {
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.MixedSort.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.MixedSort.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				var mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
-				mii.fMask = MIIM_STRING | MIIM_SUBMENU;
-				mii.hSubMenu = api.CreatePopupMenu();
-				mii.dwTypeData = GetText(Addons.MixedSort.strName);
-				nPos = Addons.MixedSort.CreateMenu(mii.hSubMenu, nPos);
-				api.InsertMenuItem(hMenu, Addons.MixedSort.nPos, true, mii);
-				return nPos;
-			});
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Addons.MixedSort.nPos = api.LowPart(item.getAttribute("MenuPos"));
+		var s = item.getAttribute("MenuName");
+		if (s && s != "") {
+			Addons.MixedSort.strName = s;
 		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.MixedSort.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.MixedSort.Exec, "Func");
-		}
-		//Type
-		AddTypeEx("Add-ons", "Mixed sort", Addons.MixedSort.Exec);
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			var mii = api.Memory("MENUITEMINFO");
+			mii.cbSize = mii.Size;
+			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
+			mii.hSubMenu = api.CreatePopupMenu();
+			mii.dwTypeData = GetText(Addons.MixedSort.strName);
+			nPos = Addons.MixedSort.CreateMenu(mii.hSubMenu, nPos);
+			api.InsertMenuItem(hMenu, Addons.MixedSort.nPos, true, mii);
+			return nPos;
+		});
 	}
-
-	if (Addons.MixedSort.strName == "") {
-		var info = GetAddonInfo(Addon_Id);
-		Addons.MixedSort.strName = GetText(info.Name);
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.MixedSort.Exec, "Func");
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,24" : "bitmap:ieframe.dll,214,24,24");
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.MixedSort.Exec, "Func");
+	}
+	//Type
+	AddTypeEx("Add-ons", "Mixed sort", Addons.MixedSort.Exec);
 
-	var s = ['<span class="button" onclick="return Addons.MixedSort.Exec(this);" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.MixedSort.strName.replace(/"/g, ""), '" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="' + h, 'px"></span>'];
-	SetAddon(Addon_Id, Default, s);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,24" : "bitmap:ieframe.dll,214,24,24");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="return Addons.MixedSort.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.MixedSort.strName, src: src }, h), '</span>']);
+} else {
+	EnableInner();
 }

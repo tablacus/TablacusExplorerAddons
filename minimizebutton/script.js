@@ -2,7 +2,6 @@
 var Default = "ToolBar1Right";
 
 var item = GetAddonElement(Addon_Id);
-
 if (window.Addon == 1) {
 	Addons.MinimizeButton =
 	{
@@ -15,20 +14,20 @@ if (window.Addon == 1) {
 		Popup: function (o)
 		{
 			wsh.SendKeys("% ");
+			return false;
 		}
 	};
 
-	var h = item.getAttribute("IconSize");
+	var h = GetIconSize(item.getAttribute("IconSize"));
 	var src = item.getAttribute("Icon");
 	if (src) {
-		src = '<img title="' + api.LoadString(hShell32, 9840) + '" src="' + EncodeSC(src) + '"';
-		if (h) {
-			h = Number(h) ? h + 'px' : EncodeSC(h);
-			src += ' width="' + h + '" height="' + h + '"';
-		}
-		src += '>';
+		src = GetImgTag({ title: api.LoadString(hShell32, 9840), src: src }, h);
 	} else {
-		src = '<span style="font-family: marlett">&#x30;</span>';
+		var fh = "";
+		if (item.getAttribute("IconSize")) {
+			fh = '; font-size:' + (Number(h) ? h + "px" : h);
+		}
+		src = '<span title="' + api.LoadString(hShell32, 9840) + '" style="font-family: marlett' + fh + '">&#x30;</span>';
 	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.MinimizeButton.Exec(this)" oncontextmenu="Addons.MinimizeButton.Popup(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' ,src ,'</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.MinimizeButton.Exec(this)" oncontextmenu="return Addons.MinimizeButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' ,src ,'</span>']);
 }

@@ -11,7 +11,9 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.RenameDialogPlus =
 	{
-		strName: "Rename Dialog Box...",
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
+
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
@@ -24,34 +26,27 @@ if (window.Addon == 1) {
 			}
 		}
 	};
-	if (items.length) {
-		var s = item.getAttribute("MenuName");
-		if (s && s != "") {
-			Addons.RenameDialogPlus.strName = GetText(s);
-		}
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.RenameDialogPlus.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-			{
-				if (item && item.IsFileSystem && api.GetAttributesOf(item, SFGAO_CANRENAME)) {
-					api.InsertMenu(hMenu, Addons.RenameDialogPlus.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.RenameDialogPlus.strName);
-					ExtraMenuCommand[nPos] = Addons.RenameDialogPlus.Exec;
-				}
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.RenameDialogPlus.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.RenameDialogPlus.Exec, "Func");
-		}
-
-		AddTypeEx("Add-ons", "Rename dialog plus...", Addons.RenameDialogPlus.Exec);
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
+		{
+			if (item && item.IsFileSystem && api.GetAttributesOf(item, SFGAO_CANRENAME)) {
+				api.InsertMenu(hMenu, Addons.RenameDialogPlus.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.RenameDialogPlus.strName);
+				ExtraMenuCommand[nPos] = Addons.RenameDialogPlus.Exec;
+			}
+			return nPos;
+		});
 	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.RenameDialogPlus.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.RenameDialogPlus.Exec, "Func");
+	}
+
+	AddTypeEx("Add-ons", "Rename dialog plus...", Addons.RenameDialogPlus.Exec);
 } else if (window.Addon == 2) {
 	AddEventEx(window, "load", function ()
 	{

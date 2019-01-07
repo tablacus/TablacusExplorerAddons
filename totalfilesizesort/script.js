@@ -5,8 +5,8 @@ var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.TotalFileSizeSort =
 	{
-		nPos: 0,
-		strName: "",
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 		cue: {},
 
 		Exec: function (Ctrl, pt)
@@ -101,42 +101,29 @@ if (window.Addon == 1) {
 		}
 	});
 
-	if (item) {
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.TotalFileSizeSort.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.TotalFileSizeSort.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.TotalFileSizeSort.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TotalFileSizeSort.strName));
-				ExtraMenuCommand[nPos] = Addons.TotalFileSizeSort.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.TotalFileSizeSort.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TotalFileSizeSort.Exec, "Func");
-		}
-		//Type
-		AddTypeEx("Add-ons", "Total file size sort", Addons.TotalFileSizeSort.Exec);
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
+		{
+			api.InsertMenu(hMenu, Addons.TotalFileSizeSort.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TotalFileSizeSort.strName));
+			ExtraMenuCommand[nPos] = Addons.TotalFileSizeSort.Exec;
+			return nPos;
+		});
 	}
-
-	if (Addons.TotalFileSizeSort.strName == "") {
-		var info = GetAddonInfo(Addon_Id);
-		Addons.TotalFileSizeSort.strName = GetText(info.Name);
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.TotalFileSizeSort.Exec, "Func");
 	}
-	var h = GetAddonOption(Addon_Id, "IconSize") || window.IconSize || 24;
-	var src = GetAddonOption(Addon_Id, "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,25" : "bitmap:ieframe.dll,214,24,25");
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TotalFileSizeSort.Exec, "Func");
+	}
+	//Type
+	AddTypeEx("Add-ons", "Total file size sort", Addons.TotalFileSizeSort.Exec);
 
-	var s = ['<span class="button" onclick="return Addons.TotalFileSizeSort.Exec(this);" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.TotalFileSizeSort.strName.replace(/"/g, ""), '" src="', src.replace(/"/g, ""), '" width="', h, 'px" height="' + h, 'px"></span>'];
-	SetAddon(Addon_Id, Default, s);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,25" : "bitmap:ieframe.dll,214,24,25");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="return Addons.TotalFileSizeSort.Exec(this);" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.TotalFileSizeSort.strName, src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

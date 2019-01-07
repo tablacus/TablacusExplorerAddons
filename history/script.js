@@ -1,4 +1,4 @@
-﻿var Addon_Id = "history";
+var Addon_Id = "history";
 var Default = "ToolBar2Left";
 
 var item = GetAddonElement(Addon_Id);
@@ -12,18 +12,16 @@ if (!item.getAttribute("Set")) {
 
 	item.setAttribute("Save", 1000);
 }
-
 if (window.Addon == 1) {
 	Addons.History1 =
 	{
-		Save: 1000,
+		Items: item.getAttribute("Save") || 1000,
 		PATH: "history:",
 		CONFIG: fso.BuildPath(te.Data.DataFolder, "config\\history.tsv"),
-		db: {},
 		bSave: false,
 		Prev: null,
-		strName: "",
-		tid: [],
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
 		IsHandle: function (Ctrl)
 		{
@@ -45,7 +43,7 @@ if (window.Addon == 1) {
 			keys.sort(function (a, b) {
 				return Addons.History1.db[b] - Addons.History1.db[a];
 			});
-			while (keys.length > this.Save) {
+			while (keys.length > this.Items) {
 				delete this.db[keys.pop()];
 			}
 		},
@@ -93,36 +91,64 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-		}
-	}
-	try {
-		var ado = te.CreateObject(api.ADBSTRM);
-		ado.CharSet = "utf-8";
-		ado.Open();
-		ado.LoadFromFile(Addons.History1.CONFIG);
-		while (!ado.EOS) {
-			var ar = ado.ReadText(adReadLine).split("\t");
-			Addons.History1.db[ar[0]] = ar[1];
-		}
-		ado.Close();
-	} catch (e) {}
-
-	AddEvent("SaveConfig", function ()
-	{
-		if (Addons.History1.bSave) {
+		},
+		Load: function ()
+		{
+			Addons.History1.db = {};
 			try {
-				var ado = te.CreateObject(api.ADBSTRM);
+				var ado = api.CreateObject("ads");
 				ado.CharSet = "utf-8";
 				ado.Open();
-				var keys = [];
-				Addons.History1.GetList(keys);
-				for (var i = 0; i < keys.length; i++) {
-					ado.WriteText([keys[i], Addons.History1.db[keys[i]]].join("\t") + "\r\n");
+				ado.LoadFromFile(Addons.History1.CONFIG);
+				while (!ado.EOS) {
+					var ar = ado.ReadText(adReadLine).split("\t");
+					Addons.History1.db[ar[0]] = ar[1];
 				}
-				ado.SaveToFile(Addons.History1.CONFIG, adSaveCreateOverWrite);
 				ado.Close();
-				Addons.History1.bSave = false;
 			} catch (e) {}
+			Addons.History1.ModifyDate = api.ILCreateFromPath(Addons.History1.CONFIG).ModifyDate;
+		},
+
+		Save: function ()
+		{
+			if (Addons.History1.tid) {
+				clearTimeout(Addons.History1.tid);
+			}
+			Addons.History1.bSave = true;
+			Addons.History1.tid = setTimeout(Addons.History1.SaveEx, 999);
+		},
+
+		SaveEx: function ()
+		{
+			if (Addons.History1.bSave) {
+				if (Addons.History1.tid) {
+					clearTimeout(Addons.History1.tid);
+					delete Addons.History1.tid;
+				}
+				try {
+					var ado = api.CreateObject("ads");
+					ado.CharSet = "utf-8";
+					ado.Open();
+					var keys = [];
+					Addons.History1.GetList(keys);
+					for (var i = 0; i < keys.length; i++) {
+						ado.WriteText([keys[i], Addons.History1.db[keys[i]]].join("\t") + "\r\n");
+					}
+					ado.SaveToFile(Addons.History1.CONFIG, adSaveCreateOverWrite);
+					ado.Close();
+					Addons.History1.bSave = false;
+				} catch (e) {}
+				Addons.History1.ModifyDate = api.ILCreateFromPath(Addons.History1.CONFIG).ModifyDate;			}
+		}
+	}
+	Addons.History1.Load();
+
+	AddEvent("SaveConfig", Addons.History1.SaveEx);
+
+	AddEvent("ChangeNotifyItem:" + Addons.History1.CONFIG, function (pid)
+	{
+		if (pid.ModifyDate - Addons.History1.ModifyDate) {
+			Addons.History1.Load();
 		}
 	});
 
@@ -132,7 +158,7 @@ if (window.Addon == 1) {
 			var path = GetSavePath(Ctrl.FolderItem);
 			if (path && IsSavePath(path)) {
 				Addons.History1.db[path] = new Date().getTime();
-				Addons.History1.bSave = true;
+				Addons.History1.Save();
 			}
 		}
 	});
@@ -211,22 +237,14 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	Addons.History1.Save = item.getAttribute("Save") || Addons.History1.Save;
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.History1.nPos = api.LowPart(item.getAttribute("MenuPos"));
-		Addons.History1.strName = item.getAttribute("MenuName") || "History";
-
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.History1.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.History1.strName));
 			ExtraMenuCommand[nPos] = Addons.History1.Exec;
 			return nPos;
 		});
-	}
-	if (!Addons.History1.strName) {
-		var info = GetAddonInfo(Addon_Id);
-		Addons.History1.strName = info.Name;
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -238,10 +256,10 @@ if (window.Addon == 1) {
 	}
 	AddTypeEx("Add-ons", "History", Addons.History1.Exec);
 
-	var h = api.LowPart(item.getAttribute("IconSize")) || window.IconSize || 24;
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var s = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,12" : "bitmap:ieframe.dll,204,24,12");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.History1.Exec(this);" oncontextmenu="Addons.History1.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', EncodeSC(Addons.History1.strName), '" src="', EncodeSC(s), '" width="', h, 'px" height="', h, 'px" /></span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.History1.Exec(this);" oncontextmenu="Addons.History1.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.History1.strName, src: s}, h), '</span>']);
 } else {
 	EnableInner();
-	SetTabContents(0, "General", '<label>Folders</label><br /><input type="text" name="Save" size="4" />');
+	SetTabContents(0, "General", '<label>Number of items</label><br /><input type="text" name="Save" size="4" />');
 }
