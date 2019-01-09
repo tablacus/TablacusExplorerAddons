@@ -2,23 +2,33 @@ var Addon_Id = "listwidth";
 
 if (window.Addon == 1) {
 	Addons.ListWidth = {
-		Width: api.QuadPart(GetAddonOption("listwidth", "Width")),
+		Width: GetAddonOptionEx("listwidth", "Width"),
 		Exec: function (Ctrl)
 		{
 			if (Ctrl.CurrentViewMode == FVM_LIST) {
-				var hList = Ctrl.hwndList;
-				if (hList) {
-					api.SendMessage(hList, LVM_SETCOLUMNWIDTH, 0, Addons.ListWidth.Width);
+				if (Addons.ListWidth.Width > 29 || Addons.ListWidth.Width < 0) {
+					var hList = Ctrl.hwndList;
+					if (hList) {
+						api.SendMessage(hList, LVM_SETCOLUMNWIDTH, 0, Addons.ListWidth.Width);
+					}
 				}
 			}
+		},
+
+		Set: function (Ctrl, n)
+		{
+			Addons.ListWidth.Width = n;
+			Addons.ListWidth.Exec(GetFolderView(Ctrl));
 		}
 	}
-	if (Addons.ListWidth.Width > 30) {
-		AddEvent("ListViewCreated", Addons.ListWidth.Exec);
-		AddEvent("ViewModeChanged", Addons.ListWidth.Exec);
-		var cFV = te.Ctrls(CTRL_FV);
-		for (var i in cFV) {
-			Addons.ListWidth.Exec(cFV[i]);
-		}
+
+	AddEvent("ListViewCreated", Addons.ListWidth.Exec);
+	AddEvent("ViewModeChanged", Addons.ListWidth.Exec);
+
+	var cFV = te.Ctrls(CTRL_FV);
+	for (var i in cFV) {
+		Addons.ListWidth.Exec(cFV[i]);
 	}
+} else {
+	SetTabContents(0, "General", '<label>Width</label><br /><input type="text" id="Width" style="width: 100%" />');
 }
