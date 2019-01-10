@@ -1,9 +1,14 @@
-﻿var Addon_Id = "duplicatecopy";
+var Addon_Id = "duplicatecopy";
 var Default = "None";
-var item = GetAddonElement(Addon_Id);
+
 if (window.Addon == 1) {
+	var item = GetAddonElement(Addon_Id);
+
 	Addons.DuplicateCopy =
 	{
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
+
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
@@ -131,10 +136,8 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	Addons.DuplicateCopy.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.DuplicateCopy.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.DuplicateCopy.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.DuplicateCopy.strName);
@@ -152,10 +155,9 @@ if (window.Addon == 1) {
 	}
 	AddTypeEx("Add-ons", "Duplicate copy", Addons.DuplicateCopy.Exec);
 
-	var h = item.getAttribute("IconSize") || (item.getAttribute("Location") == "Inner" ? 16 * screen.logicalYDPI / 96 : window.IconSize);
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,6" : "bitmap:ieframe.dll,214,24,6");
-	var s = ['<span class="button" onclick="Addons.DuplicateCopy.Exec(this)" oncontextmenu="return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', Addons.DuplicateCopy.strName, '" src="', EncodeSC(src), '" width="', h, 'px" height="', h, 'px"></span>'];
-	SetAddon(Addon_Id, Default, s);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.DuplicateCopy.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.DuplicateCopy.strName, src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

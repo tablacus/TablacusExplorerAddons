@@ -52,6 +52,11 @@ if (window.Addon == 1) {
 					te.Data.DragTab = null;
 				}
 			}
+		},
+
+		ChangeIcon: function (Ctrl, o)
+		{
+			o.src = GetIconImage(Ctrl, api.GetSysColor(COLOR_BTNFACE));
 		}
 	};
 
@@ -81,10 +86,18 @@ if (window.Addon == 1) {
 		s = "icon:shell32.dll,4,16";
 		AddEvent("ChangeView", function (Ctrl)
 		{
-			(document.getElementById("FolderButton") || {}).src = GetIconImage(Ctrl, api.GetSysColor(COLOR_BTNFACE));
+			var o = document.getElementById("FolderButton_$");
+			if (o) {
+				Addons.FolderButton.ChangeIcon(Ctrl, o);
+			} else {
+				o = document.getElementById("FolderButton_" + Ctrl.Parent.Id);
+				if (o) {
+					Addons.FolderButton.ChangeIcon(Ctrl, o);
+				}
+			}
 		});
 	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FolderButton.Exec(this)" oncontextmenu="return Addons.FolderButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()" Addons.FolderButton.Drag()" onmousedown="Addons.FolderButton.Button(true)" onmouseup="Addons.FolderButton.Button(false)">', GetImgTag({ id: "FolderButton", title:  Addons.FolderButton.strName, src: s }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FolderButton.Exec(this)" oncontextmenu="return Addons.FolderButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut(); Addons.FolderButton.Drag(this)" onmousedown="Addons.FolderButton.Button(true)" onmouseup="Addons.FolderButton.Button(false)">', GetImgTag({ id: "FolderButton_$", title:  Addons.FolderButton.strName, src: s }, h), '</span>']);
 } else {
 	EnableInner();
 }

@@ -3,14 +3,13 @@ var Addon_Id = "listwidth";
 if (window.Addon == 1) {
 	Addons.ListWidth = {
 		Width: GetAddonOptionEx("listwidth", "Width"),
+
 		Exec: function (Ctrl)
 		{
-			if (Ctrl.CurrentViewMode == FVM_LIST) {
-				if (Addons.ListWidth.Width > 29 || Addons.ListWidth.Width < 0) {
-					var hList = Ctrl.hwndList;
-					if (hList) {
-						api.SendMessage(hList, LVM_SETCOLUMNWIDTH, 0, Addons.ListWidth.Width);
-					}
+			if (Addons.ListWidth.Width > 29 || Addons.ListWidth.Width < 0) {
+				var hList = Ctrl.hwndList;
+				if (hList && api.SendMessage(hList, LVM_GETVIEW, 0, 0) == 3) {
+					api.SendMessage(hList, LVM_SETCOLUMNWIDTH, 0, Addons.ListWidth.Width);
 				}
 			}
 		},

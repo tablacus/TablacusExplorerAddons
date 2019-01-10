@@ -1,4 +1,4 @@
-﻿var sitems = (api.LoadString(hShell32, 38192) || api.LoadString(hShell32, 6466) || "%s items").replace(/%1[^ ]*/, "%s");
+var sitems = (api.LoadString(hShell32, 38192) || api.LoadString(hShell32, 6466) || "%s items").replace(/%1[^ ]*/, "%s");
 
 var GetList = function(Item)
 {

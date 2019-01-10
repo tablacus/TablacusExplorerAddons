@@ -1,61 +1,84 @@
 if (window.Addon == 1) {
-	Addons.TooltipPreview = { MAX: 400, SIZE: api.Memory("SIZE"),
+	Addons.TooltipPreview = {
+		MAX: 400,
+		SIZE: api.Memory("SIZE"),
+		artm: [99, 99, 99, 500, 999].reverse(),
 
 		Draw: function ()
 		{
+			delete Addons.TooltipPreview.tid;
 			var q = Addons.TooltipPreview.q;
-			Addons.TooltipPreview.Path = q.Item.Path;
-			if (api.IsWindowVisible(q.hwnd)) {
-				if (q.w > 48 || q.h > 48 || q.image.GetFrameCount() > 1) {
-					var hdc = api.GetWindowDC(q.hwnd);
-					if (hdc) {
-						var hbm = q.image.GetHBITMAP(GetSysColor(COLOR_WINDOW));
-						if (hbm) {
-							var hmdc = api.CreateCompatibleDC(hdc);
-							var hOld = api.SelectObject(hmdc, hbm);
-							var rc = api.Memory("RECT");
-							api.GetClientRect(q.hwnd, rc);
-							var w1 = rc.Right-- - rc.Left++;
-							var h1 = rc.Bottom-- - rc.Top++;
-							if (w1 < q.w * q.z) {
-								q.z = (w1 - 2) / q.w;
-								if (Addons.TooltipPreview.SIZE.cx > 1) {
-									Addons.TooltipPreview.SIZE.cx--;
-								}
-							}
-							if (h1 < q.h * q.z) {
-								q.z = (h1 - 2) / q.h;
-								if (Addons.TooltipPreview.SIZE.cy > 1) {
-									Addons.TooltipPreview.SIZE.cy--;
-								}
-							}
-							q.x = (w1 - q.w * q.z) / 2;
-							q.y = (h1 - q.h * q.z) / 2;
-							api.FillRect(hdc, rc, null);
-							api.StretchBlt(hdc, q.x, q.y, q.w * q.z, q.h * q.z, hmdc, 0, 0, q.w, q.h, SRCCOPY);
-							api.SelectObject(hmdc, hOld);
-							api.DeleteDC(hmdc);
-							api.DeleteObject(hbm);
-							q.image.Frame = 0;
+			if (!q.hwnd) {
+				var hwnd;
+				while (hwnd = api.FindWindowEx(null, hwnd, null, null)) {
+					if (api.GetClassName(hwnd) == "tooltips_class32") {
+						if (api.IsWindowVisible(hwnd)) {
+							q.hwnd = hwnd;
+							break;
 						}
-						api.ReleaseDC(q.hwnd, hdc);
-					}
-					if (q.image.GetFrameCount() > 1) {
-						var i = q.image.GetFrameMetadata("/grctlext/Delay") * 10;
-						setTimeout(Addons.TooltipPreview.Animate, i > 10 ? i : 100);
-					}
-				} else {
-					var hIcon = q.image.GetHICON();
-					if (hIcon) {
-						var s = q.Item.Name.substr(0, 99);
-						var p = api.Memory(100);
-						p.Write(0, VT_LPWSTR, s);
-						api.SendMessage(q.hwnd, WM_USER + 33, hIcon, p);
-						api.SendMessage(q.hwnd, WM_USER + 29, 0, 0);
-						api.SendMessage(q.hwnd, WM_USER + 33, 0, 0);
-						api.DestroyIcon(hIcon);
 					}
 				}
+			}
+			if (q.hwnd && api.IsWindowVisible(q.hwnd) && q.image) {
+				var max = api.SendMessage(q.hwnd, WM_USER + 25, 0, 0);
+				if (max < 400) {
+					Addons.TooltipPreview.MAX = max;
+				}
+				Addons.TooltipPreview.Path = q.Item.Path;
+				if (api.IsWindowVisible(q.hwnd)) {
+					if (q.w > 48 || q.h > 48 || q.image.GetFrameCount() > 1) {
+						var hdc = api.GetWindowDC(q.hwnd);
+						if (hdc) {
+							var hbm = q.image.GetHBITMAP(GetSysColor(COLOR_WINDOW));
+							if (hbm) {
+								var hmdc = api.CreateCompatibleDC(hdc);
+								var hOld = api.SelectObject(hmdc, hbm);
+								var rc = api.Memory("RECT");
+								api.GetClientRect(q.hwnd, rc);
+								var w1 = rc.Right-- - rc.Left++;
+								var h1 = rc.Bottom-- - rc.Top++;
+								if (w1 < q.w * q.z) {
+									q.z = (w1 - 2) / q.w;
+									if (Addons.TooltipPreview.SIZE.cx > 1) {
+										Addons.TooltipPreview.SIZE.cx--;
+									}
+								}
+								if (h1 < q.h * q.z) {
+									q.z = (h1 - 2) / q.h;
+									if (Addons.TooltipPreview.SIZE.cy > 1) {
+										Addons.TooltipPreview.SIZE.cy--;
+									}
+								}
+								q.x = (w1 - q.w * q.z) / 2;
+								q.y = (h1 - q.h * q.z) / 2;
+								api.FillRect(hdc, rc, null);
+								api.StretchBlt(hdc, q.x, q.y, q.w * q.z, q.h * q.z, hmdc, 0, 0, q.w, q.h, SRCCOPY);
+								api.SelectObject(hmdc, hOld);
+								api.DeleteDC(hmdc);
+								api.DeleteObject(hbm);
+								q.image.Frame = 0;
+							}
+							api.ReleaseDC(q.hwnd, hdc);
+						}
+						if (q.image.GetFrameCount() > 1) {
+							var i = q.image.GetFrameMetadata("/grctlext/Delay") * 10;
+							setTimeout(Addons.TooltipPreview.Animate, i > 10 ? i : 100);
+						}
+					} else {
+						var hIcon = q.image.GetHICON();
+						if (hIcon) {
+							var s = q.Item.Name.substr(0, 99);
+							var p = api.Memory(100);
+							p.Write(0, VT_LPWSTR, s);
+							api.SendMessage(q.hwnd, WM_USER + 33, hIcon, p);
+							api.SendMessage(q.hwnd, WM_USER + 29, 0, 0);
+							api.SendMessage(q.hwnd, WM_USER + 33, 0, 0);
+							api.DestroyIcon(hIcon);
+						}
+					}
+				}
+			} else if (Addons.TooltipPreview.tm) {
+				Addons.TooltipPreview.tid = setTimeout(Addons.TooltipPreview.Draw, Addons.TooltipPreview.artm[--Addons.TooltipPreview.tm]);
 			}
 		},
 
@@ -100,22 +123,11 @@ if (window.Addon == 1) {
 					if (q.z > 1) {
 						q.z = 1;
 					}
-					setTimeout(function ()
-					{
-						var hwnd;
-						while (q.hwnd = api.FindWindowEx(hwnd, q.hwnd, null, null)) {
-							if (api.IsWindowVisible(q.hwnd)) {
-								if (api.GetClassName(q.hwnd) == "tooltips_class32") {
-									var max = api.SendMessage(q.hwnd, WM_USER + 25, 0, 0);
-									if (max < 400) {
-										Addons.TooltipPreview.MAX = max;
-									}
-									Addons.TooltipPreview.Draw();
-									break;
-								}
-							}
-						}
-					}, 200);
+					if (Addons.TooltipPreview.tid) {
+						clearTimeout(Addons.TooltipPreview.tid);
+					}
+					Addons.TooltipPreview.tm = Addons.TooltipPreview.artm.length;
+					Addons.TooltipPreview.tid = setTimeout(Addons.TooltipPreview.Draw, 99);
 					var s = "";
 					if (Addons.TooltipPreview.SIZE.cx == 0) {
 						var hdc = api.GetWindowDC(te.hwnd);
@@ -155,6 +167,7 @@ if (window.Addon == 1) {
 					if (Addons.TooltipPreview.tid) {
 						clearTimeout(Addons.TooltipPreview.tid);
 					}
+					Addons.TooltipPreview.tm = Addons.TooltipPreview.artm.length;
 					Addons.TooltipPreview.tid = setTimeout(Addons.TooltipPreview.Draw, 999);
 				}
 			}

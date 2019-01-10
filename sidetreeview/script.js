@@ -44,12 +44,13 @@ if (window.Addon == 1) {
 				var pt = GetPos(o);
 				api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
 				api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
-				if (Addons.SideTreeView.tid) {
+				if (Addons.SideTreeView.tid2) {
 					if (Addons.SideTreeView.tid2 != -1) {
 						clearTimeout(Addons.SideTreeView.tid2);
 					}
 					Addons.SideTreeView.tid2 = setTimeout(function ()
 					{
+						delete Addons.SideTreeView.tid2;
 						Addons.SideTreeView.Expand(te.Ctrl(CTRL_FV));
 					}, 999);
 				}

@@ -1,4 +1,4 @@
-﻿var Addon_Id = "previewwindow";
+var Addon_Id = "previewwindow";
 var Default = "ToolBar2Left";
 
 var item = GetAddonElement(Addon_Id);
@@ -19,11 +19,12 @@ if (window.Addon == 1) {
 	}
 	Addons.PreviewWindow =
 	{
-		nPos: 0,
-		strName: "",
+		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
 		Exec: function (Ctrl, pt)
 		{
+			GetFolderView(Ctrl, pt).Focus();
 			if (Addons.PreviewWindow.dlg) {
 				Addons.PreviewWindow.dlg.Window.close();
 				delete Addons.PreviewWindow.dlg;
@@ -83,15 +84,13 @@ if (window.Addon == 1) {
 		}
 	});
 
-	Addons.PreviewWindow.strName = item.getAttribute("MenuName") || "Preview window...";
-	var h = item.getAttribute("IconSize") || window.IconSize || 24;
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var s = item.getAttribute("Icon") || MakeImgSrc("*.jpg", 0);
-	s = ['<span class="button" id="WindowPreviewButton" onclick="Addons.PreviewWindow.Exec()" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="return false;"><img title="', EncodeSC(Addons.PreviewWindow.strName), '" src="', EncodeSC(s), '" style="width:', h, 'px; height:', h, 'px"' ,'></span>'];
+	s = ['<span class="button" id="WindowPreviewButton" onclick="Addons.PreviewWindow.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.PreviewWindow.strName, src:s }, h) ,'</span>'];
 	SetAddon(Addon_Id, Default, s);
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.PreviewWindow.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.PreviewWindow.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.PreviewWindow.strName);
@@ -109,4 +108,6 @@ if (window.Addon == 1) {
 	}
 
 	AddTypeEx("Add-ons", "Preview window", Addons.PreviewWindow.Exec);
+} else {
+	EnableInner();
 }

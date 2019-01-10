@@ -1,4 +1,4 @@
-﻿importScripts("..\\..\\script\\consts.js");
+importScripts("..\\..\\script\\consts.js");
 
 BUF_SIZE = 32768;
 

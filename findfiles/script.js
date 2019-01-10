@@ -1,4 +1,4 @@
-﻿var Addon_Id = "findfiles";
+var Addon_Id = "findfiles";
 var Default = "None";
 
 var item = GetAddonElement(Addon_Id);
@@ -15,7 +15,8 @@ Addons.FindFiles =
 {
 	PATH: "findfiles:",
 	iCaret: -1,
-	strName: "",
+	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+	nPos: api.LowPart(item.getAttribute("MenuPos")),
 
 	GetSearchString: function(Ctrl)
 	{
@@ -30,6 +31,7 @@ Addons.FindFiles =
 
 	Exec: function (Ctrl, pt)
 	{
+		GetFolderView(Ctrl, pt).Focus();
 		ShowDialog("../addons/findfiles/dialog.html", {MainWindow: window, width: 400, height: 220});
 		return S_OK;
 	},
@@ -121,7 +123,7 @@ if (window.Addon == 1) {
 	AddEvent("GetIconImage", function (Ctrl, BGColor)
 	{
 		if (Addons.FindFiles.GetSearchString(Ctrl)) {
-			return MakeImgSrc("bitmap:ieframe.dll,216,16,14", 0, false, 16);
+			return MakeImgSrc("bitmap:ieframe.dll,216,16,17", 0, false, 16);
 		}
 	});
 
@@ -148,10 +150,8 @@ if (window.Addon == 1) {
 		}
 	}, true);
 	
-	Addons.FindFiles.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.FindFiles.nPos = api.LowPart(item.getAttribute("MenuPos"));
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
 		{
 			api.InsertMenu(hMenu, Addons.FindFiles.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.FindFiles.strName));
@@ -169,14 +169,10 @@ if (window.Addon == 1) {
 	}
 	//Type
 	AddTypeEx("Add-ons", "Find Files", Addons.FindFiles.Exec);
-	var h = api.LowPart(item.getAttribute("IconSize")) || window.IconSize || 24;
-	var s = item.getAttribute("Icon");
-	if (s) {
-		s = '<img title="' + EncodeSC(Addons.FindFiles.strName) + '" src="' + EncodeSC(s) + '" width="' + h + 'px" height="' + h + 'px" />';
-	} else {
-		s = EncodeSC(Addons.FindFiles.strName);
-	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FindFiles.Exec();" oncontextmenu="Addons.FindFiles.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
+
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,17" : "bitmap:ieframe.dll,214,24,17");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FindFiles.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.FindFiles.strName, src: src }, h), '</span>']);
 } else if (window.Addon == 2) {
 	AddEventEx(window, "load", function ()
 	{
@@ -215,4 +211,6 @@ if (window.Addon == 1) {
 		FV.Navigate("findfiles:" + [document.F.location.value, document.F.name.value, document.F.content.value.replace(/%/g, "%25").replace(/\//g, "%2F")].join("|"), document.F.newtab.checked ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
 		window.close();
 	}
+} else {
+	EnableInner();
 }
