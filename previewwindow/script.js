@@ -85,7 +85,7 @@ if (window.Addon == 1) {
 	});
 
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var s = item.getAttribute("Icon") || MakeImgSrc("*.jpg", 0);
+	var s = item.getAttribute("Icon") || (h > 16 ? "bitmap:ieframe.dll,214,24,14" : "bitmap:ieframe.dll,216,16,14");
 	s = ['<span class="button" id="WindowPreviewButton" onclick="Addons.PreviewWindow.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.PreviewWindow.strName, src:s }, h) ,'</span>'];
 	SetAddon(Addon_Id, Default, s);
 

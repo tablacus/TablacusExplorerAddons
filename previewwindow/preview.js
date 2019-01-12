@@ -48,8 +48,6 @@ Addons.PreviewWindow =
 			img1.onload = Addons.PreviewWindow.Loaded;
 			img1.onerror = Addons.PreviewWindow.FromFile;
 			img1.src = te.Data.window.Addons.PreviewWindow.File;
-			img1.style.maxWidth = "100%";
-			img1.style.maxHeight = "100vh";
 		} else {
 			document.title = te.Data.window.Addons.PreviewWindow.strName;
 			desc.innerHTML = "";
