@@ -2,7 +2,7 @@ var Addon_Id = "navigationsound";
 
 if (window.Addon == 1) {
 	Addons.NavigationSound = {
-		Path: api.PathUnquoteSpaces(ExtractMacro(te, GetAddonOption(Addon_Id, "Path"), "%SystemRoot%\\Media\\Windows Navigation Start.wav"))
+		Path: api.PathUnquoteSpaces(ExtractMacro(te, GetAddonOption(Addon_Id, "Path") || "%SystemRoot%\\Media\\Windows Navigation Start.wav"))
 	}
 
 	AddEvent("ListViewCreated", function ()
