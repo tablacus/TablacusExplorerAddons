@@ -53,7 +53,7 @@ if (window.Addon == 1) {
 		{
 			var res;
 			if (Addons.WLX.X.length) {
-				if (/string/i.test(typeof Ctrl) || !IsFolderEx(Ctrl)) {
+				if (/string/i.test(typeof Ctrl) || !IsFolderEx(Ctrl) || api.ILIsEqual((Ctrl.FolderItem || Ctrl).Alt, ssfRESULTSFOLDER)) {
 					var path = /string/i.test(typeof Ctrl) ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 					path = path.replace(/^wlx:/i, "");
 					var ext = fso.GetExtensionName(path).toUpperCase();
@@ -246,7 +246,7 @@ if (window.Addon == 1) {
 						{
 							var hwnd = WLX.ListLoad(Ctrl.hwndView, path, Fit ? 50 : 32);
 							if (hwnd) {
-								Ctrl.hwndAlt = hwnd;1
+								Ctrl.hwndAlt = hwnd;
 								Ctrl.Data.WLX = { X: WLX, hwnd: hwnd };
 								var Items = te.FolderItems();
 								Items.AddItem(path);

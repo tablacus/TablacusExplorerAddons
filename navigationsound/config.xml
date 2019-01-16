@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2019.1.16</MinVersion>
+    <pubDate>Wed, 16 Jan 2019 00:00:00 GMT</pubDate>
+    <Options>Common:0:0</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Navigation sound</Name>
+    <Description>Navigation sound</Description>
+  </en>
+  <ja>
+    <Name>ナビゲーション サウンド</Name>
+    <Description>ナビゲーション サウンド</Description>
+  </ja>
+</TablacusExplorer>
