@@ -1,7 +1,13 @@
+var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+if (ado) {
+	SetTabContents(4, "General", ado.ReadText(adReadAll));
+	ado.Close();
+}
+
 var arIndex = ["Type", "Large", "Small", "ExtraLarge", "SysSmall"];
 var fnConfig = fso.BuildPath(te.Data.DataFolder, "config\\iconchanger.tsv");
 
-function SaveIC(mode)
+SaveIC = function(mode)
 {
 	if (g_Chg[mode]) {
 		var f = fso.OpenTextFile(fnConfig, 2, true, -1);
@@ -12,7 +18,7 @@ function SaveIC(mode)
 	}
 }
 
-function EditIC(mode)
+EditIC = function(mode)
 {
 	if (g_x.List.selectedIndex < 0) {
 		return;
@@ -20,12 +26,12 @@ function EditIC(mode)
 	ClearX("List");
 	var a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
 	for (var i = arIndex.length; i--;) {
-		document.F.elements[arIndex[i]].value = a[i] || "";
+		document.E.elements[arIndex[i]].value = a[i] || "";
 	}
-	document.F.Type.value = GetText(document.F.Type.value);
+	document.E.Type.value = GetText(document.E.Type.value);
 }
 
-function ReplaceIC(mode)
+ReplaceIC = function(mode)
 {
 	ClearX();
 	if (g_x[mode].selectedIndex < 0) {
@@ -33,7 +39,7 @@ function ReplaceIC(mode)
 	}
 	var a = [];
 	for (var i = arIndex.length; i--;) {
-		a.unshift(document.F.elements[arIndex[i]].value);
+		a.unshift(document.E.elements[arIndex[i]].value);
 	}
 	a[0] = GetSourceText(a[0]);
 	SetData(g_x.List[g_x.List.selectedIndex], a);
@@ -43,7 +49,7 @@ function ReplaceIC(mode)
 ApplyLang(document);
 var info = GetAddonInfo(Addon_Id);
 document.title = info.Name;
-g_x.List = document.F.List;
+g_x.List = document.E.List;
 
 var size = api.Memory("SIZE");
 for (var j = SHIL_JUMBO; j--;) {
@@ -60,9 +66,7 @@ try {
 		ar.push(f.ReadLine());
 	}
 	f.Close();
-}
-catch (e) {
-}
+} catch (e) {}
 
 if (!ar.length) {
 	ar = ["Folder closed", "Folder opened", "Undefined", "Shortcut", "Share"];
@@ -73,16 +77,14 @@ for (var i = 0; i < ar.length; i++) {
 }
 EnableSelectTag(g_x.List);
 
-g_nResult = 3;
-AddEventEx(window, "beforeunload", function ()
+SetOnChangeHandler();
+
+SaveLocation = function ()
 {
-	if (g_nResult == 2) {
-		return;
+	if (g_bChanged) {
+		ReplaceIC("List");
 	}
-	if (ConfirmX(true, ReplaceIC)) {
+	if (g_Chg.List) {
 		SaveIC("List");
-		TEOk();
-		return;
 	}
-	event.returnValue = GetText('Close');
-});
+};

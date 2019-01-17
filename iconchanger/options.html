@@ -1,109 +1,96 @@
-<html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="MSThemeCompatible" content="Yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Tablcus Add-ons</title>
-    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
-    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="script.js">
-    </script>
-  </head>
-  <body>
-    <form name="F" style="display: inline;">
-      <div class="panel" id="panel0" style="display: block;">
-        <table width="99%">
+<form name="E">
+  <table style="width: 100%">
+    <tr>
+      <td style="width: 12em; vertical-align: top">
+        <select name="List" size="19" style="width: 12em; height: 30em; height: calc(100vh - 5.7em); min-height: 16em" onchange="EditXEx(EditIC, 'List')" ondblclick="EditIC('List')" oncontextmenu="CancelX('List')" multiple>
+        </select>
+      </td>
+      <td valign="top">
+        <label>Type</label>
+        <br />
+        <input type="text" name="Type" style="width: 100%" onchange="ChangeX('List')" />
+        <table class="layout">
           <tr>
-            <td width="150px" valign="top">
-              <select name="List" size="19" style="width: 150px; height: 380px" onchange="EditXEx(EditIC, 'List')" ondblclick="EditIC('List')" oncontextmenu="CancelX('List')" multiple>
-              </select>
-            </td>
-            <td valign="top">
-              <label>Type</label>
-              <br />
-              <input type="text" name="Type" style="width: 100%" onchange="ChangeX('List')" />
-              <label>Small</label> : <span id="size1"></span>
-              <table class="layout">
-                <tr>
-                  <td style="width: 100%">
-                    <input type="text" name="Small" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
-                  </td>
-                  <td align="right">
-                    <input type="button" value="Browse..." onclick="RefX('Small', false, this)" />
-                  </td>
-                </tr>
-              </table>
-              <label>SysSmall</label> : <span id="size3"></span>
-              <table class="layout">
-                <tr>
-                  <td style="width: 100%">
-                    <input type="text" name="SysSmall" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
-                  </td>
-                  <td align="right">
-                    <input type="button" value="Browse..." onclick="RefX('SysSmall', false, this)" />
-                  </td>
-                </tr>
-              </table>
-              <label>Large</label> : <span id="size0"></span>
-              <table class="layout">
-                <tr>
-                  <td style="width: 100%">
-                    <input type="text" name="Large" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
-                  </td>
-                  <td align="right">
-                    <input type="button" value="Browse..." onclick="RefX('Large', false, this)" />
-                  </td>
-                </tr>
-              </table>
-              <label>ExtraLarge</label> : <span id="size2"></span>
-              <table class="layout">
-                <tr>
-                  <td style="width: 100%">
-                    <input type="text" name="ExtraLarge" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
-                  </td>
-                  <td align="right">
-                    <input type="button" value="Browse..." onclick="RefX('ExtraLarge', false, this)" />
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-        <table width="97%">
-          <tr>
-            <td>
-              <input type="button" value="Remove" onclick="RemoveX('List')" />
-              <input type="button" value="Up" onclick="MoveX('List',-1)" />
-              <input type="button" value="Down" onclick="MoveX('List',1)" />
-              <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
+            <td style="width: 100%; vertical-align: bottom"><label>Small</label> : <span id="size1"></span>
             </td>
             <td align="right">
-              <input type="button" value="Add" onclick="AddX('List', ReplaceIC)" />
-              <input type="button" value="Replace" onclick="ReplaceIC('List')" />
+              <input type="button" value="Portable" title="Small" onclick="PortableX('Small')" />
+            </td>
+            <td align="right">
+              <input type="button" value="Select" onclick="ShowIcon(document.E.Small);" title="Small" />
+            </td>
+            <td align="right">
+              <input type="button" value="Browse..." onclick="RefX('Small', false, this)" />
             </td>
           </tr>
         </table>
-      </div>
-      <!--panel_end-->
-      <table width="100%">
-        <tr>
-          <td style="width: 100%; white-space: nowrap">
-          </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />&nbsp;
-          </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
-          </td>
-        </tr>
-      </table>
-    </form>
-    <script type="text/javascript" charset="utf-8" src="options.js">
-    </script>
-  </body>
-</html>
+        <input type="text" name="Small" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
+
+        <table class="layout">
+          <tr>
+            <td style="width: 100%; vertical-align: bottom"><label>SysSmall</label> : <span id="size3"></span>
+            </td>
+            <td align="right">
+              <input type="button" value="Portable" title="SysSmall" onclick="PortableX('SysSmall')" />
+            </td>
+            <td align="right">
+              <input type="button" value="Select" onclick="ShowIcon(document.E.SysSmall);" title="SysSmall" />
+            </td>
+            <td align="right">
+              <input type="button" value="Browse..." onclick="RefX('SysSmall', false, this)" />
+            </td>
+          </tr>
+        </table>
+        <input type="text" name="SysSmall" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
+
+        <table class="layout">
+          <tr>
+            <td style="width: 100%; vertical-align: bottom"><label>Large</label> : <span id="size0"></span>
+            </td>
+            <td align="right">
+              <input type="button" value="Portable" title="Large" onclick="PortableX('Large')" />
+            </td>
+            <td align="right">
+              <input type="button" value="Select" onclick="ShowIcon(document.E.Large);" title="Large" />
+            </td>
+            <td align="right">
+              <input type="button" value="Browse..." onclick="RefX('Large', false, this)" />
+            </td>
+          </tr>
+        </table>
+        <input type="text" name="Large" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
+
+        <table class="layout">
+          <tr>
+            <td style="width: 100%; vertical-align: bottom"><label>ExtraLarge</label> : <span id="size2"></span>
+            </td>
+            <td align="right">
+              <input type="button" value="Portable" title="ExtraLarge" onclick="PortableX('ExtraLarge')" />
+            </td>
+            <td align="right">
+              <input type="button" value="Select" onclick="ShowIcon(document.E.ExtraLarge);" title="ExtraLarge" />
+            </td>
+            <td align="right">
+              <input type="button" value="Browse..." onclick="RefX('ExtraLarge', false, this)" />
+            </td>
+          </tr>
+        </table>
+        <input type="text" name="ExtraLarge" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()" />
+      </td>
+    </tr>
+  </table>
+  <table width="100%">
+    <tr>
+      <td>
+        <input type="button" value="Remove" onclick="RemoveX('List')" />
+        <input type="button" value="Up" onclick="MoveX('List',-1)" />
+        <input type="button" value="Down" onclick="MoveX('List',1)" />
+        <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
+      </td>
+      <td align="right">
+        <input type="button" value="Add" onclick="AddX('List', ReplaceIC)" />
+        <input type="button" value="Replace" onclick="ReplaceIC('List')" />
+      </td>
+    </tr>
+  </table>
+</form>
