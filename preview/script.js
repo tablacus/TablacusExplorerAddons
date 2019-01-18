@@ -32,11 +32,23 @@ if (window.Addon == 1) {
 				}
 				var nWidth = 0, nHeight = 0;
 				if (PathMatchEx(path, Addons.Preview.TextFilter)) {
-					var ado = OpenAdodbFromTextFile(path);
-					if (ado) {
-						o.innerText = ado.ReadText(1024);
-						ado.Close()
-						return;
+					var f = fso.GetFile(path);
+					if (f) {
+						if (f.Size > 99999) {
+							f = fso.OpenTextFile(path, 1, false);
+							if (f) {
+								o.innerText = f.Read(1024);
+								f.Close();
+								return;
+							}
+						} else {
+							var ado = OpenAdodbFromTextFile(path);
+							if (ado) {
+								o.innerText = ado.ReadText(1024);
+								ado.Close()
+								return;
+							}
+						}
 					}
 				}
 				var style;

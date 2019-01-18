@@ -32,7 +32,7 @@ Addons.PreviewWindow =
 			if (s) {
 				s = ' (' + s + ')';
 			}
-			document.title = te.Data.window.Addons.PreviewWindow.File + s;
+			document.title = fso.GetFileName(te.Data.window.Addons.PreviewWindow.File) + s;
 			var ar = [];
 			var col = ["name", "write", wh];
 			if (!IsFolderEx(Item)) {
