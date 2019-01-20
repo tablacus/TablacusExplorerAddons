@@ -6,10 +6,7 @@ if (window.Addon == 1) {
 		Color: {}
 	};
 	try {
-		var ado = api.CreateObject("ads");
-		ado.CharSet = "utf-8";
-		ado.Open();
-		ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\extensioncolor.tsv"));
+		var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\extensioncolor.tsv"));
 		while (!ado.EOS) {
 			var ar = ado.ReadText(adReadLine).split("\t");
 			if (ar[0]) {
@@ -30,8 +27,12 @@ if (window.Addon == 1) {
 		if (pid) {
 			var c = Addons.ExtensionColor.Color[fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()];
 			if (isFinite(c)) {
-				vcd.clrText = c;
-				return S_OK;
+				var wfd = api.Memory("WIN32_FIND_DATA");
+				var hr = api.SHGetDataFromIDList(pid, SHGDFIL_FINDDATA, wfd, wfd.Size);
+				if (hr < 0 || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+					vcd.clrText = c;
+					return S_OK;
+				}
 			}
 		}
 	});

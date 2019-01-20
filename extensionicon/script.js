@@ -1,4 +1,4 @@
-﻿Addons.ExtensionIcon = {
+Addons.ExtensionIcon = {
 	Icon: {},
 	fStyle: LVIS_CUT | LVIS_SELECTED,
 
@@ -13,18 +13,22 @@ if (window.Addon == 1) {
 	AddEvent("HandleIcon", function (Ctrl, pid)
 	{
 		if (Ctrl.hwndList) {
-			var i = Ctrl.IconSize < 32 ? 0 : 1, db = Addons.ExtensionIcon.Icon[fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()];
-			if (db) {
-				var image = db[i];
-				if (image) {
-					if (/string/i.test(typeof image)) {
-						var image = Addons.ExtensionIcon.GetIconImage(image, i);
-						if (image) {
-							db[i] = GetThumbnail(image, [32, 256][i] * screen.logicalYDPI / 96, true);
+			var db, i = Ctrl.IconSize < 32 ? 0 : 1;
+			if (db = Addons.ExtensionIcon.Icon[fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()]) {
+				var wfd = api.Memory("WIN32_FIND_DATA");
+				var hr = api.SHGetDataFromIDList(pid, SHGDFIL_FINDDATA, wfd, wfd.Size);
+				if (hr < 0 || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+					var image = db[i];
+					if (image) {
+						if (/string/i.test(typeof image)) {
+							var image = Addons.ExtensionIcon.GetIconImage(image, i);
+							if (image) {
+								db[i] = GetThumbnail(image, [32, 256][i] * screen.logicalYDPI / 96, true);
+								return true;
+							}
+						} else {
 							return true;
 						}
-					} else {
-						return true;
 					}
 				}
 			}
@@ -37,22 +41,26 @@ if (window.Addon == 1) {
 		if (hList) {
 			var db = Addons.ExtensionIcon.Icon[fso.GetExtensionName(api.GetDisplayNameOf(pid, SHGDN_FORPARSING)).toLowerCase()];
 			if (db) {
-				var image = db[Ctrl.IconSize < 32 ? 0 : 1];
-				if (/object/i.test(typeof image)) {
-					var cl, fStyle, rc = api.Memory("RECT");
-					rc.Left = LVIR_ICON;
-					api.SendMessage(hList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
-					var state = api.SendMessage(hList, LVM_GETITEMSTATE, nmcd.dwItemSpec, Addons.ExtensionIcon.fStyle);
-					if (state == LVIS_SELECTED) {
-						cl = CLR_DEFAULT;
-						fStyle = api.GetFocus() == hList ? ILD_SELECTED : ILD_FOCUS;
-					} else {
-						cl = CLR_NONE;
-						fStyle = (state & LVIS_CUT) || api.GetAttributesOf(pid, SFGAO_HIDDEN) ? ILD_SELECTED : ILD_NORMAL;
+				var wfd = api.Memory("WIN32_FIND_DATA");
+				var hr = api.SHGetDataFromIDList(pid, SHGDFIL_FINDDATA, wfd, wfd.Size);
+				if (hr < 0 || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+					var image = db[Ctrl.IconSize < 32 ? 0 : 1];
+					if (/object/i.test(typeof image)) {
+						var cl, fStyle, rc = api.Memory("RECT");
+						rc.Left = LVIR_ICON;
+						api.SendMessage(hList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
+						var state = api.SendMessage(hList, LVM_GETITEMSTATE, nmcd.dwItemSpec, Addons.ExtensionIcon.fStyle);
+						if (state == LVIS_SELECTED) {
+							cl = CLR_DEFAULT;
+							fStyle = api.GetFocus() == hList ? ILD_SELECTED : ILD_FOCUS;
+						} else {
+							cl = CLR_NONE;
+							fStyle = (state & LVIS_CUT) || api.GetAttributesOf(pid, SFGAO_HIDDEN) ? ILD_SELECTED : ILD_NORMAL;
+						}
+						image = GetThumbnail(image, Ctrl.IconSize * screen.logicalYDPI / 96, Ctrl.IconSize >= 32);
+						image.DrawEx(nmcd.hdc, rc.Left + (rc.Right - rc.Left - image.GetWidth()) / 2, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, cl, cl, fStyle);
+						return S_OK;
 					}
-					image = GetThumbnail(image, Ctrl.IconSize * screen.logicalYDPI / 96, Ctrl.IconSize >= 32);
-					image.DrawEx(nmcd.hdc, rc.Left + (rc.Right - rc.Left - image.GetWidth()) / 2, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, cl, cl, fStyle);
-					return S_OK;
 				}
 			}
 		}
