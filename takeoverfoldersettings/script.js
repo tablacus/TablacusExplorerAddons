@@ -1,26 +1,21 @@
 var Addon_Id = "takeoverfoldersettings";
-
-var item = GetAddonElement(Addon_Id);
-if (!item.getAttribute("Filter")) {
-	item.setAttribute("Filter", "?:\\*;\\\\*");
-}
-
 if (window.Addon == 1) {
+	var item = GetAddonElement(Addon_Id);
+
 	Addons.TakeOverFolderSettings =
 	{
 		db: "",
 		CONFIG: fso.BuildPath(te.Data.DataFolder, "config\\takeoverfoldersettings.txt"),
-		Filter: item ? item.getAttribute("Filter") : "?:\\*;\\\\*",
-		nFormat: api.QuadPart(GetAddonOption(Addon_Id, "Format")),
+		Filter: item.getAttribute("Filter") || "?:\\*;\\\\*",
 
 		RememberFolder: function (FV)
 		{
 			if (FV && FV.FolderItem && !FV.FolderItem.Unvailable) {
 				var path = String(api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
 				if (PathMatchEx(path, Addons.TakeOverFolderSettings.Filter) && path == FV.Data.TakeOver) {
-					var col = FV.Columns(Addons.TakeOverFolderSettings.nFormat);
+					var col = FV.Columns(2);
 					if (col) {
-						var db = [FV.CurrentViewMode, FV.IconSize, col, FV.SortColumn(Addons.TakeOverFolderSettings.nFormat), FV.GroupBy, FV.SortColumns].join("\t");
+						var db = [FV.CurrentViewMode, FV.IconSize, col, FV.SortColumn(2), FV.GroupBy, FV.SortColumns].join("\t");
 						if (db != Addons.TakeOverFolderSettings.db) {
 							Addons.TakeOverFolderSettings.db = db;
 							Addons.TakeOverFolderSettings.bSave = true;
@@ -37,7 +32,7 @@ if (window.Addon == 1) {
 			if (Prev && !Prev.Unvailable) {
 				var path = String(api.GetDisplayNameOf(Prev, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX)).toLowerCase();
 				if (PathMatchEx(path, Addons.TakeOverFolderSettings.Filter)) {
-					var col = Ctrl.Columns(Addons.TakeOverFolderSettings.nFormat);
+					var col = Ctrl.Columns(2);
 					if (col) {
 						var db = [Ctrl.CurrentViewMode, Ctrl.IconSize, col, Ctrl.SortColumn, Ctrl.GroupBy, Ctrl.SortColumns].join("\t");
 						if (db != Addons.TakeOverFolderSettings.db) {
@@ -53,8 +48,7 @@ if (window.Addon == 1) {
 				if (ar) {
 					fs.ViewMode = ar[0];
 					fs.ImageSize = ar[1];
-				}
-				else if (Ctrl && Ctrl.Items) {
+				} else if (Ctrl && Ctrl.Items) {
 					fs.ViewMode = Ctrl.CurrentViewMode;
 					fs.ImageSize = Ctrl.IconSize;
 				}
@@ -98,12 +92,11 @@ if (window.Addon == 1) {
 	});
 
 	try {
-		var ado = api.CreateObject("ads");
-		ado.CharSet = "utf-8";
-		ado.Open();
-		ado.LoadFromFile(Addons.TakeOverFolderSettings.CONFIG);
-		Addons.TakeOverFolderSettings.db = ado.ReadText();
-		ado.Close();
+		var ado = OpenAdodbFromTextFile(Addons.TakeOverFolderSettings.CONFIG);
+		if (ado) {
+			Addons.TakeOverFolderSettings.db = ado.ReadText();
+			ado.Close();
+		}
 	} catch (e) {}
 
 	AddEvent("SaveConfig", function ()
@@ -121,4 +114,10 @@ if (window.Addon == 1) {
 			} catch (e) {}
 		}
 	});
+} else {
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

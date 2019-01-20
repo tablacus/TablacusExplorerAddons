@@ -21,6 +21,7 @@ if (window.Addon == 1) {
 	{
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
+		ppid: api.Memory("DWORD"),
 
 		Exec: function (Ctrl, pt)
 		{
@@ -45,10 +46,24 @@ if (window.Addon == 1) {
 					this.Item = Ctrl.SelectedItems().Item(0);
 					this.File = api.GetDisplayNameOf(this.Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				}
-				this.dlg.Window.Addons.PreviewWindow.Change(te.hwnd);
-				if (this.Focus) {
-					delete this.Focus;
-					this.dlg.focus();
+				var ppid = api.Memory("DWORD");
+				api.GetWindowThreadProcessId(api.GetFocus(), ppid);
+				if (Addons.PreviewWindow.ppid[0] == ppid[0]) {
+					this.dlg.Window.Addons.PreviewWindow.Change(te.hwnd);
+					var hwnd = api.GetWindow(this.dlg.Window.document);
+					var hwnd1 = hwnd;
+					while (hwnd1 = api.GetParent(hwnd)) {
+						hwnd = hwnd1;
+					}
+					if (hwnd) {
+						if (api.IsIconic(hwnd)) {
+							api.ShowWindow(hwnd, SW_RESTORE);
+						}
+						if (this.Focus) {
+							delete this.Focus;
+							this.dlg.focus();
+						}
+					}
 				}
 			}
 		}
@@ -108,6 +123,8 @@ if (window.Addon == 1) {
 	}
 
 	AddTypeEx("Add-ons", "Preview window", Addons.PreviewWindow.Exec);
+
+	api.GetWindowThreadProcessId(te.hwnd, Addons.PreviewWindow.ppid);
 } else {
 	EnableInner();
 }
