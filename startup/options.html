@@ -1,65 +1,19 @@
-<html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="MSThemeCompatible" content="Yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Tablcus Add-ons</title>
-    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
-    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="options.js">
-    </script>
-  </head>
-  <body>
-    <form name="F">
-      <div class="panel" style="display: block;">
-          <label>Type</label><br />
-          <select name="Type">
-          </select><br />
-          <table class="layout">
-            <tr>
-              <td style="vertical-align: bottom; width: 100%">
-                <label>Options</label>
-              </td>
-              <td>
-                <input type="button" value="Portable" onclick="PortableX('Path')" />
-              </td>
-              <td>
-                <input type="button" value="Browse..." onclick="RefX('Path', true, this)" />
-              </td>
-            </tr>
-          </table>
-          <textarea name="Path" style="width: 100%; height: 200px; min-height: calc(100vh - 11em)"></textarea><br />
-          <label>Cancel</label><br />
-          <input type="checkbox" id="Shift"><label for="Shift">Shift</label>
-      </div>
-      <table width="95%">
-        <tr>
-          <td align="right">
-            <input type="button" value="OK"  class="ok" onclick="SetResult(1)" />
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />
-          </td>
-        </tr>
-      </table>
-    </form>
-    <script type="text/javascript">
-      var Addon_Id = 'startup';
-      AddEventEx(window, "load", function ()
-      {
-        var arFunc = [];
-        MainWindow.RunEvent1("AddType", arFunc);
-        var oa = document.F.Type;
-        for (var i = 0; i < arFunc.length; i++) {
-          var o = oa[++oa.length - 1];
-          o.value = arFunc[i];
-			    o.innerText = GetText(arFunc[i]).replace(/&|\.\.\.$/g, "").replace(/\(\w\)/, "");
-        }
-        InitAddonOptions();
-    });
-    </script>
-  </body>
-</html>
+<label>Type</label><br />
+<select name="Type">
+</select><br />
+<table class="layout">
+  <tr>
+    <td style="vertical-align: bottom; width: 100%">
+      <label>Options</label>
+    </td>
+    <td>
+      <input type="button" value="Portable" onclick="PortableX('Path')" />
+    </td>
+    <td>
+      <input type="button" value="Browse..." onclick="RefX('Path', true, this)" />
+    </td>
+  </tr>
+</table>
+<textarea name="Path" style="width: 100%; height: 11em; min-height: calc(100vh - 12em)"></textarea><br />
+<label>Cancel</label><br />
+<input type="checkbox" id="Shift"><label for="Shift">Shift</label>

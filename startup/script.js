@@ -1,3 +1,5 @@
+var Addon_Id = "startup";
+
 if (window.Addon == 1) {
 	AddEvent("Create", function (Ctrl)
 	{
@@ -18,4 +20,6 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
