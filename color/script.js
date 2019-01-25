@@ -1,13 +1,6 @@
 ﻿var Addon_Id = "color";
 
 var item = GetAddonElement(Addon_Id);
-if (!item.getAttribute("Default")) {
-	item.setAttribute("Default", GetWebColor(GetSysColor(COLOR_WINDOWTEXT)));
-}
-if (!item.getAttribute("Background")) {
-	item.setAttribute("Background", GetWebColor(GetSysColor(COLOR_WINDOW)));
-}
-
 if (window.Addon == 1) {
 	Addons.Color =
 	{
@@ -75,14 +68,21 @@ if (window.Addon == 1) {
 	{
 		SetSysColor(COLOR_WINDOWTEXT, undefined);
 		SetSysColor(COLOR_WINDOW, undefined);
+		SetSysColor(COLOR_BTNFACE, undefined);
 		Addons.Color.Init();
 	});
 
-	if (item) {
-		SetSysColor(COLOR_WINDOWTEXT, GetWinColor(item.getAttribute("Default")));
-		SetSysColor(COLOR_WINDOW, GetWinColor(item.getAttribute("Background")));
-		Addons.Color.Init();
-	}
+	SetSysColor(COLOR_WINDOWTEXT, GetWinColor(item.getAttribute("Default") || GetWebColor(GetSysColor(COLOR_WINDOWTEXT))));
+	SetSysColor(COLOR_WINDOW, GetWinColor(item.getAttribute("Background") || GetWebColor(GetSysColor(COLOR_WINDOW))));
+	SetSysColor(COLOR_BTNFACE, GetWinColor(item.getAttribute("Buttons") || GetWebColor(GetSysColor(COLOR_BTNFACE))));
+	Addons.Color.Init();
 } else {
-	importScript("addons\\" + Addon_Id + "\\options.js");
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
+	}
+	document.F.Default.placeholder = GetWebColor(GetSysColor(COLOR_WINDOWTEXT));
+	document.F.Background.placeholder = GetWebColor(GetSysColor(COLOR_WINDOW));
+	document.F.Buttons.placeholder = GetWebColor(GetSysColor(COLOR_BTNFACE));
 }
