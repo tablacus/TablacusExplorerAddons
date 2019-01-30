@@ -1,19 +1,19 @@
-﻿<input type="checkbox" name="Name" id="Name"><label for="Name">Name</label><br />
+<input type="checkbox" name="Name" id="Name"><label for="Name">Name</label><br />
 <input type="checkbox" name="Filter" id="Filter"><label for="Filter">Filter</label>
 <!--panel-->
 <form name="E">
-  <div class="panel" style="display: block; height: calc(100vh - 5.5em)" id="panel0f">
+  <div class="panel" style="display: block; height: calc(100% - 18pt)" id="panel0f">
     <table id="T" style="width: 100%"></table>
   </div>
   <table id="buttons" width="100%">
     <tr>
       <td style="width: 100%; white-space: nowrap">
-        <input type="button" value="Add" onclick='ApplyLang(AddFL(["", ""]))' />
+        <input type="button" value="Add" onclick='ApplyLang(Addons.FilterList.Add(["", ""]))' />
         &emsp;
-        <input type="button" value="Up" onclick='UpFL()' />
-        <input type="button" value="Down" onclick='DownFL()' />
+        <input type="button" value="Up" onclick='Addons.FilterList.Up()' />
+        <input type="button" value="Down" onclick='Addons.FilterList.Down()' />
         &emsp;
-        <input type="button" value="Remove" onclick='RemoveFL()' />
+        <input type="button" value="Remove" onclick='Addons.FilterList.Remove()' />
       </td>
     </tr>
   </table>

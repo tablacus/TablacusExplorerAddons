@@ -1,4 +1,4 @@
-﻿var Addon_Id = "filterlist";
+var Addon_Id = "filterlist";
 
 var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
@@ -9,6 +9,10 @@ if (window.Addon == 1) {
 
 		Exec: function (Ctrl, pt, Id)
 		{
+			if (api.GetKeyState(VK_SHIFT) < 0 && api.GetKeyState(VK_CONTROL) < 0) {
+				AddonOptions("filterlist");
+				return S_OK;
+			}
 			var o;
 			var FV = GetFolderView(Ctrl, pt);
 			if (!FV) {
@@ -53,7 +57,7 @@ if (window.Addon == 1) {
 				if (!/^\//.test(s)) {
 					var ar = s.split(/;/);
 					for (var i in ar) {
-						var res = /^([^\*\?]+)$/.exec(ar[i]); 
+						var res = /^([^\*\?]+)$/.exec(ar[i]);
 						if (res) {
 							ar[i] = "*" + res[1] + "*";
 						}
@@ -67,10 +71,7 @@ if (window.Addon == 1) {
 		}
 	};
 	try {
-		var ado = te.CreateObject(api.ADBSTRM);
-		ado.CharSet = "utf-8";
-		ado.Open();
-		ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
+		var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
 		while (!ado.EOS) {
 			Addons.FilterList.Menus.push(ado.ReadText(adReadLine));
 		}
