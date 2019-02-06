@@ -31,7 +31,7 @@ if (window.Addon == 1) {
 
 		List: function (xhr, url, arg)
 		{
-			var xml = xhr.responseXML;
+			var xml = xhr.get_responseXML ? xhr.get_responseXML() : xhr.responseXML;
 			if (xml) {
 				var items = xml.getElementsByTagName("Item");
 				for (var i = 0; i < items.length; i++) {
