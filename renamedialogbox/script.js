@@ -21,7 +21,7 @@ if (window.Addon == 1) {
 				var Focused = FV.FocusedItem;
 				if (Focused) {
 					if (api.GetAttributesOf(Focused, SFGAO_CANRENAME)) {
-						var s = api.GetDisplayNameOf(Focused, SHGDN_FOREDITING);
+						var s = api.GetDisplayNameOf(Focused, SHGDN_FOREDITING | SHGDN_INFOLDER);
 						var r = s;
 						for (;;) {
 							var r = InputDialog(s, r);
