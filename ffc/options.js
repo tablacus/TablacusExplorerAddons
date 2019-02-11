@@ -1,11 +1,17 @@
-﻿var arItems = ["Path", "Class", "Copy", "Move"];
+var arItems = ["Path", "Class", "Copy", "Move"];
 var arChecks = ["DiffDriveOnly"];
 
-function RefId(o, s)
+var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+if (ado) {
+	SetTabContents(0, "", ado.ReadText(adReadAll));
+	ado.Close();
+}
+document.getElementById("GetFFC").value = api.sprintf(999, GetText("Get %s..."), "Fire File Copy");
+
+RefId = function (o, s)
 {
 	var dll = api.PathUnquoteSpaces(ExtractMacro(te, document.F.Path.value));
-	var cls = document.F.Class.value;
-	var cls2 = GetAddonOption("ffc", "Class");
+	var cls = document.F.Class.value || GetAddonOption("ffc", "Class");
 	var item = api.GetModuleFileName(null);
 	var ContextMenu = api.ContextMenu(dll, cls, fso.GetParentFolderName(item), item, HKEY_CLASSES_ROOT, "Folder", null) || api.ContextMenu(dll.replace(/_?64(\.dll)/i, "$1"), cls, fso.GetParentFolderName(item), item, HKEY_CLASSES_ROOT, "Folder", null);
 	if (ContextMenu) {
@@ -20,7 +26,7 @@ function RefId(o, s)
 	}
 }
 
-function RefClass(o, s)
+RefClass = function (o, s)
 {
 	var ar = RegEnumKey(HKEY_CLASSES_ROOT, "Folder\\ShellEx\\DragDropHandlers");
 	var hMenu = api.CreatePopupMenu();
@@ -35,62 +41,7 @@ function RefClass(o, s)
 		if (nVerb) {
 			SetValue(document.F.elements[s], wsh.RegRead("HKCR\\Folder\\ShellEx\\DragDropHandlers\\" + ar[nVerb - 1] + "\\"));
 		}
-	}
-	finally {
+	} finally {
 		api.DestroyMenu(hMenu);
 	}
 }
-
-AddEventEx(window, "load", function ()
-{
-	ApplyLang(document);
-
-	var info = GetAddonInfo("ffc");
-	document.title = info.Name;
-	var items = te.Data.Addons.getElementsByTagName("ffc");
-	if (items.length) {
-		var item = items[0];
-		for (i in arItems) {
-			var s = item.getAttribute(arItems[i]);
-			document.F.elements[arItems[i]].value = s ? s : "";
-		}
-		for (i in arChecks) {
-			document.F.elements[arChecks[i]].checked = item.getAttribute(arChecks[i]);
-		}
-	}
-
-	SetOnChangeHandler();
-
-	AddEventEx(window, "beforeunload", function ()
-	{
-		if (g_nResult == 2 || !g_bChanged) {
-			return;
-		}
-		if (ConfirmX(true)) {
-			var items = te.Data.Addons.getElementsByTagName("ffc");
-			if (items.length) {
-				var item = items[0];
-				for (i in arItems) {
-					var s = document.F.elements[arItems[i]].value;
-					if (s.length) {
-						item.setAttribute(arItems[i], s);
-					} else {
-						item.removeAttribute(arItems[i]);
-					}
-				}
-				for (i in arChecks) {
-					if (document.F.elements[arChecks[i]].checked) {
-						item.setAttribute(arChecks[i], true);
-					}
-					else {
-						item.removeAttribute(arChecks[i]);
-					}
-				}
-				item.setAttribute("Set", 1);
-				TEOk();
-			}
-			return;
-		}
-		event.returnValue = GetText('Close');
-	});
-});

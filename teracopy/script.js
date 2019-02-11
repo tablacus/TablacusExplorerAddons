@@ -1,4 +1,4 @@
-﻿var Addon_Id = "teracopy";
+var Addon_Id = "teracopy";
 
 var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
@@ -124,4 +124,6 @@ if (window.Addon == 1) {
 				break;
 		}
 	});
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

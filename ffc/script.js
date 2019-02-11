@@ -1,12 +1,10 @@
-﻿var Addon_Id = "ffc";
+var Addon_Id = "ffc";
 
 var item = GetAddonElement(Addon_Id);
-if (item) {
-	if (!item.getAttribute("Set")) {
-		item.setAttribute("Class", "{E6385E40-E2A6-11d5-ABE6-9EB61339EA35}");
-		item.setAttribute("Copy", 1);
-		item.setAttribute("Move", 2);
-	}
+if (!item.getAttribute("Set")) {
+	item.setAttribute("Class", "{E6385E40-E2A6-11d5-ABE6-9EB61339EA35}");
+	item.setAttribute("Copy", 1);
+	item.setAttribute("Move", 2);
 }
 if (window.Addon == 1) {
 	Addons.FFC =
@@ -125,4 +123,6 @@ if (window.Addon == 1) {
 				break;
 		}
 	});
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
