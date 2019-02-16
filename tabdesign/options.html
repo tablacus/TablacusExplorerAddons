@@ -1,108 +1,83 @@
-<html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="MSThemeCompatible" content="Yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Tablcus Add-ons</title>
-    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
-    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="options.js">
-    </script>
-  </head>
-  <body>
-    <form name="F">
-      <ul class="tab0"><!--
-      --><li id="sel0" class="activetab" onclick="ChangeTab(this)">Default</li><!--
-      --><li id="sel1" class="tab" onclick="ChangeTab(this)">Selected Items</li><!--
-      --><li id="sel2" class="tab" onclick="ChangeTab(this)">Left</li><!--
-      --><li id="sel3" class="tab" onclick="ChangeTab(this)">Right</li><!--
-      --><li id="sel4" class="tab" onclick="ChangeTab(this)">New Tab</li><!--
-      --><li id="sel5" class="tab" onclick="ChangeTab(this)">Base</li><!--
-      --></ul>
-      <div id="panel0" class="panel" style="display: block; overflow: auto; height: 420px">
-        <label>Default</label>
-        <textarea name="default" style="width: 100%; height: 110px"></textarea>
-        <label>Add before</label><br />
-        <textarea name="default_before" style="width: 100%; height: 110px"></textarea>
-        <label>Add after</label><br />
-        <textarea name="default_after" style="width: 100%; height: 110px"></textarea>
-      </div>
-      <div id="panel1" class="panel" style="display: none; overflow: auto; height: 420px">
-        <label>Selected Items</label>
-        <textarea name="activetab" style="width: 100%; height: 110px"></textarea>
-        <label>Add before</label><br />
-        <textarea name="activetab_before" style="width: 100%; height: 110px"></textarea>
-        <label>Add after</label><br />
-        <textarea name="activetab_after" style="width: 100%; height: 110px"></textarea>
-      </div>
-      <div id="panel2" class="panel" style="display: none; overflow: auto; height: 420px">
-        <label>Left</label>
-        <textarea name="tab" style="width: 100%; height: 110px"></textarea>
-        <label>Add before</label><br />
-        <textarea name="tab_before" style="width: 100%; height: 110px"></textarea>
-        <label>Add after</label><br />
-        <textarea name="tab_after" style="width: 100%; height: 110px"></textarea>
-      </div>
-      <div id="panel3" class="panel" style="display: none; overflow: auto; height: 420px">
-        <label>Right</label>
-        <textarea name="tab2" style="width: 100%; height: 110px"></textarea>
-        <label>Add before</label><br />
-        <textarea name="tab2_before" style="width: 100%; height: 110px"></textarea>
-        <label>Add after</label><br />
-        <textarea name="tab2_after" style="width: 100%; height: 110px"></textarea>
-      </div>
-      <div id="panel4" class="panel" style="display: none; overflow: auto; height: 420px">
-        <label>New Tab</label>
-        <textarea name="tab3" style="width: 100%; height: 110px"></textarea>
-        <label>Add before</label><br />
-        <textarea name="tab3_before" style="width: 100%; height: 110px"></textarea>
-        <label>Add after</label><br />
-        <textarea name="tab3_after" style="width: 100%; height: 110px"></textarea>
-      </div>
-      <div id="panel5" class="panel" style="display: none; overflow: auto; height: 420px">
-        <label>Base</label>
-        <textarea name="tab0" style="width: 100%; height: 110px"></textarea>
-        <label>Add before</label><br />
-        <textarea name="tab0_before" style="width: 100%; height: 110px"></textarea>
-        <label>Add after</label><br />
-        <textarea name="tab0_after" style="width: 100%; height: 110px"></textarea>
-      </div>
-      <table width="100%">
+<ul class="tab0"><!--
+--><li id="asel0" class="activetab" onclick="ChangeTab(this)">Default</li><!--
+--><li id="asel1" class="tab" onclick="ChangeTab(this)">Selected Items</li><!--
+--><li id="asel2" class="tab" onclick="ChangeTab(this)">Left</li><!--
+--><li id="asel3" class="tab" onclick="ChangeTab(this)">Right</li><!--
+--><li id="asel4" class="tab" onclick="ChangeTab(this)">New Tab</li><!--
+--><li id="asel5" class="tab" onclick="ChangeTab(this)">Base</li><!--
+--></ul>
+<div id="apanel0" class="panel" style="display: block; overflow: auto; height: calc(100% - 4em)">
+  <label>Default</label>
+  <textarea name="default" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add before</label><br />
+  <textarea name="default_before" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add after</label><br />
+  <textarea name="default_after" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+</div>
+<div id="apanel1" class="panel" style="display: none; overflow: auto; height: calc(100% - 4em)">
+  <label>Selected Items</label>
+  <textarea name="activetab" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add before</label><br />
+  <textarea name="activetab_before" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add after</label><br />
+  <textarea name="activetab_after" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+</div>
+<div id="apanel2" class="panel" style="display: none; overflow: auto; height: calc(100% - 4em)">
+  <label>Left</label>
+  <textarea name="tab" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add before</label><br />
+  <textarea name="tab_before" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add after</label><br />
+  <textarea name="tab_after" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+</div>
+<div id="apanel3" class="panel" style="display: none; overflow: auto; height: calc(100% - 4em)">
+  <label>Right</label>
+  <textarea name="tab2" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add before</label><br />
+  <textarea name="tab2_before" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add after</label><br />
+  <textarea name="tab2_after" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+</div>
+<div id="apanel4" class="panel" style="display: none; overflow: auto; height: calc(100% - 4em)">
+  <label>New Tab</label>
+  <textarea name="tab3" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add before</label><br />
+  <textarea name="tab3_before" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add after</label><br />
+  <textarea name="tab3_after" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+</div>
+<div id="apanel5" class="panel" style="display: none; overflow: auto; height: calc(100% - 4em)">
+  <label>Base</label>
+  <textarea name="tab0" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add before</label><br />
+  <textarea name="tab0_before" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+  <label>Add after</label><br />
+  <textarea name="tab0_after" style="width: 100%; height: 70pt; height: calc(100% / 3 - 2em)"></textarea>
+</div>
+<table width="100%">
+  <tr>
+    <td style="width: 100%; white-space: nowrap">
+      <table>
         <tr>
-          <td style="width: 100%; white-space: nowrap">
-            <table>
-              <tr>
-                <td>
-                  <input type="button" value="Tabs" onclick="SetCss('border-radius: 9px 9px 0 0; border-bottom: 0', 'border-radius: 9px 9px 0 0')"/>
-                </td>
-                <td>
-                  <input type="button" value="XP" onclick="SetCss('border-radius: 4px 4px 0 0; border: 0; border-top: 3px solid #ff8000; padding: 0 9px', 'border-radius: 3px 3px 0 0; margin-right: 1px;', 'border-radius: 3px 3px 0 0; margin-left: 1px;')"/>
-                </td>
-                <td>
-                  <input type="button" value="Buttons" onclick="SetCss('border-radius: 9px; height: 2em; margin-right: 1px; box-shadow: 0 0 0 1px #898C95 inset', 'border-radius: 9px; margin-right: 1px')"/>
-                </td>
-                <td>
-                  <input type="button" value="Flat" onclick="SetCss('border-radius: 9px; height: 2em; border: 1px solid #898C95; padding: 0 8px', 'border-radius: 9px; border: 0; margin: 1px')"/>
-                </td>
-            </table>
+          <td>
+            <input type="button" value="Tabs" onclick="SetCss('border-radius: 9px 9px 0 0; border-bottom: 0', 'border-radius: 9px 9px 0 0')"/>
           </td>
-          <td style="white-space: nowrap">
-            <input type="button" value="Load" onclick="ImportCss()" />&nbsp;
+          <td>
+            <input type="button" value="XP" onclick="SetCss('border-radius: 4px 4px 0 0; border: 0; border-top: 3px solid #ff8000; padding: 0 9px', 'border-radius: 3px 3px 0 0; margin-right: 1px;', 'border-radius: 3px 3px 0 0; margin-left: 1px;')"/>
           </td>
-          <td style="white-space: nowrap">
-            <input type="button" value="Save" onclick="ExportCss()" />&nbsp;
+          <td>
+            <input type="button" value="Buttons" onclick="SetCss('border-radius: 9px; height: 2em; margin-right: 1px; box-shadow: 0 0 0 1px #898C95 inset', 'border-radius: 9px; margin-right: 1px')"/>
           </td>
-        </tr>
+          <td>
+            <input type="button" value="Flat" onclick="SetCss('border-radius: 9px; height: 2em; border: 1px solid #898C95; padding: 0 8px', 'border-radius: 9px; border: 0; margin: 1px')"/>
+          </td>
       </table>
-    </form>
-    <script type="text/javascript">
-      var Addon_Id = 'tabdesign';
-      InitAddonOptions();
-    </script>
-  </body>
-</html>
+    </td>
+    <td style="white-space: nowrap">
+      <input type="button" value="Load" onclick="ImportCss()" />&nbsp;
+    </td>
+    <td style="white-space: nowrap">
+      <input type="button" value="Save" onclick="ExportCss()" />&nbsp;
+    </td>
+  </tr>
+</table>

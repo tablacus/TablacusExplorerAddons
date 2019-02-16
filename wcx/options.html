@@ -1,12 +1,12 @@
-﻿<form name="E" style="display: inline;">
-  <table style="width: 100%">
+<form name="E">
+  <table style="width: 100%; height: calc(100% - 2em)">
     <tr>
-      <td style="width: 12.5em; vertical-align: top">
-        <select name="List" size="19" style="width: 12.5em; height: 30em; height: calc(100vh - 5.7em); min-height: 16em" onchange="EditXEx(EditFS)" ondblclick="EditFS()" multiple>
+      <td style="width: 12em; vertical-align: top; height: 100%">
+        <select name="List" size="4" style="width: 12em; height: 100%" onchange="EditXEx(EditFS)" ondblclick="EditFS()" multiple>
         </select>
       </td>
       <td style="vertical-align: top">
-        <div style="height: 30em; height: calc(100vh - 5.7em); min-height: 16em; overflow: auto">
+        <div id="pane" style="height: 100%; overflow: auto">
           <label>Name</label>
           <br />
           <input type="text" name="Name" style="width: 100%" />
@@ -31,7 +31,7 @@
       </td>
     </tr>
   </table>
-  <table style="width: 100%">
+  <table id="tools" style="width: 100%">
     <tr>
       <td>
         <input type="button" value="Remove" onclick="RemoveX('List')" />

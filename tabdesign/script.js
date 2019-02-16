@@ -28,4 +28,6 @@ if (window.Addon == 1) {
 			}
 		}
 	}
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

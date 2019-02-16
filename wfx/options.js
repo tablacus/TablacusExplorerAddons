@@ -184,6 +184,13 @@ ED = function (s)
 
 LoadFS();
 SetOnChangeHandler();
+if (document.documentMode >= 9) {
+	setTimeout(function ()
+	{
+		var h = (document.getElementById("tools").offsetHeight + document.getElementById("buttons").offsetHeight + document.getElementById("tabs").offsetHeight) * 1.2;
+		document.getElementById("pane").style.height = "calc(100vh - " + h + "px)";
+	}, 99);
+}
 
 SaveLocation = function ()
 {

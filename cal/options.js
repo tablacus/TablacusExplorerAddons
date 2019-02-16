@@ -1,13 +1,23 @@
-﻿var AddonName = "CAL";
 var g_Chg = {List: false};
 
-function LoadFS()
+var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+if (ado) {
+	SetTabContents(4, "", ado.ReadText(adReadAll));
+	ado.Close();
+}
+
+Addons.CAL =
+{
+	ConfigFile: "cal.xml"
+}
+
+LoadFS = function ()
 {
 	if (!g_x.List) {
-		g_x.List = document.F.List;
+		g_x.List = document.E.List;
 		g_x.List.length = 0;
 		var nSelectSize = g_x.List.size;
-		xml = OpenXml(AddonName + ".xml", false, false);
+		xml = OpenXml(Addons.CAL.ConfigFile, false, false);
 		if (xml) {
 			var items = xml.getElementsByTagName("Item");
 			var i = items.length;
@@ -21,12 +31,12 @@ function LoadFS()
 	}
 }
 
-function SaveFS()
+SaveFS = function ()
 {
 	if (g_Chg.List) {
 		var xml = CreateXml();
 		var root = xml.createElement("TablacusExplorer");
-		var o = document.F.List;
+		var o = document.E.List;
 		for (var i = 0; i < o.length; i++) {
 			var item = xml.createElement("Item");
 			var a = o[i].value.split(g_sep);
@@ -39,26 +49,26 @@ function SaveFS()
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
-		SaveXmlEx(AddonName.toLowerCase() + ".xml", xml);
+		SaveXmlEx(Addons.CAL.ConfigFile, xml);
 	}
 }
 
-function EditFS()
+EditFS = function ()
 {
 	if (g_x.List.selectedIndex < 0) {
 		return;
 	}
 	var a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
-	document.F.Name.value = a[0];
-	document.F.Path.value = a[1];
-	document.F.Filter.value = a[2];
-	document.F.Extract.value = a[3];
-	document.F.Add.value = a[4];
-	document.F.Delete.value = a[5];
+	document.E.Name.value = a[0];
+	document.E.Path.value = a[1];
+	document.E.Filter.value = a[2];
+	document.E.Extract.value = a[3];
+	document.E.Add.value = a[4];
+	document.E.Delete.value = a[5];
 	SetProp();
 }
 
-function ReplaceFS()
+ReplaceFS = function ()
 {
 	ClearX();
 	if (g_x.List.selectedIndex < 0) {
@@ -66,15 +76,15 @@ function ReplaceFS()
 		EnableSelectTag(g_x.List);
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
-	o = document.F.Type;
-	SetData(sel, [document.F.Name.value, document.F.Path.value, document.F.Filter.value, document.F.Extract.value, document.F.Add.value, document.F.Delete.value]);
+	o = document.E.Type;
+	SetData(sel, [document.E.Name.value, document.E.Path.value, document.E.Filter.value, document.E.Extract.value, document.E.Add.value, document.E.Delete.value]);
 	g_Chg.List = true;
 	SetProp();
 }
 
-function LoadDll()
+LoadDll = function ()
 {
-	var dllPath = ExtractMacro(te, api.PathUnquoteSpaces(document.F.Path.value)).replace(/\*/g, api.sizeof("HANDLE") * 8);
+	var dllPath = ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)).replace(/\*/g, api.sizeof("HANDLE") * 8);
 	if (/\.exe"?\s*/i.test(dllPath)) {
 		return {};
 	}
@@ -82,7 +92,7 @@ function LoadDll()
 	var DLL = {
 		X: api.DllGetClassObject(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\cal\\tcal" + bit + '.dll'), "{D45DF22D-DA6A-406b-8C1E-5A6642B5BEE3}"),
 		Path: dllPath,
-		Name: document.F.Name.value.replace(/\W.*$/, ""),
+		Name: document.E.Name.value.replace(/\W.*$/, ""),
 	};
 	var CAL = DLL.X.open(DLL.Path, DLL.Name);
 	if (!CAL && api.sizeof("HANDLE") == 8 && /UNLHA[36][24].DLL$|UNZIP[36][24].DLL$|ZIP[36][24]J\.DLL$|TAR[36][24]\.DLL$|CAB[36][24]\.DLL$|UNRAR[36][24]\.DLL$|7\-ZIP[36][24]\.DLL$/i.test(DLL.Path)) {
@@ -95,7 +105,7 @@ function LoadDll()
 	return DLL;
 }
 
-function SetProp()
+SetProp = function ()
 {
 	var arHtml = [[], []];
 	var DLL = LoadDll();
@@ -123,7 +133,7 @@ function SetProp()
 	document.getElementById("ver").innerHTML = ar.join("");
 }
 
-function ConfigDialog()
+ConfigDialog = function ()
 {
 	var DLL = LoadDll();
 	if (!DLL.X) {
@@ -144,28 +154,38 @@ function ConfigDialog()
 	CAL.ConfigDialog(hwnd, szOption, 9999);
 }
 
-function AddArchiver()
+AddArchiver = function ()
 {
 	var o = document.getElementById("_Archiver");
-	document.F.List.selectedIndex = -1;
+	document.E.List.selectedIndex = -1;
 	o = o[o.selectedIndex];
 	var a = o.value.split("/");
 	a.unshift(o.text);
-	document.F.Name.value = a[0];
-	document.F.Path.value = a[1];
-	document.F.Filter.value = a[2];
-	document.F.Extract.value = a[3];
-	document.F.Add.value = a[4];
-	document.F.Delete.value = a[5];
+	document.E.Name.value = a[0];
+	document.E.Path.value = a[1];
+	document.E.Filter.value = a[2];
+	document.E.Extract.value = a[3];
+	document.E.Add.value = a[4];
+	document.E.Delete.value = a[5];
 	AddX('List', ReplaceFS);
 }
 
-ApplyLang(document);
-var info = GetAddonInfo("cal");
-document.title = info.Name;
 LoadFS();
 SetOnChangeHandler();
-AddEventEx(window, "beforeunload", function ()
+if (document.documentMode >= 9) {
+	setTimeout(function ()
+	{
+		var h = (document.getElementById("tools").offsetHeight + document.getElementById("buttons").offsetHeight + document.getElementById("tabs").offsetHeight) * 1.2;
+		document.getElementById("pane").style.height = "calc(100vh - " + h + "px)";
+	}, 99);
+}
+
+SaveLocation = function ()
 {
-	SetOptions(SaveFS);
-});
+	if (g_bChanged) {
+		ReplaceFS();
+	}
+	if (g_Chg.List) {
+		SaveFS();
+	}
+};

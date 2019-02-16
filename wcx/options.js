@@ -1,9 +1,12 @@
-var AddonName = "WCX";
-
-var ado = OpenAdodbFromTextFile("addons\\" + AddonName.toLowerCase() + "\\options.html");
+var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 if (ado) {
-	SetTabContents(4, "General", ado.ReadText(adReadAll));
+	SetTabContents(4, "", ado.ReadText(adReadAll));
 	ado.Close();
+}
+
+Addons.WCX =
+{
+	ConfigFile: "wcx.xml"
 }
 
 LoadFS = function ()
@@ -12,7 +15,7 @@ LoadFS = function ()
 		g_x.List = document.E.List;
 		g_x.List.length = 0;
 		var nSelectSize = g_x.List.size;
-		var xml = OpenXml(AddonName.toLowerCase() + ".xml", false, false);
+		var xml = OpenXml(Addons.WCX.ConfigFile, false, false);
 		if (xml) {
 			var items = xml.getElementsByTagName("Item");
 			var i = items.length;
@@ -41,7 +44,7 @@ SaveFS = function ()
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
-		SaveXmlEx(AddonName.toLowerCase() + ".xml", xml);
+		SaveXmlEx(Addons.WCX.ConfigFile, xml);
 	}
 }
 
@@ -137,6 +140,13 @@ ConfigDialog = function ()
 
 LoadFS();
 SetOnChangeHandler();
+if (document.documentMode >= 9) {
+	setTimeout(function ()
+	{
+		var h = (document.getElementById("tools").offsetHeight + document.getElementById("buttons").offsetHeight + document.getElementById("tabs").offsetHeight) * 1.2;
+		document.getElementById("pane").style.height = "calc(100vh - " + h + "px)";
+	}, 99);
+}
 
 SaveLocation = function ()
 {

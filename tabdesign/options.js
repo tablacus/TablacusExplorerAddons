@@ -2,7 +2,13 @@ var g_nPanel = 0;
 var arCss = ["default", "activetab", "tab", "tab2", "tab3", "tab0", ];
 var arExt = ["default", "selected", "left", "right", "new", "base", ];
 
-function SetCss(a, b, c, d)
+var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+if (ado) {
+	SetTabContents(0, "", ado.ReadText(adReadAll));
+	ado.Close();
+}
+
+SetCss = function (a, b, c, d)
 {
 	if (confirmOk("Are you sure?")) {
 		for (var i in arCss) {
@@ -15,21 +21,21 @@ function SetCss(a, b, c, d)
 	}
 }
 
-function ChangeTab(o)
+ChangeTab = function (o)
 {
 	if (/(\d+)/.test(o.id)) {
 		var nIndex = RegExp.$1;
 		if (nIndex != g_nPanel) {
-			document.getElementById("sel" + g_nPanel).className = "tab";
-			document.getElementById("panel" + g_nPanel).style.display = "none";
+			document.getElementById("asel" + g_nPanel).className = "tab";
+			document.getElementById("apanel" + g_nPanel).style.display = "none";
 			o.className = "activetab";
-			document.getElementById("panel" + nIndex).style.display = "block";
+			document.getElementById("apanel" + nIndex).style.display = "block";
 			g_nPanel = nIndex;
 		}
 	}
 }
 
-function ExportCss()
+ExportCss = function ()
 {
 	var commdlg = te.CommonDialog();
 	commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "config");
@@ -38,7 +44,7 @@ function ExportCss()
 	commdlg.Flags = OFN_OVERWRITEPROMPT;
 	if (commdlg.ShowSave()) {
 		try {
-			var ado = new ActiveXObject(api.ADBSTRM);
+			var ado = api.CreateObject("ads");
 			ado.CharSet = "utf-8";
 			ado.Open();
 			for (var i in arCss) {
@@ -54,7 +60,7 @@ function ExportCss()
 	}
 }
 
-function ExportCss1(ado, name, name2)
+ExportCss1 = function (ado, name, name2)
 {
 	var o = document.F.elements[name2];
 	if (o) {
@@ -62,7 +68,7 @@ function ExportCss1(ado, name, name2)
 	}
 }
 
-function ImportCss()
+ImportCss = function ()
 {
 	var commdlg = te.CommonDialog();
 	commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "config");
@@ -91,7 +97,7 @@ function ImportCss()
 	}
 }
 
-function ImportCss1(cls, name, name2)
+ImportCss1 = function (cls, name, name2)
 {
 	var o = document.F.elements[name2];
 	if (o) {

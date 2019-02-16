@@ -1,4 +1,4 @@
-﻿var Addon_Id = "cal";
+var Addon_Id = "cal";
 var item = GetAddonElement(Addon_Id);
 
 Addons.CAL =
@@ -477,4 +477,6 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

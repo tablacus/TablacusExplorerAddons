@@ -1,6 +1,6 @@
-var ado = OpenAdodbFromTextFile("addons\\extensionicon\\options.html");
+var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 if (ado) {
-	SetTabContents(4, "General", ado.ReadText(adReadAll));
+	SetTabContents(4, "", ado.ReadText(adReadAll));
 	ado.Close();
 }
 

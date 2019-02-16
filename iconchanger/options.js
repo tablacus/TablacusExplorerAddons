@@ -1,6 +1,6 @@
 var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 if (ado) {
-	SetTabContents(4, "General", ado.ReadText(adReadAll));
+	SetTabContents(4, "", ado.ReadText(adReadAll));
 	ado.Close();
 }
 
@@ -46,9 +46,6 @@ ReplaceIC = function(mode)
 	g_Chg[mode] = true;
 }
 
-ApplyLang(document);
-var info = GetAddonInfo(Addon_Id);
-document.title = info.Name;
 g_x.List = document.E.List;
 
 var size = api.Memory("SIZE");

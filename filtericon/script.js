@@ -1,4 +1,4 @@
-﻿Addons.FilterIcon = {
+Addons.FilterIcon = {
 	FV: {},
 	List: [['', 0, 0]],
 	fStyle: LVIS_CUT | LVIS_SELECTED,

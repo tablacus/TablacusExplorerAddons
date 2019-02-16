@@ -22,6 +22,7 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("ListViewCreated", Addons.ListWidth.Exec);
+	AddEvent("NavigateComplete", Addons.ListWidth.Exec);
 	AddEvent("ViewModeChanged", Addons.ListWidth.Exec);
 
 	var cFV = te.Ctrls(CTRL_FV);
@@ -29,5 +30,5 @@ if (window.Addon == 1) {
 		Addons.ListWidth.Exec(cFV[i]);
 	}
 } else {
-	SetTabContents(0, "General", '<label>Width</label><br /><input type="text" id="Width" style="width: 100%" />');
+	SetTabContents(0, "", '<label>Width</label><br /><input type="text" id="Width" style="width: 100%" />');
 }
