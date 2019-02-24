@@ -10,14 +10,16 @@
           <label>Name</label>
           <br />
           <input type="text" name="Name" style="width: 100%" />
-          <br />
-          <label>Path</label>
-          <br />
+          <table style="width: 100%">
+            <tr>
+              <td style="vertical-align: bottom"><label>Path</label></td>
+              <td align="right">
+                <input type="button" value="Portable" onclick="PortableX('Path')" />
+                <input type="button" value="Browse..." onclick="RefX('Path',0,0,1)" />
+              </td>
+            </tr>
+          </table>
           <input type="text" name="Path" style="width: 100%" onchange="SetProp();" />
-          <br />
-          <input type="button" value="Browse..." onclick="RefX('Path',0,0,1)" />
-          <input type="button" value="Portable" onclick="PortableX('Path')" />
-          <br />
           <label>Filter</label>
           <br />
           <input type="text" name="Filter" style="width: 100%" />
