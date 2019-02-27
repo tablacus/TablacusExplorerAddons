@@ -12,10 +12,10 @@ if (window.Addon == 1) {
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
-			Addons.DuplicateCopy.FO(FV, FV.SelectedItems(), FV.FolderItem, MK_LBUTTON, null, [DROPEFFECT_COPY], false);
+			Addons.DuplicateCopy.FO(FV, FV.SelectedItems(), FV.FolderItem, MK_LBUTTON, null, [DROPEFFECT_COPY], false, true);
 		},
 
-		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver)
+		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bForce)
 		{
 			var path;
 			if (!(grfKeyState & MK_LBUTTON) || Items.Count == 0) {
@@ -45,36 +45,53 @@ if (window.Addon == 1) {
 						DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 					}
 					if (pdwEffect[0] & DROPEFFECT_COPY) {
-						if (arFrom.length != 1) {
-						 	return !confirmOk();
+						if (arFrom.length > 1) {
+							var bResult = confirmOk();
+							if (bForce && bResult) {
+								var arDest = [];
+								for (var i = arFrom.length; i--;) {
+									arDest.unshift(Addons.DuplicateCopy.GetTempName(arFrom[i]));
+								}
+								api.SHFileOperation(FO_COPY, arFrom.join("\0"), arDest.join("\0"), FOF_ALLOWUNDO | FOF_MULTIDESTFILES | FOF_RENAMEONCOLLISION, true);
+								return true
+							}
+							return !bResult;
 						}
-						var pfn = fso.GetParentFolderName(arFrom[0]); 
-						var bn = fso.GetBaseName(arFrom[0]);
-						var ext = fso.GetExtensionName(arFrom[0]);
-						if (ext) {
-							ext = '.' + ext;
+						if (arFrom.length) {
+							var fn = Addons.DuplicateCopy.GetTempName(arFrom[0]);
+							var s = InputDialog(fso.GetFileName(fn), fso.GetFileName(fn));
+							if (s) {
+								api.SHFileOperation(FO_COPY, arFrom[0], fso.BuildPath(fso.GetParentFolderName(fn), s), FOF_ALLOWUNDO | FOF_RENAMEONCOLLISION, true);
+							}
+							return true;
 						}
-						var cp = api.LoadString(hShell32, 4178) || "%s - Copy";
-						if (!/\(\)/.test(cp)) {
-							cp += " ()";
-						}
-						if (!/%s/.test(cp)) {
-							cp += "%s";
-						}
-						var m = bn.length + cp.length + 9;
-						var cp1 = api.sprintf(m, cp.replace(/\s?\(\)/, ""), bn) + ext;
-						for (var i = 2; IsExists(fso.BuildPath(pfn, cp1)); i++) {
-							cp1 = api.sprintf(m, cp.replace(/(\s?\()(\))/, "$1" + i + "$2"), bn) + ext;
-						}
-						var s = InputDialog(fso.GetFileName(arFrom[0]), cp1);
-						if (s) {
-							api.SHFileOperation(FO_COPY, arFrom.join("\0"), fso.BuildPath(pfn, s), FOF_ALLOWUNDO | FOF_RENAMEONCOLLISION, true);
-						}
-						return true;
 					}
 				}
 			}
 			return false;
+		},
+
+		GetTempName: function (fn)
+		{
+			var cp = api.LoadString(hShell32, 4178) || "%s - Copy";
+			var pfn = fso.GetParentFolderName(fn); 
+			var bn = fso.GetBaseName(fn);
+			var ext = fso.GetExtensionName(fn);
+			if (ext) {
+				ext = '.' + ext;
+			}
+			if (!/\(\)/.test(cp)) {
+				cp += " ()";
+			}
+			if (!/%s/.test(cp)) {
+				cp += "%s";
+			}
+			var m = bn.length + cp.length + 9;
+			var cp1 = api.sprintf(m, cp.replace(/\s?\(\)/, ""), bn) + ext;
+			for (var i = 2; IsExists(fso.BuildPath(pfn, cp1)); i++) {
+				cp1 = api.sprintf(m, cp.replace(/(\s?\()(\))/, "$1" + i + "$2"), bn) + ext;
+			}
+			return fso.BuildPath(pfn, cp1)
 		}
 	};
 
