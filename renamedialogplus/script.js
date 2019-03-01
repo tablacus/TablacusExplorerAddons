@@ -1,4 +1,4 @@
-﻿var Addon_Id = "renamedialogplus";
+var Addon_Id = "renamedialogplus";
 
 var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
@@ -78,7 +78,7 @@ if (window.Addon == 1) {
 		var s = document.getElementById("P").innerText;
 		var r = document.F.E.value ? [document.F.N.value, document.F.E.value].join(".") : document.F.N.value;
 		if (r && s != r) {
-			if (/[\\\/:,;\*\?"<>\|]/.test(r)) {
+			if (/[\\\/:\*\?"<>\|]/.test(r)) {
 				MessageBox(api.LoadString(hShell32, 4109), null, MB_ICONSTOP | MB_OK);
 				return;
 			}
