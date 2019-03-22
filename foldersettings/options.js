@@ -1,4 +1,4 @@
-﻿var AddonName = "FolderSettings";
+var AddonName = "FolderSettings";
 var g_Chg = {List: false};
 
 GetCurrentSetting = function (bForce)
@@ -100,7 +100,7 @@ function ReplaceFS()
 }
 
 ApplyLang(document);
-document.title = GetText(AddonName);
+document.title = GetAddonInfo(AddonName.toLowerCase()).Name;
 LoadFS();
 if (dialogArguments.GetCurrent) {
 	var bNew = true;
