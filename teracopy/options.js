@@ -2,8 +2,8 @@ var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 if (ado) {
 	var ar = ado.ReadText(adReadAll).split("<!--panel-->");
 	SetTabContents(0, "General", ar[0]);
-	SetTabContents(1, "32 bit", ar[1]);
-	SetTabContents(2, "64 bit", ar[2]);
+	SetTabContents(1, "32-bit", ar[1]);
+	SetTabContents(2, "64-bit", ar[2]);
 	ado.Close();
 }
 document.getElementById("GetTeraCopy").value = api.sprintf(999, GetText("Get %s..."), "TeraCopy");

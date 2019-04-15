@@ -1,10 +1,10 @@
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="MSThemeCompatible" content="Yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="MSThemeCompatible" content="Yes">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Tablcus Add-ons</title>
-    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
+    <link rel="stylesheet" type="text/css" href="../../script/options.css">
     <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
     </script>
     <script type="text/javascript">
@@ -29,28 +29,28 @@
             <td valign="top">
             <div  style="height: 34em; height: calc(100vh - 5.7em); min-height: 16em; overflow: auto; word-break: break-all">
               <label>Name</label>
-              <br />
+              <br>
               <table style="width: 100%"><tr>
-              <td style="vertical-align: bottom"><input type="checkbox" name="Enable" checked /></td>
-              <td style="width: 100%"><input type="text" name="Name" style="width: 100%" /></td>
+              <td style="vertical-align: bottom"><input type="checkbox" name="Enable" checked></td>
+              <td style="width: 100%"><input type="text" name="Name" style="width: 100%"></td>
               </tr></table>
               <table style="width: 100%"><tr>
                 <td style="width: 100%; vertical-align: bottom"><label>Path</label><span id="bit1"><span>/td>
-                <td><input type="button" value="Portable" title="Path" onclick="PortableX('Path')" /></td>
-                <td><input type="button" value="Browse..." title="Path" id="browse1" /></td>
+                <td><input type="button" value="Portable" title="Path" onclick="PortableX('Path')"></td>
+                <td><input type="button" value="Browse..." title="Path" id="_browse1"></td>
               </tr></table>
-              <input type="text" name="Path" style="width: 100%" onchange="PathChanged()" />
-              <br /><br />
+              <input type="text" name="Path" style="width: 100%" onchange="PathChanged()">
+              <br><br>
               <label>Filter</label>
-              <br />
+              <br>
               <table style="width: 100%"><tr>
-                <td style="vertical-align: bottom"><input type="checkbox" name="Filter" /></td>
-                <td style="width: 100%"><input type="text" name="_Filter" style="width: 100%" readonly /></td>
+                <td style="vertical-align: bottom"><input type="checkbox" name="Filter"></td>
+                <td style="width: 100%"><input type="text" name="_Filter" style="width: 100%" readonly></td>
                 </tr>
-              </table><br />
+              </table><br>
               <label>Information</label>&emsp;<span id="ver"></span>
               <table style="width: 100%"><tr><td id="prop0" style="width: 33%"></td><td id="prop1" style="width: 33%"></td><td id="prop2"></td></table>
-              <div id="prop3"></div><br />
+              <div id="prop3"></div><br>
               <div id="ext"></div>
               </div>
             </td>
@@ -59,14 +59,14 @@
         <table style="width: 100%">
           <tr>
             <td>
-              <input type="button" value="Remove" onclick="RemoveX('List')" />
-              <input type="button" value="Up" onclick="MoveX('List', -1)" />
-              <input type="button" value="Down" onclick="MoveX('List', 1)" />
-              <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
+              <input type="button" value="Remove" onclick="RemoveX('List')">
+              <input type="button" value="Up" onclick="MoveX('List', -1)">
+              <input type="button" value="Down" onclick="MoveX('List', 1)">
+              <input type="checkbox" id="_EDIT" checked><label for="_EDIT">Edit</label>
             </td>
             <td align="right">
-              <input type="button" value="Add" onclick="AddX('List', ReplaceFS)" />
-              <input type="button" value="Replace" onclick="ReplaceFS()" />
+              <input type="button" value="Add" onclick="AddX('List', ReplaceFS)">
+              <input type="button" value="Replace" onclick="ReplaceFS()">
             </td>
           </tr>
         </table>
@@ -77,10 +77,10 @@
           <td style="width: 100%; white-space: nowrap">
           </td>
           <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />&nbsp;
+            <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus>&nbsp;
           </td>
           <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
+            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)">&nbsp;
           </td>
         </tr>
       </table>

@@ -107,7 +107,7 @@ SetProp = function ()
 	for (var i in arProp) {
 		arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', WCX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 	}
-	arHtml[2].push('64bit<br /><input type="text" value="', EncodeSC(ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + "64").replace(/\.u(wcx64)$/, ".$1"), '" style="width: 100%" readonly /><br />');
+	arHtml[2].push(GetTextR('64-bit'), '<br><input type="text" value="', EncodeSC(ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + "64").replace(/\.u(wcx64)$/, ".$1"), '" style="width: 100%" readonly><br>');
 	for (var i = 3; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
@@ -139,6 +139,12 @@ ConfigDialog = function ()
 }
 
 LoadFS();
+var info = GetAddonInfo(Addon_Id);
+document.getElementById("_browse1").onclick = function ()
+{
+	var s = '*.wcx;*.uwcx;*.wcx64';
+	RefX('Path', 0, 0, 1, info.Name + '(' + s + ')|' + s);
+}
 SetOnChangeHandler();
 if (document.documentMode >= 9) {
 	setTimeout(function ()

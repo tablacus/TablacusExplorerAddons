@@ -1,16 +1,16 @@
-﻿<form>
+<form>
   <label>Registry</label>
-  <br />
-  <input type="checkbox" id="EnableShellExecuteHooks" /><label for="EnableShellExecuteHooks">EnableShellExecuteHooks</label><br />
-  <input type="checkbox" id="Reg32bit" /><label for="Reg32bit">32bit</label>&emsp;<span id="update32" style="color: red"></span><br />
-  <input type="checkbox" id="Reg64bit" /><label for="Reg64bit" id="Label64">64bit</label>&emsp;<span id="update64" style="color: red"></span><br /><br />
+  <br>
+  <input type="checkbox" id="EnableShellExecuteHooks"><label for="EnableShellExecuteHooks">EnableShellExecuteHooks</label><br>
+  <input type="checkbox" id="Reg32bit"><label for="Reg32bit">32-bit</label>&emsp;<span id="update32" style="color: red"></span><br>
+  <input type="checkbox" id="Reg64bit"><label for="Reg64bit" id="Label64">64-bit</label>&emsp;<span id="update64" style="color: red"></span><br><br>
   <label>Path</label>
-  <br />
+  <br>
   <table style="width: 100%"><tr>
-  <td style="width: 100%"><input type="text" id="Path" style="width: 100%" /></td>
-  <td><input type="button" value="Browse..." onclick="RefX('Path',0,0,1)" /></td>
+  <td style="width: 100%"><input type="text" id="Path" style="width: 100%"></td>
+  <td><input type="button" value="Browse..." onclick="RefX('Path',0,0,1)"></td>
   </tr></table>
-  <input type="button" value="Default" onclick="SetDefault(document.getElementById('Path'), api.GetModuleFileName(null))" /><br /><br />
-  <label>@shell32.dll,-33281</label><br />
-  <input type="checkbox" id="Explorer" /><label for="Explorer">@shell32.dll,-30309</label>
+  <input type="button" value="Default" onclick="SetDefault(document.getElementById('Path'), api.GetModuleFileName(null))"><br><br>
+  <label>@shell32.dll,-33281</label><br>
+  <input type="checkbox" id="Explorer"><label for="Explorer">@shell32.dll,-30309</label>
  </form>

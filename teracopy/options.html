@@ -1,46 +1,46 @@
 <div class="panel" style="display: block">
   <label>Copy</label>
-  <input type="text" id="Copy" style="width: 100%" />
-  <input type="button" value="Browse..." onclick="RefId(this, 'Copy')" />
-  <input type="button" value="None" title="0" onclick="SetDefault(GetElement('Copy'), this.title)" />
-  <input type="button" value="Default" title="1" onclick="SetDefault(GetElement('Copy'), this.title)" />
+  <input type="text" id="Copy" style="width: 100%">
+  <input type="button" value="Browse..." onclick="RefId(this, 'Copy')">
+  <input type="button" value="None" title="0" onclick="SetDefault(GetElement('Copy'), this.title)">
+  <input type="button" value="Default" title="1" onclick="SetDefault(GetElement('Copy'), this.title)">
 </div>
 <div class="panel" style="display: block">
   <label>Move</label>
-  <input type="text" id="Move" style="width: 100%" />
-  <input type="button" value="Browse..." onclick="RefId(this, 'Move')" />
-  <input type="button" value="None" title="0" onclick="SetDefault(GetElement('Move'), this.title)" />
-  <input type="button" value="Default" title="2" onclick="SetDefault(GetElement('Move'), this.title)" />
-  <input type="checkbox" id="DiffDriveOnly" />
+  <input type="text" id="Move" style="width: 100%">
+  <input type="button" value="Browse..." onclick="RefId(this, 'Move')">
+  <input type="button" value="None" title="0" onclick="SetDefault(GetElement('Move'), this.title)">
+  <input type="button" value="Default" title="2" onclick="SetDefault(GetElement('Move'), this.title)">
+  <input type="checkbox" id="DiffDriveOnly">
   <label for="DiffDriveOnly">Different drive only</label>
 </div>
-<br />
-<input type="button" id="GetTeraCopy" value="Get TeraCopy..." title="https://www.codesector.com/teracopy" onclick="wsh.Run(this.title)" />
+<br>
+<input type="button" id="GetTeraCopy" value="Get TeraCopy..." title="https://www.codesector.com/teracopy" onclick="wsh.Run(this.title)">
 <!--panel-->
 <div class="panel" style="display: block">
-  <label>Path</label> (dll) 32bit
-  <input type="text" id="Path32" style="width: 100%" />
-  <input type="button" value="Browse..." onclick="RefX('Path32',0,0,1,'Dll Files|*.dll')" />
-  <input type="button" value="Default" title="" onclick="SetDefault(document.F.Path32, '')" />
-  <input type="button" value="Portable" onclick="PortableX('Path32')" /><br />
+  <label>Path</label> (dll) <label>32-bit</label>
+  <input type="text" id="Path32" style="width: 100%">
+  <input type="button" value="Browse..." onclick="RefX('Path32',0,0,1,'*.dll')">
+  <input type="button" value="Default" title="" onclick="SetDefault(document.F.Path32, '')">
+  <input type="button" value="Portable" onclick="PortableX('Path32')"><br>
 </div>
 <div class="panel" style="display: block">
-  <label>Class</label> 32bit
-  <input type="text" id="Class32" style="width: 100%" />
-  <input type="button" value="Browse..." onclick="RefClass(this, 'Class32')" />
-  <input type="button" value="Default" title="{A7005AF0-D6E8-48AF-8DFA-023B1CF660A7}" onclick="SetDefault(document.F.Class32, this.title)" />
+  <label>Class</label> <label>32-bit</label>
+  <input type="text" id="Class32" style="width: 100%">
+  <input type="button" value="Browse..." onclick="RefClass(this, 'Class32')">
+  <input type="button" value="Default" title="{A7005AF0-D6E8-48AF-8DFA-023B1CF660A7}" onclick="SetDefault(document.F.Class32, this.title)">
 </div>
  <!--panel-->
  <div class="panel" style="display: block">
-  <label>Path</label> (dll) 64bit
-  <input type="text" id="Path64" style="width: 100%" />
-  <input type="button" value="Browse..." onclick="RefX('Path64',0,0,1,'Dll Files|*.dll')" />
-  <input type="button" value="Default" title="" onclick="SetDefault(document.F.Path64, '')" />
-  <input type="button" value="Portable" onclick="PortableX('Path64')" /><br />
+  <label>Path</label> (dll) <label>64-bit</label>
+  <input type="text" id="Path64" style="width: 100%">
+  <input type="button" value="Browse..." onclick="RefX('Path64',0,0,1,'*.dll')">
+  <input type="button" value="Default" title="" onclick="SetDefault(document.F.Path64, '')">
+  <input type="button" value="Portable" onclick="PortableX('Path64')"><br>
 </div>
 <div class="panel" style="display: block">
-  <label>Class</label> 64bit
-  <input type="text" id="Class64" style="width: 100%" />
-  <input type="button" value="Browse..." onclick="RefClass(this, 'Class64')" />
-  <input type="button" value="Default" title="{A7645AF0-D6E8-48AF-8DFA-023B1CF660A7}" onclick="SetDefault(document.F.Class64, this.title)" />
+  <label>Class</label> <label>64-bit</label>
+  <input type="text" id="Class64" style="width: 100%">
+  <input type="button" value="Browse..." onclick="RefClass(this, 'Class64')">
+  <input type="button" value="Default" title="{A7645AF0-D6E8-48AF-8DFA-023B1CF660A7}" onclick="SetDefault(document.F.Class64, this.title)">
 </div>

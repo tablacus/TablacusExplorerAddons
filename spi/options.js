@@ -1,4 +1,4 @@
-﻿var AddonName = "SPI";
+var Addon_Id = "spi";
 var g_Chg = {List: false, Data: "List"};
 var SPI;
 var tspiPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\spi\\tspi", api.sizeof("HANDLE") * 8, ".dll"].join(""));
@@ -10,7 +10,7 @@ function LoadFS()
 		g_x.List = document.F.List;
 		g_x.List.length = 0;
 		var nSelectSize = g_x.List.size;
-		var xml = OpenXml(AddonName.toLowerCase() + (api.sizeof("HANDLE") * 8) + ".xml", false, false);
+		var xml = OpenXml(Addon_Id + (api.sizeof("HANDLE") * 8) + ".xml", false, false);
 		if (xml) {
 			var items = xml.getElementsByTagName("Item");
 			var i = items.length;
@@ -40,7 +40,7 @@ function SaveFS()
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
-		SaveXmlEx(AddonName.toLowerCase() + (api.sizeof("HANDLE") * 8) + ".xml", xml);
+		SaveXmlEx(Addon_Id + (api.sizeof("HANDLE") * 8) + ".xml", xml);
 	}
 }
 
@@ -103,7 +103,7 @@ function SetProp(bName)
 	}
 	var s = [];
 	if (SPI.ConfigurationDlg) {
-		s.push('<input type="button" value="', GetText("Options..."), '" onclick="SPI.ConfigurationDlg(', te.hwnd, ', 1)" /><br />');
+		s.push('<input type="button" value="', GetText("Options..."), '" onclick="SPI.ConfigurationDlg(', te.hwnd, ', 1)"><br>');
 	}
 	s.push('<table border="1px" style="width: 100%">');
 	for (var i = 0; i < ar.length; i += 2) {
@@ -128,20 +128,21 @@ function ED(s)
 }
 
 ApplyLang(document);
-var info = GetAddonInfo(AddonName.toLowerCase());
+var info = GetAddonInfo(Addon_Id);
 var bit = api.sizeof("HANDLE") * 8;
-document.title = info.Name + " " + bit + "bit";
+var bitName = GetTextR(bit + "-bit");
+document.title = info.Name + " " + bitName;
 if (bit == 64) {
-	document.getElementById("bit1").innerHTML = "(sph/64bit)";
-	document.getElementById("browse1").onclick = function ()
+	document.getElementById("bit1").innerHTML = "(sph/" + bitName + ")";
+	document.getElementById("_browse1").onclick = function ()
 	{
-		RefX('Path', 0, 0, 1, 'Susie Plug-in 64bit (sph)|*.sph');
+		RefX('Path', 0, 0, 1, info.Name + ' ' + bitName + ' (*.sph)|*.sph');
 	}
 } else {
-	document.getElementById("bit1").innerHTML = "(spi/32bit)";
-	document.getElementById("browse1").onclick = function ()
+	document.getElementById("bit1").innerHTML = "(spi/" + bitName +")";
+	document.getElementById("_browse1").onclick = function ()
 	{
-		RefX('Path', 0, 0, 1, 'Susie Plug-in 32bit (spi)|*.spi');
+		RefX('Path', 0, 0, 1, info.Name + ' ' + bitName + ' (*.spi)|*.spi');
 	}
 }
 

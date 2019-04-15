@@ -1,15 +1,14 @@
-var AddonName = "WFX";
 var g_MP0 = "";
 var g_MP = "";
 
-var ado = OpenAdodbFromTextFile("addons\\" + AddonName.toLowerCase() + "\\options.html");
+var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 if (ado) {
 	SetTabContents(3, "General", ado.ReadText(adReadAll));
 	ado.Close();
 }
 var s = [];
-s.push('<p><input form="E" type="checkbox" id="!ExSort" /><label for="!ExSort">@shell32.dll,-50690[Arrange by:]</label> <label for="!ExSort">@shell32.dll,-4131</label> <label for="!ExSort">Top</label> (*)</p>');
-s.push('<p><input form="E" type="button" value="Master Password" onclick="SetMP()" /></p>');
+s.push('<p><input form="E" type="checkbox" id="!ExSort"><label for="!ExSort">@shell32.dll,-50690[Arrange by:]</label> <label for="!ExSort">@shell32.dll,-4131</label> <label for="!ExSort">Top</label> (*)</p>');
+s.push('<p><input form="E" type="button" value="Master Password" onclick="SetMP()"></p>');
 SetTabContents(4, "Advanced", s);
 
 LoadFS = function ()
@@ -18,7 +17,7 @@ LoadFS = function ()
 		g_x.List = document.E.List;
 		g_x.List.length = 0;
 		var nSelectSize = g_x.List.size;
-		var xml = OpenXml(AddonName.toLowerCase() + ".xml", false, false);
+		var xml = OpenXml(Addon_Id + ".xml", false, false);
 		if (xml) {
 			var items = xml.getElementsByTagName("Item");
 			var i = items.length;
@@ -73,7 +72,7 @@ SaveFS = function ()
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
-		SaveXmlEx(AddonName.toLowerCase() + ".xml", xml);
+		SaveXmlEx(Addon_Id + ".xml", xml);
 		if (g_MP != g_MP0) {
 			var dbfile = fso.BuildPath(te.Data.DataFolder, "config\\wfx_" + (wnw.ComputerName.toLowerCase()) + ".bin");
 			try {
@@ -150,7 +149,7 @@ SetProp = function (bName)
 	for (var i in arProp) {
 		arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', WFX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 	}
-	arHtml[2].push('64bit<br /><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
+	arHtml[2].push(GetTextR('64-bit'), '<br><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly><br>');
 	for (var i = arHtml.length; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
@@ -183,6 +182,12 @@ ED = function (s)
 }
 
 LoadFS();
+var info = GetAddonInfo(Addon_Id);
+document.getElementById("_browse1").onclick = function ()
+{
+	var s = '*.wfx;*.uwfx;*.wfx64';
+	RefX('Path', 0, 0, 1, info.Name + '(' + s + ')|' + s);
+}
 SetOnChangeHandler();
 if (document.documentMode >= 9) {
 	setTimeout(function ()

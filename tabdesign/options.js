@@ -11,7 +11,7 @@ if (ado) {
 SetCss = function (a, b, c, d)
 {
 	if (confirmOk("Are you sure?")) {
-		for (var i in arCss) {
+		for (var i = 0; i < arCss.length; i++) {
 			ImportCss1({}, arExt[i], arCss[i]);
 			ImportCss1({}, arExt[i] + ':before', arCss[i] + '_before');
 			ImportCss1({}, arExt[i] + ':after', arCss[i] + '_after');
@@ -37,9 +37,9 @@ ChangeTab = function (o)
 
 ExportCss = function ()
 {
-	var commdlg = te.CommonDialog();
+	var commdlg = api.CreateObject("CommonDialog");
 	commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "config");
-	commdlg.Filter = "CSS Files|*.css|" + (api.LoadString(hShell32, 34193) || "All Files") + "|*.*";
+	commdlg.Filter = MakeCommDlgFilter("*.css");
 	commdlg.DefExt = "xml";
 	commdlg.Flags = OFN_OVERWRITEPROMPT;
 	if (commdlg.ShowSave()) {
@@ -47,7 +47,7 @@ ExportCss = function ()
 			var ado = api.CreateObject("ads");
 			ado.CharSet = "utf-8";
 			ado.Open();
-			for (var i in arCss) {
+			for (var i = 0; i < arCss.length; i++) {
 				ExportCss1(ado, arExt[i], arCss[i]);
 				ExportCss1(ado, arExt[i] + ':before', arCss[i] + '_before');
 				ExportCss1(ado, arExt[i] + ':after', arCss[i] + '_after');
@@ -70,9 +70,9 @@ ExportCss1 = function (ado, name, name2)
 
 ImportCss = function ()
 {
-	var commdlg = te.CommonDialog();
+	var commdlg = api.CreateObject("CommonDialog");
 	commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "config");
-	commdlg.Filter = "CSS Files|*.css|" + (api.LoadString(hShell32, 34193) || "All Files") + "|*.*";
+	commdlg.Filter = MakeCommDlgFilter("*.css");
 	commdlg.Flags = OFN_FILEMUSTEXIST;
 	if (commdlg.ShowOpen()) {
 		try {
@@ -85,7 +85,7 @@ ImportCss = function ()
 					var ar = s[i].split(/\s*{\s*/m);
 					cls[ar[0]] = ar[1];
 				}
-				for (var i in arCss) {
+				for (var i = 0; i < arCss.length; i++) {
 					ImportCss1(cls, arExt[i], arCss[i]);
 					ImportCss1(cls, arExt[i] + ':before', arCss[i] + '_before');
 					ImportCss1(cls, arExt[i] + ':after', arCss[i] + '_after');

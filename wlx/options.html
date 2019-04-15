@@ -8,21 +8,21 @@
       <td style="vertical-align: top">
         <div id="pane" style="height: 100%; overflow: auto">
           <label>Name</label>
-          <br />
-          <input type="text" name="Name" style="width: 100%" />
-          <br />
+          <br>
+          <input type="text" name="Name" style="width: 100%">
+          <br>
           <table style="width: 100%"><tr>
             <td style="width: 100%; vertical-align: bottom"><label>Path</label> (wlx)</td>
-            <td><input type="button" value="Portable" title="Path" onclick="PortableX('Path')" /></td>
-            <td><input type="button" value="Browse..." title="Path" onclick="RefX('Path',0,0,1,'LS Plugin (wlx)|*.wlx;*.uwlx;*.wlx64')" /></td>
+            <td><input type="button" value="Portable" title="Path" onclick="PortableX('Path')"></td>
+            <td><input type="button" value="Browse..." title="Path"  id="_browse1"></td>
           </tr></table>
-          <input type="text" name="Path" style="width: 100%" onchange="PathChanged()" />
+          <input type="text" name="Path" style="width: 100%" onchange="PathChanged()">
           <div id="prop2"></div>
-          DetectString
+          <label>Detect string<label>
           <textarea id="prop3" style="width: 100%; height: 5em"></textarea>
-          <br />
-          <label>Size</label><br />
-          <label><input type="checkbox" id="Fit">Auto</label><br />
+          <br>
+          <label>Size</label><br>
+          <label><input type="checkbox" id="Fit">Auto</label><br>
           <label>Information</label>&emsp;<span id="ver"></span>
           <table style="width: 100%"><tr><td id="prop0" style="width: 50%"></td><td id="prop1" style="width: 50%"></td></table>
         </div>
@@ -32,14 +32,14 @@
   <table id="tools" style="width: 100%">
     <tr>
       <td>
-        <input type="button" value="Remove" onclick="RemoveX('List')" />
-        <input type="button" value="Up" onclick="MoveX('List', -1)" />
-        <input type="button" value="Down" onclick="MoveX('List', 1)" />
-        <label><input type="checkbox" id="_EDIT" checked />Edit</label>
+        <input type="button" value="Remove" onclick="RemoveX('List')">
+        <input type="button" value="Up" onclick="MoveX('List', -1)">
+        <input type="button" value="Down" onclick="MoveX('List', 1)">
+        <label><input type="checkbox" id="_EDIT" checked>Edit</label>
       </td>
       <td align="right">
-        <input type="button" value="Add" onclick="AddX('List', ReplaceLS)" />
-        <input type="button" value="Replace" onclick="ReplaceLS()" />
+        <input type="button" value="Add" onclick="AddX('List', ReplaceLS)">
+        <input type="button" value="Replace" onclick="ReplaceLS()">
       </td>
     </tr>
   </table>

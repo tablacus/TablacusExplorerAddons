@@ -1,4 +1,4 @@
-﻿var Addon_Id = "tabgroups";
+var Addon_Id = "tabgroups";
 var Default = "ToolBar5Center";
 
 if (window.Addon == 1) {
@@ -55,9 +55,9 @@ if (window.Addon == 1) {
 
 		Load: function ()
 		{
-			var commdlg = te.CommonDialog();
+			var commdlg = api.CreateObject("CommonDialog");
 			commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "layout");
-			commdlg.Filter = "XML Files|*.xml|All Files|*.*";
+			commdlg.Filter = MakeCommDlgFilter("*.xml");
 			commdlg.Flags = OFN_FILEMUSTEXIST;
 			if (commdlg.ShowOpen()) {
 				var fn = api.PathUnquoteSpaces(commdlg.filename);
@@ -82,15 +82,14 @@ if (window.Addon == 1) {
 
 		Save: function ()
 		{
-			var commdlg = te.CommonDialog();
+			var commdlg = api.CreateObject("CommonDialog");
 			commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "layout");
-			commdlg.Filter = "XML Files|*.xml|All Files|*.*";
+			commdlg.Filter = MakeCommDlgFilter("*.xml");
 			commdlg.DefExt = "xml";
 			commdlg.Flags = OFN_OVERWRITEPROMPT;
 			if (commdlg.ShowSave()) {
 				var fn = api.PathUnquoteSpaces(commdlg.filename);
 				var xml = CreateXml(true);
-				var root = xml.documentElement;
 				var nGroup = te.Data.Tabgroups.Click;
 				var cTC = te.Ctrls(CTRL_TC);
 				for (var i in cTC) {

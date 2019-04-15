@@ -1,6 +1,4 @@
-var AddonName = "WLX";
-
-var ado = OpenAdodbFromTextFile("addons\\" + AddonName.toLowerCase() + "\\options.html");
+var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 if (ado) {
 	SetTabContents(4, "General", ado.ReadText(adReadAll));
 	ado.Close();
@@ -12,7 +10,7 @@ LoadLS = function ()
 		g_x.List = document.E.List;
 		g_x.List.length = 0;
 		var nSelectSize = g_x.List.size;
-		var xml = OpenXml(AddonName.toLowerCase() + ".xml", false, false);
+		var xml = OpenXml(Addon_Id + ".xml", false, false);
 		if (xml) {
 			var items = xml.getElementsByTagName("Item");
 			var i = items.length;
@@ -75,7 +73,7 @@ SetProp = function (bName)
 	for (var i in arProp) {
 		arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', WLX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 	}
-	arHtml[2].push('64bit<br /><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + "64").replace(/\.u(wlx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly /><br />');
+	arHtml[2].push(GetTextR('64-bit'), '<br><input type="text" value="', (ExtractMacro(te, api.PathUnquoteSpaces(document.E.Path.value)) + "64").replace(/\.u(wlx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly><br>');
 	if (WLX.ListGetDetectString) {
 		arHtml[3].push(EncodeSC(WLX.ListGetDetectString()));
 	}
@@ -93,6 +91,12 @@ SetProp = function (bName)
 }
 
 LoadLS();
+var info = GetAddonInfo(Addon_Id);
+document.getElementById("_browse1").onclick = function ()
+{
+	var s = '*.wlx;*.uwlx;*.wlx64';
+	RefX('Path', 0, 0, 1, info.Name + '(' + s + ')|' + s);
+}
 SetOnChangeHandler();
 if (document.documentMode >= 9) {
 	setTimeout(function ()
@@ -120,6 +124,6 @@ SaveLocation = function ()
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
-		SaveXmlEx(AddonName.toLowerCase() + ".xml", xml);
+		SaveXmlEx(Addon_Id + ".xml", xml);
 	}
 }

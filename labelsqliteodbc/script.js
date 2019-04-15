@@ -1,4 +1,4 @@
-﻿Addons.LabelSQLiteOdbc =
+Addons.LabelSQLiteOdbc =
 {
 	db: new ActiveXObject("ADODB.Connection"),
 	DBFILE: fso.BuildPath(te.Data.DataFolder, "config\\label.db"),
@@ -207,29 +207,5 @@ if (window.Addon == 1) {
 		AddEventId("AddonDisabledEx", "LabelSQLiteOdbc", Addons.LabelSQLiteOdbc.Finalize);
 	}, true);
 } else {
-	SetTabContents(0, "General", '<input type="button" value="Load" onclick="Addons.LabelSQLiteOdbc.Import()" /><br /><input type="button" value="Save" onclick="Addons.LabelSQLiteOdbc.Export()" /><br /><br /><input type="button" value="' + api.sprintf(999, GetText("Get %s..."), "SQLite ODBC Driver") + '" title="http://www.ch-werner.de/sqliteodbc/" onclick="wsh.Run(this.title)" />');
-
-	Addons.LabelSQLiteOdbc.Import = function ()
-	{
-		var commdlg = te.CommonDialog();
-		commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "config")
-		commdlg.Filter = "TSV Files|*.tsv|" + (api.LoadString(hShell32, 34193) || "All Files") + "|*.*";
-		commdlg.Flags = OFN_FILEMUSTEXIST;
-		if (commdlg.ShowOpen()) {
-			(MainWindow.Addons.LabelSQLiteOdbc || Addons.LabelSQLiteOdbc).Load(commdlg.FileName);
-		}
-	}
-
-	Addons.LabelSQLiteOdbc.Export = function ()
-	{
-		var commdlg = te.CommonDialog();
-		commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "config")
-		commdlg.Filter = "TSV Files|*.tsv|" + (api.LoadString(hShell32, 34193) || "All Files") + "|*.*";
-		commdlg.DefExt = "tsv";
-		commdlg.Flags = OFN_OVERWRITEPROMPT;
-		if (commdlg.ShowSave()) {
-			(MainWindow.Addons.LabelSQLiteOdbc || Addons.LabelSQLiteOdbc).Save(commdlg.FileName);
-		}
-		return;
-	}
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
