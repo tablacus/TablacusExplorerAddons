@@ -1,4 +1,4 @@
-﻿var Addon_Id = "color";
+var Addon_Id = "color";
 
 var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
@@ -79,7 +79,7 @@ if (window.Addon == 1) {
 } else {
 	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 	if (ado) {
-		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		SetTabContents(0, "", ado.ReadText(adReadAll));
 		ado.Close();
 	}
 	document.F.Default.placeholder = GetWebColor(GetSysColor(COLOR_WINDOWTEXT));
