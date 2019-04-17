@@ -1,4 +1,4 @@
-﻿var Addon_Id = "cmigemo";
+var Addon_Id = "cmigemo";
 
 var item = GetAddonElement(Addon_Id);
 
