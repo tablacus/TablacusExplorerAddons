@@ -1,4 +1,4 @@
-﻿var Addon_Id = "regexpincsearch";
+var Addon_Id = "regexpincsearch";
 
 if (window.Addon == 1) {
 	Addons.RegExpIncSearch =
@@ -148,5 +148,5 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", Addons.RegExpIncSearch.Clear);
 } else {
-	SetTabContents(0, "General", '<label>Timeout</label><br /><table style="width: 100%"><tr><td style="width: 100%"><input type="text" id="Timeout" style="width: 6em; text-align:right" />ms</td><td><input type="button" value="Set Default" onclick="document.F.Timeout.value=\'\'" /></td></tr></table>');
+	SetTabContents(0, "", '<label>Timeout</label><table style="width: 100%"><tr><td style="width: 100%"><input type="text" placeholder="2000" id="Timeout" style="width: 6em; text-align:right"><label>@calc.exe,-1721[ms]</label></td><td><input type="button" value="Set Default" onclick="document.F.Timeout.value=\'\'"></td></tr></table>');
 }

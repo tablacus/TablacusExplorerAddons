@@ -1,8 +1,8 @@
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="MSThemeCompatible" content="Yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="MSThemeCompatible" content="Yes">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Retouch</title>
     <style type="text/css">
       .color {
@@ -17,9 +17,9 @@
       }
       .layout {
         width: 100%;
-        padding: 0px;
-        margin: 0px;
-        border: 0px;
+        padding: 0;
+        margin: 0;
+        border: 0;
         border-collapse: collapse;
       }
     </style>
@@ -38,25 +38,25 @@
       <table id="table1">
         <tr>
           <td nowrap="">
-            <input type="button" value="Save" onclick="Addons.Retouch.Save(this)" />
+            <input type="button" value="Save" onclick="Addons.Retouch.Save(this)">
             <label>Width</label>
-            <input type="text" name="width" size="4" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)" />
-            px
-            <label>Height</label><input type="text" name="height" size="4" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)" />
-            px
-            <input type="text" name="percent" size="2" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)" />
+            <input type="text" name="width" size="4" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)">
+            <label>@mspaint.exe,-50047[px]</label>
+            <label>Height</label><input type="text" name="height" size="4" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)">
+            <label>@mspaint.exe,-50047[px]</label>
+            <input type="text" name="percent" size="2" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)">
             %
-            <input type="hidden" name="rotation" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)" />
-            <input type="button" name="left" value="Rotate left" onclick="Addons.Retouch.Rotate(this)" />
-            <input type="button" name="right" value="Rotate right" onclick="Addons.Retouch.Rotate(this)" />
-            <label>Quality</label>
-            <input type="text" name="quality" size="2" value="75" />%
+            <input type="hidden" name="rotation" onchange="Addons.Retouch.Change(this)" onkeydown="Addons.Retouch.KeyDown(this)">
+            <input type="button" name="left" value="@mspaint.exe,-21215[Rotate left]" onclick="Addons.Retouch.Rotate(this)">
+            <input type="button" name="right" value="@mspaint.exe,-21214[Rotate right]" onclick="Addons.Retouch.Rotate(this)">
+            <label>@wmploc.dll,-864[Quality]</label>
+            <input type="text" name="quality" size="2" value="75">%
 
           </td>
         </tr>
       </table>
     </form>
-    <img id="img1" />
+    <img id="img1">
     <script type="text/javascript">
       Addons.Retouch.Load()
     </script>

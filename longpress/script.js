@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) {
+if (window.Addon == 1) {
 	Addons.LongPress =
 	{
 		timeout: GetAddonOptionEx("longpress", "timeout") || 500
@@ -21,5 +21,5 @@
 		}
 	});
 } else {
-	SetTabContents(0, "General", '<label>Timeout</label><input type="text" name="timeout" style="width: 100%" />');
+	SetTabContents(0, "", '<label>Timeout</label><br><input type="text" name="timeout" placeholder="500" style="width: 6em; text-align:right"><label>@calc.exe,-1721[ms]</label>');
 }
