@@ -13,6 +13,7 @@ if (window.Addon == 1) {
 		{
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV && FV.Items) {
+				FV.Focus();
 				FV.SelectItem(null, SVSI_DESELECTOTHERS);
 				for (var i = FV.Items.Count; i-- > 0;) {
 					var pid = FV.Items.Item(i);

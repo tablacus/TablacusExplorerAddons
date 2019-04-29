@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2018.3.13</MinVersion>
-    <pubDate>Tue, 13 Mar 2018 00:00:00 GMT</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2019.4.26</MinVersion>
+    <pubDate>Mon, 29 Apr 2019 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,8 @@
     <Name>存在しない項目を選択</Name>
     <Description>存在しない項目を選択します。</Description>
   </ja>
+  <zh>
+    <Name>選取不存在的項目</Name>
+    <Description>選取不存在的項目</Description>
+  </zh>
 </TablacusExplorer>
