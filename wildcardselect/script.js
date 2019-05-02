@@ -13,38 +13,27 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.WildcardSelect =
 	{
-		strName: item.getAttribute("MenuName") || GetText("Wildcard Select..."),
+		strName: item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name),
 
 		Exec: function (Ctrl, pt)
 		{
 			try {
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV && FV.Items) {
-					var s = InputDialog(GetText("Wildcard Select"), "");
+					var s = InputDialog(Addons.WildcardSelect.strName, "");
 					if (s) {
-						var PathMatchSpec = api.PathMatchSpec;
-						if (s.charAt(0) == '/') {
-							var j = s.lastIndexOf("/");
-							if (j > 1) {
-								s = new RegExp(s.substr(1, j - 1), s.substr(j + 1));
-								PathMatchSpec = function (path, s)
-								{
-									return path.match(s);
-								};
-							}
-						}
 						for (var i = FV.Items.Count; i-- > 0;) {
 							var FolderItem = FV.Items.Item(i);
-							if (PathMatchSpec(fso.GetFileName(FolderItem.Path), s)) {
+							if (PathMatchEx(fso.GetFileName(FolderItem.Path), s)) {
 								FV.SelectItem(FolderItem, SVSI_SELECT);
 							}
 						}
 					}
 				}
-			}
-			catch (e) {
+			} catch (e) {
 				wsh.Popup(e.description, 0, TITLE, MB_ICONEXCLAMATION);
 			}
+			return S_OK;
 		}
 	}
 
