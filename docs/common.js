@@ -10,20 +10,85 @@ te = {
 		Lang: {}
 	}
 }
-
-if (Lang == "ja") {
+if (Lang == "de") {
+	te.Data.Lang = {
+		Download: "Herunterladen",
+		Search: "Suche",
+		Filter: "Filter",
+		Details: "Details",
+		Up: "Hoch",
+	};
+} else if (Lang == "es") {
+	te.Data.Lang = {
+		Download: "Descargar",
+		Search: "Buscar",
+		Filter: "Filtro",
+		Details: "Detailles",
+		Up: "Arriba",
+	};
+} else if (Lang == "fr") {
+	te.Data.Lang = {
+		Download: "Télécharger",
+		Search: "Rechercher",
+		Filter: "Filtre",
+		Details: "Détails",
+		Up: "Monter",
+	};
+} else if (Lang == "it") {
+	te.Data.Lang = {
+		Download: "Scaricare",
+		Search: "Ricerca",
+		Filter: "Filtro",
+		Details: "Dettagli",
+		Up: "Su",
+	};
+} else if (Lang == "ja") {
 	te.Data.Lang = {
 		Download: "ダウンロード",
 		Search: "検索",
 		Filter: "フィルタ",
-		Details: "詳細"
+		Details: "詳細",
+		Up: "上へ",
+	};
+} else if (Lang == "pt") {
+	te.Data.Lang = {
+		Download: "Baixar",
+		Search: "Pesquisar",
+		Filter: "Filtrar",
+		Details: "Detalhes",
+		Up: "Acima",
+	};
+} else if (Lang == "ru") {
+	te.Data.Lang = {
+		Download: "Скачать",
+		Search: "Поиск",
+		Filter: "Фильтр",
+		Details: "Таблица",
+		Up: "Вверх",
+	};
+} else if (Lang == "tr") {
+	te.Data.Lang = {
+		Download: "İndir",
+		Search: "Ara",
+		Filter: "Filtre",
+		Details: "Detaylar",
+		Up: "Üst",
 	};
 } else if (Lang == "zh") {
 	te.Data.Lang = {
 		Download: "下載",
 		Search: "搜尋",
 		Filter: "篩選",
-		Details: "詳細資料"
+		Details: "詳細資料",
+		Up: "上移へ",
+	};
+} else if (Lang == "zh-cn") {
+	te.Data.Lang = {
+		Download: "下载",
+		Search: "搜索",
+		Filter: "过滤",
+		Details: "详细信息",
+		Up: "上へ",
 	};
 }
 
