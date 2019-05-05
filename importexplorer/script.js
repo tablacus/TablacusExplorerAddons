@@ -13,9 +13,11 @@ if (window.Addon == 1) {
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
-		Exec: function ()
+		Exec: function (Ctrl, pt)
 		{
 			try {
+				var FV = GetFolderView(Ctrl, pt);
+				FV.Focus();
 				var sw = sha.Windows();
 				for (var i = sw.Count; i-- > 0;) {
 					var exp = sw.item(i);
@@ -24,7 +26,6 @@ if (window.Addon == 1) {
 						if (doc) {
 							if (Addons.ImportExplorer.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL))) {
 								exp.Visible = false;
-								var FV = te.Ctrl(CTRL_FV);
 								FV = FV.Navigate(doc, SBSP_NEWBROWSER);
 								if (Addons.ImportExplorer.TakeOver) {
 									FV.CurrentViewMode = doc.CurrentViewMode;
@@ -88,8 +89,9 @@ if (window.Addon == 1) {
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="return Addons.ImportExplorer.Exec(this, 0);" oncontextmenu="return Addons.ImportExplorer.Exec(this, 1);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.ImportExplorer.strName, src: src }, h), '</span>']);
 } else {
 	EnableInner();
-	var s = ['<input type="checkbox" id="RealFolders" /><label for="RealFolders">Real Folders</label><br />'];
-	s.push('<input type="checkbox" id="SpecialFolders" /><label for="SpecialFolders">Special Folders</label><br />');
-	s.push('<input type="checkbox" id="TakeOver" /><label for="TakeOver">Take over the Explorer view</label>');
-	SetTabContents(0, "General", s.join(""));
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

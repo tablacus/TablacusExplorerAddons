@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <resources>
-	<text s="Escape Unicode">ユニコードを変換</text>
-	<text s="Unescape Unicode">ユニコードに戻す</text>
+  <text s="Escape Unicode">ユニコードを変換</text>
+  <text s="Unescape Unicode">ユニコードに戻す</text>
 </resources>

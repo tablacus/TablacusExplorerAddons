@@ -5,7 +5,6 @@ var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Menu", "Edit");
 	item.setAttribute("MenuPos", -1);
-	item.setAttribute("MenuName", "Escape Unicode");
 
 	item.setAttribute("KeyOn", "List");
 	item.setAttribute("MouseOn", "List");
@@ -22,13 +21,12 @@ if (window.Addon == 1) {
 				hMenu = api.CreatePopupMenu();
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("Escape Unicode"));
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Unescape Unicode"));
-				var FV = Ctrl;
-				if (!FV || !(FV.Type <= CTRL_EB)) {
-					FV = te.Ctrl(CTRL_FV);
-				}
+				var FV = GetFolderView(Ctrl, pt);
 				if (!pt && o) {
 					pt = GetPos(o, true);
 					pt.y = pt.y + o.offsetHeight;
+					FV = GetFolderView(o);
+					FV.Focus();
 				}
 				if (!pt) {
 					pt = api.Memory("POINT");

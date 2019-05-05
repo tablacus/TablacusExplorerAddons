@@ -1,4 +1,4 @@
-﻿var Addon_Id = "folderbutton";
+var Addon_Id = "folderbutton";
 var Default = "ToolBar2Left";
 
 var item = GetAddonElement(Addon_Id);
@@ -13,6 +13,7 @@ if (window.Addon == 1) {
 		{
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
+				FV.Focus();
 				var s = InputDialog("Path", api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				if (s) {
 					FV.Navigate(s, GetNavigateFlags(FV));
@@ -23,8 +24,9 @@ if (window.Addon == 1) {
 
 		Popup: function (o)
 		{
-			var FV = te.Ctrl(CTRL_FV);
+			var FV = GetFolderView(o);
 			if (FV) {
+				FV.Focus();
 				pt = GetPos(o, true);
 				var FolderItem = FolderMenu.Open(FV.FolderItem, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI);
 				FolderMenu.Invoke(FolderItem);
@@ -40,8 +42,8 @@ if (window.Addon == 1) {
 		Drag: function (o)
 		{
 			var FV = GetFolderView(o);
-			FV.Focus();
 			if (this.bDrag) {
+				FV.Focus();
 				this.bDrag = false;
 				var TC = te.Ctrl(CTRL_TC);
 				if (TC && TC.SelectedIndex >= 0) {
