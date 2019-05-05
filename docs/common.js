@@ -1,15 +1,8 @@
 ﻿var fso = null;
-var Lang = navigator.userLanguage;
-if (!Lang) {
-	Lang = navigator.language;
+var Lang = navigator.userLanguage || navigator.language || navigator.browserLanguage || "en";
+if (Lang != "zh-cn") {
+	Lang = Lang.replace(/\-.*/,"");
 }
-if (!Lang) {
-	Lang = navigator.browserLanguage;
-}
-if (!Lang) {
-	Lang = "en";
-}
-Lang = Lang.replace(/\-.*/,"");
 
 te = {
 	Data: {
@@ -24,6 +17,13 @@ if (Lang == "ja") {
 		Search: "検索",
 		Filter: "フィルタ",
 		Details: "詳細"
+	};
+} else if (Lang == "zh") {
+	te.Data.Lang = {
+		Download: "下載",
+		Search: "搜尋",
+		Filter: "篩選",
+		Details: "詳細資料"
 	};
 }
 
