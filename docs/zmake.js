@@ -21,7 +21,7 @@ var fso = new ActiveXObject("Scripting.FileSystemObject");
 var folder = fso.GetFolder(".");
 
 var em = new Enumerator(folder.SubFolders);
-var arLangs = ["General", "en", "ja"];
+var arLangs = ["General", "en", "ja", "zh"];
 var arAddon = [];
 for (em.moveFirst(); !em.atEnd(); em.moveNext()) {
 	var name = em.item().Name;
