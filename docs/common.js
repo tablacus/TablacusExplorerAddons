@@ -1,5 +1,5 @@
 ﻿var fso = null;
-var Lang = navigator.userLanguage || navigator.language || navigator.browserLanguage || "en";
+var Lang = (navigator.userLanguage || navigator.language || navigator.browserLanguage || "en").toLowerCase();
 if (Lang != "zh-cn") {
 	Lang = Lang.replace(/\-.*/,"");
 }
