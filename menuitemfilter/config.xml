@@ -1,12 +1,12 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2016.2.1</MinVersion>
-    <pubDate>Mon, 1 Feb 2016 00:00:00 UTC</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2019.5.4</MinVersion>
+    <pubDate>Mon, 06 May 2019 00:00:00 GMT</pubDate>
     <Options>Default</Options>
     <Creator>Gaku</Creator>
-    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -17,4 +17,8 @@
     <Name>メニュー項目フィルタ</Name>
     <Description>メニュー項目フィルタ</Description>
   </ja>
+  <zh>
+    <Name>移除選單項目</Name>
+    <Description>移除選單項目</Description>
+  </zh>
 </TablacusExplorer>

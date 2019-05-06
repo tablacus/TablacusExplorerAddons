@@ -21,6 +21,7 @@ if (window.Addon == 1) {
 				pt = GetPos(o, true);
 				pt.y += o.offsetHeight;
 				Ctrl = GetFolderView(o);
+				Ctrl.Focus();
 			}
 			Addons.MainMenuButton.bLoop = true;
 			AddEvent("ExitMenuLoop", function () {

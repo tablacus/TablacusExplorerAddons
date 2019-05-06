@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2019.2.16</MinVersion>
-    <pubDate>Sat, 16 Feb 2019 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2019.5.4</MinVersion>
+    <pubDate>Mon, 06 May 2019 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,7 @@
     <Name>コマンドの差し替え</Name>
     <Description>正規表現を使ってコマンドを差し替えます。</Description>
   </ja>
+  <zh>
+    <Name>替代程式</Name>
+  </zh>
 </TablacusExplorer>

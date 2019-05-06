@@ -1,4 +1,4 @@
-﻿Addon_Id = "menuitemfilter";
+Addon_Id = "menuitemfilter";
 
 if (window.Addon == 1) {
 	Addons.MenuItemFilter = {
@@ -6,7 +6,6 @@ if (window.Addon == 1) {
 
 		Remove: function (hMenu, Menus, path)
 		{
-			var mii = api.Memory("MENUITEMINFO");
 			for (var i = api.GetMenuItemCount(hMenu); i-- > 0;) {
 				var s = api.GetMenuString(hMenu, i, MF_BYPOSITION).replace(/\t/g, "|");
 				var hSubMenu = api.GetSubMenu(hMenu, i);
@@ -24,7 +23,7 @@ if (window.Addon == 1) {
 		}
 	};
 	try {
-		var ado = te.CreateObject("Adodb.Stream");
+		var ado = api.CreateObject("ads");
 		ado.CharSet = "utf-8";
 		ado.Open();
 		ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
@@ -44,7 +43,7 @@ if (window.Addon == 1) {
 
 	AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt)
 	{
-		Addons.MenuItemFilter.Remove(hMenu, Addons.MenuItemFilter.Menus[Name], api.GetDisplayNameOf(GetFolderView(Ctrl, pt), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+		Addons.MenuItemFilter.Remove(hMenu, Addons.MenuItemFilter.Menus[Name], api.GetDisplayNameOf(SelItem || GetFolderView(Ctrl, pt), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 		return nPos;
 	});
 }

@@ -17,7 +17,9 @@ if (window.Addon == 1) {
 			if (line.length) {
 				var re = line.split(line.charAt(0));
 				if (re.length > 3) {
-					s = s.replace(new RegExp(re[1], re[3]), re[2]);
+					try {
+						s = s.replace(new RegExp(re[1], re[3]), re[2]);
+					} catch (e) {}
 				}
 			}
 		}

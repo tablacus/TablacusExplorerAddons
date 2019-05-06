@@ -91,7 +91,7 @@ if (window.Addon == 1) {
 	EnableInner();
 	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 	if (ado) {
-		SetTabContents(0, "", ado.ReadText(adReadAll));
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
 		ado.Close();
 	}
 }
