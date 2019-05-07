@@ -14,21 +14,21 @@ if (window.Addon == 1) {
 
 		Popup: function (Ctrl, pt, o)
 		{
-			if (Addons.MainMenuButton.bClose) {
-				return;
-			}
 			if (!pt && o) {
 				pt = GetPos(o, true);
 				pt.y += o.offsetHeight;
 				Ctrl = GetFolderView(o);
 				Ctrl.Focus();
 			}
+			if (Addons.MainMenuButton.nCloseId == Ctrl.Id) {
+				return;
+			}
 			Addons.MainMenuButton.bLoop = true;
 			AddEvent("ExitMenuLoop", function () {
 				Addons.MainMenuButton.bLoop = false;
-				Addons.MainMenuButton.bClose = true;
+				Addons.MainMenuButton.nCloseId = Ctrl.Id;
 				clearTimeout(Addons.MainMenuButton.tid2);
-				Addons.MainMenuButton.tid2 = setTimeout("Addons.MainMenuButton.bClose = false;", 500);
+				Addons.MainMenuButton.tid2 = setTimeout("Addons.MainMenuButton.nCloseId = 0;", 500);
 			});
 			g_nPos = 0;
 			var hMenu = api.CreatePopupMenu();
