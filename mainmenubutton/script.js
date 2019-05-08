@@ -106,7 +106,7 @@ if (window.Addon == 1) {
 
 		Exec: function (Ctrl, pt)
 		{
-			Addons.MainMenuButton.Popup(Ctrl, pt)
+			Addons.MainMenuButton.Popup(Ctrl, pt);
 			return S_OK;
 		},
 
@@ -151,7 +151,7 @@ if (window.Addon == 1) {
 
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var s = item.getAttribute("Icon") || '../addons/mainmenubutton/menu.png';
-	SetAddon(Addon_Id, Default, ['<span id="mainmenubutton1" class="button" onmousedown="Addons.MainMenuButton.Popup(null, null, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: "Main menu", src: s }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span id="mainmenubutton_$" class="button" onmousedown="Addons.MainMenuButton.Popup(null, null, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: "Main menu", src: s }, h), '</span>']);
 
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -169,7 +169,8 @@ if (window.Addon == 1) {
 		if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN) {
 			Addons.MainMenuButton.key = Addons.MainMenuButton.key != VK_MENU && (keydata & 0x40000000) ? 0 : key;
 		} else if (key == VK_MENU && msg == WM_SYSKEYUP && key == Addons.MainMenuButton.key) {
-			Addons.MainMenuButton.Popup(null, null, document.getElementById("mainmenubutton1"));
+			var FV = GetFolderView(Ctrl);
+			Addons.MainMenuButton.Popup(FV, null, document.getElementById("mainmenubutton_" + FV.Parent.Id) || document.getElementById("mainmenubutton_$"));
 			return S_OK;
 		}
 	});
