@@ -1,4 +1,4 @@
-﻿var Addon_Id = "recentlyclosedtabs";
+var Addon_Id = "recentlyclosedtabs";
 var Default = "ToolBar2Left";
 
 var item = GetAddonElement(Addon_Id);
@@ -16,6 +16,7 @@ if (window.Addon == 1) {
 
 		Exec: function (Ctrl, pt)
 		{
+			GetFolderView(Ctrl, pt).Focus();
 			if (!pt) {
 				pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
@@ -110,15 +111,9 @@ if (window.Addon == 1) {
 		}
 		AddTypeEx("Add-ons", "Recently closed tabs", Addons.RecentlyClosedTabs.Exec);
 	}
-	var h = item.getAttribute("IconSize") || window.IconSize;
-	if (h == Number(h)) {
-		h += 'px';
-	} else {
-		h = EncodeSC(h);
-	}
+	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var s = item.getAttribute("Icon") || "icon:dsuiext.dll,0";
-	s = '<img title="' + Addons.RecentlyClosedTabs.strName + '" src="' + EncodeSC(s) + '" style="width: ' + h + '; height: ' + h + '" />';
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.RecentlyClosedTabs.Exec(this);" oncontextmenu="Addons.RecentlyClosedTabs.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', s, '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.RecentlyClosedTabs.Exec(this);" oncontextmenu="Addons.RecentlyClosedTabs.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.RecentlyClosedTabs.strName, src: s }, h), '</span>']);
 } else {
 	EnableInner();
 }

@@ -13,6 +13,7 @@ if (window.Addon == 1) {
 		{
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
+				FV.Focus();
 				var s = FV.FilterView
 				if (Addons.FilterButton.RE) {
 					var res = /^\/(.*)\/i/.exec(s);

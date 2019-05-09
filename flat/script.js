@@ -30,6 +30,7 @@ Addons.Flat =
 	{
 		var FV = GetFolderView(Ctrl, pt);
 		if (api.ILGetCount(FV.FolderItem) > 1) {
+			FV.Focus();
 			var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			var pidl = api.ILCreateFromPath(path);
 			if (pidl && pidl.IsFolder) {

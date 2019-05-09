@@ -39,6 +39,8 @@ if (window.Addon == 1) {
 
 		Exec: function (Ctrl, pt)
 		{
+			var FV = GetFolderView(Ctrl, pt);
+			FV.Focus();
 			var hMenu = api.CreatePopupMenu();
 			Addons.MixedSort.CreateMenu(hMenu, 1);
 			var pt = api.Memory("POINT");

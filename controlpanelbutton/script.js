@@ -9,6 +9,7 @@ if (window.Addon == 1) {
 		Open: function(o)
 		{
 			var pt = GetPos(o);
+			GetFolderView(o).Focus();
 			var FolderItem = FolderMenu.Open(WINVER >= 0x600 ? "::{26EE0668-A00A-44D7-9371-BEB064C98683}" : ssfCONTROLS, screenLeft + pt.x, screenTop + pt.y + o.offsetHeight, "*", 1);
 			if (FolderItem) {
 				FolderMenu.Invoke(FolderItem);

@@ -16,18 +16,18 @@ if (window.Addon == 1) {
 
 		Exec: function (Ctrl, pt)
 		{
-			setTimeout(function () {
-				var hMenu = Addons.SystemFolders.GetMenu(api.CreatePopupMenu(), 1);
-				var pt = GetPos(Ctrl, true, false, false, true);
-				if (Ctrl.Type) {
-					api.GetCursorPos(pt);
-				}
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
-				api.DestroyMenu(hMenu);
-				if (nVerb) {
-					NavigateFV(GetFolderView(Ctrl, pt), Addons.SystemFolders.dir[nVerb - 1], SBSP_NEWBROWSER);
-				}
-			}, 99);
+			var FV = GetFolderView(Ctrl, pt);
+			FV.Focus();
+			var hMenu = Addons.SystemFolders.GetMenu(api.CreatePopupMenu(), 1);
+			var pt = GetPos(Ctrl, true, false, false, true);
+			if (Ctrl.Type) {
+				api.GetCursorPos(pt);
+			}
+			var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
+			api.DestroyMenu(hMenu);
+			if (nVerb) {
+				NavigateFV(FV, Addons.SystemFolders.dir[nVerb - 1], SBSP_NEWBROWSER);
+			}
 			return S_OK;
 		},
 

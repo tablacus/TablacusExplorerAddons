@@ -12,7 +12,10 @@ if (window.Addon == 1) {
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
-			Addons.DuplicateCopy.FO(FV, FV.SelectedItems(), FV.FolderItem, MK_LBUTTON, null, [DROPEFFECT_COPY], false, true);
+			if (FV) {
+				FV.Focus();
+				Addons.DuplicateCopy.FO(FV, FV.SelectedItems(), FV.FolderItem, MK_LBUTTON, null, [DROPEFFECT_COPY], false, true);
+			}
 		},
 
 		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bForce)

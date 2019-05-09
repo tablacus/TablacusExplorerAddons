@@ -25,6 +25,7 @@ if (window.Addon == 1) {
 		{
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
+				FV.Focus();
 				var ar = [];
 				var Selected = FV.SelectedItems();
 				if (Selected && Selected.Count) {

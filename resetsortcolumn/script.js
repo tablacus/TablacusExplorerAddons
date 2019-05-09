@@ -16,8 +16,11 @@ if (window.Addon == 1) {
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
-			FV.SortColumn = "System.Null";
-			return S_OK;
+			if (FV) {
+				FV.Focus();
+				FV.SortColumn = "System.Null";
+				return S_OK;
+			}
 		}
 	};
 	//Menu

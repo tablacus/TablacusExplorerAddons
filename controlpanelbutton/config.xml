@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
-    <MinVersion>2019.1.5</MinVersion>
-    <pubDate>Sun, 06 Jan 2019 00:00:00 GMT</pubDate>
+    <Version>1.07</Version>
+    <MinVersion>2019.5.8</MinVersion>
+    <pubDate>Thu, 09 May 2019 00:00:00 GMT</pubDate>
     <Options>Common:5,6:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,8 @@
     <Name>コントロールパネル ボタン</Name>
     <Description>コントロールパネル ボタン</Description>
   </ja>
+  <zh>
+    <Name>控制台按鈕</Name>
+    <Description>控制台按鈕</Description>
+  </zh>
 </TablacusExplorer>

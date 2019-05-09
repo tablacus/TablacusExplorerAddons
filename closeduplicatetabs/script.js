@@ -17,6 +17,7 @@ if (window.Addon == 1) {
 		{
 			var db = {};
 			var FV = GetFolderView(Ctrl, pt);
+			FV.Focus();
 			var TC = FV.Parent;
 			for (var i = TC.Count; i-- > 0;) {
 				var Item = TC.Item(i);

@@ -16,9 +16,12 @@ if (window.Addon == 1) {
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
-			FV.ViewFlags ^= CDB2GVF_SHOWALLFILES;
-			FV.Refresh();
-			return S_OK;
+			if (FV) {
+				FV.Focus();
+				FV.ViewFlags ^= CDB2GVF_SHOWALLFILES;
+				FV.Refresh();
+				return S_OK;
+			}
 		}
 	};
 	//Menu

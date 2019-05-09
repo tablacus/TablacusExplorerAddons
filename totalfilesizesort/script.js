@@ -12,8 +12,11 @@ if (window.Addon == 1) {
 		Exec: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
-			FV.SortColumn = "-Tablacus.TotalFileSize";
-			return S_OK;
+			if (FV) {
+				FV.Focus();
+				FV.SortColumn = "-Tablacus.TotalFileSize";
+				return S_OK;
+			}
 		},
 
 		DoSort: function (FV, ar)

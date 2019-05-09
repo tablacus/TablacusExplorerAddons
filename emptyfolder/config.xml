@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.12</Version>
-    <MinVersion>2019.1.4</MinVersion>
-    <pubDate>Fri, 04 Jan 2019 00:00:00 GMT</pubDate>
+    <Version>1.13</Version>
+    <MinVersion>2019.5.8</MinVersion>
+    <pubDate>Thu, 09 May 2019 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
@@ -17,4 +17,7 @@
     <Name>空フォルダ</Name>
     <Description>空フォルダの検索を行います。</Description>
   </ja>
+  <zh>
+    <Name>搜尋空資料夾</Name>
+  </zh>
 </TablacusExplorer>

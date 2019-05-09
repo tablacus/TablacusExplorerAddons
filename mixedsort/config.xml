@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2019.1.5</MinVersion>
-    <pubDate>Mon, 07 Jan 2019 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2019.5.8</MinVersion>
+    <pubDate>Thu, 09 May 2019 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,7 @@
     <Name>混在ソート</Name>
     <Description>ファイルとフォルダを混在して並べ替える。 ※Window Vista 以降</Description>
   </ja>
+  <zh>
+    <Name>混合排序</Name>
+  </zh>
 </TablacusExplorer>

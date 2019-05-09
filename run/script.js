@@ -22,11 +22,13 @@ if (window.Addon == 1) {
 		{
 			var path = "";
 			var FV = GetFolderView(Ctrl, pt);
-			if (FV && FV.FolderItem) {
-				path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSING);
+			if (FV) {
+				FV.Focus();
+				if (FV.FolderItem) {
+					path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSING);
+				}
 			}
 			api.ShRunDialog(te.hwnd, 0, path, null, null, 0);
-			wsh.CurrentDirectory = "C:\\";
 			return S_OK;
 		}
 	}
