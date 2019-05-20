@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2017.7.17</MinVersion>
-    <pubDate>Wed, 19 Jul 2017 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2019.5.20</MinVersion>
+    <pubDate>Mon, 20 May 2019 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,8 @@
     <Name>フォルダーリストメニュー</Name>
     <Description>フォルダーリストメニュー</Description>
   </ja>
+  <zh>
+    <Name>自訂文字檔選單</Name>
+    <Description>自訂文字檔選單</Description>
+  </zh>
 </TablacusExplorer>

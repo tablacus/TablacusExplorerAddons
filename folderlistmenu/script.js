@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) {
+if (window.Addon == 1) {
 	AddType("Folder list menu",
 	{
 		Exec: function (Ctrl, s, type, hwnd, pt)
@@ -8,7 +8,6 @@
 				FV.Focus();
 			}
 			var oMenu = {'\\' : api.CreatePopupMenu()};
-			var strMenu = [];
 			var items = [];
 			s = api.PathUnquoteSpaces(ExtractMacro(te, s));
 			var ado = OpenAdodbFromTextFile(s);
@@ -110,7 +109,6 @@
 					api.GetCursorPos(pt);
 				}
 			}
-			window.g_menu_click = true;
 			var nVerb = api.TrackPopupMenuEx(oMenu['\\'], TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
 			for (var i in oMenu) {
 				api.DestroyMenu(oMenu[i]);
@@ -124,5 +122,5 @@
 		Ref: OpenDialog
 	});
 } else {
-	SetTabContents(0, "General", '<table style="width: 100%"><tr><td><input type="checkbox" id="NewTab" /><label for="NewTab">New Tab</label></td></tr></table>');
+	SetTabContents(0, "", '<table style="width: 100%"><tr><td><input type="checkbox" id="NewTab"><label for="NewTab">New Tab</label></td></tr></table>');
 }

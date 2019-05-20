@@ -28,7 +28,10 @@ if (window.Addon == 1) {
 				var hMenu = arMenu[arMenu.length - 1];
 				if (res = /<A.*?HREF="(.*?)"(.*?)>(.*?)<\/A>/i.exec(line)) {
 					tag = res[2];
-					path = api.PathCreateFromUrl(res[1]) || res[1];
+					path = res[1];
+					if (/^file:/i.test(path)) {
+						path = api.PathCreateFromUrl(decodeURI(path)) || path;
+					}
 					Name = res[3];
 					items.push(path);
 					var hbm = hbmFolder;
@@ -65,7 +68,6 @@ if (window.Addon == 1) {
 					api.GetCursorPos(pt);
 				}
 			}
-			window.g_menu_click = true;
 			hMenu = arMenu[0];
 			if (api.GetMenuItemCount(hMenu) == 1) {
 				hMenu = api.GetSubMenu(hMenu, 0) || arMenu[0];
@@ -86,5 +88,5 @@ if (window.Addon == 1) {
 		Ref: OpenDialog
 	});
 } else {
-	SetTabContents(0, "", '<table style="width: 100%"><tr><td><input type="checkbox" id="NewTab" /><label for="NewTab">New Tab</label></td></tr></table>');
+	SetTabContents(0, "", '<table style="width: 100%"><tr><td><input type="checkbox" id="NewTab"><label for="NewTab">New Tab</label></td></tr></table>');
 }
