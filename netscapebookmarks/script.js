@@ -58,7 +58,7 @@ if (window.Addon == 1) {
 					api.InsertMenuItem(hMenu, MAXINT, false, mii);
 					arMenu.push(mii.hSubMenu);
 				}
-				if (/<\/DL>/i.test(line)) {
+				for (var dl = line.split(/<\/DL>/i); dl.length > 1 && arMenu.length > 1; dl.pop()) {
 					arMenu.pop();
 				}
 			}

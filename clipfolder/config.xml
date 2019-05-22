@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.16</Version>
-    <MinVersion>2018.12.20</MinVersion>
-    <pubDate>Thu, 20 Dec 2018 00:00:00 GMT</pubDate>
+    <Version>1.17</Version>
+    <MinVersion>2019.5.22</MinVersion>
+    <pubDate>Wed, 22 May 2019 00:00:00 GMT</pubDate>
     <Options>Common:0,7,8,9:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -16,4 +16,7 @@
     <Name>クリップフォルダ</Name>
     <Description>クリップフォルダを使うとすべてのフォルダから任意の項目を、1つのフォルダにまとめることができます。</Description>
   </ja>
+  <zh>
+    <Name>剪貼資料夾</Name>
+  </zh>
 </TablacusExplorer>
