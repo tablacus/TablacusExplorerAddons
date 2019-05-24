@@ -32,7 +32,7 @@ if (window.Addon == 1) {
 					if (/^file:/i.test(path)) {
 						path = api.PathCreateFromUrl(decodeURI(path)) || path;
 					}
-					Name = res[3];
+					Name = DecodeSC(res[3]).replace(/&/g, "&&");
 					items.push(path);
 					var hbm = hbmFolder;
 					res = /ICON="(.*?)"/.exec(tag);
@@ -48,7 +48,7 @@ if (window.Addon == 1) {
 					mii.wID = items.length;
 					api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				} else if (/<DL>/i.test(line)) {
-					Name = line.replace(/<.*?>|\r\n/g, "");
+					Name = DecodeSC(line).replace(/&/g, "&&").replace(/<.*?>|\r\n/g, "");
 					items.push(Name);
 					mii.dwTypeData = Name;
 					mii.fType = Name == "-" ? MFT_SEPARATOR : 0;
