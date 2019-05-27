@@ -146,8 +146,15 @@ if (window.Addon == 1) {
 		Paste: function (Ctrl, pt)
 		{
 			var FV = GetFolderView(Ctrl, pt);
+			Addons.ClipFolder.Add(FV, api.OleGetClipboard());
+			return S_OK;
+		},
+
+		PasteEx: function (Ctrl, pt)
+		{
+			var FV = GetFolderView(Ctrl, pt);
 			var Selected = FV.SelectedItems();
-			if (Selected.Count) {
+			if (Selected.Count && Selected.Item(0).IsFolder) {
 				var ContextMenu = api.ContextMenu(Selected);
 				if (ContextMenu) {
 					var hMenu = api.CreatePopupMenu();
@@ -157,8 +164,7 @@ if (window.Addon == 1) {
 				}
 				return S_OK;
 			}
-			Addons.ClipFolder.Add(FV, api.OleGetClipboard());
-			return S_OK;
+			return Addons.ClipFolder.Paste(FV);
 		},
 
 		SyncFV: function (Ctrl)
@@ -247,12 +253,12 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
-		Command: function (Ctrl, Verb)
+		Command: function (Ctrl, Verb, Paste)
 		{
 			if (Ctrl && Ctrl.Type <= CTRL_EB && Addons.ClipFolder.IsHandle(Ctrl)) {
 				switch (Verb + 1) {
 					case CommandID_PASTE:
-						return Addons.ClipFolder.Paste(Ctrl);
+						return Paste(Ctrl);
 						break;
 					case CommandID_DELETE:
 						return Addons.ClipFolder.Remove(Ctrl);
@@ -321,18 +327,12 @@ if (window.Addon == 1) {
 
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
 	{
-		var hr = Addons.ClipFolder.Command(Ctrl, wParam & 0xfff);
-		if (isFinite(hr)) {
-			return hr;
-		}
+		return Addons.ClipFolder.Command(Ctrl, wParam & 0xfff, Addons.ClipFolder.Paste);
 	}, true);
 
 	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
 	{
-		var hr = Addons.ClipFolder.Command(ContextMenu.FolderView, Verb);
-		if (isFinite(hr)) {
-			return hr;
-		}
+		return Addons.ClipFolder.Command(ContextMenu.FolderView, Verb, Addons.ClipFolder.PasteEx);
 	}, true);
 
 	AddEvent("DefaultCommand", function (Ctrl, Selected)
