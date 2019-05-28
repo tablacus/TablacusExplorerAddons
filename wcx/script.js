@@ -1,4 +1,4 @@
-﻿var Addon_Id = "wcx";
+var Addon_Id = "wcx";
 var item = GetAddonElement(Addon_Id);
 
 Addons.WCX =
@@ -158,7 +158,7 @@ Addons.WCX =
 			var root = Items.Item(-1).Path;
 			Addons.WCX.SizeCurrent = 0;
 			Addons.WCX.SizeTotal = 0;
-			Addons.WCX.Progress = te.ProgressDialog;
+			Addons.WCX.Progress = api.CreateObject("ProgressDialog");
 			Addons.WCX.Progress.StartProgressDialog(te.hwnd, null, 2);
 			try {
 				Addons.WCX.Progress.SetLine(1, api.LoadString(hShell32, 33260) || api.LoadString(hShell32, 6478), true);
@@ -187,7 +187,7 @@ Addons.WCX =
 			var fl = [], fh = {}, sh = {};
 			Addons.WCX.SizeCurrent = 0;
 			Addons.WCX.SizeTotal = 0;
-			Addons.WCX.Progress = te.ProgressDialog;
+			Addons.WCX.Progress = api.CreateObject("ProgressDialog");
 			Addons.WCX.Progress.StartProgressDialog(te.hwnd, null, 2);
 			try {
 				Addons.WCX.Progress.SetLine(1, api.LoadString(hShell32, 33269) || api.LoadString(hShell32, 6478), true);
@@ -314,9 +314,13 @@ Addons.WCX =
 			} else if (Size >= -100) {
 				points = Math.abs(Size);
 			}
+			if (FileName && Addons.WCX.StartProgress) {
+				Addons.WCX.StartProgress = false;
+				Addons.WCX.Progress.StartProgressDialog(te.hwnd, null, 2);
+			}
 			Addons.WCX.Progress.SetTitle(points + "%");
 			Addons.WCX.Progress.SetProgress(points, 100);
-			Addons.WCX.Progress.SetLine(2, String(FileName).replace(Addons.WCX.RootPath, ""), true);
+			Addons.WCX.Progress.SetLine(2, (FileName || "").replace(Addons.WCX.RootPath, ""), true);
 			return Addons.WCX.Progress.HasUserCancelled() ? 0 : 1;
 		}
 		return 1;
@@ -375,8 +379,8 @@ if (window.Addon == 1) {
 		if (lib) {
 			Addons.WCX.SizeCurrent = 0;
 			Addons.WCX.SizeTotal = 0;
-			Addons.WCX.Progress = te.ProgressDialog;
-			Addons.WCX.Progress.StartProgressDialog(te.hwnd, null, 2);
+			Addons.WCX.Progress = api.CreateObject("ProgressDialog");
+			Addons.WCX.StartProgress = true;
 			try {
 				Addons.WCX.Progress.SetLine(1, api.LoadString(hShell32, 33260) || api.LoadString(hShell32, 6478), true);
 				var o = {};
