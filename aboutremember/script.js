@@ -1,4 +1,4 @@
-﻿var Addon_Id = "aboutremember";
+var Addon_Id = "aboutremember";
 var item = GetAddonElement(Addon_Id);
 
 if (window.Addon == 1) {
@@ -75,10 +75,10 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.AboutRemember.IsHandle(Ctrl)) {
-			return MakeImgSrc("icon:shell32.dll,3", 0, false, 16);
+			return MakeImgDataEx("icon:shell32.dll,3", bSimple, 16);
 		}
 	});
 
@@ -145,7 +145,5 @@ if (window.Addon == 1) {
 		});
 	}
 } else {
-	var s = ['<label>Add</label><br />'];
-	s.push('<input type="checkbox" id="AddToMenu" /><label for="AddToMenu">Menus</label>');
-	SetTabContents(0, "General", s);
+	SetTabContents(0, "", '<label>Add</label><br><input type="checkbox" id="AddToMenu"><label for="AddToMenu">Menus</label>');
 }

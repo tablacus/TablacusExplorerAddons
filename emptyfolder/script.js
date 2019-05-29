@@ -1,4 +1,4 @@
-﻿var Addon_Id = "emptyfolder";
+var Addon_Id = "emptyfolder";
 var Default = "None";
 
 var item = GetAddonElement(Addon_Id);
@@ -119,10 +119,10 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.EmptyFolder.GetSearchString(Ctrl)) {
-			return MakeImgSrc("icon:shell32.dll,3", 0, false, 16);
+			return MakeImgDataEx("icon:shell32.dll,3", bSimple, 16);
 		}
 	});
 

@@ -1,8 +1,16 @@
-﻿if (window.Addon == 1) {
+if (window.Addon == 1) {
 	AddEvent("ChangeView", function (Ctrl)
 	{
-		var info = api.Memory("SHFILEINFO");
-		api.SHGetFileInfo(Ctrl.FolderItem, 0, info, info.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_OPENICON | SHGFI_PIDL);
-		api.SendMessage(te.hwnd, WM_SETICON, ICON_SMALL, info.hIcon);
+		if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
+			var icon = GetIconImage(Ctrl, api.GetSysColor(COLOR_WINDOW), true);
+			var hIcon = MakeImgIcon(icon, 0, 16);
+			if (!hIcon) {
+				var image = api.CreateObject("WICBitmap").FromFile(icon);
+				if (image) {
+					hIcon = image.GetHICON();
+				}
+			}
+			api.SendMessage(te.hwnd, WM_SETICON, ICON_SMALL, hIcon);
+		}
 	});
 }

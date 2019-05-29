@@ -141,10 +141,10 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.Flat.GetSearchString(Ctrl)) {
-			return MakeImgSrc("icon:shell32.dll,4,16", 0, false, 16);
+			return MakeImgDataEx("icon:shell32.dll,4,16", bSimple, 16);
 		}
 	});
 

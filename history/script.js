@@ -178,10 +178,10 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.History1.IsHandle(Ctrl)) {
-			return MakeImgSrc("icon:shell32.dll,20", 0, false, 16);
+			return MakeImgDataEx("icon:shell32.dll,20", bSimple, 16);
 		}
 	});
 
@@ -261,5 +261,5 @@ if (window.Addon == 1) {
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.History1.Exec(this);" oncontextmenu="Addons.History1.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.History1.strName, src: s}, h), '</span>']);
 } else {
 	EnableInner();
-	SetTabContents(0, "General", '<label>Number of items</label><br /><input type="text" name="Save" size="4" />');
+	SetTabContents(0, "General", '<label>Number of items</label><br><input type="text" name="Save" size="4">');
 }

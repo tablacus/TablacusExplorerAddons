@@ -120,10 +120,10 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.FindFiles.GetSearchString(Ctrl)) {
-			return MakeImgSrc("bitmap:ieframe.dll,216,16,17", 0, false, 16);
+			return MakeImgDataEx("bitmap:ieframe.dll,216,16,17", bSimple, 16);
 		}
 	});
 
@@ -149,7 +149,7 @@ if (window.Addon == 1) {
 			}
 		}
 	}, true);
-	
+
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)

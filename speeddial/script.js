@@ -1,4 +1,4 @@
-﻿var Addon_Id = "speeddial";
+var Addon_Id = "speeddial";
 var item = GetAddonElement(Addon_Id);
 
 if (window.Addon == 1) {
@@ -171,5 +171,9 @@ if (window.Addon == 1) {
 		});
 	}
 } else {
-	importScript("addons\\" + Addon_Id + "\\options.js");
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

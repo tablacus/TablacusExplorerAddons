@@ -242,10 +242,10 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.Everything.IsHandle(Ctrl)) {
-			return MakeImgSrc(Addons.Everything.Icon, 0, false, 16);
+			return MakeImgDataEx(Addons.Everything.Icon, bSimple, 16);
 		}
 	});
 

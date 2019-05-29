@@ -88,12 +88,13 @@ if (window.Addon == 1) {
 		s = "icon:shell32.dll,4,16";
 		AddEvent("ChangeView", function (Ctrl)
 		{
-			var o = document.getElementById("FolderButton_$");
-			if (o) {
-				Addons.FolderButton.ChangeIcon(Ctrl, o);
-			} else {
-				o = document.getElementById("FolderButton_" + Ctrl.Parent.Id);
+			if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id) {
+				var o = document.getElementById("FolderButton_$");
 				if (o) {
+					if (Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
+						Addons.FolderButton.ChangeIcon(Ctrl, o);
+					}
+				} else if (o = document.getElementById("FolderButton_" + Ctrl.Parent.Id)) {
 					Addons.FolderButton.ChangeIcon(Ctrl, o);
 				}
 			}

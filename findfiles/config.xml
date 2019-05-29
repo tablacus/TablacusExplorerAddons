@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2019.1.10</MinVersion>
-    <pubDate>Thu, 10 Jan 2019 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2019.5.29</MinVersion>
+    <pubDate>Wed, 29 May 2019 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,7 @@
     <Name>ファイル検索</Name>
     <Description>単純なファイル検索</Description>
   </ja>
+  <zh>
+    <Name>尋找檔案</Name>
+  </zh>
 </TablacusExplorer>
