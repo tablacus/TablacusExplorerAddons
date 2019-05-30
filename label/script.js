@@ -1,4 +1,4 @@
-﻿var Addon_Id = "label";
+var Addon_Id = "label";
 
 var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
@@ -25,11 +25,19 @@ if (window.Addon == 1) {
 		SyncItem: {},
 		Initd: false,
 		Portable: api.LowPart(item.getAttribute("Portable")),
-		Icon: fso.BuildPath(te.Data.Installed, "/addons/label/label16.png"),
+		Icon: item.getAttribute("Icon") || fso.BuildPath(te.Data.Installed, "/addons/label/label16.png"),
 
 		IsHandle: function (Ctrl)
 		{
 			return Addons.Label.RE.exec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+		},
+
+		IsWritable: function (Ctrl)
+		{
+			if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
+				var Label = Addons.Label.LabelPath(Ctrl);
+				return Label && !/[\?\*;]/.test(Label) && api.CommandLineToArgv(Label).length == 1;
+			}
 		},
 
 		Get: function (path)
@@ -197,7 +205,7 @@ if (window.Addon == 1) {
 				for (var i in ar) {
 					o[ar[i]] = 1;
 				}
-				var ar = String(Label || "").split(/\s*;\s*/);
+				var ar = String(api.PathUnquoteSpaces(Label) || "").split(/\s*;\s*/);
 				for (var i in ar) {
 					o[ar[i]] = 1;
 				}
@@ -236,6 +244,7 @@ if (window.Addon == 1) {
 				s = Addons.Label.Get(path);
 				var arNew = [];
 				if (Label) {
+					Label = api.PathUnquoteSpaces(Label);
 					var ar = String(s || "").split(/\s*;\s*/);
 					var o = {};
 					for (var i in ar) {
@@ -293,6 +302,24 @@ if (window.Addon == 1) {
 			}
 		},
 
+		Paste: function (Ctrl, pt)
+		{
+			var FV = GetFolderView(Ctrl, pt);
+			if (Addons.Label.IsWritable(FV)) {
+				Addons.Label.AppendItems(api.OleGetClipboard(), Addons.Label.LabelPath(FV));
+			}
+			return S_OK;
+		},
+
+		PasteEx: function (Ctrl, pt)
+		{
+			var FV = GetFolderView(Ctrl, pt);
+			var Selected = FV.SelectedItems();
+			if (!Selected.Count || !Selected.Item(0).IsFolder) {
+				return Addons.Label.Paste(FV);
+			}
+		},
+
 		Notify: function ()
 		{
 			var cFV = te.Ctrls(CTRL_FV);
@@ -303,7 +330,7 @@ if (window.Addon == 1) {
 					if (Addons.Label.Redraw[path]) {
 						api.InvalidateRect(FV.hwndList || FV.hwndView || FV.hwnd, null, false);
 					}
-					var s = Addons.Label.LabelPath(FV);
+					var s = api.PathUnquoteSpaces(Addons.Label.LabelPath(FV));
 					if (s) {
 						var b = false;
 						for (var j in Addons.Label.Changed) {
@@ -509,20 +536,25 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.Label.IsHandle(Ctrl)) {
-			return Addons.Label.Icon;
+			return MakeImgDataEx(Addons.Label.Icon, bSimple, 16);
 		}
 	});
 
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
 	{
-		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
-			if (Addons.Label.IsHandle(Ctrl)) {
-				if ((wParam & 0xfff) == CommandID_DELETE - 1) {
+		if (Ctrl.Type <= CTRL_EB) {
+			if ((wParam & 0xfff) == CommandID_DELETE - 1) {
+				if (Addons.Label.IsHandle(Ctrl)) {
 					Addons.Label.ExecRemoveItems(Ctrl);
 					return S_OK;
+				}
+			}
+			if ((wParam & 0xfff) == CommandID_PASTE - 1) {
+				if (Addons.Label.IsHandle(Ctrl)) {
+					return Addons.Label.Paste(Ctrl);
 				}
 			}
 		}
@@ -534,6 +566,12 @@ if (window.Addon == 1) {
 			var FV = ContextMenu.FolderView;
 			if (FV && Addons.Label.IsHandle(FV)) {
 				return S_OK;
+			}
+		}
+		if (Verb == CommandID_PASTE - 1) {
+			var FV = ContextMenu.FolderView;
+			if (FV && Addons.Label.IsHandle(FV)) {
+				return Addons.Label.PasteEx(Ctrl);
 			}
 		}
 		if (!Verb || Verb == CommandID_STORE - 1) {
@@ -550,28 +588,15 @@ if (window.Addon == 1) {
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
-		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
-			var Label = Addons.Label.LabelPath(Ctrl);
-			if (Label && !/[\?\*;]/.test(Label)) {
-				return S_OK;
-			}
+		if (Addons.Label.IsWritable(Ctrl)) {
+			return S_OK;
 		}
 	});
 
 	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
-		if (Ctrl.Type <= CTRL_EB) {
-			var Label = Addons.Label.LabelPath(Ctrl);
-			if (Label && !/[\?\*;]/.test(Label)) {
-				if (Ctrl.HitTest(pt, LVHT_ONITEM) < 0) {
-					pdwEffect[0] = DROPEFFECT_LINK;
-					return S_OK;
-				}
-			}
-		}
-		if (Ctrl.Type == CTRL_DT) {
-			var Label = Addons.Label.LabelPath(Ctrl);
-			if (Label && !/[\?\*;]/.test(Label)) {
+		if (Addons.Label.IsWritable(Ctrl)) {
+			if (Ctrl.Type == CTRL_DT || Ctrl.HitTest(pt, LVHT_ONITEM) < 0) {
 				pdwEffect[0] = DROPEFFECT_LINK;
 				return S_OK;
 			}
@@ -581,7 +606,7 @@ if (window.Addon == 1) {
 	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
 	{
 		var Label = Addons.Label.LabelPath(Ctrl);
-		if (Label && !/[\?\*;]/.test(Label)) {
+		if (Addons.Label.IsWritable(Ctrl)) {
 			var nIndex = -1;
 			if (Ctrl.Type <= CTRL_EB) {
 				nIndex = Ctrl.HitTest(pt, LVHT_ONITEM);
@@ -598,6 +623,32 @@ if (window.Addon == 1) {
 	AddEvent("DragLeave", function (Ctrl)
 	{
 		return S_OK;
+	});
+
+	AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt)
+	{
+		if (/Background|Edit/i.test(Name)) {
+			if (Addons.Label.IsWritable(GetFolderView(Ctrl, pt))) {
+				var Items = api.OleGetClipboard();
+				if (Items && Items.Count) {
+					var mii = api.Memory("MENUITEMINFO");
+					mii.cbSize = mii.Size;
+					mii.fMask = MIIM_ID | MIIM_STATE;
+					var paste = api.LoadString(hShell32, 33562) || "&Paste";
+					for (var i = api.GetMenuItemCount(hMenu); i-- > 0;) {
+						api.GetMenuItemInfo(hMenu, i, true, mii);
+						if (mii.fState & MFS_DISABLED) {
+							var s = api.GetMenuString(hMenu, i, MF_BYPOSITION);
+							if (s && s.indexOf(paste) == 0) {
+								api.EnableMenuItem(hMenu, i, MF_ENABLED | MF_BYPOSITION);
+								ExtraMenuCommand[mii.wID] = Addons.Label.Paste;
+							}
+						}
+					}
+				}
+			}
+		}
+		return nPos;
 	});
 
 	AddEvent("ChangeNotify", function (Ctrl, pidls)
@@ -632,7 +683,7 @@ if (window.Addon == 1) {
 
 	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
 	{
-		if (Addons.Label.IsHandle(Ctrl)) {
+		if (Addons.Label.IsWritable(Ctrl)) {
 			RemoveCommand(hMenu, ContextMenu, "delete;rename");
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
 			ExtraMenuCommand[nPos] = OpenContains;
@@ -774,7 +825,6 @@ if (window.Addon == 1) {
 						}
 					}
 				}
-				var nPos2 = nPos;
 				delete o[""];
 				for (var s in o) {
 					api.InsertMenu(mii2.hSubMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, s.replace(/&/g, "&&"));
@@ -798,12 +848,7 @@ if (window.Addon == 1) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Label.Edit, "Func");
 	}
 	AddTypeEx("Add-ons", "Label", Addons.Label.Edit);
-
-	var icon = item.getAttribute("Icon");
-	if (icon) {
-		Addons.Label.Icon = MakeImgSrc(icon, 0, false, 16);
-	}
 } else {
-	SetTabContents(0, "General", '<input type="checkbox" id="Portable" /><label for="Portable">Portable</label>');
+	SetTabContents(0, "General", '<input type="checkbox" id="Portable"><label for="Portable">Portable</label>');
 	ChangeForm([["__IconSize", "style/display", "none"]]);
 }

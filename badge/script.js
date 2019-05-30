@@ -255,6 +255,26 @@ if (window.Addon == 1) {
 			}
 		},
 
+		Paste: function (Ctrl, pt)
+		{
+			var FV = GetFolderView(Ctrl, pt);
+			var Badge = Addons.Badge.BadgePath(FV);
+			if (api.LowPart(Badge)) {
+				Addons.Badge.AppendItems(api.OleGetClipboard(), Badge);
+			}
+			return S_OK;
+		},
+
+		PasteEx: function (Ctrl, pt)
+		{
+			var FV = GetFolderView(Ctrl, pt);
+			var Selected = FV.SelectedItems();
+			if (!Selected.Count || !Selected.Item(0).IsFolder) {
+				return Addons.Badge.Paste(FV);
+			}
+		},
+
+
 		Notify: function ()
 		{
 			var cFV = te.Ctrls(CTRL_FV);
@@ -413,20 +433,25 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.Badge.IsHandle(Ctrl)) {
-			return MakeImgSrc("bitmap:ieframe.dll,699,16,28", 0, false, 16);
+			return MakeImgDataEx("bitmap:ieframe.dll,699,16,28", bSimple, 16);
 		}
 	});
 
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
 	{
 		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
-			if (Addons.Badge.IsHandle(Ctrl)) {
-				if ((wParam & 0xfff) == CommandID_DELETE - 1) {
+			if ((wParam & 0xfff) == CommandID_DELETE - 1) {
+				if (Addons.Badge.IsHandle(Ctrl)) {
 					Addons.Badge.ExecRemoveItems(Ctrl);
 					return S_OK;
+				}
+			}
+			if ((wParam & 0xfff) == CommandID_PASTE - 1) {
+				if (Addons.Badge.IsHandle(Ctrl)) {
+					return Addons.Badge.Paste(Ctrl);
 				}
 			}
 		}
@@ -438,6 +463,12 @@ if (window.Addon == 1) {
 			var FV = ContextMenu.FolderView;
 			if (FV && Addons.Badge.IsHandle(FV)) {
 				return S_OK;
+			}
+		}
+		if (Verb == CommandID_PASTE - 1) {
+			var FV = ContextMenu.FolderView;
+			if (FV && Addons.Badge.IsHandle(FV)) {
+				return Addons.Badge.PasteEx(Ctrl);
 			}
 		}
 		if (!Verb || Verb == CommandID_STORE - 1) {
@@ -502,6 +533,33 @@ if (window.Addon == 1) {
 	AddEvent("DragLeave", function (Ctrl)
 	{
 		return S_OK;
+	});
+
+	AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt)
+	{
+		if (/Background|Edit/i.test(Name)) {
+			var Badge = Addons.Badge.BadgePath(GetFolderView(Ctrl, pt));
+			if (api.LowPart(Badge)) {
+				var Items = api.OleGetClipboard();
+				if (Items && Items.Count) {
+					var mii = api.Memory("MENUITEMINFO");
+					mii.cbSize = mii.Size;
+					mii.fMask = MIIM_ID | MIIM_STATE;
+					var paste = api.LoadString(hShell32, 33562) || "&Paste";
+					for (var i = api.GetMenuItemCount(hMenu); i-- > 0;) {
+						api.GetMenuItemInfo(hMenu, i, true, mii);
+						if (mii.fState & MFS_DISABLED) {
+							var s = api.GetMenuString(hMenu, i, MF_BYPOSITION);
+							if (s && s.indexOf(paste) == 0) {
+								api.EnableMenuItem(hMenu, i, MF_ENABLED | MF_BYPOSITION);
+								ExtraMenuCommand[mii.wID] = Addons.Badge.Paste;
+							}
+						}
+					}
+				}
+			}
+		}
+		return nPos;
 	});
 
 	AddEvent("ChangeNotify", function (Ctrl, pidls)
