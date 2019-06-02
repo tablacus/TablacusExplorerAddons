@@ -21,20 +21,30 @@ if (window.Addon == 1) {
 	var h = GetIconSize(item.getAttribute("IconSize"));
 	var src = item.getAttribute("Icon");
 	if (src) {
-		src = GetImgTag({ title: api.LoadString(hShell32, 9841), src: src }, h);
+		src = GetImgTag({ id: "maximizebutton", title: api.LoadString(hShell32, 9841), src: src }, h);
 	} else {
 		var fh = "";
 		if (item.getAttribute("IconSize")) {
 			fh = '; font-size:' + (Number(h) ? h + "px" : h);
 		}
 		src = '<span id="maximizebutton" title="' + api.LoadString(hShell32, 9841) + '" style="font-family: marlett' + fh + '">&#x31;</span>';
-		AddEvent("Resize", function()
-		{
-			var o = document.getElementById("maximizebutton");
-			if (o) {
-				o.innerHTML = api.IsZoomed(te.hwnd) ? "&#x32" : "&#x31;";
-			}
-		});
 	}
+	AddEvent("Resize", function()
+	{
+		var o = document.getElementById("maximizebutton");
+		if (o) {
+			if (api.IsZoomed(te.hwnd)) {
+				o.title = (api.LoadString(hShell32, 25153) || ";;;;Restore").split(/;/)[4];
+				if (/span/i.test(o.tagName)) {
+					o.innerHTML = "&#x32;";
+				}
+			} else {
+				o.title = api.LoadString(hShell32, 9841);
+				if (/span/i.test(o.tagName)) {
+					o.innerHTML = "&#x31;";
+				}
+			}
+		}
+	});
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.MaximizeButton.Exec(this)" oncontextmenu="return Addons.MaximizeButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', src, '</span>']);
 }

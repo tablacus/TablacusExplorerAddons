@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.10</Version>
-    <MinVersion>2018.12.11</MinVersion>
-    <pubDate>Tue, 11 Dec 2018 00:00:00 GMT</pubDate>
+    <Version>1.11</Version>
+    <MinVersion>2019.5.31</MinVersion>
+    <pubDate>Sun, 02 Jun 2019 00:00:00 GMT</pubDate>
     <Options>Common:4,7,8,9:4</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,7 @@
     <Name>フルパスでアイコン変更</Name>
     <Description>フルパス名でアイコン変更</Description>
   </ja>
+  <zh>
+    <Name>依路徑設定圖示</Name>
+  </zh>
 </TablacusExplorer>

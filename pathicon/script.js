@@ -9,7 +9,7 @@ Addons.PathIcon = {
 	GetIconImage: function (fn, Large)
 	{
 		fn = api.PathUnquoteSpaces(ExtractMacro(te, fn));
-		return te.WICBitmap().FromFile(fn) || MakeImgData(fn, 0, Large ? 48 : 16);
+		return api.CreateObject("WICBitmap").FromFile(fn) || MakeImgData(fn, 0, Large ? 48 : 16);
 	},
 
 	Exec: function (Ctrl, pt)
@@ -130,7 +130,7 @@ if (window.Addon == 1) {
 					var rc = api.Memory("RECT");
 					rc.Left = nmcd.dwItemSpec;
 					api.SendMessage(hTree, TVM_GETITEMRECT, true, rc);
-					image.DrawEx(nmcd.hdc, rc.Left - cx - 3 * screen.logicalYDPI / 96, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, GetSysColor(COLOR_WINDOW), CLR_NONE, ILD_NORMAL);
+					image.DrawEx(nmcd.hdc, rc.Left - cx - 3 * screen.logicalYDPI / 96, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, CLR_NONE, CLR_NONE, ILD_NORMAL);
 					return S_OK;
 				}
 			}
@@ -195,7 +195,7 @@ if (window.Addon == 1) {
 					if (s) {
 						if (/^shell:|^::{/.test(s)) {
 							s = api.ILCreateFromPath(s);
-							s.IsFileSystem; 
+							s.IsFileSystem;
 							s = api.GetDisplayNameOf(s, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL).toLowerCase();
 						}
 						var db = {};
