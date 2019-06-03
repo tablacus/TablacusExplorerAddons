@@ -130,7 +130,29 @@ if (window.Addon == 1) {
 					var rc = api.Memory("RECT");
 					rc.Left = nmcd.dwItemSpec;
 					api.SendMessage(hTree, TVM_GETITEMRECT, true, rc);
-					image.DrawEx(nmcd.hdc, rc.Left - cx - 3 * screen.logicalYDPI / 96, rc.Top + (rc.Bottom - rc.Top - image.GetHeight()) / 2, 0, 0, CLR_NONE, CLR_NONE, ILD_NORMAL);
+					var x = rc.Left - cx - 3 * screen.logicalYDPI / 96;
+					var w = image.GetWidth();
+					var h = image.GetHeight();
+					var y = rc.Top + (rc.Bottom - rc.Top - h) / 2;
+					var rc = api.Memory("RECT");
+					rc.left = x;
+					rc.right = x + w;
+					var n = h;
+					var cl = api.GetPixel(nmcd.hdc, x + w , y + h);
+					while (h-- > 0) {
+						var cl1 = api.GetPixel(nmcd.hdc, x + w , y + h);
+						if (cl == cl1 && h) {
+							continue;
+						}
+						var brush = api.CreateSolidBrush(cl1);
+						rc.top = y + h;
+						rc.bottom = y + n;
+						api.FillRect(nmcd.hdc, rc, brush);
+						api.DeleteObject(brush);
+						cl = cl1;
+						n = h;
+					}
+					image.DrawEx(nmcd.hdc, x, y, 0, 0, CLR_NONE, CLR_NONE, ILD_NORMAL);
 					return S_OK;
 				}
 			}
