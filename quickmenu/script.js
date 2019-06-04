@@ -1,4 +1,4 @@
-﻿if (window.Addon == 1) {
+if (window.Addon == 1) {
 	Addons.QuickMenu =
 	{
 		Items: null,
@@ -53,17 +53,14 @@
 					mii.fMask  = MIIM_FTYPE;
 					while (api.GetMenuItemInfo(hMenu, nPos++, true, mii) && !(mii.fType & MFT_SEPARATOR)) {
 					}
-					var hModule = api.GetModuleHandle(fso.BuildPath(system32, "shell32.dll"));
-					var hMenu1 = api.LoadMenu(hModule, 223);
-					var hMenu2 = api.GetSubMenu(hMenu1, 0);
+					var hMenu1 = api.LoadMenu(hShell32, 223);
 					mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_SUBMENU;
 					mii.wID = wID++;
-					mii.dwTypeData = api.GetMenuString(hMenu2, 0, MF_BYPOSITION);
+					mii.dwTypeData = api.GetMenuString(api.GetSubMenu(hMenu1, 0), 0, MF_BYPOSITION);
 					mii.hSubMenu = api.CreatePopupMenu();
 					api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, api.sprintf(99, '\tJScript\tAddons.QuickMenu.SendTo("%llx")', mii.hSubMenu));
 					api.InsertMenuItem(hMenu, nPos++, true, mii);
 					api.InsertMenu(hMenu, nPos++, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-					api.DestroyMenu(hMenu2);
 					api.DestroyMenu(hMenu1);
 				}
 				ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
@@ -71,7 +68,6 @@
 					ExecMenu(Ctrl, Name, pt, 0x8000);
 				};
 				api.InsertMenu(hMenu, 1, MF_BYPOSITION | MF_STRING, wID++, GetText("Default"));
-
 				return ContextMenu;
 			case 3:
 				if (FV) {
@@ -89,7 +85,6 @@
 				if (!Items || !Items.Count) {
 					Items = SelItem;
 				}
-
 				if (Items && Items.Count) {
 					ContextMenu = arContextMenu && arContextMenu[1] || api.ContextMenu(Items, FV);
 					if (ContextMenu) {

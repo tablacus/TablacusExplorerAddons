@@ -1,4 +1,4 @@
-﻿var Addon_Id = "maximizebutton";
+var Addon_Id = "maximizebutton";
 var Default = "ToolBar1Right";
 
 var item = GetAddonElement(Addon_Id);
@@ -34,7 +34,10 @@ if (window.Addon == 1) {
 		var o = document.getElementById("maximizebutton");
 		if (o) {
 			if (api.IsZoomed(te.hwnd)) {
-				o.title = (api.LoadString(hShell32, 25153) || ";;;;Restore").split(/;/)[4];
+				var hModule = api.GetModuleHandle(fso.BuildPath(system32, "user32.dll"));
+				var hMenu = api.LoadMenu(hModule, 16);
+				o.title = (api.GetMenuString(api.GetSubMenu(hMenu, 0), 61728, MF_BYCOMMAND) || "Restore").replace(/\(&.\)|&/, "");
+				api.DestroyMenu(hMenu);
 				if (/span/i.test(o.tagName)) {
 					o.innerHTML = "&#x32;";
 				}
