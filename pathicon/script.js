@@ -124,7 +124,7 @@ if (window.Addon == 1) {
 						return;
 					}
 					image = GetThumbnail(Addons.PathIcon.GetIconImage(db[0]), cx, true) || 1;
-					db[i + 2] = image;
+					db[2] = image;
 				}
 				if (/object/i.test(typeof image)) {
 					var rc = api.Memory("RECT");
