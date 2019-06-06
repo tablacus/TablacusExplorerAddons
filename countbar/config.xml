@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2018.2.25</MinVersion>
-    <pubDate>Sun, 25 Feb 2018 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2019.6.3</MinVersion>
+    <pubDate>Thu, 06 Jun 2019 00:00:00 GMT</pubDate>
     <Options>Common:0,6:6</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,7 @@
     <Name>カウント バー</Name>
     <Description>項目数を表示します。</Description>
   </ja>
+  <zh>
+    <Name>數量列</Name>
+  </zh>
 </TablacusExplorer>
