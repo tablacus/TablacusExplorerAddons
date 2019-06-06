@@ -32,15 +32,20 @@ if (window.Addon == 1) {
 				var Selected = nCount ? FV.SelectedItems() : FV.Items();
 				for (var i = Selected.Count; i-- > 0;) {
 					var Item = Selected.Item(i);
-					if (Addons.SizeStatus.Folder && IsFolderEx(Item)) {
-						var n = FV.TotalFileSize[api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_ORIGINAL)];
-						if (n === undefined) {
-							FV.Notify(0, Item, null, 1);
-							bYet = true;
-						} else if (n === "") {
-							bYet = true;
+					if (IsFolderEx(Item)) {
+						if (Addons.SizeStatus.Folder) {
+							var n = FV.TotalFileSize[api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_ORIGINAL)];
+							if (n === undefined) {
+								FV.Notify(0, Item, null, 1);
+								bYet = true;
+							} else if (n === "") {
+								bYet = true;
+							} else {
+								nSize = api.UQuadAdd(nSize, n);
+							}
 						} else {
-							nSize = api.UQuadAdd(nSize, n);
+							bYet = true;
+							Addons.SizeStatus.SessionId = SessionId;
 						}
 						continue;
 					}
@@ -53,7 +58,7 @@ if (window.Addon == 1) {
 				bYet = true;
 				Addons.SizeStatus.SessionId = SessionId;
 			}
-			if (bYet) {
+			if (bYet && (Addons.SizeStatus.Folder || !api.UQuadCmp(nSize, 0))) {
 				s = " ";
 				if (!FV.FolderItem.Unavailable) {
 					var oDrive = api.GetDiskFreeSpaceEx(pid.Path);
