@@ -78,7 +78,7 @@ if (window.Addon == 1) {
 	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.AboutRemember.IsHandle(Ctrl)) {
-			return MakeImgDataEx("icon:shell32.dll,3", bSimple, 16);
+			return MakeImgDataEx("folder:closed", bSimple, 16);
 		}
 	});
 
@@ -145,5 +145,5 @@ if (window.Addon == 1) {
 		});
 	}
 } else {
-	SetTabContents(0, "", '<label>Add</label><br><input type="checkbox" id="AddToMenu"><label for="AddToMenu">Menus</label>');
+	SetTabContents(0, "", '<label>Add</label><br><label><input type="checkbox" id="AddToMenu">Menus</label>');
 }

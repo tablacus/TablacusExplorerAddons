@@ -154,7 +154,7 @@ if (window.Addon == 1) {
 							}
 							img = GetImgTag({ src: GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) }, h);
 						} else if (strFlag == "open") {
-							img = GetImgTag({ src: "icon:shell32.dll,3" }, h);
+							img = GetImgTag({ src: "folder:closed" }, h);
 						}
 					}
 					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.FavBar.Click(' + i + ')" onmousedown="Addons.FavBar.Down(' : 'onmousedown="Addons.FavBar.Open(');
@@ -244,11 +244,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("DragLeave", function (Ctrl)
-	{
-		MouseOut();
-		return S_OK;
-	});
+	AddEvent("DragLeave", MouseOut);
 } else {
-	SetTabContents(0, "General", '<input type="checkbox" id="NewTab" value="2" /><label for="NewTab">Open in New Tab</label><br /><label>Icon</label></label><br /><input type="text" name="Size" size="4" />');
+	SetTabContents(0, "General", '<label><input type="checkbox" id="NewTab" value="2">Open in New Tab</label><br><label>Icon</label></label><br><input type="text" name="Size" size="4">');
 }

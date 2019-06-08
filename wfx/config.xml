@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.21</Version>
-    <MinVersion>2019.4.15</MinVersion>
-    <pubDate>Mon, 15 Apr 2019 00:00:00 GMT</pubDate>
+    <Version>1.22</Version>
+    <MinVersion>2019.6.8</MinVersion>
+    <pubDate>Sat, 08 Jun 2019 00:00:00 GMT</pubDate>
     <Options>Common:3,4:3</Options>
     <DllVersion>1.0.1.0</DllVersion>
     <Creator>Gaku</Creator>
@@ -16,6 +16,8 @@
   </en>
   <ja>
     <Name>Total Commander ファイルシステムプラグイン</Name>
-    <Description>Total Commander ファイルシステムプラグイン</Description>
   </ja>
+  <zh>
+    <Name>Total Commander 檔案系統外掛程式</Name>
+  </zh>
 </TablacusExplorer>

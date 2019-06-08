@@ -111,7 +111,7 @@ if (window.Addon == 1) {
 				Path: Path,
 				SessionId: Ctrl.SessionId,
 				hwnd: te.hwnd,
-				ProgressDialog: te.ProgressDialog,
+				ProgressDialog: api.CreateObject("ProgressDialog"),
 				Locale: document.documentMode > 8 ? 999 : Infinity,
 				NavigateComplete: te.OnNavigateComplete
 			});
@@ -122,7 +122,7 @@ if (window.Addon == 1) {
 	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.EmptyFolder.GetSearchString(Ctrl)) {
-			return MakeImgDataEx("icon:shell32.dll,3", bSimple, 16);
+			return MakeImgDataEx("folder:closed", bSimple, 16);
 		}
 	});
 

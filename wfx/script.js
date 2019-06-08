@@ -1075,7 +1075,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (document.documentMode) {
 			var lib = Addons.WFX.GetObject(Ctrl);
@@ -1091,6 +1091,7 @@ if (window.Addon == 1) {
 						return image.DataURI("image/png");
 					}
 				}
+				return MakeImgDataEx("folder:closed", bSimple, 16);
 			}
 		}
 	});

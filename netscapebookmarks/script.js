@@ -19,7 +19,7 @@ if (window.Addon == 1) {
 			var mii = api.Memory("MENUITEMINFO");
 			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_ID | MIIM_BITMAP | MIIM_SUBMENU | MIIM_DATA | MIIM_STRING | MIIM_FTYPE;
-			MenusIcon(mii, "icon:shell32.dll,3,16");
+			MenusIcon(mii, "folder:closed");
 			var hbmFolder = mii.hbmpItem;
 			var lines = ado.ReadText(adReadAll).split(/<DT>/i);
 			ado.Close();
