@@ -128,7 +128,7 @@ if (window.Addon == 1) {
 					}
 					path = Addons.FavoritesBar.GetPath(items, i);
 					if (nOpen) {
-						img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a>' + GetImgTag({ src: img || "icon:shell32.dll,3", class: "favicon" });
+						img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a>' + GetImgTag({ src: img || "folder:closed", class: "favicon" });
 					} else if (img) {
 						img = GetImgTag({ src: img, class: "favicon" });
 					} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
@@ -254,4 +254,10 @@ if (window.Addon == 1) {
 	AddEvent("Load", Addons.FavoritesBar.Arrange);
 
 	Addons.FavoritesBar.Init();
+} else {
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

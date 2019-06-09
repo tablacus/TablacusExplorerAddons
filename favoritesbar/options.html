@@ -1,56 +1,13 @@
-<html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="MSThemeCompatible" content="Yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Tablcus Add-ons</title>
-    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
-    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
-    </script>
-    <script type="text/javascript">
-      var Addon_Id = 'favoritesbar';
-    </script>
-  </head>
-  <body onload="InitAddonOptions();">
-
-    <form name="F">
-      <div class="panel" style="display: block;">
-        <input type="checkbox" id="NewTab" value="2" />
-        <label for="NewTab">Open in New Tab</label>
-        <br />
-        <input type="checkbox" id="Expanded" />
-        <label for="Expanded">Expanded</label>
-        <br />
-        <br />
-        <div>
-          <label>Align</label>
-        </div>
-        <input type="hidden" name="Align" />
-        <input type="radio" name="_Align" id="Align=Left" onclick="SetRadio(this)" />
-        <label for="Align=Left">Left</label>
-        <input type="radio" name="_Align" id="Align=Right" onclick="SetRadio(this)" />
-        <label for="Align=Right">Right</label><br /><br />
-        <div>
-          <label>Height</label>
-        </div>
-        <input type="text" name="Height" size="9" />
-      </div>
-      <table width="100%">
-        <tr>
-          <td style="width: 100%; white-space: nowrap">
-          </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" autofocus />&nbsp;
-          </td>
-          <td style="width: 100px; white-space: nowrap">
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
-          </td>
-        </tr>
-      </table>
-    </form>
-  </body>
-</html>
+<label><input type="checkbox" id="NewTab" value="2">Open in New Tab</label>
+<br>
+<label><input type="checkbox" id="Expanded">Expanded</label>
+<br>
+<br>
+<label>Align</label>
+<br>
+<input type="hidden" name="Align">
+<label><input type="radio" name="_Align" id="Align=Left" onclick="SetRadio(this)">Left</label>
+<label><input type="radio" name="_Align" id="Align=Right" onclick="SetRadio(this)">Right</label><br><br>
+<label>Height</label>
+<br>
+<input type="text" name="Height" size="9">

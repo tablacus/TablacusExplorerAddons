@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.32</Version>
-    <MinVersion>2018.12.29</MinVersion>
-    <pubDate>Sat, 29 Dec 2018 00:00:00 GMT</pubDate>
-    <Options>Default</Options>
+    <Version>1.33</Version>
+    <MinVersion>2019.6.8</MinVersion>
+    <pubDate>Sun, 09 Jun 2019 00:00:00 GMT</pubDate>
+    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
@@ -15,6 +15,8 @@
   </en>
   <ja>
     <Name>お気に入り バー</Name>
-    <Description>お気に入り バー</Description>
   </ja>
+  <zh>
+    <Name>我的最愛欄</Name>
+  </zh>
 </TablacusExplorer>
