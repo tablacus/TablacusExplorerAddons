@@ -31,6 +31,15 @@ res = /\((https:[^\)]+)/.exec(s);
 var virustotal = res[1];
 ado.Close();
 
+s = s.replace(/"download_count":\d+,/, "").replace(/(",)/g, "$1\n").replace(/(:\d+,)/g, "$1\n");
+ado = new ActiveXObject("ADODB.Stream");
+ado.CharSet = "utf-8";
+ado.Open();
+ado.WriteText(s);
+ado.WriteText("\n");
+ado.SaveToFile(json_file, 2);
+ado.Close();
+
 wsh.Run(cmd.replace(/%url%/ig, browser_download_url).replace(/%file%/ig, "./" + filename), 1, true);
 var fso = new ActiveXObject("Scripting.FileSystemObject");
 fso.CopyFile(filename, "te.zip");

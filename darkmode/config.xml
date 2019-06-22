@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.18</Version>
+    <Version>1.00</Version>
     <MinVersion>2019.6.22</MinVersion>
     <pubDate>Sat, 22 Jun 2019 00:00:00 GMT</pubDate>
-    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Preview</Name>
-    <Description>Preview</Description>
+    <Name>Dark mode</Name>
+    <Description>Dark mode</Description>
   </en>
   <ja>
-    <Name>プレビュー</Name>
+    <Name>ダークモード</Name>
   </ja>
-  <zh>
-    <Name>預覽</Name>
-  </zh>
 </TablacusExplorer>

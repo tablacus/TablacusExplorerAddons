@@ -16,8 +16,8 @@ SetCss = function (a, b, c, d)
 			ImportCss1({}, arExt[i] + ':before', arCss[i] + '_before');
 			ImportCss1({}, arExt[i] + ':after', arCss[i] + '_after');
 		}
-		document.F.activetab.value = a;
-		document.F.elements["default"].value = b;
+		document.F.activetab.value = a.replace(/; +/g, ";\n");
+		document.F.elements["default"].value = b.replace(/; +/g, ";\n");
 	}
 }
 
@@ -26,7 +26,9 @@ ChangeTab = function (o)
 	if (/(\d+)/.test(o.id)) {
 		var nIndex = RegExp.$1;
 		if (nIndex != g_nPanel) {
-			document.getElementById("asel" + g_nPanel).className = "tab";
+			for (var i = 6; i--;) {
+				document.getElementById("asel" + i).className = i < nIndex ? "tab" : "tab2";
+			}
 			document.getElementById("apanel" + g_nPanel).style.display = "none";
 			o.className = "activetab";
 			document.getElementById("apanel" + nIndex).style.display = "block";

@@ -13,7 +13,7 @@ if (window.Addon == 1) {
 				te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"] = 178;
 			}
 			Addons.FavoritesBar.Width = te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"];
-			SetAddon(Addon_Id, Addons.FavoritesBar.Align + "Bar2", ['<div id="favoritesbar" style="width: 100%; height:', EncodeSC(Addons.FavoritesBar.Height), '; background-color: window; border: 1px solid WindowFrame; overflow: auto;">']);
+			SetAddon(Addon_Id, Addons.FavoritesBar.Align + "Bar2", ['<div id="favoritesbar" class="pane" style="width: 100%; height:', EncodeSC(Addons.FavoritesBar.Height), '; overflow: auto;">']);
 		},
 
 		Open: function (i, bNew)

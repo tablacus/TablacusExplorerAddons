@@ -10,10 +10,11 @@ if (window.Addon == 1) {
 		WheelButton: 0,
 		tid: null,
 		pt: api.Memory("POINT"),
+		bTab: !GetAddonOptionEx("tabgroups", "Mode"),
 
 		Init: function ()
 		{
-			SetAddon(Addon_Id, Default, '<ul class="tab0" id="tabgroups"><li class="activetab"> </li></ul>');
+			SetAddon(Addon_Id, Default, ['<ul class="', Addons.Tabgroups.bTab ? "tab0" : "menu0", '" id="tabgroups"><li> </li></ul>']);
 			if (!te.Data.Tabgroups) {
 				te.Data.Tabgroups = te.Object();
 				te.Data.Tabgroups.Data = te.Array();
@@ -141,7 +142,7 @@ if (window.Addon == 1) {
 				for (var i = 0; i < te.Data.Tabgroups.Data.length; i++) {
 					this.Tab(s, i + 1);
 				}
-				s.push('<li class="tab3" title="', GetText("New Tab"), '" onclick="return Addons.Tabgroups.Add()">+</li>');
+				s.push('<li class=', Addons.Tabgroups.bTab ? ' "tab3"' : "menu", ' title="', GetText("New Tab"), '" onclick="return Addons.Tabgroups.Add()">+</li>');
 				o.innerHTML = s.join("");
 			}
 			for (var i = 0; i < te.Data.Tabgroups.Data.length; i++) {
@@ -194,10 +195,14 @@ if (window.Addon == 1) {
 				style.backgroundColor = "";
 			}
 			if (i == te.Data.Tabgroups.Index) {
-				o.className = 'activetab';
+				o.className = Addons.Tabgroups.bTab ? 'activetab' : 'activemenu';
 				style.zIndex = tabs.length;
 			} else {
-				o.className = i < te.Data.Tabgroups.Index ? 'tab' : 'tab2';
+				if (Addons.Tabgroups.bTab) {
+					o.className = i < te.Data.Tabgroups.Index ? 'tab' : 'tab2';
+				} else {
+					o.className = 'menu';
+				}
 				style.zIndex = tabs.length - i;
 			}
 		},
@@ -660,4 +665,10 @@ if (window.Addon == 1) {
 	{
 		delete te.Data.Tabgroups;
 	});
+} else {
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

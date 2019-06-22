@@ -134,9 +134,8 @@ if (window.Addon == 1) {
 				this.Width = 178;
 				te.Data["Conf_" + this.Align + "BarWidth"] = this.Width;
 			}
-			var s = '<div id="PreviewBar" style="width: 100%; height: auto; background-color: window; border: 1px solid WindowFrame; overflow: hidden; "></div>';
-			SetAddon(Addon_Id, this.Align + "Bar3", s);
-			setTimeout(Addons.Preview.Arrange, 99);
+			SetAddon(Addon_Id, this.Align + "Bar3", '<div id="PreviewBar" class="pane" style="overflow: hidden;"></div>');
+			setTimeout(this.Arrange, 99);
 		}
 	}
 
@@ -164,7 +163,7 @@ if (window.Addon == 1) {
 } else {
 	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 	if (ado) {
-		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		SetTabContents(0, "", ado.ReadText(adReadAll));
 		ado.Close();
 	}
 }
