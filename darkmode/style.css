@@ -9,31 +9,19 @@
 
 body {
 	color: #fff;
-	background-color: #222;
+	background-color: #202020;
 }
 
-input[type="text"], select, textarea {
+input[type="text"], input[type="button"], input[type="file"], input[type="submit"], input[type="reset"], select, textarea {
 	color: #fff;
-	background-color: #222;
+	background-color: #191919;
 	border: solid 1px #555;
 }
 
-input[type="button"], input[type="file"], input[type="submit"], input[type="reset"] {
-	color: #fff;
-  	background-color: #333;
-  	border: solid 1px #555;
-}
-
-input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover, input[type="reset"]:hover {
-	color: #fff;
-  	background-color: #555;
-  	border: solid 1px #ccc;
-}
-
-.button:hover, .hoverbutton, .activebutton {
+input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover, input[type="reset"]:hover, .button:hover, .hoverbutton, .activebutton {
 	color: #fff;
 	background-color: #555;
-	border: 1px solid #555;
+	border: solid 1px #ccc;
 }
 
 .menu {
@@ -69,7 +57,7 @@ input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover
 }
 .breadcrumb {
 	color: #fff;
-	background-color: #000;
+	background-color: #191919;
 }
 
 .separator {
@@ -93,7 +81,7 @@ input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover
 
 .window {
 	color: #fff;
-	background-color: #222;
+	background-color: #202020;
 	border: 1px solid #666;
 }
 
@@ -109,7 +97,7 @@ input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover
 
 .pane {
 	color: #fff;
-	background-color: #222;
+	background-color: #202020;
 	border: 1px solid #666;
 }
 
