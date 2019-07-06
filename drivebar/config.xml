@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.11</Version>
-    <MinVersion>2018.12.29</MinVersion>
-    <pubDate>Sat, 29 Dec 2018 00:00:00 GMT</pubDate>
+    <Version>1.12</Version>
+    <MinVersion>2019.7.5</MinVersion>
+    <pubDate>Sat, 06 Jul 2019 00:00:00 GMT</pubDate>
     <Options>Location</Options>
     <Creator>Gaku</Creator>
     <Contributors>nkay08</Contributors>
@@ -16,6 +16,8 @@
   </en>
   <ja>
     <Name>ドライブ バー</Name>
-    <Description>ドライブ バー</Description>
   </ja>
+  <zh>
+    <Name>磁碟列</Name>
+  </zh>
 </TablacusExplorer>

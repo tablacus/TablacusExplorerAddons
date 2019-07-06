@@ -113,10 +113,10 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor)
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.SpeedDial.IsHandle(Ctrl)) {
-			return MakeImgSrc("bitmap:ieframe.dll,216,16,31", 0, false, 16);
+			return MakeImgDataEx("bitmap:ieframe.dll,216,16,31", bSimple, 16);
 		}
 	});
 

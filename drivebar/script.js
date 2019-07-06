@@ -44,14 +44,7 @@ if (window.Addon == 1) {
 					var vol = api.GetDisplayNameOf(Item, SHGDN_INFOLDER);
 					var src = '';
 					if (document.documentMode) { //IE8-
-						var sfi = api.Memory("SHFILEINFO");
-						api.SHGetFileInfo(Item, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_PIDL);
-						var hIcon = sfi.hIcon;
-						if (hIcon) {
-							image.FromHICON(hIcon, api.GetSysColor(COLOR_BTNFACE));
-							src = image.DataURI("image/png", hIcon);
-							api.DestroyIcon(hIcon);
-						}
+						src = GetIconImage(Item, GetSysColor(COLOR_BTNFACE));
 					}
 					if (!src) {
 						var nIcon = icon[0];
