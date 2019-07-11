@@ -28,6 +28,7 @@ if (window.Addon == 1) {
 
 		KeyDown: function (o)
 		{
+			setTimeout(Addons.SearchBar.ShowButton, 99);
 			if (event.keyCode == VK_RETURN) {
 				Addons.SearchBar.Search();
 				(function (o) { setTimeout(function () {
@@ -63,7 +64,7 @@ if (window.Addon == 1) {
 		Clear: function ()
 		{
 			document.F.search.value = "";
-			this.Search();
+			this.ShowButton();
 		},
 
 		ShowButton: function ()
@@ -116,7 +117,7 @@ if (window.Addon == 1) {
 	}
 	AddTypeEx("Add-ons", "Search Bar", Addons.SearchBar.Exec);
 
-	SetAddon(Addon_Id, Default, ['<input type="text" name="search" placeholder="Search" onkeydown="return Addons.SearchBar.KeyDown(this)" onmouseup="Addons.SearchBar.Change(this)" onfocus="Addons.SearchBar.Focus(this)" style="width:', EncodeSC(width), '; padding-right:', WINVER < 0x602 ? "32": "16", 'px; vertical-align: middle"><span class="button" style="position: relative"><input type="image" id="ButtonSearchClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.SearchBar.Clear()" style="display: none; position: absolute; left: -33px; top: -4px" hidefocus="true"><input type="image" src="', EncodeSC(icon), '" onclick="Addons.SearchBar.Search()" hidefocus="true" style="position: absolute; left: -18px; top: -6px; width 16px; height: 16px"></span>'], "middle");
+	SetAddon(Addon_Id, Default, ['<input type="text" name="search" placeholder="Search" onkeydown="return Addons.SearchBar.KeyDown(this)" onmouseup="Addons.SearchBar.Change(this)" onfocus="Addons.SearchBar.Focus(this)" style="width:', EncodeSC(width), '; padding-right:', WINVER < 0x602 ? "24": "12", 'pt; vertical-align: middle"><span style="position: relative"><span id="ButtonSearchClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.SearchBar.Clear()" class="button" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt" >r</span><input type="image" src="', EncodeSC(icon), '" onclick="Addons.SearchBar.Search()" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width 12pt; height: 12pt"></span>'], "middle");
 }
 else {
 	SetTabContents(0, "View", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr></table>');

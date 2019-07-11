@@ -179,11 +179,14 @@ if (window.Addon == 1) {
 			return api.PathUnquoteSpaces(ExtractMacro(null, line[0]));
 		},
 
-		FromPt: function (n, pt)
+		FromPt: function (pt)
 		{
-			while (--n >= 0) {
-				if (HitTest(document.getElementById("fav" + n), pt)) {
-					return n;
+			var ptc = pt.Clone();
+			api.ScreenToClient(api.GetWindow(document), ptc);
+			for (var el = document.elementFromPoint(ptc.x, ptc.y); el; el = el.parentElement) {
+				var res = /^fav(\d+)$/.exec(el.id);
+				if (res) {
+					return res[1];
 				}
 			}
 			return -1;
@@ -204,7 +207,7 @@ if (window.Addon == 1) {
 			var menus = te.Data["xmlMenus"].getElementsByTagName('Favorites');
 			if (menus && menus.length) {
 				var items = menus[0].getElementsByTagName("Item");
-				var i = Addons.FavoritesBar.FromPt(items.length, pt);
+				var i = Addons.FavoritesBar.FromPt(pt);
 				if (i >= 0) {
 					hr = Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect);
 					if (hr == S_OK && pdwEffect[0]) {
@@ -228,7 +231,7 @@ if (window.Addon == 1) {
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
 			if (menus && menus.length) {
 				var items = menus[0].getElementsByTagName("Item");
-				var i = Addons.FavoritesBar.FromPt(items.length + 1, pt);
+				var i = Addons.FavoritesBar.FromPt(pt);
 				if (i >= 0) {
 					return Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
 				}
