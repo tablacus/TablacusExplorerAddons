@@ -150,8 +150,13 @@ if (window.Addon == 1) {
 	};
 
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var s = item.getAttribute("Icon") || '../addons/mainmenubutton/menu.png';
-	SetAddon(Addon_Id, Default, ['<span id="mainmenubutton_$" class="button" onmousedown="Addons.MainMenuButton.Popup(null, null, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: "Main menu", src: s }, h), '</span>']);
+	var src = item.getAttribute("Icon");
+	if (src) {
+		src = GetImgTag({ title: "Main menu", src: src }, h);
+	} else {
+		src = '<span title="' + EncodeSC(GetText("Main menu")) + '" style="font-size: ' + (Number(h) ? h + "px" : h) + '">&#x2630;</span>';
+	}
+	SetAddon(Addon_Id, Default, ['<span id="mainmenubutton_$" class="button" onmousedown="Addons.MainMenuButton.Popup(null, null, this)">', src, '</span>']);
 
 	//Key
 	if (item.getAttribute("KeyExec")) {
