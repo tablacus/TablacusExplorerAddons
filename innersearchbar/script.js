@@ -10,12 +10,11 @@ if (window.Addon == 1) {
 		Icon: "bitmap:ieframe.dll,216,16,17",
 		Width: '176px',
 
-		Change: function (Id)
+		Change: function (o, Id)
 		{
-			var o = document.F.elements["search_" + Id];
 			setTimeout(function ()
 			{
-				if (document.F.search.value.length == 0) {
+				if (o.value.length == 0) {
 					var FV = GetInnerFV(Id);
 					if (IsSearchPath(FV)) {
 						CancelFilterView(FV);
@@ -92,7 +91,7 @@ if (window.Addon == 1) {
 
 	AddEvent("PanelCreated", function (Ctrl)
 	{
-		var s = ['<input type="text" name="search_$" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(this,$)" onmouseup="Addons.InnerSearchBar.KeyDown(this,$)" onfocus="Addons.InnerSearchBar.Focus(this, $)" style="width: ', EncodeSC(Addons.InnerSearchBar.Width), '; padding-right: 12pt; vertical-align: middle"><span style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerSearchBar.Icon), '" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width: 12pt; height: 12pt" oncontextmenu="return false" onclick="Addons.InnerSearchBar.Search($)"><span id="ButtonSearchClear_$" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt" class="button" onclick="Addons.InnerSearchBar.Clear(true, $)">r</span></span>'];
+		var s = ['<input type="text" name="search_$" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(this,$)" onmouseup="Addons.InnerSearchBar.Change(this,$)" onfocus="Addons.InnerSearchBar.Focus(this, $)" style="width: ', EncodeSC(Addons.InnerSearchBar.Width), '; padding-right: 12pt; vertical-align: middle"><span style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerSearchBar.Icon), '" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width: 12pt; height: 12pt" oncontextmenu="return false" onclick="Addons.InnerSearchBar.Search($)"><span id="ButtonSearchClear_$" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt" class="button" onclick="Addons.InnerSearchBar.Clear(true, $)">r</span></span>'];
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 

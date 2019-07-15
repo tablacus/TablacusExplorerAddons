@@ -218,10 +218,11 @@ if (window.Addon == 1) {
 			}
 			if (HitTest(document.getElementById("favoritesbar"), pt) && dataObj.Count) {
 				pdwEffect[0] = DROPEFFECT_LINK;
+				MouseOut();
 				return S_OK;
 			}
 		}
-		MouseOut("fav");
+		MouseOut();
 	});
 
 	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
