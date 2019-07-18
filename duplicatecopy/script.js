@@ -64,7 +64,18 @@ if (window.Addon == 1) {
 							var fn = Addons.DuplicateCopy.GetTempName(arFrom[0]);
 							var s = InputDialog(fso.GetFileName(fn), fso.GetFileName(fn));
 							if (s) {
-								api.SHFileOperation(FO_COPY, arFrom[0], fso.BuildPath(fso.GetParentFolderName(fn), s), FOF_ALLOWUNDO | FOF_RENAMEONCOLLISION, true);
+								s = fso.BuildPath(fso.GetParentFolderName(fn), s);
+								if (IsExists(s)) {
+									MessageBox(api.LoadString(hShell32, 6327));
+									return false;
+								}
+								api.SHFileOperation(FO_COPY, arFrom[0], s, FOF_ALLOWUNDO | FOF_RENAMEONCOLLISION, true);
+								if (Ctrl.Type <= CTRL_EB) {
+									setTimeout(function ()
+									{
+										Ctrl.SelectItem(s, SVSI_FOCUSED | SVSI_SELECT | SVSI_ENSUREVISIBLE | SVSI_DESELECTOTHERS);
+									}, 99);
+								}
 							}
 							return true;
 						}
@@ -77,7 +88,7 @@ if (window.Addon == 1) {
 		GetTempName: function (fn)
 		{
 			var cp = api.LoadString(hShell32, 4178) || "%s - Copy";
-			var pfn = fso.GetParentFolderName(fn); 
+			var pfn = fso.GetParentFolderName(fn);
 			var bn = fso.GetBaseName(fn);
 			var ext = fso.GetExtensionName(fn);
 			if (ext) {
