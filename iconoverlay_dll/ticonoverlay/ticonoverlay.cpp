@@ -693,8 +693,8 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 {
 	int nArg = pDispParams ? pDispParams->cArgs - 1 : -1;
 	HRESULT hr = S_OK;
-
-	switch (dispIdMember) {
+	try {
+		switch (dispIdMember) {
 		//Init
 		case 0x60010000:
 			if (nArg >= 0) {
@@ -711,7 +711,7 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 				LPWSTR pszKey = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers";
 				lstrcpy(pszName, pszKey);
 				lstrcat(pszName, L"\\");
-				int nName = lstrlen(pszName); 
+				int nName = lstrlen(pszName);
 				if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, pszKey, 0, KEY_ENUMERATE_SUB_KEYS, &hKey) == ERROR_SUCCESS) {
 					LONG lRet;
 					while ((lRet = RegEnumKeyEx(hKey, dwIndex++, &pszName[nName], &dwNameSize, NULL, NULL, NULL, &ftLastWriteTime)) != ERROR_NO_MORE_ITEMS) {
@@ -737,12 +737,11 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 						}
 					}
 					RegCloseKey(hKey);
-				}					
+				}
 			}
 			return S_OK;
 		//GetOverlayInfo
 		case 0x60010001:
-			HRESULT hr;
 			hr = E_FAIL;
 			if (nArg >= 1) {
 				DWORD dwIndex = GetIntFromVariant(&pDispParams->rgvarg[nArg]);
@@ -788,11 +787,13 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 			return S_OK;
 		//this
 		case DISPID_VALUE:
-			if (pVarResult) {
-				teSetObject(pVarResult, this);
-			}
+			teSetObject(pVarResult, this);
 			return S_OK;
-	}//end_switch
+		}//end_switch
+	} catch (...) {
+		teSetLong(pVarResult, E_UNEXPECTED);
+		return S_OK;
+	}
 	return DISP_E_MEMBERNOTFOUND;
 }
 

@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2018.6.2</MinVersion>
-    <pubDate>Sat, 02 Jun 2018 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2019.7.16</MinVersion>
+    <pubDate>Fri, 19 Jul 2019 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
-    <DllVersion>1.0.0.0</DllVersion>
+    <DllVersion>1.0.1.0</DllVersion>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
@@ -18,4 +18,8 @@
     <Name>アイコンオーバーレイ</Name>
     <Description>アイコンオーバーレイを無制限に</Description>
   </ja>
+  <zh>
+    <Name>解除疊置圖示上限</Name>
+    <Description>Icon overlay unlimited</Description>
+  </zh>
 </TablacusExplorer>
