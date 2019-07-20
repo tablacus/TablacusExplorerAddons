@@ -77,7 +77,7 @@ for (var i in arSorted) {
 				}
 				if (k == 0 && fso.FileExists('..\\..\\TablacusExplorerAddons.wiki\\' + name + '.md')) {
 					var item3 = xmlSave.createElement("Details");
-					item3.text = 'https://github.com/tablacus/TablacusExplorerAddons/wiki/' + name;
+					item3.text = 'https://tablacus.github.io/wiki/addons/' + name + '.html';
 					item2.appendChild(item3);
 			}
 				item1.appendChild(item2);
