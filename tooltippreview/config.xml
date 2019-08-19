@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2019.1.10</MinVersion>
-    <pubDate>Thu, 10 Jan 2019 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2019.8.5</MinVersion>
+    <pubDate>Mon, 19 Aug 2019 00:00:00 GMT</pubDate>
+    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
@@ -16,4 +17,7 @@
     <Name>ツールチップ プレビュー</Name>
     <Description>ツールチップで画像プレビュー</Description>
   </ja>
+  <zh>
+    <Name>彈出預覽</Name>
+  </zh>
 </TablacusExplorer>

@@ -1,12 +1,14 @@
 var Addon_Id = "preview";
+var item = GetAddonElement(Addon_Id);
 
 if (window.Addon == 1) {
 	Addons.Preview =
 	{
-		Align: api.StrCmpI(GetAddonOption(Addon_Id, "Align"), "Right") ? "Left" : "Right",
-		Height: GetAddonOption(Addon_Id, "Height"),
-		TextFilter: GetAddonOption(Addon_Id, "TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
-		Embed: GetAddonOption(Addon_Id, "Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
+		Align: api.StrCmpI(item.getAttribute("Align"), "Right") ? "Left" : "Right",
+		Height: item.getAttribute("Height"),
+		TextFilter: item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
+		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
+		Extract: item.getAttribute("Extract") || "*",
 		Width: 0,
 
 		Arrange: function (Item, Ctrl)
@@ -26,28 +28,30 @@ if (window.Addon == 1) {
 						Item = api.ILCreateFromPath(path);
 					}
 				}
+				if (api.PathMatchSpec(path, Addons.Preview.Extract)) {
+					var Items = api.CreateObject("FolderItems");
+					Items.AddItem(Item);
+					te.OnBeforeGetData(Ctrl, Items, 11);
+				}
 				var path = Item.Path;
 				if (Ctrl && path == Item.Name) {
 					path = EncodeSC(fso.BuildPath(Ctrl.FolderItem.Path, path));
 				}
 				var nWidth = 0, nHeight = 0;
 				if (PathMatchEx(path, Addons.Preview.TextFilter)) {
-					var f = fso.GetFile(path);
-					if (f) {
-						if (f.Size > 99999) {
-							f = fso.OpenTextFile(path, 1, false);
-							if (f) {
-								o.innerText = f.Read(1024);
-								f.Close();
-								return;
-							}
-						} else {
-							var ado = OpenAdodbFromTextFile(path);
-							if (ado) {
-								o.innerText = ado.ReadText(1024);
-								ado.Close()
-								return;
-							}
+					if (Item.ExtendedProperty("size") > 99999) {
+						f = fso.OpenTextFile(path, 1, false);
+						if (f) {
+							o.innerText = f.Read(1024);
+							f.Close();
+							return;
+						}
+					} else {
+						var ado = OpenAdodbFromTextFile(path);
+						if (ado) {
+							o.innerText = ado.ReadText(1024);
+							ado.Close()
+							return;
 						}
 					}
 				}

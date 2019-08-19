@@ -22,6 +22,7 @@ if (window.Addon == 1) {
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
 		ppid: api.Memory("DWORD"),
+		Extract: item.getAttribute("Extract") || "*",
 
 		Exec: function (Ctrl, pt)
 		{
@@ -45,6 +46,11 @@ if (window.Addon == 1) {
 				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
 					this.Item = Ctrl.SelectedItems().Item(0);
 					this.File = api.GetDisplayNameOf(this.Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+					if (api.PathMatchSpec(this.File, Addons.PreviewWindow.Extract)) {
+						var Items = api.CreateObject("FolderItems");
+						Items.AddItem(this.Item);
+						te.OnBeforeGetData(Ctrl, Items, 11);
+					}
 				}
 				var ppid = api.Memory("DWORD");
 				api.GetWindowThreadProcessId(api.GetFocus(), ppid);
@@ -127,4 +133,9 @@ if (window.Addon == 1) {
 	api.GetWindowThreadProcessId(te.hwnd, Addons.PreviewWindow.ppid);
 } else {
 	EnableInner();
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

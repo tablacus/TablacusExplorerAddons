@@ -1,8 +1,12 @@
+var Addon_Id = "tooltippreview";
+var item = GetAddonElement(Addon_Id);
+
 if (window.Addon == 1) {
 	Addons.TooltipPreview = {
 		MAX: 400,
 		SIZE: api.Memory("SIZE"),
 		artm: [99, 99, 99, 500, 999].reverse(),
+		Extract: item.getAttribute("Extract") || "*",
 
 		Draw: function ()
 		{
@@ -113,6 +117,11 @@ if (window.Addon == 1) {
 		if (Ctrl.Type <= CTRL_EB && Index >= 0) {
 			var Item = Ctrl.Items.Item(Index);
 			if (Item) {
+				if (api.PathMatchSpec(Item.Path, Addons.TooltipPreview.Extract)) {
+					var Items = api.CreateObject("FolderItems");
+					Items.AddItem(Item);
+					te.OnBeforeGetData(Ctrl, Items, 11);
+				}
 				var q = { image: api.CreateObject("WICBitmap").FromFile(Item.Path), Item: Item };
 				Addons.TooltipPreview.q = q;
 				delete Addons.TooltipPreview.Path;
@@ -173,4 +182,10 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+} else {
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }
