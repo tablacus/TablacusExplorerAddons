@@ -70,10 +70,11 @@ if (window.Addon == 1) {
 									return false;
 								}
 								api.SHFileOperation(FO_COPY, arFrom[0], s, FOF_ALLOWUNDO | FOF_RENAMEONCOLLISION, true);
-								if (Ctrl.Type <= CTRL_EB) {
+								var FV = GetFolderView(Ctrl);
+								if (FV.Type <= CTRL_EB) {
 									setTimeout(function ()
 									{
-										Ctrl.SelectItem(s, SVSI_FOCUSED | SVSI_SELECT | SVSI_ENSUREVISIBLE | SVSI_DESELECTOTHERS);
+										FV.SelectItem(s, SVSI_FOCUSED | SVSI_SELECT | SVSI_ENSUREVISIBLE | SVSI_DESELECTOTHERS);
 									}, 99);
 								}
 							}
