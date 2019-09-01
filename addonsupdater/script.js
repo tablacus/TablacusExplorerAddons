@@ -42,7 +42,7 @@ if (window.Addon == 1) {
 					if (installed) {
 						GetAddonInfo2(item, info, "General");
 						if (installed.Version < info.Version) {
-							if (arg.all || te.Version >= CalcVersion(info.MinVersion)) {
+							if (arg.all || AboutTE(0) >= CalcVersion(info.MinVersion)) {
 								MainWindow.AddonDisabled(Id);
 								if (AddonBeforeRemove(Id) < 0) {
 									return;
