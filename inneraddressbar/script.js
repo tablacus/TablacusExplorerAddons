@@ -29,11 +29,10 @@ if (window.Addon == 1) {
 				var p = GetPos(o);
 				var pt = api.Memory("POINT");
 				pt.x = screenLeft + p.x;
-				pt.y = screenTop + p.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
+				pt.y = screenTop + p.y + o.offsetHeight;
 				window.Input = o.value;
 				if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
-					FV = GetInnerFV(Id);
-					NavigateFV(FV, o.value, GetNavigateFlags());
+					NavigateFV(GetInnerFV(Id), o.value, GetNavigateFlags(), true);
 				}
 				return false;
 			}
@@ -101,7 +100,7 @@ if (window.Addon == 1) {
 				Addons.InnerAddressBar.Item = o;
 				var pt = GetPos(o, true);
 				MouseOver(o);
-				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n, Id), pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI));
+				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n, Id), pt.x, pt.y + o.offsetHeight));
 			}
 		},
 
@@ -124,7 +123,7 @@ if (window.Addon == 1) {
 				MouseOver(o);
 				var pt = GetPos(o, true);
 				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, te.hwnd, null, null);
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight, te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				FolderItem = null;
 				if (nVerb) {

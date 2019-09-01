@@ -6,7 +6,7 @@ if (window.Addon == 1) {
 		link.rel = "stylesheet";
 		link.type = "text/css";
 		link.href = fso.BuildPath(te.Data.DataFolder, "config\\user.css");
-		doc.getElementsByTagName("head").item(0).appendChild(link);
+		doc.head.appendChild(link);
 	});
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");

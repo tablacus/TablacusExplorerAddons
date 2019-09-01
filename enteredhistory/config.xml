@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
+    <Version>1.00</Version>
     <MinVersion>2019.9.1</MinVersion>
     <pubDate>Sun, 01 Sep 2019 00:00:00 GMT</pubDate>
+    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Dark mode</Name>
-    <Description>Dark mode</Description>
+    <Name>Entered history</Name>
+    <Description>Change the addressbar drop-down to the entered history.</Description>
   </en>
   <ja>
-    <Name>ダークモード</Name>
+    <Name>入力履歴</Name>
+    <Description>アドレス バーのドロップダウンを入力履歴に変更</Description>
   </ja>
 </TablacusExplorer>
