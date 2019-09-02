@@ -28,6 +28,7 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 	var nItems = 0;
 	var sItem = String(api.LoadString(hShell32, 38192) || api.LoadString(hShell32, 6466)).replace(/%1!ls!/, "%s");
 	var wfd = api.Memory("WIN32_FIND_DATA");
+	var nFound = FV.ItemCount(SVGIO_ALLVIEW);
 	while (path = folderlist.shift()) {
 		if (Progress.HasUserCancelled()) {
 			return;
@@ -42,7 +43,7 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 			if (s > loc999) {
 				s = s.toLocaleString();
 			}
-			Progress.SetTitle(api.sprintf(999, sItem, s));
+			Progress.SetTitle(api.sprintf(999, sItem, s) + ' ('+ nFound +')');
 			var fn = fso.BuildPath(path, wfd.cFileName);
 			Progress.SetLine(2, wfd.cFileName, true);
 			if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
@@ -91,9 +92,12 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 				} else {
 					bAdd = true;
 				}
-				if (bAdd && FV.AddItem(api.ILCreateFromPath(fn), SessionId) == E_ACCESSDENIED) {
-					folderlist = [];
-					break;
+				if (bAdd) {
+					if (FV.AddItem(api.ILCreateFromPath(fn), SessionId) == E_ACCESSDENIED) {
+						folderlist = [];
+						break;
+					}
+					nFound = FV.ItemCount(SVGIO_ALLVIEW);
 				}
 			}
 		}
