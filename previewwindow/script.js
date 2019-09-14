@@ -46,7 +46,7 @@ if (window.Addon == 1) {
 				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
 					this.Item = Ctrl.SelectedItems().Item(0);
 					this.File = api.GetDisplayNameOf(this.Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
-					if (api.PathMatchSpec(this.File, Addons.PreviewWindow.Extract)) {
+					if (api.PathMatchSpec(this.File, Addons.PreviewWindow.Extract) && !IsFolderEx(this.Item)) {
 						var Items = api.CreateObject("FolderItems");
 						Items.AddItem(this.Item);
 						te.OnBeforeGetData(Ctrl, Items, 11);

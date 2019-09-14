@@ -1,4 +1,4 @@
-﻿var Addon_Id = "statusbar";
+var Addon_Id = "statusbar";
 var Default = "BottomBar3Left";
 
 if (window.Addon == 1) {
@@ -21,12 +21,12 @@ if (window.Addon == 1) {
 		if (Ctrl.Type <= CTRL_EB && /^\d/.test(Text)) {
 			var Items = Ctrl.SelectedItems();
 			if (Items.Count == 1) {
-				var v = { Ctrl: Ctrl, Item: Items.Item(0), window: window, StatusBar: Addons.StatusBar }
-				api.ExecScript('var s = Ctrl.Folder.GetDetailsOf(Item, -1); if (s) { window.clearTimeout(StatusBar.tid); StatusBar.Set(s); }', "JScript", v, true);
+				var v = { Item: Items.Item(0), window: window, StatusBar: Addons.StatusBar }
+				api.ExecScript('var s = Item.ExtendedProperty("infotip"); if (s) { window.clearTimeout(StatusBar.tid); StatusBar.Set(s); }', "JScript", v, true);
 			}
 		}
 		return S_OK;
 	});
 } else {
-	SetTabContents(0, "View", '<input type="checkbox" id="Title" /><label for="Title">Title bar</label>');
+	SetTabContents(0, "View", '<input type="checkbox" id="Title"><label for="Title">Title bar</label>');
 }

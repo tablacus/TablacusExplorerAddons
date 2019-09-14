@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.11</Version>
-    <MinVersion>2018.5.16</MinVersion>
-    <pubDate>Fri, 18 May 2018 00:00:00 GMT</pubDate>
+    <Version>1.12</Version>
+    <MinVersion>2019.9.6</MinVersion>
+    <pubDate>Sat, 14 Sep 2019 00:00:00 GMT</pubDate>
     <Options>Common:0,6:6</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -15,6 +15,8 @@
   </en>
   <ja>
     <Name>ステータス バー</Name>
-    <Description>ステータス バー</Description>
   </ja>
+  <zh>
+    <Name>狀態列</Name>
+  </zh>
 </TablacusExplorer>

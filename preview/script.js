@@ -20,15 +20,14 @@ if (window.Addon == 1) {
 			var o = document.getElementById('PreviewBar');
 			var s = [];
 			if (Item) {
-				var Folder = sha.NameSpace(api.ILRemoveLastID(Item));
-				var info = EncodeSC(Folder.GetDetailsOf(Item, 0) + "\n" + Folder.GetDetailsOf(Item, -1)) +"\n";
+				var info = EncodeSC(Item.Name + "\n" + Item.ExtendedProperty("infotip")) +"\n";
 				if (Item.IsLink) {
 					var path = Item.ExtendedProperty("linktarget");
 					if (path) {
 						Item = api.ILCreateFromPath(path);
 					}
 				}
-				if (api.PathMatchSpec(path, Addons.Preview.Extract)) {
+				if (api.PathMatchSpec(path, Addons.Preview.Extract) && !IsFolderEx(Item)) {
 					var Items = api.CreateObject("FolderItems");
 					Items.AddItem(Item);
 					te.OnBeforeGetData(Ctrl, Items, 11);

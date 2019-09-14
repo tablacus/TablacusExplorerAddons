@@ -117,7 +117,7 @@ if (window.Addon == 1) {
 		if (Ctrl.Type <= CTRL_EB && Index >= 0) {
 			var Item = Ctrl.Items.Item(Index);
 			if (Item) {
-				if (api.PathMatchSpec(Item.Path, Addons.TooltipPreview.Extract)) {
+				if (api.PathMatchSpec(Item.Path, Addons.TooltipPreview.Extract) && !IsFolderEx(Item)) {
 					var Items = api.CreateObject("FolderItems");
 					Items.AddItem(Item);
 					te.OnBeforeGetData(Ctrl, Items, 11);
