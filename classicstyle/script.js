@@ -22,7 +22,7 @@
 		}
 	};
 
-	AddEvent("ViewCreated", Addons.ClassicStyle.SetTheme);
+	AddEvent("NavigateComplete", Addons.ClassicStyle.SetTheme);
 
 	AddEventId("AddonDisabledEx", "classicstyle", function ()
 	{
