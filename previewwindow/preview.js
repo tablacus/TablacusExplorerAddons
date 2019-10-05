@@ -1,4 +1,7 @@
 Addons = {};
+
+MainWindow.RunEvent1("BrowserCreated", document);
+
 Addons.PreviewWindow =
 {
 	tid: null,

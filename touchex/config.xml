@@ -1,20 +1,23 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.07</Version>
-    <MinVersion>2016.11.30</MinVersion>
-    <pubDate>Wed, 30 Nov 2016 00:00:00 GMT</pubDate>
+    <Version>1.08</Version>
+    <MinVersion>2019.9.29</MinVersion>
+    <pubDate>Sat, 05 Oct 2019 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Change the Time Stamp</Name>
+    <Name>Change the timestamp</Name>
     <Description>Change the date and time that the specified file or directory was created, last accessed, or last modified.</Description>
   </en>
   <ja>
     <Name>タイムスタンプの変更</Name>
     <Description>ファイルやフォルダの更新日時、作成日時、アクセス日時の変更</Description>
   </ja>
+  <zh>
+    <Name>變更時間戳記</Name>
+  </zh>
 </TablacusExplorer>

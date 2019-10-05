@@ -55,6 +55,8 @@ if (window.Addon == 1) {
 	AddTypeEx("Add-ons", "Attributes...", Addons.Attributes.Exec);
 }
 if (window.Addon == 2) {
+	MainWindow.RunEvent1("BrowserCreated", document);
+
 	arAttrib = [FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_ARCHIVE];
 	arStr = ["R", "H", "S", "A"];
 	arHelp = ["Read Only", "Hidden", "System", "Archive"];

@@ -50,6 +50,8 @@ if (window.Addon == 1) {
 	AddTypeEx("Add-ons", "Change the Time Stamp...", Addons.TouchEx.Exec);
 }
 if (window.Addon == 2) {
+	MainWindow.RunEvent1("BrowserCreated", document);
+	
 	window.SetTimeStamp = function ()
 	{
 		for (var i = dialogArguments.Selected.Count; i-- > 0;) {

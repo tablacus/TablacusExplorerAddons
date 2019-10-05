@@ -174,6 +174,8 @@ if (window.Addon == 1) {
 	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,17" : "bitmap:ieframe.dll,214,24,17");
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FindFiles.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.FindFiles.strName, src: src }, h), '</span>']);
 } else if (window.Addon == 2) {
+	MainWindow.RunEvent1("BrowserCreated", document);
+
 	AddEventEx(window, "load", function ()
 	{
 		FV = te.Ctrl(CTRL_FV);

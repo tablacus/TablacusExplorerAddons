@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2019.2.27</MinVersion>
-    <pubDate>Fri, 01 Mar 2019 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2019.9.29</MinVersion>
+    <pubDate>Sat, 05 Oct 2019 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>

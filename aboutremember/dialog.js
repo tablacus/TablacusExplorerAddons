@@ -1,3 +1,5 @@
+MainWindow.RunEvent1("BrowserCreated", document);
+
 document.onkeydown = function ()
 {
 	if (event.keyCode == VK_ESCAPE) {

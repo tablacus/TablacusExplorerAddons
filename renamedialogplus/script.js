@@ -50,6 +50,7 @@ if (window.Addon == 1) {
 } else if (window.Addon == 2) {
 	AddEventEx(window, "load", function ()
 	{
+		MainWindow.RunEvent1("BrowserCreated", document);
 		ApplyLang(document);
 		var Focused = dialogArguments.Focused;
 		var s = IsFileHideExt(Focused) && !dialogArguments.ResultsFolder ? fso.GetFileName(api.GetDisplayNameOf(Focused, SHGDN_FORPARSING)) : api.GetDisplayNameOf(Focused, SHGDN_FOREDITING);
