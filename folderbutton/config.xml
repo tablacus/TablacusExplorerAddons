@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Folder button</Name>
-    <Description>Folder button</Description>
+    <Description>Toolbar button to open a navigate-to dialog, right-click opens a tree menu for current path.</Description>
   </en>
   <ja>
     <Name>フォルダ ボタン</Name>
