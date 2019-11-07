@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Change the Attributes</Name>
-    <Description>Change file attributes entry in context menu.</Description>
+    <Description>Dialog to change file attributes, accessible from context menu, configurable hotkeys or gestures.</Description>
   </en>
   <ja>
     <Name>属性の変更</Name>
