@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.08</Version>
+    <Version>1.09</Version>
     <MinVersion>2019.9.29</MinVersion>
-    <pubDate>Sat, 05 Oct 2019 00:00:00 GMT</pubDate>
+    <pubDate>Thu, 07 Nov 2019 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Retouch</Name>
-    <Description>Basic image editor with rotation and scaling</Description>
+    <Description>Basic image editor with rotation and scaling.</Description>
   </en>
   <ja>
     <Name>レタッチ</Name>

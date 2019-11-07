@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.32</Version>
+    <Version>1.33</Version>
     <MinVersion>2019.5.30</MinVersion>
-    <pubDate>Thu, 30 May 2019 00:00:00 GMT</pubDate>
+    <pubDate>Thu, 07 Nov 2019 00:00:00 GMT</pubDate>
     <Options>Common:0,5,7,8,9:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Label</Name>
-    <Description>Context commands to manage user-defined tags for sorting and searching</Description>
+    <Description>Context commands to manage user-defined tags for sorting and searching.</Description>
   </en>
   <ja>
     <Name>ラベル</Name>

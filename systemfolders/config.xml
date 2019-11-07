@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
+    <Version>1.05</Version>
     <MinVersion>2019.6.28</MinVersion>
-    <pubDate>Fri, 28 Jun 2019 00:00:00 GMT</pubDate>
+    <pubDate>Thu, 07 Nov 2019 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>System folders</Name>
-    <Description>Toolbar button with shortcuts for various Windows system and user folders</Description>
+    <Description>Shortcuts for various Windows system and user folders</Description>
   </en>
   <ja>
     <Name>システム フォルダ</Name>
