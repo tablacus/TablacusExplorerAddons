@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Tab design</Name>
-    <Description>Tab design. Require "Tab Plus"</Description>
+    <Description>Tab appearence with CSS styling. Requires "Tab Plus"</Description>
   </en>
   <ja>
     <Name>タブのデザイン</Name>
