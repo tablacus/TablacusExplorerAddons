@@ -29,11 +29,10 @@ if (window.Addon == 1) {
 				var p = GetPos(o);
 				var pt = api.Memory("POINT");
 				pt.x = screenLeft + p.x;
-				pt.y = screenTop + p.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
+				pt.y = screenTop + p.y + o.offsetHeight;
 				window.Input = o.value;
 				if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
-					FV = GetInnerFV(Id);
-					NavigateFV(FV, o.value, GetNavigateFlags());
+					NavigateFV(GetInnerFV(Id), o.value, GetNavigateFlags(), true);
 				}
 				return false;
 			}
@@ -73,7 +72,7 @@ if (window.Addon == 1) {
 					if (n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER)) {
 						s.unshift('<span id="breadcrumbsaddressbar_' + Id + "_"  + n + '" class="button" style="line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + BUTTONS.next + '</span>');
 					}
-					s.unshift('<span class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(this, ' + n + ', ' + Id + ')" onmousedown="return Addons.InnerBreadcrumbsAddressBar.GoEx(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + EncodeSC(GetFolderItemName(FolderItem)) + '</span>');
+					s.unshift('<span id="breadcrumbsaddressbar_' + Id + "_" + n + '_" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(this, ' + n + ', ' + Id + ')" onmousedown="return Addons.InnerBreadcrumbsAddressBar.GoEx(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + EncodeSC(GetFolderItemName(FolderItem)) + '</span>');
 					FolderItem = api.ILGetParent(FolderItem);
 					o.innerHTML = s.join("");
 					if (o.offsetWidth > width && n > 0) {
@@ -134,7 +133,7 @@ if (window.Addon == 1) {
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 4, GetText("Open in background"));
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 5,  GetText("&Edit"));
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, te.hwnd, null, null);
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight, te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				switch (nVerb) {
 					case 1:
@@ -169,12 +168,8 @@ if (window.Addon == 1) {
 			var FolderItem = 0;
 			var FV = GetInnerFV(Id);
 			if (FV) {
-				FolderItem = FV.FolderItem;
-				if (FV) {
-					FolderItem = FV.FolderItem;
-					while (n--) {
-						FolderItem = api.ILGetParent(FolderItem);
-					}
+				for (FolderItem = FV.FolderItem; n > 0; n--) {
+					FolderItem = api.ILGetParent(FolderItem);
 				}
 			}
 			return FolderItem;
@@ -201,7 +196,7 @@ if (window.Addon == 1) {
 				Addons.InnerBreadcrumbsAddressBar.Item = o;
 				var pt = GetPos(o, true);
 				MouseOver(o);
-				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n, Id), pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, null, 1));
+				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n, Id), pt.x, pt.y + o.offsetHeight, null, 1));
 			}
 		},
 
@@ -225,7 +220,7 @@ if (window.Addon == 1) {
 				MouseOver(o);
 				var pt = GetPos(o, true);
 				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI, te.hwnd, null, null);
+				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight, te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				FolderItem = null;
 				if (nVerb) {
@@ -351,6 +346,60 @@ if (window.Addon == 1) {
 				Addons.InnerBreadcrumbsAddressBar.Resize(Ctrl.Id);
 			}
 		}
+	});
+
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
+		if (Ctrl.Type == CTRL_WB) {
+			return S_OK;
+		}
+	});
+
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
+		if (Ctrl.Type == CTRL_WB && dataObj.Count) {
+			var ptc = pt.Clone();
+			api.ScreenToClient(api.GetWindow(document), ptc);
+			var el = document.elementFromPoint(ptc.x, ptc.y);
+			if (el) {
+				var res = /^breadcrumbsaddressbar_(\d+)_(\d+)_$/.exec(el.id);
+				if (res) {
+					var Target = Addons.InnerBreadcrumbsAddressBar.GetPath(res[2] - 0, res[1] - 0);
+					if (!api.ILIsEqual(dataObj.Item(-1), Target)) {
+						var DropTarget = api.DropTarget(Target);
+						if (DropTarget) {
+							return DropTarget.DragOver(dataObj, grfKeyState, pt, pdwEffect);
+						}
+					}
+					pdwEffect[0] = DROPEFFECT_NONE;
+					return S_OK;
+				}
+			}
+		}
+	});
+
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
+		if (Ctrl.Type == CTRL_WB && dataObj.Count) {
+			var ptc = pt.Clone();
+			api.ScreenToClient(api.GetWindow(document), ptc);
+			var el = document.elementFromPoint(ptc.x, ptc.y);
+			if (el) {
+				var res = /^breadcrumbsaddressbar_(\d+)_(\d+)_$/.exec(el.id);
+				if (res) {
+					var hr = S_FALSE;
+					var Target = Addons.InnerBreadcrumbsAddressBar.GetPath(res[2] - 0, res[1] - 0);
+					if (!api.ILIsEqual(dataObj.Item(-1), Target)) {
+						var DropTarget = api.DropTarget(Target);
+						if (DropTarget) {
+							hr = DropTarget.Drop(dataObj, grfKeyState, pt, pdwEffect);
+						}
+					}
+					return hr;
+				}
+			}
+		}
+	});
+
+	AddEvent("DragLeave", function (Ctrl) {
+		return S_OK;
 	});
 
 	if (items.length) {
