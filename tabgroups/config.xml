@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Tab groups</Name>
-    <Description>Tab groups</Description>
+    <Description>Groups all panes containing several tabs into independent workspaces displayed as a tab bar</Description>
   </en>
   <ja>
     <Name>タブ グループ</Name>
