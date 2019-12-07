@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.25</Version>
+    <Version>1.26</Version>
     <MinVersion>2019.6.22</MinVersion>
-    <pubDate>Sat, 22 Jun 2019 00:00:00 GMT</pubDate>
+    <pubDate>Sat, 07 Dec 2019 00:00:00 GMT</pubDate>
     <Options>Common:0,6:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -15,7 +15,7 @@
   </en>
   <ja>
     <Name>タブ グループ</Name>
-    <Description>タブのグループ管理</Description>
+    <Description>複数のタブを含むフォルダー群をグループ分けしたタブで管理</Description>
   </ja>
   <zh>
     <Name>工作區</Name>
