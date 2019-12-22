@@ -44,7 +44,7 @@ if (window.Addon == 1) {
 					if (arContextMenu) {
 						arContextMenu[1] = ContextMenu;
 					}
-					ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME | CMF_DONOTPICKDEFAULT | CMF_ITEMMENU);
+					ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME | CMF_ITEMMENU);
 					if (SelItem) {
 						SetRenameMenu(ContextMenu.idCmdFirst);
 					}
@@ -91,7 +91,7 @@ if (window.Addon == 1) {
 						if (arContextMenu) {
 							arContextMenu[1] = ContextMenu;
 						}
-						ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME | CMF_DONOTPICKDEFAULT);
+						ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME);
 						SetRenameMenu(ContextMenu.idCmdFirst);
 					}
 				} else if (FV) {

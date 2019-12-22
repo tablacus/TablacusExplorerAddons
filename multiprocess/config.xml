@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.20</Version>
-    <MinVersion>2018.4.1</MinVersion>
-    <pubDate>Sun, 01 Apr 2018 00:00:00 GMT</pubDate>
+    <Version>1.21</Version>
+    <MinVersion>2019.12.22</MinVersion>
+    <pubDate>Sun, 22 Dec 2019 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,7 @@
     <Name>マルチプロセス</Name>
     <Description>マルチプロセスでファイル操作</Description>
   </ja>
+  <zh>
+    <Name>多程序檔案操作</Name>
+  </zh>
 </TablacusExplorer>
