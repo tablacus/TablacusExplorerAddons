@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2018.6.2</MinVersion>
-    <pubDate>Mon, 04 Jun 2018 00:00:00 UTC</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2019.12.22</MinVersion>
+    <pubDate>Tue, 31 Dec 2019 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
@@ -16,4 +16,7 @@
     <Name>削除時にタブを閉じる</Name>
     <Description>フォルダが削除されると、タブを閉じます。</Description>
   </ja>
+  <zh>
+    <Name>資料夾被刪除後自動關閉分頁</Name>
+  </zh>
 </TablacusExplorer>
