@@ -9,7 +9,7 @@ if (window.Addon == 1) {
 		Addons.AutoBackup.SaveConfig();
 
 		var item = GetAddonElement("autobackup");
-		var dest = api.PathSearchAndQualify(ExtractMacro(te, item.getAttribute("Path") || "%TE_Config%\\..\\backup"));
+		var dest = api.PathSearchAndQualify(api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Path") || "%TE_Config%\\..\\backup")));
 		var dest1 = fso.BuildPath(dest, api.GetDateFormat(LOCALE_USER_DEFAULT, 0, new Date(), "yyyy-MM-dd"));
 		if (!fso.FolderExists(dest1)) {
 			CreateFolder(dest1);

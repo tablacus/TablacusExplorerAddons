@@ -1,4 +1,4 @@
-﻿importScripts("..\\..\\script\\consts.js");
+importScripts("..\\..\\script\\consts.js");
 
 if (MainWindow.Exchange) {
 	te.OnSystemMessage = function (Ctrl, hwnd, msg, wParam, lParam)
@@ -36,19 +36,20 @@ if (MainWindow.Exchange) {
 						}
 					}
 				}
-				var nThreads = api.GetThreadCount(pid0);
-				if (nThreads > ex.nThreads) {
-					bClose = false;
-				}
-
 				if (bClose) {
-					api.KillTimer(hwnd, wParam);
+					var nThreads = api.GetThreadCount(pid0);
+					if (nThreads <= ex.nThreads) {
+						api.KillTimer(hwnd, wParam);
+					}
 					try {
 						if (ex && ex.TimeOver && new Date().getTime() - ex.time > ex.Sec * 1000 + 500) {
+							ex.TimeOver = 0;
 							ex.Callback(true);
 						}
 					} catch (e) {}
-					api.PostMessage(hwnd, WM_CLOSE, 0, 0);
+					if (nThreads <= ex.nThreads) {
+						api.PostMessage(hwnd, WM_CLOSE, 0, 0);
+					}
 				}
 			}
 		} catch (e) {

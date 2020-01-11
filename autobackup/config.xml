@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
+    <Version>1.01</Version>
     <MinVersion>2019.1.16</MinVersion>
-    <pubDate>Wed, 16 Jan 2019 00:00:00 GMT</pubDate>
+    <pubDate>Sat, 11 Jan 2020 00:00:00 GMT</pubDate>
     <Options>Common:0,4:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -15,6 +15,8 @@
   </en>
   <ja>
     <Name>自動バックアップ</Name>
-    <Description>自動バックアップ</Description>
   </ja>
+  <zh>
+    <Name>自動備份設定</Name>
+  </zh>
 </TablacusExplorer>
