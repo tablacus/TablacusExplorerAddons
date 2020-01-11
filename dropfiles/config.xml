@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2019.12.22</MinVersion>
+    <pubDate>Sat, 11 Jan 2020 00:00:00 GMT</pubDate>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Drop files</Name>
+    <Description>Add "Drop files" to the type.</Description>
+  </en>
+  <ja>
+    <Name>ファイルのドロップ</Name>
+    <Description>タイプに「Drop files」を追加します。</Description>
+  </ja>
+</TablacusExplorer>
