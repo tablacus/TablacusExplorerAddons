@@ -18,7 +18,7 @@ Addons.AutoBackup = {
 	SelectBackup: function (o)
 	{
 		var pt = GetPos(o, 9);
-		var path = ChooseFolder(api.PathSearchAndQualify(ExtractMacro(te, document.F.Path.value || "%TE_Config%\\..\\backup")), pt);
+		var path = ChooseFolder(api.PathSearchAndQualify(api.PathUnquoteSpaces(ExtractMacro(te, document.F.Path.value || "%TE_Config%\\..\\backup"))), pt);
 		if (path) {
 			document.E.Path.value = path;
 			FireEvent(document.E.Path, "change");
