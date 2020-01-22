@@ -12,7 +12,7 @@ const TCHAR g_szClsid[] = TEXT("{04D5F147-2A06-4760-9120-7CAE154FBB21}");
 HINSTANCE	g_hinstDll = NULL;
 LONG		g_lLocks = 0;
 CteBase		*g_pBase = NULL;
-CteWO		*g_ppObject[MAX_OBJ];
+std::vector <CteWO *>	g_ppObject;
 
 TEmethod methodBASE[] = {
 	{ 0x60010000, L"Open" },
@@ -32,6 +32,7 @@ TEmethod methodWO[] = {
 
 	{ 0x6001E08C, L"gflConvertBitmapIntoDDB" },
 	{ 0x6001F000, L"IsUnicode" },
+	{ 0x6001F001, L"GetImage" },
 };
 
 // Unit
@@ -594,8 +595,7 @@ GFL_UINT32 GFLAPI teSeekStream(GFL_HANDLE handle, GFL_INT32 offset, GFL_INT32 or
 		ULARGE_INTEGER uliPos;
 		LARGE_INTEGER liOffset;
 		liOffset.QuadPart = offset;
-		pStream->Seek(liOffset, origin, &uliPos);
-		return uliPos.LowPart;
+		return pStream->Seek(liOffset, origin, &uliPos);
 	} catch (...) {}
 	return 0;
 }
@@ -605,21 +605,18 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
-			for (int i = MAX_OBJ; i--;) {
-				g_ppObject[i] = NULL;
-			}
+			g_ppObject.clear();
 			g_pBase = new CteBase();
 			g_hinstDll = hinstDll;
 			break;
 		case DLL_PROCESS_DETACH:
-			for (int i = MAX_OBJ; i--;) {
-				if (g_ppObject[i]) {
-					g_ppObject[i]->Close();
-					SafeRelease(&g_ppObject[i]);
-				}
+			while (!g_ppObject.empty()) {
+				CteWO *pWO = g_ppObject.back();
+				pWO->Close();
+				SafeRelease(&pWO);
+				g_ppObject.pop_back();
 			}
 			SafeRelease(&g_pBase);
-//			SafeRelease(&g_pdispProgressProc);
 			break;
 	}
 	return TRUE;
@@ -697,6 +694,65 @@ STDAPI DllUnregisterServer(void)
 	return ShowRegError(ls);
 }
 
+//GetImage
+HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpfn, int cx, HBITMAP *phBM, int *pnAlpha)
+{
+	CteWO *pWO = g_ppObject[0];
+	GFL_ERROR iResult = GFL_UNKNOWN_ERROR;
+	GFL_LOAD_PARAMS params;
+	GFL_BITMAP *gflBM = new GFL_BITMAP();
+
+	if (cx && pWO->m_gflLoadThumbnailFromHandle) {
+		pWO->m_gflGetDefaultThumbnailParams(&params);
+		params.Flags |= GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE;
+		params.Callbacks.Read = teReadStream;
+		params.Callbacks.Seek = teSeekStream;
+		params.Callbacks.Tell = teTellStream;
+		iResult = pWO->m_gflLoadThumbnailFromHandle((GFL_HANDLE)pStream, cx, cx, &gflBM, &params, NULL);
+	} else {
+		pWO->m_gflGetDefaultLoadParams(&params);
+		params.Callbacks.Read = teReadStream;
+		params.Callbacks.Seek = teSeekStream;
+		params.Callbacks.Tell = teTellStream;
+		iResult = pWO->m_gflLoadBitmapFromHandle((GFL_HANDLE)pStream, &gflBM, &params, NULL);
+	}
+	if (iResult != GFL_NO_ERROR) {
+		if (cx && (pWO->m_gflLoadThumbnailW || pWO->m_gflLoadThumbnail)) {
+			pWO->m_gflGetDefaultThumbnailParams(&params);
+			params.Flags |= GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE;
+			if (pWO->m_gflLoadThumbnailW) {
+				iResult = pWO->m_gflLoadThumbnailW(lpfn, cx, cx, &gflBM, &params, NULL);
+			} else if (pWO->m_gflLoadThumbnail) {
+				LPSTR lpAnsi = teWide2Ansi(lpfn, -1, CP_ACP);
+				iResult = pWO->m_gflLoadThumbnail(lpAnsi, cx, cx, &gflBM, &params, NULL);
+				teFreeAnsiString(&lpAnsi);
+			}
+		} else if (pWO->m_gflLoadBitmapW || pWO->m_gflLoadBitmap) {
+			pWO->m_gflGetDefaultLoadParams(&params);
+			if (pWO->m_gflLoadBitmapW) {
+				iResult = pWO->m_gflLoadBitmapW(lpfn, &gflBM, &params, NULL);
+			} else if (pWO->m_gflLoadBitmap) {
+				LPSTR lpAnsi = teWide2Ansi(lpfn, -1, CP_ACP);
+				iResult = pWO->m_gflLoadBitmap(lpAnsi, &gflBM, &params, NULL);
+				teFreeAnsiString(&lpAnsi);
+			}
+		}
+	}
+	if (iResult != GFL_NO_ERROR) {
+		pWO->m_gflGetDefaultLoadParams(&params);
+		params.Callbacks.Read = teReadStream;
+		params.Callbacks.Seek = teSeekStream;
+		params.Callbacks.Tell = teTellStream;
+		iResult = pWO->m_gflLoadBitmapFromHandle((GFL_HANDLE)pStream, &gflBM, &params, NULL);
+	}
+	if (iResult == GFL_NO_ERROR) {
+		iResult = pWO->m_gflConvertBitmapIntoDDB(gflBM, phBM);
+		*pnAlpha = 2;
+		pWO->m_gflFreeBitmap(gflBM);
+	}
+	return iResult == GFL_NO_ERROR ? S_OK : E_NOTIMPL;
+}
+
 //CteWO
 
 CteWO::CteWO(LPWSTR lpLib, LPWSTR lpLibE)
@@ -743,10 +799,11 @@ CteWO::CteWO(LPWSTR lpLib, LPWSTR lpLibE)
 CteWO::~CteWO()
 {
 	Close();
-	for (int i = MAX_OBJ; i--;) {
+
+	for (int i = g_ppObject.size(); i--;) {
 		if (this == g_ppObject[i]) {
-			g_ppObject[i] = NULL;
-			break;
+			g_ppObject.erase(g_ppObject.begin() + i);
+ 			break;
 		}
 	}
 }
@@ -778,7 +835,7 @@ VOID CteWO::SetBitmapToObject(IUnknown *punk, GFL_BITMAP *gflBM, GFL_ERROR iResu
 {
 	if (iResult == 0) {
 		HBITMAP hbm;
-		if (m_gflConvertBitmapIntoDDB(gflBM, &hbm) == 0) {
+		if (m_gflConvertBitmapIntoDDB(gflBM, &hbm) == GFL_NO_ERROR) {
 			VARIANT v;
 			teSetPtr(&v, hbm);
 			tePutProperty(punk, L"0", &v);
@@ -971,9 +1028,15 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 			case 0x6001E08C:
 				teSetBool(pVarResult, m_gflConvertBitmapIntoDDB != NULL);
 				return S_OK;
-				//IsUnicode
+			//IsUnicode
 			case 0x6001F000:
 				teSetBool(pVarResult, m_gflLoadBitmapW != NULL);
+				return S_OK;
+			//GetImage
+			case 0x6001F001:
+				if (m_gflLoadThumbnailFromHandle) {
+					teSetPtr(pVarResult, &GetImage);
+				}
 				return S_OK;
 			//this
 			case DISPID_VALUE:
@@ -1051,24 +1114,19 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 				LPWSTR lpLibE = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
 
-				int nEmpty = -1;
 				CteWO *pItem;
-				for (int i = MAX_OBJ; i--;) {
+				for (UINT i = g_ppObject.size(); i--;) {
 					pItem = g_ppObject[i];
 					if (pItem) {
 						if (lstrcmpi(lpLib, pItem->m_bsLib) == 0 && lstrcmpi(lpLibE, pItem->m_bsLibE) == 0) {
 							teSetObject(pVarResult, pItem);
 							return S_OK;
 						}
-					} else if (nEmpty < 0) {
-						nEmpty = i;
 					}
 				}
-				if (nEmpty >= 0) {
-					pItem = new CteWO(lpLib, lpLibE);
-					g_ppObject[nEmpty] = pItem;
-					teSetObjectRelease(pVarResult, pItem);
-				}
+				pItem = new CteWO(lpLib, lpLibE);
+				g_ppObject.push_back(pItem);
+				teSetObjectRelease(pVarResult, pItem);
 			}
 			return S_OK;
 		//Close
@@ -1076,11 +1134,12 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 
-				for (int i = MAX_OBJ; i--;) {
+				for (int i = g_ppObject.size(); i--;) {
 					if (g_ppObject[i]) {
 						if (lstrcmpi(lpLib, g_ppObject[i]->m_bsLib) == 0) {
 							g_ppObject[i]->Close();
 							SafeRelease(&g_ppObject[i]);
+							g_ppObject.erase(g_ppObject.begin() + i);
 							break;
 						}
 					}

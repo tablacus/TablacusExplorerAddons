@@ -22,56 +22,6 @@ if (window.Addon == 1) {
 	AddEvent("FromFile", function (image, file, alt, cx)
 	{
 		var i, j, path, arc, path2, hFind, dw, SPI, o;
-		if (Addons.SPI.IN.length && /^[A-Z]:\\.+|^\\.+\\.+/i.test(file)) {
-			dw = null;
-			for (i = Addons.SPI.IN.length; i-- > 0;) {
-				o = Addons.SPI.IN[i];
-				if (api.PathMatchSpec(file, o.Filter)) {
-					if (dw === null) {
-						dw = Addons.SPI.GetHeader(file);
-						if (dw === undefined) {
-							break;
-						}
-					}
-					SPI = o.SPI;
-					if (SPI.IsSupported(file, dw)) {
-						var phbm = [];
-						if ((cx || 999) <= 256 && SPI.GetPreview) {
-							if (SPI.GetPreview(dw, 0, 1, null, phbm, null, 0) == 0) {
-								image.FromHBITMAP(phbm[0]);
-								api.DeleteObject(phbm[0]);
-								dw.Free();
-								return S_OK;
-							}
-						}
-						if (SPI.GetPicture(dw, 0, 1, null, phbm, null, 0) == 0) {
-							image.FromHBITMAP(phbm[0]);
-							api.DeleteObject(phbm[0]);
-							dw.Free();
-							return S_OK;
-						}
-						if ((cx || 999) <= 256 && SPI.GetPreview) {
-							if (SPI.GetPreview(file, 0, 0, null, phbm, null, 0) == 0) {
-								image.FromHBITMAP(phbm[0], 0, 0);
-								api.DeleteObject(phbm[0]);
-								dw.Free();
-								return S_OK;
-							}
-						}
-						if (SPI.GetPicture(file, 0, 0, null, phbm, null, 0) == 0) {
-							image.FromHBITMAP(phbm[0], 0, 0);
-							api.DeleteObject(phbm[0]);
-							dw.Free();
-							return S_OK;
-						}
-					}
-				}
-			}
-			if (dw) {
-				dw.Free();
-				dw = null;
-			}
-		}
 		if (Addons.SPI.AM.length) {
 			var wfd = api.Memory("WIN32_FIND_DATA");
 			var ar = [file, alt];
@@ -129,31 +79,6 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("FromStream", function (image, stream, filename, cx)
-	{
-		if (Addons.SPI.IN.length) {
-			for (var i = Addons.SPI.IN.length; i-- > 0;) {
-				var o = Addons.SPI.IN[i];
-				var SPI = o.SPI;
-				if (api.PathMatchSpec(filename, o.Filter) && SPI.IsSupported(filename, stream)) {
-					var phbm = [];
-					if ((cx || 999) <= 256 && SPI.GetPreview) {
-						if (SPI.GetPreview(stream, 0, 1, null, phbm, null, 0) == 0) {
-							image.FromHBITMAP(phbm[0]);
-							api.DeleteObject(phbm[0]);
-							return S_OK;
-						}
-					}
-					if (SPI.GetPicture(stream, 0, 1, null, phbm, null, 0) == 0) {
-						image.FromHBITMAP(phbm[0]);
-						api.DeleteObject(phbm[0]);
-						return S_OK;
-					}
-				}
-			}
-		}
-	});
-
 	AddEvent("AddonDisabled", function (Id)
 	{
 		if (Id.toLowerCase() == "spi") {
@@ -168,15 +93,20 @@ if (window.Addon == 1) {
 			for (var i = items.length; i-- > 0;) {
 				if (!items[i].getAttribute("Disabled")) {
 					var SPI = Addons.SPI.DLL.open(api.PathUnquoteSpaces(ExtractMacro(te, items[i].getAttribute("Path")))) || {};
-					var ar = [];
-					if (SPI.GetPluginInfo) {
-						SPI.GetPluginInfo(ar);
-					}
 					var filter = [];
-					for (var j = 2; j < ar.length; j += 2) {
-						filter.push(ar[j]);
+					if (items[i].getAttribute("Filter")) {
+						var ar = [];
+						if (SPI.GetPluginInfo) {
+							SPI.GetPluginInfo(ar);
+						}
+						for (var j = 2; j < ar.length; j += 2) {
+							filter.push(ar[j]);
+						}
+					} else {
+						filter.push("*");
 					}
-					var o = { SPI : SPI, Filter: items[i].getAttribute("Filter") ? filter.join(";") || "*" : "*" };
+					SPI.Filter = filter.join(";");
+					var o = { SPI: SPI, Filter: filter.join(";") };
 					if (SPI.GetPicture) {
 						Addons.SPI.IN.push(o);
 					}
@@ -188,5 +118,6 @@ if (window.Addon == 1) {
 		}
 		delete xml;
 		delete SPI;
+		te.AddEvent("GetImage", Addons.SPI.DLL.GetImage);
 	}
 }

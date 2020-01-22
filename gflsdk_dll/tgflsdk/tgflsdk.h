@@ -2,10 +2,10 @@
 #include <windows.h>
 #include <dispex.h>
 #include <shlwapi.h>
+#include <vector>
 #pragma comment (lib, "shlwapi.lib")
 #include "libgfl.h"
 
-#define MAX_OBJ 256
 #define SIZE_BUFF 32768
 
 struct TEmethod
@@ -58,11 +58,9 @@ public:
 
 	VOID Close();
 	VOID SetBitmapToObject(IUnknown *punk, GFL_BITMAP *gflBM, GFL_ERROR iResult);
-
+	
 	HMODULE		m_hDll, m_hDllE;
 	BSTR		m_bsLib, m_bsLibE;
-private:
-	LONG		m_cRef;
 	LPFN_gflFreeBitmap					m_gflFreeBitmap;
 	LPFN_gflGetDefaultLoadParams		m_gflGetDefaultLoadParams;
 	LPFN_gflGetDefaultThumbnailParams m_gflGetDefaultThumbnailParams;
@@ -77,6 +75,8 @@ private:
 	LPFN_gflLoadBitmapFromHandle		m_gflLoadBitmapFromHandle;
 	LPFN_gflLoadThumbnailFromHandle		m_gflLoadThumbnailFromHandle;
 	LPFN_gflConvertBitmapIntoDDB		m_gflConvertBitmapIntoDDB;
+private:
+	LONG		m_cRef;
 };
 
 // Base Object

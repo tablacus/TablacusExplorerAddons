@@ -11,11 +11,21 @@ Addons.ThumbPlus = {
 		if (Ctrl.type <= CTRL_SB) {
 			delete Addons.ThumbPlus.FV[Ctrl.Id];
 		}
+	},
+
+	Clear2:function(Ctrl)
+	{
+		var db = Addons.ThumbPlus.FV[Ctrl.Id];
+		if (db) {
+			if (db["*"] < Ctrl.IconSize) {
+				Addons.ThumbPlus.Clear(Ctrl);
+			}
+		}
 	}
 };
 
 if (window.Addon == 1) {
-	AddEvent("HandleIcon", function (Ctrl, pid)
+	AddEvent("HandleIcon", function (Ctrl, pid, iItem)
 	{
 		if (Ctrl.IconSize > 32) {
 			var db = Addons.ThumbPlus.FV[Ctrl.Id];
@@ -27,13 +37,21 @@ if (window.Addon == 1) {
 				if (db[path]) {
 					return /object/i.test(typeof db[path]) ? true : undefined;
 				}
-				var cx = Ctrl.IconSize * screen.logicalYDPI / 96;
-				var image = te.WICBitmap().FromFile(path, cx);
-				if (image) {
-					db[path] = GetThumbnail(image, cx, true);
-					return true;
-				}
 				db[path] = 1;
+				Threads.GetImage({
+					path: path,
+					cx: Ctrl.IconSize * screen.logicalYDPI / 96,
+					f: true,
+					hList: Ctrl.hwndList,
+					iItem: iItem,
+					db: db,
+					cl: -1,
+					callback: function (o)
+					{
+						o.db[o.path] = api.CreateObject("WICBitmap").FromHBITMAP(o.out);
+						api.PostMessage(o.hList, LVM_REDRAWITEMS, o.iItem, o.iItem);
+					}
+				});
 			}
 		}
 	}, true);
@@ -77,17 +95,9 @@ if (window.Addon == 1) {
 
 	AddEvent("NavigateComplete", Addons.ThumbPlus.Clear);
 
-	AddEvent("Command", Addons.ThumbPlus.Clear);
+	AddEvent("Command", Addons.ThumbPlus.Clear2);
 
-	AddEvent("IconSizeChanged", function (Ctrl)
-	{
-		var db = Addons.ThumbPlus.FV[Ctrl.Id];
-		if (db) {
-			if (db["*"] < Ctrl.IconSize) {
-				Addons.ThumbPlus.Clear(Ctrl);
-			}
-		}
-	});
+	AddEvent("IconSizeChanged", Addons.ThumbPlus.Clear2);
 
 	if (api.IsAppThemed() && WINVER >= 0x600) {
 		AddEvent("Load", function ()

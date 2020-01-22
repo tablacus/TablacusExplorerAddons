@@ -120,8 +120,6 @@ public:
 	~CteSPI();
 
 	VOID Close();
-	VOID SetChangeVolProc(HANDLE hArcData);
-	VOID SetProcessDataProc(HANDLE hArcData);
 
 	LPFN_GetPluginInfo GetPluginInfo;
 	LPFN_GetPluginInfoW GetPluginInfoW;
@@ -143,6 +141,7 @@ public:
 
 	HMODULE		m_hDll;
 	BSTR		m_bsLib;
+	BSTR		m_bsFilter;
 private:
 	LONG		m_cRef;
 };
