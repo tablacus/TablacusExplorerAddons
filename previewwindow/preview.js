@@ -9,13 +9,18 @@ Addons.PreviewWindow =
 
 	FromFile: function ()
 	{
-		var img1 = document.getElementById("img1");
-		img1.onerror = null;
-		var o = document.documentElement || document.body;
-		var Image = api.CreateObject("WICBitmap").FromFile(te.Data.window.Addons.PreviewWindow.File, o.offsetWidth < o.offsetHeight ? o.offsetWidth : o.offsetHeight);
-		if (Image) {
-			img1.src = Image.DataURI("image/png");
-		}
+		var img = document.getElementById("img1");
+		MainWindow.Threads.GetImage({
+			path: te.Data.window.Addons.PreviewWindow.File,
+			img: img,
+			callback: function (o)
+			{
+				if (o.path == te.Data.window.Addons.PreviewWindow.File) {
+					o.img.src = o.out.DataURI();
+				}
+			}
+		});
+		img.onerror = null;
 	},
 
 	Loaded: function ()
@@ -47,7 +52,7 @@ Addons.PreviewWindow =
 					ar.unshift(" " + api.PSGetDisplayName(col[i]) + ": " + s);
 				}
 			}
-			desc.innerHTML = ar.join("<br />");
+			desc.innerHTML = ar.join("<br>");
 			img1.onload = Addons.PreviewWindow.Loaded;
 			img1.onerror = Addons.PreviewWindow.FromFile;
 			img1.src = te.Data.window.Addons.PreviewWindow.File;

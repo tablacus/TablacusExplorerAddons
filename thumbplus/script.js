@@ -45,10 +45,9 @@ if (window.Addon == 1) {
 					hList: Ctrl.hwndList,
 					iItem: iItem,
 					db: db,
-					cl: -1,
 					callback: function (o)
 					{
-						o.db[o.path] = api.CreateObject("WICBitmap").FromHBITMAP(o.out);
+						o.db[o.path] = api.CreateObject("WICBitmap").FromSource(o.out);
 						api.PostMessage(o.hList, LVM_REDRAWITEMS, o.iItem, o.iItem);
 					}
 				});

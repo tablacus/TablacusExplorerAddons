@@ -62,48 +62,42 @@ if (window.Addon == 1) {
 				} else {
 					style = nWidth  > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
 				}
-				var img = {};
-				if (nWidth && nHeight) {
-					s.splice(s.length, 0, '<div align="center"><img src="', path, '" style="display: block;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this.src, this)"></div>');
-				} else if (api.PathMatchSpec(path, Addons.Preview.Embed)) {
+				if (api.PathMatchSpec(path, Addons.Preview.Embed)) {
 					if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4")) {
 						s.splice(s.length, 0, '<video controls width="100%" height="100%"><source src="' + path + '"></video>');
 					} else {
 						s.splice(s.length, 0, '<embed width="100%" height="100%" src="' + path + '" autoplay="false"></embed>');
 					}
-				} else if (Addons.Preview.FromFile(path, img)) {
-					s.push('<div align="center"><img src="', img.src, '" style="display: block;', style, '" title="', info, '" onerror="this.style.display=\'none\'" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false"/></div>');
 				} else {
-					s.push('<div style="font-size: 10px; margin-left: 4px">', path, '</div>');
+					s.splice(s.length, 0, '<div align="center"><img src="', path, '" style="display: block;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)"></div>');
 				}
 				s.push(info.replace(/\n/, "<br>"));
 			}
 			o.innerHTML = s.join("");
 		},
 
-		FromFile: function(path, img)
+		FromFile: function(img)
 		{
-			var image;
+			Threads.GetImage({
+				path: Addons.Preview.GetPath(img),
+				img: img,
+				callback: function (o)
+				{
+					o.img.src = o.out.DataURI();
+					o.img.style.display = "";
+				}
+			});
+			img.style.display = "none";
+			img.onerror = null;
+		},
+
+		GetPath: function (o)
+		{
+			var path = o.src;
 			if (/^file:/i.test(path)) {
 				path = api.PathCreateFromUrl(path);
 			}
-			if (image = te.WICBitmap().FromFile(path)) {
-				var nWidth = image.GetWidth();
-				var nHeight = image.GetHeight();
-				var o = document.getElementById('PreviewBar');
-				if (image.GetFrameCount() < 2 && (nWidth > o.offsetWidth || nHeight > o.offsetWidth)) {
-					if (nWidth > nHeight) {
-						image = image.GetThumbnailImage(o.offsetWidth, o.offsetWidth * nHeight / nWidth);
-					} else {
-						image = image.GetThumbnailImage(o.offsetWidth * nWidth / nHeight, o.offsetWidth);
-					}
-				}
-				if (image) {
-					img.onerror = null;
-					img.src = image.DataURI(/\.gif$/i.test(path) ? 'image/gif' : "image/png");
-					return true;
-				}
-			}
+			return path;
 		},
 
 		Popup: function (o)

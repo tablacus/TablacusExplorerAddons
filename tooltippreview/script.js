@@ -33,7 +33,7 @@ if (window.Addon == 1) {
 					if (q.w > 48 || q.h > 48 || q.image.GetFrameCount() > 1) {
 						var hdc = api.GetWindowDC(q.hwnd);
 						if (hdc) {
-							var hbm = q.image.GetHBITMAP(GetSysColor(COLOR_WINDOW));
+							var hbm = q.image.GetHBITMAP(-2);
 							if (hbm) {
 								var hmdc = api.CreateCompatibleDC(hdc);
 								var hOld = api.SelectObject(hmdc, hbm);
@@ -56,7 +56,10 @@ if (window.Addon == 1) {
 								q.x = (w1 - q.w * q.z) / 2;
 								q.y = (h1 - q.h * q.z) / 2;
 								api.FillRect(hdc, rc, null);
-								api.StretchBlt(hdc, q.x, q.y, q.w * q.z, q.h * q.z, hmdc, 0, 0, q.w, q.h, SRCCOPY);
+								q.rc = rc;
+								q.xf = api.LowPart(q.image.GetFrameMetadata("/imgdesc/Left"));
+								q.yf = api.LowPart(q.image.GetFrameMetadata("/imgdesc/Top"));
+								api.AlphaBlend(hdc, q.x, q.y, q.w * q.z, q.h * q.z, hmdc, 0, 0, q.w, q.h, 0x01ff0000);
 								api.SelectObject(hmdc, hOld);
 								api.DeleteDC(hmdc);
 								api.DeleteObject(hbm);
@@ -90,16 +93,26 @@ if (window.Addon == 1) {
 		{
 			var q = Addons.TooltipPreview.q;
 			if (api.IsWindowVisible(q.hwnd)) {
+				var d = q.image.GetFrameMetadata("/grctlext/Disposal");
 				q.image.Frame = (q.image.Frame + 1) % q.image.GetFrameCount();
 				var hdc = api.GetWindowDC(q.hwnd);
 				if (hdc) {
-					var hbm = q.image.GetHBITMAP(-1);
+					var hbm = q.image.GetHBITMAP(-2);
 					if (hbm) {
 						var hmdc = api.CreateCompatibleDC(hdc);
 						var hOld = api.SelectObject(hmdc, hbm);
-						var x = q.x + api.LowPart(q.image.GetFrameMetadata("/imgdesc/Left")) * q.z;
-						var y = q.y + api.LowPart(q.image.GetFrameMetadata("/imgdesc/Top")) * q.z;
-						api.AlphaBlend(hdc, x, y, q.w * q.z, q.h * q.z, hmdc, 0, 0, q.w, q.h, 0x01ff0000);
+						var x = q.x + (api.LowPart(q.image.GetFrameMetadata("/imgdesc/Left")) - q.xf) * q.z;
+						var y = q.y + (api.LowPart(q.image.GetFrameMetadata("/imgdesc/Top")) - q.yf) * q.z;
+						var w = q.image.GetWidth();
+						var h = q.image.GetHeight();
+						if (d == 2) {
+							api.FillRect(hdc, q.rc, null);
+						}
+						if (q.image.GetFrameMetadata("/grctlext/TransparencyFlag")) {
+							api.AlphaBlend(hdc, x, y, w * q.z, h * q.z, hmdc, 0, 0, w, h, 0x01ff0000);
+						} else {
+							api.StretchBlt(hdc, x, y, w * q.z, h * q.z, hmdc, 0, 0, w, h, SRCCOPY);
+						}
 						api.SelectObject(hmdc, hOld);
 						api.DeleteDC(hmdc);
 						api.DeleteObject(hbm);
@@ -115,7 +128,7 @@ if (window.Addon == 1) {
 	AddEvent("ToolTip", function (Ctrl, Index)
 	{
 		if (Ctrl.Type <= CTRL_EB && Index >= 0) {
-			var Item = Ctrl.Items.Item(Index);
+			var Item = Ctrl.Item(Index);
 			if (Item) {
 				if (api.PathMatchSpec(Item.Path, Addons.TooltipPreview.Extract) && !IsFolderEx(Item)) {
 					var Items = api.CreateObject("FolderItems");
@@ -176,6 +189,7 @@ if (window.Addon == 1) {
 					if (Addons.TooltipPreview.tid) {
 						clearTimeout(Addons.TooltipPreview.tid);
 					}
+					Addons.TooltipPreview.q.image.Frame = 0;
 					Addons.TooltipPreview.tm = Addons.TooltipPreview.artm.length;
 					Addons.TooltipPreview.tid = setTimeout(Addons.TooltipPreview.Draw, 999);
 				}
