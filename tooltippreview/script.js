@@ -8,8 +8,7 @@ if (window.Addon == 1) {
 		artm: [99, 99, 99, 500, 999].reverse(),
 		Extract: item.getAttribute("Extract") || "*",
 
-		Draw: function ()
-		{
+		Draw: function () {
 			delete Addons.TooltipPreview.tid;
 			var q = Addons.TooltipPreview.q;
 			if (!q.hwnd) {
@@ -30,57 +29,68 @@ if (window.Addon == 1) {
 				}
 				Addons.TooltipPreview.Path = q.Item.Path;
 				if (api.IsWindowVisible(q.hwnd)) {
-					if (q.w > 48 || q.h > 48 || q.image.GetFrameCount() > 1) {
-						var hdc = api.GetWindowDC(q.hwnd);
-						if (hdc) {
-							var hbm = q.image.GetHBITMAP(-2);
-							if (hbm) {
-								var hmdc = api.CreateCompatibleDC(hdc);
-								var hOld = api.SelectObject(hmdc, hbm);
-								var rc = api.Memory("RECT");
-								api.GetClientRect(q.hwnd, rc);
-								var w1 = rc.Right-- - rc.Left++;
-								var h1 = rc.Bottom-- - rc.Top++;
-								if (w1 < q.w * q.z) {
-									q.z = (w1 - 2) / q.w;
-									if (Addons.TooltipPreview.SIZE.cx > 1) {
-										Addons.TooltipPreview.SIZE.cx--;
-									}
-								}
-								if (h1 < q.h * q.z) {
-									q.z = (h1 - 2) / q.h;
-									if (Addons.TooltipPreview.SIZE.cy > 1) {
-										Addons.TooltipPreview.SIZE.cy--;
-									}
-								}
-								q.x = (w1 - q.w * q.z) / 2;
-								q.y = (h1 - q.h * q.z) / 2;
-								api.FillRect(hdc, rc, null);
-								q.rc = rc;
-								q.xf = api.LowPart(q.image.GetFrameMetadata("/imgdesc/Left"));
-								q.yf = api.LowPart(q.image.GetFrameMetadata("/imgdesc/Top"));
-								api.AlphaBlend(hdc, q.x, q.y, q.w * q.z, q.h * q.z, hmdc, 0, 0, q.w, q.h, 0x01ff0000);
-								api.SelectObject(hmdc, hOld);
-								api.DeleteDC(hmdc);
-								api.DeleteObject(hbm);
-								q.image.Frame = 0;
+					var hdc = api.GetWindowDC(q.hwnd);
+					if (hdc) {
+						var hbm = q.image.GetHBITMAP(GetSysColor(COLOR_WINDOW));
+						if (hbm) {
+							api.SetTextColor(hdc, GetSysColor(COLOR_WINDOWTEXT));;
+							api.SetBkColor(hdc, GetSysColor(COLOR_WINDOW));;
+							var hmdc = api.CreateCompatibleDC(hdc);
+							var hOld = api.SelectObject(hmdc, hbm);
+							var rc = api.Memory("RECT");
+							api.GetClientRect(q.hwnd, rc);
+							var w1 = rc.right-- - rc.left++;
+							var h1 = rc.bottom-- - rc.top++;
+							h1 -= Addons.TooltipPreview.SIZE.cy * 4;
+							if (h1 < 32) {
+								h1 = 32;
 							}
-							api.ReleaseDC(q.hwnd, hdc);
+							if (w1 < q.w * q.z) {
+								q.z = (w1 - 2) / q.w;
+								if (Addons.TooltipPreview.SIZE.cx > 1) {
+									Addons.TooltipPreview.SIZE.cx--;
+								}
+							}
+							if (h1 < q.h * q.z) {
+								q.z = (h1 - 2) / q.h;
+								if (Addons.TooltipPreview.SIZE.cy > 1) {
+									Addons.TooltipPreview.SIZE.cy--;
+								}
+							}
+							q.x = Math.max((w1 - q.w * q.z) / 2, 4);
+							q.y = Math.max((h1 - q.h * q.z) / 2, 4);
+							var brush = api.CreateSolidBrush(GetSysColor(COLOR_WINDOW));
+							api.FillRect(hdc, rc, brush);
+							api.DeleteObject(brush);
+							q.rc2 = api.Memory("RECT");
+							q.rc2.left = 4;
+							q.rc2.top = q.h * q.z + q.y - 4;
+							q.rc2.right = rc.right;
+							q.rc2.bottom = rc.bottom;
+							rc.bottom = q.rc2.top;
+							q.rc = rc;
+							q.xf = api.LowPart(q.image.GetFrameMetadata("/imgdesc/Left"));
+							q.yf = api.LowPart(q.image.GetFrameMetadata("/imgdesc/Top"));
+							api.StretchBlt(hdc, q.x, q.y, q.w * q.z, q.h * q.z, hmdc, 0, 0, q.w, q.h, SRCCOPY);
+							api.SelectObject(hmdc, hOld);
+							api.DeleteDC(hmdc);
+							api.DeleteObject(hbm);
+							q.image.Frame = 0;
+							var lf = api.Memory("LOGFONT");
+							lf.lfFaceName = DefaultFont.lfFaceName;
+							lf.lfHeight = -11;
+							lf.lfCharSet = DefaultFont.lfCharSet;
+							var hFont = CreateFont(lf);
+							var hfontOld = api.SelectObject(hdc, hFont);
+							api.DrawText(hdc, Addons.TooltipPreview.Text, -1, q.rc2, DT_NOPREFIX | DT_END_ELLIPSIS);
+							api.SelectObject(hdc, hfontOld);
 						}
-						if (q.image.GetFrameCount() > 1) {
-							var i = q.image.GetFrameMetadata("/grctlext/Delay") * 10;
-							setTimeout(Addons.TooltipPreview.Animate, i > 10 ? i : 100);
-						}
-					} else {
-						var hIcon = q.image.GetHICON();
-						if (hIcon) {
-							var s = q.Item.Name.substr(0, 99);
-							var p = api.Memory(100);
-							p.Write(0, VT_LPWSTR, s);
-							api.SendMessage(q.hwnd, WM_USER + 33, hIcon, p);
-							api.SendMessage(q.hwnd, WM_USER + 29, 0, 0);
-							api.SendMessage(q.hwnd, WM_USER + 33, 0, 0);
-							api.DestroyIcon(hIcon);
+						api.ReleaseDC(q.hwnd, hdc);
+					}
+					if (q.image.GetFrameCount() > 1) {
+						var nDelay = q.image.GetFrameMetadata("/grctlext/Delay");
+						if (nDelay !== undefined || api.PathMatchSpec(q.Item.Path, "*.gif")) {
+							setTimeout(Addons.TooltipPreview.Animate, nDelay * 10 || 100);
 						}
 					}
 				}
@@ -89,8 +99,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Animate: function ()
-		{
+		Animate: function () {
 			var q = Addons.TooltipPreview.q;
 			if (api.IsWindowVisible(q.hwnd)) {
 				var d = q.image.GetFrameMetadata("/grctlext/Disposal");
@@ -106,9 +115,11 @@ if (window.Addon == 1) {
 						var w = q.image.GetWidth();
 						var h = q.image.GetHeight();
 						if (d == 2) {
-							api.FillRect(hdc, q.rc, null);
+							var brush = api.CreateSolidBrush(GetSysColor(COLOR_WINDOW));
+							api.FillRect(hdc, q.rc, brush);
+							api.DeleteObject(brush);
 						}
-						if (q.image.GetFrameMetadata("/grctlext/TransparencyFlag")) {
+						if (q.image.GetFrameMetadata("/grctlext/TransparencyFlag") !== 0) {
 							api.AlphaBlend(hdc, x, y, w * q.z, h * q.z, hmdc, 0, 0, w, h, 0x01ff0000);
 						} else {
 							api.StretchBlt(hdc, x, y, w * q.z, h * q.z, hmdc, 0, 0, w, h, SRCCOPY);
@@ -125,23 +136,27 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("ToolTip", function (Ctrl, Index)
-	{
+	AddEvent("ToolTip", function (Ctrl, Index) {
 		if (Ctrl.Type <= CTRL_EB && Index >= 0) {
 			var Item = Ctrl.Item(Index);
 			if (Item) {
-				if (api.PathMatchSpec(Item.Path, Addons.TooltipPreview.Extract) && !IsFolderEx(Item)) {
-					var Items = api.CreateObject("FolderItems");
-					Items.AddItem(Item);
-					te.OnBeforeGetData(Ctrl, Items, 11);
-				}
 				var q = { image: api.CreateObject("WICBitmap").FromFile(Item.Path), Item: Item };
+				if (!q.image) {
+					if (api.PathMatchSpec(Item.Path, Addons.TooltipPreview.Extract) && !IsFolderEx(Item)) {
+						var Items = api.CreateObject("FolderItems");
+						Items.AddItem(Item);
+						te.OnBeforeGetData(Ctrl, Items, 11);
+						if (IsExists(Item.Path)) {
+							q.image = api.CreateObject("WICBitmap").FromFile(Item.Path);
+						}
+					}
+				}
 				Addons.TooltipPreview.q = q;
 				delete Addons.TooltipPreview.Path;
 				if (q.image) {
 					q.w = q.image.GetWidth();
 					q.h = q.image.GetHeight();
-					q.z = w > q.h ? Addons.TooltipPreview.MAX / q.w : Addons.TooltipPreview.MAX / q.h;
+					q.z = Addons.TooltipPreview.MAX / Math.max(q.w, q.h);
 					if (q.z > 1) {
 						q.z = 1;
 					}
@@ -158,30 +173,32 @@ if (window.Addon == 1) {
 							api.ReleaseDC(te.hwnd, hdc);
 						}
 					}
-					var ar = new Array(Math.floor(q.h * q.z / Addons.TooltipPreview.SIZE.cy));
-					var col = ["name", "type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13", "size"];
+					var ar = new Array(Math.floor(q.h * q.z / Addons.TooltipPreview.SIZE.cy) + 5);
+					var col = ["type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13"];
+					if (!IsFolderEx(Item)) {
+						col.push("size");
+					}
 					for (var i = col.length; i--;) {
 						var s = api.PSFormatForDisplay(col[i], Item.ExtendedProperty(col[i]), PDFF_DEFAULT);
-						if (i != 3 || s) {
+						if (i != 2 || s) {
 							ar[i + 1] = " " + api.PSGetDisplayName(col[i]) + ": " + s;
 						} else {
 							ar[i + 1] = " " + api.PSGetDisplayName(col[i]) + ": " + q.w + " x " + q.h;
 						}
 					}
 					ar.push(new Array(Math.floor(q.w * q.z / Addons.TooltipPreview.SIZE.cx * 1.5)).join(" "));
+					Addons.TooltipPreview.Text = ar.slice(0, col.length + 1).join("\n");
 					return ar.join(" \n");
 				}
 			}
 		}
 	});
 
-	AddEvent("ListViewCreated", function (Ctrl)
-	{
+	AddEvent("ListViewCreated", function (Ctrl) {
 		delete Addons.TooltipPreview.Path;
 	});
 
-	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt)
-	{
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
 		if (Addons.TooltipPreview.Path && msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_SB) {
 			var Item = Ctrl.HitTest(pt);
 			if (Item && Item.Path == Addons.TooltipPreview.Path) {
