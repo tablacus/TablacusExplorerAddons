@@ -11,8 +11,7 @@ if (window.Addon == 1) {
 		Extract: item.getAttribute("Extract") || "*",
 		Width: 0,
 
-		Arrange: function (Item, Ctrl)
-		{
+		Arrange: function (Item, Ctrl) {
 			if (api.ILIsEqual(Addons.Preview.Item, Item)) {
 				return;
 			}
@@ -20,17 +19,12 @@ if (window.Addon == 1) {
 			var o = document.getElementById('PreviewBar');
 			var s = [];
 			if (Item) {
-				var info = EncodeSC(Item.Name + "\n" + Item.ExtendedProperty("infotip")) +"\n";
+				var info = EncodeSC(Item.Name + "\n" + Item.ExtendedProperty("infotip")) + "\n";
 				if (Item.IsLink) {
 					var path = Item.ExtendedProperty("linktarget");
 					if (path) {
 						Item = api.ILCreateFromPath(path);
 					}
-				}
-				if (api.PathMatchSpec(path, Addons.Preview.Extract) && !IsFolderEx(Item)) {
-					var Items = api.CreateObject("FolderItems");
-					Items.AddItem(Item);
-					te.OnBeforeGetData(Ctrl, Items, 11);
 				}
 				var path = Item.Path;
 				if (Ctrl && path == Item.Name) {
@@ -60,7 +54,7 @@ if (window.Addon == 1) {
 				if (document.documentMode) {
 					style = "max-width: 100%; max-height: 100%";
 				} else {
-					style = nWidth  > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
+					style = nWidth > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
 				}
 				if (api.PathMatchSpec(path, Addons.Preview.Embed)) {
 					if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4")) {
@@ -76,23 +70,40 @@ if (window.Addon == 1) {
 			o.innerHTML = s.join("");
 		},
 
-		FromFile: function(img)
-		{
+		FromFile: function (img) {
 			Threads.GetImage({
 				path: Addons.Preview.GetPath(img),
 				img: img,
-				callback: function (o)
-				{
+				Extract: Addons.Preview.Extract,
+
+				onload: function (o) {
 					o.img.src = o.out.DataURI();
 					o.img.style.display = "";
+				},
+				onerror: function (o) {
+					if (api.PathMatchSpec(o.path, o.Extract)) {
+						var FV = te.Ctrl(CTRL_FV);
+						var Selected = FV.SelectedItems();
+						if (Selected.Count) {
+							var Item = Selected.Item(0);
+							if (Item.Path == o.path && !IsFolderEx(Item)) {
+								var Items = api.CreateObject("FolderItems");
+								Items.AddItem(Item);
+								te.OnBeforeGetData(FV, Items, 11);
+								if (IsExists(o.path)) {
+									o.onerror = null;
+									MainWindow.Threads.GetImage(o);
+								}
+							}
+						}
+					}
 				}
 			});
 			img.style.display = "none";
 			img.onerror = null;
 		},
 
-		GetPath: function (o)
-		{
+		GetPath: function (o) {
 			var path = o.src;
 			if (/^file:/i.test(path)) {
 				path = api.PathCreateFromUrl(path);
@@ -100,8 +111,7 @@ if (window.Addon == 1) {
 			return path;
 		},
 
-		Popup: function (o)
-		{
+		Popup: function (o) {
 			if (Addons.Preview.Item) {
 				var hMenu = api.CreatePopupMenu();
 				var ContextMenu = api.ContextMenu(Addons.Preview.Item);
@@ -118,14 +128,12 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Drag: function ()
-		{
+		Drag: function () {
 			var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 			api.SHDoDragDrop(null, Addons.Preview.Item, te, pdwEffect[0], pdwEffect);
 		},
 
-		Init: function ()
-		{
+		Init: function () {
 			this.Width = te.Data["Conf_" + this.Align + "BarWidth"];
 			if (!this.Width) {
 				this.Width = 178;
@@ -138,8 +146,7 @@ if (window.Addon == 1) {
 
 	Addons.Preview.Init();
 
-	AddEvent("StatusText", function (Ctrl, Text, iPart)
-	{
+	AddEvent("StatusText", function (Ctrl, Text, iPart) {
 		if (Ctrl.Type <= CTRL_EB && Text) {
 			if (Addons.Preview.Width && !/^none$/i.test(document.getElementById('PreviewBar').style.display)) {
 				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
@@ -149,8 +156,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Resize", function ()
-	{
+	AddEvent("Resize", function () {
 		var o = document.getElementById('PreviewBar');
 		var w = te.Data["Conf_" + Addons.Preview.Align + "BarWidth"];
 		Addons.Preview.Width = w;

@@ -4,51 +4,35 @@ if (window.Addon == 1) {
 	var item = GetAddonElement(Addon_Id);
 	Addons.FolderImage =
 	{
-		Items: api.LowPart(item.getAttribute("Items")) || 10,
-		Expanded: api.LowPart(item.getAttribute("Expanded")),
-		Filter: item.getAttribute("Filter") || FILTER_IMAGE,
-		Invalid: item.getAttribute("Invalid") || "-",
-		Name: GetAddonInfo(Addon_Id).Name,
+		hModule: api.LoadLibraryEx(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\folderimage\\fldrimg", api.sizeof("HANDLE") * 8, ".dll"].join("")), 0, 0),
 
-		Search: function (image, Item, bECM, Progress)
-		{
-			var nDog = Addons.FolderImage.Items;
-			var List = [Item];
-			while (List.length && !Progress.HasUserCancelled() && nDog) {
-				var Items = List.shift().GetFolder.Items();
-				for (var i = 0; i < Items.Count && !Progress.HasUserCancelled() && nDog; i++) {
-					Item = Items.Item(i);
-					Progress.SetLine(2, Item.Path, true);
-					if (Item.IsFolder) {
-						if (Addons.FolderImage.Expanded) {
-							List.push(Item);
-						}
-					} else if (PathMatchEx(Item.Path, Addons.FolderImage.Filter) && !PathMatchEx(Item.Path, Addons.FolderImage.Invalid) && image.FromFile(Item.Path, bECM)) {
-						return S_OK;
-					}
-					nDog--;
-				}
+		Finalize: function () {
+			if (Addons.FolderImage.hModule) {
+				api.FreeLibrary(Addons.FolderImage.hModule);
+				delete Addons.FolderImage.hModule;
 			}
 		}
 	}
 
-	AddEvent("FromFile", function (image, file, alt, bECM)
-	{
-		var hr;
-		var Item = api.ILCreateFromPath(file);
-		if (Item.IsFolder) {
-			var path = Item.Path;
-			var Progress = te.ProgressDialog;
-			Progress.StartProgressDialog(te.hwnd, null, 0x20);
-			try {
-				Progress.SetTitle(Addons.FolderImage.Name);
-				Progress.SetLine(1, api.LoadString(hShell32, 13585) || api.LoadString(hShell32, 6478), true);
-				hr = Addons.FolderImage.Search(image, Item, bECM, Progress);
-			} catch (e) {}
-			Progress.StopProgressDialog();
+	api.RunDLL(Addons.FolderImage.hModule, "SetGetImageW", 0, 0, api.sprintf(99, "%llx", api.GetProcAddress(null, "GetImage")), 1);
+	api.RunDLL(Addons.FolderImage.hModule, "SetItemsW", 0, 0, api.LowPart(item.getAttribute("Items")) || 30, 1);
+	api.RunDLL(Addons.FolderImage.hModule, "SetExpandedW", 0, 0, api.LowPart(item.getAttribute("Expanded")), 1);
+	api.RunDLL(Addons.FolderImage.hModule, "SetFilterW", 0, 0, item.getAttribute("Filter") || "*", 1);
+	api.RunDLL(Addons.FolderImage.hModule, "SetInvalidW", 0, 0, item.getAttribute("Invalid") || "-", 1);
+
+	te.AddEvent("GetImage", api.GetProcAddress(Addons.FolderImage.hModule, "GetImage"));
+
+	AddEvent("Finalize", Addons.FolderImage.Finalize);
+
+	AddEvent("AddonDisabled", function (Id) {
+		if (Id.toLowerCase() == "folderimage") {
+			Addons.FolderImage.Finalize();
 		}
-		return hr;
 	});
 } else {
-	SetTabContents(0, "General", ['<label>Number of items</label><br><input type="text" name="Items" style="width: 100%" /><br><input type="checkbox" name="Expanded" id="Expanded" /><label for="Expanded">Expanded</label><br><label>Filter</label><br><input type="text" name="Filter" placeholder="', EncodeSC(FILTER_IMAGE), '" style="width: 100%" /><br><label>', api.LoadString(hShell32, 6438), '</label><br><input type="text" name="Invalid" style="width: 100%" />'].join(""));
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

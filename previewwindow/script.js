@@ -24,19 +24,17 @@ if (window.Addon == 1) {
 		ppid: api.Memory("DWORD"),
 		Extract: item.getAttribute("Extract") || "*",
 
-		Exec: function (Ctrl, pt)
-		{
+		Exec: function (Ctrl, pt) {
 			GetFolderView(Ctrl, pt).Focus();
 			if (Addons.PreviewWindow.dlg) {
 				Addons.PreviewWindow.dlg.Window.close();
 				delete Addons.PreviewWindow.dlg;
 			} else {
-				Addons.PreviewWindow.dlg = ShowDialog("../addons/previewwindow/preview.html", te.Data.AddonsData.PreviewWindow );
+				Addons.PreviewWindow.dlg = ShowDialog("../addons/previewwindow/preview.html", te.Data.AddonsData.PreviewWindow);
 			}
 		},
 
-		Arrange: function (Ctrl)
-		{
+		Arrange: function (Ctrl) {
 			if (!Ctrl) {
 				Ctrl = te.Ctrl(CTRL_FV);
 			}
@@ -45,12 +43,7 @@ if (window.Addon == 1) {
 				delete this.File;
 				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
 					this.Item = Ctrl.SelectedItems().Item(0);
-					this.File = api.GetDisplayNameOf(this.Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
-					if (api.PathMatchSpec(this.File, Addons.PreviewWindow.Extract) && !IsFolderEx(this.Item)) {
-						var Items = api.CreateObject("FolderItems");
-						Items.AddItem(this.Item);
-						te.OnBeforeGetData(Ctrl, Items, 11);
-					}
+					this.File = this.Item.Path;
 				}
 				var ppid = api.Memory("DWORD");
 				api.GetWindowThreadProcessId(api.GetFocus(), ppid);
@@ -75,15 +68,13 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("StatusText", function (Ctrl, Text, iPart)
-	{
+	AddEvent("StatusText", function (Ctrl, Text, iPart) {
 		if (Ctrl.Type <= CTRL_EB && Text) {
 			Addons.PreviewWindow.Arrange(Ctrl);
 		}
 	});
 
-	AddEvent("LoadWindow", function (xml)
-	{
+	AddEvent("LoadWindow", function (xml) {
 		var items = xml ? xml.getElementsByTagName("PreviewWindow") : {};
 		if (items.length) {
 			te.Data.AddonsData.PreviewWindow.width = items[0].getAttribute("Width");
@@ -93,8 +84,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("SaveWindow", function (xml, all)
-	{
+	AddEvent("SaveWindow", function (xml, all) {
 		if (te.Data.AddonsData.PreviewWindow.width && te.Data.AddonsData.PreviewWindow.height) {
 			var item = xml.createElement("PreviewWindow");
 			item.setAttribute("Width", te.Data.AddonsData.PreviewWindow.width);
@@ -107,13 +97,12 @@ if (window.Addon == 1) {
 
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var s = item.getAttribute("Icon") || (h > 16 ? "bitmap:ieframe.dll,214,24,14" : "bitmap:ieframe.dll,216,16,14");
-	s = ['<span class="button" id="WindowPreviewButton" onclick="Addons.PreviewWindow.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.PreviewWindow.strName, src:s }, h) ,'</span>'];
+	s = ['<span class="button" id="WindowPreviewButton" onclick="Addons.PreviewWindow.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.PreviewWindow.strName, src: s }, h), '</span>'];
 	SetAddon(Addon_Id, Default, s);
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 			api.InsertMenu(hMenu, Addons.PreviewWindow.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.PreviewWindow.strName);
 			ExtraMenuCommand[nPos] = Addons.PreviewWindow.Exec;
 			return nPos;

@@ -1,0 +1,9 @@
+LIBRARY	"fldrimg64"
+
+EXPORTS
+	GetImage PRIVATE
+	SetGetImageW PRIVATE
+	SetItemsW PRIVATE
+	SetExpandedW PRIVATE
+	SetFilterW PRIVATE
+	SetInvalidW PRIVATE

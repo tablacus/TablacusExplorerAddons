@@ -1,6 +1,6 @@
 // Tablacus Susie Plug-in Wrapper (C)2017 Gaku
 // MIT Lisence
-// Visual C++ 2010 Express Edition SP1
+// Visual C++ 2017 Express Edition
 // Windows SDK v7.1
 // https://tablacus.github.io/
 
@@ -19,6 +19,7 @@ TEmethod methodBASE[] = {
 	{ 0x60010000, L"Open" },
 	{ 0x6001000C, L"Close" },
 	{ 0x60000010, L"GetImage" },
+	{ 0x60000011, L"GetArchive" },
 };
 
 TEmethod methodTSPI[] = {
@@ -659,13 +660,13 @@ VOID teVariantChangeType(__out VARIANTARG * pvargDest,
 	}
 }
 
-BSTR teWide2Ansi(LPWSTR lpW, int nLenW)
+BSTR teWide2Ansi(LPCWSTR lpW, int nLenW)
 {
 	if (lpW) {
-		int nLenA = WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)lpW, nLenW, NULL, 0, NULL, NULL);
+		int nLenA = WideCharToMultiByte(CP_ACP, 0, lpW, nLenW, NULL, 0, NULL, NULL);
 		BSTR bs = ::SysAllocStringByteLen(NULL, nLenA);
-		WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)lpW, nLenW, (LPSTR)bs, nLenA, NULL, NULL);
-		LPSTR lp = (LPSTR)bs;
+		WideCharToMultiByte(CP_ACP, 0, lpW, nLenW, (LPSTR)bs, nLenA, NULL, NULL);
+//		LPSTR lp = (LPSTR)bs;
 		return bs;
 	}
 	return NULL;
@@ -774,90 +775,146 @@ STDAPI DllUnregisterServer(void)
 	return ShowRegError(ls);
 }
 
-//GetImage
-HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpfn, int cx, HBITMAP *phBM, int *pnAlpha)
+//GetArchive
+HRESULT WINAPI GetArchive(LPCWSTR lpszArcPath, LPCWSTR lpszItem, IStream **ppStream, LPVOID lpReserved)
 {
 	HRESULT hr = E_NOTIMPL;
+	IStream *pStream;
+	if SUCCEEDED(SHCreateStreamOnFileEx(lpszArcPath, STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, false, NULL, &pStream)) {
+		BOOL bDelete = FALSE;
+		BSTR pdw = GetMemoryFromStream(pStream, &bDelete, NULL);
+		for (UINT i = 0; i < g_ppObject.size(); i++) {
+			CteSPI *pSPI = g_ppObject[i];
+			if (pSPI->IsSupported && PathMatchSpec(lpszArcPath, pSPI->m_bsFilter)) {
+				HLOCAL hLocal = NULL;
+				if (pSPI->IsSupportedW && pSPI->GetFileInfo && pSPI->GetFile) {
+					if (pSPI->IsSupportedW(lpszArcPath, (void *)pdw)) {
+						SUSIE_FINFOTW finfo;
+						if (pSPI->GetFileInfoW(lpszArcPath, 0, lpszItem, 0x80, &finfo) == SPI_ALL_RIGHT) {
+							pSPI->GetFileW(lpszArcPath, finfo.position, (LPWSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
+						}
+					}
+				} else if (pSPI->GetFileInfo && pSPI->GetFile) {
+					BSTR bsPathA = teWide2Ansi(lpszArcPath, -1);
+					BSTR bsItemA = teWide2Ansi(lpszItem, -1);
+					if (pSPI->IsSupported((LPSTR)bsPathA, (void *)pdw)) {
+						SUSIE_FINFO finfo;
+						if (pSPI->GetFileInfo((LPSTR)bsPathA, 0, (LPSTR)bsItemA, 0x80, &finfo) == SPI_ALL_RIGHT) {
+							pSPI->GetFile((LPSTR)bsPathA, finfo.position, (LPSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
+						}
+					}
+					teSysFreeString(&bsItemA);
+					teSysFreeString(&bsPathA);
+				}
+				if (hLocal) {
+					PBYTE lpData = (PBYTE)LocalLock(hLocal);
+					if (lpData) {
+						*ppStream = SHCreateMemStream(lpData, LocalSize(hLocal));
+						if (*ppStream) {
+							hr = S_OK;
+						}
+						LocalUnlock(hLocal);
+					}
+					LocalFree(hLocal);
+				}
+			}
+		}	
+		if (bDelete) {
+			teSysFreeString(&pdw);
+		}
+		SafeRelease(&pStream);
+	}
+	return hr;
+}
+
+//GetImage
+HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpPath, int cx, HBITMAP *phBM, int *pnAlpha)
+{
+	HRESULT hr = E_NOTIMPL;
+	int nAM = 0;
 	for (UINT i = 0; i < g_ppObject.size(); i++) {
 		CteSPI *pSPI = g_ppObject[i];
-		if (pSPI->GetPicture && pSPI->IsSupported && PathMatchSpec(lpfn, pSPI->m_bsFilter)) {
-			HLOCAL hInfo = NULL;
-			HLOCAL hBMData = NULL;
-			BOOL bDelete = FALSE;
-			LONG_PTR len = 0;
-			BSTR pdw = GetMemoryFromStream(pStream, &bDelete, NULL);
-			int iResult = SPI_NO_FUNCTION;
-			if (pSPI->IsSupportedW && pSPI->GetPictureW) {
-				if (pSPI->IsSupportedW(lpfn, (void *)pdw)) {
-					if (len == 0) {
-						teSysFreeString(&pdw);
-						pdw = GetMemoryFromStream(pStream, &bDelete, &len);
-					}
-					if (pSPI->GetPreviewW && (cx != 0 || cx < 256)) {
-						iResult = pSPI->GetPreviewW(pdw, len, 1, &hInfo, &hBMData, tspi_ProgressCallback, 0);
-					}
-					if (iResult != SPI_ALL_RIGHT) {
-						iResult = pSPI->GetPictureW(pdw, len, 1, &hInfo, &hBMData, tspi_ProgressCallback, 0);
-					}
-					if (iResult != SPI_ALL_RIGHT && pSPI->GetPreviewW && (cx != 0 || cx < 256)) {
-						iResult = pSPI->GetPreviewW(lpfn, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
-					}
-					if (iResult != SPI_ALL_RIGHT) {
-						iResult = pSPI->GetPictureW(lpfn, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
-					}
-				}
-			}
-			if (iResult != SPI_ALL_RIGHT && pSPI->IsSupported) {
-				BSTR bsPath = teWide2Ansi(lpfn, -1);
-				if (pSPI->IsSupported((char *)bsPath, (void *)pdw)) {
-					if (len == 0) {
-						teSysFreeString(&pdw);
-						pdw = GetMemoryFromStream(pStream, &bDelete, &len);
-					}
-					if (pSPI->GetPreview && (cx != 0 || cx < 256)) {
-						iResult = pSPI->GetPreview((LPSTR)pdw, len, 1, &hInfo, &hBMData, tspi_ProgressCallback, 0);
-					}
-					if (iResult != SPI_ALL_RIGHT) {
-						iResult = pSPI->GetPicture((LPSTR)pdw, len, 1, &hInfo, &hBMData, tspi_ProgressCallback, 0);
-					}
-					if (iResult != SPI_ALL_RIGHT) {
-						BSTR bsBufA = teWide2Ansi(lpfn, -1);
-						if (pSPI->GetPreview && (cx != 0 || cx < 256)) {
-							iResult = pSPI->GetPreview((LPSTR)bsBufA, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
+		if (pSPI->IsSupported && PathMatchSpec(lpPath, pSPI->m_bsFilter)) {
+			//IN
+			if (pSPI->GetPicture) {
+				HLOCAL hInfo = NULL;
+				HLOCAL hBMData = NULL;
+				BOOL bDelete = FALSE;
+				LONG_PTR len = 0;
+				BSTR pdw = GetMemoryFromStream(pStream, &bDelete, NULL);
+				int iResult = SPI_NO_FUNCTION;
+				if (pSPI->IsSupportedW && pSPI->GetPictureW) {
+					if (pSPI->IsSupportedW(lpPath, (void *)pdw)) {
+						if (len == 0) {
+							teSysFreeString(&pdw);
+							pdw = GetMemoryFromStream(pStream, &bDelete, &len);
+						}
+						if (pSPI->GetPreviewW && (cx != 0 || cx < 256)) {
+							iResult = pSPI->GetPreviewW(pdw, len, 1, &hInfo, &hBMData, tspi_ProgressCallback, 0);
 						}
 						if (iResult != SPI_ALL_RIGHT) {
-							iResult = pSPI->GetPicture((LPSTR)bsBufA, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
+							iResult = pSPI->GetPictureW(pdw, len, 1, &hInfo, &hBMData, tspi_ProgressCallback, 0);
 						}
-						teSysFreeString(&bsBufA);
+						if (iResult != SPI_ALL_RIGHT && pSPI->GetPreviewW && (cx != 0 || cx < 256)) {
+							iResult = pSPI->GetPreviewW(lpPath, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
+						}
+						if (iResult != SPI_ALL_RIGHT) {
+							iResult = pSPI->GetPictureW(lpPath, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
+						}
 					}
 				}
-				teSysFreeString(&bsPath);
-			}
-			if (iResult == SPI_ALL_RIGHT) {
-				PBITMAPINFO lpbmi = (PBITMAPINFO)LocalLock(hInfo);
-				if (lpbmi) {
-					try {
-						VOID *lpBits;
-						*phBM =  CreateDIBSection(NULL, lpbmi, DIB_RGB_COLORS, &lpBits, NULL, 0);
-						if (*phBM) {
-							*pnAlpha = 2;
-							hr = S_OK;
-							PBYTE lpbm = (PBYTE)LocalLock(hBMData);
-							if (lpbm) {
-								try {
-									SetDIBits(NULL, *phBM, 0, lpbmi->bmiHeader.biHeight, lpbm, lpbmi, DIB_RGB_COLORS);
-								} catch (...) {}
-							}
-							LocalUnlock(hBMData);
-							LocalFree(hBMData);
+				if (iResult != SPI_ALL_RIGHT && pSPI->IsSupported) {
+					BSTR bsPathA = teWide2Ansi(lpPath, -1);
+					if (pSPI->IsSupported((char *)bsPathA, (void *)pdw)) {
+						if (len == 0) {
+							teSysFreeString(&pdw);
+							pdw = GetMemoryFromStream(pStream, &bDelete, &len);
 						}
-					} catch (...) {}
-					LocalUnlock(hInfo);
-					LocalFree(hInfo);
+						if (pSPI->GetPreview && (cx != 0 || cx < 256)) {
+							iResult = pSPI->GetPreview((LPSTR)pdw, len, 1, &hInfo, &hBMData, tspi_ProgressCallback, 0);
+						}
+						if (iResult != SPI_ALL_RIGHT) {
+							iResult = pSPI->GetPicture((LPSTR)pdw, len, 1, &hInfo, &hBMData, tspi_ProgressCallback, 0);
+						}
+						if (iResult != SPI_ALL_RIGHT) {
+							if (pSPI->GetPreview && (cx != 0 || cx < 256)) {
+								iResult = pSPI->GetPreview((LPSTR)bsPathA, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
+							}
+							if (iResult != SPI_ALL_RIGHT) {
+								iResult = pSPI->GetPicture((LPSTR)bsPathA, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
+							}
+						}
+					}
+					teSysFreeString(&bsPathA);
 				}
-			}
-			if (bDelete) {
-				teSysFreeString(&pdw);
+				if (iResult == SPI_ALL_RIGHT) {
+					PBITMAPINFO lpbmi = (PBITMAPINFO)LocalLock(hInfo);
+					if (lpbmi) {
+						try {
+							VOID *lpBits;
+							*phBM =  CreateDIBSection(NULL, lpbmi, DIB_RGB_COLORS, &lpBits, NULL, 0);
+							if (*phBM) {
+								*pnAlpha = 2;
+								hr = S_OK;
+								PBYTE lpbm = (PBYTE)LocalLock(hBMData);
+								if (lpbm) {
+									try {
+										SetDIBits(NULL, *phBM, 0, lpbmi->bmiHeader.biHeight, lpbm, lpbmi, DIB_RGB_COLORS);
+									} catch (...) {}
+								}
+								LocalUnlock(hBMData);
+								LocalFree(hBMData);
+							}
+						} catch (...) {}
+						LocalUnlock(hInfo);
+						LocalFree(hInfo);
+					}
+				}
+				if (bDelete) {
+					teSysFreeString(&pdw);
+				}
+			} else if (pSPI->GetFile) {
+				nAM++;
 			}
 		}
 	}
@@ -1318,7 +1375,7 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					GetDispatch(&pDispParams->rgvarg[nArg - 4], &g_pdispProgressProc);
 					LONG_PTR lData = GetPtrFromVariant(&pDispParams->rgvarg[nArg - 5]);
 					if (GetFileW) {
-						iResult = GetFileW(lpBuf, len, lpDest, flag, NULL, lData);
+						iResult = GetFileW(lpBuf, len, lpDest, flag, tspi_ProgressCallback, lData);
 					} else if (GetFile) {
 						if (!punk) {
 							lpDest = teWide2Ansi(lpDest, -1);
@@ -1340,9 +1397,8 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					if (iResult == SPI_ALL_RIGHT && punk && hLocal) {
 						PBYTE lpData = (PBYTE)LocalLock(hLocal);
 						if (lpData) {
-							IStream *pStream = SHCreateMemStream(NULL, NULL);
+							IStream *pStream = SHCreateMemStream(lpData, LocalSize(hLocal));
 							if (pStream) {
-								pStream->Write(lpData, LocalSize(hLocal), NULL);
 								VARIANT v;
 								VariantInit(&v);
 								teSetObjectRelease(&v, pStream);
@@ -1491,7 +1547,11 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 		case 0x60000010:
 			teSetPtr(pVarResult, GetImage);
 			return S_OK;
-		//this
+		//GetArchve
+		case 0x60000011:
+			teSetPtr(pVarResult, GetArchive);
+			return S_OK;
+			//this
 		case DISPID_VALUE:
 			if (pVarResult) {
 				teSetObject(pVarResult, this);

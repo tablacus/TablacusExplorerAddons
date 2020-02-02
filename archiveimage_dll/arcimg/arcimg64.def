@@ -1,0 +1,4 @@
+LIBRARY	"arcimg64"
+
+EXPORTS
+	GetArchive PRIVATE

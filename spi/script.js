@@ -5,13 +5,7 @@ if (window.Addon == 1) {
 		IN: [],
 		AM: [],
 
-		GetHeader: function (file)
-		{
-			return api.SHCreateStreamOnFileEx(file, STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, false, null);
-		},
-
-		Finalize: function ()
-		{
+		Finalize: function () {
 			Addons.SPI.IN = [];
 			Addons.SPI.AM = [];
 			CollectGarbage();
@@ -19,68 +13,7 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("FromFile", function (image, file, alt, cx)
-	{
-		var i, j, path, arc, path2, hFind, dw, SPI, o;
-		if (Addons.SPI.AM.length) {
-			var wfd = api.Memory("WIN32_FIND_DATA");
-			var ar = [file, alt];
-			for (i in ar) {
-				if (ar[i]) {
-					path = ar[i].split(/\\/);
-					for (j = path.length; --j > 0;) {
-						arc = path.slice(0, j).join("\\");
-						if (!/^[A-Z]:\\.+|^\\.+\\.+/i.test(arc)) {
-							break;
-						}
-						hFind = api.FindFirstFile(arc, wfd);
-						api.FindClose(hFind);
-						if (hFind == INVALID_HANDLE_VALUE || wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-							continue;
-						}
-						if (dw) {
-							dw.Free();
-						}
-						dw = null;
-						path2 = path.slice(j).join("\\");
-						for (i = Addons.SPI.AM.length; i-- > 0;) {
-							o = Addons.SPI.AM[i];
-							if (api.PathMatchSpec(arc, o.Filter)) {
-								if (dw === null) {
-									dw = Addons.SPI.GetHeader(arc);
-									if (dw === undefined) {
-										break;
-									}
-								}
-								SPI = o.SPI;
-								if (SPI.IsSupported(arc, dw)) {
-									dw.Free();
-									dw = null;
-									var fileinfo = {};
-									if (SPI.GetFileInfo(arc, 0, path2, 0x80, fileinfo) == 0) {
-										var ppStream = [];
-										if (SPI.GetFile(arc, fileinfo.position, ppStream, 0x100, null, 0) == 0) {
-											image.FromStream(ppStream[0], path2);
-											return S_OK;
-										}
-
-									}
-								}
-							}
-						}
-						if (dw) {
-							dw.Free();
-							dw = null;
-						}
-						break;
-					}
-				}
-			}
-		}
-	});
-
-	AddEvent("AddonDisabled", function (Id)
-	{
+	AddEvent("AddonDisabled", function (Id) {
 		if (Id.toLowerCase() == "spi") {
 			Addons.SPI.Finalize();
 		}
@@ -106,18 +39,20 @@ if (window.Addon == 1) {
 						filter.push("*");
 					}
 					SPI.Filter = filter.join(";");
-					var o = { SPI: SPI, Filter: filter.join(";") };
 					if (SPI.GetPicture) {
-						Addons.SPI.IN.push(o);
+						Addons.SPI.IN.push(SPI);
 					}
 					if (SPI.GetFile) {
-						Addons.SPI.AM.push(o);
+						Addons.SPI.AM.push(SPI);
 					}
 				}
 			}
 		}
-		delete xml;
-		delete SPI;
-		te.AddEvent("GetImage", Addons.SPI.DLL.GetImage);
+		if (Addons.SPI.IN.length) {
+			te.AddEvent("GetImage", Addons.SPI.DLL.GetImage);
+		}
+		if (Addons.SPI.AM.length) {
+			te.AddEvent("GetArchive", Addons.SPI.DLL.GetArchive);
+		}
 	}
 }

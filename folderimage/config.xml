@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2018.6.2</MinVersion>
-    <pubDate>Thu, 07 Jun 2018 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2020.2.2</MinVersion>
+    <pubDate>Sun, 02 Feb 2020 00:00:00 GMT</pubDate>
+    <DllVersion>1.0.0.0</DllVersion>
     <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +18,7 @@
     <Name>フォルダ画像</Name>
     <Description>フォルダ内の画像を表示</Description>
   </ja>
+  <zh>
+    <Name>預覽圖片資料夾</Name>
+  </zh>
 </TablacusExplorer>
