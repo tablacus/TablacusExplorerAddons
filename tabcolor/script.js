@@ -17,8 +17,7 @@ if (window.Addon == 1) {
 		nPos: 0,
 		strName: "Change tab color...",
 
-		Exec: function (Ctrl, pt)
-		{
+		Exec: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				Addons.TabColor.Set(FV, ChooseWebColor(RunEvent4("GetTabColor", FV)));
@@ -26,8 +25,7 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
-		Set: function (FV, s)
-		{
+		Set: function (FV, s) {
 			var path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
 			if (s) {
 				Addons.TabColor.db[path] = s;
@@ -59,8 +57,7 @@ if (window.Addon == 1) {
 		if (s && s != "") {
 			Addons.TabColor.strName = s;
 		}
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 			api.InsertMenu(hMenu, Addons.TabColor.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TabColor.strName));
 			ExtraMenuCommand[nPos] = Addons.TabColor.Exec;
 			return nPos;
@@ -75,13 +72,11 @@ if (window.Addon == 1) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TabColor.Exec, "Func");
 	}
 
-	AddEvent("GetTabColor", function (Ctrl)
-	{
+	AddEvent("GetTabColor", function (Ctrl) {
 		return Addons.TabColor.db[api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX)];
 	}, true);
 
-	AddEvent("SaveConfig", function ()
-	{
+	AddEvent("SaveConfig", function () {
 		if (Addons.TabColor.db[true]) {
 			delete Addons.TabColor.db[true];
 			var xml = CreateXml();
@@ -101,5 +96,5 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddTypeEx("Add-ons", Addons.TabColor.strName, Addons.TabColor.Exec);
+	AddTypeEx("Add-ons", "Change tab color...", Addons.TabColor.Exec);
 }

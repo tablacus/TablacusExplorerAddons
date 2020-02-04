@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2018.5.3</MinVersion>
-    <pubDate>Thu, 03 May 2018 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2020.2.2</MinVersion>
+    <pubDate>Tue, 04 Feb 2020 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -18,4 +18,7 @@
     <Name>タブに色を付ける</Name>
     <Description>タブに色を付けます。※タブプラスが必要</Description>
   </ja>
+  <zh>
+    <Name>變更頁籤色彩</Name>
+  </zh>
 </TablacusExplorer>
