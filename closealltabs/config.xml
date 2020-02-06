@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2020.2.6</MinVersion>
+    <pubDate>Thu, 06 Feb 2020 00:00:00 GMT</pubDate>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Close all tabs</Name>
+    <Description>Close all tabs</Description>
+  </en>
+  <ja>
+    <Name>すべてのタブを閉じる</Name>
+  </ja>
+  <zh>
+    <Name>關閉所有分頁</Name>
+  </zh>
+</TablacusExplorer>
