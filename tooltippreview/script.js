@@ -6,7 +6,8 @@ if (window.Addon == 1) {
 		MAX: 400,
 		cx: 0,
 		artm: [99, 99, 99, 500, 999].reverse(),
-		Extract: item.getAttribute("Extract") || "*",
+		Extract: item.getAttribute("Extract") || "-",
+		Folder: api.LowPart(item.getAttribute("Folder")),
 
 		Draw: function () {
 			Addons.TooltipPreview.DeleteBM();
@@ -171,6 +172,9 @@ if (window.Addon == 1) {
 			}
 			var Item = Ctrl.Item(Index);
 			if (Item) {
+				if (Item.IsFolder && !Addons.TooltipPreview.Folder) {
+					return;
+				}
 				var q = { Item: Item, path: Item.Path };
 				Addons.TooltipPreview.q = q;
 				q.w = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 3");
