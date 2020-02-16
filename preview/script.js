@@ -63,7 +63,7 @@ if (window.Addon == 1) {
 						s.splice(s.length, 0, '<embed width="100%" height="100%" src="' + path + '" autoplay="false"></embed>');
 					}
 				} else {
-					s.splice(s.length, 0, '<div align="center"><img src="', path, '" style="display: block;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)"></div>');
+					s.splice(s.length, 0, '<div align="center"><img src="', path, '" style="display: none;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)" onload="this.style.display=', "'block';", '"></div>');
 				}
 				s.push(info.replace(/\n/, "<br>"));
 			}
@@ -71,14 +71,16 @@ if (window.Addon == 1) {
 		},
 
 		FromFile: function (img) {
+			img.onerror = null;
 			Threads.GetImage({
-				path: Addons.Preview.GetPath(img),
+				path: Addons.Preview.Item,
 				img: img,
 				Extract: Addons.Preview.Extract,
 
 				onload: function (o) {
-					o.img.src = o.out.DataURI();
-					o.img.style.display = "";
+					if (o.path === Addons.Preview.Item) {
+						o.img.src = o.out.DataURI();
+					}
 				},
 				onerror: function (o) {
 					if (api.PathMatchSpec(o.path, o.Extract)) {
@@ -99,16 +101,6 @@ if (window.Addon == 1) {
 					}
 				}
 			});
-			img.style.display = "none";
-			img.onerror = null;
-		},
-
-		GetPath: function (o) {
-			var path = o.src;
-			if (/^file:/i.test(path)) {
-				path = api.PathCreateFromUrl(path);
-			}
-			return path;
 		},
 
 		Popup: function (o) {
@@ -139,7 +131,7 @@ if (window.Addon == 1) {
 				this.Width = 178;
 				te.Data["Conf_" + this.Align + "BarWidth"] = this.Width;
 			}
-			SetAddon(Addon_Id, this.Align + "Bar3", '<div id="PreviewBar" class="pane" style="overflow: hidden;"></div>');
+			SetAddon(Addon_Id, this.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"></div>');
 			setTimeout(this.Arrange, 99);
 		}
 	}

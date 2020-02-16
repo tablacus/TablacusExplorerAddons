@@ -172,10 +172,10 @@ if (window.Addon == 1) {
 			}
 			var Item = Ctrl.Item(Index);
 			if (Item) {
-				if (Item.IsFolder && !Addons.TooltipPreview.Folder) {
+				if (!Addons.TooltipPreview.Folder && IsFolderEx(Item)) {
 					return;
 				}
-				var q = { Item: Item, path: Item.Path };
+				var q = { Item: Item, path: Item };
 				Addons.TooltipPreview.q = q;
 				q.w = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 3");
 				q.h = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 4");
@@ -186,7 +186,7 @@ if (window.Addon == 1) {
 					}
 					Threads.GetImage(Addons.TooltipPreview.q);
 				} else {
-					q.image = api.CreateObject("WICBitmap").FromFile(Item.Path);
+					q.image = api.CreateObject("WICBitmap").FromFile(q.path);
 					if (!q.image) {
 						if (api.PathMatchSpec(Item.Path, Addons.TooltipPreview.Extract) && !IsFolderEx(Item)) {
 							var Items = api.CreateObject("FolderItems");

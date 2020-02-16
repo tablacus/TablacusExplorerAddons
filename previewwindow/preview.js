@@ -10,11 +10,11 @@ Addons.PreviewWindow =
 	FromFile: function () {
 		var img = document.getElementById("img1");
 		MainWindow.Threads.GetImage({
-			path: MainWindow.Addons.PreviewWindow.File,
+			path: MainWindow.Addons.PreviewWindow.Item,
 			img: img,
 			Parent: MainWindow.Addons.PreviewWindow,
 			onload: function (o) {
-				if (o.path == o.Parent.File) {
+				if (o.path === o.Parent.Item) {
 					o.img.src = o.out.DataURI();
 					Addons.PreviewWindow.w = o.out.GetWidth();
 					Addons.PreviewWindow.h = o.out.GetHeight();

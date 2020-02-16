@@ -38,14 +38,14 @@ if (window.Addon == 1) {
 				}
 				db[path] = 1;
 				Threads.GetImage({
-					path: path,
+					path: pid,
 					cx: Ctrl.IconSize * screen.logicalYDPI / 96,
 					f: true,
 					hList: Ctrl.hwndList,
 					iItem: iItem,
 					db: db,
 					onload: function (o) {
-						o.db[o.path] = api.CreateObject("WICBitmap").FromSource(o.out);
+						o.db[o.path.Path] = api.CreateObject("WICBitmap").FromSource(o.out);
 						api.PostMessage(o.hList, LVM_REDRAWITEMS, o.iItem, o.iItem);
 					}
 				});
