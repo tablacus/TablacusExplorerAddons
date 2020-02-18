@@ -8,12 +8,13 @@
 #include "fldrimg.h"
 
 LPFNGetImage lpfnGetImage = NULL;
-int	g_nItems = 100;
+int	g_nItems = 30;
 BOOL g_bExpanded = TRUE;
 LPWSTR g_bsFilter = NULL;
 LPWSTR g_bsInvalid = NULL;
-
-//LPWSTR g_psz
+DWORD g_dwMainThreadId = GetCurrentThreadId();
+HWND g_hwndMain = NULL;
+LONG g_lLocks = 0;
 
 // Unit
 VOID SafeRelease(PVOID ppObj)
@@ -52,61 +53,104 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 //GetImage
 HRESULT WINAPI GetImage(IStream *pStream, LPCWSTR lpPath, int cx, HBITMAP *phBM, int *pnAlpha)
 {
+	InterlockedIncrement(&g_lLocks);
 	HRESULT hr = E_NOTIMPL;
-	if (lpfnGetImage && PathMatchSpec(lpPath, L"?:\\*;\\\\*\\*")) {
-		LPITEMIDLIST pidl = ILCreateFromPath(const_cast<LPWSTR>(lpPath));
-		if (pidl) {
-			LPCITEMIDLIST pidlPart;
-			IShellFolder *pSF;
-			if SUCCEEDED(SHBindToParent(pidl, IID_PPV_ARGS(&pSF), &pidlPart)) {
-				IStorage *pStorage;
-				if SUCCEEDED(pSF->BindToStorage(pidlPart, NULL, IID_PPV_ARGS(&pStorage))) {
-					std::list<IStorage *> ppFolder;
-					ppFolder.push_back(pStorage);
-					int nDog = g_nItems;
-					while (!ppFolder.empty()) {
-						pStorage = ppFolder.front();
-						ppFolder.pop_front();
-						if (nDog) {
-							STATSTG statstg;
-							IEnumSTATSTG *pEnumSTATSTG = NULL;
-							IStream *pStreamNew;
-							if SUCCEEDED(pStorage->EnumElements(NULL, NULL, NULL, &pEnumSTATSTG)) {
-								while (FAILED(hr) && pEnumSTATSTG->Next(1, &statstg, NULL) == S_OK && nDog) {
-									if (statstg.type == STGTY_STORAGE) {
-										if (g_bExpanded) {
-											IStorage *pStorageNew;
-											pStorage->OpenStorage(statstg.pwcsName, NULL, STGM_READ, 0, 0, &pStorageNew);
-											ppFolder.push_back(pStorageNew);
-										}
-									} else if (statstg.type == STGTY_STREAM) {
-										if (PathMatchSpec(statstg.pwcsName, g_bsFilter) && !PathMatchSpec(statstg.pwcsName, g_bsInvalid)) {
-											if SUCCEEDED(pStorage->OpenStream(statstg.pwcsName, NULL, STGM_READ, NULL, &pStreamNew)) {
-												hr = lpfnGetImage(pStreamNew, statstg.pwcsName, cx, phBM, pnAlpha);
-												pStreamNew->Release();
+	IProgressDialog *ppd = NULL;
+	if (g_dwMainThreadId == GetCurrentThreadId()) {
+		CoCreateInstance(CLSID_ProgressDialog, NULL, CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&ppd));
+		if (ppd) {
+			ppd->StartProgressDialog(g_hwndMain, NULL, PROGDLG_NORMAL, NULL);
+		}
+	}
+	try {
+		if (lpfnGetImage && PathMatchSpec(lpPath, L"?:\\*;\\\\*\\*")) {
+			if (ppd) {
+				ppd->SetTitle(lpPath);
+			}
+			LPITEMIDLIST pidl = ILCreateFromPath(const_cast<LPWSTR>(lpPath));
+			if (pidl) {
+				LPCITEMIDLIST pidlPart;
+				IShellFolder *pSF;
+				if SUCCEEDED(SHBindToParent(pidl, IID_PPV_ARGS(&pSF), &pidlPart)) {
+					IStorage *pStorage;
+					if SUCCEEDED(pSF->BindToStorage(pidlPart, NULL, IID_PPV_ARGS(&pStorage))) {
+						std::deque<IStorage *> ppFolder;
+						ppFolder.push_back(pStorage);
+						int nDog = g_nItems;
+						while (!ppFolder.empty()) {
+							pStorage = ppFolder.front();
+							ppFolder.pop_front();
+							if (nDog) {
+								STATSTG statstg;
+								if (ppd) {
+									if SUCCEEDED(pStorage->Stat(&statstg, STATFLAG_DEFAULT)) {
+										ppd->SetLine(1, statstg.pwcsName, true, NULL);
+									}
+									if (ppd->HasUserCancelled()) {
+										nDog = 0;
+										break;
+									}
+								}
+								IEnumSTATSTG *pEnumSTATSTG = NULL;
+								IStream *pStreamNew;
+								if SUCCEEDED(pStorage->EnumElements(NULL, NULL, NULL, &pEnumSTATSTG)) {
+									while (FAILED(hr) && pEnumSTATSTG->Next(1, &statstg, NULL) == S_OK) {
+										if (ppd) {
+											ppd->SetLine(2, statstg.pwcsName, true, NULL);
+											ppd->SetProgress(g_nItems - nDog, g_nItems);
+											if (ppd->HasUserCancelled()) {
+												nDog = 0;
+												break;
 											}
 										}
-									}
-									if (nDog) {
+										if (statstg.type == STGTY_STORAGE) {
+											if (g_bExpanded && statstg.cbSize.QuadPart == 0) {
+												IStorage *pStorageNew;
+												pStorage->OpenStorage(statstg.pwcsName, NULL, STGM_READ, 0, 0, &pStorageNew);
+												ppFolder.push_back(pStorageNew);
+											}
+										} else if (statstg.type == STGTY_STREAM) {
+											if (PathMatchSpec(statstg.pwcsName, g_bsFilter) && !PathMatchSpec(statstg.pwcsName, g_bsInvalid)) {
+												if SUCCEEDED(pStorage->OpenStream(statstg.pwcsName, NULL, STGM_READ, NULL, &pStreamNew)) {
+													hr = lpfnGetImage(pStreamNew, statstg.pwcsName, cx, phBM, pnAlpha);
+													pStreamNew->Release();
+												}
+											}
+										}
+										if (nDog == 0) {
+											break;
+										}
 										nDog--;
 									}
 								}
 							}
+							pStorage->Release();
 						}
-						pStorage->Release();
 					}
+					pSF->Release();
 				}
-				pSF->Release();
+				CoTaskMemFree(pidl);
 			}
-			CoTaskMemFree(pidl);
 		}
+	} catch (...) {}
+	if (ppd) {
+		ppd->StopProgressDialog();
+		ppd->Release();
 	}
+	InterlockedDecrement(&g_lLocks);
 	return hr;
+}
+
+// DLL Export
+STDAPI DllCanUnloadNow(void)
+{
+	return g_lLocks == 0 ? S_OK : S_FALSE;
 }
 
 //Option
 void __stdcall SetGetImageW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)
 {
+	g_hwndMain = hwnd;
 #ifdef _WIN64
 	swscanf_s(lpszCmdLine, L"%llx", &lpfnGetImage);
 #else

@@ -1,6 +1,7 @@
 LIBRARY	"fldrimg32"
 
 EXPORTS
+	DllCanUnloadNow PRIVATE
 	GetImage PRIVATE
 	SetGetImageW PRIVATE
 	SetItemsW PRIVATE

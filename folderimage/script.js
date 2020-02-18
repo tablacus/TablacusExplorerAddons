@@ -8,13 +8,13 @@ if (window.Addon == 1) {
 
 		Finalize: function () {
 			if (Addons.FolderImage.hModule) {
-				api.FreeLibrary(Addons.FolderImage.hModule);
+				te.RemoveEvent("GetImage", api.GetProcAddress(Addons.FolderImage.hModule, "GetImage"));
+				api.FreeLibrary(Addons.FolderImage.hModule, 99);
 				delete Addons.FolderImage.hModule;
 			}
 		}
 	}
-
-	api.RunDLL(Addons.FolderImage.hModule, "SetGetImageW", 0, 0, api.sprintf(99, "%llx", api.GetProcAddress(null, "GetImage")), 1);
+	api.RunDLL(Addons.FolderImage.hModule, "SetGetImageW", te.hwnd, 0, api.sprintf(99, "%llx", api.GetProcAddress(null, "GetImage")), 1);
 	api.RunDLL(Addons.FolderImage.hModule, "SetItemsW", 0, 0, api.LowPart(item.getAttribute("Items")) || 30, 1);
 	api.RunDLL(Addons.FolderImage.hModule, "SetExpandedW", 0, 0, api.LowPart(item.getAttribute("Expanded")), 1);
 	api.RunDLL(Addons.FolderImage.hModule, "SetFilterW", 0, 0, item.getAttribute("Filter") || "*", 1);
