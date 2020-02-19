@@ -779,51 +779,65 @@ STDAPI DllUnregisterServer(void)
 HRESULT WINAPI GetArchive(LPCWSTR lpszArcPath, LPCWSTR lpszItem, IStream **ppStream, LPVOID lpReserved)
 {
 	HRESULT hr = E_NOTIMPL;
-	IStream *pStream;
-	if SUCCEEDED(SHCreateStreamOnFileEx(lpszArcPath, STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, false, NULL, &pStream)) {
-		BOOL bDelete = FALSE;
-		BSTR pdw = GetMemoryFromStream(pStream, &bDelete, NULL);
-		for (UINT i = 0; i < g_ppObject.size(); i++) {
-			CteSPI *pSPI = g_ppObject[i];
-			if (pSPI->IsSupported && PathMatchSpec(lpszArcPath, pSPI->m_bsFilter)) {
+	BOOL bDelete = FALSE;
+	BSTR pdw = NULL;
+	BSTR bsPathA = NULL;
+	BSTR bsItemA = NULL;
+	for (UINT i = 0; hr == E_NOTIMPL && i < g_ppObject.size(); i++) {
+		CteSPI *pSPI = g_ppObject[i];
+		if (pSPI->IsSupported && PathMatchSpec(lpszArcPath, pSPI->m_bsFilter)) {
+			//AM
+			if (pSPI->GetFile) {
+				if (!pdw) {
+					IStream *pStream;
+					if SUCCEEDED(SHCreateStreamOnFileEx(lpszArcPath, STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, false, NULL, &pStream)) {
+						pdw = GetMemoryFromStream(pStream, &bDelete, NULL);
+						SafeRelease(&pStream);
+					} else {
+						hr = STG_E_FILENOTFOUND;
+						break;
+					}
+				}
+				int iResult = SPI_NO_FUNCTION;
 				HLOCAL hLocal = NULL;
-				if (pSPI->IsSupportedW && pSPI->GetFileInfo && pSPI->GetFile) {
+				if (pSPI->IsSupportedW && pSPI->GetFileInfoW && pSPI->GetFileW) {
 					if (pSPI->IsSupportedW(lpszArcPath, (void *)pdw)) {
 						SUSIE_FINFOTW finfo;
 						if (pSPI->GetFileInfoW(lpszArcPath, 0, lpszItem, 0x80, &finfo) == SPI_ALL_RIGHT) {
-							pSPI->GetFileW(lpszArcPath, finfo.position, (LPWSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
+							iResult = pSPI->GetFileW(lpszArcPath, finfo.position, (LPWSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
 						}
 					}
-				} else if (pSPI->GetFileInfo && pSPI->GetFile) {
-					BSTR bsPathA = teWide2Ansi(lpszArcPath, -1);
-					BSTR bsItemA = teWide2Ansi(lpszItem, -1);
+				} else if (pSPI->GetFileInfo) {
+					if (!bsPathA) {
+						bsPathA = teWide2Ansi(lpszArcPath, -1);
+					}
+					if (!bsItemA) {
+						bsItemA = teWide2Ansi(lpszItem, -1);
+					}
 					if (pSPI->IsSupported((LPSTR)bsPathA, (void *)pdw)) {
 						SUSIE_FINFO finfo;
 						if (pSPI->GetFileInfo((LPSTR)bsPathA, 0, (LPSTR)bsItemA, 0x80, &finfo) == SPI_ALL_RIGHT) {
-							pSPI->GetFile((LPSTR)bsPathA, finfo.position, (LPSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
+							iResult = pSPI->GetFile((LPSTR)bsPathA, finfo.position, (LPSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
 						}
 					}
-					teSysFreeString(&bsItemA);
-					teSysFreeString(&bsPathA);
 				}
-				if (hLocal) {
+				if (iResult == SPI_ALL_RIGHT && hLocal) {
 					PBYTE lpData = (PBYTE)LocalLock(hLocal);
 					if (lpData) {
 						*ppStream = SHCreateMemStream(lpData, LocalSize(hLocal));
-						if (*ppStream) {
-							hr = S_OK;
-						}
 						LocalUnlock(hLocal);
 					}
 					LocalFree(hLocal);
+					hr = *ppStream ? S_OK : E_OUTOFMEMORY;
 				}
 			}
 		}	
-		if (bDelete) {
-			teSysFreeString(&pdw);
-		}
-		SafeRelease(&pStream);
 	}
+	if (bDelete) {
+		teSysFreeString(&pdw);
+	}
+	teSysFreeString(&bsItemA);
+	teSysFreeString(&bsPathA);
 	return hr;
 }
 
@@ -831,17 +845,20 @@ HRESULT WINAPI GetArchive(LPCWSTR lpszArcPath, LPCWSTR lpszItem, IStream **ppStr
 HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpPath, int cx, HBITMAP *phBM, int *pnAlpha)
 {
 	HRESULT hr = E_NOTIMPL;
-	int nAM = 0;
-	for (UINT i = 0; i < g_ppObject.size(); i++) {
+	BSTR bsPathA = NULL;
+	LONG_PTR len = 0;
+	BOOL bDelete = FALSE;
+	BSTR pdw = NULL;
+	for (UINT i = 0; hr == E_NOTIMPL && i < g_ppObject.size(); i++) {
 		CteSPI *pSPI = g_ppObject[i];
 		if (pSPI->IsSupported && PathMatchSpec(lpPath, pSPI->m_bsFilter)) {
 			//IN
 			if (pSPI->GetPicture) {
 				HLOCAL hInfo = NULL;
 				HLOCAL hBMData = NULL;
-				BOOL bDelete = FALSE;
-				LONG_PTR len = 0;
-				BSTR pdw = GetMemoryFromStream(pStream, &bDelete, NULL);
+				if (!pdw) {
+					pdw = GetMemoryFromStream(pStream, &bDelete, NULL);
+				}
 				int iResult = SPI_NO_FUNCTION;
 				if (pSPI->IsSupportedW && pSPI->GetPictureW) {
 					if (pSPI->IsSupportedW(lpPath, (void *)pdw)) {
@@ -864,7 +881,9 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpPath, int cx, HBITMAP *phBM, 
 					}
 				}
 				if (iResult != SPI_ALL_RIGHT && pSPI->IsSupported) {
-					BSTR bsPathA = teWide2Ansi(lpPath, -1);
+					if (!bsPathA) {
+						bsPathA = teWide2Ansi(lpPath, -1);
+					}
 					if (pSPI->IsSupported((char *)bsPathA, (void *)pdw)) {
 						if (len == 0) {
 							teSysFreeString(&pdw);
@@ -885,7 +904,6 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpPath, int cx, HBITMAP *phBM, 
 							}
 						}
 					}
-					teSysFreeString(&bsPathA);
 				}
 				if (iResult == SPI_ALL_RIGHT) {
 					PBITMAPINFO lpbmi = (PBITMAPINFO)LocalLock(hInfo);
@@ -894,12 +912,12 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpPath, int cx, HBITMAP *phBM, 
 							VOID *lpBits;
 							*phBM =  CreateDIBSection(NULL, lpbmi, DIB_RGB_COLORS, &lpBits, NULL, 0);
 							if (*phBM) {
-								*pnAlpha = 2;
-								hr = S_OK;
 								PBYTE lpbm = (PBYTE)LocalLock(hBMData);
 								if (lpbm) {
 									try {
 										SetDIBits(NULL, *phBM, 0, lpbmi->bmiHeader.biHeight, lpbm, lpbmi, DIB_RGB_COLORS);
+										*pnAlpha = 2;
+										hr = S_OK;
 									} catch (...) {}
 								}
 								LocalUnlock(hBMData);
@@ -910,14 +928,13 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpPath, int cx, HBITMAP *phBM, 
 						LocalFree(hInfo);
 					}
 				}
-				if (bDelete) {
-					teSysFreeString(&pdw);
-				}
-			} else if (pSPI->GetFile) {
-				nAM++;
 			}
 		}
 	}
+	if (bDelete) {
+		teSysFreeString(&pdw);
+	}
+	teSysFreeString(&bsPathA);
 	return hr;
 }
 

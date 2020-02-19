@@ -6,8 +6,14 @@ if (window.Addon == 1) {
 		AM: [],
 
 		Finalize: function () {
-			Addons.SPI.IN = [];
-			Addons.SPI.AM = [];
+			if (Addons.SPI.IN.length) {
+				te.RemoveEvent("GetImage", Addons.SPI.DLL.GetImage);
+				Addons.SPI.IN = [];
+			}
+			if (Addons.SPI.AM.length) {
+				te.RemoveEvent("GetArchive", Addons.SPI.DLL.GetArchive);
+				Addons.SPI.AM = [];
+			}
 			CollectGarbage();
 			delete Addons.SPI.DLL;
 		}
@@ -48,6 +54,8 @@ if (window.Addon == 1) {
 				}
 			}
 		}
+		delete xml;
+		delete SPI;
 		if (Addons.SPI.IN.length) {
 			te.AddEvent("GetImage", Addons.SPI.DLL.GetImage);
 		}
