@@ -8,7 +8,7 @@ for (var i = 32; i <= 64; i += 32) {
 
 s.push('<br><label>Information</label>&emsp;<span id="ver"></span>');
 s.push('<table style="width: 100%"><tr><td id="prop0" style="width: 50%"></td><td id="prop1" style="width: 50%"></td></tr></table>');
-s.push('<br><input type="button" value="', api.sprintf(999, GetText("Get %s..."), "GFL SDK"), '" title="https://newsgroup.xnview.com/viewtopic.php?f=4&t=21686" onclick="wsh.Run(this.title)">');
+s.push('<br><input type="button" value="', api.sprintf(999, GetText("Get %s..."), "GFL SDK"), '" title="https://www.xnview.com/en/GFL/index.php" onclick="wsh.Run(this.title)">');
 
 SetTabContents(0, "", s);
 
