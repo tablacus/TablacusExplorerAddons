@@ -38,7 +38,6 @@ typedef GFL_ERROR (GFLAPI *LPFN_gflLoadThumbnail)( const char* filename, GFL_INT
 typedef GFL_ERROR (GFLAPI *LPFN_gflLoadThumbnailW)( const wchar_t* filename, GFL_INT32 width, GFL_INT32 height, GFL_BITMAP** bitmap, const GFL_LOAD_PARAMS* params, GFL_FILE_INFORMATION* info ); 
 typedef GFL_ERROR (GFLAPI *LPFN_gflLoadBitmapFromHandle)( GFL_HANDLE handle, GFL_BITMAP** bitmap, const GFL_LOAD_PARAMS* params, GFL_FILE_INFORMATION* info ); 
 typedef GFL_ERROR (GFLAPI *LPFN_gflLoadThumbnailFromHandle)( GFL_HANDLE handle, GFL_INT32 width, GFL_INT32 height, GFL_BITMAP** bitmap, const GFL_LOAD_PARAMS* params, GFL_FILE_INFORMATION *info ); 
-typedef GFL_ERROR (GFLAPI *LPFN_gflConvertBitmapIntoDDB) ( const GFL_BITMAP *bitmap, HBITMAP *hBitmap );
 
 // Wrapper Object
 class CteWO : public IDispatch
@@ -53,14 +52,14 @@ public:
 	STDMETHODIMP GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId);
 	STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr);
 
-	CteWO(LPWSTR lpLib, LPWSTR lpLibE);
+	CteWO(LPWSTR lpLib);
 	~CteWO();
 
 	VOID Close();
 	VOID SetBitmapToObject(IUnknown *punk, GFL_BITMAP *gflBM, GFL_ERROR iResult);
 	
-	HMODULE		m_hDll, m_hDllE;
-	BSTR		m_bsLib, m_bsLibE;
+	HMODULE		m_hDll;
+	BSTR		m_bsLib;
 	LPFN_gflFreeBitmap					m_gflFreeBitmap;
 	LPFN_gflGetDefaultLoadParams		m_gflGetDefaultLoadParams;
 	LPFN_gflGetDefaultThumbnailParams m_gflGetDefaultThumbnailParams;
@@ -74,7 +73,6 @@ public:
 	LPFN_gflLoadThumbnailW				m_gflLoadThumbnailW;
 	LPFN_gflLoadBitmapFromHandle		m_gflLoadBitmapFromHandle;
 	LPFN_gflLoadThumbnailFromHandle		m_gflLoadThumbnailFromHandle;
-	LPFN_gflConvertBitmapIntoDDB		m_gflConvertBitmapIntoDDB;
 private:
 	LONG		m_cRef;
 };

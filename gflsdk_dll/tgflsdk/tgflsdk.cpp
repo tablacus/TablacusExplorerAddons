@@ -30,7 +30,6 @@ TEmethod methodWO[] = {
 	{ 0x60010082, L"gflLoadThumbnail" },//W
 	{ 0x60011083, L"gflLoadThumbnailFromHandle" },
 
-	{ 0x6001E08C, L"gflConvertBitmapIntoDDB" },
 	{ 0x6001F000, L"IsUnicode" },
 	{ 0x6001F001, L"GetImage" },
 };
@@ -610,12 +609,11 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 			g_hinstDll = hinstDll;
 			break;
 		case DLL_PROCESS_DETACH:
-			while (!g_ppObject.empty()) {
-				CteWO *pWO = g_ppObject.back();
-				pWO->Close();
-				SafeRelease(&pWO);
-				g_ppObject.pop_back();
+			for (int i = g_ppObject.size(); i--;) {
+				g_ppObject[i]->Close();
+				SafeRelease(&g_ppObject[i]);
 			}
+			g_ppObject.clear();
 			SafeRelease(&g_pBase);
 			break;
 	}
@@ -694,6 +692,23 @@ STDAPI DllUnregisterServer(void)
 	return ShowRegError(ls);
 }
 
+GFL_ERROR tegflConvertBitmapIntoDDB(GFL_BITMAP *gflBM, HBITMAP *phBM)
+{
+	BITMAPINFO bmi;
+	::ZeroMemory(&bmi.bmiHeader, sizeof(BITMAPINFOHEADER));
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmi.bmiHeader.biWidth = gflBM->Width;
+	bmi.bmiHeader.biHeight = -gflBM->Height;
+	bmi.bmiHeader.biPlanes = 1;
+	bmi.bmiHeader.biBitCount = gflBM->ComponentsPerPixel * gflBM->BitsPerComponent;
+	*phBM = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, NULL, NULL, 0);
+	if (*phBM) {
+		SetDIBits(NULL, *phBM, 0, gflBM->Height, gflBM->Data, &bmi, DIB_RGB_COLORS);
+		return GFL_NO_ERROR;
+	}
+	return GFL_ERROR_NO_MEMORY;
+}
+
 //GetImage
 HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpfn, int cx, HBITMAP *phBM, int *pnAlpha)
 {
@@ -704,13 +719,15 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpfn, int cx, HBITMAP *phBM, in
 
 	if (cx && pWO->m_gflLoadThumbnailFromHandle) {
 		pWO->m_gflGetDefaultThumbnailParams(&params);
-		params.Flags |= GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE;
+		params.Flags = GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE | GFL_LOAD_HIGH_QUALITY_THUMBNAIL;
+		params.ColorModel = GFL_BGRA;
 		params.Callbacks.Read = teReadStream;
 		params.Callbacks.Seek = teSeekStream;
 		params.Callbacks.Tell = teTellStream;
 		iResult = pWO->m_gflLoadThumbnailFromHandle((GFL_HANDLE)pStream, cx, cx, &gflBM, &params, NULL);
 	} else {
 		pWO->m_gflGetDefaultLoadParams(&params);
+		params.ColorModel = GFL_BGRA;
 		params.Callbacks.Read = teReadStream;
 		params.Callbacks.Seek = teSeekStream;
 		params.Callbacks.Tell = teTellStream;
@@ -719,7 +736,8 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpfn, int cx, HBITMAP *phBM, in
 	if (iResult != GFL_NO_ERROR) {
 		if (cx && (pWO->m_gflLoadThumbnailW || pWO->m_gflLoadThumbnail)) {
 			pWO->m_gflGetDefaultThumbnailParams(&params);
-			params.Flags |= GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE;
+			params.Flags = GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE | GFL_LOAD_HIGH_QUALITY_THUMBNAIL;
+			params.ColorModel = GFL_BGRA;
 			if (pWO->m_gflLoadThumbnailW) {
 				iResult = pWO->m_gflLoadThumbnailW(lpfn, cx, cx, &gflBM, &params, NULL);
 			} else if (pWO->m_gflLoadThumbnail) {
@@ -729,6 +747,7 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpfn, int cx, HBITMAP *phBM, in
 			}
 		} else if (pWO->m_gflLoadBitmapW || pWO->m_gflLoadBitmap) {
 			pWO->m_gflGetDefaultLoadParams(&params);
+			params.ColorModel = GFL_BGRA;
 			if (pWO->m_gflLoadBitmapW) {
 				iResult = pWO->m_gflLoadBitmapW(lpfn, &gflBM, &params, NULL);
 			} else if (pWO->m_gflLoadBitmap) {
@@ -740,14 +759,15 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpfn, int cx, HBITMAP *phBM, in
 	}
 	if (iResult != GFL_NO_ERROR) {
 		pWO->m_gflGetDefaultLoadParams(&params);
+		params.ColorModel = GFL_BGRA;
 		params.Callbacks.Read = teReadStream;
 		params.Callbacks.Seek = teSeekStream;
 		params.Callbacks.Tell = teTellStream;
 		iResult = pWO->m_gflLoadBitmapFromHandle((GFL_HANDLE)pStream, &gflBM, &params, NULL);
 	}
 	if (iResult == GFL_NO_ERROR) {
-		iResult = pWO->m_gflConvertBitmapIntoDDB(gflBM, phBM);
-		*pnAlpha = 2;
+		tegflConvertBitmapIntoDDB(gflBM, phBM);
+		*pnAlpha = gflBM->ComponentsPerPixel >= 4 ? 0 : 2;
 		pWO->m_gflFreeBitmap(gflBM);
 	}
 	return iResult == GFL_NO_ERROR ? S_OK : E_NOTIMPL;
@@ -755,11 +775,10 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpfn, int cx, HBITMAP *phBM, in
 
 //CteWO
 
-CteWO::CteWO(LPWSTR lpLib, LPWSTR lpLibE)
+CteWO::CteWO(LPWSTR lpLib)
 {
 	m_cRef = 1;
 	m_bsLib = NULL;
-	m_bsLibE = NULL;
 
 	m_gflFreeBitmap = NULL;
 	m_gflGetDefaultLoadParams = NULL;
@@ -772,7 +791,6 @@ CteWO::CteWO(LPWSTR lpLib, LPWSTR lpLibE)
 	m_gflLoadBitmapW = NULL;
 	m_gflLoadThumbnail = NULL;
 	m_gflLoadThumbnailW = NULL;
-	m_gflConvertBitmapIntoDDB = NULL;
 
 	m_hDll = LoadLibrary(lpLib);
 	if (m_hDll) {
@@ -788,11 +806,6 @@ CteWO::CteWO(LPWSTR lpLib, LPWSTR lpLibE)
 		teGetProcAddress(m_hDll, "gflLoadThumbnail", (FARPROC *)&m_gflLoadThumbnail, (FARPROC *)&m_gflLoadThumbnailW);
 		teGetProcAddress(m_hDll, "gflLoadBitmapFromHandle", (FARPROC *)&m_gflLoadBitmapFromHandle, NULL);
 		teGetProcAddress(m_hDll, "gflLoadThumbnailFromHandle", (FARPROC *)&m_gflLoadThumbnailFromHandle, NULL);
-	}
-	m_hDllE = LoadLibrary(lpLibE);
-	if (m_hDllE) {
-		m_bsLibE = ::SysAllocString(lpLibE);
-		teGetProcAddress(m_hDllE, "gflConvertBitmapIntoDDB", (FARPROC *)&m_gflConvertBitmapIntoDDB, NULL);
 	}
 }
 
@@ -814,10 +827,6 @@ VOID CteWO::Close()
 		FreeLibrary(m_hDll);
 		m_hDll = NULL;
 	}
-	if (m_hDllE) {
-		FreeLibrary(m_hDllE);
-		m_hDllE = NULL;
-	}
 	m_gflFreeBitmap = NULL;
 	m_gflGetDefaultLoadParams = NULL;
 	m_gflGetErrorString = NULL;
@@ -828,21 +837,20 @@ VOID CteWO::Close()
 	m_gflLoadBitmapW = NULL;
 	m_gflLoadThumbnail = NULL;
 	m_gflLoadThumbnailW = NULL;
-	m_gflConvertBitmapIntoDDB = NULL;
 }
 
 VOID CteWO::SetBitmapToObject(IUnknown *punk, GFL_BITMAP *gflBM, GFL_ERROR iResult)
 {
 	if (iResult == 0) {
 		HBITMAP hbm;
-		if (m_gflConvertBitmapIntoDDB(gflBM, &hbm) == GFL_NO_ERROR) {
+		if (tegflConvertBitmapIntoDDB(gflBM, &hbm) == GFL_NO_ERROR) {
 			VARIANT v;
 			teSetPtr(&v, hbm);
 			tePutProperty(punk, L"0", &v);
 			VariantClear(&v);
 		}
+		m_gflFreeBitmap(gflBM);
 	}
-	m_gflFreeBitmap(gflBM);
 }
 
 STDMETHODIMP CteWO::QueryInterface(REFIID riid, void **ppvObject)
@@ -926,12 +934,13 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 			//gflLoadBitmap
 			case 0x60010077:
 				if (wFlags & DISPATCH_METHOD) {
-					if (nArg >= 1 && (m_gflLoadBitmapW || m_gflLoadBitmap) && m_gflGetDefaultLoadParams && m_gflFreeBitmap && m_gflConvertBitmapIntoDDB) {
+					if (nArg >= 1 && (m_gflLoadBitmapW || m_gflLoadBitmap) && m_gflGetDefaultLoadParams && m_gflFreeBitmap) {
 						IUnknown *punk;
 						if (FindUnknown(&pDispParams->rgvarg[nArg - 1], &punk)) {
 							GFL_BITMAP *gflBM = new GFL_BITMAP();
 							GFL_LOAD_PARAMS params;
 							m_gflGetDefaultLoadParams(&params);
+							params.ColorModel = GFL_BGRA;
 							if (m_gflLoadBitmapW) {
 								LPWSTR kpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 								iResult = m_gflLoadBitmapW(GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]), &gflBM, &params, NULL);
@@ -951,13 +960,14 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 			//gflLoadThumbnail
 			case 0x60010082:
 				if (wFlags & DISPATCH_METHOD) {
-					if (nArg >= 3 && (m_gflLoadThumbnailW || m_gflLoadThumbnail) && m_gflGetDefaultThumbnailParams && m_gflFreeBitmap && m_gflConvertBitmapIntoDDB) {
+					if (nArg >= 3 && (m_gflLoadThumbnailW || m_gflLoadThumbnail) && m_gflGetDefaultThumbnailParams && m_gflFreeBitmap) {
 						IUnknown *punk;
 						if (FindUnknown(&pDispParams->rgvarg[nArg - 3], &punk)) {
 							GFL_BITMAP *gflBM = new GFL_BITMAP();
 							GFL_LOAD_PARAMS params;
 							m_gflGetDefaultThumbnailParams(&params);
-							params.Flags |= GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE;
+							params.Flags = GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE | GFL_LOAD_HIGH_QUALITY_THUMBNAIL;
+							params.ColorModel = GFL_BGRA;
 							if (m_gflLoadBitmapW) {
 								iResult = m_gflLoadThumbnailW(GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]), GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]), GetIntFromVariant(&pDispParams->rgvarg[nArg - 2]), &gflBM, &params, NULL);
 							} else {
@@ -976,7 +986,7 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 			//gflLoadBitmapFromHandle
 			case 0x6001107A:
 				if (wFlags & DISPATCH_METHOD) {
-					if (nArg >= 1 && m_gflLoadBitmapFromHandle && m_gflGetDefaultLoadParams && m_gflFreeBitmap && m_gflConvertBitmapIntoDDB) {
+					if (nArg >= 1 && m_gflLoadBitmapFromHandle && m_gflGetDefaultLoadParams && m_gflFreeBitmap) {
 						IUnknown *punk, *punkStream;
 						if (FindUnknown(&pDispParams->rgvarg[nArg], &punkStream) && FindUnknown(&pDispParams->rgvarg[nArg - 1], &punk)) {
 							IStream *pStream;
@@ -984,6 +994,7 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 								GFL_BITMAP *gflBM = new GFL_BITMAP();
 								GFL_LOAD_PARAMS params;
 								m_gflGetDefaultLoadParams(&params);
+								params.ColorModel = GFL_BGRA;
 								params.Callbacks.Read = teReadStream;
 								params.Callbacks.Seek = teSeekStream;
 								params.Callbacks.Tell = teTellStream;
@@ -1001,7 +1012,7 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 			//gflLoadThumbnailFromHandle
 			case 0x60011083:
 				if (wFlags & DISPATCH_METHOD) {
-					if (nArg >= 3 && m_gflLoadThumbnailFromHandle && m_gflGetDefaultThumbnailParams && m_gflFreeBitmap && m_gflConvertBitmapIntoDDB) {
+					if (nArg >= 3 && m_gflLoadThumbnailFromHandle && m_gflGetDefaultThumbnailParams && m_gflFreeBitmap) {
 						IUnknown *punk, *punkStream;
 						if (FindUnknown(&pDispParams->rgvarg[nArg], &punkStream) && FindUnknown(&pDispParams->rgvarg[nArg - 3], &punk)) {
 							IStream *pStream;
@@ -1009,7 +1020,8 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 								GFL_BITMAP *gflBM = new GFL_BITMAP();
 								GFL_LOAD_PARAMS params;
 								m_gflGetDefaultThumbnailParams(&params);
-								params.Flags |= GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE;
+								params.Flags = GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE | GFL_LOAD_HIGH_QUALITY_THUMBNAIL;
+								params.ColorModel = GFL_BGRA;
 								params.Callbacks.Read = teReadStream;
 								params.Callbacks.Seek = teSeekStream;
 								params.Callbacks.Tell = teTellStream;
@@ -1023,10 +1035,6 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
 					teSetBool(pVarResult, m_gflLoadBitmapFromHandle && m_gflGetDefaultLoadParams);
 				}
-				return S_OK;
-			//gflConvertBitmapIntoDDB
-			case 0x6001E08C:
-				teSetBool(pVarResult, m_gflConvertBitmapIntoDDB != NULL);
 				return S_OK;
 			//IsUnicode
 			case 0x6001F000:
@@ -1110,23 +1118,22 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 	switch (dispIdMember) {
 		//Open
 		case 0x60010000:
-			if (nArg >= 1) {
+			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				LPWSTR lpLibE = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg - 1]);
 
 				CteWO *pItem;
 				for (UINT i = g_ppObject.size(); i--;) {
 					pItem = g_ppObject[i];
 					if (pItem) {
-						if (lstrcmpi(lpLib, pItem->m_bsLib) == 0 && lstrcmpi(lpLibE, pItem->m_bsLibE) == 0) {
+						if (lstrcmpi(lpLib, pItem->m_bsLib) == 0) {
 							teSetObject(pVarResult, pItem);
 							return S_OK;
 						}
 					}
 				}
-				pItem = new CteWO(lpLib, lpLibE);
+				pItem = new CteWO(lpLib);
 				g_ppObject.push_back(pItem);
-				teSetObjectRelease(pVarResult, pItem);
+				teSetObject(pVarResult, pItem);
 			}
 			return S_OK;
 		//Close
