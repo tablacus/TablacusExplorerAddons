@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.13</Version>
+    <Version>1.14</Version>
     <MinVersion>2020.2.18</MinVersion>
-    <pubDate>Wed, 19 Feb 2020 00:00:00 GMT</pubDate>
+    <pubDate>Fri, 21 Feb 2020 00:00:00 GMT</pubDate>
     <Options>Default</Options>
-    <DllVersion>1.1.0.1</DllVersion>
+    <DllVersion>1.1.0.2</DllVersion>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>

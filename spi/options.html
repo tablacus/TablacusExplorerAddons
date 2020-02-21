@@ -40,14 +40,22 @@
                 <td><input type="button" value="Browse..." title="Path" id="_browse1"></td>
               </tr></table>
               <input type="text" name="Path" style="width: 100%" onchange="PathChanged()">
-              <br><br>
+              <br>
               <label>Filter</label>
               <br>
               <table style="width: 100%"><tr>
                 <td style="vertical-align: bottom"><input type="checkbox" name="Filter"></td>
                 <td style="width: 100%"><input type="text" name="_Filter" style="width: 100%" readonly></td>
                 </tr>
-              </table><br>
+              </table>
+              <label>Preview</label> (AM)
+              <br>
+              <table style="width: 100%">
+                <tr>
+                  <td style="vertical-align: bottom"><input type="checkbox" name="_Preview" onclick="SwitchPreview(this)"></td>
+                  <td style="width: 100%"><input type="text" name="Preview" style="width: 100%" onchange="ChangePreview()"></td>
+                </tr>
+              </table>
               <label>Information</label>&emsp;<span id="ver"></span>
               <table style="width: 100%"><tr><td id="prop0" style="width: 33%"></td><td id="prop1" style="width: 33%"></td><td id="prop2"></td></table>
               <div id="prop3"></div><br>

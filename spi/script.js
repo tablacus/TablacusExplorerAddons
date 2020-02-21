@@ -24,7 +24,6 @@ if (window.Addon == 1) {
 			Addons.SPI.Finalize();
 		}
 	});
-
 	if (Addons.SPI.DLL) {
 		var xml = OpenXml("spi" + (api.sizeof("HANDLE") * 8) + ".xml", false, false);
 		if (xml) {
@@ -45,6 +44,7 @@ if (window.Addon == 1) {
 						filter.push("*");
 					}
 					SPI.Filter = filter.join(";");
+					SPI.Preview = items[i].getAttribute("Preview");
 					if (SPI.GetPicture) {
 						Addons.SPI.IN.push(SPI);
 					}
@@ -62,5 +62,6 @@ if (window.Addon == 1) {
 		if (Addons.SPI.AM.length) {
 			te.AddEvent("GetArchive", Addons.SPI.DLL.GetArchive);
 		}
+		Addons.SPI.DLL.GetImage(api.GetProcAddress(null, "GetImage"));
 	}
 }

@@ -80,6 +80,8 @@ typedef struct PictureInfo{
 	HLOCAL  hInfo;
 } SUSIE_PICTUREINFO;
 #pragma pack(pop)
+//Plug in(Image)
+typedef HRESULT (WINAPI* LPFNGetImage)(IStream *pStream, LPCWSTR lpPath, int cx, HBITMAP *phBM, int *pnAlpha);
 
 // Susie Plug-in calback
 typedef int (__stdcall *SUSIE_PROGRESS)(int nNum, int nDenom, LONG_PTR lData);
@@ -142,6 +144,7 @@ public:
 	HMODULE		m_hDll;
 	BSTR		m_bsLib;
 	BSTR		m_bsFilter;
+	BSTR		m_bsPreview;
 private:
 	LONG		m_cRef;
 };

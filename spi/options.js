@@ -1,11 +1,10 @@
 var Addon_Id = "spi";
-var g_Chg = {List: false, Data: "List"};
+var g_Chg = { List: false, Data: "List" };
 var SPI;
 var tspiPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\spi\\tspi", api.sizeof("HANDLE") * 8, ".dll"].join(""));
 var DLL = api.DllGetClassObject(tspiPath, "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
 
-function LoadFS()
-{
+function LoadFS() {
 	if (!g_x.List) {
 		g_x.List = document.F.List;
 		g_x.List.length = 0;
@@ -17,15 +16,14 @@ function LoadFS()
 			g_x.List.length = i;
 			while (--i >= 0) {
 				var item = items[i];
-				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Disabled"), item.getAttribute("Filter")], !item.getAttribute("Disabled"));
+				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Disabled"), item.getAttribute("Filter"), item.getAttribute("Preview")], !item.getAttribute("Disabled"));
 			}
 		}
 		EnableSelectTag(g_x.List);
 	}
 }
 
-function SaveFS()
-{
+function SaveFS() {
 	if (g_Chg.List) {
 		var xml = CreateXml();
 		var root = xml.createElement("TablacusExplorer");
@@ -37,6 +35,7 @@ function SaveFS()
 			item.setAttribute("Path", a[1]);
 			item.setAttribute("Disabled", a[2]);
 			item.setAttribute("Filter", a[3]);
+			item.setAttribute("Preview", a[4]);
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
@@ -44,8 +43,7 @@ function SaveFS()
 	}
 }
 
-function EditFS()
-{
+function EditFS() {
 	if (g_x.List.selectedIndex < 0) {
 		return;
 	}
@@ -54,11 +52,12 @@ function EditFS()
 	document.F.Path.value = a[1];
 	document.F.Enable.checked = !a[2];
 	document.F.Filter.checked = a[3];
+	document.F.Preview.value = a[4] || "";
+	ChangePreview();
 	SetProp();
 }
 
-function ReplaceFS()
-{
+function ReplaceFS() {
 	ClearX();
 	if (g_x.List.selectedIndex < 0) {
 		g_x.List.selectedIndex = ++g_x.List.length - 1;
@@ -66,17 +65,15 @@ function ReplaceFS()
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
 	o = document.F.Type;
-	SetData(sel, [document.F.Name.value, document.F.Path.value, !document.F.Enable.checked, document.F.Filter.checked], document.F.Enable.checked);
+	SetData(sel, [document.F.Name.value, document.F.Path.value, !document.F.Enable.checked, document.F.Filter.checked, document.F.Preview.value], document.F.Enable.checked);
 	g_Chg.List = true;
 }
 
-function PathChanged()
-{
+function PathChanged() {
 	SetProp(true);
 }
 
-function SetProp(bName)
-{
+function SetProp(bName) {
 	SPI = null;
 	var dllPath = api.PathUnquoteSpaces(ExtractMacro(te, document.F.Path.value));
 	if (DLL) {
@@ -89,21 +86,23 @@ function SetProp(bName)
 	}
 	var arProp = ["IsUnicode", "GetPluginInfo", "IsSupported", "GetPictureInfo", "GetPicture", "GetPreview", "GetArchiveInfo", "GetFileInfo", "GetFile", "ConfigurationDlg"];
 	var arHtml = [[], [], [], []];
-	for (var i in arProp) {
-		arHtml[i % 3].push('<div style="white-space: nowrap"><input type="checkbox" ', SPI[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
-	}
-	for (var i = 4; i--;) {
-		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
-	}
-	var ar = [];
-	if (SPI.GetPluginInfo) {
-		SPI.GetPluginInfo(ar);
-	} else {
-		ar.unshift(fso.GetFileName(dllPath));
-	}
 	var s = [];
-	if (SPI.ConfigurationDlg) {
-		s.push('<input type="button" value="', GetText("Options..."), '" onclick="SPI.ConfigurationDlg(', te.hwnd, ', 1)"><br>');
+	var ar = [];
+	if (SPI) {
+		for (var i in arProp) {
+			arHtml[i % 3].push('<div style="white-space: nowrap"><input type="checkbox" ', SPI[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
+		}
+		for (var i = 4; i--;) {
+			document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
+		}
+		if (SPI.GetPluginInfo) {
+			SPI.GetPluginInfo(ar);
+		} else {
+			ar.unshift(fso.GetFileName(dllPath));
+		}
+		if (SPI.ConfigurationDlg) {
+			s.push('<input type="button" value="', GetText("Options..."), '" onclick="SPI.ConfigurationDlg(', te.hwnd, ', 1)"><br>');
+		}
 	}
 	s.push('<table border="1px" style="width: 100%">');
 	for (var i = 0; i < ar.length; i += 2) {
@@ -118,8 +117,7 @@ function SetProp(bName)
 	document.F.elements["_Filter"].value = filter.join(";") || "*";
 }
 
-function ED(s)
-{
+function ED(s) {
 	var ar = s.split("").reverse();
 	for (var i in ar) {
 		ar[i] = String.fromCharCode(ar[i].charCodeAt(0) ^ 13);
@@ -134,14 +132,12 @@ var bitName = GetTextR(bit + "-bit");
 document.title = info.Name + " " + bitName;
 if (bit == 64) {
 	document.getElementById("bit1").innerHTML = "(sph/" + bitName + ")";
-	document.getElementById("_browse1").onclick = function ()
-	{
+	document.getElementById("_browse1").onclick = function () {
 		RefX('Path', 0, 0, 1, info.Name + ' ' + bitName + ' (*.sph)|*.sph');
 	}
 } else {
-	document.getElementById("bit1").innerHTML = "(spi/" + bitName +")";
-	document.getElementById("_browse1").onclick = function ()
-	{
+	document.getElementById("bit1").innerHTML = "(spi/" + bitName + ")";
+	document.getElementById("_browse1").onclick = function () {
 		RefX('Path', 0, 0, 1, info.Name + ' ' + bitName + ' (*.spi)|*.spi');
 	}
 }
@@ -149,8 +145,16 @@ if (bit == 64) {
 LoadFS();
 SetOnChangeHandler();
 
-AddEventEx(window, "beforeunload", function ()
+function SwitchPreview(o) {
+	document.F.Preview.value = o.checked ? "*" : "";
+}
+
+function ChangePreview()
 {
+	document.F.elements["_Preview"].checked = document.F.Preview.value != "";
+}
+
+AddEventEx(window, "beforeunload", function () {
 	if (g_nResult == 2 || !g_bChanged) {
 		return;
 	}
