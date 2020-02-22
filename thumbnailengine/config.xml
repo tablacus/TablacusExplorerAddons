@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2020.2.2</MinVersion>
-    <pubDate>Sun, 02 Feb 2020 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2020.2.22</MinVersion>
+    <pubDate>Sat, 22 Feb 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
-    <DllVersion>1.0.0.0</DllVersion>
+    <DllVersion>1.0.1.0</DllVersion>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
     <Name>Thumbnail engine</Name>
-    <Description>Use thumbnail engine in preview etc.</Description>
+    <Description>Thumbnail engine</Description>
   </en>
   <ja>
     <Name>サムネイル エンジン</Name>
-    <Description>プレビュー等でサムネイル エンジンを使う</Description>
   </ja>
   <zh>
     <Name>預覽影片截圖</Name>

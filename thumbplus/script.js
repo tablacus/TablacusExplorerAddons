@@ -7,6 +7,7 @@ Addons.ThumbPlus = {
 	Disable: item.getAttribute("Disable") || "-",
 	Priority: item.getAttribute("Priority") || "-",
 	Folder: api.LowPart(item.getAttribute("Folder")),
+	Icon: api.LowPart(item.getAttribute("ShowIcon")),
 
 	Clear: function (Ctrl) {
 		if (Ctrl.type <= CTRL_SB) {
@@ -32,7 +33,7 @@ if (window.Addon == 1) {
 				Addons.ThumbPlus.FV[Ctrl.Id] = db = { "*": Ctrl.IconSize };
 			}
 			var path = pid.Path;
-			if (api.PathMatchSpec(path, Addons.ThumbPlus.Priority) || (Addons.ThumbPlus.Folder && pid.IsFolder) || (api.PathMatchSpec(path, Addons.ThumbPlus.Filter) && !api.PathMatchSpec(path, Addons.ThumbPlus.Disable) && !api.HasThumbnail(pid))) {
+			if (api.PathMatchSpec(path, Addons.ThumbPlus.Priority) || (Addons.ThumbPlus.Folder && IsFolderEx(pid)) || (api.PathMatchSpec(path, Addons.ThumbPlus.Filter) && !api.PathMatchSpec(path, Addons.ThumbPlus.Disable) && !api.HasThumbnail(pid))) {
 				if (db[path]) {
 					return /object/i.test(typeof db[path]) ? true : undefined;
 				}
@@ -59,7 +60,8 @@ if (window.Addon == 1) {
 			var db = Addons.ThumbPlus.FV[Ctrl.Id];
 			if (db) {
 				var image = db[pid.Path];
-				if (/object/i.test(typeof image)) {
+				var bThumb = /object/i.test(typeof image);
+				if (bThumb || Addons.ThumbPlus.Icon && api.HasThumbnail(pid)) {
 					var cl, fStyle, rc = api.Memory("RECT");
 					rc.Left = LVIR_ICON;
 					api.SendMessage(hList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
@@ -79,9 +81,18 @@ if (window.Addon == 1) {
 							rc.Right = rc.Left + i;
 						}
 					}
-					image = GetThumbnail(image, x, true);
-					if (image) {
-						image.DrawEx(nmcd.hdc, rc.Left + (rc.Right - rc.Left - image.GetWidth()) / 2, rc.Bottom - image.GetHeight(), 0, 0, cl, cl, fStyle);
+					if (bThumb) {
+						image = GetThumbnail(image, x, true);
+						if (image) {
+							image.DrawEx(nmcd.hdc, rc.Left + (rc.Right - rc.Left - image.GetWidth()) / 2, rc.Bottom - image.GetHeight(), 0, 0, cl, cl, fStyle);
+						}
+					}
+					if (Addons.ThumbPlus.Icon) {
+						var sfi = api.Memory("SHFILEINFO");
+						api.SHGetFileInfo(pid, 0, sfi, sfi.Size, SHGFI_SYSICONINDEX | SHGFI_PIDL);
+						api.ImageList_Draw(te.Data.SHIL[SHIL_SMALL], sfi.iIcon, nmcd.hdc, rc.Right - te.Data.SHILS[SHIL_SMALL].cx, rc.bottom - te.Data.SHILS[SHIL_SMALL].cy, fStyle | ILD_TRANSPARENT);
+					}
+					if (bThumb) {
 						return S_OK;
 					}
 				}
@@ -102,7 +113,6 @@ if (window.Addon == 1) {
 			}
 		});
 	}
-
 } else {
 	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 	if (ado) {

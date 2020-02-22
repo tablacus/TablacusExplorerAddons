@@ -96,17 +96,17 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpszPath, int cx, HBITMAP *phBM
 							size.cy = size.cx;
 							DWORD dwFlags = cx ? IEIFLAG_SCREEN : IEIFLAG_ASPECT | IEIFLAG_ORIGSIZE | IEIFLAG_QUALITY;
 							WCHAR pszPath[MAX_PATH];
-							hr = pEI->GetLocation(pszPath, MAX_PATH, NULL, &size, 24, &dwFlags);
+							hr = pEI->GetLocation(pszPath, MAX_PATH, NULL, &size, 32, &dwFlags);
 							//Fix for Acrobat Reader DC
 							if (FAILED(hr) && size.cx > 512) {
 								size.cx = 512;
 								size.cy = size.cx;
-								pEI->GetLocation(pszPath, MAX_PATH, NULL, &size, 24, &dwFlags);
+								pEI->GetLocation(pszPath, MAX_PATH, NULL, &size, 32, &dwFlags);
 							}
 							hr = pEI->Extract(phBM);
 							pEI->Release();
 							if (hr == S_OK) {
-								*pnAlpha = sfAttr ? 0 : 2;
+								*pnAlpha = 3;
 							}
 						}
 					}

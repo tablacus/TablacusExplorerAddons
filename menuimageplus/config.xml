@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.14</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.2.22</MinVersion>
     <pubDate>Sat, 22 Feb 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
@@ -10,14 +10,10 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Thumbnail plus</Name>
-    <Description>Thumbnail extension</Description>
+    <Name>Menu image plus</Name>
+    <Description>Preview in menu.</Description>
   </en>
   <ja>
-    <Name>サムネイル プラス</Name>
-    <Description>縮小版表示を拡張します</Description>
+    <Name>メニュー画像プラス</Name>
   </ja>
-  <zh>
-    <Name>進階縮圖</Name>
-  </zh>
 </TablacusExplorer>
