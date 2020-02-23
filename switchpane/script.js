@@ -1,8 +1,7 @@
 if (window.Addon == 1) {
 	Addons.SwitchPane =
 	{
-		NextFV: function (Ctrl)
-		{
+		NextFV: function (Ctrl) {
 			var cTC = te.Ctrls(CTRL_TC, true);
 			var TC = te.Ctrl(CTRL_TC);
 			var nId = TC.Id;
@@ -33,18 +32,16 @@ if (window.Addon == 1) {
 			}
 			return cTC[ix[(nId + 1) % nLen]].Selected;
 		}
-	},
+	}
 
-	AddEnv("Other", function(Ctrl)
-	{
+	AddEnv("Other", function (Ctrl) {
 		var FV = Addons.SwitchPane.NextFV(Ctrl);
 		if (FV) {
 			return api.PathQuoteSpaces(api.GetDisplayNameOf(FV, SHGDN_FORPARSING));
 		}
 	});
 
-	AddTypeEx("Add-ons", "Switch to next pane", function (Ctrl)
-	{
+	AddTypeEx("Add-ons", "Switch to next pane", function (Ctrl) {
 		var FV = Addons.SwitchPane.NextFV(Ctrl);
 		if (FV) {
 			return FV.Focus();

@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
+    <Version>1.02</Version>
     <MinVersion>2017.9.4</MinVersion>
-    <pubDate>Mon, 04 Sep 2017 00:00:00 GMT</pubDate>
+    <pubDate>Sun, 23 Feb 2020 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
@@ -14,6 +14,9 @@
   </en>
   <ja>
     <Name>次のペインに切り替える</Name>
-    <Description>次のペインに切り替えるコマンドと、次のペインを現す環境変数「%other%」を追加します。</Description>
+    <Description>次のペインに切り替えるコマンドと、次のペインを表す環境変数「%other%」を追加します。</Description>
   </ja>
+  <zh>
+  	<Name>下一個窗格</Name>
+  </zh>
 </TablacusExplorer>
