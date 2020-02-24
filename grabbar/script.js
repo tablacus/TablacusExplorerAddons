@@ -4,8 +4,7 @@ var Default = "ToolBar1Center";
 if (window.Addon == 1) {
 	Addons.GrabBar =
 	{
-		Grab: function ()
-		{
+		Grab: function () {
 			if (event.button < 2 && !api.IsZoomed(te.hwnd)) {
 				Addons.GrabBar.pt = api.Memory("POINT");
 				api.GetCursorPos(Addons.GrabBar.pt);
@@ -14,14 +13,15 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Popup: function (o)
-		{
-			wsh.SendKeys("% ");
+		Popup: function () {
+			var pt = api.Memory("POINT");
+			api.GetCursorPos(pt);
+			api.PostMessage(te.hwnd, 0x313, 0, pt.x + (pt.y << 16));
+			return false;
 		}
 	};
 
-	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt)
-	{
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
 		if (Addons.GrabBar.Capture) {
 			if (msg == WM_LBUTTONUP || api.GetKeyState(VK_LBUTTON) >= 0) {
 				api.ReleaseCapture();
@@ -40,17 +40,15 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("ChangeView", function(Ctrl)
-	{
+	AddEvent("ChangeView", function (Ctrl) {
 		try {
-			setTimeout(function ()
-			{
+			setTimeout(function () {
 				if (Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
 					document.getElementById("grabbar").innerText = Ctrl.Title + ' - Tablacus Explorer';
 				}
 			}, 99);
-		} catch (e) {}
+		} catch (e) { }
 	});
 
-	SetAddon(Addon_Id, Default, ['<div id="grabbar" onmousedown="Addons.GrabBar.Grab()" oncontextmenu="Addons.GrabBar.Popup(this)" style="width: 100%; cursor : default; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden"></div>']);
+	SetAddon(Addon_Id, Default, ['<div id="grabbar" onmousedown="Addons.GrabBar.Grab()" oncontextmenu="return Addons.GrabBar.Popup(this)" style="width: 100%; cursor : default; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"></div>']);
 }

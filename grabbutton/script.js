@@ -6,8 +6,7 @@ var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.GrabButton =
 	{
-		Grab: function ()
-		{
+		Grab: function () {
 			if (event.button < 2 && !api.IsZoomed(te.hwnd)) {
 				Addons.GrabButton.pt = api.Memory("POINT");
 				api.GetCursorPos(Addons.GrabButton.pt);
@@ -16,14 +15,15 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Popup: function (o)
-		{
-			wsh.SendKeys("% ");
+		Popup: function () {
+			var pt = api.Memory("POINT");
+			api.GetCursorPos(pt);
+			api.PostMessage(te.hwnd, 0x313, 0, pt.x + (pt.y << 16));
+			return false;
 		}
 	};
 
-	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt)
-	{
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
 		if (Addons.GrabButton.Capture) {
 			if (msg == WM_LBUTTONUP || api.GetKeyState(VK_LBUTTON) >= 0) {
 				api.ReleaseCapture();
@@ -52,5 +52,5 @@ if (window.Addon == 1) {
 		}
 		src += '>';
 	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="Addons.GrabButton.Grab()" oncontextmenu="Addons.GrabButton.Popup(this); return false">' ,src ,'</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="Addons.GrabButton.Grab()" oncontextmenu="return Addons.GrabButton.Popup(this)">', src, '</span>']);
 }

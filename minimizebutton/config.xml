@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
+    <Version>1.04</Version>
     <MinVersion>2019.1.5</MinVersion>
     <pubDate>Mon, 07 Jan 2019 00:00:00 GMT</pubDate>
     <Options>Common:5,6:5</Options>
@@ -15,6 +15,8 @@
   </en>
   <ja>
     <Name>最小化 ボタン</Name>
-    <Description>最小化 ボタン</Description>
   </ja>
+  <zh>
+    <Name>最小化按鈕</Name>
+  </zh>
 </TablacusExplorer>

@@ -5,15 +5,15 @@ var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.MaximizeButton =
 	{
-		Exec: function ()
-		{
+		Exec: function () {
 			api.SendMessage(te.hwnd, WM_SYSCOMMAND, api.IsZoomed(te.hwnd) ? SC_RESTORE : SC_MAXIMIZE, 0);
 			return S_OK;
 		},
 
-		Popup: function (o)
-		{
-			wsh.SendKeys("% ");
+		Popup: function () {
+			var pt = api.Memory("POINT");
+			api.GetCursorPos(pt);
+			api.PostMessage(te.hwnd, 0x313, 0, pt.x + (pt.y << 16));
 			return false;
 		}
 	};
@@ -29,8 +29,7 @@ if (window.Addon == 1) {
 		}
 		src = '<span id="maximizebutton" title="' + api.LoadString(hShell32, 9841) + '" style="font-family: marlett' + fh + '">&#x31;</span>';
 	}
-	AddEvent("Resize", function()
-	{
+	AddEvent("Resize", function () {
 		var o = document.getElementById("maximizebutton");
 		if (o) {
 			if (api.IsZoomed(te.hwnd)) {

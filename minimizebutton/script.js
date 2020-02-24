@@ -5,15 +5,15 @@ var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.MinimizeButton =
 	{
-		Exec: function ()
-		{
+		Exec: function () {
 			api.SendMessage(te.hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
 			return S_OK;
 		},
 
-		Popup: function (o)
-		{
-			wsh.SendKeys("% ");
+		Popup: function () {
+			var pt = api.Memory("POINT");
+			api.GetCursorPos(pt);
+			api.PostMessage(te.hwnd, 0x313, 0, pt.x + (pt.y << 16));
 			return false;
 		}
 	};
@@ -29,5 +29,5 @@ if (window.Addon == 1) {
 		}
 		src = '<span title="' + api.LoadString(hShell32, 9840) + '" style="font-family: marlett' + fh + '">&#x30;</span>';
 	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.MinimizeButton.Exec(this)" oncontextmenu="return Addons.MinimizeButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' ,src ,'</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.MinimizeButton.Exec(this)" oncontextmenu="return Addons.MinimizeButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', src, '</span>']);
 }
