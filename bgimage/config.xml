@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.2.25</MinVersion>
     <pubDate>Tue, 25 Feb 2020 00:00:00 GMT</pubDate>
+    <Options>Common:4:4</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Multiple executions</Name>
-    <Description>Multiple executions</Description>
+    <Name>Background image</Name>
+    <Description>Background image</Description>
   </en>
   <ja>
-    <Name>複数起動</Name>
+    <Name>背景画像</Name>
   </ja>
-  <zh>
-    <Name>多個執行個體</Name>
-  </zh>
 </TablacusExplorer>

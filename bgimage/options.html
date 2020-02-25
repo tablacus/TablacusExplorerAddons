@@ -1,0 +1,56 @@
+<form name="E">
+  <table style="width: 100%; height: calc(100% - 2em)">
+    <tr>
+      <td style="width: 12em; vertical-align: top">
+        <select name="List" size="20" style="width: 12em; height: 100%" onchange="EditXEx(EditIC, 'List')"
+          ondblclick="EditIC('List')" oncontextmenu="CancelX('List')" multiple>
+        </select>
+      </td>
+      <td style="width: 100%; vertical-align: top">
+        <table class="layout">
+          <tr>
+            <td style="width: 100%; white-space: nowrap; vertical-align: bottom">
+              <label>Filter</label>
+            </td>
+            <td>
+              <input type="button" value="Get the current folder view" onclick="GetCurrentPath()">
+            </td>
+          </tr>
+        </table>
+        <input type="text" name="Filter" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()">
+        <table class="layout">
+          <tr>
+            <td style="width: 100%; white-space: nowrap; vertical-align: bottom">
+              <label>Path</label>
+            </td>
+            <td>
+              <input type="button" value="Portable" onclick="PortableX('Path')">
+            </td>
+            <td>
+              <input type="button" value="Browse..."
+                onclick="RefX('Path', false, this, true, api.LoadString(hShell32, 9007))">
+            </td>
+          </tr>
+        </table>
+        <input type="text" name="Path" style="width: 100%" onchange="ChangeX('List');ShowIconX()"
+          onfocus="this.select()"><br>
+        <img id="Image1" style="max-width: calc(100vw - 13em); max-height: calc(100vh - 11em)">
+      </td>
+    </tr>
+  </table>
+  <table style="width: 100%">
+    <tr>
+      <td style="width: 100%; white-space: nowrap">
+        <input type="button" value="Remove" onclick="RemoveX('List')">
+        <input type="button" value="Up" onclick="MoveX('List',-1)">
+        <input type="button" value="Down" onclick="MoveX('List',1)">
+        <input type="checkbox" id="_EDIT" checked="">
+        <label for="_EDIT">Edit</label>
+      </td>
+      <td style="white-space: nowrap">
+        <input type="button" value="Add" onclick="AddX('List', ReplaceIC)">
+        <input type="button" value="Replace" onclick="ReplaceIC('List')">
+      </td>
+    </tr>
+  </table>
+</form>
