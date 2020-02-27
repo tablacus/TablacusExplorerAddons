@@ -6,9 +6,9 @@ if (window.Addon == 1) {
 	{
 		Align: api.StrCmpI(item.getAttribute("Align"), "Right") ? "Left" : "Right",
 		Height: item.getAttribute("Height"),
-		TextFilter: item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
+		TextFilter: api.LowPart(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
 		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
-		Extract: item.getAttribute("Extract") || "*",
+		Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 		Width: 0,
 
 		Arrange: function (Item, Ctrl) {
@@ -56,14 +56,9 @@ if (window.Addon == 1) {
 				} else {
 					style = nWidth > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
 				}
+				s.splice(s.length, 0, '<div align="center" id="previewimg1"><img src="', path, '" style="display: none;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)" onload="Addons.Preview.Loaded(this)"></div>');
 				if (api.PathMatchSpec(path, Addons.Preview.Embed)) {
-					if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a;*.webm;*.mp4")) {
-						s.splice(s.length, 0, '<video controls width="100%" height="100%"><source src="' + path + '"></video>');
-					} else {
-						s.splice(s.length, 0, '<embed width="100%" height="100%" src="' + path + '" autoplay="false"></embed>');
-					}
-				} else {
-					s.splice(s.length, 0, '<div align="center"><img src="', path, '" style="display: none;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)" onload="this.style.display=', "'block';", '"></div>');
+					s.push('<input id="previewplay1" type="button" value=" &#x25B6; " title="Play" onclick="Addons.Preview.Play()"><br>');
 				}
 				s.push(info.replace(/\n/, "<br>"));
 			}
@@ -83,20 +78,13 @@ if (window.Addon == 1) {
 					}
 				},
 				onerror: function (o) {
-					if (api.PathMatchSpec(o.path, o.Extract)) {
-						var FV = te.Ctrl(CTRL_FV);
-						var Selected = FV.SelectedItems();
-						if (Selected.Count) {
-							var Item = Selected.Item(0);
-							if (Item.Path == o.path && !IsFolderEx(Item)) {
-								var Items = api.CreateObject("FolderItems");
-								Items.AddItem(Item);
-								te.OnBeforeGetData(FV, Items, 11);
-								if (IsExists(o.path)) {
-									o.onerror = null;
-									MainWindow.Threads.GetImage(o);
-								}
-							}
+					if (!IsFolderEx(o.path) && api.PathMatchSpec(o.path.Path, o.Extract)) {
+						var Items = api.CreateObject("FolderItems");
+						Items.AddItem(o.path);
+						te.OnBeforeGetData(te.Ctrl(CTRL_FV), Items, 11);
+						if (IsExists(o.path.Path)) {
+							o.onerror = null;
+							MainWindow.Threads.GetImage(o);
 						}
 					}
 				}
@@ -123,6 +111,30 @@ if (window.Addon == 1) {
 		Drag: function () {
 			var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 			api.SHDoDragDrop(null, Addons.Preview.Item, te, pdwEffect[0], pdwEffect);
+		},
+
+		Loaded: function (o) {
+			o.style.display = "block";
+			var path = MainWindow.Addons.Preview.Item.Path;
+			if (api.PathMatchSpec(path, Addons.Preview.Embed)) {
+				o.onclick = Addons.Preview.Play;
+				o.style.cursor = "pointer";
+			}
+		},
+
+		Play: function () {
+			var div1 = document.getElementById("PreviewBar");
+			var path = MainWindow.Addons.Preview.Item.Path;
+			if (api.PathMatchSpec(path, "*.wav")) {
+				api.PlaySound(path, null, 3);
+			} else if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a")) {
+				document.getElementById("previewplay1").style.display = "none";
+				document.getElementById("previewimg1").innerHTML = '<audio controls autoplay width="100%" height="100%"><source src="' + path + '"></audio>';
+			} else if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.webm;*.mp4")) {
+				div1.innerHTML = '<video controls autoplay width="100%" height="100%"><source src="' + path + '"></video>';
+			} else {
+				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
+			}
 		},
 
 		Init: function () {

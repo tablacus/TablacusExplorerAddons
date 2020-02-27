@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.13</Version>
-    <MinVersion>2020.2.16</MinVersion>
-    <pubDate>Sun, 16 Feb 2020 00:00:00 GMT</pubDate>
+    <Version>1.14</Version>
+    <MinVersion>2020.2.25</MinVersion>
+    <pubDate>Thu, 27 Feb 2020 00:00:00 GMT</pubDate>
     <Options>Common:0,5,6,7,8,9:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Preview window</Name>
-    <Description>Preview using external window.</Description>
+    <Description>Displays the contents of selected text, image and media files in a external preview window.</Description>
   </en>
   <ja>
     <Name>プレビュー ウインドウ</Name>

@@ -6,7 +6,7 @@ if (window.Addon == 1) {
 		MAX: 400,
 		cx: 0,
 		artm: [99, 99, 99, 500, 999].reverse(),
-		Extract: item.getAttribute("Extract") || "-",
+		Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 		Folder: api.LowPart(item.getAttribute("Folder")),
 
 		Draw: function () {

@@ -16,27 +16,18 @@ Addons.PreviewWindow =
 			onload: function (o) {
 				if (o.path === o.Parent.Item) {
 					o.img.src = o.out.DataURI();
-					Addons.PreviewWindow.w = o.out.GetWidth();
-					Addons.PreviewWindow.h = o.out.GetHeight();
+					Parent.w = o.out.GetWidth();
+					Parent.h = o.out.GetHeight();
 				}
 			},
 			onerror: function (o) {
-				if (o.path == o.Parent.File) {
-					if (api.PathMatchSpec(o.path, o.Parent.Extract)) {
-						var FV = te.Ctrl(CTRL_FV);
-						var Selected = FV.SelectedItems();
-						if (Selected.Count) {
-							var Item = Selected.Item(0);
-							if (Item.Path == o.path && !IsFolderEx(Item)) {
-								var Items = api.CreateObject("FolderItems");
-								Items.AddItem(Item);
-								te.OnBeforeGetData(FV, Items, 11);
-								if (IsExists(o.path)) {
-									o.onerror = null;
-									MainWindow.Threads.GetImage(o);
-								}
-							}
-						}
+				if (!IsFolderEx(o.path) && api.PathMatchSpec(o.path.Path, o.Parent.Extract)) {
+					var Items = api.CreateObject("FolderItems");
+					Items.AddItem(o.path);
+					te.OnBeforeGetData(te.Ctrl(CTRL_FV), Items, 11);
+					if (IsExists(o.path.Path)) {
+						o.onerror = null;
+						MainWindow.Threads.GetImage(o);
 					}
 				}
 			}
@@ -61,6 +52,10 @@ Addons.PreviewWindow =
 		var desc = document.getElementById("desc1");
 		var img1 = document.getElementById("img1");
 		img1.style.display = "none";
+		var div1 = document.getElementById("div1");
+		div1.innerHTML = "";
+		div1.style.height = "";
+
 		document.title = MainWindow.Addons.PreviewWindow.strName;
 		Addons.PreviewWindow.w = 0;
 		Addons.PreviewWindow.h = 0;
@@ -77,10 +72,46 @@ Addons.PreviewWindow =
 					ar.unshift(" " + api.PSGetDisplayName(col[i]) + ": " + s);
 				}
 			}
+			var Handled = false;
+			var path = Item.Path;
+			if (PathMatchEx(path, MainWindow.Addons.PreviewWindow.TextFilter)) {
+				var el;
+				if (Item.ExtendedProperty("size") > 99999) {
+					f = fso.OpenTextFile(path, 1, false);
+					if (f) {
+						el = document.createElement("textarea");
+						el.innerHTML = f.Read(4096);
+						f.Close();
+					}
+				} else {
+					var ado = OpenAdodbFromTextFile(path);
+					if (ado) {
+						el = document.createElement("textarea");
+						el.innerHTML = ado.ReadText(4096);
+						ado.Close()
+					}
+				}
+				if (el) {
+					el.style.width = "100%";
+					el.style.height = "calc(100vh - 5em)";
+					div1.appendChild(el);
+					Handled = true;
+				}
+			}
+			if (api.PathMatchSpec(path, MainWindow.Addons.PreviewWindow.Embed)) {
+				ar.unshift('<input type="button" value=" &#x25B6; " title="Play" id="play1"" onclick="Addons.PreviewWindow.Play()">');
+				img1.onclick = Addons.PreviewWindow.Play;
+				img1.style.cursor = "pointer";
+			} else {
+				img1.style.cursor = "";
+			}
+			document.title = fso.GetFileName(MainWindow.Addons.PreviewWindow.File);
 			desc.innerHTML = ar.join("<br>");
-			img1.onload = Addons.PreviewWindow.Loaded;
-			img1.onerror = Addons.PreviewWindow.FromFile;
-			img1.src = MainWindow.Addons.PreviewWindow.File;
+			if (!Handled) {
+				img1.onload = Addons.PreviewWindow.Loaded;
+				img1.onerror = Addons.PreviewWindow.FromFile;
+				img1.src = MainWindow.Addons.PreviewWindow.File;
+			}
 		} else {
 			desc.innerHTML = "";
 		}
@@ -105,23 +136,46 @@ Addons.PreviewWindow =
 		while (hwnd1 = api.GetParent(hwnd)) {
 			hwnd = hwnd1;
 		}
-		api.GetWindowRect(hwnd, rc);
-		if (te.Data.AddonsData.PreviewWindow.left != rc.Left) {
-			te.Data.AddonsData.PreviewWindow.left = rc.Left;
-			te.Data.bSaveConfig = true;
+		if (!api.IsZoomed(hwnd)) {
+			api.GetWindowRect(hwnd, rc);
+			if (te.Data.AddonsData.PreviewWindow.left != rc.Left) {
+				te.Data.AddonsData.PreviewWindow.left = rc.Left;
+				te.Data.bSaveConfig = true;
+			}
+			if (te.Data.AddonsData.PreviewWindow.top != rc.Top) {
+				te.Data.AddonsData.PreviewWindow.top = rc.Top;
+				te.Data.bSaveConfig = true;
+			}
+			var o = document.documentElement || document.body;
+			if (te.Data.AddonsData.PreviewWindow.width != o.offsetWidth) {
+				te.Data.AddonsData.PreviewWindow.width = o.offsetWidth;
+				te.Data.bSaveConfig = true;
+			}
+			if (te.Data.AddonsData.PreviewWindow.height != o.offsetHeight) {
+				te.Data.AddonsData.PreviewWindow.height = o.offsetHeight;
+				te.Data.bSaveConfig = true;
+			}
 		}
-		if (te.Data.AddonsData.PreviewWindow.top != rc.Top) {
-			te.Data.AddonsData.PreviewWindow.top = rc.Top;
-			te.Data.bSaveConfig = true;
-		}
-		var o = document.documentElement || document.body;
-		if (te.Data.AddonsData.PreviewWindow.width != o.offsetWidth) {
-			te.Data.AddonsData.PreviewWindow.width = o.offsetWidth;
-			te.Data.bSaveConfig = true;
-		}
-		if (te.Data.AddonsData.PreviewWindow.height != o.offsetHeight) {
-			te.Data.AddonsData.PreviewWindow.height = o.offsetHeight;
-			te.Data.bSaveConfig = true;
+	},
+
+	Play: function ()
+	{
+		var div1 = document.getElementById("div1");
+		var path = MainWindow.Addons.PreviewWindow.Item.Path;
+		if (api.PathMatchSpec(path, "*.wav")) {
+			api.PlaySound(path, null, 3);
+		} else if(document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a")) {
+			document.getElementById("play1").style.display = "none";
+			div1.innerHTML = '<audio controls autoplay width="100%" height="100%"><source src="' + path + '"></audio>';
+		} else {
+			document.getElementById("img1").style.display = "none";
+			document.getElementById("desc1").innerHTML = "";
+			div1.style.height = document.documentMode ? "calc(100% - 5px)" : "99%";
+			if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.webm;*.mp4")) {
+				div1.innerHTML = '<video controls autoplay width="100%" height="100%"><source src="' + path + '"></video>';
+			} else {
+				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
+			}
 		}
 	}
 };
@@ -165,5 +219,18 @@ AddEventEx(window, "mouseup", function (e) {
 	if (api.GetKeyState(VK_LBUTTON) < 0) {
 		Addons.PreviewWindow.Move(1);
 		return true;
+	}
+});
+
+AddEventEx(document, "MSFullscreenChange", function () {
+	var hwnd = api.GetWindow(document);
+	var hwnd1 = hwnd;
+	while (hwnd1 = api.GetParent(hwnd)) {
+		hwnd = hwnd1;
+	}
+	if (document.msFullscreenElement) {
+		api.SendMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+	} else {
+		api.SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
 	}
 });

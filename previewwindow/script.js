@@ -22,7 +22,9 @@ if (window.Addon == 1) {
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
 		ppid: api.Memory("DWORD"),
-		Extract: item.getAttribute("Extract") || "*",
+		Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
+		TextFilter: api.LowPart(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
+		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
 
 		Exec: function (Ctrl, pt) {
 			GetFolderView(Ctrl, pt).Focus();
