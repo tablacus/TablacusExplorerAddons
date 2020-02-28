@@ -19,8 +19,8 @@ if (window.Addon == 1) {
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
 		Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 		Size: api.LowPart(item.getAttribute("Size")) || 256,
-		Items: {},
 		Visible: !api.LowPart(item.getAttribute("Hidden")),
+		Items: {},
 
 		Exec: function (Ctrl, pt) {
 			Addons.BGPreview.Visible = !Addons.BGPreview.Visible;
@@ -35,36 +35,47 @@ if (window.Addon == 1) {
 			if (!FV) {
 				FV = te.Ctrl(CTRL_FV);
 			}
-			if (Addons.BGPreview.Visible && FV.hwndList && FV.ItemCount(SVGIO_SELECTION) == 1) {
+			var hwnd = FV.hwndList;
+			if (Addons.BGPreview.Visible && hwnd && FV.ItemCount(SVGIO_SELECTION) == 1) {
 				var Item = FV.SelectedItems().Item(0);
-				if (!api.ILIsEqual(Item, Addons.BGPreview.Items[FV.Id])) {
-					Addons.BGPreview.Items[FV.Id] = Item;
+				if (!api.ILIsEqual(Item, Addons.BGPreview.Items[hwnd])) {
+					var bClear = Addons.BGPreview.Items[hwnd] === null;
+					Addons.BGPreview.Items[hwnd] = Item;
 					Threads.GetImage({
 						FV: FV,
+						hwnd: hwnd,
 						path: Item,
 						cx: Addons.BGPreview.Size,
 						f: true,
 						Extract: Addons.BGPreview.Extract,
+						bClear: bClear,
 
 						onload: function (o) {
-							if (o.path === Addons.BGPreview.Items[o.FV.Id]) {
+							if (o.path === Addons.BGPreview.Items[o.hwnd]) {
+								Addons.BGPreview.Items[o.hwnd] = null;
 								var lvbk = api.Memory("LVBKIMAGE");
 								lvbk.hbm = o.out.GetHBITMAP(-2);
 								lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
-								api.SendMessage(o.FV.hwndList, LVM_SETBKIMAGE, 0, lvbk);
+								if (!api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
+									api.DeleteObject(lvbk.hbm);
+								}
 							}
 						},
 						onerror: function (o) {
-							var lvbk = api.Memory("LVBKIMAGE");
-							lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-							api.SendMessage(FV.hwndList, LVM_SETBKIMAGE, 0, lvbk);
-							if (!IsFolderEx(o.path) && api.PathMatchSpec(o.path.Path, o.Extract)) {
-								var Items = api.CreateObject("FolderItems");
-								Items.AddItem(o.path);
-								te.OnBeforeGetData(o.FV, Items, 11);
-								if (IsExists(o.path.Path)) {
-									o.onerror = null;
-									MainWindow.Threads.GetImage(o);
+							if (Addons.BGPreview.Items[o.hwnd]) {
+								if (o.bClear) {
+									var lvbk = api.Memory("LVBKIMAGE");
+									lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
+									api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk);
+								}
+								if (!IsFolderEx(o.path) && api.PathMatchSpec(o.path.Path, o.Extract)) {
+									var Items = api.CreateObject("FolderItems");
+									Items.AddItem(o.path);
+									te.OnBeforeGetData(o.FV, Items, 11);
+									if (IsExists(o.path.Path)) {
+										o.onerror = null;
+										MainWindow.Threads.GetImage(o);
+									}
 								}
 							}
 						}
@@ -73,17 +84,15 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Finalize: function () {
-			var cFV = te.Ctrls(CTRL_FV);
+		Clear: function () {
 			var lvbk = api.Memory("LVBKIMAGE");
 			lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-			for (var i in cFV) {
-				var hwnd = cFV[i].hwndList;
-				if (hwnd) {
+			for (var hwnd in Addons.BGPreview.Items) {
+				if (Addons.BGPreview.Items[hwnd] === null) {
 					api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 				}
+				delete Addons.BGPreview.Items[hwnd];
 			}
-			Addons.BGPreview.Items = {};
 		}
 	};
 
@@ -97,7 +106,7 @@ if (window.Addon == 1) {
 
 	AddEventId("AddonDisabledEx", "bgpreview", Addons.BGPreview.Finalize);
 
-	AddEvent("Finalize", Addons.BGPreview.Finalize);
+	AddEvent("Finalize", Addons.BGPreview.Clear);
 
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var s = item.getAttribute("Icon") || (h > 16 ? "bitmap:ieframe.dll,214,24,14" : "bitmap:ieframe.dll,216,16,14");

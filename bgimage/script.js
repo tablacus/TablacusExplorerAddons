@@ -6,40 +6,61 @@ if (window.Addon == 1) {
 	{
 		tid: {},
 		List: [],
+		db: {},
 
 		Arrange: function (Ctrl, nDog) {
 			delete Addons.BGImage.tid[Ctrl.Id];
 			var hwnd = Ctrl.hwndList;
 			if (hwnd) {
-				var lvbk = api.Memory("LVBKIMAGE");
+				var image = Addons.BGImage.db[hwnd];
+				if ("object" === typeof image) {
+					Addons.BGImage.ShowImage(hwnd);
+					return;
+				}
+				if (image === 1) {
+					return;
+				}
+				Addons.BGImage.db[hwnd] = 1;
 				var path = Ctrl.FolderItem.Path;
 				var list = Addons.BGImage.List;
 				for (var i = list.length; i--;) {
 					if (PathMatchEx(path, list[i][0])) {
 						var image = list[i][1];
-						if (/string/i.test(typeof image)) {
-							list[i][1] = undefined;
+						if ("object" === typeof image) {
+							Addons.BGImage.ShowImage(hwnd, image);
+						} else if ("string" === typeof image) {
 							Threads.GetImage({
-								Ctrl: Ctrl,
+								hwnd: hwnd,
 								path: image,
 								listx: list[i],
 
 								onload: function (o) {
-									o.listx[1] = api.CreateObject("WICBitmap").FromSource(o.out);
-									Addons.BGImage.Arrange(o.Ctrl);
+									if ("object" !== typeof o.listx[1]) {
+										o.listx[1] = api.CreateObject("WICBitmap").FromSource(o.out);
+									}
+									Addons.BGImage.ShowImage(hwnd, o.listx[1]);
+								},
+
+								onerror: function (o) {
+									o.listx[1] = undefined;
 								}
 							});
-						}
-						if (/object/i.test(typeof image)) {
-							lvbk.hbm = image.GetHBITMAP(-2);
 						}
 						break;
 					}
 				}
-				lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
-				api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 			} else {
 				Addons.BGImage.Retry(Ctrl, nDog);
+			}
+		},
+
+		ShowImage: function (hwnd, image) {
+			Addons.BGImage.db[hwnd] = image;
+			var lvbk = api.Memory("LVBKIMAGE");
+			lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
+			lvbk.hbm = image.GetHBITMAP(-2);
+			if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
+				api.DeleteObject(lvbk.hbm);
 			}
 		},
 
@@ -71,24 +92,21 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Finalize: function () {
-			var cFV = te.Ctrls(CTRL_FV);
+		Clear: function () {
 			var lvbk = api.Memory("LVBKIMAGE");
 			lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-			for (var i in cFV) {
-				var hwnd = cFV[i].hwndList;
-				if (hwnd) {
-					api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
-				}
+			for (var hwnd in Addons.BGImage.db) {
+				delete Addons.BGImage.db[hwnd];
+				api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 			}
 		}
 	}
 
 	AddEvent("ListViewCreated", Addons.BGImage.Arrange);
 
-	AddEventId("AddonDisabledEx", "bgimage", Addons.BGImage.Finalize);
+	AddEventId("AddonDisabledEx", "bgimage", Addons.BGImage.Clear);
 
-	AddEvent("Finalize", Addons.BGImage.Finalize);
+	AddEvent("Finalize", Addons.BGImage.Clear);
 
 	try {
 		var ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\bgimage.tsv"));
