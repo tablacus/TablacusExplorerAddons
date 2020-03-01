@@ -16,7 +16,7 @@ function LoadFS() {
 			g_x.List.length = i;
 			while (--i >= 0) {
 				var item = items[i];
-				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Disabled"), item.getAttribute("Filter"), item.getAttribute("Preview")], !item.getAttribute("Disabled"));
+				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Disabled"), item.getAttribute("Filter"), item.getAttribute("Preview"), item.getAttribute("IsPreview"), item.getAttribute("UserFilter")], !item.getAttribute("Disabled"));
 			}
 		}
 		EnableSelectTag(g_x.List);
@@ -36,6 +36,8 @@ function SaveFS() {
 			item.setAttribute("Disabled", a[2]);
 			item.setAttribute("Filter", a[3]);
 			item.setAttribute("Preview", a[4]);
+			item.setAttribute("IsPreview", a[5]);
+			item.setAttribute("UserFilter", a[6]);
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
@@ -53,7 +55,8 @@ function EditFS() {
 	document.F.Enable.checked = !a[2];
 	document.F.Filter.checked = a[3];
 	document.F.Preview.value = a[4] || "";
-	ChangePreview();
+	document.F.IsPreview.checked = a[5];
+	document.F.UserFilter.value = a[6] || "";
 	SetProp();
 }
 
@@ -65,7 +68,7 @@ function ReplaceFS() {
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
 	o = document.F.Type;
-	SetData(sel, [document.F.Name.value, document.F.Path.value, !document.F.Enable.checked, document.F.Filter.checked, document.F.Preview.value], document.F.Enable.checked);
+	SetData(sel, [document.F.Name.value, document.F.Path.value, !document.F.Enable.checked, document.F.Filter.checked, document.F.Preview.value, document.F.IsPreview.checked, document.F.UserFilter.value], document.F.Enable.checked);
 	g_Chg.List = true;
 }
 
@@ -114,7 +117,7 @@ function SetProp(bName) {
 	for (var j = 2; j < ar.length; j += 2) {
 		filter.push(ar[j]);
 	}
-	document.F.elements["_Filter"].value = filter.join(";") || "*";
+	document.F.elements["UserFilter"].setAttribute("placeholder", filter.join(";") || "*");
 }
 
 function ED(s) {
@@ -144,15 +147,6 @@ if (bit == 64) {
 
 LoadFS();
 SetOnChangeHandler();
-
-function SwitchPreview(o) {
-	document.F.Preview.value = o.checked ? "*" : "";
-}
-
-function ChangePreview()
-{
-	document.F.elements["_Preview"].checked = document.F.Preview.value != "";
-}
 
 AddEventEx(window, "beforeunload", function () {
 	if (g_nResult == 2 || !g_bChanged) {

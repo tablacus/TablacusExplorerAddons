@@ -10,11 +10,11 @@
 const TCHAR g_szProgid[] = TEXT("Tablacus.SusiePlugin");
 const TCHAR g_szClsid[] = TEXT("{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
 HINSTANCE	g_hinstDll = NULL;
-LONG		g_lLocks = 0;
 CteBase		*g_pBase = NULL;
 std::vector<CteSPI *> g_ppObject;
 IDispatch	*g_pdispProgressProc = NULL;
 LPFNGetImage lpfnGetImage = NULL;
+LONG		g_lLocks = 0;
 
 TEmethod methodBASE[] = {
 	{ 0x60010000, L"Open" },
@@ -67,9 +67,9 @@ VOID teGetProcAddress(HMODULE hModule, LPSTR lpName, FARPROC *lpfnA, FARPROC *lp
 void LockModule(BOOL bLock)
 {
 	if (bLock) {
-		InterlockedIncrement(&g_lLocks);
+		::InterlockedIncrement(&g_lLocks);
 	} else {
-		InterlockedDecrement(&g_lLocks);
+		::InterlockedDecrement(&g_lLocks);
 	}
 }
 
@@ -936,47 +936,65 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpPath, int cx, HBITMAP *phBM, 
 				}
 				HLOCAL hLocal = NULL;
 				BSTR bsInfo = NULL;
-				if (pSPI->IsSupportedW && pSPI->GetArchiveInfoW && pSPI->GetFileW) {
-					if (pSPI->IsSupportedW(lpPath, (void *)pdw)) {
-						HLOCAL hInfo = NULL;
-						iResult = pSPI->GetArchiveInfoW(lpPath, 0, 0, &hInfo);
-						if (iResult == SPI_ALL_RIGHT && hInfo) {
-							SUSIE_FINFOTW *pfinfo = (SUSIE_FINFOTW *)LocalLock(hInfo);
-							for (int j = 0; hLocal == NULL && pfinfo[j].method[0]; j++) {
-								teSysFreeString(&bsInfo);
-								bsInfo = ::SysAllocString(pfinfo[j].filename);
-								if (PathMatchSpec(bsInfo, pSPI->m_bsPreview)) {
-									pSPI->GetFileW(lpPath, pfinfo[j].position, (LPWSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
+				try {
+					if (pSPI->IsSupportedW && pSPI->GetArchiveInfoW && pSPI->GetFileW) {
+						if (pSPI->IsSupportedW(lpPath, (void *)pdw)) {
+							HLOCAL hInfo = NULL;
+							pSPI->GetArchiveInfoW(lpPath, 0, 0, &hInfo);
+							if (hInfo) {
+								SUSIE_FINFOTW *pfinfo = (SUSIE_FINFOTW *)LocalLock(hInfo);
+								if (pfinfo) {
+									try {
+										for (int j = 0; pfinfo[j].method[0]; j++) {
+											teSysFreeString(&bsInfo);
+											bsInfo = ::SysAllocString(pfinfo[j].filename);
+											if (PathMatchSpec(bsInfo, pSPI->m_bsPreview)) {
+												pSPI->GetFileW(lpPath, pfinfo[j].position, (LPWSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
+												if (hLocal) {
+													break;
+												}
+											}
+										}
+									} catch (...) {}
+									LocalUnlock(hInfo);
 								}
+								LocalFree(hInfo);
 							}
-							LocalUnlock(hInfo);
 						}
-						LocalFree(hInfo);
-					}
-				} else if (pSPI->GetArchiveInfo && pSPI->GetFile) {
-					if (!bsPathA) {
-						bsPathA = teWide2Ansi(lpPath, -1);
-					}
-					if (pSPI->IsSupported((LPSTR)bsPathA, (void *)pdw)) {
-						HLOCAL hInfo = NULL;
-						iResult = pSPI->GetArchiveInfo((LPSTR)bsPathA, 0, 0, &hInfo);
-						if (iResult == SPI_ALL_RIGHT && hInfo) {
-							SUSIE_FINFO *pfinfo = (SUSIE_FINFO *)LocalLock(hInfo);
-							for (int j = 0; hLocal == NULL && pfinfo[j].method[0]; j++) {
-								teSysFreeString(&bsInfo);
-								int nLenW = MultiByteToWideChar(CP_ACP, 0, pfinfo[j].filename, -1, NULL, NULL);
-								if (nLenW) {
-									bsInfo = ::SysAllocStringLen(NULL, nLenW - 1);
-									MultiByteToWideChar(CP_ACP, 0, pfinfo[j].filename, -1, bsInfo, nLenW);
+					} else if (pSPI->GetArchiveInfo && pSPI->GetFile) {
+						if (!bsPathA) {
+							bsPathA = teWide2Ansi(lpPath, -1);
+						}
+						if (pSPI->IsSupported((LPSTR)bsPathA, (void *)pdw)) {
+							HLOCAL hInfo = NULL;
+							pSPI->GetArchiveInfo((LPSTR)bsPathA, 0, 0, &hInfo);
+							if (hInfo) {
+								SUSIE_FINFO *pfinfo = (SUSIE_FINFO *)LocalLock(hInfo);
+								if (pfinfo) {
+									try {
+										for (int j = 0; pfinfo[j].method[0]; j++) {
+											teSysFreeString(&bsInfo);
+											int nLenW = MultiByteToWideChar(CP_ACP, 0, pfinfo[j].filename, -1, NULL, NULL);
+											if (nLenW) {
+												bsInfo = ::SysAllocStringLen(NULL, nLenW - 1);
+												MultiByteToWideChar(CP_ACP, 0, pfinfo[j].filename, -1, bsInfo, nLenW);
+											}
+											if (PathMatchSpec(bsInfo, pSPI->m_bsPreview)) {
+												pSPI->GetFile((LPSTR)bsPathA, pfinfo[j].position, (LPSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
+												if (hLocal) {
+													break;
+												}
+											}
+										}
+									} catch (...) {}
+									LocalUnlock(hInfo);
 								}
-								if (PathMatchSpec(bsInfo, pSPI->m_bsPreview)) {
-									pSPI->GetFile((LPSTR)bsPathA, pfinfo[j].position, (LPSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
-								}
+								LocalFree(hInfo);
 							}
-							LocalUnlock(hInfo);
 						}
-						LocalFree(hInfo);
 					}
+				} catch (...) {
+					hLocal = NULL;
 				}
 				if (hLocal) {
 					IStream *pStreamOut = NULL;
@@ -1351,38 +1369,50 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 							VARIANT v, vX;
 							VariantInit(&v);
 							if (GetArchiveInfoW) {
-								iResult = GetArchiveInfoW(lpBuf, len, flag, &hInfo);
-								if (iResult == SPI_ALL_RIGHT) {
-									SUSIE_FINFOTW *pfinfo = (SUSIE_FINFOTW *)hInfo;
-									for (int i = 0; pfinfo[i].method[0]; i++) {
-										if SUCCEEDED(Invoke5(pdisp, DISPID_VALUE, DISPATCH_METHOD, &v, 0, NULL)) {
-											if (v.vt == VT_DISPATCH) {
-												teSetSusieFileInfoW(v.pdispVal, &pfinfo[i]);
-												teExecMethod(pList, L"push", NULL, -1, &v);
-												VariantClear(&v);
+								GetArchiveInfoW(lpBuf, len, flag, &hInfo);
+								if (hInfo) {
+									SUSIE_FINFOTW *pfinfo = (SUSIE_FINFOTW *)LocalLock(hInfo);
+									if (pfinfo) {
+										try {
+											for (int i = 0; pfinfo[i].method[0]; i++) {
+												if SUCCEEDED(Invoke5(pdisp, DISPID_VALUE, DISPATCH_METHOD, &v, 0, NULL)) {
+													if (v.vt == VT_DISPATCH) {
+														teSetSusieFileInfoW(v.pdispVal, &pfinfo[i]);
+														teExecMethod(pList, L"push", NULL, -1, &v);
+														VariantClear(&v);
+													}
+												}
 											}
-										}
+										} catch (...) {}
+										LocalUnlock(hInfo);
 									}
+									LocalFree(hInfo);
 								}
 							} else if (GetArchiveInfo) {
 								if (bDelete) {
-									iResult = GetArchiveInfo((LPSTR)lpBuf, len, flag, &hInfo);
+									GetArchiveInfo((LPSTR)lpBuf, len, flag, &hInfo);
 								} else {
 									BSTR bsBufA = teWide2Ansi(lpBuf, -1);
-									iResult = GetArchiveInfo((LPSTR)bsBufA, len, flag, &hInfo);
+									GetArchiveInfo((LPSTR)bsBufA, len, flag, &hInfo);
 									teSysFreeString(&bsBufA);
 								}
-								if (iResult == SPI_ALL_RIGHT) {
-									SUSIE_FINFO *pfinfo = (SUSIE_FINFO *)hInfo;
-									for (int i = 0; pfinfo[i].method[0]; i++) {
-										if SUCCEEDED(Invoke5(pdisp, DISPID_VALUE, DISPATCH_METHOD, &vX, 0, NULL)) {
-											if (v.vt == VT_DISPATCH) {
-												teSetSusieFileInfoA(v.pdispVal, &pfinfo[i]);
-												teExecMethod(pList, L"push", NULL, -1, &v);
-												VariantClear(&v);
+								if (hInfo) {
+									SUSIE_FINFO *pfinfo = (SUSIE_FINFO *)LocalLock(hInfo);
+									if (pfinfo) {
+										try {
+											for (int i = 0; pfinfo[i].method[0]; i++) {
+												if SUCCEEDED(Invoke5(pdisp, DISPID_VALUE, DISPATCH_METHOD, &vX, 0, NULL)) {
+													if (v.vt == VT_DISPATCH) {
+														teSetSusieFileInfoA(v.pdispVal, &pfinfo[i]);
+														teExecMethod(pList, L"push", NULL, -1, &v);
+														VariantClear(&v);
+													}
+												}
 											}
-										}
+										} catch (...) {}
+										LocalUnlock(hInfo);
 									}
+									LocalFree(hInfo);
 								}
 							}
 							pdisp->Release();
@@ -1415,7 +1445,7 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 							if (iResult == SPI_ALL_RIGHT) {
 								teSetSusieFileInfoW(punk, &finfo);
 							}
-						} else if (GetArchiveInfo) {
+						} else if (GetFileInfo) {
 							SUSIE_FINFO finfo;
 							BSTR bsFilenameA = teWide2Ansi(lpfilename, -1);
 							if (bDelete) {
@@ -1524,7 +1554,7 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 				return S_OK;
 			//IsUnicode
 			case 0x6001FFFF:
-				teSetBool(pVarResult, GetPluginInfoW != NULL);
+				teSetBool(pVarResult, IsSupportedW != NULL);
 				return S_OK;
 			//this
 			case DISPID_VALUE:

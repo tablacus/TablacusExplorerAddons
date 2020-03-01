@@ -6,10 +6,8 @@ if (window.Addon == 1) {
 		AM: [],
 
 		Finalize: function () {
-			if (Addons.SPI.IN.length) {
-				te.RemoveEvent("GetImage", Addons.SPI.DLL.GetImage);
-				Addons.SPI.IN = [];
-			}
+			te.RemoveEvent("GetImage", Addons.SPI.DLL.GetImage);
+			Addons.SPI.IN = [];
 			if (Addons.SPI.AM.length) {
 				te.RemoveEvent("GetArchive", Addons.SPI.DLL.GetArchive);
 				Addons.SPI.AM = [];
@@ -27,24 +25,33 @@ if (window.Addon == 1) {
 	if (Addons.SPI.DLL) {
 		var xml = OpenXml("spi" + (api.sizeof("HANDLE") * 8) + ".xml", false, false);
 		if (xml) {
+			var bPreview = false;
 			var items = xml.getElementsByTagName("Item");
-			for (var i = items.length; i-- > 0;) {
+			for (var i = 0; i < items.length; i++) {
 				if (!items[i].getAttribute("Disabled")) {
 					var SPI = Addons.SPI.DLL.open(api.PathUnquoteSpaces(ExtractMacro(te, items[i].getAttribute("Path")))) || {};
 					var filter = [];
 					if (items[i].getAttribute("Filter")) {
-						var ar = [];
-						if (SPI.GetPluginInfo) {
-							SPI.GetPluginInfo(ar);
-						}
-						for (var j = 2; j < ar.length; j += 2) {
-							filter.push(ar[j]);
+						var s = items[i].getAttribute("UserFilter");
+						if (s) {
+							filter.push(s);
+						} else {
+							var ar = [];
+							if (SPI.GetPluginInfo) {
+								SPI.GetPluginInfo(ar);
+							}
+							for (var j = 2; j < ar.length; j += 2) {
+								filter.push(ar[j]);
+							}
 						}
 					} else {
 						filter.push("*");
 					}
 					SPI.Filter = filter.join(";");
-					SPI.Preview = items[i].getAttribute("Preview");
+					SPI.Preview = items[i].getAttribute("IsPreview") ? items[i].getAttribute("Preview") || "*" : "-";
+					if (SPI.Preview != "-") {
+						bPreview = true;
+					}
 					if (SPI.GetPicture) {
 						Addons.SPI.IN.push(SPI);
 					}
@@ -56,12 +63,12 @@ if (window.Addon == 1) {
 		}
 		delete xml;
 		delete SPI;
-		if (Addons.SPI.IN.length) {
+		Addons.SPI.DLL.GetImage(api.GetProcAddress(null, "GetImage"));
+		if (Addons.SPI.IN.length || bPreview) {
 			te.AddEvent("GetImage", Addons.SPI.DLL.GetImage);
 		}
 		if (Addons.SPI.AM.length) {
 			te.AddEvent("GetArchive", Addons.SPI.DLL.GetArchive);
 		}
-		Addons.SPI.DLL.GetImage(api.GetProcAddress(null, "GetImage"));
 	}
 }

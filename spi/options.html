@@ -45,15 +45,14 @@
               <br>
               <table style="width: 100%"><tr>
                 <td style="vertical-align: bottom"><input type="checkbox" name="Filter"></td>
-                <td style="width: 100%"><input type="text" name="_Filter" style="width: 100%" readonly></td>
+                <td style="width: 100%"><input type="text" name="UserFilter" style="width: 100%"></td>
                 </tr>
               </table>
-              <label>Preview</label> (AM)
-              <br>
+              <label>Preview</label> (AM)<br>
               <table style="width: 100%">
                 <tr>
-                  <td style="vertical-align: bottom"><input type="checkbox" name="_Preview" onclick="SwitchPreview(this)"></td>
-                  <td style="width: 100%"><input type="text" name="Preview" style="width: 100%" onchange="ChangePreview()"></td>
+                  <td style="vertical-align: bottom"><input type="checkbox" name="IsPreview"></td>
+                  <td style="width: 100%"><input type="text" name="Preview" placeholder="*" style="width: 100%"></td>
                 </tr>
               </table>
               <label>Information</label>&emsp;<span id="ver"></span>

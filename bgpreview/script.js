@@ -27,7 +27,7 @@ if (window.Addon == 1) {
 			if (Addons.BGPreview.Visible) {
 				Addons.BGPreview.Arrange();
 			} else {
-				Addons.BGPreview.Finalize();
+				Addons.BGPreview.Clear();
 			}
 		},
 
@@ -104,7 +104,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEventId("AddonDisabledEx", "bgpreview", Addons.BGPreview.Finalize);
+	AddEventId("AddonDisabledEx", "bgpreview", Addons.BGPreview.Clear);
 
 	AddEvent("Finalize", Addons.BGPreview.Clear);
 
