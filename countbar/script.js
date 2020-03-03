@@ -6,8 +6,7 @@ if (window.Addon == 1) {
 	{
 		Title: GetAddonOption(Addon_Id, "Title"),
 
-		Exec: function (Ctrl, Text, iPart)
-		{
+		Exec: function (Ctrl, Text, iPart) {
 			var FV = GetFolderView(Ctrl);
 			if (FV) {
 				var s;
@@ -16,7 +15,7 @@ if (window.Addon == 1) {
 					var nCount = FV.ItemCount(SVGIO_SELECTION);
 					if (nCount) {
 						var s1 = nCount > 1 ? Addons.CountBar.Item[2] : Addons.CountBar.Item[3];
-						if (nCount > 999 && document.documentMode > 8) {
+						if (nCount > 999 && g_.IEVer > 8) {
 							nCount = nCount.toLocaleString();
 						}
 						s.push(api.sprintf(s1.length + 9, s1, nCount));
