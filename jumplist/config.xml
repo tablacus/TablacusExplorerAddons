@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2020.3.4</MinVersion>
+    <pubDate>Wed, 04 Mar 2020 00:00:00 GMT</pubDate>
+    <Options>Common:4:4</Options>
+    <DllVersion>1.0.0.0</DllVersion>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Jump list</Name>
+    <Description>Jump list</Description>
+  </en>
+  <ja>
+    <Name>ジャンプリスト</Name>
+  </ja>
+</TablacusExplorer>

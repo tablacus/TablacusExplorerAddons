@@ -1,0 +1,61 @@
+<form name="E">
+  <table style="width: 100%; height: calc(100% - 2em)">
+    <tr>
+      <td style="width: 12em; vertical-align: top">
+        <select name="List" size="20" style="width: 12em; height: 100%" onchange="EditXEx(EditIC, 'List')" ondblclick="EditIC('List')" oncontextmenu="CancelX('List')" multiple>
+        </select>
+      </td>
+      <td style="width: 100%; vertical-align: top">
+        <label>Name</label><br>
+        <input type="text" name="Name" style="width: 100%" onfocus="this.select()" onchange="ChangeX('List')"><br>
+        <table class="layout">
+          <tr>
+            <td style="width: 100%; white-space: nowrap; vertical-align: bottom;">
+              <label>Path</label>
+            </td>
+            <td>
+              <input type="button" value="Portable" onclick="PortableX('Path')">
+            </td>
+            <td>
+              <input type="button" value="Browse..." onclick="RefX('Path', false, this, false, api.LoadString(hShell32, 4131) + '|<Folder>')">
+            </td>
+          </tr>
+        </table>
+        <input type="text" name="Path" style="width: 100%" onfocus="this.select()" onchange="SetNameX(this)"><br>
+        <table class="layout">
+          <tr>
+            <td style="width: 100%; vertical-align: bottom"><label>Icon</label></td>
+            <td align="right">
+              <input type="button" value="Portable" title="Icon" onclick="PortableX('Icon1')">
+            </td>
+            <td align="right">
+              <input type="button" value="Select" onclick="ShowIcon(document.E.Icon1, 2);" title="Icon">
+            </td>
+            <td align="right">
+              <input type="button" value="Browse..." onclick="RefX('Icon1', false, this, false, GetText('Icon') + '(*.ico)#*.ico')">
+            </td>
+          </tr>
+        </table>
+        <input type="text" name="Icon1" style="width: 100%" onchange="ShowIconX()" onfocus="this.select()" onchange="ChangeX('List')">
+        <img id="icon_" style="height: 12pt"><br>
+        <label>@shell32.dll,-31061[-9045]</label><br>
+        <input type="text" name="Category" placeholder="List" style="width: 100%" onfocus="this.select()" onchange="SetNameX(this)"><br>
+      </td>
+    </tr>
+  </table>
+  <table style="width: 100%">
+    <tr>
+      <td style="width: 100%; white-space: nowrap">
+        <input type="button" value="Remove" onclick="RemoveX('List')">
+        <input type="button" value="Up" onclick="MoveX('List',-1)">
+        <input type="button" value="Down" onclick="MoveX('List',1)">
+        <input type="checkbox" id="_EDIT" checked="">
+        <label for="_EDIT">Edit</label>
+      </td>
+      <td style="white-space: nowrap">
+        <input type="button" value="Add" onclick="AddX('List', ReplaceIC)">
+        <input type="button" value="Replace" onclick="ReplaceIC('List')">
+      </td>
+    </tr>
+  </table>
+</form>
