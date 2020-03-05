@@ -13,6 +13,30 @@ struct TEmethod
 	LPWSTR name;
 };
 
+struct TEGetImageArg
+{
+	IStream *pStream;
+	LPWSTR lpPath;
+	int cx;
+	HBITMAP *phBM;
+	int *pnAlpha;
+	BSTR bsPathA;
+	LONG_PTR len;
+	BOOL bDelete;
+	BSTR pdw;
+};
+
+struct TEGetArchiveArg
+{
+	LPCWSTR lpszArcPath;
+	LPCWSTR lpszItem; 
+	IStream **ppStream;
+	BOOL bDelete;
+	BSTR pdw;
+	BSTR bsPathA;
+	BSTR bsItemA;
+};
+
 #ifdef _WIN64
 #define teSetPtr(pVar, nData)	teSetLL(pVar, (LONGLONG)nData)
 #define GetPtrFromVariant(pv)	GetLLFromVariant(pv)
@@ -123,6 +147,9 @@ public:
 
 	VOID Close();
 
+	HRESULT GetImage(TEGetImageArg *pArg);
+	HRESULT GetArchive(TEGetArchiveArg *pArg);
+
 	LPFN_GetPluginInfo GetPluginInfo;
 	LPFN_GetPluginInfoW GetPluginInfoW;
 	LPFN_IsSupported IsSupported;
@@ -145,6 +172,7 @@ public:
 	BSTR		m_bsLib;
 	BSTR		m_bsFilter;
 	BSTR		m_bsPreview;
+	BOOL		m_bSync;
 private:
 	LONG		m_cRef;
 };

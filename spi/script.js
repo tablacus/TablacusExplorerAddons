@@ -23,13 +23,14 @@ if (window.Addon == 1) {
 		}
 	});
 	if (Addons.SPI.DLL) {
+		Addons.SPI.DLL.Clear();
 		var xml = OpenXml("spi" + (api.sizeof("HANDLE") * 8) + ".xml", false, false);
 		if (xml) {
 			var bPreview = false;
 			var items = xml.getElementsByTagName("Item");
 			for (var i = 0; i < items.length; i++) {
 				if (!items[i].getAttribute("Disabled")) {
-					var SPI = Addons.SPI.DLL.open(api.PathUnquoteSpaces(ExtractMacro(te, items[i].getAttribute("Path")))) || {};
+					var SPI = Addons.SPI.DLL.Open(api.PathUnquoteSpaces(ExtractMacro(te, items[i].getAttribute("Path")))) || {};
 					var filter = [];
 					if (items[i].getAttribute("Filter")) {
 						var s = items[i].getAttribute("UserFilter");
@@ -49,6 +50,7 @@ if (window.Addon == 1) {
 					}
 					SPI.Filter = filter.join(";");
 					SPI.Preview = items[i].getAttribute("IsPreview") ? items[i].getAttribute("Preview") || "*" : "-";
+					SPI.Sync = items[i].getAttribute("Sync") ? 1 : 0;
 					if (SPI.Preview != "-") {
 						bPreview = true;
 					}

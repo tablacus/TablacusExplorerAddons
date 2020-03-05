@@ -16,7 +16,7 @@ function LoadFS() {
 			g_x.List.length = i;
 			while (--i >= 0) {
 				var item = items[i];
-				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Disabled"), item.getAttribute("Filter"), item.getAttribute("Preview"), item.getAttribute("IsPreview"), item.getAttribute("UserFilter")], !item.getAttribute("Disabled"));
+				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Disabled"), item.getAttribute("Filter"), item.getAttribute("Preview"), item.getAttribute("IsPreview"), item.getAttribute("UserFilter"), item.getAttribute("Sync")], !item.getAttribute("Disabled"));
 			}
 		}
 		EnableSelectTag(g_x.List);
@@ -38,6 +38,7 @@ function SaveFS() {
 			item.setAttribute("Preview", a[4]);
 			item.setAttribute("IsPreview", a[5]);
 			item.setAttribute("UserFilter", a[6]);
+			item.setAttribute("Sync", a[7]);
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
@@ -57,6 +58,7 @@ function EditFS() {
 	document.F.Preview.value = a[4] || "";
 	document.F.IsPreview.checked = a[5];
 	document.F.UserFilter.value = a[6] || "";
+	document.F.Sync.checked = a[7];
 	SetProp();
 }
 
@@ -68,11 +70,14 @@ function ReplaceFS() {
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
 	o = document.F.Type;
-	SetData(sel, [document.F.Name.value, document.F.Path.value, !document.F.Enable.checked, document.F.Filter.checked, document.F.Preview.value, document.F.IsPreview.checked, document.F.UserFilter.value], document.F.Enable.checked);
+	SetData(sel, [document.F.Name.value, document.F.Path.value, !document.F.Enable.checked, document.F.Filter.checked, document.F.Preview.value, document.F.IsPreview.checked, document.F.UserFilter.value, document.F.Sync.checked], document.F.Enable.checked);
 	g_Chg.List = true;
 }
 
 function PathChanged() {
+	if (/ZBYPASS/i.test(document.F.Path.value)) {
+		document.F.Sync.checked = true;
+	}
 	SetProp(true);
 }
 
