@@ -2,7 +2,6 @@
 #include <windows.h>
 #include <dispex.h>
 #include <shlwapi.h>
-#include <vector>
 #pragma comment (lib, "shlwapi.lib")
 #include "libgfl.h"
 

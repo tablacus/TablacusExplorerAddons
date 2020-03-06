@@ -12,7 +12,9 @@ if (window.Addon == 1) {
 			delete Addons.GFLSDK.GFL;
 			CollectGarbage();
 		}
-		delete Addons.GFLSDK.DLL;
+		if (Addons.GFLSDK.DLL) {
+			delete Addons.GFLSDK.DLL;
+		}
 	}
 
 	AddEvent("AddonDisabled", function (Id) {

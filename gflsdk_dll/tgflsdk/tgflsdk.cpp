@@ -1,6 +1,6 @@
 // Tablacus GFL SDK Wrapper (C)2018 Gaku
 // MIT Lisence
-// Visual C++ 2010 Express Edition SP1
+// Visual Studio Express 2017 for Windows Desktop
 // Windows SDK v7.1
 // https://tablacus.github.io/
 
@@ -12,7 +12,7 @@ const TCHAR g_szClsid[] = TEXT("{04D5F147-2A06-4760-9120-7CAE154FBB21}");
 HINSTANCE	g_hinstDll = NULL;
 LONG		g_lLocks = 0;
 CteBase		*g_pBase = NULL;
-std::vector <CteWO *>	g_ppObject;
+CteWO		*g_pObject = NULL;
 
 TEmethod methodBASE[] = {
 	{ 0x60010000, L"Open" },
@@ -604,16 +604,11 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
-			g_ppObject.clear();
 			g_pBase = new CteBase();
 			g_hinstDll = hinstDll;
 			break;
 		case DLL_PROCESS_DETACH:
-			for (int i = g_ppObject.size(); i--;) {
-				g_ppObject[i]->Close();
-				SafeRelease(&g_ppObject[i]);
-			}
-			g_ppObject.clear();
+			SafeRelease(&g_pObject);
 			SafeRelease(&g_pBase);
 			break;
 	}
@@ -651,7 +646,7 @@ STDAPI DllRegisterServer(void)
 	if (lr != ERROR_SUCCESS) {
 		return ShowRegError(lr);
 	}
-	GetModuleFileName(g_hinstDll, szModulePath, sizeof(szModulePath) / sizeof(TCHAR));
+	GetModuleFileName(g_hinstDll, szModulePath, ARRAYSIZE(szModulePath));
 	wsprintf(szKey, TEXT("CLSID\\%s\\InprocServer32"), g_szClsid);
 	lr = CreateRegistryKey(HKEY_CLASSES_ROOT, szKey, NULL, szModulePath);
 	if (lr != ERROR_SUCCESS) {
@@ -712,64 +707,65 @@ GFL_ERROR tegflConvertBitmapIntoDDB(GFL_BITMAP *gflBM, HBITMAP *phBM)
 //GetImage
 HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpfn, int cx, HBITMAP *phBM, int *pnAlpha)
 {
-	CteWO *pWO = g_ppObject[0];
+	InterlockedIncrement(&g_lLocks);
 	GFL_ERROR iResult = GFL_UNKNOWN_ERROR;
 	GFL_LOAD_PARAMS params;
 	GFL_BITMAP *gflBM = new GFL_BITMAP();
 
-	if (cx && pWO->m_gflLoadThumbnailFromHandle) {
-		pWO->m_gflGetDefaultThumbnailParams(&params);
+	if (cx && g_pObject->m_gflLoadThumbnailFromHandle) {
+		g_pObject->m_gflGetDefaultThumbnailParams(&params);
 		params.Flags = GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE | GFL_LOAD_HIGH_QUALITY_THUMBNAIL;
 		params.ColorModel = GFL_BGRA;
 		params.Callbacks.Read = teReadStream;
 		params.Callbacks.Seek = teSeekStream;
 		params.Callbacks.Tell = teTellStream;
-		iResult = pWO->m_gflLoadThumbnailFromHandle((GFL_HANDLE)pStream, cx, cx, &gflBM, &params, NULL);
+		iResult = g_pObject->m_gflLoadThumbnailFromHandle((GFL_HANDLE)pStream, cx, cx, &gflBM, &params, NULL);
 	} else {
-		pWO->m_gflGetDefaultLoadParams(&params);
+		g_pObject->m_gflGetDefaultLoadParams(&params);
 		params.ColorModel = GFL_BGRA;
 		params.Callbacks.Read = teReadStream;
 		params.Callbacks.Seek = teSeekStream;
 		params.Callbacks.Tell = teTellStream;
-		iResult = pWO->m_gflLoadBitmapFromHandle((GFL_HANDLE)pStream, &gflBM, &params, NULL);
+		iResult = g_pObject->m_gflLoadBitmapFromHandle((GFL_HANDLE)pStream, &gflBM, &params, NULL);
 	}
 	if (iResult != GFL_NO_ERROR) {
-		if (cx && (pWO->m_gflLoadThumbnailW || pWO->m_gflLoadThumbnail)) {
-			pWO->m_gflGetDefaultThumbnailParams(&params);
+		if (cx && (g_pObject->m_gflLoadThumbnailW || g_pObject->m_gflLoadThumbnail)) {
+			g_pObject->m_gflGetDefaultThumbnailParams(&params);
 			params.Flags = GFL_LOAD_PREVIEW_NO_CANVAS_RESIZE | GFL_LOAD_HIGH_QUALITY_THUMBNAIL;
 			params.ColorModel = GFL_BGRA;
-			if (pWO->m_gflLoadThumbnailW) {
-				iResult = pWO->m_gflLoadThumbnailW(lpfn, cx, cx, &gflBM, &params, NULL);
-			} else if (pWO->m_gflLoadThumbnail) {
+			if (g_pObject->m_gflLoadThumbnailW) {
+				iResult = g_pObject->m_gflLoadThumbnailW(lpfn, cx, cx, &gflBM, &params, NULL);
+			} else if (g_pObject->m_gflLoadThumbnail) {
 				LPSTR lpAnsi = teWide2Ansi(lpfn, -1, CP_ACP);
-				iResult = pWO->m_gflLoadThumbnail(lpAnsi, cx, cx, &gflBM, &params, NULL);
+				iResult = g_pObject->m_gflLoadThumbnail(lpAnsi, cx, cx, &gflBM, &params, NULL);
 				teFreeAnsiString(&lpAnsi);
 			}
-		} else if (pWO->m_gflLoadBitmapW || pWO->m_gflLoadBitmap) {
-			pWO->m_gflGetDefaultLoadParams(&params);
+		} else if (g_pObject->m_gflLoadBitmapW || g_pObject->m_gflLoadBitmap) {
+			g_pObject->m_gflGetDefaultLoadParams(&params);
 			params.ColorModel = GFL_BGRA;
-			if (pWO->m_gflLoadBitmapW) {
-				iResult = pWO->m_gflLoadBitmapW(lpfn, &gflBM, &params, NULL);
-			} else if (pWO->m_gflLoadBitmap) {
+			if (g_pObject->m_gflLoadBitmapW) {
+				iResult = g_pObject->m_gflLoadBitmapW(lpfn, &gflBM, &params, NULL);
+			} else if (g_pObject->m_gflLoadBitmap) {
 				LPSTR lpAnsi = teWide2Ansi(lpfn, -1, CP_ACP);
-				iResult = pWO->m_gflLoadBitmap(lpAnsi, &gflBM, &params, NULL);
+				iResult = g_pObject->m_gflLoadBitmap(lpAnsi, &gflBM, &params, NULL);
 				teFreeAnsiString(&lpAnsi);
 			}
 		}
 	}
 	if (iResult != GFL_NO_ERROR) {
-		pWO->m_gflGetDefaultLoadParams(&params);
+		g_pObject->m_gflGetDefaultLoadParams(&params);
 		params.ColorModel = GFL_BGRA;
 		params.Callbacks.Read = teReadStream;
 		params.Callbacks.Seek = teSeekStream;
 		params.Callbacks.Tell = teTellStream;
-		iResult = pWO->m_gflLoadBitmapFromHandle((GFL_HANDLE)pStream, &gflBM, &params, NULL);
+		iResult = g_pObject->m_gflLoadBitmapFromHandle((GFL_HANDLE)pStream, &gflBM, &params, NULL);
 	}
 	if (iResult == GFL_NO_ERROR) {
 		tegflConvertBitmapIntoDDB(gflBM, phBM);
 		*pnAlpha = gflBM->ComponentsPerPixel >= 4 ? 0 : 2;
-		pWO->m_gflFreeBitmap(gflBM);
+		g_pObject->m_gflFreeBitmap(gflBM);
 	}
+	InterlockedDecrement(&g_lLocks);
 	return iResult == GFL_NO_ERROR ? S_OK : E_NOTIMPL;
 }
 
@@ -812,13 +808,7 @@ CteWO::CteWO(LPWSTR lpLib)
 CteWO::~CteWO()
 {
 	Close();
-
-	for (int i = g_ppObject.size(); i--;) {
-		if (this == g_ppObject[i]) {
-			g_ppObject.erase(g_ppObject.begin() + i);
- 			break;
-		}
-	}
+	g_pObject = NULL;
 }
 
 VOID CteWO::Close()
@@ -1120,37 +1110,18 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 		case 0x60010000:
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-
-				CteWO *pItem;
-				for (UINT i = g_ppObject.size(); i--;) {
-					pItem = g_ppObject[i];
-					if (pItem) {
-						if (lstrcmpi(lpLib, pItem->m_bsLib) == 0) {
-							teSetObject(pVarResult, pItem);
-							return S_OK;
-						}
-					}
+				if (!g_pObject || lstrcmpi(lpLib, g_pObject->m_bsLib)) {
+					SafeRelease(&g_pObject);
+					g_pObject = new CteWO(lpLib);
 				}
-				pItem = new CteWO(lpLib);
-				g_ppObject.push_back(pItem);
-				teSetObject(pVarResult, pItem);
+				teSetObject(pVarResult, g_pObject);
 			}
 			return S_OK;
 		//Close
 		case 0x6001000C:
-			if (nArg >= 0) {
-				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-
-				for (int i = g_ppObject.size(); i--;) {
-					if (g_ppObject[i]) {
-						if (lstrcmpi(lpLib, g_ppObject[i]->m_bsLib) == 0) {
-							g_ppObject[i]->Close();
-							SafeRelease(&g_ppObject[i]);
-							g_ppObject.erase(g_ppObject.begin() + i);
-							break;
-						}
-					}
-				}
+			if (g_pObject) {
+				g_pObject->Close();
+				SafeRelease(&g_pObject);
 			}
 			return S_OK;
 		//this

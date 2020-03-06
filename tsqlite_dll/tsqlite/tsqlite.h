@@ -4,13 +4,19 @@
 #include <shlwapi.h>
 #pragma comment (lib, "shlwapi.lib")
 
-#define MAX_OBJ 256
 #define SIZE_BUFF 32768
 
 struct TEmethod
 {
 	LONG   id;
 	LPWSTR name;
+};
+
+struct TECallback
+{
+	IUnknown *punkCallback;
+	IUnknown *punkDB;
+	VARIANT *pvResult;
 };
 
 #ifdef _WIN64

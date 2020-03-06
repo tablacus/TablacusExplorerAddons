@@ -1,8 +1,8 @@
 // Tablacus Susie Plug-in Wrapper (C)2017 Gaku
 // MIT Lisence
-// Visual C++ 2010 Express Edition SP1
+// Visual Studio Express 2017 for Windows Desktop
 // Windows SDK v7.1
-// http://www.eonet.ne.jp/~gakana/tablacus/
+// https://tablacus.github.io/
 
 #include "tsqlite.h"
 
@@ -12,7 +12,7 @@ const TCHAR g_szClsid[] = TEXT("{CAC858A3-6D0C-4E03-A609-880C7F04BBDA}");
 HINSTANCE	g_hinstDll = NULL;
 LONG		g_lLocks = 0;
 CteBase		*g_pBase = NULL;
-CteSQLite		*g_ppObject[MAX_OBJ];
+CteSQLite	*g_pObject = NULL;
 IDispatch	*g_pdispProgressProc = NULL;
 
 TEmethod methodBASE[] = {
@@ -582,19 +582,11 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
-			for (int i = MAX_OBJ; i--;) {
-				g_ppObject[i] = NULL;
-			}
 			g_pBase = new CteBase();
 			g_hinstDll = hinstDll;
 			break;
 		case DLL_PROCESS_DETACH:
-			for (int i = MAX_OBJ; i--;) {
-				if (g_ppObject[i]) {
-					g_ppObject[i]->Close();
-					SafeRelease(&g_ppObject[i]);
-				}
-			}
+			SafeRelease(&g_pObject);
 			SafeRelease(&g_pBase);
 			SafeRelease(&g_pdispProgressProc);
 			break;
@@ -633,7 +625,7 @@ STDAPI DllRegisterServer(void)
 	if (lr != ERROR_SUCCESS) {
 		return ShowRegError(lr);
 	}
-	GetModuleFileName(g_hinstDll, szModulePath, sizeof(szModulePath) / sizeof(TCHAR));
+	GetModuleFileName(g_hinstDll, szModulePath, ARRAYSIZE(szModulePath));
 	wsprintf(szKey, TEXT("CLSID\\%s\\InprocServer32"), g_szClsid);
 	lr = CreateRegistryKey(HKEY_CLASSES_ROOT, szKey, NULL, szModulePath);
 	if (lr != ERROR_SUCCESS) {
@@ -677,13 +669,15 @@ STDAPI DllUnregisterServer(void)
 int __cdecl sqlite3_callback(void *pArg, int argc, char **argv, char **columnNames)
 {
 	int iResult = SQLITE_OK;
-	IUnknown **ppunk = (IUnknown **)pArg;
-	if (ppunk[0] && ppunk[1] && ppunk[2]) {
+	TECallback *pcb = (TECallback *)pArg;
+	if (pcb->punkCallback && pcb->punkDB) {
 		VARIANT vDB, vColumn, vArgv, vResult;
 		VariantInit(&vDB);
 		IDispatch *pdisp;
-		if SUCCEEDED(ppunk[1]->QueryInterface(IID_PPV_ARGS(&pdisp))) {
-			Invoke4(pdisp, &vDB, 0, NULL);
+		if SUCCEEDED(pcb->punkDB->QueryInterface(IID_PPV_ARGS(&pdisp))) {
+			LPVARIANTARG pv = GetNewVARIANT(1);
+			teSetSZ(pv, L"Object");
+			Invoke4(pdisp, &vDB, 1, pv);
 			pdisp->Release();
 		}
 		IUnknown *punk;
@@ -698,7 +692,7 @@ int __cdecl sqlite3_callback(void *pArg, int argc, char **argv, char **columnNam
 				VariantClear(&vColumn);
 			}
 		}
-		if SUCCEEDED(ppunk[0]->QueryInterface(IID_PPV_ARGS(&pdisp))) {
+		if SUCCEEDED(pcb->punkCallback->QueryInterface(IID_PPV_ARGS(&pdisp))) {
 			VARIANTARG *pv = GetNewVARIANT(1);
 			VariantCopy(&pv[0], &vDB);
 			VariantInit(&vResult);
@@ -707,6 +701,9 @@ int __cdecl sqlite3_callback(void *pArg, int argc, char **argv, char **columnNam
 			iResult = GetIntFromVariantClear(&vResult);
 		}
 		VariantClear(&vDB);
+	} else if (argc && pcb->pvResult) {
+		VariantClear(pcb->pvResult);
+		teSetSZA(pcb->pvResult, argv[0], CP_UTF8);
 	}
 	return iResult;
 }
@@ -729,12 +726,7 @@ CteSQLite::CteSQLite(HMODULE hDll, LPWSTR lpLib)
 CteSQLite::~CteSQLite()
 {
 	Close();
-	for (int i = MAX_OBJ; i--;) {
-		if (this == g_ppObject[i]) {
-			g_ppObject[i] = NULL;
-			break;
-		}
-	}
+	g_pObject = NULL;
 }
 
 VOID CteSQLite::Close()
@@ -822,15 +814,21 @@ STDMETHODIMP CteSQLite::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD
 				if (nArg >= 0 && sqlite3_exec && sqlite3_free) {
 					LPSTR lpExec = teWide2Ansi(GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]), -1, CP_UTF8);
 					if (lpExec) {
+						TECallback cb;
+						::ZeroMemory(&cb, sizeof(TECallback));
 						char *lpErr = NULL;
-						IUnknown *ppunk[2];
-						ppunk[0] = NULL;
-						ppunk[1] = NULL;
-						if (nArg >= 2) {
-							FindUnknown(&pDispParams->rgvarg[nArg - 1], &ppunk[0]);
-							FindUnknown(&pDispParams->rgvarg[nArg - 2], &ppunk[1]);
+						int nValue = nArg >= 1 ? GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]) : 0;
+						if (nValue) {
+							cb.pvResult = pVarResult;
 						}
-						iResult = sqlite3_exec(m_pSQLite3, lpExec, sqlite3_callback, ppunk, &lpErr);
+						if (nArg >= 2) {
+							FindUnknown(&pDispParams->rgvarg[nArg - 1], &cb.punkCallback);
+							FindUnknown(&pDispParams->rgvarg[nArg - 2], &cb.punkDB);
+						}
+						iResult = sqlite3_exec(m_pSQLite3, lpExec, sqlite3_callback, &cb, &lpErr);
+						if (nValue) {
+							iResult = -1;
+						}
 						teFreeAnsiString(&lpExec);
 						if (lpErr) {
 							IUnknown *punk;
@@ -844,7 +842,10 @@ STDMETHODIMP CteSQLite::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD
 							sqlite3_free(lpErr);
 						}
 					}
-					teSetLong(pVarResult, iResult);
+					if (iResult >= 0 && pVarResult) {
+						VariantClear(pVarResult);
+						teSetLong(pVarResult, iResult);
+					}
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
 					teSetBool(pVarResult, sqlite3_open != NULL);
 				}
@@ -923,44 +924,21 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 		case 0x60010000:
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-
-				int nEmpty = -1;
-				CteSQLite *pItem;
-				for (int i = MAX_OBJ; i--;) {
-					pItem = g_ppObject[i];
-					if (pItem) {
-						if (lstrcmpi(lpLib, pItem->m_bsLib) == 0) {
-							teSetObject(pVarResult, pItem);
-							return S_OK;
-						}
-					} else if (nEmpty < 0) {
-						nEmpty = i;
-					}
-				}
-				if (nEmpty >= 0) {
+				if (!g_pObject || lstrcmpi(lpLib, g_pObject->m_bsLib)) {
 					HMODULE hDll = LoadLibrary(lpLib);
 					if (hDll) {
-						pItem = new CteSQLite(hDll, lpLib);
-						g_ppObject[nEmpty] = pItem;
-						teSetObjectRelease(pVarResult, pItem);
+						SafeRelease(&g_pObject);
+						g_pObject = new CteSQLite(hDll, lpLib);
 					}
 				}
+				teSetObjectRelease(pVarResult, g_pObject);
 			}
 			return S_OK;
 		//Close
 		case 0x6001000C:
-			if (nArg >= 0) {
-				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-
-				for (int i = MAX_OBJ; i--;) {
-					if (g_ppObject[i]) {
-						if (lstrcmpi(lpLib, g_ppObject[i]->m_bsLib) == 0) {
-							g_ppObject[i]->Close();
-							SafeRelease(&g_ppObject[i]);
-							break;
-						}
-					}
-				}
+			if (g_pObject) {
+				g_pObject->Close();
+				SafeRelease(&g_pObject);
 			}
 			return S_OK;
 		//this

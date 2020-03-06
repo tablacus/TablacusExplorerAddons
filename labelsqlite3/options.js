@@ -9,8 +9,7 @@ s.push('<br><input type="button" value="', api.sprintf(999, GetText("Get %s...")
 
 SetTabContents(0, "", s.join(""));
 
-Addons.LabelSQLite3.Import = function ()
-{
+Addons.LabelSQLite3.Import = function () {
 	var commdlg = api.CreateObject("CommonDialog");
 	commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "config")
 	commdlg.Filter = MakeCommDlgFilter("*.tsv");
@@ -20,8 +19,7 @@ Addons.LabelSQLite3.Import = function ()
 	}
 }
 
-Addons.LabelSQLite3.Export = function ()
-{
+Addons.LabelSQLite3.Export = function () {
 	var commdlg = api.CreateObject("CommonDialog");
 	commdlg.InitDir = fso.BuildPath(te.Data.DataFolder, "config")
 	commdlg.Filter = MakeCommDlgFilter("*.tsv");
@@ -32,8 +30,7 @@ Addons.LabelSQLite3.Export = function ()
 	}
 }
 
-Addons.LabelSQLite3.Info = function ()
-{
+Addons.LabelSQLite3.Info = function () {
 	SPI = null;
 	var dllPath = api.PathUnquoteSpaces(ExtractMacro(te, document.F.elements["Path" + (api.sizeof("HANDLE") * 8)].value) || 'sqlite3.dll');
 	if (Addons.LabelSQLite3.DLL) {
