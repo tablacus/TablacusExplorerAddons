@@ -1,8 +1,6 @@
 var Addon_Id = "spi";
 var g_Chg = { List: false, Data: "List" };
 var SPI;
-var tspiPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\spi\\tspi", api.sizeof("HANDLE") * 8, ".dll"].join(""));
-var DLL = api.DllGetClassObject(tspiPath, "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
 
 function LoadFS() {
 	if (!g_x.List) {
@@ -84,8 +82,8 @@ function PathChanged() {
 function SetProp(bName) {
 	SPI = null;
 	var dllPath = api.PathUnquoteSpaces(ExtractMacro(te, document.F.Path.value));
-	if (DLL) {
-		SPI = DLL.open(dllPath) || {};
+	if (Addons.SPI.DLL) {
+		SPI = Addons.SPI.DLL.open(dllPath) || {};
 	}
 	if (bName && SPI.GetPluginInfo) {
 		var ar = [];

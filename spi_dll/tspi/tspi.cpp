@@ -15,17 +15,16 @@ std::vector<CteSPI *> g_ppObject;
 IDispatch	*g_pdispProgressProc = NULL;
 LPFNGetImage lpfnGetImage = NULL;
 LONG		g_lLocks = 0;
-CRITICAL_SECTION g_csObject;
-IStream		*g_pStrmObj = NULL;
+DWORD		g_dwCookie = 0;
 DWORD		g_dwMainThreadId;
 
 TEmethod methodBASE[] = {
 	{ 0x60010000, L"Open" },
 	{ 0x60010001, L"Clear" },
 	{ 0x6001000C, L"Close" },
-	{ 0x60000010, L"GetImage" },
-	{ 0x60000011, L"GetArchive" },
-	{ 0x60000020, L"Callback" },
+	{ 0x6001F010, L"GetImage" },
+	{ 0x6001F011, L"GetArchive" },
+	{ 0x6001F020, L"Callback" },
 };
 
 TEmethod methodTSPI[] = {
@@ -246,6 +245,11 @@ VOID teSysFreeString(BSTR *pbs)
 		::SysFreeString(*pbs);
 		*pbs = NULL;
 	}
+}
+
+VOID teSysFreeStringA(LPSTR *ppstr)
+{
+	teSysFreeString((BSTR *)ppstr);
 }
 
 VOID teSetLong(VARIANT *pv, LONG i)
@@ -668,14 +672,13 @@ VOID teVariantChangeType(__out VARIANTARG * pvargDest,
 	}
 }
 
-BSTR teWide2Ansi(LPCWSTR lpW, int nLenW)
+LPSTR teWide2Ansi(LPCWSTR lpW, int nLenW)
 {
 	if (lpW) {
 		int nLenA = WideCharToMultiByte(CP_ACP, 0, lpW, nLenW, NULL, 0, NULL, NULL);
-		BSTR bs = ::SysAllocStringByteLen(NULL, nLenA);
-		WideCharToMultiByte(CP_ACP, 0, lpW, nLenW, (LPSTR)bs, nLenA, NULL, NULL);
-//		LPSTR lp = (LPSTR)bs;
-		return bs;
+		LPSTR bsA = (LPSTR)::SysAllocStringByteLen(NULL, nLenA);
+		WideCharToMultiByte(CP_ACP, 0, lpW, nLenW, bsA, nLenA, NULL, NULL);
+		return bsA;
 	}
 	return NULL;
 }
@@ -694,19 +697,21 @@ HRESULT teExecMethod(IDispatch *pdisp, LPOLESTR sz, VARIANT *pvResult, int nArg,
 // Initialize & Finalize
 BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 {
+	IGlobalInterfaceTable *pGlobalInterfaceTable;
+
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
 			g_pBase = new CteBase();
 			g_hinstDll = hinstDll;
 			g_dwMainThreadId = GetCurrentThreadId();
-			InitializeCriticalSection(&g_csObject);
-			CoMarshalInterThreadInterfaceInStream(IID_IDispatch, g_pBase, &g_pStrmObj);
+			CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pGlobalInterfaceTable));
+			pGlobalInterfaceTable->RegisterInterfaceInGlobal(g_pBase, IID_IDispatch, &g_dwCookie);
+			pGlobalInterfaceTable->Release();
 			break;
 		case DLL_PROCESS_DETACH:
-			IDispatch *pdisp;
-			CoGetInterfaceAndReleaseStream(g_pStrmObj, IID_PPV_ARGS(&pdisp));
-			SafeRelease(&pdisp);
-			DeleteCriticalSection(&g_csObject);
+			CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pGlobalInterfaceTable));
+			pGlobalInterfaceTable->RevokeInterfaceFromGlobal(g_dwCookie);
+			pGlobalInterfaceTable->Release();
 			for (size_t i = g_ppObject.size(); i--;) {
 				SafeRelease(&g_ppObject[i]);
 			}
@@ -792,29 +797,21 @@ STDAPI DllUnregisterServer(void)
 HRESULT Synchronize(int nMode, size_t i, LONG_PTR arg)
 {
 	HRESULT hr = E_NOTIMPL;
-	if (g_dwMainThreadId != GetCurrentThreadId()) {
-		IDispatch *pdisp = NULL;
-		EnterCriticalSection(&g_csObject);
-		try {
-			if SUCCEEDED(CoGetInterfaceAndReleaseStream(g_pStrmObj, IID_PPV_ARGS(&pdisp))) {
-				CoMarshalInterThreadInterfaceInStream(IID_IDispatch, pdisp, &g_pStrmObj);
-			}
-		} catch (...) {
-			pdisp = NULL;
+	IDispatch *pdisp = NULL;
+	IGlobalInterfaceTable *pGlobalInterfaceTable;
+	CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pGlobalInterfaceTable));
+	if SUCCEEDED(pGlobalInterfaceTable->GetInterfaceFromGlobal(g_dwCookie, IID_PPV_ARGS(&pdisp))) {
+		VARIANT v;
+		VARIANTARG *pv = GetNewVARIANT(3);
+		teSetLong(&pv[2], nMode);
+		teSetPtr(&pv[1], i);
+		teSetPtr(&pv[0], arg);
+		if (teExecMethod(pdisp, L"Callback", &v, 3, pv) == S_OK) {
+			hr = GetIntFromVariantClear(&v);
 		}
-		LeaveCriticalSection(&g_csObject);
-		if (pdisp) {
-			VARIANT v;
-			VARIANTARG *pv = GetNewVARIANT(3);
-			teSetLong(&pv[2], nMode);
-			teSetPtr(&pv[1], i);
-			teSetPtr(&pv[0], arg);
-			if (teExecMethod(pdisp, L"Callback", &v, 3, pv) == S_OK) {
-				hr = GetIntFromVariantClear(&v);
-			}
-			pdisp->Release();
-		}
+		pdisp->Release();
 	}
+	pGlobalInterfaceTable->Release();
 	return hr;
 }
 
@@ -845,8 +842,8 @@ HRESULT WINAPI GetArchive(LPCWSTR lpszArcPath, LPCWSTR lpszItem, IStream **ppStr
 		if (arg.bDelete) {
 			teSysFreeString(&arg.pdw);
 		}
-		teSysFreeString(&arg.bsItemA);
-		teSysFreeString(&arg.bsPathA);
+		teSysFreeStringA(&arg.bsItemA);
+		teSysFreeStringA(&arg.bsPathA);
 	} catch (...) {}
 	LockModule(FALSE);
 	return hr;
@@ -881,7 +878,7 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpPath, int cx, HBITMAP *phBM, 
 		if (arg.bDelete) {
 			teSysFreeString(&arg.pdw);
 		}
-		teSysFreeString(&arg.bsPathA);
+		teSysFreeStringA(&arg.bsPathA);
 	} catch (...) {}
 	LockModule(FALSE);
 	return hr;
@@ -969,10 +966,10 @@ HRESULT CteSPI::GetArchive(TEGetArchiveArg *pArg)
 				if (!pArg->bsItemA) {
 					pArg->bsItemA = teWide2Ansi(pArg->lpszItem, -1);
 				}
-				if (IsSupported((LPSTR)pArg->bsPathA, (void *)pArg->pdw)) {
+				if (IsSupported(pArg->bsPathA, (void *)pArg->pdw)) {
 					SUSIE_FINFO finfo;
-					if (GetFileInfo((LPSTR)pArg->bsPathA, 0, (LPSTR)pArg->bsItemA, 0x80, &finfo) == SPI_ALL_RIGHT) {
-						GetFile((LPSTR)pArg->bsPathA, finfo.position, (LPSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
+					if (GetFileInfo(pArg->bsPathA, 0, (LPSTR)pArg->bsItemA, 0x80, &finfo) == SPI_ALL_RIGHT) {
+						GetFile(pArg->bsPathA, finfo.position, (LPSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
 					}
 				}
 			}
@@ -1028,7 +1025,7 @@ HRESULT CteSPI::GetImage(TEGetImageArg *pArg)
 				if (!pArg->bsPathA) {
 					pArg->bsPathA = teWide2Ansi(pArg->lpPath, -1);
 				}
-				if (IsSupported((char *)pArg->bsPathA, (void *)pArg->pdw)) {
+				if (IsSupported(pArg->bsPathA, (void *)pArg->pdw)) {
 					if (pArg->len == 0) {
 						teSysFreeString(&pArg->pdw);
 						pArg->pdw = GetMemoryFromStream(pArg->pStream, &pArg->bDelete, &pArg->len);
@@ -1041,10 +1038,10 @@ HRESULT CteSPI::GetImage(TEGetImageArg *pArg)
 					}
 					if (iResult != SPI_ALL_RIGHT) {
 						if (GetPreview && (pArg->cx != 0 || pArg->cx < 256)) {
-							iResult = GetPreview((LPSTR)pArg->bsPathA, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
+							iResult = GetPreview(pArg->bsPathA, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
 						}
 						if (iResult != SPI_ALL_RIGHT) {
-							iResult = GetPicture((LPSTR)pArg->bsPathA, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
+							iResult = GetPicture(pArg->bsPathA, 0, 0, &hInfo, &hBMData, tspi_ProgressCallback, 0);
 						}
 					}
 				}
@@ -1107,9 +1104,9 @@ HRESULT CteSPI::GetImage(TEGetImageArg *pArg)
 					if (!pArg->bsPathA) {
 						pArg->bsPathA = teWide2Ansi(pArg->lpPath, -1);
 					}
-					if (IsSupported((LPSTR)pArg->bsPathA, (void *)pArg->pdw)) {
+					if (IsSupported(pArg->bsPathA, (void *)pArg->pdw)) {
 						HLOCAL hInfo = NULL;
-						GetArchiveInfo((LPSTR)pArg->bsPathA, 0, 0, &hInfo);
+						GetArchiveInfo(pArg->bsPathA, 0, 0, &hInfo);
 						if (hInfo) {
 							SUSIE_FINFO *pfinfo = (SUSIE_FINFO *)LocalLock(hInfo);
 							if (pfinfo) {
@@ -1122,7 +1119,7 @@ HRESULT CteSPI::GetImage(TEGetImageArg *pArg)
 											MultiByteToWideChar(CP_ACP, 0, pfinfo[j].filename, -1, bsInfo, nLenW);
 										}
 										if (PathMatchSpec(bsInfo, m_bsPreview)) {
-											GetFile((LPSTR)pArg->bsPathA, pfinfo[j].position, (LPSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
+											GetFile(pArg->bsPathA, pfinfo[j].position, (LPSTR)&hLocal, 0x100, tspi_ProgressCallback, 0);
 											if (hLocal) {
 												break;
 											}
@@ -1206,8 +1203,7 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 	int nArg = pDispParams ? pDispParams->cArgs - 1 : -1;
 	try {
 		switch (dispIdMember) {
-			//GetPluginInfo
-			case 0x60010001:
+			case 0x60010001://GetPluginInfo
 				if (nArg >= 0) {
 					IUnknown *punk;
 					if (FindUnknown(&pDispParams->rgvarg[nArg], &punk)) {
@@ -1238,8 +1234,7 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetBool(pVarResult, GetPluginInfoW || GetPluginInfo);
 				}
 				return S_OK;
-			//IsSupported
-			case 0x60010002:
+			case 0x60010002://IsSupported
 				if (nArg >= 1) {
 					LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 					BOOL bDelete = FALSE;
@@ -1248,9 +1243,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					if (IsSupportedW) {
 						iResult = IsSupportedW(lpPath, (void *)pdw);
 					} else if (IsSupported) {
-						BSTR bsPath = teWide2Ansi(lpPath, -1);
-						iResult = IsSupported((char *)bsPath, (void *)pdw);
-						teSysFreeString(&bsPath);
+						LPSTR bsPathA = teWide2Ansi(lpPath, -1);
+						iResult = IsSupported(bsPathA, (void *)pdw);
+						teSysFreeStringA(&bsPathA);
 					}
 					if (bDelete) {
 						teSysFreeString(&pdw);
@@ -1260,8 +1255,7 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetBool(pVarResult, IsSupportedW || IsSupported);
 				}
 				return S_OK;
-			//GetPictureInfo
-			case 0x60010003:
+			case 0x60010003://GetPictureInfo
 				if (nArg >= 3) {
 					BOOL bDelete = FALSE;
 					LONG_PTR len = GetPtrFromVariant(&pDispParams->rgvarg[nArg - 1]);
@@ -1276,9 +1270,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 							if (bDelete) {
 								iResult = GetPictureInfo((LPSTR)lpBuf, len, flag, &Info);
 							} else {
-								BSTR bsBufA = teWide2Ansi(lpBuf, -1);
-								iResult = GetPictureInfo((LPSTR)bsBufA, len, flag, &Info);
-								teSysFreeString(&bsBufA);
+								LPSTR bsBufA = teWide2Ansi(lpBuf, -1);
+								iResult = GetPictureInfo(bsBufA, len, flag, &Info);
+								teSysFreeStringA(&bsBufA);
 							}
 						}
 						if (iResult == SPI_ALL_RIGHT) {
@@ -1321,10 +1315,8 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetBool(pVarResult, GetPictureInfoW || GetPictureInfo);
 				}
 				return S_OK;
-			//GetPicture
-			case 0x60010004:
-			//GetPreview
-			case 0x60010005:
+			case 0x60010004://GetPicture
+			case 0x60010005://GetPreview
 				if (nArg >= 6) {
 					BOOL bDelete = FALSE;
 					LONG_PTR len = GetPtrFromVariant(&pDispParams->rgvarg[nArg - 1]);
@@ -1347,17 +1339,17 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 							if (bDelete) {
 								iResult = GetPicture((LPSTR)lpBuf, len, flag, &hInfo, &hBMData, tspi_ProgressCallback, lData);
 							} else {
-								BSTR bsBufA = teWide2Ansi(lpBuf, -1);
-								iResult = GetPicture((LPSTR)bsBufA, len, flag, &hInfo, &hBMData, tspi_ProgressCallback, lData);
-								teSysFreeString(&bsBufA);
+								LPSTR bsBufA = teWide2Ansi(lpBuf, -1);
+								iResult = GetPicture(bsBufA, len, flag, &hInfo, &hBMData, tspi_ProgressCallback, lData);
+								teSysFreeStringA(&bsBufA);
 							}
 						} else if (dispIdMember == 0x60010005 && GetPreview) {
 							if (bDelete) {
 								iResult = GetPreview((LPSTR)lpBuf, len, flag, &hInfo, &hBMData, NULL, lData);
 							} else {
-								BSTR bsBufA = teWide2Ansi(lpBuf, -1);
-								iResult = GetPreview((LPSTR)bsBufA, len, flag, &hInfo, &hBMData, NULL, lData);
-								teSysFreeString(&bsBufA);
+								LPSTR bsBufA = teWide2Ansi(lpBuf, -1);
+								iResult = GetPreview(bsBufA, len, flag, &hInfo, &hBMData, NULL, lData);
+								teSysFreeStringA(&bsBufA);
 							}
 						}
 						VARIANT v, vX;
@@ -1442,8 +1434,7 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetBool(pVarResult, dispIdMember == 0x60010004 ? GetPictureInfoW || GetPictureInfo : GetPreviewW || GetPreview);
 				}
 				return S_OK;
-			//GetArchiveInfo
-			case 0x60010006:
+			case 0x60010006://GetArchiveInfo
 				if (nArg >= 4) {
 					BOOL bDelete = FALSE;
 					LONG_PTR len = GetPtrFromVariant(&pDispParams->rgvarg[nArg - 1]);
@@ -1480,9 +1471,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 								if (bDelete) {
 									GetArchiveInfo((LPSTR)lpBuf, len, flag, &hInfo);
 								} else {
-									BSTR bsBufA = teWide2Ansi(lpBuf, -1);
-									GetArchiveInfo((LPSTR)bsBufA, len, flag, &hInfo);
-									teSysFreeString(&bsBufA);
+									LPSTR bsBufA = teWide2Ansi(lpBuf, -1);
+									GetArchiveInfo(bsBufA, len, flag, &hInfo);
+									teSysFreeStringA(&bsBufA);
 								}
 								if (hInfo) {
 									SUSIE_FINFO *pfinfo = (SUSIE_FINFO *)LocalLock(hInfo);
@@ -1515,8 +1506,7 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetBool(pVarResult, GetArchiveInfoW || GetArchiveInfo);
 				}
 				return S_OK;
-			//GetFileInfo
-			case 0x60010007:
+			case 0x60010007://GetFileInfo
 				if (nArg >= 4) {
 					BOOL bDelete = FALSE;
 					LONG_PTR len = GetPtrFromVariant(&pDispParams->rgvarg[nArg - 1]);
@@ -1535,15 +1525,15 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 							}
 						} else if (GetFileInfo) {
 							SUSIE_FINFO finfo;
-							BSTR bsFilenameA = teWide2Ansi(lpfilename, -1);
+							LPSTR bsFilenameA = teWide2Ansi(lpfilename, -1);
 							if (bDelete) {
 								iResult = GetFileInfo((LPSTR)lpBuf, len, (LPCSTR)bsFilenameA, flag, &finfo);
 							} else {
-								BSTR bsBufA = teWide2Ansi(lpBuf, -1);
-								iResult = GetFileInfo((LPSTR)bsBufA, len, (LPCSTR)bsFilenameA, flag, &finfo);
-								teSysFreeString(&bsBufA);
+								LPSTR bsBufA = teWide2Ansi(lpBuf, -1);
+								iResult = GetFileInfo(bsBufA, len, (LPCSTR)bsFilenameA, flag, &finfo);
+								teSysFreeStringA(&bsBufA);
 							}
-							teSysFreeString(&bsFilenameA);
+							teSysFreeStringA(&bsFilenameA);
 							if (iResult == SPI_ALL_RIGHT) {
 								teSetSusieFileInfoA(punk, &finfo);
 							}
@@ -1557,8 +1547,7 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetBool(pVarResult, GetFileInfoW || GetFileInfo);
 				}
 				return S_OK;
-			//GetFile
-			case 0x60010008:
+			case 0x60010008://GetFile
 				if (nArg >= 5) {
 					BOOL bDelete = FALSE;
 					LONG_PTR len = GetPtrFromVariant(&pDispParams->rgvarg[nArg - 1]);
@@ -1577,14 +1566,14 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 						GetFileW(lpBuf, len, lpDest, flag, tspi_ProgressCallback, lData);
 					} else if (GetFile) {
 						if (!punk) {
-							lpDest = teWide2Ansi(lpDest, -1);
+							lpDest = (BSTR)teWide2Ansi(lpDest, -1);
 						}
 						if (bDelete) {
 							iResult = GetFile((LPSTR)lpBuf, len, (LPSTR)lpDest, flag, tspi_ProgressCallback, lData);
 						} else {
-							BSTR bsBufA = teWide2Ansi(lpBuf, -1);
-							GetFile((LPSTR)bsBufA, len, (LPSTR)lpDest, flag, tspi_ProgressCallback, lData);
-							teSysFreeString(&bsBufA);
+							LPSTR bsBufA = teWide2Ansi(lpBuf, -1);
+							GetFile(bsBufA, len, (LPSTR)lpDest, flag, tspi_ProgressCallback, lData);
+							teSysFreeStringA(&bsBufA);
 						}
 						if (!punk) {
 							teSysFreeString(&lpDest);
@@ -1614,8 +1603,7 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetBool(pVarResult, GetFileInfoW || GetFileInfo);
 				}
 				return S_OK;
-			case 0x60010009:
-			//ConfigurationDlg
+			case 0x60010009://ConfigurationDlg
 				if (nArg >= 1) {
 					if (ConfigurationDlg) {
 						ConfigurationDlg((HWND)GetPtrFromVariant(&pDispParams->rgvarg[nArg]), GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]));
@@ -1625,35 +1613,30 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					teSetBool(pVarResult, ConfigurationDlg != NULL);
 				}
 				return S_OK;
-			//Filter
-			case 0x6001F000:
+			case 0x6001F000://Filter
 				if (nArg >= 0) {
 					teSysFreeString(&m_bsFilter);
 					m_bsFilter = ::SysAllocString(GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]));
 				}
 				teSetSZ(pVarResult, m_bsFilter);
 				return S_OK;
-			//Preview
-			case 0x6001F001:
+			case 0x6001F001://Preview
 				if (nArg >= 0) {
 					teSysFreeString(&m_bsPreview);
 					m_bsPreview = ::SysAllocString(GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]));
 				}
 				teSetSZ(pVarResult, m_bsPreview);
 				return S_OK;
-			//Sync
-			case 0x6001F002:
+			case 0x6001F002://Sync
 				if (nArg >= 0) {
 					m_bSync = GetIntFromVariant(&pDispParams->rgvarg[nArg]);
 				}
 				teSetBool(pVarResult, m_bSync);
 				return S_OK;
-			//IsUnicode
-			case 0x6001FFFF:
+			case 0x6001FFFF://IsUnicode
 				teSetBool(pVarResult, IsSupportedW != NULL);
 				return S_OK;
-			//this
-			case DISPID_VALUE:
+			case DISPID_VALUE://this
 				if (pVarResult) {
 					teSetObject(pVarResult, this);
 				}
@@ -1722,8 +1705,7 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 	HRESULT hr = S_OK;
 
 	switch (dispIdMember) {
-		//Open
-		case 0x60010000:
+		case 0x60010000://Open
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 
@@ -1743,15 +1725,13 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 				}
 			}
 			return S_OK;
-		//Clear
-		case 0x60010001:
+		case 0x60010001://Clear
 			for (size_t i = g_ppObject.size(); i--;) {
 				SafeRelease(&g_ppObject[i]);
 			}
 			g_ppObject.clear();
 			return S_OK;
-		//Close
-		case 0x6001000C:
+		case 0x6001000C://Close
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 
@@ -1765,19 +1745,16 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 				}
 			}
 			return S_OK;
-		//GetImage
-		case 0x60000010:
+		case 0x6001F010://GetImage
 			if (nArg >= 0) {
 				lpfnGetImage = (LPFNGetImage)GetPtrFromVariant(&pDispParams->rgvarg[nArg]);
 			}
 			teSetPtr(pVarResult, GetImage);
 			return S_OK;
-		//GetArchve
-		case 0x60000011:
+		case 0x6001F011://GetArchve
 			teSetPtr(pVarResult, GetArchive);
 			return S_OK;
-		//Callback
-		case 0x60000020:
+		case 0x6001F020://Callback
 			if (nArg >= 2) {
 				HRESULT hr = E_NOTIMPL;
 				int nMode = GetIntFromVariant(&pDispParams->rgvarg[nArg]);
@@ -1791,8 +1768,7 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 				teSetLong(pVarResult, hr);
 			}
 			return S_OK;
-		//this
-		case DISPID_VALUE:
+		case DISPID_VALUE://this
 			if (pVarResult) {
 				teSetObject(pVarResult, this);
 			}

@@ -6,6 +6,7 @@ if (window.Addon == 1) {
 	{
 		tid: {},
 		db: {},
+		Color: GetBGRA(GetWinColor(item.getAttribute("Color2") || "#cccccc"), (item.getAttribute("Alpha") & 0xff) || 128),
 
 		Arrange: function (Ctrl, nDog) {
 			delete Addons.Stripes.tid[Ctrl.hwnd];
@@ -28,9 +29,8 @@ if (window.Addon == 1) {
 						if (Addons.Stripes.db[hwnd] != h * 65536 + w) {
 							Addons.Stripes.db[hwnd] = h * 65536 + w;
 							var image = api.CreateObject("WICBitmap").Create(w, h);
-							var cl2 = Addons.Stripes.GetBGRA(Addons.Stripes.Color, Addons.Stripes.Alpha);
 							for (var i = 0; i < h; i += nHeight * 2) {
-								image.FillRect(0, i, w, nHeight, cl2);
+								image.FillRect(0, i, w, nHeight, Addons.Stripes.Color);
 							}
 							lvbk.hbm = image.GetHBITMAP(-2);
 							lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
@@ -82,10 +82,6 @@ if (window.Addon == 1) {
 			}, 99);
 		},
 
-		GetBGRA: function (c, a) {
-			return ((c & 0xff) << 16) | (c & 0xff00) | ((c & 0xff0000) >> 16) | a << 24;
-		},
-
 		Retry: function (Ctrl, nDog) {
 			nDog = (nDog || 0) + 1;
 			if (nDog < 9) {
@@ -117,8 +113,6 @@ if (window.Addon == 1) {
 		}
 	}
 
-	Addons.Stripes.Color = GetWinColor(item.getAttribute("Color2") || "#cccccc");
-	Addons.Stripes.Alpha = (item.getAttribute("Alpha") & 0xff) || 128;
 	AddEvent("NavigateComplete", Addons.Stripes.Arrange);
 	AddEvent("Command", Addons.Stripes.Arrange2);
 	AddEvent("IconSizeChanged", Addons.Stripes.Arrange);

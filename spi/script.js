@@ -1,22 +1,21 @@
-if (window.Addon == 1) {
-	Addons.SPI =
-	{
-		DLL: api.DllGetClassObject(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\spi\\tspi", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}"),
-		IN: [],
-		AM: [],
+Addons.SPI =
+{
+	DLL: api.DllGetClassObject(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\spi\\tspi", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}"),
 
-		Finalize: function () {
-			te.RemoveEvent("GetImage", Addons.SPI.DLL.GetImage);
-			Addons.SPI.IN = [];
-			if (Addons.SPI.AM.length) {
-				te.RemoveEvent("GetArchive", Addons.SPI.DLL.GetArchive);
-				Addons.SPI.AM = [];
+	Finalize: function () {
+		if (Addons.SPI.DLL) {
+			if (Addons.SPI.GetImage) {
+				te.RemoveEvent("GetImage", Addons.SPI.DLL.GetImage);
 			}
-			CollectGarbage();
+			if (Addons.SPI.GetArchive) {
+				te.RemoveEvent("GetArchive", Addons.SPI.DLL.GetArchive);
+			}
+			Addons.SPI.DLL.Clear();
 			delete Addons.SPI.DLL;
 		}
-	};
-
+	}
+};
+if (window.Addon == 1) {
 	AddEvent("AddonDisabled", function (Id) {
 		if (Id.toLowerCase() == "spi") {
 			Addons.SPI.Finalize();
@@ -51,14 +50,11 @@ if (window.Addon == 1) {
 					SPI.Filter = filter.join(";");
 					SPI.Preview = items[i].getAttribute("IsPreview") ? items[i].getAttribute("Preview") || "*" : "-";
 					SPI.Sync = items[i].getAttribute("Sync") ? 1 : 0;
-					if (SPI.Preview != "-") {
-						bPreview = true;
-					}
-					if (SPI.GetPicture) {
-						Addons.SPI.IN.push(SPI);
+					if (SPI.GetPicture || (SPI.GetFile && SPI.Preview != "-")) {
+						Addons.SPI.GetImage = true;
 					}
 					if (SPI.GetFile) {
-						Addons.SPI.AM.push(SPI);
+						Addons.SPI.GetArchive = true;
 					}
 				}
 			}
@@ -66,10 +62,10 @@ if (window.Addon == 1) {
 		delete xml;
 		delete SPI;
 		Addons.SPI.DLL.GetImage(api.GetProcAddress(null, "GetImage"));
-		if (Addons.SPI.IN.length || bPreview) {
+		if (Addons.SPI.GetImage) {
 			te.AddEvent("GetImage", Addons.SPI.DLL.GetImage);
 		}
-		if (Addons.SPI.AM.length) {
+		if (Addons.SPI.GetArchive) {
 			te.AddEvent("GetArchive", Addons.SPI.DLL.GetArchive);
 		}
 	}

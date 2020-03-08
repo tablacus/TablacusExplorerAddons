@@ -20,7 +20,7 @@ struct TEGetImageArg
 	int cx;
 	HBITMAP *phBM;
 	int *pnAlpha;
-	BSTR bsPathA;
+	LPSTR bsPathA;
 	LONG_PTR len;
 	BOOL bDelete;
 	BSTR pdw;
@@ -33,8 +33,8 @@ struct TEGetArchiveArg
 	IStream **ppStream;
 	BOOL bDelete;
 	BSTR pdw;
-	BSTR bsPathA;
-	BSTR bsItemA;
+	LPSTR bsPathA;
+	LPSTR bsItemA;
 };
 
 #ifdef _WIN64
