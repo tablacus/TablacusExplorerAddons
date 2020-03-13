@@ -1,17 +1,20 @@
 Addons.SPI =
 {
 	DLL: api.DllGetClassObject(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\spi\\tspi", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}"),
+	AM: [],
 
 	Finalize: function () {
 		if (Addons.SPI.DLL) {
 			if (Addons.SPI.GetImage) {
 				te.RemoveEvent("GetImage", Addons.SPI.DLL.GetImage);
 			}
-			if (Addons.SPI.GetArchive) {
+			if (Addons.SPI.AM.length) {
 				te.RemoveEvent("GetArchive", Addons.SPI.DLL.GetArchive);
+				Addons.SPI.AM.length = 0;
 			}
 			Addons.SPI.DLL.Clear();
 			delete Addons.SPI.DLL;
+			CollectGarbage();
 		}
 	}
 };
@@ -54,7 +57,7 @@ if (window.Addon == 1) {
 						Addons.SPI.GetImage = true;
 					}
 					if (SPI.GetFile) {
-						Addons.SPI.GetArchive = true;
+						Addons.SPI.AM.push(SPI);
 					}
 				}
 			}
@@ -65,7 +68,7 @@ if (window.Addon == 1) {
 		if (Addons.SPI.GetImage) {
 			te.AddEvent("GetImage", Addons.SPI.DLL.GetImage);
 		}
-		if (Addons.SPI.GetArchive) {
+		if (Addons.SPI.AM.length) {
 			te.AddEvent("GetArchive", Addons.SPI.DLL.GetArchive);
 		}
 	}
