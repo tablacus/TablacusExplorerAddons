@@ -25,6 +25,9 @@ if (window.Addon == 1) {
 		Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 		TextFilter: api.LowPart(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
 		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
+		Charset: item.getAttribute("Charset"),
+		TextSize: item.getAttribute("TextSize") || 4000,
+		TextLimit: item.getAttribute("TextLimit") || 10000000,
 
 		Exec: function (Ctrl, pt) {
 			GetFolderView(Ctrl, pt).Focus();

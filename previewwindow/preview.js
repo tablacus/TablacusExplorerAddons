@@ -76,18 +76,11 @@ Addons.PreviewWindow =
 			var path = Item.Path;
 			if (PathMatchEx(path, MainWindow.Addons.PreviewWindow.TextFilter)) {
 				var el;
-				if (Item.ExtendedProperty("size") > 99999) {
-					f = fso.OpenTextFile(path, 1, false);
-					if (f) {
-						el = document.createElement("textarea");
-						el.innerHTML = f.Read(4096);
-						f.Close();
-					}
-				} else {
-					var ado = OpenAdodbFromTextFile(path);
+				if (Item.ExtendedProperty("size") <= MainWindow.Addons.PreviewWindow.TextLimit) {
+					var ado = OpenAdodbFromTextFile(path, MainWindow.Addons.PreviewWindow.Charset);
 					if (ado) {
 						el = document.createElement("textarea");
-						el.innerHTML = ado.ReadText(4096);
+						el.innerHTML = ado.ReadText(MainWindow.Addons.PreviewWindow.TextSize);
 						ado.Close()
 					}
 				}
@@ -164,14 +157,14 @@ Addons.PreviewWindow =
 		var path = MainWindow.Addons.PreviewWindow.Item.Path;
 		if (api.PathMatchSpec(path, "*.wav")) {
 			api.PlaySound(path, null, 3);
-		} else if(document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a")) {
+		} else if (g_.IEVer >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a")) {
 			document.getElementById("play1").style.display = "none";
 			div1.innerHTML = '<audio controls autoplay width="100%" height="100%"><source src="' + path + '"></audio>';
 		} else {
 			document.getElementById("img1").style.display = "none";
 			document.getElementById("desc1").innerHTML = "";
-			div1.style.height = document.documentMode ? "calc(100% - 5px)" : "99%";
-			if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.webm;*.mp4")) {
+			div1.style.height = g_.IEVer >= 8 ? "calc(100% - 5px)" : "99%";
+			if (g_.IEVer >= 11 && api.PathMatchSpec(path, "*.webm;*.mp4")) {
 				div1.innerHTML = '<video controls autoplay width="100%" height="100%"><source src="' + path + '"></video>';
 			} else {
 				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';

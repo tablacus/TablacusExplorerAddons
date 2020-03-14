@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.26</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.3.14</MinVersion>
     <pubDate>Sat, 14 Mar 2020 00:00:00 GMT</pubDate>
-    <Options>Common:0:0</Options>
+    <Options>Common:0,1,2:0</Options>
+    <DllVersion>1.0.0.0</DllVersion>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Preview</Name>
-    <Description>Displays the contents of selected text, image and media files in a preview pane.</Description>
+    <Name>7-Zip</Name>
+    <Description>7-Zip *Require 7d.dll and 7zG.exe</Description>
   </en>
   <ja>
-    <Name>プレビュー</Name>
+    <Name>7-Zip</Name>
+    <Description>7-Zip ※7d.dll と 7zG.exe が必要</Description>
   </ja>
-  <zh>
-    <Name>預覽</Name>
-  </zh>
 </TablacusExplorer>

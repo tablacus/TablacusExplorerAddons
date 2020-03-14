@@ -10,6 +10,9 @@ if (window.Addon == 1) {
 		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
 		Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 		Width: 0,
+		Charset: item.getAttribute("Charset"),
+		TextSize: item.getAttribute("TextSize") || 1000,
+		TextLimit: item.getAttribute("TextLimit") || 10000000,
 
 		Arrange: function (Item, Ctrl) {
 			if (api.ILIsEqual(Addons.Preview.Item, Item)) {
@@ -32,17 +35,10 @@ if (window.Addon == 1) {
 				}
 				var nWidth = 0, nHeight = 0;
 				if (PathMatchEx(path, Addons.Preview.TextFilter)) {
-					if (Item.ExtendedProperty("size") > 99999) {
-						f = fso.OpenTextFile(path, 1, false);
-						if (f) {
-							o.innerText = f.Read(1024);
-							f.Close();
-							return;
-						}
-					} else {
-						var ado = OpenAdodbFromTextFile(path);
+					if (Item.ExtendedProperty("size") <= Addons.Preview.TextLimit) {
+						var ado = OpenAdodbFromTextFile(path, Addons.Preview.Charset);
 						if (ado) {
-							o.innerText = ado.ReadText(1024);
+							o.innerText = ado.ReadText(Addons.Preview.TextSize);
 							ado.Close()
 							return;
 						}
@@ -51,7 +47,7 @@ if (window.Addon == 1) {
 				var style;
 				nWidth = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 3");
 				nHeight = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 4");
-				if (document.documentMode) {
+				if (g_.IEVer > 6) {
 					style = "max-width: 100%; max-height: 100%";
 				} else {
 					style = nWidth > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";

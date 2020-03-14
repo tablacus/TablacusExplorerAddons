@@ -1,25 +1,35 @@
-<div>
-  <label>Text</label>
+<div class="panel" style="display: block">
+  <table style="width: 100%">
+    <tr>
+      <td style="vertical-align: bottom"><input type="checkbox" name="!NoTextFilter"></td>
+      <td style="width: 100%"><label>@mspaint.exe,-36044[Text]</label></td>
+    </tr>
+  </table>
+  <input type="text" name="TextFilter" placeholder="*.txt;*.ini;*.css;*.js;*.vba;*.vbs" style="width: 100%">
+  <div style="width: 33.33%; float: left">
+    <label>Charset</label>
+    <input type="text" name="Charset" placeholder="Auto" style="width: 100%">
+  </div>
+  <div style="width: 33.33%; float: left">
+    <label>Limit</label>
+    <input type="text" name="TextLimit" placeholder="10000000" style="width: 100%">
+  </div>
+  <div style="width: 33.33%; float: left">
+    <label>Size</label>
+    <input type="text" name="TextSize" placeholder="4000" style="width: 100%">
+  </div>
 </div>
-<table style="width: 100%">
-  <tr>
-    <td style="vertical-align: bottom"><input type="checkbox" name="!NoTextFilter"></td>
-    <td style="width: 100%"><input type="text" name="TextFilter" placeholder="*.txt;*.ini;*.css;*.js;*.vba;*.vbs"
-        style="width: 100%"></td>
-  </tr>
-</table>
-<br>
-<div>
+<div class="panel" style="display: block">
   <label>@mshtml.dll,-771[Play]</label>
+  <input type="text" name="Embed" placeholder="*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf" style="width: 100%">
 </div>
-<input type="text" name="Embed" placeholder="*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf" style="width: 100%">
-<br>
-<div>
-  <label>Extract</label>
-</div>
+<div class="panel" style="display: block">
+
 <table style="width: 100%">
   <tr>
     <td style="vertical-align: bottom"><input type="checkbox" name="IsExtract"></td>
-    <td style="width: 100%"><input type="text" name="Extract" placeholder="*" style="width: 100%"></td>
+    <td style="width: 100%"><label>Extract</label></td>
   </tr>
 </table>
+<input type="text" name="Extract" placeholder="*" style="width: 100%">
+</div>
