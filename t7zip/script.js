@@ -218,7 +218,7 @@ Addons.T7Zip =
 				}
 			}
 			var strExe = api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Exe" + bit)));
-			if (!strExe || !fso.FileExists(strFile)) {
+			if (!strExe || !fso.FileExists(strExe)) {
 				strExe = Addons.T7Zip.DLL.Path.replace(/7z\.dll$/i, "7zG.exe");
 				if (!fso.FileExists(strExe)) {
 					strExe = 'C:\\Program Files\\7-Zip\\7zG.exe';
@@ -240,7 +240,7 @@ Addons.T7Zip =
 				ar.push("*." + s);
 			}
 			Addons.T7Zip.DLL.FilterList = item.getAttribute("FilterList") || ar.join(";") || "*.7z;*.zip";
-			Addons.T7Zip.DLL.DisableList = item.getAttribute("DisableList") || "*.zip";
+			Addons.T7Zip.DLL.DisableList = item.getAttribute("DisableList") || "*.chm;*.doc;*.docx;*.epub;*.exe;*.msi;*.ods;*.odt;*.ppt;*.xls;*.xlsx;*.zip";
 
 			Addons.T7Zip.DLL.FilterExtract = item.getAttribute("FilterExtract") || ar.join(";") || "*.7z;*.zip";
 			Addons.T7Zip.DLL.DisableExtract = item.getAttribute("DisableExtract") || "*.zip";
@@ -349,12 +349,9 @@ if (window.Addon == 1) {
 
 		AddEvent("DefaultCommand", function (Ctrl, Selected) {
 			if (Selected.Count == 1) {
-				var path = Selected.Item(0).Path;
-				if (Addons.T7Zip.IsHandle(path)) {
-					Ctrl.Navigate(path);
-					return S_OK;
-				}
-				if (Selected.Item(0).IsFolder) {
+				var Item = Selected.Item(0);
+				var path = Item.Path;
+				if (Item.IsFolder) {
 					var lib = Addons.T7Zip.GetObject(Ctrl);
 					if (lib) {
 						var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
@@ -363,7 +360,7 @@ if (window.Addon == 1) {
 						return S_OK;
 					}
 				}
-			}
+		}
 		}, true);
 
 		AddEvent("ILGetParent", function (FolderItem) {

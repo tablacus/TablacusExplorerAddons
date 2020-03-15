@@ -772,28 +772,37 @@ BSTR teGetExtensionFilter(PROPVARIANT *pv)
 HRESULT teGetInArchiveFromStream(IStream *pStream, LPWSTR lpszPath, BOOL bUpdate, IDispatch *pdispCB, IInArchive **ppInArchive)
 {
 	HRESULT hr = E_NOINTERFACE;
-	BOOL bFound = FALSE;
 	CLSID clsidFormat;
 	IInStream *pInStream = new CteInStream(pStream);
 	UInt32 uItems;
 	if (g_GetNumberOfFormats(&uItems) == S_OK) {
 		PROPVARIANT propVar;
 		::PropVariantInit(&propVar);
-		for (UInt32 i = 0; !bFound && i < uItems; i++) {
+		for (UInt32 i = 0; FAILED(hr) && i < uItems; i++) {
 			g_GetHandlerProperty2(i, NArchive::NHandlerPropID::kExtension, &propVar);
 			BSTR bsFilter = teGetExtensionFilter(&propVar);
 			if (PathMatchSpec(lpszPath, bsFilter)) {
-				PropVariantClear(&propVar);
+				::PropVariantClear(&propVar);
 				g_GetHandlerProperty2(i, NArchive::NHandlerPropID::kClassID, &propVar);
 				if (propVar.vt == VT_BSTR) {
 					if (::SysStringByteLen(propVar.bstrVal) == sizeof(CLSID)) {
 						::CopyMemory(&clsidFormat, propVar.bstrVal, sizeof(CLSID));
-						bFound = TRUE;
 						if (bUpdate) {
 							::PropVariantClear(&propVar);
 							g_GetHandlerProperty2(i, NArchive::NHandlerPropID::kUpdate, &propVar);
-							if (propVar.vt == VT_BOOL) {
-								bFound = propVar.boolVal;
+							if (propVar.vt == VT_BOOL && !propVar.boolVal) {
+								hr = E_NOTIMPL;
+							}
+						}
+						if (hr != E_NOTIMPL) {
+							if SUCCEEDED(g_CreateObject(&clsidFormat, &IID_IInArchive, (void**)ppInArchive)) {
+								UInt64 maxCheckStartPosition = 0;
+								IArchiveOpenCallback *pCallback = new CteArchiveOpenCallback(pdispCB);
+								if ((*ppInArchive)->Open(pInStream, &maxCheckStartPosition, pCallback) == S_OK) {
+									hr = S_OK;
+								} else {
+									SafeRelease(ppInArchive);
+								}
 							}
 						}
 					}
@@ -801,16 +810,6 @@ HRESULT teGetInArchiveFromStream(IStream *pStream, LPWSTR lpszPath, BOOL bUpdate
 			}
 			::SysAllocString(bsFilter);
 			::PropVariantClear(&propVar);
-		}
-	}
-	if (bFound) {
-		if SUCCEEDED(g_CreateObject(&clsidFormat, &IID_IInArchive, (void**)ppInArchive)) {
-			UInt64 maxCheckStartPosition = 0;
-			IArchiveOpenCallback *pCallback = new CteArchiveOpenCallback(pdispCB);
-			hr = (*ppInArchive)->Open(pInStream, &maxCheckStartPosition, pCallback);
-			if FAILED(hr) {
-				SafeRelease(ppInArchive);
-			}
 		}
 	}
 	pInStream->Release();
