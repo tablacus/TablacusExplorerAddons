@@ -134,12 +134,13 @@ public:
 	//ICryptoGetTextPassword
 	STDMETHODIMP CryptoGetTextPassword(BSTR *password);
 
-	CteArchiveOpenCallback(IDispatch *pdisp);
+	CteArchiveOpenCallback(IDispatch *pdisp, BOOL *pbUsePassword);
 	~CteArchiveOpenCallback();
 private:
 	LONG		m_cRef;
 	IDispatch	*m_pdisp;
 	VARIANT		m_vGetPassword;
+	BOOL		*m_pbUsePassword;
 };
 
 class CteArchiveExtractCallback : public IArchiveExtractCallback
@@ -157,7 +158,6 @@ public:
 	STDMETHODIMP SetCompleted(const UInt64 *completeValue);
 		
 	CteArchiveExtractCallback(IInArchive *pInArchive, LPWSTR lpszFilter, int nFilter, int nDisable, IStream **ppStream, BSTR *pbsItem);
-	~CteArchiveExtractCallback();
 private:
 	LONG		m_cRef;
 	IStream		**m_ppStream;

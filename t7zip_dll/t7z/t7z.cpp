@@ -797,9 +797,11 @@ HRESULT teGetInArchiveFromStream(IStream *pStream, LPWSTR lpszPath, BOOL bUpdate
 						if (hr != E_NOTIMPL) {
 							if SUCCEEDED(g_CreateObject(&clsidFormat, &IID_IInArchive, (void**)ppInArchive)) {
 								UInt64 maxCheckStartPosition = 0;
-								IArchiveOpenCallback *pCallback = new CteArchiveOpenCallback(pdispCB);
-								if ((*ppInArchive)->Open(pInStream, &maxCheckStartPosition, pCallback) == S_OK) {
-									hr = S_OK;
+								BOOL bUsePassword = FALSE;
+								IArchiveOpenCallback *pCallback = new CteArchiveOpenCallback(pdispCB, &bUsePassword);
+								HRESULT hr2 = (*ppInArchive)->Open(pInStream, &maxCheckStartPosition, pCallback);
+								if (hr2 == S_OK || bUsePassword) {
+									hr = hr2;
 								} else {
 									SafeRelease(ppInArchive);
 								}
@@ -996,7 +998,7 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 									teSetLong(pVarResult, uItems);
 									PROPVARIANT propVar;
 									PropVariantInit(&propVar);
-									int pKid[] = { kpidPath, kpidIsDir, kpidAttrib, kpidSize, kpidMTime };
+									int pKid[] = { kpidPath, kpidIsDir, kpidSize, kpidMTime };
 									int nColumns = _countof(pKid);
 									for (UInt32 i = 0; i < uItems; i++) {
 										VARIANTARG *pv = GetNewVARIANT(nColumns + 1);
@@ -1252,7 +1254,7 @@ STDMETHODIMP CteOutStream::SetSize(UInt64 newSize)
 
 //CteArchiveOpenCallback
 
-CteArchiveOpenCallback::CteArchiveOpenCallback(IDispatch *pdisp)
+CteArchiveOpenCallback::CteArchiveOpenCallback(IDispatch *pdisp, BOOL *pbUsePassword)
 {
 	m_cRef = 1;
 	VariantInit(&m_vGetPassword);
@@ -1261,6 +1263,7 @@ CteArchiveOpenCallback::CteArchiveOpenCallback(IDispatch *pdisp)
 		pdisp->QueryInterface(IID_PPV_ARGS(&m_pdisp));
 		teGetProperty(pdisp, L"GetPassword", &m_vGetPassword);
 	}
+	m_pbUsePassword = pbUsePassword;
 }
 
 CteArchiveOpenCallback::~CteArchiveOpenCallback()
@@ -1276,7 +1279,7 @@ STDMETHODIMP CteArchiveOpenCallback::QueryInterface(REFIID riid, void **ppvObjec
 		AddRef();
 		return S_OK;
 	}
-	if (m_vGetPassword.vt == VT_DISPATCH && IsEqualIID(riid, IID_ICryptoGetTextPassword)) {
+	if (IsEqualIID(riid, IID_ICryptoGetTextPassword)) {
 		*ppvObject = static_cast<ICryptoGetTextPassword *>(this);
 		AddRef();
 		return S_OK;
@@ -1326,6 +1329,9 @@ STDMETHODIMP CteArchiveOpenCallback::CryptoGetTextPassword(BSTR *password)
 			VariantClear(&v);
 		}
 	}
+	if (m_pbUsePassword) {
+		*m_pbUsePassword = TRUE;
+	}
 	return hr;
 }
 
@@ -1341,10 +1347,6 @@ CteArchiveExtractCallback::CteArchiveExtractCallback(IInArchive *pInArchive, LPW
 	m_nFilter = nFilter;
 	m_nDisable = nDisable;
 	m_bDone = FALSE;
-}
-
-CteArchiveExtractCallback::~CteArchiveExtractCallback()
-{
 }
 
 STDMETHODIMP CteArchiveExtractCallback::QueryInterface(REFIID riid, void **ppvObject)

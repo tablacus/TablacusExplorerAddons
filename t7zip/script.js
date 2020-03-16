@@ -151,7 +151,7 @@ Addons.T7Zip =
 				Folder: {},
 				Folder2: {},
 				lib: lib,
-				root: fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId)),
+				root: fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", SessionId)),
 				GetProperty: Addons.T7Zip.GetProperty,
 				GetPassword: Addons.T7Zip.GetPassword
 			}
@@ -164,13 +164,11 @@ Addons.T7Zip =
 					}
 				}
 			}
-			if (fncb) {
-				fncb(Ctrl, q.Items)
-			}
+			return q.Items;
 		}
 	},
 
-	GetProperty: function (q, Path, IsDir, Attrib, Size, MTime) {
+	GetProperty: function (q, Path, IsDir, Size, MTime) {
 		var fn = Path.replace(/\//g, "\\");
 		var strParent = fso.GetParentFolderName(fn).toLowerCase();
 		if (strParent == q.lib.path.toLowerCase()) {
@@ -276,7 +274,7 @@ Addons.T7Zip =
 		if (Addons.Debug) {
 			Addons.Debug.alert(s);
 		} else {
-			api.OutputDebugString(s);
+			api.OutputDebugString(s + "\n");
 		}
 	},
 
@@ -351,6 +349,10 @@ if (window.Addon == 1) {
 			if (Selected.Count == 1) {
 				var Item = Selected.Item(0);
 				var path = Item.Path;
+				if (Addons.T7Zip.IsHandle(path)) {
+					Ctrl.Navigate(path);
+					return S_OK;
+				}
 				if (Item.IsFolder) {
 					var lib = Addons.T7Zip.GetObject(Ctrl);
 					if (lib) {

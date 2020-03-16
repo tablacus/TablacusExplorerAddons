@@ -21,3 +21,5 @@ rmdir t7z\x64
 del /q /s *.sdf
 rmdir /q /s ipch
 rmdir /q /s Debug
+rmdir /q /s t7z\C
+rmdir /q /s t7z\CPP
