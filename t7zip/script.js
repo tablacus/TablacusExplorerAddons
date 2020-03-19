@@ -98,7 +98,7 @@ Addons.T7Zip =
 		if (lib) {
 			var ar = [], root;
 			if (lib.path) {
-				root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+				var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
 				var path = fso.BuildPath(root, lib.path);
 				DeleteItem(path);
 				Addons.T7Zip.CreateFolder(path);
@@ -108,7 +108,7 @@ Addons.T7Zip =
 					ar.push(lib.path);
 				}
 			} else {
-				root = Items.Item(-1).Path;
+				var root = Items.Item(-1).Path;
 				if (!/^[A-Z]:\\|^\\\\[A-Z]/i.test(root)) {
 					root = fso.GetParentFolderName(Items.Item(0).Path);
 				}
@@ -203,6 +203,16 @@ Addons.T7Zip =
 		}
 	},
 
+	GetDropEffect: function (Ctrl, dataObj, pdwEffect) {
+		pdwEffect[0] = DROPEFFECT_NONE;
+		if (dataObj.Count) {
+			if (!api.PathMatchSpec(dataObj.Item(0).Path, fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x\\*", Ctrl.SessionId)))) {
+				pdwEffect[0] = DROPEFFECT_COPY;
+				return true;
+			}
+		}
+	},
+
 	Init: function ()
 	{
 		if (Addons.T7Zip.DLL) {
@@ -262,12 +272,49 @@ Addons.T7Zip =
 			Addons.T7Zip.Cmd.Delete = (item.getAttribute("CmdDelete") || 'd') + ' %archive% %items%';
 
 			Addons.T7Zip.DLL.hwnd = te.hwnd;
-			Addons.T7Zip.NoExSort = item.getAttribute("NoExSort");
+			if  (!api.LowPart(item.getAttribute("NoExSort"))) {
+				AddEvent("ColumnClick", function (Ctrl, iItem) {
+					if (Ctrl.Type <= CTRL_EB) {
+						if (Addons.T7Zip.IsHandle(Ctrl)) {
+							var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
+							var s = cColumns[iItem * 2];
+							if (api.PathMatchSpec(s, "System.ItemNameDisplay;System.DateModified")) {
+								var s1 = Ctrl.SortColumns;
+								var s2 = 'prop:' + s + ';System.ItemTypeText;';
+								var s3 = s2.replace(":", ":-");
+								if (s1 != s2 && s1 != s3) {
+									Ctrl.SortColumns = (s1 == s2) ? s3 : s2;
+									return S_OK;
+								}
+							}
+						}
+					}
+				});
+
+				AddEvent("Sort", function (Ctrl) {
+					if (Ctrl.Type <= CTRL_EB) {
+						if (Addons.T7Zip.IsHandle(Ctrl)) {
+							var s1 = Ctrl.SortColumns;
+							if (/^prop:\-?System\.ItemNameDisplay;$|^prop:\-?System\.DateModified;$/.test(s1)) {
+								setTimeout(function () {
+									Ctrl.SortColumns = s1 + 'System.ItemTypeText;';
+								}, 99);
+							}
+						}
+					}
+				});
+			}
 
 			te.AddEvent("GetImage", Addons.T7Zip.DLL.GetImage(api.GetProcAddress(null, "GetImage")));
 			te.AddEvent("GetArchive", Addons.T7Zip.DLL.GetArchive);
 			return true;
 		}
+	},
+
+	IsFolder: function (Item) {
+		var wfd = api.Memory("WIN32_FIND_DATA");
+		api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size);
+		return wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
 	},
 
 	Debug: function (s) {
@@ -312,37 +359,36 @@ if (window.Addon == 1) {
 			var ar = [];
 			for (var i = Items.Count; i--;) {
 				var path = Items.Item(i).Path;
-				if (!api.StrCmpNI(root, path, root.length) && !IsExists(path)) {
-					ar.unshift(path);
+				if (api.PathMatchSpec(path, root + "\\*")) {
+					if (!fso.FileExists(path)) {
+						ar.unshift(path);
+					}
+				} else {
+					return;
 				}
 			}
 			if (!ar.length) {
 				return;
 			}
-			var strSessionId = fso.GetParentFolderName(ar[0]).replace(root + "\\", "").replace(/\\.*/, "");
+			var strSessionId = ar[0].substr(root.length + 1, 8);
 			var lib = Addons.T7Zip.GetObject(strSessionId == Addons.T7Zip.ClipId ? Addons.T7Zip.ClipPath : Ctrl, "Extract");
 			if (lib) {
 				var dest = fso.BuildPath(root, strSessionId);
 				for (var i = ar.length; i--;) {
-					ar[i] = api.PathQuoteSpaces(ar[i].replace(dest, "").replace(/^\\/, ""));
+					ar[i] = api.PathQuoteSpaces(ar[i].substr(dest.length + 1));
 				}
 				Addons.T7Zip.CreateFolder(dest);
 				Addons.T7Zip.Exec(Ctrl, lib, Addons.T7Zip.Cmd.Extract, dest, ar);
+				return S_OK;
 			}
 		});
 
 		AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
-			var hr = Addons.T7Zip.Command(Ctrl, wParam & 0xfff);
-			if (isFinite(hr)) {
-				return hr;
-			}
+			return Addons.T7Zip.Command(Ctrl, wParam & 0xfff);
 		}, true);
 
 		AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
-			var hr = Addons.T7Zip.Command(ContextMenu.FolderView, Verb);
-			if (isFinite(hr)) {
-				return hr;
-			}
+			return Addons.T7Zip.Command(ContextMenu.FolderView, Verb);
 		}, true);
 
 		AddEvent("DefaultCommand", function (Ctrl, Selected) {
@@ -353,7 +399,7 @@ if (window.Addon == 1) {
 					Ctrl.Navigate(path);
 					return S_OK;
 				}
-				if (Item.IsFolder) {
+				if (Addons.T7Zip.IsFolder(Item)) {
 					var lib = Addons.T7Zip.GetObject(Ctrl);
 					if (lib) {
 						var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
@@ -362,19 +408,17 @@ if (window.Addon == 1) {
 						return S_OK;
 					}
 				}
-		}
+			}
 		}, true);
 
 		AddEvent("ILGetParent", function (FolderItem) {
-			var path = FolderItem.Path;
-			if (Addons.T7Zip.IsHandle(path)) {
-				return fso.GetParentFolderName(path);
+			if (Addons.T7Zip.IsHandle(FolderItem)) {
+				return fso.GetParentFolderName(FolderItem.Path);
 			}
 		});
 
 		AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
-			if (Addons.T7Zip.IsHandle(path)) {
+			if (Addons.T7Zip.IsHandle(Ctrl)) {
 				RemoveCommand(hMenu, ContextMenu, "rename");
 			}
 			return nPos;
@@ -384,6 +428,7 @@ if (window.Addon == 1) {
 			if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
 				var lib = Addons.T7Zip.GetObject(Ctrl, "Add");
 				if (lib) {
+					Addons.T7Zip.GetDropEffect(Ctrl, dataObj, pdwEffect);
 					return S_OK;
 				}
 			}
@@ -393,7 +438,7 @@ if (window.Addon == 1) {
 			if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
 				var lib = Addons.T7Zip.GetObject(Ctrl, "Add");
 				if (lib) {
-					pdwEffect[0] = DROPEFFECT_COPY;
+					Addons.T7Zip.GetDropEffect(Ctrl, dataObj, pdwEffect);
 					return S_OK;
 				}
 			}
@@ -402,8 +447,10 @@ if (window.Addon == 1) {
 		AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 			var lib = Addons.T7Zip.GetObject(Ctrl, "Add");
 			if (lib) {
-				Addons.T7Zip.Append(Ctrl, dataObj);
-				return S_OK;
+				if (Addons.T7Zip.GetDropEffect(Ctrl, dataObj, pdwEffect)) {
+					Addons.T7Zip.Append(Ctrl, dataObj);
+					return S_OK;
+				}
 			}
 		});
 
@@ -436,7 +483,7 @@ if (window.Addon == 1) {
 			if (Ctrl.Type <= CTRL_EB) {
 				if (Addons.T7Zip.IsHandle(Ctrl)) {
 					var Item = Ctrl.Items.Item(Index);
-					if (Item.IsFolder) {
+					if (Addons.T7Zip.IsFolder(Item)) {
 						var s = FormatDateTime(Item.ModifyDate);
 						return s ? api.PSGetDisplayName("Write") + " : " + s : "";
 					}
@@ -444,37 +491,6 @@ if (window.Addon == 1) {
 			}
 		});
 	}
-
-	AddEvent("ColumnClick", function (Ctrl, iItem) {
-		if (Ctrl.Type <= CTRL_EB && !Addons.T7Zip.NoExSort) {
-			if (Addons.T7Zip.IsHandle(Ctrl)) {
-				var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
-				var s = cColumns[iItem * 2];
-				if (api.PathMatchSpec(s, "System.ItemNameDisplay;System.DateModified")) {
-					var s1 = Ctrl.SortColumns;
-					var s2 = 'prop:' + s + ';System.ItemTypeText;';
-					var s3 = s2.replace(":", ":-");
-					if (s1 != s2 && s1 != s3) {
-						Ctrl.SortColumns = (s1 == s2) ? s3 : s2;
-						return S_OK;
-					}
-				}
-			}
-		}
-	});
-
-	AddEvent("Sort", function (Ctrl) {
-		if (Ctrl.Type <= CTRL_EB && !Addons.T7Zip.NoExSort) {
-			if (Addons.T7Zip.IsHandle(Ctrl)) {
-				var s1 = Ctrl.SortColumns;
-				if (/^prop:\-?System\.ItemNameDisplay;$|^prop:\-?System\.DateModified;$/.test(s1)) {
-					setTimeout(function () {
-						Ctrl.SortColumns = s1 + 'System.ItemTypeText;';
-					}, 99);
-				}
-			}
-		}
-	});
 
 	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
 		var lib = Addons.T7Zip.GetObject(Ctrl);

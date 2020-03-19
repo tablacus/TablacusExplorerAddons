@@ -31,12 +31,7 @@ if (window.Addon == 1) {
 
 		IsHandle: function (Ctrl)
 		{
-			return Addons.Badge.RE.exec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-		},
-
-		Get: function (path)
-		{
-			return te.Data.Badges && te.Data.Badges[path] || "";
+			return Addons.Badge.RE.exec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 		},
 
 		SetX: function (Ctrl, pt, s)
@@ -113,7 +108,7 @@ if (window.Addon == 1) {
 		{
 			var Items = te.FolderItems();
 			var Badge = Addons.Badge.BadgePath(pid);
-			Addons.Badge.ENumCB(function (path, s)
+			Addons.Badge.DB.ENumCB(function (path, s)
 			{
 				var parent = fso.GetParentFolderName(path);
 				if (api.PathMatchSpec(Badge, s) || api.PathMatchSpec(parent, Badge)) {
@@ -130,16 +125,16 @@ if (window.Addon == 1) {
 				try {
 					var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 					if (path) {
-						var Badge = Addons.Badge.Get(path);
+						var Badge = Addons.Badge.DB.Get(path);
 						var s = InputDialog("badge:" + Badge + "\n" + path, path);
-						if (typeof(s) == "string") {
+						if ("string" === typeof s) {
 						 	api.SHParseDisplayName(function (pid, s, path, Badge)
 						 	{
 								if (pid) {
 									s = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 								}
 								if (s != path) {
-									if (Addons.Badge.Get(s)) {
+									if (Addons.Badge.DB.Get(s)) {
 										wsh.Popup(api.LoadString(hShell32, 6327));
 									} else {
 										Addons.Badge.Set(s, Badge);
@@ -225,7 +220,7 @@ if (window.Addon == 1) {
 			var s = "";
 			var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			if (path) {
-				s = Addons.Badge.Get(path);
+				s = Addons.Badge.DB.Get(path);
 				Addons.Badge.Set(path, 0);
 			}
 			return s;
@@ -234,24 +229,10 @@ if (window.Addon == 1) {
 		Set: function (path, s)
 		{
 			if (path) {
-				if (!/string/i.test(typeof path)) {
+				if ("string" === typeof path) {
 					path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				}
-				s = api.LowPart(s);
-				var old = te.Data.Badges[path];
-				if (s != old) {
-					if (s) {
-						te.Data.Badges[path] = s;
-					} else {
-						delete te.Data.Badges[path];
-					}
-					clearTimeout(Addons.Badge.tid2);
-					Addons.Badge.tid2 = setTimeout(Addons.Badge.Notify, 500);
-					Addons.Badge.bSave = true;
-					Addons.Badge.Redraw[fso.GetParentFolderName(path)] = true;
-					Addons.Badge.Changed[s] = true;
-					Addons.Badge.Changed[old] = true;
-				}
+				Addons.Badge.DB.Set(path, api.LowPart(s));
 			}
 		},
 
@@ -301,13 +282,13 @@ if (window.Addon == 1) {
 			}
 			Addons.Badge.Changed = {};
 			Addons.Badge.Redraw = {};
-			Addons.Badge.Save();
+			Addons.Badge.DB.Save();
 		},
 
 		List: function (list)
 		{
 			var ix = [];
-			Addons.Badge.ENumCB(function (path, s)
+			Addons.Badge.DB.ENumCB(function (path, s)
 			{
 				if (s) {
 					ix.push(s);
@@ -318,13 +299,6 @@ if (window.Addon == 1) {
 			});
 			for (var i = ix.length; i--;) {
 				list[ix[i]] = true;
-			}
-		},
-
-		ENumCB: function (fncb)
-		{
-			for (var path in te.Data.Badges) {
-				fncb(path, te.Data.Badges[path]);
 			}
 		},
 
@@ -343,67 +317,28 @@ if (window.Addon == 1) {
 				Addons.Badge.tidSync = null;
 				Addons.Badge.SyncItem = {};
 			}, 500);
-		},
-
-		Load: function ()
-		{
-			Addons.Badge.bSave = false;
-			te.Data.Badges = api.CreateObject("Object");
-			try {
-				var ado = api.CreateObject("ads");
-				ado.CharSet = "utf-8";
-				ado.Open();
-				ado.LoadFromFile(Addons.Badge.CONFIG);
-				while (!ado.EOS) {
-					var ar = ado.ReadText(adReadLine).split("\t");
-					te.Data.Badges[ar[0]] = ar[1];
-				}
-				ado.Close();
-				delete te.Data.Badges[""];
-				te.Data.BadgeModifyDate = api.ILCreateFromPath(Addons.Badge.CONFIG).ModifyDate;
-			} catch (e) {}
-		},
-
-		Save: function ()
-		{
-			if (Addons.Badge.bSave && !Addons.Badge.Initd) {
-				try {
-					var ado = api.CreateObject("ads");
-					ado.CharSet = "utf-8";
-					ado.Open();
-					delete te.Data.Badges[""];
-					Addons.Badge.ENumCB(function (path, badge)
-					{
-						ado.WriteText([path, badge].join("\t") + "\r\n");
-					});
-					ado.SaveToFile(Addons.Badge.CONFIG, adSaveCreateOverWrite);
-					ado.Close();
-					te.Data.BadgeModifyDate = api.ILCreateFromPath(Addons.Badge.CONFIG).ModifyDate;
-					Addons.Badge.bSave = false;
-				} catch (e) {}
-			}
 		}
 	}
 
 	AddEvent("Load", function ()
 	{
-		if (!Addons.Badge.Initd) {
-			if (!te.Data.BadgeModifyDate) {
-				Addons.Badge.Load();
-			}
-			AddEvent("SaveConfig", Addons.Badge.Save);
-			AddEvent("ChangeNotifyItem:" + Addons.Badge.CONFIG, function (pid)
-			{
-				if (pid.ModifyDate - te.Data.BadgeModifyDate) {
-					Addons.Badge.Load();
-				}
-			});
+		Addons.Badge.DB = new SimpleDB("badge");
+		Addons.Badge.DB.Load();
+		Addons.Badge.DB.OnChange = function (n, s, old) {
+			clearTimeout(Addons.Badge.tid2);
+			Addons.Badge.tid2 = setTimeout(Addons.Badge.Notify, 500);
+			Addons.Badge.Redraw[fso.GetParentFolderName(n)] = true;
+			Addons.Badge.Changed[s] = true;
+			Addons.Badge.Changed[old] = true;
 		}
+		AddEvent("SaveConfig", Addons.Badge.DB.Save);
+		AddEvent("Finalize", Addons.Badge.DB.Close);
 
-		var Installed0 = Addons.Badge.Get('%Installed%').toUpperCase();
+		var Installed0 = Addons.Badge.DB.Get('%Installed%').toUpperCase();
+		var Installed0 = Addons.Badge.Set('%Installed%', "");
 		var Installed1 = Addons.Badge.Portable ? fso.GetDriveName(api.GetModuleFileName(null)).toUpperCase() : "";
 		if (Installed0 && Addons.Badge.Portable && Installed0 != Installed1) {
-			Addons.Badge.ENumCB(function (path, badge)
+			Addons.Badge.DB.ENumCB(function (path, badge)
 			{
 				var drv = fso.GetDriveName(path);
 				if (drv.toUpperCase() == Installed0) {
@@ -564,7 +499,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeNotify", function (Ctrl, pidls)
 	{
-		if (te.Data.Badges) {
+		if (Addons.Badge.DB) {
 			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				var s = Addons.Badge.Remove(pidls[0]);
@@ -616,21 +551,18 @@ if (window.Addon == 1) {
 	AddEvent("ItemPostPaint2", function (Ctrl, pid, nmcd, vcd)
 	{
 		var hList = Ctrl.hwndList;
-		if (hList && pid) {
-			var image = Addons.Badge.Image[Addons.Badge.Get(pid.Path)];
+		if (hList && pid && Addons.Badge.DB) {
+			var image = Addons.Badge.Image[Addons.Badge.DB.Get(pid.Path)];
 			if (image) {
 				var rc = api.Memory("RECT");
-				rc.Left = LVIR_ICON;
+				rc.left = LVIR_ICON;
 				api.SendMessage(hList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
 				if (api.SendMessage(hList, LVM_GETVIEW, 0, 0) == 1) {
-					var i = api.SendMessage(hList, LVM_GETCOLUMNWIDTH, 0, 0);
-					if (rc.Right > i) {
-						rc.Right = i;
-					}
+					rc.right = Math.min(rc.right, api.SendMessage(hList, LVM_GETCOLUMNWIDTH, 0, 0));
 				}
-				image = GetThumbnail(image, (rc.Bottom - rc.Top) / 2, true);
+				image = GetThumbnail(image, (rc.bottom - rc.top) / 2, true);
 				if (image) {
-					image.DrawEx(nmcd.hdc, rc.Right - image.GetWidth(), Addons.Badge.Bottom ? rc.Bottom - image.GetHeight() : rc.Top, 0, 0, CLR_NONE, CLR_NONE, ILD_NORMAL);
+					image.DrawEx(nmcd.hdc, rc.right - image.GetWidth(), Addons.Badge.Bottom ? rc.bottom - image.GetHeight() : rc.top, 0, 0, CLR_NONE, CLR_NONE, ILD_NORMAL);
 				}
 			}
 		}
@@ -646,15 +578,15 @@ if (window.Addon == 1) {
 				if (res) {
 					switch (res[1]) {
 						case '<':
-							return (Addons.Badge.Get(Item.Path) || 0) < res[2] ? S_OK : S_FALSE;
+							return (Addons.Badge.DB.Get(Item.Path) || 0) < res[2] ? S_OK : S_FALSE;
 						case '>':
-							return (Addons.Badge.Get(Item.Path) || 0) > res[2] ? S_OK : S_FALSE;
+							return (Addons.Badge.DB.Get(Item.Path) || 0) > res[2] ? S_OK : S_FALSE;
 						case '<=':
-							return (Addons.Badge.Get(Item.Path) || 0) <= res[2] ? S_OK : S_FALSE;
+							return (Addons.Badge.DB.Get(Item.Path) || 0) <= res[2] ? S_OK : S_FALSE;
 						case '>=':
-							return (Addons.Badge.Get(Item.Path) || 0) >= res[2] ? S_OK : S_FALSE;
+							return (Addons.Badge.DB.Get(Item.Path) || 0) >= res[2] ? S_OK : S_FALSE;
 						default:
-							return (Addons.Badge.Get(Item.Path) || 0) == res[2] ? S_OK : S_FALSE;
+							return (Addons.Badge.DB.Get(Item.Path) || 0) == res[2] ? S_OK : S_FALSE;
 					}
 				}
 			}
@@ -668,7 +600,7 @@ if (window.Addon == 1) {
 			CustomSort(Ctrl, Addons.Badge.strName, /^-/.test(Name),
 				function (pid, FV)
 				{
-					return  Addons.Badge.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					return  Addons.Badge.DB.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				},
 				function (a, b)
 				{
@@ -697,7 +629,7 @@ if (window.Addon == 1) {
 						mii2.fMask = MIIM_STRING | MIIM_SUBMENU;
 						mii2.hSubMenu = api.CreatePopupMenu();
 						mii2.dwTypeData = api.LoadString(hShell32, 12850);
-						var s = Addons.Badge.Get(path);
+						var s = Addons.Badge.DB.Get(path);
 						var str1 = unescape('\%u2605%u2605%u2605%u2605%u2605%u2606%u2606%u2606%u2606%u2606%u2606');
 						for (var i = 6; i--;) {
 							api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING | (s == i ? MF_CHECKED : 0), ++nPos, ["&" + i, " - ", str1.substr(5 - i, 5)].join(""));
@@ -728,7 +660,7 @@ if (window.Addon == 1) {
 	//Image
 	var hdc;
 	for (var i = 6; --i;) {
-		var image = te.WICBitmap();
+		var image = api.CreateObject("WICBitmap");
 		var s = api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Img"+ i)));
 		if (s) {
 			Addons.Badge.Image[i] = image.FromFile(s);
@@ -739,8 +671,8 @@ if (window.Addon == 1) {
 		hdc = api.GetDC(te.hwnd);
 		var rc = api.Memory("RECT");
 		var w = 32 * screen.logicalYDPI / 96;
-		rc.Right = w;
-		rc.Bottom = w;
+		rc.right = w;
+		rc.bottom = w;
 		var hbm = api.CreateCompatibleBitmap(hdc, w, w);
 		var hmdc = api.CreateCompatibleDC(hdc);
 		var hOld = api.SelectObject(hmdc, hbm);
@@ -754,7 +686,7 @@ if (window.Addon == 1) {
 		lf.lfWeight = 700;
 		var hFont = CreateFont(lf);
 		var hfontOld = api.SelectObject(hmdc, hFont);
-		rc.Top = -w / 4;
+		rc.top = -w / 4;
 		api.DrawText(hmdc, i, -1, rc, DT_CENTER);
 		api.SelectObject(hmdc, hfontOld);
 		api.DeleteObject(brush);
