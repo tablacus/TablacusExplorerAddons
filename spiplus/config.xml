@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2020.3.16</MinVersion>
+    <pubDate>Sat, 21 Mar 2020 00:00:00 GMT</pubDate>
+    <Options>Common:0:0</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Susie Plug-in plus</Name>
+    <Description>Open archive file using Susie Plug-in. *Susie Plug-in is required</Description>
+  </en>
+  <ja>
+    <Name>Susie プラグイン プラス</Name>
+    <Description>Susie プラグインを使ってアーカイブファイルを開く ※Susie プラグインが必要</Description>
+  </ja>
+</TablacusExplorer>

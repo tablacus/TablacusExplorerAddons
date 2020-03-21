@@ -28,34 +28,20 @@
             </td>
             <td valign="top">
             <div  style="height: 34em; height: calc(100vh - 5.7em); min-height: 16em; overflow: auto; word-break: break-all">
-              <label>Name</label>
-              <br>
-              <table style="width: 100%"><tr>
-              <td style="vertical-align: bottom"><input type="checkbox" name="Enable" checked></td>
-              <td style="width: 100%"><input type="text" name="Name" style="width: 100%"></td>
-              </tr></table>
+              <label>Name</label>&nbsp;<label><input type="checkbox" name="Enable" checked>Enable</label>&nbsp;<label><input type="checkbox" name="Sync">@shell32.dll,-31494[22062]</label>&nbsp;<label><input type="checkbox"
+                  name="Ansi">Ansi</label>
+              <input type="text" name="Name" style="width: 100%">
               <table style="width: 100%"><tr>
                 <td style="white-space: nowrap; vertical-align: bottom"><label>Path</label><span id="bit1"><span></td>
-                <td style="white-space: nowrap; vertical-align: bottom; width: 100%"><label><input type="checkbox" name="Sync">@shell32.dll,-31494[22062]</label></td>
+                <td style="white-space: nowrap; vertical-align: bottom; width: 100%"></td>
                 <td><input type="button" value="Portable" title="Path" onclick="PortableX('Path')"></td>
                 <td><input type="button" value="Browse..." title="Path" id="_browse1"></td>
               </tr></table>
               <input type="text" name="Path" style="width: 100%" onchange="PathChanged()">
-              <br>
-              <label>Filter</label>
-              <br>
-              <table style="width: 100%"><tr>
-                <td style="vertical-align: bottom"><input type="checkbox" name="Filter"></td>
-                <td style="width: 100%"><input type="text" name="UserFilter" style="width: 100%"></td>
-                </tr>
-              </table>
-              <label>Content</label> (AM)<br>
-              <table style="width: 100%">
-                <tr>
-                  <td style="vertical-align: bottom"><input type="checkbox" name="IsPreview"></td>
-                  <td style="width: 100%"><input type="text" name="Preview" placeholder="*" style="width: 100%"></td>
-                </tr>
-              </table>
+              <label><input type="checkbox" name="Filter">Filter</label>
+              <input type="text" name="UserFilter" style="width: 100%">
+              <label><input type="checkbox" name="IsPreview" id="IsPreview">Content</label> (00AM) / <label for="IsPreview">@mspaint.exe,-24300[Preview]</label> (00IN)<br>
+              <input type="text" name="Preview" placeholder="*" style="width: 100%">
               <label>Information</label>&emsp;<span id="ver"></span>
               <table style="width: 100%"><tr><td id="prop0" style="width: 33%"></td><td id="prop1" style="width: 33%"></td><td id="prop2"></td></table>
               <div id="prop3"></div><br>

@@ -6,6 +6,7 @@
 #pragma comment (lib, "shlwapi.lib")
 
 #define SIZE_BUFF 32768
+#define BSTRA	LPSTR
 
 struct TEmethod
 {
@@ -20,7 +21,7 @@ struct TEGetImageArg
 	int cx;
 	HBITMAP *phBM;
 	int *pnAlpha;
-	LPSTR bsPathA;
+	BSTRA bsPathA;
 	LONG_PTR len;
 	BOOL bDelete;
 	BSTR pdw;
@@ -33,8 +34,8 @@ struct TEGetArchiveArg
 	IStream **ppStream;
 	BOOL bDelete;
 	BSTR pdw;
-	LPSTR bsPathA;
-	LPSTR bsItemA;
+	BSTRA bsPathA;
+	BSTRA bsItemA;
 };
 
 #ifdef _WIN64
@@ -147,6 +148,10 @@ public:
 
 	VOID Close();
 
+	HLOCAL GetArchiveInfoX(LPCWSTR lpszArcPath, BOOL bDelete, BSTRA *pbsPathA, void *pdw,
+			LONG_PTR len, int flag, SUSIE_FINFOTW **ppfinfoW, SUSIE_FINFO **ppfinfo);
+	int GetFileInfoX(LPCWSTR lpszArcPath, LPCWSTR lpszItem, BOOL bDelete, BSTRA *pbsPathA, BSTRA *pbsItemA, void *pdw,
+			LONG_PTR len, int flag, SUSIE_FINFOTW *pfinfoW, SUSIE_FINFO *pfinfo, BOOL *pbUnicode);
 	HRESULT GetImage(TEGetImageArg *pArg);
 	HRESULT GetArchive(TEGetArchiveArg *pArg);
 
@@ -173,6 +178,8 @@ public:
 	BSTR		m_bsFilter;
 	BSTR		m_bsPreview;
 	BOOL		m_bSync;
+	BOOL		m_bIsPreview;
+	BOOL		m_bIsUnicode;
 private:
 	LONG		m_cRef;
 };

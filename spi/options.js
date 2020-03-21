@@ -14,7 +14,7 @@ function LoadFS() {
 			g_x.List.length = i;
 			while (--i >= 0) {
 				var item = items[i];
-				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Disabled"), item.getAttribute("Filter"), item.getAttribute("Preview"), item.getAttribute("IsPreview"), item.getAttribute("UserFilter"), item.getAttribute("Sync")], !item.getAttribute("Disabled"));
+				SetData(g_x.List[i], [item.getAttribute("Name"), item.getAttribute("Path"), item.getAttribute("Disabled"), item.getAttribute("Filter"), item.getAttribute("Preview"), item.getAttribute("IsPreview"), item.getAttribute("UserFilter"), item.getAttribute("Sync"), item.getAttribute("Ansi")], !item.getAttribute("Disabled"));
 			}
 		}
 		EnableSelectTag(g_x.List);
@@ -37,6 +37,7 @@ function SaveFS() {
 			item.setAttribute("IsPreview", a[5]);
 			item.setAttribute("UserFilter", a[6]);
 			item.setAttribute("Sync", a[7]);
+			item.setAttribute("Ansi", a[8]);
 			root.appendChild(item);
 		}
 		xml.appendChild(root);
@@ -57,6 +58,7 @@ function EditFS() {
 	document.F.IsPreview.checked = a[5];
 	document.F.UserFilter.value = a[6] || "";
 	document.F.Sync.checked = a[7];
+	document.F.Ansi.checked = a[8];
 	SetProp();
 }
 
@@ -68,7 +70,7 @@ function ReplaceFS() {
 	}
 	var sel = g_x.List[g_x.List.selectedIndex];
 	o = document.F.Type;
-	SetData(sel, [document.F.Name.value, document.F.Path.value, !document.F.Enable.checked, document.F.Filter.checked, document.F.Preview.value, document.F.IsPreview.checked, document.F.UserFilter.value, document.F.Sync.checked], document.F.Enable.checked);
+	SetData(sel, [document.F.Name.value, document.F.Path.value, !document.F.Enable.checked, document.F.Filter.checked, document.F.Preview.value, document.F.IsPreview.checked, document.F.UserFilter.value, document.F.Sync.checked, document.F.Ansi.checked], document.F.Enable.checked);
 	g_Chg.List = true;
 }
 
@@ -118,7 +120,15 @@ function SetProp(bName) {
 	document.getElementById("ext").innerHTML = s.join("");
 	var filter = [];
 	for (var j = 2; j < ar.length; j += 2) {
-		filter.push(ar[j]);
+		var s = ar[j];
+		if (/\./.test(s) && !/\*/.test(s)) {
+			var ar2 = s.split(/\./);
+			for (k = 1; k < ar2.length; k++) {
+				filter.push('*.' + ar2[k]);
+			}
+		} else {
+			filter.push(s);
+		}
 	}
 	document.F.elements["UserFilter"].setAttribute("placeholder", filter.join(";") || "*");
 }

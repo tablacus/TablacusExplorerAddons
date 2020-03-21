@@ -44,15 +44,25 @@ if (window.Addon == 1) {
 								SPI.GetPluginInfo(ar);
 							}
 							for (var j = 2; j < ar.length; j += 2) {
-								filter.push(ar[j]);
+								var s = ar[j];
+								if (/\./.test(s) && !/\*/.test(s)) {
+									var ar2 = s.split(/\./);
+									for (k = 1; k < ar2.length; k++) {
+										filter.push('*.' + ar2[k]);
+									}
+								} else {
+									filter.push(s);
+								}
 							}
 						}
 					} else {
 						filter.push("*");
 					}
-					SPI.Filter = filter.join(";");
-					SPI.Preview = items[i].getAttribute("IsPreview") ? items[i].getAttribute("Preview") || "*" : "-";
+					SPI.Filter = filter.join(";") || "*";
+					SPI.IsPreview = items[i].getAttribute("IsPreview") != 0;
+					SPI.Preview = items[i].getAttribute("Preview") || "*";
 					SPI.Sync = items[i].getAttribute("Sync") ? 1 : 0;
+					SPI.IsUnicode = items[i].getAttribute("Ansi") ? 0 : 1;
 					if (SPI.GetPicture || (SPI.GetFile && SPI.Preview != "-")) {
 						Addons.SPI.GetImage = true;
 					}

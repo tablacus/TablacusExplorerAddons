@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
-    <MinVersion>2018.7.29</MinVersion>
-    <pubDate>Wed, 01 Aug 2018 00:00:00 GMT</pubDate>
+    <Version>1.04</Version>
+    <MinVersion>2020.3.16</MinVersion>
+    <pubDate>Sat, 21 Mar 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -15,6 +15,8 @@
   </en>
   <ja>
     <Name>同一のロックされたタブがあれば開く</Name>
-    <Description>同一のロックされたタブがあれば開く</Description>
   </ja>
+  <zh>
+    <Name>防止重複已鎖分頁</Name>
+  </zh>
 </TablacusExplorer>
