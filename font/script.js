@@ -1,11 +1,13 @@
-﻿var Addon_Id = "font";
+var Addon_Id = "font";
 
 var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Font =
 	{
-		Exec: function (Ctrl)
-		{
+		TreeHeight: api.LowPart(item.getAttribute("TreeHeight")),
+		FrameHeight: api.LowPart(item.getAttribute("FrameHeight")),
+
+		Exec: function (Ctrl) {
 			var FV = GetFolderView(Ctrl);
 			if (FV) {
 				var hwnd = FV.hwndList;
@@ -16,21 +18,24 @@ if (window.Addon == 1) {
 					api.SendMessage(hwnd, LVM_SETVIEW, nView, 0);
 				}
 				if (Ctrl.TreeView && Ctrl.TreeView) {
-					Addons.Font.SetTV(Ctrl.TreeView.hwndTree);
+					Addons.Font.SetTV(Ctrl.TreeView.hwndTree, Addons.Font.TreeHeight);
+				}
+				if (FV.Type == CTRL_EB) {
+					Addons.Font.SetTV(FindChildByClass(FV.hwnd, WC_TREEVIEW), Addons.Font.FrameHeight);
 				}
 			}
 		},
 
-		SetTV: function (hwnd)
-		{
+		SetTV: function (hwnd, nHeight) {
 			if (hwnd) {
 				api.SendMessage(hwnd, WM_SETFONT, Addons.Font.hFont, 1);
-				api.SendMessage(hwnd, TVM_SETITEMHEIGHT, -1, 0);
+				if (nHeight) {
+					api.SendMessage(hwnd, TVM_SETITEMHEIGHT, nHeight, 0);
+				}
 			}
 		},
 
-		Init: function ()
-		{
+		Init: function () {
 			Addons.Font.hFont = CreateFont(DefaultFont);
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
@@ -41,8 +46,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ViewCreated", Addons.Font.Exec);
 
-	AddEvent("Create", function (Ctrl)
-	{
+	AddEvent("Create", function (Ctrl) {
 		if (Ctrl.Type <= CTRL_EB) {
 			Addons.Font.Exec(Ctrl);
 			return;
@@ -52,9 +56,12 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEventId("AddonDisabledEx", "font", function(Id)
-	{
+	AddEventId("AddonDisabledEx", "font", function (Id) {
 		api.SystemParametersInfo(SPI_GETICONTITLELOGFONT, DefaultFont.Size, DefaultFont, 0);
+		if (Addons.Font.TreeHeight) {
+			Addons.Font.TreeHeight = -1;
+		}
+		Addons.Font.FrameHeight = 0;
 		Addons.Font.Init();
 	});
 

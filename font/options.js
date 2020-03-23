@@ -1,15 +1,11 @@
-var s= '<label>Name</label><br />';
-s += '<input type="text" id="Name" style="width: 100%" /><br />';
-s += '<label>Size</label><br />';
-s += '<input type="text" id="Size" style="width: 100%" /><br />';
-s += '<label>Weight</label><br />';
-s += '<input type="text" id="Weight" style="width: 100%" /><br />';
-s += '<input type="button" value="Browse..." onclick="ChooseFont(this)" />';
 var info = GetAddonInfo(Addon_Id);
-SetTabContents(0, info.Name, s);
+var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+if (ado) {
+	SetTabContents(0, "", ado.ReadText(adReadAll));
+	ado.Close();
+}
 
-ChooseFont = function (o)
-{
+ChooseFont = function (o) {
 	var lf = api.Memory("LOGFONT");
 	lf.lfFaceName = document.F.Name.value || MainWindow.DefaultFont.lfFaceName;
 	var h = document.F.Size.value;
