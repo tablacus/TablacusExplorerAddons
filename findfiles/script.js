@@ -18,10 +18,9 @@ Addons.FindFiles =
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 	nPos: api.LowPart(item.getAttribute("MenuPos")),
 
-	GetSearchString: function(Ctrl)
-	{
+	GetSearchString: function (Ctrl) {
 		if (Ctrl) {
-			var res = new RegExp("^" + Addons.FindFiles.PATH + "\\s*(.*)" , "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			var res = new RegExp("^" + Addons.FindFiles.PATH + "\\s*(.*)", "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 			if (res) {
 				return res[1];
 			}
@@ -29,15 +28,13 @@ Addons.FindFiles =
 		return "";
 	},
 
-	Exec: function (Ctrl, pt)
-	{
+	Exec: function (Ctrl, pt) {
 		GetFolderView(Ctrl, pt).Focus();
-		ShowDialog("../addons/findfiles/dialog.html", {MainWindow: window, width: 400, height: 220});
+		ShowDialog("../addons/findfiles/dialog.html", { MainWindow: window, width: 400, height: 220 });
 		return S_OK;
 	},
 
-	Start: function (Ctrl, pt)
-	{
+	Start: function (Ctrl, pt) {
 		var FV = GetFolderView(Ctrl, pt);
 		if (FV) {
 			var ar = [];
@@ -60,8 +57,7 @@ Addons.FindFiles =
 		return S_OK;
 	},
 
-	Notify: function (pid, pid2)
-	{
+	Notify: function (pid, pid2) {
 		var cTC = te.Ctrls(CTRL_TC);
 		for (var i in cTC) {
 			var TC = cTC[i];
@@ -78,41 +74,37 @@ Addons.FindFiles =
 };
 
 if (window.Addon == 1) {
-	AddEvent("TranslatePath", function (Ctrl, Path)
-	{
+	AddEvent("TranslatePath", function (Ctrl, Path) {
 		if (api.PathMatchSpec(Path, Addons.FindFiles.PATH + "*")) {
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
 
-	AddEvent("BeginNavigate", function (Ctrl)
-	{
+	AddEvent("BeginNavigate", function (Ctrl) {
 		var Path = Addons.FindFiles.GetSearchString(Ctrl);
 		if (Path) {
 			OpenNewProcess("addons\\findfiles\\worker.js",
-			{
-				FV: Ctrl,
-				Path: Path,
-				SessionId: Ctrl.SessionId,
-				hwnd: te.hwnd,
-				ProgressDialog: te.ProgressDialog,
-				Locale: document.documentMode > 8 ? 999 : Infinity,
-				NavigateComplete: te.OnNavigateComplete
-			});
+				{
+					FV: Ctrl,
+					Path: Path,
+					SessionId: Ctrl.SessionId,
+					hwnd: te.hwnd,
+					ProgressDialog: te.ProgressDialog,
+					Locale: g_.IEVer > 8 ? 999 : Infinity,
+					NavigateComplete: te.OnNavigateComplete
+				});
 			return S_FALSE;
 		}
 	});
 
-	AddEvent("ILGetParent", function (FolderItem)
-	{
+	AddEvent("ILGetParent", function (FolderItem) {
 		var ar = Addons.FindFiles.GetSearchString(FolderItem).split("|");
 		if (ar[0]) {
 			return ar[0];
 		}
 	});
 
-	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
-	{
+	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 		if (Addons.FindFiles.GetSearchString(Ctrl)) {
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
 			ExtraMenuCommand[nPos] = OpenContains;
@@ -120,15 +112,13 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
-	{
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
 		if (Addons.FindFiles.GetSearchString(Ctrl)) {
 			return MakeImgDataEx("bitmap:ieframe.dll,216,16,17", bSimple, 16);
 		}
 	});
 
-	AddEvent("ChangeNotify", function (Ctrl, pidls)
-	{
+	AddEvent("ChangeNotify", function (Ctrl, pidls) {
 		if (pidls.lEvent & (SHCNE_DELETE | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT)) {
 			Addons.FindFiles.Notify(pidls[0]);
 		}
@@ -137,8 +127,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
-	{
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 		if (!Verb || Verb == CommandID_STORE - 1) {
 			if (ContextMenu.Items.Count >= 1) {
 				var path = Addons.FindFiles.GetSearchString(ContextMenu.Items.Item(0));
@@ -152,8 +141,7 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 			api.InsertMenu(hMenu, Addons.FindFiles.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.FindFiles.strName));
 			ExtraMenuCommand[nPos] = Addons.FindFiles.Exec;
 			return nPos;
@@ -176,8 +164,7 @@ if (window.Addon == 1) {
 } else if (window.Addon == 2) {
 	MainWindow.RunEvent1("BrowserCreated", document);
 
-	AddEventEx(window, "load", function ()
-	{
+	AddEventEx(window, "load", function () {
 		FV = te.Ctrl(CTRL_FV);
 		var ar = Addons.FindFiles.GetSearchString(FV).split("|");
 		if (ar.length > 1) {
@@ -194,8 +181,7 @@ if (window.Addon == 1) {
 		ApplyLang(document);
 		document.F.name.focus();
 
-		document.body.onkeydown = function (e)
-		{
+		document.body.onkeydown = function (e) {
 			var key = (e || event).keyCode;
 			if (key == VK_RETURN && document.F.location.value && (document.F.name.value || document.F.content.value)) {
 				FindFiles();
@@ -207,8 +193,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	FindFiles = function ()
-	{
+	FindFiles = function () {
 		var ar = [];
 		FV.Navigate("findfiles:" + [document.F.location.value, document.F.name.value, document.F.content.value.replace(/%/g, "%25").replace(/\//g, "%2F")].join("|"), document.F.newtab.checked ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
 		window.close();

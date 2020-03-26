@@ -17,7 +17,7 @@ if (window.Addon == 1) {
 					api.SendMessage(hwnd, LVM_SETVIEW, nView == 1 ? 4 : 1, 0);
 					api.SendMessage(hwnd, LVM_SETVIEW, nView, 0);
 				}
-				if (Ctrl.TreeView && Ctrl.TreeView) {
+				if (Ctrl.TreeView) {
 					Addons.Font.SetTV(Ctrl.TreeView.hwndTree, Addons.Font.TreeHeight);
 				}
 				if (FV.Type == CTRL_EB) {
@@ -52,7 +52,7 @@ if (window.Addon == 1) {
 			return;
 		}
 		if (Ctrl.Type == CTRL_TV) {
-			Addons.Font.SetTV(Ctrl.hwndTree);
+			Addons.Font.SetTV(Ctrl.hwndTree, Addons.Font.TreeHeight);
 		}
 	});
 

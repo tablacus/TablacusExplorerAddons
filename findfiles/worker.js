@@ -6,7 +6,7 @@ if (MainWindow.Exchange) {
 	var ex = MainWindow.Exchange[arg[3]];
 	if (ex) {
 		var ar = ex.Path.split("|");
-		var list = [ar.shift()];
+		var list = [api.ILCreateFromPath(ar.shift())];
 		var mask1 = ar.shift();
 		var filter1 = ar.join("|").replace(/%2F/g, "/").replace(/%25/g, "%");
 		var length1 = filter1.length * 2;
@@ -15,40 +15,41 @@ if (MainWindow.Exchange) {
 		try {
 			Progress.SetAnimation(hShell32, 150);
 			SearchFolders(list, ex.FV, ex.SessionId, ex.Locale, mask1, length1, new RegExp(filter1.replace(/([\+\*\.\?\^\$\[\-\]\|\(\)\\])/g, "\\$1"), "i"), Progress);
-		} catch (e) {}
+		} catch (e) { }
 		Progress.StopProgressDialog();
 		delete MainWindow.Exchange[arg[3]];
 		ex.NavigateComplete(ex.FV);
 	}
 }
 
-function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, Progress)
-{
-	var bAdd, path;
+function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, Progress) {
+	var bAdd, FolderItem;
 	var nItems = 0;
 	var sItem = String(api.LoadString(hShell32, 38192) || api.LoadString(hShell32, 6466)).replace(/%1!ls!/, "%s");
 	var wfd = api.Memory("WIN32_FIND_DATA");
 	var nFound = FV.ItemCount(SVGIO_ALLVIEW);
-	while (path = folderlist.shift()) {
+	while (FolderItem = folderlist.shift()) {
 		if (Progress.HasUserCancelled()) {
 			return;
 		}
-		Progress.SetLine(1, path, true);
-		var hFind = api.FindFirstFile(fso.BuildPath(path, "*"), wfd);
-		for (var bFind = hFind != INVALID_HANDLE_VALUE; bFind && !Progress.HasUserCancelled(); bFind = api.FindNextFile(hFind, wfd)) {
-			if (/^\.\.?$/.test(wfd.cFileName)) {
-				continue;
-			}
+		var Folder = FolderItem.GetFolder;
+		if (!Folder) {
+			continue;
+		}
+		Progress.SetLine(1, FolderItem.Path, true);
+		for (var Items = Folder.Items(), i = 0; i < Items.Count && !Progress.HasUserCancelled(); i++) {
+			var Item = Items.Item(i);
+			api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size);
 			var s = ++nItems;
 			if (s > loc999) {
 				s = s.toLocaleString();
 			}
-			Progress.SetTitle(api.sprintf(999, sItem, s) + ' ('+ nFound +')');
-			var fn = fso.BuildPath(path, wfd.cFileName);
+			Progress.SetTitle(api.sprintf(999, sItem, s) + ' (' + nFound + ')');
+			var fn = api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			Progress.SetLine(2, wfd.cFileName, true);
 			if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				if (!/^[A-Z]:\\\$Recycle\.Bin$/i.test(fn)) {
-					folderlist.push(fn);
+					folderlist.push(Item);
 				}
 			} else if (api.PathMatchSpec(wfd.cFileName, mask1)) {
 				if (length1) {
@@ -87,13 +88,13 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 								break;
 							}
 						}
-					} catch (e) {}
+					} catch (e) { }
 					ado.close();
 				} else {
 					bAdd = true;
 				}
 				if (bAdd) {
-					if (FV.AddItem(api.ILCreateFromPath(fn), SessionId) == E_ACCESSDENIED) {
+					if (FV.AddItem(Item, SessionId) == E_ACCESSDENIED) {
 						folderlist = [];
 						break;
 					}
@@ -101,6 +102,5 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 				}
 			}
 		}
-		api.FindClose(hFind);
 	}
 }
