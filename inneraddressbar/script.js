@@ -26,15 +26,20 @@ if (window.Addon == 1) {
 		KeyDown: function (o, Id)
 		{
 			if (event.keyCode == VK_RETURN) {
-				var p = GetPos(o);
-				var pt = api.Memory("POINT");
-				pt.x = screenLeft + p.x;
-				pt.y = screenTop + p.y + o.offsetHeight;
-				window.Input = o.value;
-				if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
-					NavigateFV(GetInnerFV(Id), o.value, GetNavigateFlags(), true);
-				}
-				return false;
+				(function (o, Id, str) {
+					setTimeout(function () {
+						if (str == o.value) {
+							var p = GetPos(o);
+							var pt = api.Memory("POINT");
+							pt.x = screenLeft + p.x;
+							pt.y = screenTop + p.y + o.offsetHeight;
+							window.Input = o.value;
+							if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
+								NavigateFV(GetInnerFV(Id), o.value, GetNavigateFlags(), true);
+							}
+						}
+					}, 99);
+				})(o, Id, o.value);
 			}
 			return true;
 		},
@@ -212,11 +217,11 @@ if (window.Addon == 1) {
 	{
 		var nSize = api.GetSystemMetrics(SM_CYSMICON);
 		var s = (Addons.InnerAddressBar.path2[Ctrl.Id] || "").replace(/"/, "");
-		s = ['<div style="position: relative; width; 100px; overflow: hidden"><input id="inneraddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerAddressBar.KeyDown(this, $)" onfocus="Addons.InnerAddressBar.Focus(this, $)" onresize="Addons.InnerAddressBar.Resize($)" style="width: 100%; vertical-align: middle; padding-left: ', nSize + 4, 'px; padding-right: 16px;"><div id="inneraddrselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</span></div>'];
+		s = ['<div style="position: relative; width; 100px; overflow: hidden"><input id="inneraddressbar_$" type="text" value="' + s + '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerAddressBar.KeyDown(this, $)" oninput="AdjustAutocomplete(this.value)" onfocus="Addons.InnerAddressBar.Focus(this, $)" onresize="Addons.InnerAddressBar.Resize($)" style="width: 100%; vertical-align: middle; padding-left: ', nSize + 4, 'px; padding-right: 16px;"><div id="inneraddrselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</span></div>'];
 		s.push('<img id="inneraddr_img_$" src="icon:shell32.dll,3,16"');
 		s.push(' onclick="return Addons.InnerAddressBar.ExecEx($);"');
 		s.push(' oncontextmenu="Addons.InnerAddressBar.ExecEx($); return false;"');
-		s.push(' style="position: absolute; left: 4px; top: 1.5pt; width: ', nSize, 'px; height: ', nSize, 'px; z-index: 3; border: 0px" /></div>');
+		s.push(' style="position: absolute; left: 4px; top: 1.5pt; width: ', nSize, 'px; height: ', nSize, 'px; z-index: 3; border: 0px"></div>');
 		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
@@ -254,4 +259,6 @@ if (window.Addon == 1) {
 		}
 	}
 	AddTypeEx("Add-ons", "Inner Address Bar", Addons.InnerAddressBar.Exec);
+} else {
+	SetTabContents(0, "General", '<label><input type="checkbox" id="!NoAutocomplete">Autocomplete</label>');
 }

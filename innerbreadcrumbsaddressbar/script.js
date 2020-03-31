@@ -26,15 +26,20 @@ if (window.Addon == 1) {
 		KeyDown: function (o, Id)
 		{
 			if (event.keyCode == VK_RETURN) {
-				var p = GetPos(o);
-				var pt = api.Memory("POINT");
-				pt.x = screenLeft + p.x;
-				pt.y = screenTop + p.y + o.offsetHeight;
-				window.Input = o.value;
-				if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
-					NavigateFV(GetInnerFV(Id), o.value, GetNavigateFlags(), true);
-				}
-				return false;
+				(function (o, Id, str) {
+					setTimeout(function () {
+						if (str == o.value) {
+							var p = GetPos(o);
+							var pt = api.Memory("POINT");
+							pt.x = screenLeft + p.x;
+							pt.y = screenTop + p.y + o.offsetHeight;
+							window.Input = o.value;
+							if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
+								NavigateFV(GetInnerFV(Id), o.value, GetNavigateFlags(), true);
+							}
+						}
+					}, 99);
+				})(o, Id, o.value);
 			}
 			return true;
 		},
@@ -331,11 +336,11 @@ if (window.Addon == 1) {
 	{
 		var nSize = api.GetSystemMetrics(SM_CYSMICON);
 		var s = (Addons.InnerBreadcrumbsAddressBar.path2[Ctrl.Id] || "").replace(/"/, "");
-		s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbsbuttons_$"  class="breadcrumb" style="position: absolute; top: 1px; left: 1px; padding-left: ', nSize + 4, 'px" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus($)" onclick="Addons.InnerBreadcrumbsAddressBar.ExecEx($)"></div><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus($)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur($)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; padding-left: ', nSize + 4, 'px; padding-right: 16px;"><div class="breadcrumb"><div id="breadcrumbsselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</div></div>'];
+		s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbsbuttons_$"  class="breadcrumb" style="position: absolute; top: 1px; left: 1px; padding-left: ', nSize + 4, 'px" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus($)" onclick="Addons.InnerBreadcrumbsAddressBar.ExecEx($)"></div><input id="breadcrumbsaddressbar_$" type="text" value="' + s + '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(this, $)" oninput="AdjustAutocomplete(this.value)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus($)" onblur="Addons.InnerBreadcrumbsAddressBar.Blur($)" onresize="Addons.InnerBreadcrumbsAddressBar.Resize($)" style="width: 100%; vertical-align: middle; padding-left: ', nSize + 4, 'px; padding-right: 16px;"><div class="breadcrumb"><div id="breadcrumbsselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</div></div>'];
 		s.push('<img id="breadcrumbsaddr_img_$" src="icon:shell32.dll,3,16"');
 		s.push(' onclick="return Addons.InnerBreadcrumbsAddressBar.ExecEx($);"');
 		s.push(' oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ExecEx($); return false;"');
-		s.push(' style="position: absolute; left: 4px; top: 1.5pt; width: ', nSize, 'px; height: ', nSize, 'px; z-index: 3; border: 0px" /></div>');
+		s.push(' style="position: absolute; left: 4px; top: 1.5pt; width: ', nSize, 'px; height: ', nSize, 'px; z-index: 3; border: 0px"></div>');
 		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 

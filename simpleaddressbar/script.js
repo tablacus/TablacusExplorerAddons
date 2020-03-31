@@ -17,44 +17,42 @@ if (window.Addon == 1) {
 		nPos: 0,
 		strName: "Simple Address Bar",
 
-		KeyDown: function (o)
-		{
+		KeyDown: function (o) {
 			if (event.keyCode == VK_RETURN) {
-				var o = document.F.simpleaddressbar;
-				var p = GetPos(o);
-				var pt = api.Memory("POINT");
-				pt.x = screenLeft + p.x;
-				pt.y = screenTop + p.y + o.offsetHeight;
-				window.Input = o.value;
-				if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
-					Navigate(o.value, GetNavigateFlags());
-				}
-				return false;
+				(function (o, str) {
+					setTimeout(function () {
+						if (str == o.value) {
+							var p = GetPos(o);
+							var pt = api.Memory("POINT");
+							pt.x = screenLeft + p.x;
+							pt.y = screenTop + p.y + o.offsetHeight;
+							window.Input = str;
+							if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
+								NavigateFV(te.Ctrl(CTRL_FV), str, GetNavigateFlags(), true);
+							}
+						}
+					}, 99);
+				})(o, o.value);
 			}
-			return true;
 		},
 
-		Focus: function ()
-		{
+		Focus: function () {
 			document.F.simpleaddressbar.focus();
 			return S_OK;
 		}
 	};
 
-	AddEvent("ChangeView", function (Ctrl)
-	{
+	AddEvent("ChangeView", function (Ctrl) {
 		if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
 			document.F.simpleaddressbar.value = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		}
 	});
 
-	AddEvent("SetAddress", function (s)
-	{
+	AddEvent("SetAddress", function (s) {
 		document.F.addressbar.value = s;
 	});
 
-	GetAddress = function ()
-	{
+	GetAddress = function () {
 		return document.F.simpleaddressbar.value;
 	}
 
@@ -65,8 +63,7 @@ if (window.Addon == 1) {
 		if (s && s != "") {
 			Addons.SimpleAddressBar.strName = s;
 		}
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 			api.InsertMenu(hMenu, Addons.SimpleAddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.SimpleAddressBar.strName));
 			ExtraMenuCommand[nPos] = Addons.SimpleAddressBar.Focus;
 			return nPos;
@@ -82,8 +79,6 @@ if (window.Addon == 1) {
 	}
 
 	AddTypeEx("Add-ons", "Simple Address Bar", Addons.SimpleAddressBar.Focus);
-
-	var s = '<input id="simpleaddressbar" type="text" onkeydown="return Addons.SimpleAddressBar.KeyDown(this)" onfocus="this.select()" style="width: 100%; vertical-align: middle">';
-
+	var s = '<input id="simpleaddressbar" type="text" autocomplate="on" list="AddressList" oninput="AdjustAutocomplete(this.value)" onkeydown="return Addons.SimpleAddressBar.KeyDown(this)" onfocus="this.select()" style="width: 100%; vertical-align: middle">';
 	SetAddon(Addon_Id, Default, s, "middle");
 }
