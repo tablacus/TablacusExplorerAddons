@@ -3,7 +3,7 @@ var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Tabs");
-	item.setAttribute("MenuPos", 0);
+	item.setAttribute("MenuPos", -1);
 
 	item.setAttribute("KeyOn", "List");
 	item.setAttribute("Key", "");
@@ -26,6 +26,20 @@ if (window.Addon == 1) {
 		},
 
 	};
+
+	AddEvent("SaveFV", function (FV, item) {
+		if (FV.Data.Home !== void 0) {
+			item.setAttribute("Home", GetSavePath(FV.Data.Home));
+		}
+	});
+
+	AddEvent("LoadFV", function (FV, item) {
+		var Home = item.getAttribute("Home");;
+		if (Home) {
+			FV.Data.Home = api.ILCreateFromPath(Home);
+		}
+	});
+
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {

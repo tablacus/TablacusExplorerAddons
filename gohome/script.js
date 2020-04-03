@@ -3,7 +3,7 @@ var item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Tabs");
-	item.setAttribute("MenuPos", 0);
+	item.setAttribute("MenuPos", -1);
 
 	item.setAttribute("KeyOn", "All");
 	item.setAttribute("Key", "$4147");
