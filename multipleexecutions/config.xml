@@ -10,7 +10,7 @@
   </General>
   <en>
     <Name>Multiple executions</Name>
-    <Description>Multiple executions</Description>
+    <Description>Lets you run multiple instances of Tablacus which share the same set of settings</Description>
   </en>
   <ja>
     <Name>複数起動</Name>
