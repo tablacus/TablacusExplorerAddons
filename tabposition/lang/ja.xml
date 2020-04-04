@@ -1,6 +1,6 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <resources>
-  <text s="Active Tab After Tab Closing">タブを閉じた後にアクティブにするタブ</text>
+  <text s="Active tab after tab closing">タブを閉じた後にアクティブにするタブ</text>
   <text s="First">先頭</text>
   <text s="Last">最後</text>
   <text s="Parent folder">親フォルダ</text>

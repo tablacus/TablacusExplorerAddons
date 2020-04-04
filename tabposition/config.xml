@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
-    <MinVersion>2017.8.19</MinVersion>
-    <pubDate>Sat, 19 Aug 2017 00:00:00 GMT</pubDate>
+    <Version>1.04</Version>
+    <MinVersion>2020.4.4</MinVersion>
+    <pubDate>Sat, 04 Apr 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,7 @@
     <Name>タブの位置</Name>
     <Description>新しいタブやタブを閉じた際にアクティブにするタブを指定します。</Description>
   </ja>
+  <zh>
+    <Name>分頁位置</Name>
+  </zh>
 </TablacusExplorer>

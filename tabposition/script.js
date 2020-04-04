@@ -6,8 +6,7 @@ if (window.Addon == 1) {
 		nClose: GetAddonOptionEx(Addon_Id, "Close")
 	};
 
-	AddEvent("Close", function (Ctrl)
-	{
+	AddEvent("Close", function (Ctrl) {
 		var FV;
 		if (Ctrl.Type <= CTRL_EB) {
 			var TC = Ctrl.Parent;
@@ -58,8 +57,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("SelectionChanged", function (Ctrl, uChange)
-	{
+	AddEvent("SelectionChanged", function (Ctrl, uChange) {
 		var FV;
 		if (Ctrl.Type == CTRL_TC) {
 			for (var i = Ctrl.Count; i-- > 0;) {
@@ -67,7 +65,7 @@ if (window.Addon == 1) {
 				if (FV && FV.Data) {
 					FV.Data.nActive = (FV.Data.nActive || 0) + 1;
 					if (FV.Data.Created) {
-						if  (new Date().getTime() - FV.Data.Created < 9999) {
+						if (new Date().getTime() - FV.Data.Created < 9999) {
 							if (Addons.TabPositon.nNew) {
 								Ctrl.Move(i, Ctrl.Count - 1);
 							}
@@ -83,16 +81,15 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Create", function (Ctrl)
-	{
-		if (Ctrl.Type <= CTRL_EB) {
+	AddEvent("Create", function (Ctrl) {
+		if (Ctrl.Type <= CTRL_EB && !g_.LockUpdate) {
 			Ctrl.Data.Created = new Date().getTime();
 		}
 	});
 } else {
-	var ado = OpenAdodbFromTextFile(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\"+ Addon_Id + "\\options.html"));
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 	if (ado) {
-		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		SetTabContents(0, "", ado.ReadText(adReadAll));
 		ado.Close();
 	}
 }
