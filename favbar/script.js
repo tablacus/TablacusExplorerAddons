@@ -4,8 +4,7 @@ var Default = "ToolBar4Center";
 if (window.Addon == 1) {
 	Addons.FavBar =
 	{
-		Click: function (i, bNew)
-		{
+		Click: function (i, bNew) {
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
 			if (menus && menus.length) {
 				var items = menus[0].getElementsByTagName("Item");
@@ -18,15 +17,13 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Down: function (i)
-		{
+		Down: function (i) {
 			if (api.GetKeyState(VK_MBUTTON) < 0) {
 				return this.Click(i, true);
 			}
 		},
 
-		Open: function (i)
-		{
+		Open: function (i) {
 			if (Addons.FavBar.bClose) {
 				return S_OK;
 			}
@@ -47,7 +44,7 @@ if (window.Addon == 1) {
 					AdjustMenuBreak(hMenu);
 					AddEvent("ExitMenuLoop", function () {
 						Addons.FavBar.bClose = true;
-						setTimeout("Addons.FavBar.bClose = false;", 100);
+						setTimeout("Addons.FavBar.bClose = false;", 99);
 					});
 					window.g_menu_click = 2;
 					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
@@ -69,8 +66,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Popup: function (i)
-		{
+		Popup: function (i) {
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
 			if (menus && menus.length) {
 				var items = menus[0].getElementsByTagName("Item");
@@ -113,18 +109,17 @@ if (window.Addon == 1) {
 			return false;
 		},
 
-		Arrange: function ()
-		{
+		Arrange: function () {
 			var s = [];
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
 			if (menus && menus.length) {
 				var items = menus[0].getElementsByTagName("Item");
 				menus = 0;
-				var image = te.GdiplusBitmap;
 				for (var i = 0; i < items.length; i++) {
 					var item = items[i];
 					var strType = item.getAttribute("Type").toLowerCase();
 					var strFlag = strType == "menus" ? item.text.toLowerCase() : "";
+					var strName = EncodeSC(ExtractMacro(te, item.getAttribute("Name").replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")));
 					if (strFlag == "close" && menus) {
 						menus--;
 						continue;
@@ -134,7 +129,16 @@ if (window.Addon == 1) {
 						if (menus++) {
 							continue;
 						}
-					} else if (menus) {
+					} else if (strName == "/" || strFlag == "break") {
+						s.push('<br class="break">');
+						continue;
+					} else if (strName == "//" || strFlag == "barbreak") {
+						s.push('<hr class="barbreak">');
+						continue;
+					} else if (strName == "-" || strFlag == "separator") {
+						s.push('<span class="separator">|</span>');
+						continue;
+					}  else if (menus) {
 						continue;
 					}
 					var img = '';
@@ -158,7 +162,7 @@ if (window.Addon == 1) {
 						}
 					}
 					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.FavBar.Click(' + i + ')" onmousedown="Addons.FavBar.Down(' : 'onmousedown="Addons.FavBar.Open(');
-					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(item.text), '">', img, EncodeSC(ExtractMacro(te, item.getAttribute("Name").replace(/\\t.*$/g, "").replace(/&(.)/g, "$1"))), '</span> ');
+					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(item.text), '">', img, strName, '</span> ');
 				}
 				s.push('&nbsp;</label>');
 
@@ -169,19 +173,16 @@ if (window.Addon == 1) {
 			}
 		},
 
-		ShowOptions: function (i)
-		{
+		ShowOptions: function (i) {
 			ShowOptions("Tab=Menus&Menus=Favorites" + (isFinite(i) ? "," + i : ""));
 		},
 
-		GetPath: function (items, i)
-		{
+		GetPath: function (items, i) {
 			var line = items[i].text.split("\n");
 			return api.PathUnquoteSpaces(ExtractMacro(null, line[0]));
 		},
 
-		FromPt: function (n, pt)
-		{
+		FromPt: function (n, pt) {
 			while (--n >= 0) {
 				if (HitTest(document.getElementById("_favbar" + n), pt)) {
 					return n;
@@ -195,15 +196,13 @@ if (window.Addon == 1) {
 	AddEvent("FavoriteChanged", Addons.FavBar.Arrange);
 	AddEvent("Load", Addons.FavBar.Arrange);
 
-	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type == CTRL_WB) {
 			return S_OK;
 		}
 	});
 
-	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type == CTRL_WB) {
 			var menus = te.Data["xmlMenus"].getElementsByTagName('Favorites');
 			if (menus && menus.length) {
@@ -222,8 +221,7 @@ if (window.Addon == 1) {
 		MouseOut("_favbar");
 	});
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		MouseOut();
 		if (Ctrl.Type == CTRL_WB) {
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
@@ -235,8 +233,7 @@ if (window.Addon == 1) {
 				}
 			}
 			if (HitTest(Addons.FavBar.Parent, pt) && dataObj.Count) {
-				setTimeout(function ()
-				{
+				setTimeout(function () {
 					AddFavorite(dataObj.Item(0));
 				}, 99);
 				return S_OK;
