@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
-    <MinVersion>2018.12.28</MinVersion>
-    <pubDate>Fri, 28 Dec 2018 00:00:00 GMT</pubDate>
+    <Version>1.07</Version>
+    <MinVersion>2020.4.10</MinVersion>
+    <pubDate>Fri, 10 Apr 2020 00:00:00 GMT</pubDate>
     <Options>Common:5:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,7 @@
     <Name>Inner 戻る</Name>
     <Description>ペイン毎の 戻る ボタン</Description>
   </ja>
+  <zh>
+    <Name>窗格內上一頁</Name>
+  </zh>
 </TablacusExplorer>
