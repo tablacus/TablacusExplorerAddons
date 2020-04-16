@@ -25,17 +25,15 @@ if (window.Addon == 1) {
 						return;
 					}
 					var s1 = nCount > 1 ? Addons.CountBar.Item[0] : Addons.CountBar.Item[1];
-					if (nCount > 999 && document.documentMode > 8) {
+					if (nCount > 999 && g_.IEVer > 8) {
 						nCount = nCount.toLocaleString();
 					}
 					s.push(api.sprintf(s1.length + 9, s1, nCount));
 					s = s.join(" / ") + " ";
-				} else {
-					s = "";
-				}
-				document.getElementById("countbar").innerHTML = "&nbsp;" + s;
-				if (Addons.CountBar.Title) {
-					api.SetWindowText(te.hwnd, s + " - " + TITLE);
+					document.getElementById("countbar").innerHTML = "&nbsp;" + s;
+					if (Addons.CountBar.Title) {
+						api.SetWindowText(te.hwnd, s + " - " + TITLE);
+					}
 				}
 			}
 		}
