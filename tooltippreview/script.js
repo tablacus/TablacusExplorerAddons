@@ -8,6 +8,10 @@ if (window.Addon == 1) {
 		artm: [99, 99, 99, 500, 999].reverse(),
 		Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 		Folder: api.LowPart(item.getAttribute("Folder")),
+		TextFilter: api.LowPart(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
+		Charset: item.getAttribute("Charset"),
+		TextSize: item.getAttribute("TextSize") || 4000,
+		TextLimit: item.getAttribute("TextLimit") || 10000000,
 
 		Draw: function () {
 			Addons.TooltipPreview.DeleteBM();
@@ -174,6 +178,16 @@ if (window.Addon == 1) {
 			if (Item) {
 				if (!Addons.TooltipPreview.Folder && IsFolderEx(Item)) {
 					return;
+				}
+				if (PathMatchEx(Item.Path, Addons.TooltipPreview.TextFilter)) {
+					if (Item.ExtendedProperty("size") <= Addons.TooltipPreview.TextLimit) {
+						var ado = OpenAdodbFromTextFile(Item.Path, Addons.TooltipPreview.Charset);
+						if (ado) {
+							var s = ado.ReadText(Addons.TooltipPreview.TextSize);
+							ado.Close()
+							return s;
+						}
+					}
 				}
 				var q = { Item: Item, path: Item };
 				Addons.TooltipPreview.q = q;

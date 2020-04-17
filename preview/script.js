@@ -11,7 +11,7 @@ if (window.Addon == 1) {
 		Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 		Width: 0,
 		Charset: item.getAttribute("Charset"),
-		TextSize: item.getAttribute("TextSize") || 1000,
+		TextSize: item.getAttribute("TextSize") || 4000,
 		TextLimit: item.getAttribute("TextLimit") || 10000000,
 
 		Arrange: function (Item, Ctrl) {

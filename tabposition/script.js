@@ -66,7 +66,7 @@ if (window.Addon == 1) {
 					FV.Data.nActive = (FV.Data.nActive || 0) + 1;
 					if (FV.Data.Created) {
 						if (new Date().getTime() - FV.Data.Created < 9999) {
-							if (Addons.TabPositon.nNew) {
+							if (Addons.TabPositon.nNew && !g_.LockUpdate) {
 								Ctrl.Move(i, Ctrl.Count - 1);
 							}
 						}
@@ -82,7 +82,7 @@ if (window.Addon == 1) {
 	});
 
 	AddEvent("Create", function (Ctrl) {
-		if (Ctrl.Type <= CTRL_EB && !g_.LockUpdate) {
+		if (Ctrl.Type <= CTRL_EB) {
 			Ctrl.Data.Created = new Date().getTime();
 		}
 	});
