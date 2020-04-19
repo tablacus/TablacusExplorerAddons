@@ -14,13 +14,12 @@ if (window.Addon == 1) {
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
-		Exec: function (Ctrl, pt)
-		{
+		Exec: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				var Focused = FV.FocusedItem;
 				if (Focused && api.GetAttributesOf(Focused, SFGAO_CANRENAME)) {
-					ShowDialog("../addons/renamedialogplus/dialog.html", { MainWindow: window, width: 480, height: 120, Focused: Focused, 	ResultsFolder: api.ILIsEqual(FV.FolderItem.Alt, ssfRESULTSFOLDER) });
+					ShowDialog("../addons/renamedialogplus/dialog.html", { MainWindow: window, width: 480, height: 120, Focused: Focused, ResultsFolder: api.ILIsEqual(FV.FolderItem.Alt, ssfRESULTSFOLDER) });
 					return S_OK;
 				}
 			}
@@ -28,8 +27,7 @@ if (window.Addon == 1) {
 	};
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
 			if (item && item.IsFileSystem && api.GetAttributesOf(item, SFGAO_CANRENAME)) {
 				api.InsertMenu(hMenu, Addons.RenameDialogPlus.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.RenameDialogPlus.strName);
 				ExtraMenuCommand[nPos] = Addons.RenameDialogPlus.Exec;
@@ -48,21 +46,24 @@ if (window.Addon == 1) {
 
 	AddTypeEx("Add-ons", "Rename dialog plus...", Addons.RenameDialogPlus.Exec);
 } else if (window.Addon == 2) {
-	AddEventEx(window, "load", function ()
-	{
+	AddEventEx(window, "load", function () {
 		MainWindow.RunEvent1("BrowserCreated", document);
 		ApplyLang(document);
 		var Focused = dialogArguments.Focused;
 		var s = IsFileHideExt(Focused) && !dialogArguments.ResultsFolder ? fso.GetFileName(api.GetDisplayNameOf(Focused, SHGDN_FORPARSING)) : api.GetDisplayNameOf(Focused, SHGDN_FOREDITING);
 		document.getElementById("P").innerText = s;
-		document.F.N.value = fso.GetBaseName(s);
-		document.F.E.value = fso.GetExtensionName(s);
+		if (IsFolderEx(Focused)) {
+			document.F.N.value = s;
+			document.F.E.style.display = "none";
+	} else {
+			document.F.N.value = fso.GetBaseName(s);
+			document.F.E.value = fso.GetExtensionName(s);
+		}
 		document.F.N.select();
 		document.F.N.focus();
 	});
 
-	AddEventEx(document.body, "keydown", function (e)
-	{
+	AddEventEx(document.body, "keydown", function (e) {
 		var key = (e || event).keyCode;
 		if (key == VK_RETURN) {
 			DoRename();
@@ -73,8 +74,7 @@ if (window.Addon == 1) {
 		return true;
 	});
 
-	DoRename = function ()
-	{
+	DoRename = function () {
 		var Focused = dialogArguments.Focused;
 		var s = document.getElementById("P").innerText;
 		var r = document.F.E.value ? [document.F.N.value, document.F.E.value].join(".") : document.F.N.value;
@@ -99,8 +99,7 @@ if (window.Addon == 1) {
 		window.close();
 	}
 
-	IsFileHideExt = function (Item)
-	{
+	IsFileHideExt = function (Item) {
 		return api.StrCmpI(fso.GetExtensionName(api.GetDisplayNameOf(Item, SHGDN_FOREDITING)), fso.GetExtensionName(api.GetDisplayNameOf(Item, SHGDN_FORPARSING))) && IsExists(api.GetDisplayNameOf(Item, SHGDN_FORPARSING));
 	}
 }

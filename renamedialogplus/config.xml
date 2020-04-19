@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
-    <MinVersion>2019.9.29</MinVersion>
-    <pubDate>Sat, 05 Oct 2019 00:00:00 GMT</pubDate>
+    <Version>1.07</Version>
+    <MinVersion>2020.4.17</MinVersion>
+    <pubDate>Sun, 19 Apr 2020 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
@@ -17,4 +17,7 @@
     <Name>名前の変更ダイアログボックス プラス</Name>
     <Description>名前の変更を拡張子別のダイアログボックスで行います。</Description>
   </ja>
+  <zh>
+  	<Name>重新命名進階對話窗</Name>
+  </zh>
 </TablacusExplorer>
