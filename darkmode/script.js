@@ -3,6 +3,8 @@ var Addon_Id = "darkmode";
 if (window.Addon == 1) {
 	Addons.DarkMode =
 	{
+		Brush: api.CreateSolidBrush(0x555555),
+
 		Arrange: function (Ctrl)
 		{
 			var clrText = GetSysColor(COLOR_WINDOWTEXT);
@@ -83,6 +85,27 @@ if (window.Addon == 1) {
 		SetSysColor(COLOR_BTNFACE, undefined);
 		Addons.DarkMode.Init();
 	});
+	if (api.IsAppThemed() && WINVER > 0x603) {
+		AddEvent("Load", function () {
+			if (!Addons.ClassicStyle) {
+				AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes) {
+					if (pid) {
+						var uState = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, LVIS_SELECTED);
+						if (uState & LVIS_SELECTED || nmcd.uItemState & CDIS_HOT) {
+							var rc = api.Memory("RECT");
+							rc.left = LVIR_SELECTBOUNDS;
+							api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
+							api.FillRect(nmcd.hdc, rc, Addons.DarkMode.Brush);
+						}
+					}
+				}, true);
+			}
+		});
+
+		AddEvent("Finalize", function () {
+			api.DeleteObject(Addons.DarkMode.Brush);
+		});
+	}
 
 	SetSysColor(COLOR_WINDOWTEXT, 0xffffff);
 	SetSysColor(COLOR_WINDOW, 0x202020);
