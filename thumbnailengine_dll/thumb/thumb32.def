@@ -3,6 +3,7 @@ LIBRARY	"thumb32"
 EXPORTS
 	GetImage PRIVATE
 	SetFilterW PRIVATE
+	SetDisableW PRIVATE
 	SetSizeW PRIVATE
 	SetFolderW PRIVATE
 	SetTPW PRIVATE

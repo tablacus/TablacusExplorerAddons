@@ -8,13 +8,11 @@
 #include "thumb.h"
 
 LPWSTR g_bsFilter = NULL;
-LPWSTR g_bsInvalid = NULL;
+LPWSTR g_bsDisable = NULL;
 int g_nSize = 1024;
 BOOL g_bFolder = TRUE;
 BOOL g_bTP = TRUE;
 BOOL g_bEI = TRUE;
-
-//LPWSTR g_psz
 
 // Unit
 VOID SafeRelease(PVOID ppObj)
@@ -44,7 +42,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 		break;
 	case DLL_PROCESS_DETACH:
 		teSysFreeString(&g_bsFilter);
-		teSysFreeString(&g_bsInvalid);
+		teSysFreeString(&g_bsDisable);
 		break;
 	}
 	return TRUE;
@@ -56,7 +54,7 @@ HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpszPath, int cx, HBITMAP *phBM
 	IThumbnailProvider *pTP;
 	IInitializeWithStream *pInitStream;
 	HRESULT hr = E_NOTIMPL;
-	BOOL bFile = PathMatchSpec(lpszPath, g_bsFilter) && !PathMatchSpec(lpszPath, g_bsInvalid);
+	BOOL bFile = PathMatchSpec(lpszPath, g_bsFilter) && !PathMatchSpec(lpszPath, g_bsDisable);
 	if (bFile && g_bTP) { 
 		hr = CoCreateInstance(CLSID_PhotoThumbnailProvider, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pInitStream));
 		if SUCCEEDED(hr) {
@@ -126,10 +124,10 @@ void __stdcall SetFilterW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nC
 	g_bsFilter = ::SysAllocString(lpszCmdLine);
 }
 
-void __stdcall SetInvalidW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)
+void __stdcall SetDisableW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)
 {
-	teSysFreeString(&g_bsInvalid);
-	g_bsInvalid = ::SysAllocString(lpszCmdLine);
+	teSysFreeString(&g_bsDisable);
+	g_bsDisable = ::SysAllocString(lpszCmdLine);
 }
 
 void __stdcall SetSizeW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)

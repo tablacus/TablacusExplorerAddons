@@ -33,9 +33,9 @@ if (window.Addon == 1) {
 				Addons.ThumbPlus.FV[Ctrl.Id] = db = { "*": Ctrl.IconSize };
 			}
 			var path = pid.Path;
-			if (api.PathMatchSpec(path, Addons.ThumbPlus.Priority) || (Addons.ThumbPlus.Folder && IsFolderEx(pid)) || (api.PathMatchSpec(path, Addons.ThumbPlus.Filter) && !api.PathMatchSpec(path, Addons.ThumbPlus.Disable) && !api.HasThumbnail(pid))) {
+			if (IsFolderEx(pid) ? Addons.ThumbPlus.Folder : (api.PathMatchSpec(path, Addons.ThumbPlus.Priority) || (!api.HasThumbnail(pid) && api.PathMatchSpec(path, Addons.ThumbPlus.Filter) && !api.PathMatchSpec(path, Addons.ThumbPlus.Disable)))) {
 				if (db[path]) {
-					return /object/i.test(typeof db[path]) ? true : undefined;
+					return /object/i.test(typeof db[path]) ? true : void 0;
 				}
 				db[path] = 1;
 				Threads.GetImage({
