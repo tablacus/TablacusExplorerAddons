@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2018.10.1</MinVersion>
-    <pubDate>Thu, 04 Oct 2018 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2020.4.21</MinVersion>
+    <pubDate>Thu, 23 Apr 2020 00:00:00 GMT</pubDate>
     <Options>Common:0,7,8,9:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -15,6 +15,8 @@
   </en>
   <ja>
     <Name>カラーラベル</Name>
-    <Description>カラーラベル</Description>
   </ja>
+  <zh>
+  	<Name>以背景色標示</Name>
+  </zh>
 </TablacusExplorer>

@@ -16,6 +16,7 @@ if (window.Addon == 1) {
 		CONFIG: fso.BuildPath(te.Data.DataFolder, "config\\colorlabels.tsv"),
 		bSave: false,
 		Portable: api.LowPart(item.getAttribute("Portable")),
+		Tabs: api.LowPart(item.getAttribute("Tabs")),
 		SyncItem: {},
 
 		Get: function (path)
@@ -34,6 +35,12 @@ if (window.Addon == 1) {
 				for (var i = Selected.Count; i--;) {
 					Addons.ColorLabels.Set(Selected.Item(i), cl);
 				}
+				if (Addons.ColorLabels.Tabs) {
+					var cTC = te.Ctrls(CTRL_TC, true);
+					for (var i in cTC) {
+						RunEvent3("SelectionChanged", cTC[i]);
+					}
+				}
 			}
 			return S_OK;
 		},
@@ -46,7 +53,7 @@ if (window.Addon == 1) {
 				}
 				path = path.toLowerCase();
 				if (cl !== te.Data.ColorLabels[path]) {
-					if (cl !== undefined) {
+					if (cl !== void 0) {
 						te.Data.ColorLabels[path] = cl;
 					} else {
 						delete te.Data.ColorLabels[path];
@@ -131,7 +138,7 @@ if (window.Addon == 1) {
 	{
 		if (pid) {
 			var cl = Addons.ColorLabels.Get(pid);
-			if (cl !== undefined) {
+			if (cl !== void 0) {
 				vcd.clrTextBk = cl;
 				var brush = api.CreateSolidBrush(cl);
 				api.FillRect(nmcd.hdc, nmcd.rc, brush);
@@ -176,6 +183,13 @@ if (window.Addon == 1) {
 		}
 	});
 
+	if (Addons.ColorLabels.Tabs) {
+		AddEvent("GetTabColor", function (Ctrl) {
+			var cl = Addons.ColorLabels.Get(Ctrl.FolderItem);
+			return cl !== void 0 ? GetWebColor(cl) : void 0;
+		});
+	}
+
 	Addons.ColorLabels.strName = item.getAttribute("MenuName");
 	if (!Addons.ColorLabels.strName) {
 		var info = GetAddonInfo(Addon_Id);
@@ -207,5 +221,5 @@ if (window.Addon == 1) {
 
 	AddTypeEx("Add-ons", "Color labels", Addons.ColorLabels.Exec);
 } else {
-	SetTabContents(0, "General", '<input type="checkbox" id="Portable" /><label for="Portable">Portable</label>');
+	SetTabContents(0, "General", '<label><input type="checkbox" id="Portable">Portable</label><br><label><input type="checkbox" id="Tabs">Tabs</label>');
 }

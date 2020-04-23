@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
-    <MinVersion>2020.2.25</MinVersion>
-    <pubDate>Fri, 28 Feb 2020 00:00:00 GMT</pubDate>
+    <Version>1.02</Version>
+    <MinVersion>2020.4.21</MinVersion>
+    <pubDate>Thu, 23 Apr 2020 00:00:00 GMT</pubDate>
     <Options>Common:4:4</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -11,7 +11,6 @@
   </General>
   <en>
     <Name>Background image</Name>
-    <Description>Background image</Description>
   </en>
   <ja>
     <Name>背景画像</Name>

@@ -7,13 +7,12 @@ if (ado) {
 var arIndex = ["Filter", "Path"];
 var fnConfig = fso.BuildPath(te.Data.DataFolder, "config\\bgimage.tsv");
 
-function SaveIC(mode)
-{
+function SaveIC(mode) {
 	if (g_Chg[mode]) {
 		var ado = api.CreateObject("ads");
 		ado.CharSet = "utf-8";
 		ado.Open();
-		for (var i = 0; i < g_x.List.length; i++) {
+		for (var i = 0; i < g_x.List.length; ++i) {
 			ado.WriteText(g_x.List[i].value.replace(new RegExp(g_sep, "g"), "\t") + "\r\n");
 		}
 		ado.SaveToFile(fnConfig, adSaveCreateOverWrite);
@@ -21,8 +20,7 @@ function SaveIC(mode)
 	}
 }
 
-EditIC = function(mode)
-{
+EditIC = function (mode) {
 	if (g_x.List.selectedIndex < 0) {
 		return;
 	}
@@ -40,8 +38,7 @@ EditIC = function(mode)
 	document.E.Filter.value = document.E.Filter.value;
 }
 
-ReplaceIC = function(mode)
-{
+ReplaceIC = function (mode) {
 	ClearX();
 	if (g_x[mode].selectedIndex < 0) {
 		g_x[mode].selectedIndex = ++g_x[mode].length - 1;
@@ -59,13 +56,11 @@ ReplaceIC = function(mode)
 	g_Chg[mode] = true;
 }
 
-ShowIconX = function()
-{
-	document.getElementById('Image1').src = ExtractMacro(te, document.E.Path.value);
+ShowIconX = function () {
+	document.getElementById('Image1').src = api.PathUnquoteSpaces(ExtractMacro(te, document.E.Path.value));
 }
 
-GetCurrentPath = function ()
-{
+GetCurrentPath = function () {
 	if (confirmOk()) {
 		document.E.Filter.value = te.Ctrl(CTRL_FV).FolderItem.Path;
 	}
@@ -80,16 +75,15 @@ try {
 		ar.push(ado.ReadText(adReadLine));
 	}
 	ado.Close();
-} catch (e) {}
+} catch (e) { }
 
 g_x.List.length = ar.length;
-for (var i = 0; i < ar.length; i++) {
+for (var i = 0; i < ar.length; ++i) {
 	SetData(g_x.List[i], ar[i].split("\t"));
 }
 EnableSelectTag(g_x.List);
 
-SaveLocation = function ()
-{
+SaveLocation = function () {
 	if (g_Chg.Data) {
 		ReplaceIC("List");
 	}
