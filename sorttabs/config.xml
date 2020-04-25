@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2020.4.21</MinVersion>
+    <pubDate>Sat, 25 Apr 2020 00:00:00 GMT</pubDate>
+    <Options>Common:0,7,8,9:0</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Sort tabs</Name>
+    <Description>Sort tabs</Description>
+  </en>
+  <ja>
+    <Name>タブのソート</Name>
+  </ja>
+</TablacusExplorer>
