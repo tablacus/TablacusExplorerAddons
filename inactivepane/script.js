@@ -82,7 +82,9 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeView", Addons.InactivePane.OnChange);
 	AddEvent("VisibleChanged", function () {
-		setTimeout("Addons.InactivePane.OnChange();", 99);
+		setTimeout(function () {
+			Addons.InactivePane.OnChange();
+		}, 99);
 	});
 
 	AddEventId("AddonDisabledEx", "inactivepane", function () {
@@ -109,5 +111,6 @@ if (window.Addon == 1) {
 	if (ado) {
 		SetTabContents(0, "", ado.ReadText(adReadAll));
 		ado.Close();
+		document.getElementById("Color").setAttribute("placeholder", GetWebColor(GetSysColor(COLOR_APPWORKSPACE)));
 	}
 }

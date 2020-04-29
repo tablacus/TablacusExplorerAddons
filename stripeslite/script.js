@@ -7,8 +7,7 @@ if (window.Addon == 1) {
 	};
 	Addons.StripesLite.Brush = api.CreateSolidBrush(Addons.StripesLite.Color2);
 
-	AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes)
-	{
+	AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes) {
 		if (pid && api.SendMessage(Ctrl.hwndList, LVM_GETVIEW, 0, 0) == 1) {
 			if (nmcd.dwItemSpec & 1) {
 				return;
@@ -20,11 +19,10 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("Finalize", function ()
-	{
+	AddEvent("Finalize", function () {
 		api.DeleteObject(Addons.StripesLite.Brush);
 	});
 
 } else {
-	SetTabContents(0, "Color", '<input type="text" id="Color2" style="width: 7em" onchange="ChangeColor1(this)" /><input id="Color_Color2" type="button" value=" " class="color" onclick="ChooseColor2(this)" />');
+	SetTabContents(0, "", '<input type="text" id="Color2" style="width: 7em" placeholder="#ececec" onchange="ChangeColor1(this)"><input id="Color_Color2" type="button" value=" " class="color" onclick="ChooseColor2(this)">');
 }

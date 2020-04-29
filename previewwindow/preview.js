@@ -45,7 +45,7 @@ Addons.PreviewWindow =
 		} else if (Addons.PreviewWindow.w) {
 			s = [' (', Addons.PreviewWindow.w, ' x ', Addons.PreviewWindow.h, ')'].join("");
 		}
-		document.title = fso.GetFileName(MainWindow.Addons.PreviewWindow.File) + s;
+		document.title = MainWindow.Addons.PreviewWindow.Item.Name + s;
 	},
 
 	Change: function (hwnd) {
@@ -98,7 +98,7 @@ Addons.PreviewWindow =
 			} else {
 				img1.style.cursor = "";
 			}
-			document.title = fso.GetFileName(MainWindow.Addons.PreviewWindow.File);
+			document.title = Item.Name;
 			desc.innerHTML = ar.join("<br>");
 			if (!Handled) {
 				img1.onload = Addons.PreviewWindow.Loaded;

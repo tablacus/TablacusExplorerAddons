@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2018.3.21</MinVersion>
-    <pubDate>Thu, 22 Mar 2018 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2020.4.28</MinVersion>
+    <pubDate>Wed, 29 Apr 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,7 @@
     <Name>ストライプ ライト</Name>
     <Description>詳細表示の際に背景を交互縞で表示します。</Description>
   </ja>
+  <zh>
+  	<Name>快速斑馬條紋</Name>
+  </zh>
 </TablacusExplorer>

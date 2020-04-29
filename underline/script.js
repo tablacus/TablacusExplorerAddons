@@ -6,8 +6,7 @@ if (window.Addon == 1) {
 		Color: GetWinColor(item.getAttribute("Color") || "#ececec")
 	};
 
-	AddEvent("ItemPostPaint2", function (Ctrl, pid, nmcd, vcd)
-	{
+	AddEvent("ItemPostPaint2", function (Ctrl, pid, nmcd, vcd) {
 		if (Ctrl.Type <= CTRL_EB && pid) {
 			var pen1 = api.CreatePen(PS_SOLID, 1, Addons.Underline.Color);
 			var hOld = api.SelectObject(nmcd.hdc, pen1);
@@ -18,5 +17,5 @@ if (window.Addon == 1) {
 		}
 	});
 } else {
-	SetTabContents(0, "Color", '<input type="text" id="Color" style="width: 7em" onchange="ChangeColor1(this)" /><input id="Color_Color" type="button" value=" " class="color" onclick="ChooseColor2(this)" />');
+	SetTabContents(0, "Color", '<input type="text" id="Color" style="width: 7em" placeholder="#ececec" onchange="ChangeColor1(this)"><input id="Color_Color" type="button" value=" " class="color" onclick="ChooseColor2(this)">');
 }

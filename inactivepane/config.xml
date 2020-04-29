@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
-    <MinVersion>2020.2.29</MinVersion>
-    <pubDate>Sat, 29 Feb 2020 00:00:00 GMT</pubDate>
+    <Version>1.04</Version>
+    <MinVersion>2020.4.28</MinVersion>
+    <pubDate>Wed, 29 Apr 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
@@ -17,4 +17,7 @@
     <Name>非アクティブペイン</Name>
     <Description>非アクティブペインの色を変えてアクティブペインを判りやすくします。</Description>
   </ja>
+  <zh>
+    <Name>備用窗格變暗</Name>
+  </zh>
 </TablacusExplorer>
