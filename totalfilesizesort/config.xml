@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2019.5.8</MinVersion>
-    <pubDate>Thu, 09 May 2019 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2020.4.30</MinVersion>
+    <pubDate>Thu, 30 Apr 2020 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Total file size sort</Name>
-    <Description>Sort by Total file size. Require Window Vista or higher.</Description>
+    <Description>Sort by Total file size. *Windows Vista or higher is required.</Description>
   </en>
   <ja>
     <Name>総ファイルサイズ ソート</Name>

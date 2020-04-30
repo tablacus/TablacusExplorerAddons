@@ -7,38 +7,33 @@ if (window.Addon == 1) {
 	{
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
+		tid: {},
 
-		CreateMenu: function (hMenu, nIndex)
-		{
+		CreateMenu: function (hMenu, nIndex) {
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, api.PSGetDisplayName("Name"));
-			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
-			{
+			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb) {
 				var FV = GetFolderView(Ctrl, pt);
 				FV.SortColumn = 'Tablacus.Name';
 			};
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, '-' + api.PSGetDisplayName("Name"));
-			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
-			{
+			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb) {
 				var FV = GetFolderView(Ctrl, pt);
 				FV.SortColumn = '-Tablacus.Name';
 			};
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, api.PSGetDisplayName("Write"));
-			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
-			{
+			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb) {
 				var FV = GetFolderView(Ctrl, pt);
 				FV.SortColumn = 'Tablacus.Write';
 			};
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, '-' + api.PSGetDisplayName("Write"));
-			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb)
-			{
+			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb) {
 				var FV = GetFolderView(Ctrl, pt);
 				FV.SortColumn = '-Tablacus.Write';
 			};
 			return nIndex;
 		},
 
-		Exec: function (Ctrl, pt)
-		{
+		Exec: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			FV.Focus();
 			var hMenu = api.CreatePopupMenu();
@@ -49,11 +44,42 @@ if (window.Addon == 1) {
 			if (nVerb) {
 				ExtraMenuCommand[nVerb](Ctrl, pt);
 			}
+		},
+
+		Sort: function (Ctrl, Name) {
+			if (Addons.MixedSort.tid[Ctrl.Id]) {
+				clearTimeout(Addons.MixedSort.tid[Ctrl.Id]);
+				delete Addons.MixedSort.tid[Ctrl.Id];
+			}
+			if (/^\-?Tablacus\.Name$|^\-?Tablacus\.Write$/i.test(Name)) {
+				var strProp = Name.replace(/Tablacus\./i, "");
+				var res = /^\-(.*)/.exec(strProp);
+				if (res) {
+					strProp = res[1];
+				}
+				var fnAdd, fnComp;
+				if (/Name/i.test(strProp)) {
+					fnAdd = function (pid, FV) {
+						return pid.ExtendedProperty("Name");
+					};
+					fnComp = function (a, b) {
+						return api.StrCmpLogical(b[1], a[1]);
+					};
+				} else {
+					fnAdd = function (pid, FV) {
+						return pid.ExtendedProperty("Write");
+					};
+					fnComp = function (a, b) {
+						return (b[1] - a[1]);
+					};
+				}
+				CustomSort(Ctrl, strProp, res, fnAdd, fnComp);
+				return true;
+			}
 		}
 	};
 
-	AddEvent("ColumnClick", function (Ctrl, iItem)
-	{
+	AddEvent("ColumnClick", function (Ctrl, iItem) {
 		if (api.GetKeyState(VK_SHIFT) < 0) {
 			var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
 			var s = cColumns[iItem * 2];
@@ -68,38 +94,19 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Sorting", function (Ctrl, Name)
-	{
-		if (/-?Tablacus\.Name$|-?Tablacus\.Write$/i.test(Name)) {
-			var strProp = Name.replace(/Tablacus\./i, "");
-			var res = /^-(.*)/.exec(strProp);
-			if (res) {
-				strProp = res[1];
-			}
-			var fnAdd, fnComp;
-			if (/Name/i.test(strProp)) {
-				fnAdd = function (pid, FV)
-				{
-					return pid.ExtendedProperty("Name");
-				};
-				fnComp = function (a, b)
-				{
-					return api.StrCmpLogical(b[1], a[1]);
-				};
-			} else {
-				fnAdd = function (pid, FV)
-				{
-					return pid.ExtendedProperty("Write");
-				};
-				fnComp = function (a, b)
-				{
-					return (b[1] - a[1]);
-				};
-			}
-			CustomSort(Ctrl, strProp, res, fnAdd, fnComp);
-			return true;
+	AddEvent("Sort", function (Ctrl) {
+		if (Addons.MixedSort.tid[Ctrl.Id]) {
+			clearTimeout(Addons.MixedSort.tid[Ctrl.Id]);
+			delete Addons.MixedSort.tid[Ctrl.Id];
+		}
+		if (/^\-?Tablacus\.Name$|^\-?Tablacus\.Write$/i.test(Ctrl.SortColumn(1))) {
+			Addons.MixedSort.tid[Ctrl.Id] = setTimeout(function () {
+				Addons.MixedSort.Sort(Ctrl, Ctrl.SortColumn(1));
+			}, 99);
 		}
 	});
+
+	AddEvent("Sorting", Addons.MixedSort.Sort);
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
@@ -108,8 +115,7 @@ if (window.Addon == 1) {
 		if (s && s != "") {
 			Addons.MixedSort.strName = s;
 		}
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 			var mii = api.Memory("MENUITEMINFO");
 			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STRING | MIIM_SUBMENU;

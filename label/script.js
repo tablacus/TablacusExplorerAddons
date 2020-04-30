@@ -26,27 +26,24 @@ if (window.Addon == 1) {
 		Initd: false,
 		Portable: api.LowPart(item.getAttribute("Portable")),
 		Icon: item.getAttribute("Icon") || fso.BuildPath(te.Data.Installed, "/addons/label/label16.png"),
+		tid: {},
 
-		IsHandle: function (Ctrl)
-		{
-			return Addons.Label.RE.exec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+		IsHandle: function (Ctrl) {
+			return Addons.Label.RE.exec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 		},
 
-		IsWritable: function (Ctrl)
-		{
+		IsWritable: function (Ctrl) {
 			if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
 				var Label = Addons.Label.LabelPath(Ctrl);
 				return Label && !/[\?\*;]/.test(Label) && api.CommandLineToArgv(Label).length == 1;
 			}
 		},
 
-		Get: function (path)
-		{
+		Get: function (path) {
 			return te.Labels[path] || "";
 		},
 
-		Edit: function (Ctrl, pt)
-		{
+		Edit: function (Ctrl, pt) {
 			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
 			if (Selected && Selected.Count) {
 				try {
@@ -54,7 +51,7 @@ if (window.Addon == 1) {
 					if (path) {
 						var Label = Addons.Label.Get(path);
 						var s = InputDialog(path + (Selected.Count > 1 ? " : " + Selected.Count : "") + "\nlabel:" + Label, Label);
-						if (typeof(s) == "string") {
+						if ("string" === typeof s) {
 							for (var i = Selected.Count; i-- > 0;) {
 								Addons.Label.Set(api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), s);
 							}
@@ -66,8 +63,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		EditPath: function (Ctrl, pt)
-		{
+		EditPath: function (Ctrl, pt) {
 			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
 			if (Selected && Selected.Count == 1) {
 				try {
@@ -75,9 +71,8 @@ if (window.Addon == 1) {
 					if (path) {
 						var Label = Addons.Label.Get(path);
 						var s = InputDialog("label:" + Label + "\n" + path, path);
-						if (typeof(s) == "string") {
-						 	api.SHParseDisplayName(function (pid, s, path, Label)
-						 	{
+						if ("string" === typeof s) {
+							api.SHParseDisplayName(function (pid, s, path, Label) {
 								if (pid) {
 									s = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 								}
@@ -98,13 +93,11 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Details: function (Ctrl, pt)
-		{
+		Details: function (Ctrl, pt) {
 			Ctrl.Columns = Ctrl.Columns + ' "System.Contact.Label" -1';
 		},
 
-		ExecRemoveItems: function (Ctrl, pt)
-		{
+		ExecRemoveItems: function (Ctrl, pt) {
 			if (!confirmOk("Are you sure?")) {
 				return;
 			}
@@ -118,16 +111,14 @@ if (window.Addon == 1) {
 			}
 		},
 
-		LabelPath: function (Ctrl)
-		{
+		LabelPath: function (Ctrl) {
 			var res = Addons.Label.IsHandle(Ctrl);
 			if (res) {
 				return res[1];
 			}
 		},
 
-		AddMenu: function (hMenu, hParent, nIndex)
-		{
+		AddMenu: function (hMenu, hParent, nIndex) {
 			hMenu = api.sscanf(hMenu, "%llx");
 			var oList = {};
 			Addons.Label.List(oList);
@@ -172,8 +163,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		ExecAdd: function (Ctrl, pt, Name, nVerb)
-		{
+		ExecAdd: function (Ctrl, pt, Name, nVerb) {
 			if (!confirmOk("Are you sure?")) {
 				return;
 			}
@@ -184,8 +174,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		ExecRemove: function (Ctrl, pt, Name, nVerb)
-		{
+		ExecRemove: function (Ctrl, pt, Name, nVerb) {
 			if (!confirmOk("Are you sure?")) {
 				return;
 			}
@@ -196,8 +185,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Append: function (Item, Label)
-		{
+		Append: function (Item, Label) {
 			var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			if (path) {
 				var ar = Addons.Label.Get(path).split(/\s*;\s*/);
@@ -218,8 +206,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		AppendItems: function (Items, Label)
-		{
+		AppendItems: function (Items, Label) {
 			if (Items) {
 				for (var i = 0; i < Items.Count; i++) {
 					Addons.Label.Append(Items.Item(i), Label);
@@ -227,8 +214,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		RemoveItems: function (Items, Label)
-		{
+		RemoveItems: function (Items, Label) {
 			if (Items) {
 				for (var i = Items.Count; i-- > 0;) {
 					Addons.Label.Remove(Items.Item(i), Label);
@@ -236,8 +222,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Remove: function (Item, Label)
-		{
+		Remove: function (Item, Label) {
 			var s = "";
 			var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			if (path) {
@@ -268,8 +253,7 @@ if (window.Addon == 1) {
 			return s;
 		},
 
-		Set: function (path, s)
-		{
+		Set: function (path, s) {
 			if (path) {
 				var ar = Addons.Label.Get(path).split(/\s*;\s*/);
 				s = s.replace(/[\\?\\*"]|^ +| +$/g, "");
@@ -302,8 +286,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Paste: function (Ctrl, pt)
-		{
+		Paste: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			if (Addons.Label.IsWritable(FV)) {
 				Addons.Label.AppendItems(api.OleGetClipboard(), Addons.Label.LabelPath(FV));
@@ -311,8 +294,7 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
-		PasteEx: function (Ctrl, pt)
-		{
+		PasteEx: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			var Selected = FV.SelectedItems();
 			if (!Selected.Count || !Selected.Item(0).IsFolder) {
@@ -320,8 +302,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Notify: function ()
-		{
+		Notify: function () {
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
 				var FV = cFV[i];
@@ -349,11 +330,9 @@ if (window.Addon == 1) {
 			Addons.Label.Save();
 		},
 
-		List: function (list, all)
-		{
+		List: function (list, all) {
 			var ix = [];
-			Addons.Label.ENumCB(function (path, s)
-			{
+			Addons.Label.ENumCB(function (path, s) {
 				var ar = s.split(/\s*;\s*/);
 				for (var i in ar) {
 					var s = api.PathQuoteSpaces(ar[i]);
@@ -376,15 +355,13 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Enum: function (pid, Ctrl, fncb, SessionId)
-		{
+		Enum: function (pid, Ctrl, fncb, SessionId) {
 			var Items = api.CreateObject("FolderItems");
 			var b, ar;
 			var Label = Addons.Label.LabelPath(pid);
 			if (Label) {
 				var bWC = /[\*\?;]/.test(Label);
-				Addons.Label.ENumCB(function (path, s)
-				{
+				Addons.Label.ENumCB(function (path, s) {
 					var ar3 = Label.split(/;/);
 					for (k in ar3) {
 						var ar2 = api.CommandLineToArgv(ar3[k]);
@@ -410,7 +387,7 @@ if (window.Addon == 1) {
 							break;
 						}
 					}
-					if (b && path !="%Installed%") {
+					if (b && path != "%Installed%") {
 						Items.AddItem(path);
 					}
 				});
@@ -424,32 +401,45 @@ if (window.Addon == 1) {
 			return Items;
 		},
 
-		ENumCB: function (fncb)
-		{
+		ENumCB: function (fncb) {
 			for (var path in te.Labels) {
 				fncb(path, te.Labels[path]);
 			}
 		},
 
-		DoSort: function (Ctrl, pt, strProp)
-		{
+		DoSort: function (Ctrl, pt, strProp) {
 			(GetFolderView(Ctrl, pt) || {}).SortColumn = "System.Contact.Label";
 			return S_OK;
 		},
 
-		SetSync: function (name, s)
-		{
+		Sort: function (Ctrl, Name) {
+			if (Addons.Label.tid[Ctrl.Id]) {
+				clearTimeout(Addons.Label.tid[Ctrl.Id]);
+				delete Addons.Label.tid[Ctrl.Id];
+			}
+			if (/^\-?System\.Contact\.Label$/i.test(Name)) {
+				CustomSort(Ctrl, 'System.Contact.Label', /^\-/.test(Name),
+					function (pid, FV) {
+						return Addons.Label.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					},
+					function (a, b) {
+						return api.StrCmpLogical(b[1], a[1]);
+					}
+				);
+				return true;
+			}
+		},
+
+		SetSync: function (name, s) {
 			this.SyncItem[name] = s;
 			clearTimeout(this.tidSync);
-			this.tidSync = setTimeout(function ()
-			{
+			this.tidSync = setTimeout(function () {
 				Addons.Label.tidSync = null;
 				Addons.Label.SyncItem = {};
 			}, 500);
 		},
 
-		Load: function ()
-		{
+		Load: function () {
 			Addons.Label.bSave = false;
 			te.Labels = api.CreateObject("Object");
 			try {
@@ -464,39 +454,35 @@ if (window.Addon == 1) {
 				ado.Close();
 				delete te.Labels[""];
 				te.Data.LabelModifyDate = api.ILCreateFromPath(Addons.Label.CONFIG).ModifyDate;
-			} catch (e) {}
+			} catch (e) { }
 		},
 
-		Save: function ()
-		{
+		Save: function () {
 			if (Addons.Label.bSave && !Addons.Label.Initd) {
 				try {
 					var ado = api.CreateObject("ads");
 					ado.CharSet = "utf-8";
 					ado.Open();
 					delete te.Labels[""];
-					Addons.Label.ENumCB(function (path, label)
-					{
+					Addons.Label.ENumCB(function (path, label) {
 						ado.WriteText([path, label].join("\t") + "\r\n");
 					});
 					ado.SaveToFile(Addons.Label.CONFIG, adSaveCreateOverWrite);
 					ado.Close();
 					te.Data.LabelModifyDate = api.ILCreateFromPath(Addons.Label.CONFIG).ModifyDate;
 					Addons.Label.bSave = false;
-				} catch (e) {}
+				} catch (e) { }
 			}
 		}
 	}
 
-	AddEvent("Load", function ()
-	{
+	AddEvent("Load", function () {
 		if (!Addons.Label.Initd) {
 			if (!te.Data.LabelModifyDate) {
 				Addons.Label.Load();
 			}
 			AddEvent("SaveConfig", Addons.Label.Save);
-			AddEvent("ChangeNotifyItem:" + Addons.Label.CONFIG, function (pid)
-			{
+			AddEvent("ChangeNotifyItem:" + Addons.Label.CONFIG, function (pid) {
 				if (pid.ModifyDate - te.Data.LabelModifyDate) {
 					Addons.Label.Load();
 				}
@@ -505,8 +491,7 @@ if (window.Addon == 1) {
 		var Installed0 = Addons.Label.Get('%Installed%').toUpperCase();
 		var Installed1 = Addons.Label.Portable ? fso.GetDriveName(api.GetModuleFileName(null)).toUpperCase() : "";
 		if (Installed0 && Addons.Label.Portable && Installed0 != Installed1) {
-			Addons.Label.ENumCB(function (path, label)
-			{
+			Addons.Label.ENumCB(function (path, label) {
 				var drv = fso.GetDriveName(path);
 				if (drv.toUpperCase() == Installed0) {
 					Addons.Label.Set(path, "");
@@ -520,31 +505,27 @@ if (window.Addon == 1) {
 	});
 
 
-	AddEvent("TranslatePath", function (Ctrl, Path)
-	{
+	AddEvent("TranslatePath", function (Ctrl, Path) {
 		if (Addons.Label.IsHandle(Path)) {
 			Ctrl.Enum = Addons.Label.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
 
-	AddEvent("GetFolderItemName", function (pid)
-	{
+	AddEvent("GetFolderItemName", function (pid) {
 		var Label = Addons.Label.LabelPath(pid);
 		if (Label) {
 			return "label:" + Label;
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
-	{
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
 		if (Addons.Label.IsHandle(Ctrl)) {
 			return MakeImgDataEx(Addons.Label.Icon, bSimple, 16);
 		}
 	});
 
-	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
-	{
+	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 		if (Ctrl.Type <= CTRL_EB) {
 			if ((wParam & 0xfff) == CommandID_DELETE - 1) {
 				if (Addons.Label.IsHandle(Ctrl)) {
@@ -560,8 +541,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
-	{
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 		if (Verb == CommandID_DELETE - 1) {
 			var FV = ContextMenu.FolderView;
 			if (FV && Addons.Label.IsHandle(FV)) {
@@ -586,15 +566,13 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Addons.Label.IsWritable(Ctrl)) {
 			return S_OK;
 		}
 	});
 
-	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Addons.Label.IsWritable(Ctrl)) {
 			if (Ctrl.Type == CTRL_DT || Ctrl.HitTest(pt, LVHT_ONITEM) < 0) {
 				pdwEffect[0] = DROPEFFECT_LINK;
@@ -603,8 +581,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		var Label = Addons.Label.LabelPath(Ctrl);
 		if (Addons.Label.IsWritable(Ctrl)) {
 			var nIndex = -1;
@@ -620,13 +597,11 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("DragLeave", function (Ctrl)
-	{
+	AddEvent("DragLeave", function (Ctrl) {
 		return S_OK;
 	});
 
-	AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt)
-	{
+	AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt) {
 		if (/Background|Edit/i.test(Name)) {
 			if (Addons.Label.IsWritable(GetFolderView(Ctrl, pt))) {
 				var Items = api.OleGetClipboard();
@@ -651,8 +626,7 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	AddEvent("ChangeNotify", function (Ctrl, pidls)
-	{
+	AddEvent("ChangeNotify", function (Ctrl, pidls) {
 		if (te.Labels) {
 			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
@@ -681,8 +655,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
-	{
+	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 		if (Addons.Label.IsWritable(Ctrl)) {
 			RemoveCommand(hMenu, ContextMenu, "delete;rename");
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
@@ -693,8 +666,7 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	AddEvent("BeginLabelEdit", function (Ctrl, Name)
-	{
+	AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Addons.Label.IsHandle(Ctrl)) {
 				return 1;
@@ -702,8 +674,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("ColumnClick", function (Ctrl, iItem)
-	{
+	AddEvent("ColumnClick", function (Ctrl, iItem) {
 		var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
 		if (cColumns[iItem * 2] == "System.Contact.Label") {
 			Ctrl.SortColumn = (Ctrl.SortColumn != 'System.Contact.Label') ? 'System.Contact.Label' : '-System.Contact.Label';
@@ -711,40 +682,24 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Sort", function (Ctrl)
-	{
-		var res = /^prop:(\-?System\.Contact\.Label);$/.exec(Ctrl.SortColumns);
-		if (res) {
-			setTimeout(function ()
-			{
-				Ctrl.SortColumn = res[1];
+	AddEvent("Sort", function (Ctrl) {
+		if (Addons.Label.tid[Ctrl.Id]) {
+			clearTimeout(Addons.Label.tid[Ctrl.Id]);
+			delete Addons.Label.tid[Ctrl.Id];
+		}
+		if (/\-?System\.Contact\.Label;$/.exec(Ctrl.SortColumn(1))) {
+			Addons.Label.tid[Ctrl.Id] = setTimeout(function () {
+				Addons.Label.Sort(Ctrl, Ctrl.SortColumn(1));
 			}, 99);
 		}
 	});
 
-	AddEvent("Sorting", function (Ctrl, Name)
-	{
-		if (/-?System.Contact.Label$/i.test(Name)) {
-			CustomSort(Ctrl, 'System.Contact.Label', /^-/.test(Name),
-				function (pid, FV)
-				{
-					return  Addons.Label.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-				},
-				function (a, b)
-				{
-					return api.StrCmpLogical(b[1], a[1]);
-				}
-			);
-			return true;
-		}
-	});
+	AddEvent("Sorting", Addons.Label.Sort);
 
-	AddEvent("FilterChanged", function (Ctrl)
-	{
+	AddEvent("FilterChanged", function (Ctrl) {
 		var res = /^\*?label:.+/i.exec(Ctrl.FilterView);
 		if (res) {
-			Ctrl.OnIncludeObject = function (Ctrl, Path1, Path2, Item)
-			{
+			Ctrl.OnIncludeObject = function (Ctrl, Path1, Path2, Item) {
 				var res = /^(\*)?label:\s*(.*)/i.exec(Ctrl.FilterView);
 				if (res) {
 					var s = res[2];
@@ -768,8 +723,7 @@ if (window.Addon == 1) {
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		Addons.Label.nPos = api.LowPart(item.getAttribute("MenuPos"));
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
 			if (item && item.IsFileSystem) {
 				var mii = api.Memory("MENUITEMINFO");
 				mii.cbSize = mii.Size;

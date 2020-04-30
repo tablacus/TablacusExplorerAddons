@@ -28,14 +28,13 @@ if (window.Addon == 1) {
 		Portable: api.LowPart(item.getAttribute("Portable")),
 		Bottom: api.LowPart(item.getAttribute("Bottom")),
 		Image: [],
+		tid: {},
 
-		IsHandle: function (Ctrl)
-		{
+		IsHandle: function (Ctrl) {
 			return Addons.Badge.RE.exec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 		},
 
-		SetX: function (Ctrl, pt, s)
-		{
+		SetX: function (Ctrl, pt, s) {
 			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
 			if (Selected && Selected.Count) {
 				for (var i = Selected.Count; i-- > 0;) {
@@ -44,72 +43,58 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Set0: function (Ctrl, pt)
-		{
+		Set0: function (Ctrl, pt) {
 			Addons.Badge.SetX(Ctrl, pt, 0);
 		},
 
-		Set1: function (Ctrl, pt)
-		{
+		Set1: function (Ctrl, pt) {
 			Addons.Badge.SetX(Ctrl, pt, 1);
 		},
 
-		Set2: function (Ctrl, pt)
-		{
+		Set2: function (Ctrl, pt) {
 			Addons.Badge.SetX(Ctrl, pt, 2);
 		},
 
-		Set3: function (Ctrl, pt)
-		{
+		Set3: function (Ctrl, pt) {
 			Addons.Badge.SetX(Ctrl, pt, 3);
 		},
 
-		Set4: function (Ctrl, pt)
-		{
+		Set4: function (Ctrl, pt) {
 			Addons.Badge.SetX(Ctrl, pt, 4);
 		},
 
-		Set5: function (Ctrl, pt)
-		{
+		Set5: function (Ctrl, pt) {
 			Addons.Badge.SetX(Ctrl, pt, 5);
 		},
 
-		Open0: function (Ctrl, pt)
-		{
+		Open0: function (Ctrl, pt) {
 			Navigate("badge:*");
 		},
 
-		Open1: function (Ctrl, pt)
-		{
+		Open1: function (Ctrl, pt) {
 			Navigate("badge:1");
 		},
 
-		Open2: function (Ctrl, pt)
-		{
+		Open2: function (Ctrl, pt) {
 			Navigate("badge:2");
 		},
 
-		Open3: function (Ctrl, pt)
-		{
+		Open3: function (Ctrl, pt) {
 			Navigate("badge:3");
 		},
 
-		Open4: function (Ctrl, pt)
-		{
+		Open4: function (Ctrl, pt) {
 			Navigate("badge:4");
 		},
 
-		Open5: function (Ctrl, pt)
-		{
+		Open5: function (Ctrl, pt) {
 			Navigate("badge:5");
 		},
 
-		Enum: function (pid, Ctrl, fncb, SessionId)
-		{
+		Enum: function (pid, Ctrl, fncb, SessionId) {
 			var Items = te.FolderItems();
 			var Badge = Addons.Badge.BadgePath(pid);
-			Addons.Badge.DB.ENumCB(function (path, s)
-			{
+			Addons.Badge.DB.ENumCB(function (path, s) {
 				var parent = fso.GetParentFolderName(path);
 				if (api.PathMatchSpec(Badge, s) || api.PathMatchSpec(parent, Badge)) {
 					Items.AddItem(path);
@@ -118,8 +103,7 @@ if (window.Addon == 1) {
 			return Items;
 		},
 
-		EditPath: function (Ctrl, pt)
-		{
+		EditPath: function (Ctrl, pt) {
 			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
 			if (Selected && Selected.Count == 1) {
 				try {
@@ -128,8 +112,7 @@ if (window.Addon == 1) {
 						var Badge = Addons.Badge.DB.Get(path);
 						var s = InputDialog("badge:" + Badge + "\n" + path, path);
 						if ("string" === typeof s) {
-						 	api.SHParseDisplayName(function (pid, s, path, Badge)
-						 	{
+							api.SHParseDisplayName(function (pid, s, path, Badge) {
 								if (pid) {
 									s = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 								}
@@ -150,8 +133,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		ExecRemoveItems: function (Ctrl, pt)
-		{
+		ExecRemoveItems: function (Ctrl, pt) {
 			if (!confirmOk("Are you sure?")) {
 				return;
 			}
@@ -165,16 +147,14 @@ if (window.Addon == 1) {
 			}
 		},
 
-		BadgePath: function (Ctrl)
-		{
+		BadgePath: function (Ctrl) {
 			var res = Addons.Badge.IsHandle(Ctrl);
 			if (res) {
 				return res[1];
 			}
 		},
 
-		ExecAdd: function (Ctrl, pt, Name, nVerb)
-		{
+		ExecAdd: function (Ctrl, pt, Name, nVerb) {
 			if (!confirmOk("Are you sure?")) {
 				return;
 			}
@@ -185,8 +165,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		ExecRemove: function (Ctrl, pt, Name, nVerb)
-		{
+		ExecRemove: function (Ctrl, pt, Name, nVerb) {
 			if (!confirmOk("Are you sure?")) {
 				return;
 			}
@@ -197,8 +176,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		AppendItems: function (Items, Badge)
-		{
+		AppendItems: function (Items, Badge) {
 			if (Items) {
 				for (var i = 0; i < Items.Count; i++) {
 					Addons.Badge.Set(Items.Item(i), Badge);
@@ -206,8 +184,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		RemoveItems: function (Items)
-		{
+		RemoveItems: function (Items) {
 			if (Items) {
 				for (var i = Items.Count; i-- > 0;) {
 					Addons.Badge.Remove(Items.Item(i));
@@ -215,8 +192,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Remove: function (Item)
-		{
+		Remove: function (Item) {
 			var s = "";
 			var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			if (path) {
@@ -226,8 +202,7 @@ if (window.Addon == 1) {
 			return s;
 		},
 
-		Set: function (path, s)
-		{
+		Set: function (path, s) {
 			if (path) {
 				if ("string" === typeof path) {
 					path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
@@ -236,8 +211,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Paste: function (Ctrl, pt)
-		{
+		Paste: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			var Badge = Addons.Badge.BadgePath(FV);
 			if (api.LowPart(Badge)) {
@@ -246,8 +220,7 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
-		PasteEx: function (Ctrl, pt)
-		{
+		PasteEx: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			var Selected = FV.SelectedItems();
 			if (!Selected.Count || !Selected.Item(0).IsFolder) {
@@ -256,8 +229,7 @@ if (window.Addon == 1) {
 		},
 
 
-		Notify: function ()
-		{
+		Notify: function () {
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
 				var FV = cFV[i];
@@ -285,11 +257,9 @@ if (window.Addon == 1) {
 			Addons.Badge.DB.Save();
 		},
 
-		List: function (list)
-		{
+		List: function (list) {
 			var ix = [];
-			Addons.Badge.DB.ENumCB(function (path, s)
-			{
+			Addons.Badge.DB.ENumCB(function (path, s) {
 				if (s) {
 					ix.push(s);
 				}
@@ -302,26 +272,40 @@ if (window.Addon == 1) {
 			}
 		},
 
-		SetSort: function (Ctrl, pt)
-		{
+		SetSort: function (Ctrl, pt) {
 			(GetFolderView(Ctrl, pt) || {}).SortColumn = "Tablacus.Badge";
 			return S_OK;
 		},
 
-		SetSync: function (name, s)
-		{
+		SetSync: function (name, s) {
 			this.SyncItem[name] = s;
 			clearTimeout(this.tidSync);
-			this.tidSync = setTimeout(function ()
-			{
+			this.tidSync = setTimeout(function () {
 				Addons.Badge.tidSync = null;
 				Addons.Badge.SyncItem = {};
 			}, 500);
+		},
+
+		Sort: function (Ctrl, Name) {
+			if (Addons.Badge.tid[Ctrl.Id]) {
+				clearTimeout(Addons.Badge.tid[Ctrl.Id]);
+				delete Addons.Badge.tid[Ctrl.Id];
+			}
+			if (/\-?Tablacus\.Badge$/i.test(Name)) {
+				CustomSort(Ctrl, Addons.Badge.strName, /^\-/.test(Name),
+					function (pid, FV) {
+						return Addons.Badge.DB.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					},
+					function (a, b) {
+						return api.StrCmpLogical(b[1], a[1]);
+					}
+				);
+				return true;
+			}
 		}
 	}
 
-	AddEvent("Load", function ()
-	{
+	AddEvent("Load", function () {
 		Addons.Badge.DB = new SimpleDB("badge");
 		Addons.Badge.DB.Load();
 		Addons.Badge.DB.OnChange = function (n, s, old) {
@@ -338,8 +322,7 @@ if (window.Addon == 1) {
 		var Installed0 = Addons.Badge.Set('%Installed%', "");
 		var Installed1 = Addons.Badge.Portable ? fso.GetDriveName(api.GetModuleFileName(null)).toUpperCase() : "";
 		if (Installed0 && Addons.Badge.Portable && Installed0 != Installed1) {
-			Addons.Badge.DB.ENumCB(function (path, badge)
-			{
+			Addons.Badge.DB.ENumCB(function (path, badge) {
 				var drv = fso.GetDriveName(path);
 				if (drv.toUpperCase() == Installed0) {
 					Addons.Badge.Set(path, "");
@@ -352,31 +335,27 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("TranslatePath", function (Ctrl, Path)
-	{
+	AddEvent("TranslatePath", function (Ctrl, Path) {
 		if (Addons.Badge.IsHandle(Path)) {
 			Ctrl.Enum = Addons.Badge.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
 
-	AddEvent("GetFolderItemName", function (pid)
-	{
+	AddEvent("GetFolderItemName", function (pid) {
 		var Badge = Addons.Badge.BadgePath(pid);
 		if (Badge) {
 			return "badge:" + Badge;
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
-	{
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
 		if (Addons.Badge.IsHandle(Ctrl)) {
 			return MakeImgDataEx("bitmap:ieframe.dll,699,16,28", bSimple, 16);
 		}
 	});
 
-	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
-	{
+	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
 			if ((wParam & 0xfff) == CommandID_DELETE - 1) {
 				if (Addons.Badge.IsHandle(Ctrl)) {
@@ -392,8 +371,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
-	{
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 		if (Verb == CommandID_DELETE - 1) {
 			var FV = ContextMenu.FolderView;
 			if (FV && Addons.Badge.IsHandle(FV)) {
@@ -418,8 +396,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
 			var Badge = Addons.Badge.BadgePath(Ctrl);
 			if (api.LowPart(Badge)) {
@@ -428,8 +405,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type <= CTRL_EB) {
 			var Badge = Addons.Badge.BadgePath(Ctrl);
 			if (api.LowPart(Badge)) {
@@ -448,8 +424,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		var Badge = Addons.Badge.BadgePath(Ctrl);
 		if (api.LowPart(Badge)) {
 			var nIndex = -1;
@@ -465,13 +440,11 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("DragLeave", function (Ctrl)
-	{
+	AddEvent("DragLeave", function (Ctrl) {
 		return S_OK;
 	});
 
-	AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt)
-	{
+	AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt) {
 		if (/Background|Edit/i.test(Name)) {
 			var Badge = Addons.Badge.BadgePath(GetFolderView(Ctrl, pt));
 			if (api.LowPart(Badge)) {
@@ -497,8 +470,7 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	AddEvent("ChangeNotify", function (Ctrl, pidls)
-	{
+	AddEvent("ChangeNotify", function (Ctrl, pidls) {
 		if (Addons.Badge.DB) {
 			if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
@@ -527,8 +499,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
-	{
+	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 		if (Addons.Badge.IsHandle(Ctrl)) {
 			RemoveCommand(hMenu, ContextMenu, "delete;rename");
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
@@ -539,8 +510,7 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	AddEvent("BeginLabelEdit", function (Ctrl, Name)
-	{
+	AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Addons.Badge.IsHandle(Ctrl)) {
 				return 1;
@@ -548,8 +518,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("ItemPostPaint2", function (Ctrl, pid, nmcd, vcd)
-	{
+	AddEvent("ItemPostPaint2", function (Ctrl, pid, nmcd, vcd) {
 		var hList = Ctrl.hwndList;
 		if (hList && pid && Addons.Badge.DB) {
 			var image = Addons.Badge.Image[Addons.Badge.DB.Get(pid.Path)];
@@ -568,12 +537,10 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("FilterChanged", function (Ctrl)
-	{
+	AddEvent("FilterChanged", function (Ctrl) {
 		var res = /^\*?badge:[^*]+/i.exec(Ctrl.FilterView);
 		if (res) {
-			Ctrl.OnIncludeObject = function (Ctrl, Path1, Path2, Item)
-			{
+			Ctrl.OnIncludeObject = function (Ctrl, Path1, Path2, Item) {
 				var res = /^\*?badge:\s*([<=>]*)(\d+)/i.exec(Ctrl.FilterView);
 				if (res) {
 					switch (res[1]) {
@@ -594,27 +561,23 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Sorting", function (Ctrl, Name)
-	{
-		if (/-?Tablacus\.Badge$/i.test(Name)) {
-			CustomSort(Ctrl, Addons.Badge.strName, /^-/.test(Name),
-				function (pid, FV)
-				{
-					return  Addons.Badge.DB.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-				},
-				function (a, b)
-				{
-					return api.StrCmpLogical(b[1], a[1]);
-				}
-			);
-			return true;
+	AddEvent("Sort", function (Ctrl) {
+		if (Addons.Badge.tid[Ctrl.Id]) {
+			clearTimeout(Addons.Badge.tid[Ctrl.Id]);
+			delete Addons.Badge.tid[Ctrl.Id];
+		}
+		if (/\-?Tablacus\.Badge$/i.test(Ctrl.SortColumn(1))) {
+			Addons.Badge.tid[Ctrl.Id] = setTimeout(function () {
+				Addons.Badge.Sort(Ctrl, Ctrl.SortColumn(1));
+			}, 99);
 		}
 	});
 
+	AddEvent("Sorting", Addons.Badge.Sort);
+
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
 			if (item && item.IsFileSystem) {
 				var mii = api.Memory("MENUITEMINFO");
 				mii.cbSize = mii.Size;
@@ -634,7 +597,7 @@ if (window.Addon == 1) {
 						for (var i = 6; i--;) {
 							api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING | (s == i ? MF_CHECKED : 0), ++nPos, ["&" + i, " - ", str1.substr(5 - i, 5)].join(""));
 							ExtraMenuCommand[nPos] = Addons.Badge["Set" + i];
-							api.InsertMenu(mii2.hSubMenu, 0, MF_BYPOSITION | MF_STRING , ++nPos, i ? ["&" + i, " - ", str1.substr(5 - i, 5)].join("") : GetText("All"));
+							api.InsertMenu(mii2.hSubMenu, 0, MF_BYPOSITION | MF_STRING, ++nPos, i ? ["&" + i, " - ", str1.substr(5 - i, 5)].join("") : GetText("All"));
 							ExtraMenuCommand[nPos] = Addons.Badge["Open" + i];
 						}
 						api.InsertMenu(mii.hSubMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
@@ -661,7 +624,7 @@ if (window.Addon == 1) {
 	var hdc;
 	for (var i = 6; --i;) {
 		var image = api.CreateObject("WICBitmap");
-		var s = api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Img"+ i)));
+		var s = api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Img" + i)));
 		if (s) {
 			Addons.Badge.Image[i] = image.FromFile(s);
 			if (Addons.Badge.Image[i]) {

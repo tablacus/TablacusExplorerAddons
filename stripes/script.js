@@ -25,6 +25,9 @@ if (window.Addon == 1) {
 					if (api.GetWindowLongPtr(hwnd, GWL_STYLE) & WS_HSCROLL) {
 						h -= api.GetSystemMetrics(SM_CYHSCROLL);
 					}
+					if (Ctrl.Type == CTRL_EB) {
+						h -= 4;
+					}
 					if (nHeight > 0 && w > 0 && h > 0) {
 						if (Addons.Stripes.db[hwnd] != h * 65536 + w) {
 							Addons.Stripes.db[hwnd] = h * 65536 + w;

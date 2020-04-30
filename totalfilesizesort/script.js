@@ -8,9 +8,9 @@ if (window.Addon == 1) {
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
 		cue: {},
+		tid: {},
 
-		Exec: function (Ctrl, pt)
-		{
+		Exec: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
@@ -19,8 +19,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		DoSort: function (FV, ar)
-		{
+		DoSort: function (FV, ar) {
 			delete Addons.TotalFileSizeSort.cue[FV.Id];
 			if (!api.ILIsEqual(FV.FolderItem, ar[0])) {
 				return S_OK;
@@ -54,29 +53,36 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 			CustomSort(FV, "System.TotalFileSize", ar[1],
-				function (pid, FV)
-				{
+				function (pid, FV) {
 					var wfd = api.Memory("WIN32_FIND_DATA");
 					api.SHGetDataFromIDList(pid, SHGDFIL_FINDDATA, wfd, wfd.Size);
 					return wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? FV.TotalFileSize[api.GetDisplayNameOf(pid, SHGDN_FORPARSING | SHGDN_ORIGINAL)] : pid.ExtendedProperty("Size");
 				},
-				function (a, b)
-				{
+				function (a, b) {
 					return api.UQuadCmp(b[1], a[1]);
 				}
 			);
+		},
+
+		Sort: function (Ctrl, Name) {
+			if (Addons.TotalFileSizeSort.tid[Ctrl.Id]) {
+				clearTimeout(Addons.TotalFileSizeSort.tid[Ctrl.Id]);
+				delete Addons.TotalFileSizeSort.tid[Ctrl.Id];
+			}
+			if (/\-?[Tablacus|System]\.TotalFileSize$/i.test(Name)) {
+				Addons.TotalFileSizeSort.DoSort(Ctrl, [Ctrl.FolderItem, /^\-/.test(Name)]);
+				return true;
+			}
 		}
 	};
 
-	AddEvent("StatusText", function (Ctrl, Text, iPart)
-	{
+	AddEvent("StatusText", function (Ctrl, Text, iPart) {
 		for (var i in Addons.TotalFileSizeSort.cue) {
 			Addons.TotalFileSizeSort.DoSort(te.Ctrl(CTRL_FV, i), Addons.TotalFileSizeSort.cue[i]);
 		}
 	});
 
-	AddEvent("ColumnClick", function (Ctrl, iItem)
-	{
+	AddEvent("ColumnClick", function (Ctrl, iItem) {
 		var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
 		var s = cColumns[iItem * 2];
 		if (s == "System.TotalFileSize" || (s == "System.Size" && api.GetKeyState(VK_SHIFT) < 0)) {
@@ -85,29 +91,23 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Sort", function (Ctrl)
-	{
-		var res = /^prop:(\-?System\.TotalFileSize);$/.exec(Ctrl.SortColumns);
-		if (res) {
-			setTimeout(function ()
-			{
-				Ctrl.SortColumn = res[1];
+	AddEvent("Sort", function (Ctrl) {
+		if (Addons.TotalFileSizeSort.tid[Ctrl.Id]) {
+			clearTimeout(Addons.TotalFileSizeSort.tid[Ctrl.Id]);
+			delete Addons.TotalFileSizeSort.tid[Ctrl.Id];
+		}
+		if (/\-?[Tablacus|System]\.TotalFileSize$/i.test(Ctrl.SortColumn(1))) {
+			Addons.TotalFileSizeSort.tid[Ctrl.Id] = setTimeout(function () {
+				Ctrl.SortColumn = Ctrl.SortColumn(1);
 			}, 99);
 		}
 	});
 
-	AddEvent("Sorting", function (Ctrl, Name)
-	{
-		if (/-?[Tablacus|System]\.TotalFileSize$/i.test(Name)) {
-			Addons.TotalFileSizeSort.DoSort(Ctrl, [Ctrl.FolderItem, /^-/.test(Name)]);
-			return true;
-		}
-	});
+	AddEvent("Sorting", Addons.TotalFileSizeSort.Sort);
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 			api.InsertMenu(hMenu, Addons.TotalFileSizeSort.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.TotalFileSizeSort.strName));
 			ExtraMenuCommand[nPos] = Addons.TotalFileSizeSort.Exec;
 			return nPos;
