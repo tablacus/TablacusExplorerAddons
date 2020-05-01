@@ -83,16 +83,15 @@ if (window.Addon == 1) {
 	AddEvent("BeginNavigate", function (Ctrl) {
 		var Path = Addons.FindFiles.GetSearchString(Ctrl);
 		if (Path) {
-			OpenNewProcess("addons\\findfiles\\worker.js",
-				{
-					FV: Ctrl,
-					Path: Path,
-					SessionId: Ctrl.SessionId,
-					hwnd: te.hwnd,
-					ProgressDialog: te.ProgressDialog,
-					Locale: g_.IEVer > 8 ? 999 : Infinity,
-					NavigateComplete: te.OnNavigateComplete
-				});
+			OpenNewProcess("addons\\findfiles\\worker.js", {
+				FV: Ctrl,
+				Path: Path,
+				SessionId: Ctrl.SessionId,
+				hwnd: te.hwnd,
+				ProgressDialog: te.ProgressDialog,
+				Locale: g_.IEVer > 8 ? 999 : Infinity,
+			});
+			te.OnNavigateComplete(Ctrl);
 			return S_FALSE;
 		}
 	});

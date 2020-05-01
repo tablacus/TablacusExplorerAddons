@@ -18,7 +18,6 @@ if (MainWindow.Exchange) {
 		} catch (e) { }
 		Progress.StopProgressDialog();
 		delete MainWindow.Exchange[arg[3]];
-		ex.NavigateComplete(ex.FV);
 	}
 }
 
@@ -57,21 +56,17 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 					var ado = api.CreateObject("ads");
 					var charset = "_autodetect_all";
 					try {
-						ado.CharSet = "iso-8859-1";
+						ado.Type = adTypeBinary;
 						ado.Open();
 						ado.LoadFromFile(fn);
-						var s = ado.ReadText(999);
-						if (/^\xEF\xBB\xBF/.test(s)) {
+						var s = api.SysAllocString(ado.Read(8192), 28591);
+						if (/^\xEF\xBB\xBF|^([\x09\x0A\x0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*[\x80-\xBF]{0,3}$/.test(s)) {
 							charset = 'utf-8';
 						} else if (/^\xFF\xFE|^\xFE\xFF/.test(s)) {
 							charset = 'unicode';
-						} else {
-							var res = /<meta[^>]*charset\s*=([\w_\-]+)|\@charset.*?([\w_\-]+)|<\?xml[^>]*encoding\s*=[^\w_\->]*([\w_\-]+)/i.exec(s);
-							if (res) {
-								charset = res[1] || res[2] || res[3];
-							}
 						}
 						ado.Position = 0;
+						ado.Type = adTypeText;
 						ado.CharSet = charset;
 						var n = -1;
 						while (!ado.EOS && n < 0) {
