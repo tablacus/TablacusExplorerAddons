@@ -15,7 +15,7 @@ if (window.Addon == 1) {
 					if (Addons.InactivePane.IsActive(Ctrl)) {
 						return Addons.InactivePane.Active(Ctrl);
 					}
-					Addons.InactivePane.SetBKColor(Ctrl, hwnd, Addons.InactivePane.Color);
+					Addons.InactivePane.SetBKColor(Ctrl, hwnd, Addons.InactivePane.Color, Addons.InactivePane.TextColor);
 					api.InvalidateRect(hwnd, null, true);
 				}
 			}
@@ -25,11 +25,8 @@ if (window.Addon == 1) {
 			if (Ctrl) {
 				if (Ctrl.Type == CTRL_TE) {
 					Ctrl = te.Ctrl(CTRL_FV);
-					if (!Ctrl) {
-						return;
-					}
 				}
-				if (Ctrl.Type <= CTRL_EB) {
+				if ((Ctrl || {}).Type == CTRL_SB) {
 					Addons.InactivePane.Arrange(Ctrl);
 					if (!Addons.InactivePane.tid[Ctrl.hwnd]) {
 						Addons.InactivePane.tid[Ctrl.hwnd] = setTimeout(function () {
@@ -40,18 +37,21 @@ if (window.Addon == 1) {
 			}
 		},
 
-		SetBKColor: function (FV, hwnd, color) {
+		SetBKColor: function (FV, hwnd, color, text) {
+			api.SendMessage(hwnd, LVM_SETTEXTCOLOR, 0, text);
 			api.SendMessage(hwnd, LVM_SETBKCOLOR, 0, color);
 			api.SendMessage(hwnd, LVM_SETTEXTBKCOLOR, 0, color);
 			api.SendMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
 			var TV = FV.TreeView;
 			hwnd = TV.hwndTree;
 			if (hwnd) {
+				api.SendMessage(hwnd, TVM_SETTEXTCOLOR, 0, text);
 				api.SendMessage(hwnd, TVM_SETBKCOLOR, 0, color);
 			}
 			if (FV.Type == CTRL_EB) {
 				hwnd = FindChildByClass(FV.hwnd, WC_TREEVIEW);
 				if (hwnd) {
+					api.SendMessage(hwnd, TVM_SETTEXTCOLOR, 0, text);
 					api.SendMessage(hwnd, TVM_SETBKCOLOR, 0, color);
 				}
 			}
@@ -60,7 +60,7 @@ if (window.Addon == 1) {
 		Active: function (FV) {
 			var hwnd = FV.hwndList;
 			if (hwnd) {
-				Addons.InactivePane.SetBKColor(FV, hwnd, GetSysColor(COLOR_WINDOW));
+				Addons.InactivePane.SetBKColor(FV, hwnd, GetSysColor(COLOR_WINDOW), GetSysColor(COLOR_WINDOWTEXT));
 				api.InvalidateRect(hwnd, null, true);
 			}
 		},
@@ -96,7 +96,9 @@ if (window.Addon == 1) {
 			}
 		}
 	});
-	var cl = item.getAttribute("Color");
+	var cl = item.getAttribute("TextColor");
+	Addons.InactivePane.TextColor = GetWinColor(cl || "#444444");
+	cl = item.getAttribute("Color");
 	Addons.InactivePane.Color = cl ? GetWinColor(cl) : GetSysColor(COLOR_APPWORKSPACE);
 
 	var cTC = te.Ctrls(CTRL_TC);
