@@ -4,19 +4,17 @@ if (window.Addon == 1) {
 	Addons.ForceRefresh = {
 		Filter: (item.getAttribute("Filter") || "-").replace(/\s+$/, "").replace(/\r\n/g, ";"),
 		Disable: (item.getAttribute("Disable") || "-").replace(/\s+$/, "").replace(/\r\n/g, ";"),
-		Notify: api.LowPart(item.getAttribute("NewFile")) ? SHCNE_CREATE : 0 | api.LowPart(item.getAttribute("NewFolder")) ? SHCNE_MKDIR : 0,
+		Notify: (api.LowPart(item.getAttribute("NewFile")) ? SHCNE_CREATE : 0) | (api.LowPart(item.getAttribute("NewFolder")) ? SHCNE_MKDIR : 0),
 		Timeout: api.LowPart(item.getAttribute("Timeout")) || 500,
 		db: {},
 		tid: {},
 
-		ChangeNotify: function (FV, pidls)
-		{
+		ChangeNotify: function (FV, pidls) {
 			if (api.ILIsParent(FV, pidls[0], true)) {
 				if (Addons.ForceRefresh.tid[FV.Id]) {
 					clearTimeout(Addons.ForceRefresh.tid[FV.Id]);
 				}
-				Addons.ForceRefresh.tid[FV.Id] = setTimeout(function ()
-				{
+				Addons.ForceRefresh.tid[FV.Id] = setTimeout(function () {
 					delete Addons.ForceRefresh.tid[FV.Id];
 					FV.Refresh();
 				}, Addons.ForceRefresh.Timeout);
@@ -24,8 +22,7 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("SelectionChanged", function (Ctrl, uChange)
-	{
+	AddEvent("SelectionChanged", function (Ctrl, uChange) {
 		if (Ctrl.Type == CTRL_TC) {
 			if (Ctrl.Selected) {
 				var FV = te.Ctrl(CTRL_FV, Addons.ForceRefresh.db[Ctrl.Id]);
@@ -40,8 +37,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ChangeNotify", function (Ctrl, pidls)
-	{
+	AddEvent("ChangeNotify", function (Ctrl, pidls) {
 		if (pidls.lEvent & Addons.ForceRefresh.Notify) {
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
