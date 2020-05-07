@@ -204,7 +204,7 @@ if (window.Addon == 1) {
 
 		Set: function (path, s) {
 			if (path) {
-				if ("string" === typeof path) {
+				if ("string" !== typeof path) {
 					path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				}
 				Addons.Badge.DB.Set(path, api.LowPart(s));
