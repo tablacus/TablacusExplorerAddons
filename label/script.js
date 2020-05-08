@@ -641,11 +641,11 @@ if (window.Addon == 1) {
 					Addons.Label.Append(pidls[1], s);
 				}
 			}
-			if (pidls.lEvent & SHCNE_DELETE) {
+			if (pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR)) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				Addons.Label.SetSync(name, Addons.Label.Remove(pidls[0]));
 			}
-			if (pidls.lEvent & SHCNE_CREATE) {
+			if (pidls.lEvent & (SHCNE_CREATE | SHCNE_MKDIR)) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				var Item = Addons.Label.SyncItem[name];
 				if (Item) {

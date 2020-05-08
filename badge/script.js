@@ -485,11 +485,11 @@ if (window.Addon == 1) {
 					Addons.Badge.Set(pidls[1], s);
 				}
 			}
-			if (pidls.lEvent & SHCNE_DELETE) {
+			if (pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR)) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				Addons.Badge.SetSync(name, Addons.Badge.Remove(pidls[0]));
 			}
-			if (pidls.lEvent & SHCNE_CREATE) {
+			if (pidls.lEvent & (SHCNE_CREATE | SHCNE_MKDIR)) {
 				var name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 				var Item = Addons.Badge.SyncItem[name];
 				if (Item) {
@@ -641,6 +641,7 @@ if (window.Addon == 1) {
 		var hOld = api.SelectObject(hmdc, hbm);
 		var brush = api.CreateSolidBrush(159 + i * 16);
 		api.FillRect(hmdc, rc, brush);
+		api.DeleteObject(brush);
 		api.SetTextColor(hmdc, 0xffffff);
 		api.SetBkMode(hmdc, 1);
 		var lf = api.Memory("LOGFONT");
@@ -652,9 +653,8 @@ if (window.Addon == 1) {
 		rc.top = -w / 4;
 		api.DrawText(hmdc, i, -1, rc, DT_CENTER);
 		api.SelectObject(hmdc, hfontOld);
-		api.DeleteObject(brush);
-		api.DeleteDC(hmdc);
 		api.SelectObject(hmdc, hOld);
+		api.DeleteDC(hmdc);
 		Addons.Badge.Image[i] = image.FromHBITMAP(hbm);
 		api.DeleteObject(hbm);
 	}

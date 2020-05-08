@@ -21,7 +21,7 @@ input[type="text"], input[type="button"], input[type="file"], input[type="submit
 input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover, input[type="reset"]:hover, .button:hover, .hoverbutton, .activebutton {
 	color: #fff;
 	background-color: #555;
-	border: solid 1px #ccc;
+	border: solid 1px #777;
 }
 
 .menu {
@@ -76,7 +76,7 @@ input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover
 
 .oddline {
 	color: #fff;
-	background-color: #555;
+	background-color: #333;
 }
 
 .window {
@@ -101,3 +101,6 @@ input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover
 	border: 1px solid #666;
 }
 
+.link {
+  color: #29e;
+}

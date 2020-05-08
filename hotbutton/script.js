@@ -89,7 +89,7 @@ if (window.Addon == 1) {
 							if (FolderItem) {
 								FolderMenu.Invoke(FolderItem);
 							}
-						}, 99)})(Ctrl.Item(iItem), ptm);
+						}, 99)})(api.ILCreateFromPath(Ctrl.Item(iItem).Path), ptm);
 						return S_OK;
 					}
 				}
@@ -151,15 +151,15 @@ if (window.Addon == 1) {
 		api.SetTextColor(hmdc, 0x333333);
 		api.SetBkMode(hmdc, 1);
 		var lf = api.Memory("LOGFONT");
-		lf.lfFaceName = "Consolas",
-		lf.lfHeight = - w;
+		lf.lfFaceName = "Consolas";
+		lf.lfHeight = -w;
 		var hFont = CreateFont(lf);
 		var hfontOld = api.SelectObject(hmdc, hFont);
 		rc.top = 1 - w / 4;
 		api.DrawText(hmdc, ">", -1, rc, DT_CENTER);
 		api.SelectObject(hmdc, hfontOld);
-		api.DeleteDC(hmdc);
 		api.SelectObject(hmdc, hOld);
+		api.DeleteDC(hmdc);
 		Addons.HotButton.Image = api.CreateObject("WICBitmap").FromHBITMAP(hbm);
 		api.DeleteObject(hbm);
 		api.ReleaseDC(te.hwnd, hdc);
