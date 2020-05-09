@@ -25,7 +25,7 @@ if (window.Addon == 1) {
 					ids.push(TC[i].Id);
 				}
 				ids.sort(function (a, b) {
-					return api.StrCmpLogical(te.Ctrl(CTRL_FV, a).FolderItem.Path, te.Ctrl(CTRL_FV, b).FolderItem.Path);
+					return api.CompareIDs(0, te.Ctrl(CTRL_FV, a).FolderItem, te.Ctrl(CTRL_FV, b).FolderItem);
 				});
 				for (var i = 0; i < TC.Count; i++) {
 					var j = te.Ctrl(CTRL_FV, ids[i]).Index;

@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.5.9</MinVersion>
     <pubDate>Sat, 09 May 2020 00:00:00 GMT</pubDate>
-    <Options>Common:0,7,8,9:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Sort tabs</Name>
-    <Description>Sort tabs</Description>
+    <Name>Lock only disables "Close tab"</Name>
+    <Description>Lock only disables "Close tab"</Description>
   </en>
   <ja>
-    <Name>タブのソート</Name>
+    <Name>ロックは「タブを閉じる」だけ無効にする</Name>
   </ja>
 </TablacusExplorer>
