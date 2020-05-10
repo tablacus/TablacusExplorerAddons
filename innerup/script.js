@@ -1,18 +1,16 @@
 if (window.Addon == 1) {
 	Addons.InnerUp =
 	{
-		Exec: function (Id)
-		{
+		Exec: function (Id) {
 			var FV = GetInnerFV(Id);
 			if (FV) {
 				FV.Focus();
-				FV.Navigate(null, SBSP_PARENT | SBSP_SAMEBROWSER);
+				Exec(FV, "Up", "Tabs");
 			}
 			return false;
 		},
 
-		Popup: function (o, id)
-		{
+		Popup: function (o, id) {
 			var FV = GetInnerFV(id);
 			if (FV) {
 				FV.Focus();
@@ -36,8 +34,7 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("PanelCreated", function (Ctrl)
-	{
+	AddEvent("PanelCreated", function (Ctrl) {
 		var h = GetIconSize(GetAddonOption("innerup", "IconSize"), 16);
 		var s = GetAddonOption("innerup", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,28" : "bitmap:ieframe.dll,214,24,28");
 		s = ['<span class="button" onclick="return Addons.InnerUp.Exec($)" oncontextmenu="Addons.InnerUp.Popup(this, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: "Up", src: s }, h), '</span>'];
