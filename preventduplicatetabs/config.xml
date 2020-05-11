@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2018.7.29</MinVersion>
-    <pubDate>Mon, 30 Jul 2018 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2020.5.11</MinVersion>
+    <pubDate>Mon, 11 May 2020 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
@@ -16,4 +16,7 @@
     <Name>重複タブ禁止</Name>
     <Description>重複タブを禁止します。</Description>
   </ja>
+  <zh>
+    <Name>防止重複分頁</Name>
+  </zh>
 </TablacusExplorer>

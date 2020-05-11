@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.5.11</MinVersion>
     <pubDate>Mon, 11 May 2020 00:00:00 GMT</pubDate>
-    <Options>Common:5:5</Options>
+    <Options>Common:0,7,8,9:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Inner Forward</Name>
-    <Description>Forward button of every pane</Description>
+    <Name>Protect tabs</Name>
+    <Description>Protect tabs</Description>
   </en>
   <ja>
-    <Name>Inner 進む</Name>
-    <Description>ペイン毎の 進む ボタン</Description>
+    <Name>タブを保護</Name>
   </ja>
-  <zh>
-    <Name>窗格內下一頁</Name>
-  </zh>
 </TablacusExplorer>

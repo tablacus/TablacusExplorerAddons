@@ -1,20 +1,21 @@
 ﻿if (window.Addon == 1) {
-	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
-	{
+	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 		var hr;
 		var db = {};
 		var TC = Ctrl.Parent;
 		for (var i = TC.Count; i-- > 0;) {
 			var Item = TC.Item(i);
 			if (Ctrl.hwnd != Item.hwnd && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
-				if (Item.Data.Lock) {
+				if (CanClose(Item)) {
 					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.hwnd == Ctrl.hwnd) {
-						(function (TC, i, Item, Selected) { setTimeout(function () {
-							TC.SelectedIndex = i;
-							if (Selected && Selected.Count == 1) {
-								Item.SelectItem(Selected.Item(0), SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS | SVSI_DESELECTOTHERS | SVSI_SELECT);
-							}
-						}, 99);}) (TC, Ctrl.Index < i ? i - 1 : i, Item, Ctrl.SelectedItems());
+						(function (TC, i, Item, Selected) {
+							setTimeout(function () {
+								TC.SelectedIndex = i;
+								if (Selected && Selected.Count == 1) {
+									Item.SelectItem(Selected.Item(0), SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS | SVSI_DESELECTOTHERS | SVSI_SELECT);
+								}
+							}, 99);
+						})(TC, Ctrl.Index < i ? i - 1 : i, Item, Ctrl.SelectedItems());
 					}
 					hr = E_ABORT;
 				} else if (!hr) {
@@ -28,8 +29,7 @@
 				db[path] = [Item];
 			}
 		}
-		setTimeout(function ()
-		{
+		setTimeout(function () {
 			var SelectedIndex = TC.SelectedIndex;
 			for (var i in db) {
 				var cFV = db[i];

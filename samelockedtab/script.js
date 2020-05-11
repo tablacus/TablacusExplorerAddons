@@ -8,7 +8,7 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
-		if (Ctrl && Ctrl.Data.Lock) {
+		if (CanClose(Ctrl)) {
 			return;
 		}
 		var hr;
