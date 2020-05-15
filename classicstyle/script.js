@@ -11,8 +11,16 @@
 			}
 		}
 	};
+
+	AddEvent("ListViewCreated", function (Ctrl) {
+		if (Ctrl.hwndList) {
+			api.SetWindowTheme(Ctrl.hwndList, null, null);
+		}
+	});
+
 	AddEventId("AddonDisabledEx", "classicstyle", function () {
 		Addons.ClassicStyle.SetThemeAll("explorer");
 	});
+
 	Addons.ClassicStyle.SetThemeAll(null);
 }
