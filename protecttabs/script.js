@@ -53,7 +53,5 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.ProtectTabs.Exec, "Func");
 	}
-	AddTypeEx("Add-ons", "Sort tabs", Addons.ProtectTabs.Exec);
-} else {
-	SetTabContents(0, "General", '<label><input type="checkbox" id="Auto">Auto</label>');
+	AddTypeEx("Add-ons", "Protect tabs", Addons.ProtectTabs.Exec);
 }

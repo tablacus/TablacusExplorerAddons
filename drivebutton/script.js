@@ -46,9 +46,7 @@ if (window.Addon == 1) {
 						api.GetCursorPos(pt);
 					}
 				}
-				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD,  pt.x, pt.y, te.hwnd, null);
-				api.DestroyMenu(hMenu);
+				var nVerb = FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD,  pt.x, pt.y);
 				if (nVerb) {
 					FolderMenu.Invoke(FolderMenu.Items[nVerb - 1]);
 				}

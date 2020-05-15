@@ -1,33 +1,18 @@
 ﻿if (window.Addon == 1) {
 	Addons.ClassicStyle =
 	{
-		SetTheme: function (Ctrl)
-		{
-			Addons.ClassicStyle.SetTheme1(Ctrl, api.ShouldAppsUseDarkMode() ? "darkmode_explorer" : null);
-		},
-
-		SetTheme1: function (FV, s)
-		{
-			if (FV.hwndList) {
-				api.SetWindowTheme(FV.hwndList, s, null);
-			}
-		},
-
-		SetThemeAll: function(s)
-		{
+		SetThemeAll: function (s) {
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
-				Addons.ClassicStyle.SetTheme1(cFV[i], s);
+				var FV = cFV[i];
+				if (FV.hwndList) {
+					api.SetWindowTheme(FV.hwndList, s, null);
+				}
 			}
 		}
 	};
-
-	AddEvent("NavigateComplete", Addons.ClassicStyle.SetTheme);
-
-	AddEventId("AddonDisabledEx", "classicstyle", function ()
-	{
+	AddEventId("AddonDisabledEx", "classicstyle", function () {
 		Addons.ClassicStyle.SetThemeAll("explorer");
 	});
-
-	Addons.ClassicStyle.SetThemeAll(api.ShouldAppsUseDarkMode() ? "darkmode_explorer" : null);
+	Addons.ClassicStyle.SetThemeAll(null);
 }

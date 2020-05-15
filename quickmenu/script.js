@@ -2,15 +2,13 @@ if (window.Addon == 1) {
 	Addons.QuickMenu =
 	{
 		Items: null,
-		SendTo: function (hMenu)
-		{
+		SendTo: function (hMenu) {
 			hMenu = api.sscanf(hMenu, "%llx");
 			Addons.QuickMenu.Items = sha.NameSpace(ssfSENDTO).Items();
 			for (var i = 0; i < Addons.QuickMenu.Items.Count; i++) {
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 0x4e00 + i, api.GetDisplayNameOf(Addons.QuickMenu.Items.Item(i), SHGDN_INFOLDER));
 			}
-			AddEvent("MenuCommand", function (Ctrl, pt, Name, nVerb)
-			{
+			AddEvent("MenuCommand", function (Ctrl, pt, Name, nVerb) {
 				nVerb -= 0x4e00;
 				if (nVerb >= 0 && nVerb < Addons.QuickMenu.Items.Count) {
 					var DropTarget = api.DropTarget(Addons.QuickMenu.Items.Item(nVerb));
@@ -25,8 +23,7 @@ if (window.Addon == 1) {
 		}
 	}
 
-	AddEvent("GetBaseMenuEx", function (hMenu, nBase, FV, Selected, uCMF, Mode, SelItem, arContextMenu)
-	{
+	AddEvent("GetBaseMenuEx", function (hMenu, nBase, FV, Selected, uCMF, Mode, SelItem, arContextMenu) {
 		if ((Mode & 0x8000) || api.GetKeyState(VK_SHIFT) < 0) {
 			return;
 		}
@@ -45,16 +42,13 @@ if (window.Addon == 1) {
 						arContextMenu[1] = ContextMenu;
 					}
 					ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME | CMF_ITEMMENU);
-					if (SelItem) {
-						SetRenameMenu(ContextMenu.idCmdFirst);
-					}
 					var mii = api.Memory("MENUITEMINFO");
 					mii.cbSize = mii.Size;
-					mii.fMask  = MIIM_FTYPE;
+					mii.fMask = MIIM_FTYPE;
 					while (api.GetMenuItemInfo(hMenu, nPos++, true, mii) && !(mii.fType & MFT_SEPARATOR)) {
 					}
 					var hMenu1 = api.LoadMenu(hShell32, 223);
-					mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_SUBMENU;
+					mii.fMask = MIIM_ID | MIIM_STRING | MIIM_SUBMENU;
 					mii.wID = wID++;
 					mii.dwTypeData = api.GetMenuString(api.GetSubMenu(hMenu1, 0), 0, MF_BYPOSITION);
 					mii.hSubMenu = api.CreatePopupMenu();
@@ -63,8 +57,7 @@ if (window.Addon == 1) {
 					api.InsertMenu(hMenu, nPos++, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 					api.DestroyMenu(hMenu1);
 				}
-				ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
-				{
+				ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb) {
 					ExecMenu(Ctrl, Name, pt, 0x8000);
 				};
 				api.InsertMenu(hMenu, 1, MF_BYPOSITION | MF_STRING, wID++, GetText("Default"));
@@ -72,8 +65,7 @@ if (window.Addon == 1) {
 			case 3:
 				if (FV) {
 					ContextMenu = GetViewMenu(arContextMenu, FV, hMenu, CMF_DEFAULTONLY);
-					ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
-					{
+					ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb) {
 						ExecMenu(Ctrl, Name, pt, 0x8000);
 					};
 					api.SetMenuDefaultItem(hMenu, -1, true);
@@ -92,7 +84,6 @@ if (window.Addon == 1) {
 							arContextMenu[1] = ContextMenu;
 						}
 						ContextMenu.QueryContextMenu(hMenu, 0, 0x6001, 0x6fff, CMF_DEFAULTONLY | CMF_CANRENAME);
-						SetRenameMenu(ContextMenu.idCmdFirst);
 					}
 				} else if (FV) {
 					ContextMenu = GetViewMenu(arContextMenu, FV, hMenu, CMF_DEFAULTONLY);
@@ -109,8 +100,7 @@ if (window.Addon == 1) {
 						break;
 					}
 				}
-				ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb)
-				{
+				ExtraMenuCommand[wID] = function (Ctrl, pt, Name, nVerb) {
 					ExecMenu(Ctrl, Name, pt, 0x8000);
 				};
 				api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, wID++, GetText("Default"));

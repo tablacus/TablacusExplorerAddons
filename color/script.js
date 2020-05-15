@@ -75,6 +75,29 @@ if (window.Addon == 1) {
 	SetSysColor(COLOR_WINDOWTEXT, GetWinColor(item.getAttribute("Default") || GetWebColor(GetSysColor(COLOR_WINDOWTEXT))));
 	SetSysColor(COLOR_WINDOW, GetWinColor(item.getAttribute("Background") || GetWebColor(GetSysColor(COLOR_WINDOW))));
 	SetSysColor(COLOR_BTNFACE, GetWinColor(item.getAttribute("Buttons") || GetWebColor(GetSysColor(COLOR_BTNFACE))));
+	var clSelected = item.getAttribute("Selected");
+
+	if (clSelected) {
+		AddEvent("Load", function () {
+			Addons.Color.Brush = api.CreateSolidBrush(GetWinColor(clSelected));
+			AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes) {
+				if (pid) {
+					var uState = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, LVIS_SELECTED);
+					if (uState & LVIS_SELECTED || nmcd.uItemState & CDIS_HOT) {
+						var rc = api.Memory("RECT");
+						rc.left = LVIR_SELECTBOUNDS;
+						api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
+						rc.right -= 2;
+						api.FillRect(nmcd.hdc, rc, Addons.Color.Brush);
+					}
+				}
+			}, true);
+		});
+
+		AddEvent("Finalize", function () {
+			api.DeleteObject(Addons.Color.Brush);
+		});
+	}
 	Addons.Color.Init();
 } else {
 	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");

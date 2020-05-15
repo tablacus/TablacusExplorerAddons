@@ -1,4 +1,4 @@
-﻿var Addon_Id = "samelockedtab";
+var Addon_Id = "samelockedtab";
 var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.SameLockedTab =
@@ -8,7 +8,7 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
-		if (CanClose(Ctrl)) {
+		if (Ctrl && Ctrl.Data.Lock) {
 			return;
 		}
 		var hr;
@@ -17,7 +17,7 @@ if (window.Addon == 1) {
 		for (var j = cTC.length; j--;) {
 			var TC = cTC[j];
 			for (var i = TC.Count; i-- > 0;) {
-				var Item = TC.Item(i);
+				var Item = TC[i];
 				if (Item.Data.Lock && Ctrl.hwnd != Item.hwnd && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
 					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.hwnd == Ctrl.hwnd) {
 						(function (TC, i, Item, Selected) {

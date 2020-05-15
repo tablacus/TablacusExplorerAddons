@@ -25,7 +25,7 @@ if (window.Addon == 1) {
 				var list = Addons.BGImage.List;
 				for (var i = list.length; i--;) {
 					if (PathMatchEx(path, list[i][0])) {
-						var image = api.PathUnquoteSpaces(list[i][1]);
+						var image = list[i][1];
 						if ("object" === typeof image) {
 							Addons.BGImage.ShowImage(hwnd, image);
 						} else if ("string" === typeof image) {
@@ -113,6 +113,7 @@ if (window.Addon == 1) {
 		while (!ado.EOS) {
 			var ar = ExtractMacro(te, ado.ReadText(adReadLine)).split("\t");
 			if (ar[0]) {
+				ar[1] = api.PathUnquoteSpaces(ar[1]);
 				Addons.BGImage.List.push(ar);
 			}
 		}

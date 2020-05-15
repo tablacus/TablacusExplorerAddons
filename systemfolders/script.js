@@ -11,11 +11,11 @@ if (window.Addon == 1) {
 	{
 		dir: [],
 		Flat: api.LowPart(item.getAttribute("Flat")),
+		wFlags: api.LowPart(item.getAttribute("NoNewTab")) ? SBSP_SAMEBROWSER : SBSP_NEWBROWSER,
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
-		Exec: function (Ctrl, pt)
-		{
+		Exec: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			FV.Focus();
 			var hMenu = Addons.SystemFolders.GetMenu(api.CreatePopupMenu(), 1);
@@ -23,16 +23,14 @@ if (window.Addon == 1) {
 			if (Ctrl.Type) {
 				api.GetCursorPos(pt);
 			}
-			var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
-			api.DestroyMenu(hMenu);
+			var nVerb = FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y);
 			if (nVerb) {
-				NavigateFV(FV, Addons.SystemFolders.dir[nVerb - 1], SBSP_NEWBROWSER);
+				FolderMenu.Invoke(Addons.SystemFolders.dir[nVerb - 1], Addons.SystemFolders.wFlags, FV);
 			}
 			return S_OK;
 		},
 
-		GetMenu: function (hMenu, nOffset)
-		{
+		GetMenu: function (hMenu, nOffset) {
 			var dir = Addons.SystemFolders.dir;
 			if (!dir.length) {
 				dir.push(ssfDRIVES, ssfNETHOOD, ssfWINDOWS, ssfSYSTEM, ssfPROGRAMFILES);
@@ -55,7 +53,7 @@ if (window.Addon == 1) {
 			}
 			var mii = api.Memory("MENUITEMINFO");
 			mii.cbSize = mii.Size;
-			mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
+			mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
 			for (var i = 0; i < dir.length; i++) {
 				mii.wID = i + nOffset;
 				mii.dwTypeData = api.GetDisplayNameOf(dir[i], SHGDN_INFOLDER);
@@ -65,8 +63,7 @@ if (window.Addon == 1) {
 			return hMenu;
 		},
 
-		MenuCommand: function (Ctrl, pt, Name, nVerb, hMenu)
-		{
+		MenuCommand: function (Ctrl, pt, Name, nVerb, hMenu) {
 			nVerb -= Addons.SystemFolders.nCommand;
 			if (nVerb >= 0 && nVerb < Addons.SystemFolders.dir.length) {
 				Navigate(Addons.SystemFolders.dir[nVerb], SBSP_NEWBROWSER);
@@ -77,8 +74,7 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 			Addons.SystemFolders.nCommand = nPos + 1;
 			if (Addons.SystemFolders.Flat) {
 				Addons.SystemFolders.GetMenu(hMenu, nPos + 1)
@@ -107,8 +103,9 @@ if (window.Addon == 1) {
 
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,42,16" : "icon:shell32.dll,42,32");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SystemFolders.Exec(this)" oncontextmenu="Addons.SystemFolders.Exec(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.SystemFolders.strName, src: src}, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SystemFolders.Exec(this)" oncontextmenu="Addons.SystemFolders.Exec(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.SystemFolders.strName, src: src }, h), '</span>']);
 } else {
 	EnableInner();
+	SetTabContents(0, "General", '<input type="checkbox" name="!NoNewTab"><label>Open in new tab</label>');
 	document.getElementById("panel7").innerHTML += '<div><input type="checkbox" name="Flat"><label>Flat</label></div>';
 }

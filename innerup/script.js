@@ -23,11 +23,9 @@ if (window.Addon == 1) {
 				}
 				var pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
-				window.g_menu_click = true;
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, external.hwnd, null, null);
-				api.DestroyMenu(hMenu);
+				var nVerb = FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y);
 				if (nVerb) {
-					FolderMenu.Invoke(FolderMenu.Items[nVerb - 1]);
+					FolderMenu.Invoke(FolderMenu.Items[nVerb - 1], SBSP_SAMEBROWSER, FV);
 				}
 				FolderMenu.Clear();
 			}
