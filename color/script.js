@@ -79,16 +79,29 @@ if (window.Addon == 1) {
 
 	if (clSelected) {
 		AddEvent("Load", function () {
-			Addons.Color.Brush = api.CreateSolidBrush(GetWinColor(clSelected));
+			Addons.Color.clSelected = GetWinColor(clSelected);
+			Addons.Color.Brush = api.CreateSolidBrush(Addons.Color.clSelected);
 			AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes) {
-				if (pid) {
-					var uState = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, LVIS_SELECTED);
-					if (uState & LVIS_SELECTED || nmcd.uItemState & CDIS_HOT) {
-						var rc = api.Memory("RECT");
-						rc.left = LVIR_SELECTBOUNDS;
-						api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
-						rc.right -= 2;
-						api.FillRect(nmcd.hdc, rc, Addons.Color.Brush);
+				if (Ctrl.Type == CTRL_SB) {
+					if (pid) {
+						var uState = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, LVIS_SELECTED);
+						if (uState & LVIS_SELECTED || nmcd.uItemState & CDIS_HOT) {
+							var rc = api.Memory("RECT");
+							rc.left = LVIR_SELECTBOUNDS;
+							api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
+							rc.right -= 2;
+							api.FillRect(nmcd.hdc, rc, Addons.Color.Brush);
+						}
+					}
+				} else if (Ctrl.Type == CTRL_TV) {
+					if (nmcd.uItemState & CDIS_SELECTED) {
+						var cl = Addons.Color.clSelected;
+						vcd.clrTextBk = cl;
+						api.FillRect(nmcd.hdc, nmcd.rc, Addons.Color.Brush);
+						if (vcd.clrText == GetSysColor(COLOR_WINDOWTEXT)) {
+							cl = (cl & 0xff) * 299 + (cl & 0xff00) * 2.29296875 + (cl & 0xff0000) * 0.001739501953125;
+							vcd.clrText = cl > 127500 ? 0 : 0xffffff;
+						}
 					}
 				}
 			}, true);

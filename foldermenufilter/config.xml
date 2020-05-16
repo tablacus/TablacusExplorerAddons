@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.11</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.5.16</MinVersion>
     <pubDate>Sat, 16 May 2020 00:00:00 GMT</pubDate>
-    <Options>Default</Options>
+    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>FastCopy</Name>
-    <Description>File operations in FastCopy.</Description>
+    <Name>Folder menu filter</Name>
+    <Description>Folder menu filter</Description>
   </en>
   <ja>
-    <Name>FastCopy</Name>
-    <Description>FastCopyでファイル操作を行います。</Description>
+    <Name>フォルダメニューフィルタ</Name>
   </ja>
 </TablacusExplorer>
