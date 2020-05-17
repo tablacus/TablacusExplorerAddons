@@ -179,7 +179,7 @@ if (window.Addon == 1) {
 			if (!Item) {
 				return;
 			}
-			if (!Addons.TooltipPreview.Selected && !(api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, Index, LVIS_SELECTED) & LVIS_SELECTED)) {
+			if (Addons.TooltipPreview.Selected && !(api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, Index, LVIS_SELECTED) & LVIS_SELECTED)) {
 				return;
 			}
 			if (!Addons.TooltipPreview.Folder && IsFolderEx(Item)) {
