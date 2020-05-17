@@ -12,6 +12,7 @@ if (window.Addon == 1) {
 		Charset: item.getAttribute("Charset"),
 		TextSize: item.getAttribute("TextSize") || 4000,
 		TextLimit: item.getAttribute("TextLimit") || 10000000,
+		Selected: api.LowPart(item.getAttribute("Selected")),
 
 		Draw: function () {
 			Addons.TooltipPreview.DeleteBM();
@@ -169,88 +170,92 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("ToolTip", function (Ctrl, Index) {
-		if (Ctrl.Type <= CTRL_EB && Index >= 0) {
+		if (Ctrl.Type == CTRL_SB && Index >= 0) {
 			if (Addons.TooltipPreview.tid) {
 				clearTimeout(Addons.TooltipPreview.tid);
 				delete Addons.TooltipPreview.tid;
 			}
 			var Item = Ctrl.Item(Index);
-			if (Item) {
-				if (!Addons.TooltipPreview.Folder && IsFolderEx(Item)) {
-					return;
+			if (!Item) {
+				return;
+			}
+			if (!Addons.TooltipPreview.Selected && !(api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, Index, LVIS_SELECTED) & LVIS_SELECTED)) {
+				return;
+			}
+			if (!Addons.TooltipPreview.Folder && IsFolderEx(Item)) {
+				return;
+			}
+			if (PathMatchEx(Item.Path, Addons.TooltipPreview.TextFilter)) {
+				if (Item.ExtendedProperty("size") <= Addons.TooltipPreview.TextLimit) {
+					var ado = OpenAdodbFromTextFile(Item.Path, Addons.TooltipPreview.Charset);
+					if (ado) {
+						var s = ado.ReadText(Addons.TooltipPreview.TextSize);
+						ado.Close()
+						return s;
+					}
 				}
-				if (PathMatchEx(Item.Path, Addons.TooltipPreview.TextFilter)) {
-					if (Item.ExtendedProperty("size") <= Addons.TooltipPreview.TextLimit) {
-						var ado = OpenAdodbFromTextFile(Item.Path, Addons.TooltipPreview.Charset);
-						if (ado) {
-							var s = ado.ReadText(Addons.TooltipPreview.TextSize);
-							ado.Close()
-							return s;
+			}
+			var q = { Item: Item, path: Item };
+			Addons.TooltipPreview.q = q;
+			q.w = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 3");
+			q.h = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 4");
+			if (q.w && q.h) {
+				q.onload = function (q) {
+					q.image = api.CreateObject("WICBitmap").FromSource(q.out);
+					Addons.TooltipPreview.Draw();
+				}
+				Threads.GetImage(Addons.TooltipPreview.q);
+			} else {
+				q.image = api.CreateObject("WICBitmap").FromFile(q.path);
+				if (!q.image) {
+					if (api.PathMatchSpec(Item.Path, Addons.TooltipPreview.Extract) && !IsFolderEx(Item)) {
+						var Items = api.CreateObject("FolderItems");
+						Items.AddItem(Item);
+						te.OnBeforeGetData(Ctrl, Items, 11);
+						if (IsExists(Item.Path)) {
+							q.image = api.CreateObject("WICBitmap").FromFile(Item.Path);
 						}
 					}
 				}
-				var q = { Item: Item, path: Item };
-				Addons.TooltipPreview.q = q;
-				q.w = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 3");
-				q.h = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 4");
-				if (q.w && q.h) {
-					q.onload = function (q) {
-						q.image = api.CreateObject("WICBitmap").FromSource(q.out);
-						Addons.TooltipPreview.Draw();
-					}
-					Threads.GetImage(Addons.TooltipPreview.q);
-				} else {
-					q.image = api.CreateObject("WICBitmap").FromFile(q.path);
-					if (!q.image) {
-						if (api.PathMatchSpec(Item.Path, Addons.TooltipPreview.Extract) && !IsFolderEx(Item)) {
-							var Items = api.CreateObject("FolderItems");
-							Items.AddItem(Item);
-							te.OnBeforeGetData(Ctrl, Items, 11);
-							if (IsExists(Item.Path)) {
-								q.image = api.CreateObject("WICBitmap").FromFile(Item.Path);
-							}
-						}
-					}
-					if (q.image) {
-						q.w = q.image.GetWidth();
-						q.h = q.image.GetHeight();
-						Addons.TooltipPreview.tid = setTimeout(Addons.TooltipPreview.Draw, 99);
+				if (q.image) {
+					q.w = q.image.GetWidth();
+					q.h = q.image.GetHeight();
+					Addons.TooltipPreview.tid = setTimeout(Addons.TooltipPreview.Draw, 99);
+				}
+			}
+			Addons.TooltipPreview.tm = Addons.TooltipPreview.artm.length;
+			delete Addons.TooltipPreview.Path;
+			if (q.w && q.h) {
+				q.z = Math.min(Addons.TooltipPreview.MAX / Math.max(q.w, q.h), 1);
+				var s = "";
+				if (Addons.TooltipPreview.cx == 0) {
+					var hdc = api.GetWindowDC(Ctrl.hwndList);
+					if (hdc) {
+						var size = api.Memory("SIZE");
+						api.GetTextExtentPoint32(hdc, " ", size);
+						Addons.TooltipPreview.cx = size.cx * .7;
+						Addons.TooltipPreview.cy = size.cy * .8;
+						api.ReleaseDC(Ctrl.hwndList, hdc);
 					}
 				}
-				Addons.TooltipPreview.tm = Addons.TooltipPreview.artm.length;
-				delete Addons.TooltipPreview.Path;
-				if (q.w && q.h) {
-					q.z = Math.min(Addons.TooltipPreview.MAX / Math.max(q.w, q.h), 1);
-					var s = "";
-					if (Addons.TooltipPreview.cx == 0) {
-						var hdc = api.GetWindowDC(null);
-						if (hdc) {
-							var size = api.Memory("SIZE");
-							api.GetTextExtentPoint32(hdc, " ", size);
-							Addons.TooltipPreview.cx = size.cx * .7;
-							Addons.TooltipPreview.cy = size.cy;
-							api.ReleaseDC(null, hdc);
-						}
-					}
-					Addons.TooltipPreview.cyn = Math.round(q.h * q.z / Addons.TooltipPreview.cy);
-					var ar = new Array(Addons.TooltipPreview.cyn);
-					Addons.TooltipPreview.cxn = Math.round(q.w * q.z / Addons.TooltipPreview.cx);
-					ar.push(new Array(Addons.TooltipPreview.cxn).join(" "));
-					var col = ["type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13"];
-					if (!IsFolderEx(Item)) {
-						col.push("size");
-					}
-					for (var i = 0; i < col.length; i++) {
-						var s = api.PSFormatForDisplay(col[i], Item.ExtendedProperty(col[i]), PDFF_DEFAULT);
-						if (i != 2 || s) {
-							ar.push(api.PSGetDisplayName(col[i]) + ": " + s);
-						} else {
-							ar.push(api.PSGetDisplayName(col[i]) + ": " + q.w + " x " + q.h);
-						}
-					}
-					Addons.TooltipPreview.nCols = col.length;
-					return ar.join("\n");
+				Addons.TooltipPreview.cyn = Math.round(q.h * q.z / Addons.TooltipPreview.cy);
+				var ar = new Array(Addons.TooltipPreview.cyn);
+				Addons.TooltipPreview.cxn = Math.round(q.w * q.z / Addons.TooltipPreview.cx);
+				ar.push(new Array(Addons.TooltipPreview.cxn).join(" "));
+				var col = ["type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13"];
+				if (!IsFolderEx(Item)) {
+					col.push("size");
 				}
+				for (var i = 0; i < col.length; i++) {
+					var s = api.PSFormatForDisplay(col[i], Item.ExtendedProperty(col[i]), PDFF_DEFAULT);
+					if (i != 2 || s) {
+						ar.push(api.PSGetDisplayName(col[i]) + ": " + s);
+					} else {
+						ar.push(api.PSGetDisplayName(col[i]) + ": " + q.w + " x " + q.h);
+					}
+				}
+				Addons.TooltipPreview.nCols = col.length;
+				return ar.join("\n");
 			}
 		}
 	});
