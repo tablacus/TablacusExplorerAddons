@@ -8,7 +8,7 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
-		if (Ctrl && Ctrl.Data.Lock) {
+		if (GetLock(Ctrl)) {
 			return;
 		}
 		var hr;
@@ -39,5 +39,5 @@ if (window.Addon == 1) {
 		return hr;
 	});
 } else {
-	SetTabContents(0, "General", '<input type="checkbox" id="Close"><label for="Close">Close</label><br><input type="checkbox" id="Multi"><label for="Multi">Multiple panes</label>');
+	SetTabContents(0, "", '<input type="checkbox" id="Close"><label for="Close">Close</label><br><input type="checkbox" id="Multi"><label for="Multi">Multiple panes</label>');
 }

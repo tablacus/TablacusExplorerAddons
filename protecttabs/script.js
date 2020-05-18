@@ -15,7 +15,7 @@ if (window.Addon == 1) {
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Data.Protect = !FV.Data.Protect;
-				RunEvent1("Lock", FV, FV.Index, FV.Data.Lock);
+				RunEvent1("Lock", FV.Parent, FV.Index, FV.Data.Lock);
 			}
 		}
 	};

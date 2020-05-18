@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.18</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.5.18</MinVersion>
     <pubDate>Mon, 18 May 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
@@ -10,14 +10,10 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Tooltip preview</Name>
-    <Description>Image preview with tooltip.</Description>
+    <Name>Tree view filter</Name>
+    <Description>Tree view filter</Description>
   </en>
   <ja>
-    <Name>ツールチップ プレビュー</Name>
-    <Description>ツールチップで画像プレビュー</Description>
+    <Name>ツリーフィルタ</Name>
   </ja>
-  <zh>
-    <Name>彈出預覽</Name>
-  </zh>
 </TablacusExplorer>

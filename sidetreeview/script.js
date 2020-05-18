@@ -11,8 +11,7 @@ if (window.Addon == 1) {
 		Depth: api.LowPart(item.getAttribute("Depth")),
 		Height: item.getAttribute("Height") || '100%',
 
-		Init: function ()
-		{
+		Init: function () {
 			if (!te.Data["Conf_" + this.Align + "BarWidth"]) {
 				te.Data["Conf_" + this.Align + "BarWidth"] = 178;
 			}
@@ -26,8 +25,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Create: function ()
-		{
+		Create: function () {
 			this.TV = te.CreateCtrl(CTRL_TV);
 			this.TV.Style = te.Data.Tree_Style;
 			this.TV.SetRoot(te.Data.Tree_Root, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle);
@@ -38,8 +36,7 @@ if (window.Addon == 1) {
 				this.tid2 = -1;
 			}
 
-			AddEvent("Resize", function ()
-			{
+			AddEvent("Resize", function () {
 				var o = document.getElementById("sidetreeview");
 				var pt = GetPos(o);
 				api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
@@ -48,27 +45,23 @@ if (window.Addon == 1) {
 					if (Addons.SideTreeView.tid2 != -1) {
 						clearTimeout(Addons.SideTreeView.tid2);
 					}
-					Addons.SideTreeView.tid2 = setTimeout(function ()
-					{
+					Addons.SideTreeView.tid2 = setTimeout(function () {
 						delete Addons.SideTreeView.tid2;
 						Addons.SideTreeView.Expand(te.Ctrl(CTRL_FV));
 					}, 999);
 				}
 			});
 
-			AddEventEx(document, "MSFullscreenChange", function ()
-			{
+			AddEventEx(document, "MSFullscreenChange", function () {
 				Addons.SideTreeView.TV.Visible = !document.msFullscreenElement;
 			});
 
-			AddEvent("Finalize", function ()
-			{
+			AddEvent("Finalize", function () {
 				Addons.SideTreeView.TV.Close();
 			});
 		},
 
-		Expand: function (Ctrl)
-		{
+		Expand: function (Ctrl) {
 			if (Ctrl.FolderItem && !IsSearchPath(Ctrl.FolderItem)) {
 				var TV = Addons.SideTreeView.TV;
 				if (TV && Addons.SideTreeView.TV.Visible) {
@@ -77,8 +70,7 @@ if (window.Addon == 1) {
 						delete Addons.SideTreeView.tid;
 					}
 					TV.Expand(Ctrl.FolderItem, Addons.SideTreeView.Depth);
-					Addons.SideTreeView.tid = setTimeout(function ()
-					{
+					Addons.SideTreeView.tid = setTimeout(function () {
 						delete Addons.SideTreeView.tid;
 						TV.Expand(Ctrl.FolderItem, 0);
 					}, 99);
@@ -87,27 +79,23 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("Create", function (Ctrl)
-	{
+	AddEvent("Create", function (Ctrl) {
 		if (Ctrl.Type == CTRL_TE) {
 			Addons.SideTreeView.Create();
 		}
 	});
 	Addons.SideTreeView.Init();
 
-	AddEvent("Load", function ()
-	{
+	AddEvent("Load", function () {
 		if (Addons.TreeView) {
 			return;
 		}
-		SetGestureExec("Tree", "1", function (Ctrl, pt)
-		{
+		SetGestureExec("Tree", "1", function (Ctrl, pt) {
 			var Item = Ctrl.SelectedItem;
 			if (Item) {
 				var FV = Ctrl.FolderView;
 				if (!api.ILIsEqual(FV.FolderItem, Item)) {
-					setTimeout(function ()
-					{
+					setTimeout(function () {
 						FV.Navigate(Item, GetNavigateFlags(FV));
 					}, 99);
 				}
@@ -115,12 +103,10 @@ if (window.Addon == 1) {
 			return S_OK;
 		}, "Func", true);
 
-		SetGestureExec("Tree", "3", function (Ctrl, pt)
-		{
+		SetGestureExec("Tree", "3", function (Ctrl, pt) {
 			var Item = Ctrl.SelectedItem;
 			if (Item) {
-				setTimeout(function ()
-				{
+				setTimeout(function () {
 					Ctrl.FolderView.Navigate(Item, SBSP_NEWBROWSER);
 				}, 99);
 			}
@@ -128,23 +114,20 @@ if (window.Addon == 1) {
 		}, "Func", true);
 
 		//Tab
-		SetKeyExec("Tree", "$f", function (Ctrl, pt)
-		{
+		SetKeyExec("Tree", "$f", function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			FV.focus();
 			return S_OK;
 		}, "Func", true);
 		//Enter
-		SetKeyExec("Tree", "$1c", function (Ctrl, pt)
-		{
+		SetKeyExec("Tree", "$1c", function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			FV.Navigate(Ctrl.SelectedItem, GetNavigateFlags(FV));
 			return S_OK;
 		}, "Func", true);
 
 		if (WINVER >= 0x600) {
-			AddEvent("AppMessage", function (Ctrl, hwnd, msg, wParam, lParam)
-			{
+			AddEvent("AppMessage", function (Ctrl, hwnd, msg, wParam, lParam) {
 				if (msg == Addons.SideTreeView.WM) {
 					var pidls = {};
 					var hLock = api.SHChangeNotification_Lock(wParam, lParam, pidls);
@@ -156,8 +139,7 @@ if (window.Addon == 1) {
 				}
 			});
 
-			AddEvent("Finalize", function ()
-			{
+			AddEvent("Finalize", function () {
 				api.SHChangeNotifyDeregister(Addons.SideTreeView.uRegisterId);
 			});
 
@@ -166,5 +148,9 @@ if (window.Addon == 1) {
 		}
 	});
 } else {
-	SetTabContents(0, "General", '<div><label>Align</label></div><input type="hidden" name="Align" /><input type="radio" name="_Align" id="Align=0" onclick="SetRadio(this)" /><label for="Align=0">Left</label><input type="radio" name="_Align" id="Align=1" onclick="SetRadio(this)" /><label for="Align=1">Right</label><br><br><label>Style</label><br><input type="checkbox" id="Depth" value="1" /><label for="Depth">Expanded</label><br><input type="checkbox" id="List" value="1" /><label for="List">List</label><br><br><label>Height</label><br><input type="text" name="Height" size="9" />');
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

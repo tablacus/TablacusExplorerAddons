@@ -25,7 +25,7 @@ if (window.Addon == 1) {
 			}
 			var nVerb = FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y);
 			if (nVerb) {
-				FolderMenu.Invoke(Addons.SystemFolders.dir[nVerb - 1], Addons.SystemFolders.wFlags, FV);
+				FV.Navigate(Addons.SystemFolders.dir[nVerb - 1], Addons.SystemFolders.wFlags | GetNavigateFlags(FV));
 			}
 			return S_OK;
 		},

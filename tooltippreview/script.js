@@ -51,6 +51,7 @@ if (window.Addon == 1) {
 							q.z = Math.min(q.z, h1 / q.h);
 							Addons.TooltipPreview.cy = h1 / Addons.TooltipPreview.cyn;
 						}
+						cr = false;
 						var bAnime = false;
 						if (q.image.GetFrameCount() > 1) {
 							var nDelay = q.image.GetFrameMetadata("/grctlext/Delay");
@@ -236,11 +237,14 @@ if (window.Addon == 1) {
 						Addons.TooltipPreview.cx = size.cx * .7;
 						Addons.TooltipPreview.cy = size.cy * .8;
 						api.ReleaseDC(Ctrl.hwndList, hdc);
+					} else {
+						Addons.TooltipPreview.cx = 6;
+						Addons.TooltipPreview.cy = 13;
 					}
 				}
-				Addons.TooltipPreview.cyn = Math.round(q.h * q.z / Addons.TooltipPreview.cy);
+				Addons.TooltipPreview.cyn = Math.max(Math.round(q.h * q.z / Addons.TooltipPreview.cy), 1);
 				var ar = new Array(Addons.TooltipPreview.cyn);
-				Addons.TooltipPreview.cxn = Math.round(q.w * q.z / Addons.TooltipPreview.cx);
+				Addons.TooltipPreview.cxn = Math.max(Math.round(q.w * q.z / Addons.TooltipPreview.cx), 1);
 				ar.push(new Array(Addons.TooltipPreview.cxn).join(" "));
 				var col = ["type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13"];
 				if (!IsFolderEx(Item)) {
