@@ -7,17 +7,15 @@ Addons.WFX =
 	xml: OpenXml("wfx.xml", false, true),
 	dbfile: fso.BuildPath(te.Data.DataFolder, "config\\wfx_" + (wnw.ComputerName.toLowerCase()) + ".bin"),
 
-	IsHandle: function (Ctrl)
-	{
+	IsHandle: function (Ctrl) {
 		return Addons.WFX.GetObject(Ctrl) != null;
 	},
 
-	GetObject: function (Ctrl)
-	{
+	GetObject: function (Ctrl) {
 		if (!Addons.WFX.DLL) {
 			return;
 		}
-		var lib = { file: typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL) };
+		var lib = { file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL) };
 		var re = /^(\\{3})([^\\]*)(.*)/.exec(lib.file);
 		if (!re) {
 			return;
@@ -45,8 +43,7 @@ Addons.WFX =
 		}
 	},
 
-	Init: function ()
-	{
+	Init: function () {
 		Addons.WFX.Obj = {};
 		Addons.WFX.Root = [];
 		Addons.WFX.Obj[""] =
@@ -56,8 +53,7 @@ Addons.WFX =
 				hFind: 0,
 				hash: {},
 
-				FsFindFirst: function (path, wfd)
-				{
+				FsFindFirst: function (path, wfd) {
 					if (Addons.WFX.Root.length) {
 						var hFind = this.hFind++;
 						this.hFind = this.hFind % MAXINT;
@@ -69,8 +65,7 @@ Addons.WFX =
 					return -1;
 				},
 
-				FsFindNext: function (hFind, wfd)
-				{
+				FsFindNext: function (hFind, wfd) {
 					if (isFinite(this.hash[hFind])) {
 						wfd.cFileName = Addons.WFX.Root[this.hash[hFind]++];
 						if (wfd.cFileName) {
@@ -81,15 +76,13 @@ Addons.WFX =
 					return false;
 				},
 
-				FsFindClose: function (hFind)
-				{
+				FsFindClose: function (hFind) {
 					delete this.hash[hFind];
 				},
 
-				FsExecuteFile: function (MainWin, RemoteName, Verb)
-				{
+				FsExecuteFile: function (MainWin, RemoteName, Verb) {
 					if (Verb.toLowerCase() == "properties") {
-						var lib =  Addons.WFX.GetObject('\\\\' + RemoteName[0]);
+						var lib = Addons.WFX.GetObject('\\\\' + RemoteName[0]);
 						if (lib && lib.X) {
 							lib.X.FsExecuteFile(MainWin, ["\\"], Verb);
 						}
@@ -100,7 +93,7 @@ Addons.WFX =
 
 		Addons.WFX.Root = [];
 		var items = Addons.WFX.xml.getElementsByTagName("Item");
-		for (var i = 0; i < items.length; i++) {
+		for (var i = 0; i < items.length; ++i) {
 			var dllPath = (ExtractMacro(te, api.PathUnquoteSpaces(items[i].getAttribute("Path"))) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
 			var WFX = Addons.WFX.DLL.open(dllPath);
 			if (WFX && WFX.FsInit) {
@@ -150,8 +143,7 @@ Addons.WFX =
 		}
 	},
 
-	GetObjectEx: function (Path)
-	{
+	GetObjectEx: function (Path) {
 		var dwSessionId = api.sscanf(Path, fso.BuildPath(fso.GetSpecialFolder(2).Path, "tablacus\\%llx"));
 		if (dwSessionId) {
 			var cFV = te.Ctrls(CTRL_FV);
@@ -168,25 +160,23 @@ Addons.WFX =
 		}
 	},
 
-	Refresh: function (Ctrl)
-	{
+	Refresh: function (Ctrl) {
 		Ctrl.Refresh();
 	},
 
 	StringToVerb: {
-		"paste" : CommandID_PASTE,
+		"paste": CommandID_PASTE,
 		"delete": CommandID_DELETE,
 		"copy": CommandID_COPY,
 		"cut": CommandID_CUT,
 		"properties": CommandID_PROPERTIES,
 	},
 
-	Command: function (Ctrl, Verb, ContextMenu)
-	{
+	Command: function (Ctrl, Verb, ContextMenu) {
 		if (Ctrl && Ctrl.Type <= CTRL_EB) {
 			var lib = Addons.WFX.GetObject(Ctrl);
 			if (lib) {
-				switch (typeof(Verb) == "string" ? Addons.WFX.StringToVerb[Verb.toLowerCase()] : Verb + 1) {
+				switch ("string" === typeof Verb ? Addons.WFX.StringToVerb[Verb.toLowerCase()] : Verb + 1) {
 					case CommandID_PASTE:
 						Addons.WFX.Append(Ctrl, api.OleGetClipboard());
 						return S_OK;
@@ -213,8 +203,7 @@ Addons.WFX =
 		}
 	},
 
-	Append: function (Ctrl, Items)
-	{
+	Append: function (Ctrl, Items) {
 		if (!Items.Count) {
 			return;
 		}
@@ -232,13 +221,13 @@ Addons.WFX =
 				Addons.WFX.Cnt = [0, 0, 0, 0, 0];
 				if (Addons.WFX.LocalList(lib, Items, "", fl) == 0) {
 					Addons.WFX.ShowLine(5954, 32946);
-					for (;fl.length && !Addons.WFX.Progress.HasUserCancelled(); Addons.WFX.Cnt[0]++) {
+					for (; fl.length && !Addons.WFX.Progress.HasUserCancelled(); ++Addons.WFX.Cnt[0]) {
 						var item = fl.shift();
 						var rfn = fso.BuildPath(lib.path, item[0]);
 						Addons.WFX.Cnt[4] = item[3];
 						Addons.WFX.Progress.SetLine(2, item[0], true);
 						if (item[1]) {
-						 	lib.X.FsMkDir(rfn);
+							lib.X.FsMkDir(rfn);
 						} else {
 							FsResult = lib.X.FsPutFile(item[2], rfn, 1);
 							if (FsResult) {
@@ -268,8 +257,7 @@ Addons.WFX =
 		}
 	},
 
-	RemoteList: function (lib, fl, items)
-	{
+	RemoteList: function (lib, fl, items) {
 		var Result = Addons.WFX.Progress.HasUserCancelled();
 		Addons.WFX.Cnt[1] += items.length;
 		while (items.length && !Result) {
@@ -293,7 +281,7 @@ Addons.WFX =
 					if (hFind != -1) {
 						do {
 							if (!api.PathMatchSpec(wfd.cFileName, ".;..")) {
-								Addons.WFX.Cnt[1]++;
+								++Addons.WFX.Cnt[1];
 								Addons.WFX.Unix2Win(wfd);
 								if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 									arDir.push({ path: path, wfd: wfd });
@@ -323,10 +311,9 @@ Addons.WFX =
 		return Result ? 1 : 0;
 	},
 
-	LocalList: function (lib, Items, path, fl)
-	{
+	LocalList: function (lib, Items, path, fl) {
 		Addons.WFX.Cnt[1] += Items.Count;
-		for (var i = 0; i < Items.Count; i++) {
+		for (var i = 0; i < Items.Count; ++i) {
 			if (Addons.WFX.Progress && Addons.WFX.Progress.HasUserCancelled()) {
 				return 1;
 			}
@@ -350,8 +337,7 @@ Addons.WFX =
 		return 0;
 	},
 
-	Delete: function (Ctrl)
-	{
+	Delete: function (Ctrl) {
 		var Items = Ctrl.SelectedItems();
 		if (!Items.Count || !confirmOk("Are you sure?")) {
 			return;
@@ -373,7 +359,7 @@ Addons.WFX =
 				if (Addons.WFX.RemoteList(lib, fl, items) == 0) {
 					Addons.WFX.ShowLine(5955, 32947);
 					Addons.WFX.Cnt[3] = 0;
-					for (;fl.length && !Addons.WFX.Progress.HasUserCancelled(); Addons.WFX.Cnt[0]++) {
+					for (; fl.length && !Addons.WFX.Progress.HasUserCancelled(); ++Addons.WFX.Cnt[0]) {
 						var item = fl.pop();
 						var path = fso.BuildPath(lib.path, item.path);
 						Addons.WFX.Progress.SetLine(2, item.path, true);
@@ -412,9 +398,8 @@ Addons.WFX =
 		}
 	},
 
-	Enum: function (pid, Ctrl, fncb)
-	{
-		var lib =  Addons.WFX.GetObject(pid.Path);
+	Enum: function (pid, Ctrl, fncb) {
+		var lib = Addons.WFX.GetObject(pid.Path);
 		if (Ctrl && lib) {
 			var Items = api.CreateObject("FolderItems");
 			Addons.WFX.Connect(lib);
@@ -423,8 +408,7 @@ Addons.WFX =
 			var hFind = lib.X.FsFindFirst(lib.path, wfd);
 			if (hFind != -1) {
 				do {
-					var fn = wfd.cFileName.replace(/([%\\/:\*\?"<>|]+)/g, function (all, re1)
-					{
+					var fn = wfd.cFileName.replace(/([%\\/:\*\?"<>|]+)/g, function (all, re1) {
 						return escape(re1);
 					});
 					if (!/^\.\.?$|^$/.test(fn)) {
@@ -438,15 +422,13 @@ Addons.WFX =
 		}
 	},
 
-	ReplaceColumns: function (Ctrl, pid, s)
-	{
+	ReplaceColumns: function (Ctrl, pid, s) {
 		if (s.indexOf("%") >= 0) {
 			return unescape(s);
 		}
 	},
 
-	CreateFolder: function (path)
-	{
+	CreateFolder: function (path) {
 		var s = fso.GetParentFolderName(path);
 		if (s.length > 3 && !fso.FolderExists(s)) {
 			this.CreateFolder(s);
@@ -456,8 +438,7 @@ Addons.WFX =
 		}
 	},
 
-	ChangeNotify: function (path)
-	{
+	ChangeNotify: function (path) {
 		var strMatch = path + ";" + path + "\\*";
 		var cFV = te.Ctrls(CTRL_FV);
 		for (var i in cFV) {
@@ -467,17 +448,18 @@ Addons.WFX =
 					if (Addons.WFX.tidNotify[FV.Id]) {
 						clearTimeout(Addons.WFX.tidNotify[FV.Id]);
 					}
-					(function (FV) { Addons.WFX.tidNotify[FV.Id] = setTimeout(function () {
-						delete Addons.WFX.tidNotify[FV.Id];
-						FV.Refresh();
-					}, 500);}) (FV);
+					(function (FV) {
+						Addons.WFX.tidNotify[FV.Id] = setTimeout(function () {
+							delete Addons.WFX.tidNotify[FV.Id];
+							FV.Refresh();
+						}, 500);
+					})(FV);
 				}
 			}
 		}
 	},
 
-	Connect: function (lib)
-	{
+	Connect: function (lib) {
 		if (lib.X.FsDisconnect) {
 			var re = /^\\([^\\]+)/.exec(lib.path);
 			if (re) {
@@ -486,8 +468,7 @@ Addons.WFX =
 		}
 	},
 
-	CheckDisconnect: function (Ctrl)
-	{
+	CheckDisconnect: function (Ctrl) {
 		var bOk = true;
 		for (var i in Addons.WFX.Use) {
 			bOk = false;
@@ -499,13 +480,12 @@ Addons.WFX =
 		if (Addons.WFX.tidClose) {
 			clearTimeout(Addons.WFX.tidClose);
 		}
-		Addons.WFX.tidClose = setTimeout(function ()
-		{
+		Addons.WFX.tidClose = setTimeout(function () {
 			var Use = {};
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
 				var FV = cFV[i];
-				if (FV.hwndView) {
+				if (FV.hwndView && FV.FolderItem) {
 					var re = /^(\\{3}[^\\]+\\[^\\]+)/.exec(FV.FolderItem.Path);
 					if (re) {
 						Use[re[1]] = 1;
@@ -524,8 +504,7 @@ Addons.WFX =
 		}, 999);
 	},
 
-	DefaultCommand: function (Ctrl, Selected)
-	{
+	DefaultCommand: function (Ctrl, Selected) {
 		if (Selected.Count) {
 			var Item = Selected.Item(0);
 			var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
@@ -564,8 +543,7 @@ Addons.WFX =
 		}
 	},
 
-	SetName: function (pid, Name)
-	{
+	SetName: function (pid, Name) {
 		var lib = Addons.WFX.GetObjectEx(pid.Path);
 		if (lib && lib.X.FsRenMovFile) {
 			Addons.WFX.Connect(lib);
@@ -587,8 +565,7 @@ Addons.WFX =
 			if (r == 0) {
 				Addons.WFX.ChangeNotify(fso.BuildPath(lib.root, lib.path));
 			} else {
-				setTimeout(function ()
-				{
+				setTimeout(function () {
 					Addons.WFX.ShowError(r, fn);
 				}, 99);
 			}
@@ -596,13 +573,11 @@ Addons.WFX =
 		}
 	},
 
-	ShowError: function (r, path)
-	{
+	ShowError: function (r, path) {
 		if (r == 5) {
 			return;
 		}
-		setTimeout(function ()
-		{
+		setTimeout(function () {
 			if (isFinite(r)) {
 				var o = [0, 6327, 6146, 6175, 6173, 28743, 16771];
 				MessageBox(api.LoadString(hShell32, o[r]) || api.sprintf(999, api.LoadString(hShell32, 4228), r), TITLE, MB_OK);
@@ -612,21 +587,19 @@ Addons.WFX =
 		}, 500);
 	},
 
-	ShowLine: function (s1, s2)
-	{
+	ShowLine: function (s1, s2) {
 		var i = Addons.WFX.Cnt[1];
 		var s3 = 6466;
-		if (document.documentMode > 8) {
+		if (g_.IEVer > 8) {
 			s3 = i > 1 ? 38192 : 38193;
 			if (i > 999) {
 				i = i.toLocaleString();
 			}
 		}
-		this.Progress.SetLine(1, [api.LoadString(hShell32, s1) || api.LoadString(hShell32, s2), " ", (api.LoadString(hShell32, s3) || "%s items").replace(/%1!ls!|%s/g, i), " (", api.StrFormatByteSize(Addons.WFX.Cnt[3]) ,")"].join(""), true);
+		this.Progress.SetLine(1, [api.LoadString(hShell32, s1) || api.LoadString(hShell32, s2), " ", (api.LoadString(hShell32, s3) || "%s items").replace(/%1!ls!|%s/g, i), " (", api.StrFormatByteSize(Addons.WFX.Cnt[3]), ")"].join(""), true);
 	},
 
-	ProgressProc: function (PluginNr, SourceName, TargetName, PercentDone)
-	{
+	ProgressProc: function (PluginNr, SourceName, TargetName, PercentDone) {
 		if (Addons.WFX.Progress) {
 			var i = Addons.WFX.Cnt[1] - Addons.WFX.Cnt[0];
 			if (i > 999 && document.documentMode > 8) {
@@ -648,8 +621,7 @@ Addons.WFX =
 		return 0;
 	},
 
-	LogProc: function (PluginNr, MsgType, LogString)
-	{
+	LogProc: function (PluginNr, MsgType, LogString) {
 		if (Addons.Debug) {
 			Addons.Debug.alert(LogString);
 		} else {
@@ -657,8 +629,7 @@ Addons.WFX =
 		}
 	},
 
-	RequestProc: function (PluginNr, RequestType, CustomTitle, CustomText, pReturnedText)
-	{
+	RequestProc: function (PluginNr, RequestType, CustomTitle, CustomText, pReturnedText) {
 		if (RequestType < 8) {
 			pReturnedText[0] = InputDialog([CustomTitle || TITLE, CustomText].join("\n"), pReturnedText[0]);
 			return 1;
@@ -676,8 +647,7 @@ Addons.WFX =
 		return 1;
 	},
 
-	CryptProc: function (PluginNr, CryptoNumber, mode, ConnectionName, pPassword)
-	{
+	CryptProc: function (PluginNr, CryptoNumber, mode, ConnectionName, pPassword) {
 		var db = Addons.WFX.pdb[Addons.WFX.Root[PluginNr - 1]];
 		if (!db) {
 			Addons.WFX.pdb[Addons.WFX.Root[PluginNr - 1]] = db = {};
@@ -717,8 +687,7 @@ Addons.WFX =
 		return 6;
 	},
 
-	ED: function (s)
-	{
+	ED: function (s) {
 		var ar = s.split("").reverse();
 		for (var i in ar) {
 			ar[i] = String.fromCharCode(ar[i].charCodeAt(0) ^ 13);
@@ -726,8 +695,7 @@ Addons.WFX =
 		return ar.join("");
 	},
 
-	Unix2Win: function (wfd)
-	{
+	Unix2Win: function (wfd) {
 		if (wfd.dwFileAttributes < 0) {
 			if (wfd.dwReserved0 & 0x6000) {
 				wfd.dwFileAttributes |= FILE_ATTRIBUTE_DIRECTORY;
@@ -738,21 +706,18 @@ Addons.WFX =
 		}
 	},
 
-	Properties: function (Ctrl)
-	{
-		var lib =  Addons.WFX.GetObject(Ctrl);
+	Properties: function (Ctrl) {
+		var lib = Addons.WFX.GetObject(Ctrl);
 		if (lib && lib.X) {
 			lib.X.FsExecuteFile(te.hwnd, ["\\"], "properties");
 		}
 	},
 
-	ArrayProc: function ()
-	{
+	ArrayProc: function () {
 		return [];
 	},
 
-	Finalize: function ()
-	{
+	Finalize: function () {
 		for (var i in Addons.WFX.Use) {
 			var re = /^\\{3}([^\\]+)(.+)/.exec(i);
 			if (re) {
@@ -771,24 +736,21 @@ if (window.Addon == 1) {
 
 	AddEvent("Finalize", Addons.WFX.Finalize);
 
-	AddEvent("TranslatePath", function (Ctrl, Path)
-	{
+	AddEvent("TranslatePath", function (Ctrl, Path) {
 		if (Addons.WFX.IsHandle(Path)) {
 			Ctrl.Enum = Addons.WFX.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
 
-	AddEvent("ReplacePath", function (FolderItem, Path)
-	{
+	AddEvent("ReplacePath", function (FolderItem, Path) {
 		var lib = Addons.WFX.GetObjectEx(Path);
 		if (lib) {
 			return fso.BuildPath(lib.root, fso.BuildPath(lib.path, lib.file));
 		}
 	});
 
-	AddEvent("BeginDrag", function (Ctrl)
-	{
+	AddEvent("BeginDrag", function (Ctrl) {
 		if (Addons.WFX.IsHandle(Ctrl)) {
 			var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 			api.SHDoDragDrop(null, Ctrl.SelectedItems(), Ctrl, pdwEffect[0], pdwEffect, true);
@@ -796,15 +758,14 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("BeforeGetData", function (Ctrl, Items, nMode)
-	{
+	AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 		if (!Items.Count) {
 			return;
 		}
 		var hr = S_OK;
 		var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, "tablacus");
 		var ar = [], fl = [];
-		for (var i = Items.Count; i-- ;) {
+		for (var i = Items.Count; i--;) {
 			var path = Items.Item(i).Path;
 			if (api.PathMatchSpec(path, root + "*") && !fso.FileExists(path)) {
 				ar.unshift(Items.Item(i));
@@ -827,7 +788,7 @@ if (window.Addon == 1) {
 				Addons.WFX.Cnt = [0, 0, 0, 0, 0];
 				if (Addons.WFX.RemoteList(lib, fl, ar) == 0) {
 					Addons.WFX.ShowLine(5954, 32946);
-					for (;fl.length && !Addons.WFX.Progress.HasUserCancelled(); Addons.WFX.Cnt[0]++) {
+					for (; fl.length && !Addons.WFX.Progress.HasUserCancelled(); ++Addons.WFX.Cnt[0]) {
 						var item = fl.shift();
 						var path = fso.BuildPath(lib.path, item.path);
 						var lfn = fso.BuildPath(root, item.path);
@@ -863,8 +824,7 @@ if (window.Addon == 1) {
 		return hr;
 	});
 
-	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
-	{
+	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 		var lib = Addons.WFX.GetObject(Ctrl);
 		if (lib) {
 			var ar = [];
@@ -881,8 +841,7 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	AddEvent("Background", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
-	{
+	AddEvent("Background", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 		var lib = Addons.WFX.GetObject(Ctrl);
 		if (lib) {
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 33555));
@@ -891,16 +850,14 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
-	{
+	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 		var hr = Addons.WFX.Command(Ctrl, wParam & 0xfff);
 		if (isFinite(hr)) {
 			return hr;
 		}
 	}, true);
 
-	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
-	{
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 		var hr = Addons.WFX.Command(ContextMenu.FolderView, Verb, ContextMenu);
 		if (isFinite(hr)) {
 			return hr;
@@ -909,8 +866,7 @@ if (window.Addon == 1) {
 
 	AddEvent("DefaultCommand", Addons.WFX.DefaultCommand, true);
 
-	AddEvent("ILGetParent", function (FolderItem)
-	{
+	AddEvent("ILGetParent", function (FolderItem) {
 		var path = FolderItem.Path;
 		var re = /^(\\{3})([^\\]*)(.*)/.exec(path);
 		if (re) {
@@ -924,8 +880,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
 			if (Addons.WFX.IsHandle(Ctrl)) {
 				return S_OK;
@@ -933,8 +888,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
 			if (Addons.WFX.IsHandle(Ctrl)) {
 				pdwEffect[0] = DROPEFFECT_COPY;
@@ -943,43 +897,37 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Addons.WFX.IsHandle(Ctrl)) {
 			Addons.WFX.Append(Ctrl, dataObj);
 			return S_OK;
 		}
 	});
 
-	AddEvent("DragLeave", function (Ctrl)
-	{
+	AddEvent("DragLeave", function (Ctrl) {
 		return S_OK;
 	});
 
-	AddEvent("AddonDisabled", function (Id)
-	{
+	AddEvent("AddonDisabled", function (Id) {
 		if (Id.toLowerCase() == "wfx") {
 			Addons.WFX.Finalize();
 		}
 	});
 
-	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
-	{
+	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 		if (Ctrl.Type <= CTRL_EB && Addons.WFX.IsHandle(Prev)) {
 			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(999, "tablacus\\%x", Ctrl.SessionId));
 			DeleteItem(root);
 		}
 	});
 
-	AddEvent("ViewCreated", function (Ctrl)
-	{
+	AddEvent("ViewCreated", function (Ctrl) {
 		if (Addons.WFX.IsHandle(Ctrl)) {
 			ColumnsReplace(Ctrl, "Name", HDF_LEFT, Addons.WFX.ReplaceColumns);
 		}
 	});
 
-	AddEvent("BeginLabelEdit", function (Ctrl)
-	{
+	AddEvent("BeginLabelEdit", function (Ctrl) {
 		if (Ctrl.Type <= CTRL_EB) {
 			var lib = Addons.WFX.GetObject(Ctrl, lib);
 			if (lib && !lib.X.FsRenMovFile) {
@@ -988,8 +936,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("EndLabelEdit", function (Ctrl, Name)
-	{
+	AddEvent("EndLabelEdit", function (Ctrl, Name) {
 		if (Ctrl.Type <= CTRL_EB && Name) {
 			var lib = Addons.WFX.GetObject(Ctrl, lib);
 			if (lib && lib.X.FsRenMovFile) {
@@ -1004,8 +951,7 @@ if (window.Addon == 1) {
 
 	AddEvent("SetName", Addons.WFX.SetName);
 
-	AddEvent("CreateFolder", function (path)
-	{
+	AddEvent("CreateFolder", function (path) {
 		var lib = Addons.WFX.GetObject(path);
 		if (lib) {
 			if (lib.X.FsMkDir && lib.X.FsMkDir(lib.path)) {
@@ -1017,8 +963,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("CreateFile", function (path)
-	{
+	AddEvent("CreateFile", function (path) {
 		var lib = Addons.WFX.GetObject(path);
 		if (lib) {
 			if (lib.X.FsPutFile) {
@@ -1036,8 +981,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("SetFileTime", function (path, ctime, atime, mtime)
-	{
+	AddEvent("SetFileTime", function (path, ctime, atime, mtime) {
 		var lib = Addons.WFX.GetObjectEx(path);
 		if (lib && lib.X.FsSetTime) {
 			Addons.WFX.Connect(lib);
@@ -1049,8 +993,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("SetFileAttributes", function (path, attr)
-	{
+	AddEvent("SetFileAttributes", function (path, attr) {
 		var lib = Addons.WFX.GetObjectEx(path);
 		if (lib && lib.X.FsSetAttr) {
 			Addons.WFX.Connect(lib);
@@ -1062,8 +1005,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("ToolTip", function (Ctrl, Index)
-	{
+	AddEvent("ToolTip", function (Ctrl, Index) {
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Addons.WFX.IsHandle(Ctrl)) {
 				var Item = Ctrl.Items.Item(Index);
@@ -1075,8 +1017,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
-	{
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
 		if (document.documentMode) {
 			var lib = Addons.WFX.GetObject(Ctrl);
 			if (lib) {
@@ -1096,15 +1037,13 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("AddItems", function (Items, pid)
-	{
+	AddEvent("AddItems", function (Items, pid) {
 		if (api.ILIsEqual(pid, ssfDRIVES)) {
 			Items.AddItem("\\\\\\");
 		}
 	});
 
-	AddEvent("SaveConfig", function ()
-	{
+	AddEvent("SaveConfig", function () {
 		if (Addons.WFX.bSave) {
 			var ar = [];
 			for (var i in Addons.WFX.pdb) {
@@ -1123,15 +1062,14 @@ if (window.Addon == 1) {
 				ado.SaveToFile(Addons.WFX.dbfile, adSaveCreateOverWrite);
 				ado.Close();
 				Addons.WFX.bSave = false;
-			} catch (e) {}
+			} catch (e) { }
 		}
 	});
 
 	AddEvent("CloseView", Addons.WFX.CheckDisconnect);
 	AddEvent("ChangeView", Addons.WFX.CheckDisconnect);
 
-	AddEvent("ColumnClick", function (Ctrl, iItem)
-	{
+	AddEvent("ColumnClick", function (Ctrl, iItem) {
 		if (Ctrl.Type <= CTRL_EB && !Addons.WFX.NoExSort) {
 			if (Addons.WFX.IsHandle(Ctrl)) {
 				var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
@@ -1149,14 +1087,12 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Sort", function (Ctrl)
-	{
+	AddEvent("Sort", function (Ctrl) {
 		if (Ctrl.Type <= CTRL_EB && !Addons.WFX.NoExSort) {
 			if (Addons.WFX.IsHandle(Ctrl)) {
 				var s1 = Ctrl.SortColumns;
 				if (/^prop:\-?System\.ItemNameDisplay;$|^prop:\-?System\.DateModified;$/.test(s1)) {
-					setTimeout(function ()
-					{
+					setTimeout(function () {
 						Ctrl.SortColumns = s1 + 'System.ItemTypeText;';
 					}, 99);
 				}
