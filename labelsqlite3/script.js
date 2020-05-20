@@ -29,7 +29,7 @@ Addons.LabelSQLite3 =
 		for (var i = ix.length; i--;) {
 			list[ix[i]] = true;
 		}
-		db.sqlite3_exec("CREATE TABLE IF NOT EXISTS list (label TEXT);");
+		db.sqlite3_exec("CREATE TABLE IF NOT EXISTS list (label TEXT PRIMARY KEY);");
 		db.sqlite3_exec('DELETE FROM list');
 		for (var i in list) {
 			db.sqlite3_exec('INSERT INTO list(label) VALUES ("' + i + '");');
@@ -37,9 +37,9 @@ Addons.LabelSQLite3 =
 	},
 
 	Open: function () {
-		Addons.LabelSQLite3.db = Addons.LabelSQLite3.DLL.Open(api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Path" + (api.sizeof("HANDLE") * 8)) || 'sqlite3.dll')));
+		Addons.LabelSQLite3.db = Addons.LabelSQLite3.DLL.Open(api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Path" + (api.sizeof("HANDLE") * 8)) || 'winsqlite3.dll')));
 		if (Addons.LabelSQLite3.db && Addons.LabelSQLite3.db.sqlite3_open && Addons.LabelSQLite3.db.sqlite3_open(Addons.LabelSQLite3.DBFILE) == 0) {
-			Addons.LabelSQLite3.db.sqlite3_exec("CREATE TABLE IF NOT EXISTS labels (path TEXT, label TEXT);");
+			Addons.LabelSQLite3.db.sqlite3_exec("CREATE TABLE IF NOT EXISTS labels (path TEXT PRIMARY KEY, label TEXT);");
 			Addons.LabelSQLite3.Open = function () { };
 			AddEvent("Finalize", Addons.LabelSQLite3.Close);
 			return;

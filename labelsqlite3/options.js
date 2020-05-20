@@ -1,6 +1,6 @@
 var s = ['<input type="button" value="Load" onclick="Addons.LabelSQLite3.Import()"><br><input type="button" value="Save" onclick="Addons.LabelSQLite3.Export()"><br><br>'];
 for (var i = 32; i <= 64; i += 32) {
-	s.push('<label>Path</label> (sqlite3.dll) <label>', i, '-bit</label><br><input type="text" name="Path', i, '" style="width: 100%" onchange="Addons.LabelSQLite3.Info()"><br>');
+	s.push('<label>Path</label> (sqlite3.dll) <label>', i, '-bit</label><br><input type="text" name="Path', i, '" placeholder="winsqlite3.dll" style="width: 100%" onchange="Addons.LabelSQLite3.Info()"><br>');
 	s.push('<input type="button" value="Browse..." onclick="RefX(\'Path', i, '\', false, this, true, \'*.dll\')">');
 	s.push('<input type="button" value="Portable" onclick="PortableX(\'Path', i, '\')"><br><br>');
 }
@@ -31,19 +31,18 @@ Addons.LabelSQLite3.Export = function () {
 }
 
 Addons.LabelSQLite3.Info = function () {
-	SPI = null;
-	var dllPath = api.PathUnquoteSpaces(ExtractMacro(te, document.F.elements["Path" + (api.sizeof("HANDLE") * 8)].value) || 'sqlite3.dll');
-	if (Addons.LabelSQLite3.DLL) {
-		SPI = Addons.LabelSQLite3.DLL.Open(dllPath);
-	}
-	if (!SPI) {
-		SPI = {};
-	}
+	var dllPath = api.PathUnquoteSpaces(ExtractMacro(te, document.F.elements["Path" + (api.sizeof("HANDLE") * 8)].value) || 'winsqlite3.dll');
+	var hDll = api.LoadLibraryEx(dllPath, 0, 0);
 	var arProp = ["sqlite3_open", "sqlite3_close", "sqlite3_exec"];
 	var arHtml = [];
-	for (var i in arProp) {
-		arHtml.push('<input type="checkbox" ', SPI[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i], '<br>');
+	for (var i = 0; i < arProp.length; ++i) {
+		arHtml.push('<input type="checkbox" ');
+		if (api.GetProcAddress(hDll, arProp[i])) {
+			arHtml.push("checked");
+		}
+		arHtml.push(' onclick="return false;">', arProp[i], '<br>');
 	}
+	api.FreeLibrary(hDll);
 	document.getElementById("Info").innerHTML = arHtml.join("");
 }
 

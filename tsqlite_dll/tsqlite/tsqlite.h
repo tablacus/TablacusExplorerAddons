@@ -1,10 +1,9 @@
 #include "resource.h"
 #include <windows.h>
 #include <dispex.h>
+#include <vector>
 #include <shlwapi.h>
 #pragma comment (lib, "shlwapi.lib")
-
-#define SIZE_BUFF 32768
 
 struct TEmethod
 {
@@ -59,12 +58,19 @@ typedef struct sqlite3 sqlite3;
 
 //SQLite3 callback
 typedef int (__cdecl *LPFN_sqlite3_callback)(void *pArg, int argc, char **argv, char **columnNames);
+//winsqlite3.dll
+typedef int(__stdcall *LPFN_win_sqlite3_callback)(void *pArg, int argc, char **argv, char **columnNames);
 
 // SQLite3 functions
 typedef int (__cdecl *LPFN_sqlite3_open)(char *, sqlite3 **);
 typedef int (__cdecl *LPFN_sqlite3_exec)(sqlite3 *, const char *, LPFN_sqlite3_callback, void *, char **);
 typedef int (__cdecl *LPFN_sqlite3_close)(sqlite3 *);
 typedef int (__cdecl *LPFN_sqlite3_free)(char *);
+//winsqlite3.dll
+typedef int(__stdcall *LPFN_win_sqlite3_open)(char *, sqlite3 **);
+typedef int(__stdcall *LPFN_win_sqlite3_exec)(sqlite3 *, const char *, LPFN_win_sqlite3_callback, void *, char **);
+typedef int(__stdcall *LPFN_win_sqlite3_close)(sqlite3 *);
+typedef int(__stdcall *LPFN_win_sqlite3_free)(char *);
 
 // SQLite3 Wrapper Object
 class CteSQLite : public IDispatch
@@ -86,16 +92,17 @@ public:
 	VOID SetChangeVolProc(HANDLE hArcData);
 	VOID SetProcessDataProc(HANDLE hArcData);
 
-	LPFN_sqlite3_open sqlite3_open;
-	LPFN_sqlite3_exec sqlite3_exec;
-	LPFN_sqlite3_close sqlite3_close;
-	LPFN_sqlite3_free sqlite3_free;
+	FARPROC sqlite3_open;
+	FARPROC sqlite3_exec;
+	FARPROC sqlite3_close;
+	FARPROC sqlite3_free;
 
 	HMODULE		m_hDll;
 	BSTR		m_bsLib;
 private:
 	sqlite3		*m_pSQLite3;
 	LONG		m_cRef;
+	BOOL		m_bWinSQLite3;
 };
 
 // Base Object

@@ -5,9 +5,9 @@
 		var TC = Ctrl.Parent;
 		for (var i = TC.Count; i-- > 0;) {
 			var Item = TC.Item(i);
-			if (Ctrl.hwnd != Item.hwnd && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
+			if (Ctrl.Id != Item.Id && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
 				if (CanClose(Item)) {
-					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.hwnd == Ctrl.hwnd) {
+					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.Id == Ctrl.Id) {
 						(function (TC, i, Item, Selected) {
 							setTimeout(function () {
 								TC.SelectedIndex = i;

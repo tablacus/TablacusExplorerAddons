@@ -1,7 +1,21 @@
 <label>Number of items</label><br>
-<input type="text" name="Items" placeholder="30" style="width: 100%"><br>
+<input type="text" name="Items" placeholder="1000" style="width: 100%"><br>
 <label><input type="checkbox" name="Expanded">Expanded</label><br>
 <label>Filter</label><br>
-<input type="text" name="Filter" placeholder="*" style="width: 100%">
+<input type="text" name="Filter" placeholder="*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.ico" style="width: 100%">
 <label>Disable</label><br>
 <input type="text" name="Invalid" style="width: 100%">
+<br>
+<!--panel-->
+<label><input type="checkbox" name="Cache">Enable</label><br>
+<br>
+<label>Path</label> (sqlite3.dll) <label>32-bit</label><br>
+<input type="text" name="SQLite32" placeholder="winsqlite3.dll" style="width: 100%" onchange="Addons.FolderImage.Info()"><br>
+<input type="button" value="Browse..." onclick="RefX('SQLite32', false, this, true, '*.dll')">
+<input type="button" value="Portable" onclick="PortableX('SQLite32')"><br>
+<br>
+<label>Path</label> (sqlite3.dll) <label>64-bit</label><br>
+<input type="text" name="SQLite64" placeholder="winsqlite3.dll" style="width: 100%" onchange="Addons.FolderImage.Info()"><br>
+<input type="button" value="Browse..." onclick="RefX('SQLite64', false, this, true, '*.dll')">
+<input type="button" value="Portable" onclick="PortableX('SQLite64')"><br>
+<br>

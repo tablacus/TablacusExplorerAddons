@@ -18,8 +18,8 @@ if (window.Addon == 1) {
 			var TC = cTC[j];
 			for (var i = TC.Count; i-- > 0;) {
 				var Item = TC[i];
-				if (Item.Data.Lock && Ctrl.hwnd != Item.hwnd && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
-					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.hwnd == Ctrl.hwnd) {
+				if (Item.Data.Lock && Ctrl.Id != Item.Id && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
+					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.Id == Ctrl.Id) {
 						(function (TC, i, Item, Selected) {
 							setTimeout(function () {
 								if (TC.Id != TC1.Id) {

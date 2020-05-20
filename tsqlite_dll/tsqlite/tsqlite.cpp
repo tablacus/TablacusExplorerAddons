@@ -12,7 +12,7 @@ const TCHAR g_szClsid[] = TEXT("{CAC858A3-6D0C-4E03-A609-880C7F04BBDA}");
 HINSTANCE	g_hinstDll = NULL;
 LONG		g_lLocks = 0;
 CteBase		*g_pBase = NULL;
-CteSQLite	*g_pObject = NULL;
+std::vector <CteSQLite*> g_ppObject;
 IDispatch	*g_pdispProgressProc = NULL;
 
 TEmethod methodBASE[] = {
@@ -37,19 +37,6 @@ VOID SafeRelease(PVOID ppObj)
 			*ppunk = NULL;
 		}
 	} catch (...) {}
-}
-
-VOID teGetProcAddress(HMODULE hModule, LPSTR lpName, FARPROC *lpfnA, FARPROC *lpfnW)
-{
-	*lpfnA = GetProcAddress(hModule, lpName);
-	if (lpfnW) {
-		char pszProcName[80];
-		strcpy_s(pszProcName, 80, lpName);
-		strcat_s(pszProcName, 80, "W");
-		*lpfnW = GetProcAddress(hModule, (LPCSTR)pszProcName);
-	} else if (lpfnW) {
-		*lpfnW = NULL;
-	}
 }
 
 void LockModule(BOOL bLock)
@@ -586,7 +573,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 			g_hinstDll = hinstDll;
 			break;
 		case DLL_PROCESS_DETACH:
-			SafeRelease(&g_pObject);
+			for (size_t i = g_ppObject.size(); i--;) {
+				SafeRelease(&g_ppObject[i]);
+			}
+			g_ppObject.clear();
 			SafeRelease(&g_pBase);
 			SafeRelease(&g_pdispProgressProc);
 			break;
@@ -708,6 +698,11 @@ int __cdecl sqlite3_callback(void *pArg, int argc, char **argv, char **columnNam
 	return iResult;
 }
 
+int __stdcall win_sqlite3_callback(void *pArg, int argc, char **argv, char **columnNames)
+{
+	return sqlite3_callback(pArg, argc, argv, columnNames);
+}
+
 //CteSQLite
 
 CteSQLite::CteSQLite(HMODULE hDll, LPWSTR lpLib)
@@ -716,17 +711,23 @@ CteSQLite::CteSQLite(HMODULE hDll, LPWSTR lpLib)
 	m_hDll = hDll;
 	m_bsLib = ::SysAllocString(lpLib);
 	m_pSQLite3 = NULL;
+	m_bWinSQLite3 = PathMatchSpec(lpLib, L"*winsqlite3.dll");
 
-	teGetProcAddress(m_hDll, "sqlite3_open", (FARPROC *)&sqlite3_open, NULL);
-	teGetProcAddress(m_hDll, "sqlite3_exec", (FARPROC *)&sqlite3_exec, NULL);
-	teGetProcAddress(m_hDll, "sqlite3_close", (FARPROC *)&sqlite3_close, NULL);
-	teGetProcAddress(m_hDll, "sqlite3_free", (FARPROC *)&sqlite3_free, NULL);
+	sqlite3_open = GetProcAddress(m_hDll, "sqlite3_open");
+	sqlite3_close = GetProcAddress(m_hDll, "sqlite3_close");
+	sqlite3_exec = GetProcAddress(m_hDll, "sqlite3_exec");
+	sqlite3_free = GetProcAddress(m_hDll, "sqlite3_free");
 }
 
 CteSQLite::~CteSQLite()
 {
 	Close();
-	g_pObject = NULL;
+	for (size_t i = g_ppObject.size(); i--;) {
+		if (this == g_ppObject[i]) {
+			g_ppObject.erase(g_ppObject.begin() + i);
+			break;
+		}
+	}
 }
 
 VOID CteSQLite::Close()
@@ -792,7 +793,11 @@ STDMETHODIMP CteSQLite::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD
 				if (nArg >= 0 && sqlite3_open) {
 					LPSTR lpFile = teWide2Ansi(GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]), -1, CP_UTF8);
 					if (lpFile) {
-						iResult = sqlite3_open(lpFile, &m_pSQLite3);
+						if (m_bWinSQLite3) {
+							iResult = ((LPFN_win_sqlite3_open)sqlite3_open)(lpFile, &m_pSQLite3);
+						} else {
+							iResult = ((LPFN_sqlite3_open)sqlite3_open)(lpFile, &m_pSQLite3);
+						}
 						teFreeAnsiString(&lpFile);
 					}
 					teSetLong(pVarResult, iResult);
@@ -803,8 +808,15 @@ STDMETHODIMP CteSQLite::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD
 			//sqlite3_close
 			case 0x60010002:
 				if (wFlags != DISPATCH_PROPERTYGET && sqlite3_close) {
-					teSetLong(pVarResult, sqlite3_close(m_pSQLite3));
-					m_pSQLite3 = NULL;
+					if (m_pSQLite3) {
+						if (m_bWinSQLite3) {
+							iResult = ((LPFN_win_sqlite3_close)sqlite3_close)(m_pSQLite3);
+						} else {
+							iResult = ((LPFN_sqlite3_close)sqlite3_close)(m_pSQLite3);
+						}
+						m_pSQLite3 = NULL;
+					}
+					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
 					teSetBool(pVarResult, sqlite3_open != NULL);
 				}
@@ -825,7 +837,11 @@ STDMETHODIMP CteSQLite::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD
 							FindUnknown(&pDispParams->rgvarg[nArg - 1], &cb.punkCallback);
 							FindUnknown(&pDispParams->rgvarg[nArg - 2], &cb.punkDB);
 						}
-						iResult = sqlite3_exec(m_pSQLite3, lpExec, sqlite3_callback, &cb, &lpErr);
+						if (m_bWinSQLite3) {
+							iResult = ((LPFN_win_sqlite3_exec)sqlite3_exec)(m_pSQLite3, lpExec, win_sqlite3_callback, &cb, &lpErr);
+						} else {
+							iResult = ((LPFN_sqlite3_exec)sqlite3_exec)(m_pSQLite3, lpExec, sqlite3_callback, &cb, &lpErr);
+						}
 						if (nValue) {
 							iResult = -1;
 						}
@@ -839,7 +855,11 @@ STDMETHODIMP CteSQLite::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD
 								tePutProperty(punk, L"0", &v);
 								VariantClear(&v);
 							}
-							sqlite3_free(lpErr);
+							if (m_bWinSQLite3) {
+								((LPFN_win_sqlite3_free)sqlite3_free)(lpErr);
+							} else {
+								((LPFN_sqlite3_free)sqlite3_free)(lpErr);
+							}
 						}
 					}
 					if (iResult >= 0 && pVarResult) {
@@ -924,21 +944,35 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 		case 0x60010000:
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				if (!g_pObject || lstrcmpi(lpLib, g_pObject->m_bsLib)) {
-					HMODULE hDll = LoadLibrary(lpLib);
-					if (hDll) {
-						SafeRelease(&g_pObject);
-						g_pObject = new CteSQLite(hDll, lpLib);
+				CteSQLite *pItem;
+				for (size_t i = g_ppObject.size(); i--;) {
+					pItem = g_ppObject[i];
+					if (lstrcmpi(lpLib, pItem->m_bsLib) == 0) {
+						teSetObject(pVarResult, pItem);
+						return S_OK;
 					}
 				}
-				teSetObjectRelease(pVarResult, g_pObject);
+				HMODULE hDll = LoadLibrary(lpLib);
+				if (hDll) {
+					pItem = new CteSQLite(hDll, lpLib);
+					g_ppObject.push_back(pItem);
+					teSetObjectRelease(pVarResult, pItem);
+				}
 			}
 			return S_OK;
 		//Close
 		case 0x6001000C:
-			if (g_pObject) {
-				g_pObject->Close();
-				SafeRelease(&g_pObject);
+			if (nArg >= 0) {
+				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
+
+				for (size_t i = g_ppObject.size(); i--;) {
+					if (lstrcmpi(lpLib, g_ppObject[i]->m_bsLib) == 0) {
+						g_ppObject[i]->Close();
+						SafeRelease(&g_ppObject[i]);
+						g_ppObject.erase(g_ppObject.begin() + i);
+						break;
+					}
+				}
 			}
 			return S_OK;
 		//this
