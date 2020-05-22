@@ -6,7 +6,10 @@ if (ado) {
 
 Addons.FolderMenuFilter = {
 	AddPath: function (path) {
-		var path = api.PathUnquoteSpaces(path);
+		if (!path) {
+			return;
+		}
+		path = api.PathUnquoteSpaces(path);
 		if (api.GetKeyState(VK_SHIFT) < 0) {
 			path = fso.BuildPath("*", fso.GetFileName(path));
 		}

@@ -6,6 +6,9 @@ if (ado) {
 
 Addons.TreeViewFilter = {
 	AddPath: function (path) {
+		if (!path) {
+			return;
+		}
 		path = path.Path || api.PathUnquoteSpaces(path);
 		if (api.GetKeyState(VK_SHIFT) < 0) {
 			path = fso.BuildPath("*", fso.GetFileName(path));

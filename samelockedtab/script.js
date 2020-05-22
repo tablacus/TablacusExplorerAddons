@@ -20,17 +20,17 @@ if (window.Addon == 1) {
 				var Item = TC[i];
 				if (Item.Data.Lock && Ctrl.Id != Item.Id && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
 					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.Id == Ctrl.Id) {
-						(function (TC, i, Item, Selected) {
+						(function (TC, Item, Selected) {
 							setTimeout(function () {
 								if (TC.Id != TC1.Id) {
 									Item.Focus();
 								}
-								TC.SelectedIndex = i;
+								TC.SelectedIndex = Item.Index;
 								if (Selected && Selected.Count == 1) {
 									Item.SelectItem(Selected.Item(0), SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS | SVSI_DESELECTOTHERS | SVSI_SELECT);
 								}
 							}, 99);
-						})(TC, Addons.SameLockedTab.Close && TC.Id == TC1.Id && Ctrl.Index < i ? i - 1 : i, Item, Ctrl.SelectedItems());
+						})(TC, Item, Ctrl.SelectedItems());
 					}
 					hr = Addons.SameLockedTab.Close ? E_ABORT : E_FAIL;
 				}

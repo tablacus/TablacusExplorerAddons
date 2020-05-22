@@ -8,14 +8,14 @@
 			if (Ctrl.Id != Item.Id && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
 				if (CanClose(Item)) {
 					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.Id == Ctrl.Id) {
-						(function (TC, i, Item, Selected) {
+						(function (TC, Item, Selected) {
 							setTimeout(function () {
-								TC.SelectedIndex = i;
+								TC.SelectedIndex = Item.Index;
 								if (Selected && Selected.Count == 1) {
 									Item.SelectItem(Selected.Item(0), SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS | SVSI_DESELECTOTHERS | SVSI_SELECT);
 								}
 							}, 99);
-						})(TC, Ctrl.Index < i ? i - 1 : i, Item, Ctrl.SelectedItems());
+						})(TC, Item, Ctrl.SelectedItems());
 					}
 					hr = E_ABORT;
 				} else if (!hr) {
