@@ -22,7 +22,7 @@ Addons.TreeViewFilter = {
 	BrowseForFolder: function () {
 		var pid = sha.BrowseForFolder(0, GetText("Filter"), 0x40);
 		if (pid) {
-			this.AddPath(pid);
+			this.AddPath(pid.Self);
 		}
 	},
 
