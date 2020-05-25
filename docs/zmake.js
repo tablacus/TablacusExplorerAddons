@@ -41,6 +41,8 @@ for (em.moveFirst(); !em.atEnd(); em.moveNext()) {
 			name: name,
 			order: ("0000000000000000000" + dt.getTime()).slice(-20) + (9999 - ver)
 		});
+	} else if (name != "te") {
+		WScript.Echo([name, fso.FileExists("..\\" + name + "\\config.xml")].join(","));
 	}
 }
 
@@ -83,7 +85,7 @@ for (var i in arSorted) {
 				item1.appendChild(item2);
 			}
 		}
-root.appendChild(item1);
+		root.appendChild(item1);
 	} else {
 		WScript.Echo(name);
 	}

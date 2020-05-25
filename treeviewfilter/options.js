@@ -9,7 +9,7 @@ Addons.TreeViewFilter = {
 		if (!path) {
 			return;
 		}
-		path = path.Path || api.PathUnquoteSpaces(path);
+		path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		if (api.GetKeyState(VK_SHIFT) < 0) {
 			path = fso.BuildPath("*", fso.GetFileName(path));
 		}
@@ -20,7 +20,7 @@ Addons.TreeViewFilter = {
 	},
 
 	BrowseForFolder: function () {
-		var pid = sha.BrowseForFolder(0, GetText("Filter"), 0x40);
+		var pid = sha.BrowseForFolder(0, GetText("Filter"), 0x50);
 		if (pid) {
 			this.AddPath(pid.Self);
 		}

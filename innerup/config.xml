@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
+    <Version>1.06</Version>
     <MinVersion>2020.5.15</MinVersion>
     <pubDate>Fri, 15 May 2020 00:00:00 GMT</pubDate>
     <Options>Common:5:5</Options>
@@ -16,8 +16,8 @@
   <ja>
     <Name>Inner 上へ</Name>
     <Description>ペイン毎の 上へ ボタン</Description>
-  </zh>
-  <ja>
+  </ja>
+  <zh>
     <Name>窗格內上移</Name>
   </zh>
 </TablacusExplorer>
