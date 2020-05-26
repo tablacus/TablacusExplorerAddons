@@ -44,7 +44,7 @@ if (window.Addon == 1) {
 		}
 	}
 
-	AddEvent("ViewCreated", Addons.Font.Exec);
+	AddEvent("ChangeView", Addons.Font.Exec);
 
 	AddEvent("Create", function (Ctrl) {
 		if (Ctrl.Type <= CTRL_EB) {

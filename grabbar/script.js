@@ -14,27 +14,29 @@ if (window.Addon == 1) {
 			if (event.button == 0) {
 				api.GetCursorPos(this.pt);
 			} else {
-				this.pt.X = this.pt.Y = 0;
+				this.pt.x = this.pt.y = 0;
 			}
 		},
 
 		Move: function () {
-			if (this.Check() && this.pt.X + this.pt.Y > 0 && !this.MMove) {
+			if (this.Check() && this.pt.x + this.pt.y > 0 && !this.MMove) {
 				this.MMove = true;
 				var rec = api.Memory("RECT");
 				api.GetWindowRect(te.hwnd, rec);
 				if (api.IsZoomed(te.hwnd)) {
-					this.dv.Left = this.pt.X / rec.Right * 1000;
+					var x = rec.left + 8;
+					var y = rec.top + 8;
+					this.dv.left = (this.pt.x - x) / (rec.right - x) * 1000;
 					api.SendMessage(te.hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
 					api.GetWindowRect(te.hwnd, rec);
-					this.dv.Left = (rec.Right - rec.Left) * this.dv.Left / 1000;
-					this.dv.Top = this.pt.Y + 5;
+					this.dv.left = (rec.right - rec.left) * this.dv.left / 1000;
+					this.dv.top = this.pt.y + 5 - y;
 				} else {
-					this.dv.Left = this.pt.X - rec.Left;
-					this.dv.Top = this.pt.Y - rec.Top;
+					this.dv.left = this.pt.x - rec.left;
+					this.dv.top = this.pt.y - rec.top;
 				}
-				this.dv.Right = rec.Right - rec.Left;
-				this.dv.Bottom = rec.Bottom - rec.Top;
+				this.dv.right = rec.right - rec.left;
+				this.dv.bottom = rec.bottom - rec.top;
 				setTimeout(this.MoveMonit,25);
 			}
 		},
@@ -42,7 +44,7 @@ if (window.Addon == 1) {
 		MoveMonit: function() {
 			if (Addons.GrabBar.Check()) {
 				api.GetCursorPos(Addons.GrabBar.pt);
-				api.MoveWindow(te.hwnd, Addons.GrabBar.pt.X - Addons.GrabBar.dv.Left, Addons.GrabBar.pt.Y - Addons.GrabBar.dv.Top, Addons.GrabBar.dv.Right, Addons.GrabBar.dv.Bottom, true);
+				api.MoveWindow(te.hwnd, Addons.GrabBar.pt.x - Addons.GrabBar.dv.left, Addons.GrabBar.pt.y - Addons.GrabBar.dv.top, Addons.GrabBar.dv.right, Addons.GrabBar.dv.bottom, true);
 				setTimeout(Addons.GrabBar.MoveMonit,25);
 			} else {
 				Addons.GrabBar.MMove = false;
@@ -55,7 +57,7 @@ if (window.Addon == 1) {
 		},
 
 		Check: function () {
-			return getComputedStyle(this.div).getPropertyValue('cursor') == 'default';
+			return api.GetKeyState(VK_LBUTTON) < 0;
 		},
 
 		Popup: function () {
@@ -76,12 +78,6 @@ if (window.Addon == 1) {
 		} catch (e) { }
 	});
 
-	if (!window.getComputedStyle) {
-		Addons.GrabBar.Check = function () {
-			return this.div.currentStyle.cursor == 'default';
-		}
-	}
-
-	SetAddon(Addon_Id, Default, ['<style>div.grabbar:active{cursor:default;}</style><div id="grabbar" class="grabbar" unselectable="on" ondblclick="Addons.GrabBar.Max()" onmousedown="Addons.GrabBar.Down()" onmousemove="Addons.GrabBar.Move()" oncontextmenu="return Addons.GrabBar.Popup(this)" style="width: 100%; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"></div>']);
+	SetAddon(Addon_Id, Default, ['<div id="grabbar" class="grabbar" unselectable="on" ondblclick="Addons.GrabBar.Max()" onmousedown="Addons.GrabBar.Down()" onmousemove="Addons.GrabBar.Move()" oncontextmenu="return Addons.GrabBar.Popup(this)" style="width: 100%; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default"></div>']);
 	Addons.GrabBar.div = document.getElementById(Addon_Id);
 }
