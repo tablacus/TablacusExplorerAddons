@@ -8,15 +8,13 @@ if (window.Addon == 1) {
 		Select: item.getAttribute("Select"),
 		Handled: false,
 
-		IsHot: function (nmcd, hList)
-		{
+		IsHot: function (nmcd, hList) {
 			if (nmcd.uItemState & CDIS_HOT) {
 				return true;
 			}
 		},
 
-		GetRect: function (hList, iItem, rc)
-		{
+		GetRect: function (hList, iItem, rc) {
 			Addons.HotButton.GetRect2(hList, iItem, rc);
 			rc.left = rc.right - Addons.HotButton.Image.GetWidth();
 			var h = Addons.HotButton.Image.GetHeight();
@@ -26,15 +24,13 @@ if (window.Addon == 1) {
 			}
 		},
 
-		GetRect2: function (hList, iItem, rc)
-		{
+		GetRect2: function (hList, iItem, rc) {
 			rc.left = LVIR_SELECTBOUNDS;
 			api.SendMessage(hList, LVM_GETITEMRECT, iItem, rc);
 		}
 	};
 
-	AddEvent("ItemPostPaint2", function (Ctrl, pid, nmcd, vcd)
-	{
+	AddEvent("ItemPostPaint2", function (Ctrl, pid, nmcd, vcd) {
 		var hList = Ctrl.hwndList;
 		if (hList && pid && Addons.HotButton.IsHot(nmcd, hList)) {
 			if (pid.IsFolder || api.ILCreateFromPath(pid.Path).Enum) {
@@ -51,8 +47,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt)
-	{
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
 		var hList = Ctrl.hwndList;
 		if (hList) {
 			if (msg == WM_LBUTTONDOWN) {
@@ -65,7 +60,7 @@ if (window.Addon == 1) {
 					api.ScreenToClient(hList, ptc);
 					if (PtInRect(rc, ptc)) {
 						if (Addons.HotButton.Select) {
-							Ctrl.SelectItem(Ctrl.Item(iItem), SVSI_SELECT | (api.GetKeyState(VK_CONTROL) < 0 ? 0 :SVSI_DESELECTOTHERS));
+							Ctrl.SelectItem(Ctrl.Item(iItem), SVSI_SELECT | (api.GetKeyState(VK_CONTROL) < 0 ? 0 : SVSI_DESELECTOTHERS));
 						}
 						Addons.HotButton.Handled = true;
 						return S_OK;
@@ -83,13 +78,14 @@ if (window.Addon == 1) {
 						ptm.x = rc.right;
 						ptm.y = rc.top;
 						api.ClientToScreen(Ctrl.hwndList, ptm);
-						(function (Item, ptm) { setTimeout(function ()
-						{
-							var FolderItem = FolderMenu.Open(Item, ptm.x, ptm.y, "*", 1);
-							if (FolderItem) {
-								FolderMenu.Invoke(FolderItem);
-							}
-						}, 99)})(api.ILCreateFromPath(Ctrl.Item(iItem).Path), ptm);
+						(function (Item, ptm) {
+							setTimeout(function () {
+								var FolderItem = FolderMenu.Open(Item, ptm.x, ptm.y, "*", 1);
+								if (FolderItem) {
+									FolderMenu.Invoke(FolderItem);
+								}
+							}, 99)
+						})(api.ILCreateFromPath(Ctrl.Item(iItem).Path), ptm);
 						return S_OK;
 					}
 				}
@@ -97,11 +93,9 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Load", function ()
-	{
+	AddEvent("Load", function () {
 		if (WINVER < 0x600 || !api.IsAppThemed() || Addons.ClassicStyle) {
-			Addons.HotButton.IsHot = function (nmcd, hList)
-			{
+			Addons.HotButton.IsHot = function (nmcd, hList) {
 				var rc = api.Memory("RECT");
 				Addons.HotButton.GetRect2(hList, nmcd.dwItemSpec, rc);
 				var pt = api.Memory("POINT");
@@ -110,8 +104,7 @@ if (window.Addon == 1) {
 				return PtInRect(rc, pt);
 			}
 
-			Addons.HotButton.GetRect2 = function (hList, iItem, rc)
-			{
+			Addons.HotButton.GetRect2 = function (hList, iItem, rc) {
 				var vm = api.SendMessage(hList, LVM_GETVIEW, 0, 0);
 				if (vm != 3) {
 					rc.left = LVIR_SELECTBOUNDS;
@@ -130,6 +123,19 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+
+	if (item.getAttribute("NoInfotip")) {
+		AddEvent("ToolTip", function (Ctrl, Index) {
+			if (Ctrl.Type == CTRL_SB && Index >= 0) {
+				var pid = Ctrl.Item(Index);
+				if (pid) {
+					if (pid.IsFolder || api.ILCreateFromPath(pid.Path).Enum) {
+						return "";
+					}
+				}
+			}
+		}, true);
+	}
 
 	//Image
 	var w = 14 * screen.logicalYDPI / 96;
@@ -165,6 +171,6 @@ if (window.Addon == 1) {
 		api.ReleaseDC(te.hwnd, hdc);
 	}
 } else {
-	SetTabContents(0, "General", '<label><input type="checkbox" id="Select" />Select</label>');
+	SetTabContents(0, "General", '<label><input type="checkbox" id="Select">Select</label><br><label><input type="checkbox" id="NoInfotip">No Infotip</label>');
 	ChangeForm([["__IconSize", "style/display", "none"]]);
 }

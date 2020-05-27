@@ -147,8 +147,10 @@ if (window.Addon == 1) {
 	Addons.Preview.Init();
 
 	AddEvent("StatusText", function (Ctrl, Text, iPart) {
-		if (Ctrl.Type <= CTRL_EB && Text) {
-			if (Addons.Preview.Width && !/^none$/i.test(document.getElementById('PreviewBar').style.display)) {
+		if (Addons.Preview.Width && !/^none$/i.test(document.getElementById('PreviewBar').style.display)) {
+			if (Ctrl.Path) {
+				Addons.Preview.Arrange(Ctrl);
+			} else if (Ctrl.Type <= CTRL_EB && Text) {
 				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
 					Addons.Preview.Arrange(Ctrl.SelectedItems().Item(0), Ctrl);
 				}

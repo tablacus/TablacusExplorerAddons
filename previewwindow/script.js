@@ -39,16 +39,19 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Arrange: function (Ctrl) {
+		Arrange: function (Ctrl, Item) {
 			if (!Ctrl) {
 				Ctrl = te.Ctrl(CTRL_FV);
 			}
 			if (this.dlg) {
 				delete this.Item;
 				delete this.File;
-				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
-					this.Item = Ctrl.SelectedItems().Item(0);
-					this.File = this.Item.Path;
+				if (!Item && Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
+					Item = Ctrl.SelectedItems().Item(0);
+				}
+				if (Item) {
+					this.Item = Item;
+					this.File = Item.Path;
 				}
 				var ppid = api.Memory("DWORD");
 				api.GetWindowThreadProcessId(api.GetFocus(), ppid);
@@ -74,7 +77,9 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("StatusText", function (Ctrl, Text, iPart) {
-		if (Ctrl.Type <= CTRL_EB && Text) {
+		if (Ctrl.Path) {
+			Addons.PreviewWindow.Arrange(null, Ctrl);
+		} else if (Ctrl.Type <= CTRL_EB && Text) {
 			Addons.PreviewWindow.Arrange(Ctrl);
 		}
 	});

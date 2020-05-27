@@ -31,13 +31,15 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Arrange: function (FV) {
+		Arrange: function (FV, Item) {
 			if (!FV) {
 				FV = te.Ctrl(CTRL_FV);
 			}
+			if (!Item && FV.ItemCount(SVGIO_SELECTION) == 1) {
+				Item = FV.SelectedItems().Item(0);
+			}
 			var hwnd = FV.hwndList;
-			if (Addons.BGPreview.Visible && hwnd && FV.ItemCount(SVGIO_SELECTION) == 1) {
-				var Item = FV.SelectedItems().Item(0);
+			if (Addons.BGPreview.Visible && hwnd) {
 				if (!api.ILIsEqual(Item, Addons.BGPreview.Items[hwnd])) {
 					var bClear = Addons.BGPreview.Items[hwnd] === null;
 					Addons.BGPreview.Items[hwnd] = Item;
@@ -97,7 +99,9 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("StatusText", function (Ctrl, Text, iPart) {
-		if (Ctrl.Type <= CTRL_EB && Text) {
+		if (Ctrl.Path) {
+			Addons.BGPreview.Arrange(null, Ctrl);
+		} else if (Ctrl.Type <= CTRL_EB && Text) {
 			if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
 				Addons.BGPreview.Arrange(Ctrl);
 			}
