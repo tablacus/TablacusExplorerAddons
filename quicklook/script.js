@@ -25,12 +25,17 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
-		SendMessage: function (FV, Mode) {
-			if (!FV) {
-				FV = te.Ctrl(CTRL_FV);
+		SendMessage: function (FV, Mode, Path) {
+			if (!Path) {
+				if (!FV) {
+					FV = te.Ctrl(CTRL_FV);
+				}
+				var Selected = FV.SelectedItems();
+				if (Selected && Selected.Count) {
+					Path = Selected.Item(0).Path;
+				}
 			}
-			var Selected = FV.SelectedItems();
-			if (Selected && Selected.Count) {
+			if (Path) {
 				var wfd = api.Memory("WIN32_FIND_DATA");
 				var hFind = api.FindFirstFile("\\\\.\\pipe\\QuickLook.App.Pipe.*", wfd);
 				if (hFind == INVALID_HANDLE_VALUE) {
@@ -41,7 +46,7 @@ if (window.Addon == 1) {
 				if (hFile == INVALID_HANDLE_VALUE) {
 					return;
 				}
-				api.WriteFile(hFile, api.WideCharToMultiByte(65001, ["QuickLook.App.PipeMessages.", Mode, "|", Selected.Item(0).Path].join("")));
+				api.WriteFile(hFile, api.WideCharToMultiByte(65001, ["QuickLook.App.PipeMessages.", Mode, "|", Path].join("")));
 				api.CloseHandle(hFile);
 			}
 		},
@@ -49,12 +54,12 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("StatusText", function (Ctrl, Text, iPart) {
-		if (Ctrl.Type <= CTRL_EB && Text) {
+		if (Ctrl.Path || Ctrl.Type <= CTRL_EB && Text) {
 			var hwnd = api.GetTopWindow(null);
 			do {
 				if (api.PathMatchSpec(api.GetClassName(hwnd), "*QuickLook*")) {
 					if (api.IsWindowVisible(hwnd)) {
-						Addons.QuickLook.SendMessage(Ctrl, "Switch");
+						Addons.QuickLook.SendMessage(Ctrl, "Switch", Ctrl.Path);
 						break;
 					}
 				}
