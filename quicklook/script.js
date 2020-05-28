@@ -19,9 +19,15 @@ if (window.Addon == 1) {
 	{
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
+		Key: item.getAttribute("Key"),
 
 		Exec: function (Ctrl, pt) {
 			Addons.QuickLook.SendMessage(GetFolderView(Ctrl, pt), "Toggle");
+			return S_OK;
+		},
+
+		ExecMenu: function (Ctrl, pt) {
+			Addons.QuickLook.SendMessage(null, "Toggle", (g_.MenuSelected || {}).Path);
 			return S_OK;
 		},
 
@@ -30,25 +36,32 @@ if (window.Addon == 1) {
 				if (!FV) {
 					FV = te.Ctrl(CTRL_FV);
 				}
-				var Selected = FV.SelectedItems();
-				if (Selected && Selected.Count) {
-					Path = Selected.Item(0).Path;
+				var Items = FV.SelectedItems();
+				if (!Items || !Items.Count) {
+					Items = FV.Items();
+				}
+				if (Items && Items.Count) {
+					Path = Items.Item(0).Path;
+				} else {
+					Path = FV.FolderItem.Path;
 				}
 			}
-			if (Path) {
-				var wfd = api.Memory("WIN32_FIND_DATA");
-				var hFind = api.FindFirstFile("\\\\.\\pipe\\QuickLook.App.Pipe.*", wfd);
-				if (hFind == INVALID_HANDLE_VALUE) {
-					return;
-				}
-				api.FindClose(hFind);
-				var hFile = api.CreateFile(["\\\\.\\pipe\\", wfd.cFileName].join(""), 0x40000000, 0, null, 3, FILE_ATTRIBUTE_NORMAL, null);
-				if (hFile == INVALID_HANDLE_VALUE) {
-					return;
-				}
-				api.WriteFile(hFile, api.WideCharToMultiByte(65001, ["QuickLook.App.PipeMessages.", Mode, "|", Path].join("")));
-				api.CloseHandle(hFile);
+			if (Mode == "Switch" && Addons.QuickLook.Path == Path) {
+				return;
 			}
+			Addons.QuickLook.Path = Path;
+			var wfd = api.Memory("WIN32_FIND_DATA");
+			var hFind = api.FindFirstFile("\\\\.\\pipe\\QuickLook.App.Pipe.*", wfd);
+			if (hFind == INVALID_HANDLE_VALUE) {
+				return;
+			}
+			api.FindClose(hFind);
+			var hFile = api.CreateFile(["\\\\.\\pipe\\", wfd.cFileName].join(""), 0x40000000, 0, null, 3, FILE_ATTRIBUTE_NORMAL, null);
+			if (hFile == INVALID_HANDLE_VALUE) {
+				return;
+			}
+			api.WriteFile(hFile, api.WideCharToMultiByte(65001, ["QuickLook.App.PipeMessages.", Mode, "|", Path].join("")));
+			api.CloseHandle(hFile);
 		},
 
 	};
@@ -83,6 +96,7 @@ if (window.Addon == 1) {
 	//Key
 	if (item.getAttribute("KeyExec")) {
 		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.QuickLook.Exec, "Func");
+		SetKeyExec("Menus", item.getAttribute("Key"), Addons.QuickLook.ExecMenu, "Func");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {

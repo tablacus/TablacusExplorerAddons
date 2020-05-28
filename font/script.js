@@ -62,13 +62,15 @@ if (window.Addon == 1) {
 		}
 	});
 
+	AddEvent("FontChanged", Addons.Font.Init);
+
 	AddEventId("AddonDisabledEx", "font", function (Id) {
 		api.SystemParametersInfo(SPI_GETICONTITLELOGFONT, DefaultFont.Size, DefaultFont, 0);
 		if (Addons.Font.TreeHeight) {
 			Addons.Font.TreeHeight = -1;
 		}
 		Addons.Font.FrameHeight = 0;
-		Addons.Font.Init();
+		FontChanged();
 	});
 
 	DefaultFont.lfFaceName = item.getAttribute("Name") || DefaultFont.lfFaceName;
@@ -81,7 +83,6 @@ if (window.Addon == 1) {
 	document.body.style.fontFamily = DefaultFont.lfFaceName;
 	document.body.style.fontSize = Math.abs(DefaultFont.lfHeight) + "px";
 	document.body.style.fontWeight = DefaultFont.lfWeight || 400;
-	Addons.Font.Init();
 	FontChanged();
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
