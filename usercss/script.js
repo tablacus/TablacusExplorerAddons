@@ -1,11 +1,10 @@
-var Addons_Id = "usercss"
+var Addons_Id = "usercss";
 if (window.Addon == 1) {
-	AddEvent("BrowserCreated", function (doc)
-	{
+	AddEvent("BrowserCreated", function (doc) {
 		var link = doc.createElement("link");
 		link.rel = "stylesheet";
 		link.type = "text/css";
-		link.href = fso.BuildPath(te.Data.DataFolder, "config\\user.css");
+		link.href = "../config/user.css";
 		doc.head.appendChild(link);
 	});
 } else {

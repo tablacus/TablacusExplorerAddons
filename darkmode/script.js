@@ -3,39 +3,39 @@ var Addon_Id = "darkmode";
 if (window.Addon == 1) {
 	Addons.DarkMode =
 	{
-		Brush: api.CreateSolidBrush(0x555555),
+		clrText: 0xffffff,
+		clrBk: 0x202020,
+		clrLine: 0x555555,
 
 		Arrange: function (Ctrl)
 		{
-			var clrText = GetSysColor(COLOR_WINDOWTEXT);
-			var clrBk = GetSysColor(COLOR_WINDOW);
 			var FV = GetFolderView(Ctrl);
 			if (FV) {
 				var hwnd = FV.hwndList;
 				if (hwnd) {
-					Addons.DarkMode.SetColor(FV, hwnd, clrText, clrBk);
+					Addons.DarkMode.SetColor(FV, hwnd);
 				}
 			}
 		},
 
-		SetColor: function (FV, hwnd, clrText, clrBk)
+		SetColor: function (FV, hwnd)
 		{
-			api.SendMessage(hwnd, LVM_SETTEXTCOLOR, 0, clrText);
-			api.SendMessage(hwnd, LVM_SETBKCOLOR, 0, clrBk);
-			api.SendMessage(hwnd, LVM_SETTEXTBKCOLOR, 0, clrBk);
+			api.SendMessage(hwnd, LVM_SETTEXTCOLOR, 0, Addons.DarkMode.clrText);
+			api.SendMessage(hwnd, LVM_SETBKCOLOR, 0, Addons.DarkMode.clrBk);
+			api.SendMessage(hwnd, LVM_SETTEXTBKCOLOR, 0, Addons.DarkMode.clrBk);
 			FV.ViewFlags |= 8;
-			Addons.DarkMode.SetTV(FV.TreeView.hwndTree, clrText, clrBk);
+			Addons.DarkMode.SetTV(FV.TreeView.hwndTree);
 			if (FV.Type == CTRL_EB) {
-				Addons.DarkMode.SetTV(FindChildByClass(FV.hwnd, WC_TREEVIEW), clrText, clrBk);
+				Addons.DarkMode.SetTV(FindChildByClass(FV.hwnd, WC_TREEVIEW));
 			}
 		},
 
-		SetTV: function (hwnd, clrText, clrBk)
+		SetTV: function (hwnd)
 		{
 			if (hwnd) {
-				api.SendMessage(hwnd, TVM_SETTEXTCOLOR, 0, clrText);
-				api.SendMessage(hwnd, TVM_SETBKCOLOR, 0, clrBk);
-				api.SendMessage(hwnd, TVM_SETLINECOLOR, 0, clrText);
+				api.SendMessage(hwnd, TVM_SETTEXTCOLOR, 0, Addons.DarkMode.clrText);
+				api.SendMessage(hwnd, TVM_SETBKCOLOR, 0, Addons.DarkMode.clrBk);
+				api.SendMessage(hwnd, TVM_SETLINECOLOR, 0, Addons.DarkMode.clrLine);
 			}
 		},
 
@@ -53,7 +53,7 @@ if (window.Addon == 1) {
 		var link = doc.createElement("link");
 		link.rel = "stylesheet";
 		link.type = "text/css";
-		link.href = fso.BuildPath(te.Data.Installed, "addons\\darkmode\\style.css");
+		link.href = "../addons/darkmode/style.css";
 		doc.head.appendChild(link);
 	}, true);
 
@@ -80,9 +80,12 @@ if (window.Addon == 1) {
 
 	AddEventId("AddonDisabledEx", "darkmode", function ()
 	{
-		SetSysColor(COLOR_WINDOWTEXT, undefined);
-		SetSysColor(COLOR_WINDOW, undefined);
-		SetSysColor(COLOR_BTNFACE, undefined);
+		SetSysColor(COLOR_WINDOWTEXT, void 0);
+		SetSysColor(COLOR_WINDOW, void 0);
+		SetSysColor(COLOR_BTNFACE, void 0);
+		Addons.DarkMode.clrText = GetSysColor(COLOR_WINDOWTEXT);
+		Addons.DarkMode.clrBk = GetSysColor(COLOR_WINDOW);
+		Addons.DarkMode.clrLine = GetSysColor(COLOR_WINDOWTEXT);
 		Addons.DarkMode.Init();
 	});
 	if (api.IsAppThemed() && WINVER > 0x603) {
@@ -95,20 +98,17 @@ if (window.Addon == 1) {
 							var rc = api.Memory("RECT");
 							rc.left = LVIR_SELECTBOUNDS;
 							api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
-							api.FillRect(nmcd.hdc, rc, Addons.DarkMode.Brush);
+							api.SetDCBrushColor(nmcd.hdc, 0x555555);
+							api.FillRect(nmcd.hdc, rc, api.GetStockObject(DC_BRUSH));
 						}
 					}
 				}, true);
 			}
 		});
-
-		AddEvent("Finalize", function () {
-			api.DeleteObject(Addons.DarkMode.Brush);
-		});
 	}
 
-	SetSysColor(COLOR_WINDOWTEXT, 0xffffff);
-	SetSysColor(COLOR_WINDOW, 0x202020);
+	SetSysColor(COLOR_WINDOWTEXT, Addons.DarkMode.clrText);
+	SetSysColor(COLOR_WINDOW, Addons.DarkMode.clrBk);
 	SetSysColor(COLOR_BTNFACE, 0x2c2c2c);
 	Addons.DarkMode.Init();
 }
