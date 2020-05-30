@@ -53,7 +53,7 @@ if (window.Addon == 1) {
 		var link = doc.createElement("link");
 		link.rel = "stylesheet";
 		link.type = "text/css";
-		link.href = "../addons/darkmode/style.css";
+		link.href = api.UrlCreateFromPath(fso.BuildPath(te.Data.Installed, "addons\\darkmode\\style.css"));
 		doc.head.appendChild(link);
 	}, true);
 

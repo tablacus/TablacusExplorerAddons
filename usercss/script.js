@@ -4,7 +4,7 @@ if (window.Addon == 1) {
 		var link = doc.createElement("link");
 		link.rel = "stylesheet";
 		link.type = "text/css";
-		link.href = "../config/user.css";
+		link.href = api.UrlCreateFromPath(fso.BuildPath(te.Data.DataFolder, "config\\user.css"));
 		doc.head.appendChild(link);
 	});
 } else {
