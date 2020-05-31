@@ -31,12 +31,18 @@ if (window.Addon == 1) {
 
 		SetTV: function (hwnd, nHeight) {
 			if (hwnd) {
-				var hFont = api.SendMessage(hwnd, WM_SETFONT, 0, 0);
+				var hFont = api.SendMessage(hwnd, WM_GETFONT, 0, 0);
 				if (hFont != Addons.Font.hFont) {
 					api.SendMessage(hwnd, WM_SETFONT, Addons.Font.hFont, 1);
 				}
+				var dwStyle = api.GetWindowLongPtr(hwnd, GWL_STYLE);
 				if (nHeight) {
+					if (!(dwStyle & 0x4000)) {
+						api.SetWindowLongPtr(hwnd, GWL_STYLE, dwStyle | 0x4000);
+					}
 					api.SendMessage(hwnd, TVM_SETITEMHEIGHT, nHeight, 0);
+				} else if (dwStyle & 0x4000) {
+					api.SetWindowLongPtr(hwnd, GWL_STYLE, dwStyle & ~0x4000);
 				}
 			}
 		},
