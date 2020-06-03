@@ -43,17 +43,21 @@ if (window.Addon == 1) {
 				Addons.GrabButton.Capture = false;
 			} else {
 				if (api.IsZoomed(te.hwnd)) {
-					var rcZoomed = api.Memory("RECT");
-					api.GetWindowRect(te.hwnd, rcZoomed);
-					api.ReleaseCapture();
-					api.SendMessage(te.hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
-					api.SetCapture(te.hwnd);
-					var rc = api.Memory("RECT");
-					api.GetWindowRect(te.hwnd, rc);
-					var x = pt.x > rc.right - rc.left + rcZoomed.left ? pt.x - (rc.right - rc.left) : rcZoomed.left; 
-					var y = pt.y > rc.bottom - rc.top + rcZoomed.top ? pt.y - (rc.bottom - rc.top) : rcZoomed.top; 
-					api.MoveWindow(te.hwnd, x, y, rc.right - rc.left, rc.bottom - rc.top, true);
-					Addons.GrabButton.pt = pt.Clone();
+					if (IsDrag(pt, Addons.GrabButton.pt)) {
+						var rcZoomed = api.Memory("RECT");
+						api.GetWindowRect(te.hwnd, rcZoomed);
+						api.ReleaseCapture();
+						api.SendMessage(te.hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+						api.SetCapture(te.hwnd);
+						var rc = api.Memory("RECT");
+						api.GetWindowRect(te.hwnd, rc);
+						var w = rc.right - rc.left;
+						var h = rc.bottom - rc.top;
+						var x = pt.x - (pt.x - rcZoomed.Left) * (w / (rcZoomed.right - rcZoomed.left));
+						var y = pt.y - (pt.y - rcZoomed.top) * (h / (rcZoomed.bottom - rcZoomed.top));
+						api.MoveWindow(te.hwnd, x, y, rc.right - rc.left, rc.bottom - rc.top, true);
+						Addons.GrabButton.pt = pt.Clone();
+					}
 					return S_OK;
 				}
 				var dx = pt.x - Addons.GrabButton.pt.x;

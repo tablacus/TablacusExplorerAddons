@@ -5,8 +5,7 @@ var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Split =
 	{
-		Exec: function (nMax, nMode)
-		{
+		Exec: function (nMax, nMode) {
 			var TC = [te.Ctrl(CTRL_TC)];
 			Addons.Split.Exec2(nMax, TC);
 			switch (nMode) {
@@ -58,20 +57,16 @@ if (window.Addon == 1) {
 			TC[0].Selected.Focus();
 		},
 
-		Exec2: function (nMax, TC)
-		{
-			var nTC = (TC[0] && TC[0].Count) ? 1 : 0;
-			var Group = nTC ? TC[0].Data.Group : 0;
+		Exec2: function (nMax, TC) {
 			var cTC = te.Ctrls(CTRL_TC);
+			var ix = Addons.Split.Sort(cTC);
+			var Group = TC[0] && TC[0].Count ? TC[0].Data.Group : 0;
 			var freeTC = [];
+			var nTC = 0;
 			for (var i = cTC.length; i-- > 0;) {
-				var TC1 = cTC[i];
+				var TC1 = cTC[ix[i]];
 				if (TC1.Data.Group == 0 || TC1.Data.Group == Group) {
-					if (TC1.Count == 0) {
-						TC1.Close();
-					} else if (nTC && TC[0] == TC1) {
-						TC1.Visible = true;
-					} else if (nTC < nMax) {
+					if (TC1.Count && nTC < nMax) {
 						TC1.Visible = true;
 						TC1.Data.Group = Group;
 						TC[nTC++] = TC1;
@@ -82,14 +77,14 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			for (;nTC < nMax; nTC++) {
-				var path = HOME_PATH;
+			for (; nTC < nMax; nTC++) {
+				var path = "about:blank";
 				var type = CTRL_SB;
 				var viewmode = FVM_DETAILS;
 				var flags = FWF_SHOWSELALWAYS | FWF_NOWEBVIEW | FWF_AUTOARRANGE;
 				var icon = 0;
 				var options = EBO_SHOWFRAMES | EBO_ALWAYSNAVIGATE;
-				var viewflags = 0;
+				var viewflags = 8;
 				if (TC[0]) {
 					var FV = TC[0].Selected;
 					if (FV) {
@@ -108,10 +103,15 @@ if (window.Addon == 1) {
 					TC[nTC].Visible = true;
 				}
 			}
+			while (TC1 = freeTC.shift()) {
+				if (api.GetDisplayNameOf(TC1[0], SHGDN_FORPARSING) == "about:blank") {
+					TC1.Close();
+				}
+			}
 		},
-	
-		CreateTC: function (freeTC, Left, Top, Width, Height, Style, Align, TabWidth, TabHeight, Group)
-		{
+
+		CreateTC: function (freeTC, Left, Top, Width, Height, Style, Align, TabWidth, TabHeight, Group) {
+			var TC;
 			if (freeTC.length) {
 				TC = freeTC.shift();
 				TC.Left = Left;
@@ -124,14 +124,13 @@ if (window.Addon == 1) {
 				TC.TabHeight = TabHeight;
 				TC.Visible = true;
 			} else {
-				var TC = te.CreateCtrl(CTRL_TC, Left, Top, Width, Height, Style, Align, TabWidth, TabHeight);
+				TC = te.CreateCtrl(CTRL_TC, Left, Top, Width, Height, Style, Align, TabWidth, TabHeight);
 			}
 			TC.Data.Group = Group;
 			return TC;
 		},
 
-		SetButtons: function (Addon_Id, Default, item, n, ar)
-		{
+		SetButtons: function (Addon_Id, Default, item, n, ar) {
 			var s = [];
 			for (var i = 0; i < ar.length; i++) {
 				if (!item.getAttribute("No" + ar[i].id)) {
@@ -139,13 +138,39 @@ if (window.Addon == 1) {
 				}
 			}
 			document.getElementById(Addon_Id).innerHTML = s.join("");
+		},
+
+		Sort: function (cTC) {
+			var ix = [];
+			for (var i = cTC.length; i--;) {
+				ix.push(i);
+			}
+			return ix.sort(
+				function (b, a) {
+					if (cTC[a].Visible) {
+						if (cTC[b].Visible) {
+							var rca = api.Memory("RECT");
+							var rcb = api.Memory("RECT");
+							api.GetWindowRect(cTC[a].hwnd, rca);
+							api.GetWindowRect(cTC[b].hwnd, rcb);
+							if (rca.Top > rcb.Top) {
+								return 1;
+							} else if (rca.Top < rcb.Top) {
+								return -1;
+							}
+							return rca.Left - rcb.Left;
+						}
+						return -1;
+					}
+					return cTC[b].Visible ? 1 : a - b;
+				}
+			);
 		}
 	};
 
 	SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
 
-	AddEvent("load", function ()
-	{
+	AddEvent("load", function () {
 		Addons.Split.SetButtons(Addon_Id, Default, item, "",
 		[
 			{ id: "1x1", exec: "1, 1", img: "1tab" },

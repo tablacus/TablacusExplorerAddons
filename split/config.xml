@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.07</Version>
-    <MinVersion>2019.1.5</MinVersion>
-    <pubDate>Sun, 06 Jan 2019 00:00:00 GMT</pubDate>
+    <Version>1.09</Version>
+    <MinVersion>2020.6.3</MinVersion>
+    <pubDate>Wed, 03 Jun 2020 00:00:00 GMT</pubDate>
     <Options>Common:0,6:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -17,4 +17,7 @@
     <Name>分割</Name>
     <Description>画面の分割</Description>
   </ja>
+  <zh>
+    <Name>劃分窗格</Name>
+  </zh>
 </TablacusExplorer>

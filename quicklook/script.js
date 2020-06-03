@@ -51,17 +51,23 @@ if (window.Addon == 1) {
 			}
 			Addons.QuickLook.Path = Path;
 			var wfd = api.Memory("WIN32_FIND_DATA");
-			var hFind = api.FindFirstFile("\\\\.\\pipe\\QuickLook.App.Pipe.*", wfd);
-			if (hFind == INVALID_HANDLE_VALUE) {
-				return;
-			}
+			var hFind = api.FindFirstFile("\\\\.\\pipe\\*", wfd);			
+			var strPipe;
+			for (var bFind = hFind != INVALID_HANDLE_VALUE; bFind; bFind = api.FindNextFile(hFind, wfd)) {
+				if (/QuickLook\.App\.Pipe\./i.test(wfd.cFileName)) {
+					strPipe = wfd.cFileName;
+					break;
+				}
+			} 
 			api.FindClose(hFind);
-			var hFile = api.CreateFile(["\\\\.\\pipe\\", wfd.cFileName].join(""), 0x40000000, 0, null, 3, FILE_ATTRIBUTE_NORMAL, null);
-			if (hFile == INVALID_HANDLE_VALUE) {
-				return;
+			if (strPipe) {
+				var hFile = api.CreateFile(["\\\\.\\pipe\\", strPipe].join(""), 0x40000000, 0, null, 3, FILE_ATTRIBUTE_NORMAL, null);
+				if (hFile == INVALID_HANDLE_VALUE) {
+					return;
+				}
+				api.WriteFile(hFile, api.WideCharToMultiByte(65001, ["QuickLook.App.PipeMessages.", Mode, "|", Path].join("")));
+				api.CloseHandle(hFile);
 			}
-			api.WriteFile(hFile, api.WideCharToMultiByte(65001, ["QuickLook.App.PipeMessages.", Mode, "|", Path].join("")));
-			api.CloseHandle(hFile);
 		},
 
 	};

@@ -21,7 +21,7 @@ if (window.Addon == 1) {
 					}
 				}
 				if (Ctrl.TreeView) {
-					Addons.Font.SetTV(Ctrl.TreeView.hwndTree, Addons.Font.TreeHeight);
+					Addons.Font.SetTV(Ctrl.TreeView.hwndTree, Addons.Font.TreeHeight || -1);
 				}
 				if (FV.Type == CTRL_EB) {
 					Addons.Font.SetTV(FindChildByClass(FV.hwnd, WC_TREEVIEW), Addons.Font.FrameHeight);
@@ -55,6 +55,8 @@ if (window.Addon == 1) {
 			}
 		}
 	}
+
+	AddEvent("ListViewCreated", Addons.Font.Exec);
 
 	AddEvent("ChangeView", Addons.Font.Exec);
 

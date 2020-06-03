@@ -5,59 +5,19 @@ var Default = "ToolBar1Center";
 if (window.Addon == 1) {
 	Addons.GrabBar =
 	{
-		MMove: false,
-		pt: api.Memory("POINT"),
-		dv: api.Memory("RECT"),
-		div: document.createElement("div"),
-
 		Down: function () {
-			if (event.button == 0) {
-				api.GetCursorPos(this.pt);
-			} else {
-				this.pt.x = this.pt.y = 0;
-			}
-		},
-
-		Move: function () {
-			if (this.Check() && this.pt.x + this.pt.y > 0 && !this.MMove) {
-				this.MMove = true;
-				var rec = api.Memory("RECT");
-				api.GetWindowRect(te.hwnd, rec);
-				if (api.IsZoomed(te.hwnd)) {
-					var x = rec.left + 8;
-					var y = rec.top + 8;
-					this.dv.left = (this.pt.x - x) / (rec.right - x) * 1000;
-					api.SendMessage(te.hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
-					api.GetWindowRect(te.hwnd, rec);
-					this.dv.left = (rec.right - rec.left) * this.dv.left / 1000;
-					this.dv.top = this.pt.y + 5 - y;
-				} else {
-					this.dv.left = this.pt.x - rec.left;
-					this.dv.top = this.pt.y - rec.top;
+			var dt = new Date().getTime();
+			if (event.button < 2) {
+				if (dt - Addons.GrabBar.dt < sha.GetSystemInformation("DoubleClickTime")) {
+					this.bZoom = true;
+					return S_OK;
 				}
-				this.dv.right = rec.right - rec.left;
-				this.dv.bottom = rec.bottom - rec.top;
-				setTimeout(this.MoveMonit,25);
-			}
-		},
-
-		MoveMonit: function() {
-			if (Addons.GrabBar.Check()) {
+				Addons.GrabBar.dt = dt;
+				Addons.GrabBar.pt = api.Memory("POINT");
 				api.GetCursorPos(Addons.GrabBar.pt);
-				api.MoveWindow(te.hwnd, Addons.GrabBar.pt.x - Addons.GrabBar.dv.left, Addons.GrabBar.pt.y - Addons.GrabBar.dv.top, Addons.GrabBar.dv.right, Addons.GrabBar.dv.bottom, true);
-				setTimeout(Addons.GrabBar.MoveMonit,25);
-			} else {
-				Addons.GrabBar.MMove = false;
+				api.SetCapture(te.hwnd);
+				Addons.GrabBar.Capture = true;
 			}
-		},
-
-		Max: function () {
-			api.SendMessage(te.hwnd, WM_SYSCOMMAND, api.IsZoomed(te.hwnd) ? SC_RESTORE : SC_MAXIMIZE, 0);
-			return S_OK;
-		},
-
-		Check: function () {
-			return api.GetKeyState(VK_LBUTTON) < 0;
 		},
 
 		Popup: function () {
@@ -65,8 +25,52 @@ if (window.Addon == 1) {
 			api.GetCursorPos(pt);
 			api.PostMessage(te.hwnd, 0x313, 0, pt.x + (pt.y << 16));
 			return false;
+		},
+
+		Click: function () {
+			if (this.bZoom) {
+				api.SendMessage(te.hwnd, WM_SYSCOMMAND, api.IsZoomed(te.hwnd) ? SC_RESTORE : SC_MAXIMIZE, 0);
+				this.bZoom = false;
+			}
 		}
 	};
+
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
+		if (Addons.GrabBar.Capture) {
+			if (msg == WM_LBUTTONUP || api.GetKeyState(VK_LBUTTON) >= 0) {
+				api.ReleaseCapture();
+				Addons.GrabBar.Capture = false;
+			} else {
+				if (api.IsZoomed(te.hwnd)) {
+					if (IsDrag(pt, Addons.GrabBar.pt)) {
+						var rcZoomed = api.Memory("RECT");
+						api.GetWindowRect(te.hwnd, rcZoomed);
+						api.ReleaseCapture();
+						api.SendMessage(te.hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+						api.SetCapture(te.hwnd);
+						var rc = api.Memory("RECT");
+						api.GetWindowRect(te.hwnd, rc);
+						var w = rc.right - rc.left;
+						var h = rc.bottom - rc.top;
+						var x = pt.x - (pt.x - rcZoomed.Left) * (w / (rcZoomed.right - rcZoomed.left));
+						var y = pt.y - (pt.y - rcZoomed.top) * (h / (rcZoomed.bottom - rcZoomed.top));
+						api.MoveWindow(te.hwnd, x, y, w, h, true);
+						Addons.GrabBar.pt = pt.Clone();
+					}
+					return S_OK;
+				}
+				var dx = pt.x - Addons.GrabBar.pt.x;
+				var dy = pt.y - Addons.GrabBar.pt.y;
+				if (dx || dy) {
+					var rc = api.Memory("RECT");
+					api.GetWindowRect(te.hwnd, rc);
+					api.MoveWindow(te.hwnd, rc.left + dx, rc.top + dy, rc.right - rc.left, rc.bottom - rc.top, true);
+				}
+				Addons.GrabBar.pt = pt.Clone();
+			}
+			return S_OK;
+		}
+	}, true);
 
 	AddEvent("ChangeView", function (Ctrl) {
 		try {
@@ -78,6 +82,5 @@ if (window.Addon == 1) {
 		} catch (e) { }
 	});
 
-	SetAddon(Addon_Id, Default, ['<div id="grabbar" class="grabbar" unselectable="on" ondblclick="Addons.GrabBar.Max()" onmousedown="Addons.GrabBar.Down()" onmousemove="Addons.GrabBar.Move()" oncontextmenu="return Addons.GrabBar.Popup(this)" style="width: 100%; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default"></div>']);
-	Addons.GrabBar.div = document.getElementById(Addon_Id);
+	SetAddon(Addon_Id, Default, ['<div id="grabbar" class="grabbar" unselectable="on" onclick="Addons.GrabBar.Click()" onmousedown="Addons.GrabBar.Down()" oncontextmenu="return Addons.GrabBar.Popup(this)" style="width: 100%; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default"></div>']);
 }
