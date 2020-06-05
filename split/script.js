@@ -5,8 +5,11 @@ var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Split =
 	{
+		NoTop: item.getAttribute("NoTop"),
+		Close: item.getAttribute("Close"),
+
 		Exec: function (nMax, nMode) {
-			var TC = [te.Ctrl(CTRL_TC)];
+			var TC = [];
 			Addons.Split.Exec2(nMax, TC);
 			switch (nMode) {
 				case 1:
@@ -55,12 +58,14 @@ if (window.Addon == 1) {
 					break;
 			}
 			TC[0].Selected.Focus();
+			RunEvent1("VisibleChanged", TC[0]);
 		},
 
 		Exec2: function (nMax, TC) {
+			var TC0 = te.Ctrl(CTRL_TC);
 			var cTC = te.Ctrls(CTRL_TC);
 			var ix = Addons.Split.Sort(cTC);
-			var Group = TC[0] && TC[0].Count ? TC[0].Data.Group : 0;
+			var Group = TC0 && TC0.Count ? TC0.Data.Group : 0;
 			var freeTC = [];
 			var nTC = 0;
 			for (var i = cTC.length; i-- > 0;) {
@@ -78,7 +83,6 @@ if (window.Addon == 1) {
 				}
 			}
 			for (; nTC < nMax; nTC++) {
-				var path = "about:blank";
 				var type = CTRL_SB;
 				var viewmode = FVM_DETAILS;
 				var flags = FWF_SHOWSELALWAYS | FWF_NOWEBVIEW | FWF_AUTOARRANGE;
@@ -88,7 +92,6 @@ if (window.Addon == 1) {
 				if (TC[0]) {
 					var FV = TC[0].Selected;
 					if (FV) {
-						path = FV.FolderItem;
 						type = FV.Type;
 						viewmode = FV.CurrentViewMode;
 						flags = FV.FolderFlags;
@@ -99,12 +102,12 @@ if (window.Addon == 1) {
 				}
 				TC[nTC] = Addons.Split.CreateTC(freeTC, 0, 0, 0, 0, te.Data.Tab_Style, te.Data.Tab_Align, te.Data.Tab_TabWidth, te.Data.Tab_TabHeight, Group);
 				if (TC[nTC].Count == 0) {
-					TC[nTC].Selected.Navigate2(path, SBSP_NEWBROWSER, type, viewmode, flags, options, viewflags, icon, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root);
+					TC[nTC].Selected.Navigate2("about:blank", SBSP_NEWBROWSER, type, viewmode, flags, options, viewflags, icon, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root);
 					TC[nTC].Visible = true;
 				}
 			}
 			while (TC1 = freeTC.shift()) {
-				if (api.GetDisplayNameOf(TC1[0], SHGDN_FORPARSING) == "about:blank") {
+				if (Addons.Split.Close || api.GetDisplayNameOf(TC1[0], SHGDN_FORPARSING) == "about:blank") {
 					TC1.Close();
 				}
 			}
@@ -145,8 +148,15 @@ if (window.Addon == 1) {
 			for (var i = cTC.length; i--;) {
 				ix.push(i);
 			}
+			var Id = Addons.Split.NoTop ? te.Ctrl(CTRL_TC).Id : -1;
 			return ix.sort(
 				function (b, a) {
+					if (cTC[a].Id == Id) {
+						return -1;
+					}
+					if (cTC[b].Id == Id) {
+						return 1;
+					}
 					if (cTC[a].Visible) {
 						if (cTC[b].Visible) {
 							var rca = api.Memory("RECT");
@@ -180,10 +190,9 @@ if (window.Addon == 1) {
 		]);
 	});
 } else {
-	var s = ['<label>View</label><br>'];
-	var ar = ["1x1", "1x2", "2x1", "2x2"];
-	for (var i = 0; i < ar.length; i++) {
-		s.push('<label><input type="checkbox" id="!No', ar[i], '" />', ar[i], '</label>&nbsp;');
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
 	}
-	SetTabContents(0, "General", s);
 }
