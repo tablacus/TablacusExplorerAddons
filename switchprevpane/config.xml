@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
+    <Version>1.01</Version>
     <MinVersion>2020.6.5</MinVersion>
     <pubDate>Fri, 05 Jun 2020 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
@@ -14,7 +14,7 @@
   </en>
   <ja>
     <Name>前のペインに切り替える</Name>
-    <Description>前のペインに切り替えるコマンドと、次のペインを表す環境変数「%prevpane%」を追加します。</Description>
+    <Description>前のペインに切り替えるコマンドと、前のペインを表す環境変数「%prevpane%」を追加します。</Description>
   </ja>
   <zh>
   	<Name>上一個窗格</Name>
