@@ -15,17 +15,18 @@ if (window.Addon == 1) {
 					var hFont = api.SendMessage(hwnd, WM_GETFONT, 0, 0);
 					if (hFont != Addons.Font.hFont) {
 						api.SendMessage(hwnd, WM_SETFONT, Addons.Font.hFont, 1);
-						var nView = api.SendMessage(hwnd, LVM_GETVIEW, 0, 0);
-						api.SendMessage(hwnd, LVM_SETVIEW, nView == 1 ? 4 : 1, 0);
-						api.SendMessage(hwnd, LVM_SETVIEW, nView, 0);
 					}
 				}
 				if (Ctrl.TreeView) {
-					Addons.Font.SetTV(Ctrl.TreeView.hwndTree, Addons.Font.TreeHeight || -1);
+					Addons.Font.SetTV(Ctrl.TreeView.hwndTree, Addons.Font.TreeHeight);
 				}
-				if (FV.Type == CTRL_EB) {
-					Addons.Font.SetTV(FindChildByClass(FV.hwnd, WC_TREEVIEW), Addons.Font.FrameHeight);
-				}
+				Addons.Font.SetFrame(FV);
+			}
+		},
+
+		SetFrame: function (FV) {
+			if (FV.Type == CTRL_EB) {
+				Addons.Font.SetTV(FindChildByClass(FV.hwnd, WC_TREEVIEW), Addons.Font.FrameHeight);
 			}
 		},
 
@@ -37,10 +38,12 @@ if (window.Addon == 1) {
 				}
 				var dwStyle = api.GetWindowLongPtr(hwnd, GWL_STYLE);
 				if (nHeight) {
-					if (!(dwStyle & 0x4000)) {
-						api.SetWindowLongPtr(hwnd, GWL_STYLE, dwStyle | 0x4000);
+					if (nHeight != api.SendMessage(hwnd, TVM_GETITEMHEIGHT, 0, 0)) {
+						if (!(dwStyle & 0x4000)) {
+							api.SetWindowLongPtr(hwnd, GWL_STYLE, dwStyle | 0x4000);
+						}
+						api.SendMessage(hwnd, TVM_SETITEMHEIGHT, nHeight, 0);
 					}
-					api.SendMessage(hwnd, TVM_SETITEMHEIGHT, nHeight, 0);
 				} else if (dwStyle & 0x4000) {
 					api.SetWindowLongPtr(hwnd, GWL_STYLE, dwStyle & ~0x4000);
 				}
@@ -53,12 +56,21 @@ if (window.Addon == 1) {
 			for (var i in cFV) {
 				Addons.Font.Exec(cFV[i]);
 			}
+		},
+
+		Clear: function () {
+			api.SystemParametersInfo(SPI_GETICONTITLELOGFONT, DefaultFont.Size, DefaultFont, 0);
+			if (Addons.Font.TreeHeight) {
+				Addons.Font.TreeHeight = -1;
+			}
+			Addons.Font.FrameHeight = 0;
+			FontChanged();
 		}
 	}
 
 	AddEvent("ListViewCreated", Addons.Font.Exec);
 
-	AddEvent("ChangeView", Addons.Font.Exec);
+	AddEvent("ChangeView", Addons.Font.SetFrame);
 
 	AddEvent("Create", function (Ctrl) {
 		if (Ctrl.Type <= CTRL_EB) {
@@ -72,18 +84,11 @@ if (window.Addon == 1) {
 
 	AddEvent("FontChanged", Addons.Font.Init);
 
-	AddEventId("AddonDisabledEx", "font", function (Id) {
-		api.SystemParametersInfo(SPI_GETICONTITLELOGFONT, DefaultFont.Size, DefaultFont, 0);
-		if (Addons.Font.TreeHeight) {
-			Addons.Font.TreeHeight = -1;
-		}
-		Addons.Font.FrameHeight = 0;
-		FontChanged();
-	});
+	AddEventId("AddonDisabledEx", "font", Addons.Font.Clear);
 
 	DefaultFont.lfFaceName = item.getAttribute("Name") || DefaultFont.lfFaceName;
 	var h = item.getAttribute("Size");
-	if (h >= 6 && h <= 18) {
+	if (h >= 6 && h <= 24) {
 		DefaultFont.lfHeight = - (h * screen.logicalYDPI / 72);
 	}
 	DefaultFont.lfWeight = item.getAttribute("Weight") || DefaultFont.lfWeight;
@@ -91,6 +96,7 @@ if (window.Addon == 1) {
 	document.body.style.fontFamily = DefaultFont.lfFaceName;
 	document.body.style.fontSize = Math.abs(DefaultFont.lfHeight) + "px";
 	document.body.style.fontWeight = DefaultFont.lfWeight || 400;
+	Addons.Font.hFont = CreateFont(DefaultFont);
 	FontChanged();
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");

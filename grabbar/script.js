@@ -73,13 +73,15 @@ if (window.Addon == 1) {
 	}, true);
 
 	AddEvent("ChangeView", function (Ctrl) {
-		try {
-			setTimeout(function () {
-				if (Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
-					document.getElementById(Addon_Id).innerText = Ctrl.Title + ' - Tablacus Explorer';
-				}
+		if (Ctrl.Parent.Visible && Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
+			if (Addons.GrabBar.tid) {
+				clearTimeout(Addons.GrabBar.tid);
+			}
+			Addons.GrabBar.tid = setTimeout(function () {
+				delete Addons.GrabBar.tid;
+				document.getElementById(Addon_Id).innerText = Ctrl.Title + ' - Tablacus Explorer';
 			}, 99);
-		} catch (e) { }
+		}
 	});
 
 	SetAddon(Addon_Id, Default, ['<div id="grabbar" class="grabbar" unselectable="on" onclick="Addons.GrabBar.Click()" onmousedown="Addons.GrabBar.Down()" oncontextmenu="return Addons.GrabBar.Popup(this)" style="width: 100%; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default"></div>']);

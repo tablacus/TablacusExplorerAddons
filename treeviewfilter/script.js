@@ -15,6 +15,11 @@ if (window.Addon == 1) {
 					TV.Expand(FV);
 				}
 			}
+		},
+
+		Clear: function () {
+			te.Data.TreeHiddenFilter = null;
+			Addons.TreeViewFilter.Refresh();
 		}
 	};
 	AddEvent("IncludeItem", function (Ctrl, pid)
@@ -22,7 +27,7 @@ if (window.Addon == 1) {
 		return PathMatchEx(pid.Path, Addons.TreeViewFilter.Hidden);
 	});
 
-	AddEventId("AddonDisabledEx", Addon_Id, Addons.TreeViewFilter);
+	AddEventId("AddonDisabledEx", Addon_Id, Addons.TreeViewFilter.Clear);
 
 	if (Addons.TreeViewFilter.Hidden != te.Data.TreeHiddenFilter) {
 		te.Data.TreeHiddenFilter = Addons.TreeViewFilter.Hidden;
