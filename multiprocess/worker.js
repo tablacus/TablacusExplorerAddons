@@ -67,6 +67,16 @@ if (MainWindow.Exchange) {
 	var ex = MainWindow.Exchange[arg[3]];
 	if (ex) {
 		delete MainWindow.Exchange[arg[3]];
+		var KeyState0 = api.Memory("KEYSTATE");
+		api.GetKeyboardState(KeyState0);
+		if (ex.State.length) {
+			var KeyState = api.Memory("KEYSTATE");
+			api.GetKeyboardState(KeyState);
+			for (var i = ex.State.length; i--;) {
+				KeyState.Write(ex.State[i], VT_UI1, 0x80);
+			}
+			api.SetKeyboardState(KeyState);
+		}
 		ex.time = new Date().getTime();
 		ex.nThreads = api.GetThreadCount(pid0);
 		switch (ex.Mode) {
@@ -79,6 +89,9 @@ if (MainWindow.Exchange) {
 			case 2:
 				InvokeCommand(CommandID_PASTE, ex.Dest);
 				break;
+		}
+		if (ex.State.length) {
+			api.SetKeyboardState(KeyState0);
 		}
 	}
 	g_bClose = true;

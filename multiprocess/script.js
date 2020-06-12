@@ -22,9 +22,6 @@ Addons.MultiProcess =
 		}
 		var dwEffect = pdwEffect[0];
 		if (Dest !== null) {
-			if (api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
-				return false;
-			}
 			var path = api.GetDisplayNameOf(Dest, SHGDN_FORPARSING);
 			if (/^::{/.test(path) || (/^[A-Z]:\\|^\\/i.test(path) && !fso.FolderExists(path))) {
 				return false;
@@ -36,8 +33,33 @@ Addons.MultiProcess =
 				var DropTarget = api.DropTarget(Dest);
 				DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 			}
-		} else if (/^::{/.test(api.GetDisplayNameOf(Items.Item(-1), SHGDN_FORPARSING))) {
-			return false;
+			var strTemp = (fso.GetSpecialFolder(2).Path + "\\").replace(/\\\\$/, "\\");
+			var strTemp2;
+			var arRen1 = [], arRen2 = [];
+			var Items2 = api.CreateObject("FolderItems");
+			for (var i = Items.Count; i-- > 0;) {
+				var path1 = Items.Item(i).Path;
+				if (IsExists(path1)) {
+					if (!api.StrCmpNI(path1, strTemp, strTemp.length)) {
+						if (!arRen1.length) {
+							strTemp2 = strTemp + "tablacus\\" + fso.GetTempName() + "\\";
+							DeleteItem(strTemp2);
+						}
+						arRen1.unshift(path1);
+						path1 = strTemp2 + path1.slice(strTemp.length);
+						arRen2.unshift(path1);
+						CreateFolder(fso.GetParentFolderName(path1));
+					}
+					Items2.AddItem(path1);
+				} else {
+					arRen1.length = 0;
+					break;
+				}
+			}
+			if (arRen1.length) {
+				api.SHFileOperation(FO_MOVE, arRen1.join("\0"), arRen2.join("\0"), FOF_MULTIDESTFILES | FOF_SILENT, false);
+				Items = Items2;
+			}
 		}
 		if (nMode == 0) {
 			if (grfKeyState & MK_RBUTTON) {
@@ -73,6 +95,12 @@ Addons.MultiProcess =
 			}
 		}, 5000);
 
+		var State = [VK_SHIFT, VK_CONTROL, VK_MENU];
+		for (var i = State.length; i--;) {
+			if (api.GetKeyState(State[i]) >= 0) {
+				State.splice(i, 1);
+			}
+		}
 		OpenNewProcess("addons\\multiprocess\\worker.js",
 		{
 			Items: Items,
@@ -83,6 +111,7 @@ Addons.MultiProcess =
 			dwEffect: dwEffect,
 			TimeOver: item.getAttribute("TimeOver"),
 			Sec: item.getAttribute("Sec"),
+			State: State,
 			Callback: Addons.MultiProcess.Player
 		});
 		return true;
@@ -100,7 +129,7 @@ Addons.MultiProcess =
 			api.PlaySound(src, null, 1);
 			return;
 		}
-		if (document.documentMode >= 11 && api.PathMatchSpec(src, "*.mp3;*.m4a;*.webm;*.mp4")) {
+		if (g_.IEVer >= 11 && api.PathMatchSpec(src, "*.mp3;*.m4a;*.webm;*.mp4")) {
 			el = document.createElement('audio');
 			if (autoplay === true) {
 				el.setAttribute("autoplay", "true");

@@ -1,8 +1,7 @@
 ﻿if (window.Addon == 1) {
 	Addons.FastCopy =
 	{
-		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bDelete)
-		{
+		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bDelete) {
 			if (!(grfKeyState & MK_LBUTTON) || Items.Count == 0) {
 				return false;
 			}
@@ -15,9 +14,6 @@
 			if (!strCmd || !fso.FileExists(strCmd)) {
 				return false;
 			}
-			if (!bDelete && api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Items.Item(-1), false)) {
-				return false;
-			}
 			if (Dest) {
 				try {
 					Dest = Dest.ExtendedProperty("linktarget") || Dest.Path;
@@ -26,12 +22,32 @@
 				}
 			}
 			if (bDelete || (Dest != "" && fso.FolderExists(Dest))) {
-				for (i = Items.Count - 1; i >= 0; i--) {
-					if (!IsExists(Items.Item(i).Path)) {
+				var strTemp = (fso.GetSpecialFolder(2).Path + "\\").replace(/\\\\$/, "\\");
+				var strTemp2;
+				var arRen1 = [], arRen2 = [];
+				var Items2 = api.CreateObject("FolderItems");
+				for (var i = Items.Count; i-- > 0;) {
+					var path1 = Items.Item(i).Path;
+					if (IsExists(path1)) {
+						if (!bDelete && !api.StrCmpNI(path1, strTemp, strTemp.length)) {
+							if (!arRen1.length) {
+								strTemp2 = strTemp + "tablacus\\" + fso.GetTempName() + "\\";
+								DeleteItem(strTemp2);
+							}
+							arRen1.unshift(path1);
+							path1 = strTemp2 + path1.slice(strTemp.length);
+							arRen2.unshift(path1);
+							CreateFolder(fso.GetParentFolderName(path1));
+						}
+					} else {
 						return false;
 					}
+					Items2.AddItem(path1);
 				}
-				var hDrop = Items.hDrop;
+				if (arRen1.length) {
+					api.SHFileOperation(FO_MOVE, arRen1.join("\0"), arRen2.join("\0"), FOF_MULTIDESTFILES | FOF_SILENT, false);
+				}
+				var hDrop = arRen1.length ? Items2.hDrop : Items.hDrop;
 				var strFunc;
 				var bStart;
 				if (bDelete) {
@@ -71,8 +87,7 @@
 		}
 	};
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		switch (Ctrl.Type) {
 			case CTRL_SB:
 			case CTRL_EB:
@@ -100,8 +115,7 @@
 		}
 	});
 
-	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
-	{
+	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
 			switch ((wParam & 0xfff) + 1) {
 				case CommandID_PASTE:
@@ -120,8 +134,7 @@
 		}
 	});
 
-	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
-	{
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 		switch (Verb + 1) {
 			case CommandID_PASTE:
 				var Target = ContextMenu.Items();

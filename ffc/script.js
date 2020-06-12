@@ -11,14 +11,9 @@ if (window.Addon == 1) {
 	{
 		bDiffDriveOnly: item.getAttribute("DiffDriveOnly"),
 
-		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver)
-		{
+		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver) {
 			var i = Items.Count;
 			if (i == 0 || !(grfKeyState & MK_LBUTTON)) {
-				return false;
-			}
-			var Parent = Items.Item(-1);
-			if (api.ILIsParent(wsh.ExpandEnvironmentStrings("%TEMP%"), Parent, false)) {
 				return false;
 			}
 			if (Dest) {
@@ -28,11 +23,33 @@ if (window.Addon == 1) {
 					path = Dest.Path || Dest;
 				}
 				if (path && fso.FolderExists(path)) {
+					var strTemp = (fso.GetSpecialFolder(2).Path + "\\").replace(/\\\\$/, "\\");
+					var strTemp2;
+					var arRen1 = [], arRen2 = [];
+					var Items2 = api.CreateObject("FolderItems");
 					while (i--) {
-						if (!IsExists(Items.Item(i).Path)) {
+						var path1 = Items.Item(i).Path;
+						if (IsExists(path1)) {
+							if (!api.StrCmpNI(path1, strTemp, strTemp.length)) {
+								if (!arRen1.length) {
+									strTemp2 = strTemp + "tablacus\\" + fso.GetTempName() + "\\";
+									DeleteItem(strTemp2);
+								}
+								arRen1.unshift(path1);
+								path1 = strTemp2 + path1.slice(strTemp.length);
+								arRen2.unshift(path1);
+								CreateFolder(fso.GetParentFolderName(path1));
+							}
+						} else {
+							arRen1.length = 0;
 							pdwEffect[0] = DROPEFFECT_NONE;
 							break;
 						}
+						Items2.AddItem(path1);
+					}
+					if (arRen1.length) {
+						api.SHFileOperation(FO_MOVE, arRen1.join("\0"), arRen2.join("\0"), FOF_MULTIDESTFILES | FOF_SILENT, false);
+						Items = Items2;
 					}
 					if (pdwEffect[0]) {
 						nVerb = -1;
@@ -43,7 +60,7 @@ if (window.Addon == 1) {
 						if (pdwEffect[0] & DROPEFFECT_COPY) {
 							nVerb = GetAddonOptionEx("ffc", "Copy");
 						} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
-							if (!(Addons.FFC.bDiffDriveOnly && api.PathIsSameRoot(Parent.Path, path))) {
+							if (!(Addons.FFC.bDiffDriveOnly && api.PathIsSameRoot(Items.Item(-1).Path, path))) {
 								nVerb = GetAddonOptionEx("ffc", "Move");
 							}
 						}
@@ -66,8 +83,7 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		switch (Ctrl.Type) {
 			case CTRL_SB:
 			case CTRL_EB:
@@ -95,8 +111,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
-	{
+	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
 			switch ((wParam & 0xfff) + 1) {
 				case CommandID_PASTE:
@@ -109,8 +124,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
-	{
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 		switch (Verb + 1) {
 			case CommandID_PASTE:
 				var Target = ContextMenu.Items();

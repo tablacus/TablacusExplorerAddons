@@ -6,32 +6,16 @@ Addons.InactivePane =
 	tid: {},
 
 	Arrange: function (Ctrl) {
-		var FV = (Ctrl.Type == CTRL_TC) ? Ctrl.Selected : Ctrl;
+		var FV = GetFolderView(Ctrl);
 		if (FV) {
 			delete Addons.InactivePane.tid[FV.hwnd];
 			var hwnd = FV.hwndList;
 			if (hwnd) {
-				if (Addons.InactivePane.IsActive(Ctrl)) {
-					return Addons.InactivePane.Active(Ctrl);
+				if (Addons.InactivePane.IsActive(FV)) {
+					return Addons.InactivePane.Active(FV);
 				}
-				Addons.InactivePane.SetBKColor(Ctrl, hwnd, Addons.InactivePane.Color, Addons.InactivePane.TextColor);
+				Addons.InactivePane.SetBKColor(FV, hwnd, Addons.InactivePane.Color, Addons.InactivePane.TextColor);
 				api.InvalidateRect(hwnd, null, true);
-			}
-		}
-	},
-
-	Arrange2: function (Ctrl) {
-		if (Ctrl) {
-			if (Ctrl.Type == CTRL_TE) {
-				Ctrl = te.Ctrl(CTRL_FV);
-			}
-			if ((Ctrl || {}).Type == CTRL_SB) {
-				Addons.InactivePane.Arrange(Ctrl);
-				if (!Addons.InactivePane.tid[Ctrl.hwnd]) {
-					Addons.InactivePane.tid[Ctrl.hwnd] = setTimeout(function () {
-						Addons.InactivePane.Arrange(Ctrl);
-					}, 500);
-				}
 			}
 		}
 	},
@@ -68,27 +52,18 @@ Addons.InactivePane =
 		return Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id;
 	},
 
-	OnChange: function (Ctrl) {
-		var cTC = te.Ctrls(CTRL_TC);
-		for (var i in cTC) {
-			var TC = cTC[i];
-			if (TC && TC.Visible) {
-				Addons.InactivePane.Arrange(TC.Selected);
-			}
-		}
-	},
-
 	IsDark: function () {
 		var cl = MainWindow.GetSysColor(COLOR_WINDOW);
 		return (cl & 0xff) * 299 + (cl & 0xff00) * 2.29296875 + (cl & 0xff0000) * 0.001739501953125 < 127500;
 	}
 }
 if (window.Addon == 1) {
-	AddEvent("ChangeView", Addons.InactivePane.OnChange);
-	AddEvent("VisibleChanged", function () {
-		setTimeout(function () {
-			Addons.InactivePane.OnChange();
-		}, 99);
+	AddEvent("Arrange", Addons.InactivePane.Arrange);
+
+	AddEvent("VisibleChanged", function (Ctrl) {
+		if (Ctrl.Visible) {
+			Addons.InactivePane.Arrange(Ctrl);
+		}
 	});
 
 	AddEventId("AddonDisabledEx", "inactivepane", function () {
@@ -106,11 +81,11 @@ if (window.Addon == 1) {
 		Addons.InactivePane.TextColor = cl ? GetWinColor(cl) : Addons.InactivePane.IsDark() ? 0xaaaaaa : 0x444444;
 		cl = item.getAttribute("Color");
 		Addons.InactivePane.Color = cl ? GetWinColor(cl) : Addons.InactivePane.IsDark() ? 0x444444 : 0xaaaaaa;
-		var cTC = te.Ctrls(CTRL_TC);
+		var cTC = te.Ctrls(CTRL_TC, true);
 		for (var i in cTC) {
 			var TC = cTC[i];
 			if (TC) {
-				Addons.InactivePane.Arrange2(TC.Selected);
+				Addons.InactivePane.Arrange(TC.Selected);
 			}
 		}
 	});
