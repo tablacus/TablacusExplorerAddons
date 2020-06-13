@@ -9,11 +9,15 @@ if (window.Addon == 1) {
 		Color: GetBGRA(GetWinColor(item.getAttribute("Color2") || "#cccccc"), (item.getAttribute("Alpha") & 0xff) || 128),
 
 		Arrange: function (Ctrl, nDog) {
-			delete Addons.Stripes.tid[Ctrl.hwnd];
-			var hwnd = Ctrl.hwndList;
+			var FV = GetFolderView(Ctrl);
+			if (!FV) {
+				return;
+			}
+			var hwnd = FV.hwndList;
+			delete Addons.Stripes.tid[FV.hwnd];
 			if (hwnd) {
 				var lvbk = api.Memory("LVBKIMAGE");
-				if (Ctrl.CurrentViewMode == FVM_DETAILS && !api.SendMessage(hwnd, LVM_GETGROUPCOUNT, 0, 0) && !api.SendMessage(hwnd, LVM_HASGROUP, 9425, 0)) {
+				if (FV.CurrentViewMode == FVM_DETAILS && !api.SendMessage(hwnd, LVM_GETGROUPCOUNT, 0, 0) && !api.SendMessage(hwnd, LVM_HASGROUP, 9425, 0)) {
 					var rc = api.Memory("RECT");
 					api.SendMessage(hwnd, LVM_GETITEMRECT, 0, rc);
 					var nHeight = rc.Bottom - rc.Top;
@@ -25,7 +29,7 @@ if (window.Addon == 1) {
 					if (api.GetWindowLongPtr(hwnd, GWL_STYLE) & WS_HSCROLL) {
 						h -= api.GetSystemMetrics(SM_CYHSCROLL);
 					}
-					if (Ctrl.Type == CTRL_EB) {
+					if (FV.Type == CTRL_EB) {
 						h -= 4;
 					}
 					if (nHeight > 0 && w > 0 && h > 0) {
@@ -40,6 +44,7 @@ if (window.Addon == 1) {
 							if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
 								api.DeleteObject(lvbk.hbm);
 							}
+							FV.ViewFlags |= 8;
 						}
 					} else {
 						Addons.Stripes.Retry(Ctrl, nDog);
@@ -54,40 +59,9 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Arrange2: function (Ctrl) {
-			if (Ctrl) {
-				if (Ctrl.Type == CTRL_TE) {
-					Ctrl = te.Ctrl(CTRL_FV);
-					if (!Ctrl) {
-						return;
-					}
-				}
-				if (Ctrl.Type == CTRL_SB) {
-					Addons.Stripes.Arrange(Ctrl);
-					if (!Addons.Stripes.tid[Ctrl.hwnd]) {
-						Addons.Stripes.tid[Ctrl.hwnd] = setTimeout(function () {
-							Addons.Stripes.Arrange(Ctrl);
-						}, 99);
-					}
-				}
-			}
-		},
-
-		Arrange3: function (Ctrl) {
-			setTimeout(function () {
-				var cTC = te.Ctrls(CTRL_TC);
-				for (var i in cTC) {
-					var TC = cTC[i];
-					if (TC && TC.Visible) {
-						Addons.Stripes.Arrange(TC.Selected);
-					}
-				}
-			}, 99);
-		},
-
 		Retry: function (Ctrl, nDog) {
-			nDog = (nDog || 0) + 1;
-			if (nDog < 9) {
+			nDog = api.LowPart(nDog) + 1;
+			if (Ctrl && nDog < 9) {
 				Addons.Stripes.tid[Ctrl.hwnd] = setTimeout(function () {
 					Addons.Stripes.Arrange(Ctrl, nDog);
 				}, nDog * 100);
@@ -116,12 +90,13 @@ if (window.Addon == 1) {
 		}
 	}
 
-	AddEvent("NavigateComplete", Addons.Stripes.Arrange);
-	AddEvent("Command", Addons.Stripes.Arrange2);
+	AddEvent("ContentsChanged", Addons.Stripes.Arrange);
 	AddEvent("IconSizeChanged", Addons.Stripes.Arrange);
-	AddEvent("Arrange", Addons.Stripes.Arrange3);
-	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
-		Addons.Stripes.Arrange2(te.CtrlFromWindow(hwnd));
+	AddEvent("ViewModeChanged", Addons.Stripes.Arrange);
+	AddEvent("Arrange", function (Ctrl) {
+		setTimeout(function () {
+			Addons.Stripes.Arrange(Ctrl.Selected);
+		}, 99);
 	});
 	AddEventId("AddonDisabledEx", "stripes", Addons.Stripes.Clear);
 	Addons.Stripes.Resize(5000);
