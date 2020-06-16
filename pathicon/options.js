@@ -7,8 +7,7 @@ if (ado) {
 var arIndex = ["Path", "Small", "Large"];
 var fnConfig = fso.BuildPath(te.Data.DataFolder, "config\\pathicon.tsv");
 
-function SaveIC(mode)
-{
+function SaveIC(mode) {
 	if (g_Chg[mode]) {
 		var ado = api.CreateObject("ads");
 		ado.CharSet = "utf-8";
@@ -21,8 +20,7 @@ function SaveIC(mode)
 	}
 }
 
-EditIC = function(mode)
-{
+EditIC = function (mode) {
 	if (g_x.List.selectedIndex < 0) {
 		return;
 	}
@@ -37,8 +35,7 @@ EditIC = function(mode)
 	document.E.Path.value = document.E.Path.value;
 }
 
-ReplaceIC = function(mode)
-{
+ReplaceIC = function (mode) {
 	ClearX();
 	if (g_x[mode].selectedIndex < 0) {
 		g_x[mode].selectedIndex = ++g_x[mode].length - 1;
@@ -51,8 +48,7 @@ ReplaceIC = function(mode)
 	g_Chg[mode] = true;
 }
 
-ShowIconX = function(s, i)
-{
+ShowIconX = function (s, i) {
 	var image = Addons.PathIcon.GetIconImage(document.E.elements[s].value, i);
 	document.getElementById('icon_' + i).src = image ? GetThumbnail(image, [16, 192][i] * screen.logicalYDPI / 96, true).DataURI("image/png") : "";
 }
@@ -66,7 +62,7 @@ try {
 		ar.push(ado.ReadText(adReadLine));
 	}
 	ado.Close();
-} catch (e) {}
+} catch (e) { }
 
 g_x.List.length = ar.length;
 for (var i = 0; i < ar.length; i++) {
@@ -89,8 +85,7 @@ if (dialogArguments.Data.FV) {
 	}
 }
 
-SaveLocation = function ()
-{
+SaveLocation = function () {
 	if (g_Chg.Data) {
 		ReplaceIC("List");
 	}
