@@ -1,6 +1,6 @@
 // Tablacus Shell icon overlay wrapper (C)2018 Gaku
 // MIT Lisence
-// Visual C++ 2010 Express Edition SP1
+// Visual Studio Express 2017 for Windows Desktop
 // Windows SDK v7.1
 // https://tablacus.github.io/
 
@@ -10,14 +10,19 @@
 const TCHAR g_szProgid[] = TEXT("Tablacus.IconOverlay");
 const TCHAR g_szClsid[] = TEXT("{ADB2CB70-5C00-4fa2-B121-CB60B556FFA7}");
 HINSTANCE	g_hinstDll = NULL;
-LONG		g_lLocks = 0;
 CteBase		*g_pBase = NULL;
-std::vector<IShellIconOverlayIdentifier *>	g_pIconOverlayHandlers;
+std::vector<TEGetOverlayIcon *>	g_pIconOverlay;
+HANDLE		g_hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+LONG		g_lLocks = 0;
+LONG		g_lThreads = 0;
+DWORD		g_dwBase = 11;
+DWORD		g_dwCookie = 0;
+BOOL		g_bAlive = TRUE;
 
 TEmethod methodBASE[] = {
 	{ 0x60010000, L"Init" },
-	{ 0x60010001, L"GetOverlayInfo" },
-	{ 0x60010002, L"GetOverlayIconIndex" },
+	{ 0x60010001, L"Finalize" },
+	{ 0x60010002, L"GetOverlayIcon" },
 };
 
 // Unit
@@ -45,13 +50,14 @@ VOID teGetProcAddress(HMODULE hModule, LPSTR lpName, FARPROC *lpfnA, FARPROC *lp
 	}
 }
 
-void LockModule(BOOL bLock)
+VOID LockModule()
 {
-	if (bLock) {
-		InterlockedIncrement(&g_lLocks);
-	} else {
-		InterlockedDecrement(&g_lLocks);
-	}
+	::InterlockedIncrement(&g_lLocks);
+}
+
+VOID UnlockModule()
+{
+	::InterlockedDecrement(&g_lLocks);
 }
 
 HRESULT ShowRegError(LSTATUS ls)
@@ -547,6 +553,94 @@ VOID teFreeAnsiString(LPSTR *lplpA)
 	*lplpA = NULL;
 }
 
+static void threadGetOverlayIcon(void *args)
+{
+	::OleInitialize(NULL);
+	try {
+		::InterlockedIncrement(&g_lThreads);
+		DWORD dwBase = MAXDWORD;
+		std::vector<IShellIconOverlayIdentifier *>	pIconOverlayHandlers;
+		IGlobalInterfaceTable *pGlobalInterfaceTable;
+		CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pGlobalInterfaceTable));
+		do {
+			if (dwBase != g_dwBase) {
+				while (!pIconOverlayHandlers.empty()) {
+					pIconOverlayHandlers.back()->Release();
+					pIconOverlayHandlers.pop_back();
+				}
+				dwBase = g_dwBase;
+				DWORD dwIndex = dwBase;
+				TCHAR pszName[MAX_PATH * 2], pszClsid[MAX_PATH];
+				DWORD dwNameSize = MAX_PATH;
+				DWORD dwSize = sizeof(pszClsid);
+				FILETIME ftLastWriteTime;
+				HKEY hKey, hKey1;
+				LPWSTR pszKey = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers";
+				lstrcpy(pszName, pszKey);
+				lstrcat(pszName, L"\\");
+				int nName = lstrlen(pszName);
+				if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, pszKey, 0, KEY_ENUMERATE_SUB_KEYS, &hKey) == ERROR_SUCCESS) {
+					LONG lRet;
+					while ((lRet = RegEnumKeyEx(hKey, dwIndex++, &pszName[nName], &dwNameSize, NULL, NULL, NULL, &ftLastWriteTime)) != ERROR_NO_MORE_ITEMS) {
+						if (lRet == ERROR_SUCCESS) {
+							if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, pszName, 0, KEY_READ, &hKey1) == ERROR_SUCCESS) {
+								if (RegQueryValueEx(hKey1, NULL, NULL, NULL, (LPBYTE)&pszClsid, &dwSize) == ERROR_SUCCESS) {
+									CLSID clsid;
+									if SUCCEEDED(CLSIDFromString(pszClsid, &clsid)) {
+										IShellIconOverlayIdentifier *psio = NULL;
+										if SUCCEEDED(CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&psio))) {
+											pIconOverlayHandlers.push_back(psio);
+										}
+									}
+								}
+								RegCloseKey(hKey1);
+							}
+							dwNameSize = MAX_PATH;
+						}
+					}
+					RegCloseKey(hKey);
+				}
+			}
+			while (!g_pIconOverlay.empty()) {
+				TEGetOverlayIcon *pGOI = g_pIconOverlay.back();
+				g_pIconOverlay.pop_back();
+				if (g_bAlive) {
+					for (size_t i = 0; i < pIconOverlayHandlers.size(); ++i) {
+						if (pIconOverlayHandlers[i]->IsMemberOf(pGOI->bsPath, pGOI->dwAttrib) == S_OK) {
+							TCHAR pszIconFile[MAX_PATH * 2];
+							int iIndex;
+							DWORD dwFlags;
+							if SUCCEEDED(pIconOverlayHandlers[i]->GetOverlayInfo(pszIconFile, sizeof(pszIconFile), &iIndex, &dwFlags)) {
+								IDispatch *pCB;
+								if SUCCEEDED(pGlobalInterfaceTable->GetInterfaceFromGlobal(g_dwCookie, IID_PPV_ARGS(&pCB))) {
+									VARIANT *pv = GetNewVARIANT(5);
+									teSetSZ(&pv[4], pGOI->bsPath);
+									teSetSZ(&pv[3], pszIconFile);
+									teSetLong(&pv[2], iIndex);
+									teSetLong(&pv[1], dwFlags);
+									teSetLong(&pv[0], pGOI->Id);
+									Invoke4(pCB, NULL, 5, pv);
+									break;
+								}
+							}
+						}
+					}
+				}
+				teSysFreeString(&pGOI->bsPath);
+			}
+			ResetEvent(g_hEvent);
+		} while ((WaitForSingleObject(g_hEvent, 10000) != WAIT_TIMEOUT || !g_pIconOverlay.empty()) && g_bAlive);
+
+		while (!pIconOverlayHandlers.empty()) {
+			pIconOverlayHandlers.back()->Release();
+			pIconOverlayHandlers.pop_back();
+		}
+		pGlobalInterfaceTable->Release();
+	} catch (...) {}
+	::InterlockedDecrement(&g_lThreads);
+	::OleUninitialize();
+	::_endthread();
+}
 
 // Initialize & Finalize
 BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
@@ -567,7 +661,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 
 STDAPI DllCanUnloadNow(void)
 {
-	return g_lLocks == 0 ? S_OK : S_FALSE;
+	return g_lLocks + g_lThreads  == 0 ? S_OK : S_FALSE;
 }
 
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppv)
@@ -644,8 +738,27 @@ CteBase::CteBase()
 
 CteBase::~CteBase()
 {
-	for (int i = g_pIconOverlayHandlers.size(); i-- > 0;) {
-		SafeRelease(&g_pIconOverlayHandlers[i]);
+	Finalize();
+	CloseHandle(g_hEvent);
+}
+
+VOID CteBase::Finalize()
+{
+	while (!g_pIconOverlay.empty()) {
+		TEGetOverlayIcon *pGOI = g_pIconOverlay.back();
+		g_pIconOverlay.pop_back();
+		teSysFreeString(&pGOI->bsPath);
+	}
+	g_bAlive = FALSE;
+	if (g_lThreads) {
+		SetEvent(g_hEvent);
+	}
+	if (g_dwCookie) {
+		IGlobalInterfaceTable *pGlobalInterfaceTable;
+		CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pGlobalInterfaceTable));
+		pGlobalInterfaceTable->RevokeInterfaceFromGlobal(g_dwCookie);
+		pGlobalInterfaceTable->Release();
+		g_dwCookie = 0;
 	}
 }
 
@@ -695,98 +808,38 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 	HRESULT hr = S_OK;
 	try {
 		switch (dispIdMember) {
-		//Init
-		case 0x60010000:
-			if (nArg >= 0) {
-				DWORD dwIndex = GetIntFromVariant(&pDispParams->rgvarg[nArg]);
-				for (int i = g_pIconOverlayHandlers.size(); i-- > 0;) {
-					SafeRelease(&g_pIconOverlayHandlers[i]);
+		case 0x60010000://Init
+			if (nArg >= 1 && pDispParams->rgvarg[nArg - 1].vt == VT_DISPATCH) {
+				g_dwBase = GetIntFromVariant(&pDispParams->rgvarg[nArg]);
+				IGlobalInterfaceTable *pGlobalInterfaceTable;
+				CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pGlobalInterfaceTable));
+				if (g_dwCookie) {
+					pGlobalInterfaceTable->RevokeInterfaceFromGlobal(g_dwCookie);
 				}
-				g_pIconOverlayHandlers.clear();
-				TCHAR pszName[MAX_PATH * 2], pszClsid[MAX_PATH];
-				DWORD dwNameSize = MAX_PATH;
-				DWORD dwSize = sizeof(pszClsid);
-				FILETIME ftLastWriteTime;
-				HKEY hKey, hKey1;
-				LPWSTR pszKey = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers";
-				lstrcpy(pszName, pszKey);
-				lstrcat(pszName, L"\\");
-				int nName = lstrlen(pszName);
-				if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, pszKey, 0, KEY_ENUMERATE_SUB_KEYS, &hKey) == ERROR_SUCCESS) {
-					LONG lRet;
-					while ((lRet = RegEnumKeyEx(hKey, dwIndex++, &pszName[nName], &dwNameSize, NULL, NULL, NULL, &ftLastWriteTime)) != ERROR_NO_MORE_ITEMS) {
-						if (lRet == ERROR_SUCCESS) {
-							if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, pszName, 0, KEY_READ, &hKey1) == ERROR_SUCCESS) {
-								if (RegQueryValueEx(hKey1, NULL, NULL, NULL, (LPBYTE)&pszClsid, &dwSize) == ERROR_SUCCESS) {
-									CLSID clsid;
-									if SUCCEEDED(CLSIDFromString(pszClsid, &clsid)) {
-										IShellIconOverlayIdentifier *psio;
-										if SUCCEEDED(CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&psio))) {
-											TCHAR pszIconFile[MAX_PATH * 2];
-											int iIndex;
-											DWORD dwFlags;
-											if (psio->GetOverlayInfo(pszIconFile, sizeof(pszIconFile), &iIndex, &dwFlags) == S_OK) {
-												g_pIconOverlayHandlers.push_back(psio);
-											}
-										}
-									}
-								}
-								RegCloseKey(hKey1);
-							}
-							dwNameSize = MAX_PATH;
-						}
-					}
-					RegCloseKey(hKey);
+				pGlobalInterfaceTable->RegisterInterfaceInGlobal(pDispParams->rgvarg[nArg - 1].pdispVal, IID_IDispatch, &g_dwCookie);
+				pGlobalInterfaceTable->Release();
+			}
+			return S_OK;
+
+		case 0x60010001://Finalize
+			Finalize();
+			return S_OK;
+
+		case 0x60010002://GetOverlayIcon
+			if (nArg >= 2 && g_bAlive) {
+				TEGetOverlayIcon *pGOI = new TEGetOverlayIcon[1];
+				pGOI->bsPath = ::SysAllocString(GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]));
+				pGOI->dwAttrib = GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]);
+				pGOI->Id = GetIntFromVariant(&pDispParams->rgvarg[nArg - 2]);
+				g_pIconOverlay.push_back(pGOI);
+				SetEvent(g_hEvent);
+				if (g_lThreads == 0) {
+					_beginthread(&threadGetOverlayIcon, 0, NULL);
 				}
 			}
 			return S_OK;
-		//GetOverlayInfo
-		case 0x60010001:
-			hr = E_FAIL;
-			if (nArg >= 1) {
-				DWORD dwIndex = GetIntFromVariant(&pDispParams->rgvarg[nArg]);
-				IUnknown *punk;
-				if (FindUnknown(&pDispParams->rgvarg[nArg - 1], &punk)) {
-					TCHAR pszIconFile[MAX_PATH * 2];
-					int iIndex;
-					DWORD dwFlags;
-					if (dwIndex < g_pIconOverlayHandlers.size()) {
-						hr = g_pIconOverlayHandlers[dwIndex]->GetOverlayInfo(pszIconFile, sizeof(pszIconFile), &iIndex, &dwFlags);
-						if SUCCEEDED(hr) {
-							VARIANT v;
-							teSetSZ(&v, pszIconFile);
-							tePutProperty(punk, L"IconFile", &v);
-							VariantClear(&v);
-							teSetLong(&v, iIndex);
-							tePutProperty(punk, L"Index", &v);
-							VariantClear(&v);
-							teSetLong(&v, dwFlags);
-							tePutProperty(punk, L"dwFlags", &v);
-							VariantClear(&v);
-						}
-					}
-				}
-			}
-			teSetLong(pVarResult, hr);
-			return S_OK;
-		//GetOverlayIconIndex
-		case 0x60010002:
-			int iResult;
-			iResult = -1;
-			if (nArg >= 1) {
-				BSTR bsPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-				DWORD dwAttrib = GetIntFromVariant(&pDispParams->rgvarg[nArg - 1]);
-				for (UINT i = 0; i < g_pIconOverlayHandlers.size(); i++) {
-					if (g_pIconOverlayHandlers[i]->IsMemberOf(bsPath, dwAttrib) == S_OK) {
-						iResult = i;
-						break;
-					}
-				}
-			}
-			teSetLong(pVarResult, iResult);
-			return S_OK;
-		//this
-		case DISPID_VALUE:
+			
+		case DISPID_VALUE://this
 			teSetObject(pVarResult, this);
 			return S_OK;
 		}//end_switch
@@ -811,13 +864,13 @@ STDMETHODIMP CteClassFactory::QueryInterface(REFIID riid, void **ppvObject)
 
 STDMETHODIMP_(ULONG) CteClassFactory::AddRef()
 {
-	LockModule(TRUE);
+	LockModule();
 	return 2;
 }
 
 STDMETHODIMP_(ULONG) CteClassFactory::Release()
 {
-	LockModule(FALSE);
+	UnlockModule();
 	return 1;
 }
 
@@ -833,6 +886,10 @@ STDMETHODIMP CteClassFactory::CreateInstance(IUnknown *pUnkOuter, REFIID riid, v
 
 STDMETHODIMP CteClassFactory::LockServer(BOOL fLock)
 {
-	LockModule(fLock);
+	if (fLock) {
+		LockModule();
+		return S_OK;
+	}
+	UnlockModule();
 	return S_OK;
 }

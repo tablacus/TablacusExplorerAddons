@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
-    <MinVersion>2014.10.6</MinVersion>
-    <pubDate>Mon, 6 Oct 2014 00:00:00 UTC</pubDate>
+    <Version>1.02</Version>
+    <MinVersion>2020.6.17</MinVersion>
+    <pubDate>Wed, 17 Jun 2020 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
-    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -16,4 +16,7 @@
     <Name>選択項目の順序</Name>
     <Description>選択項目を表示された順にします。</Description>
   </ja>
+  <zh>
+    <Name>順序處理選擇項目</Name>
+  </zh>
 </TablacusExplorer>

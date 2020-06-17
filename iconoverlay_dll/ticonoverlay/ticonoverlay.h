@@ -3,6 +3,7 @@
 #include <dispex.h>
 #include <shlwapi.h>
 #include <shlobj.h>
+#include <process.h>
 #include <vector>
 #pragma comment (lib, "shlwapi.lib")
 
@@ -13,6 +14,13 @@ struct TEmethod
 {
 	LONG   id;
 	LPWSTR name;
+};
+
+struct TEGetOverlayIcon
+{
+	BSTR bsPath;
+	DWORD dwAttrib;
+	int Id;
 };
 
 #ifdef _WIN64
@@ -39,6 +47,8 @@ public:
 
 	CteBase();
 	~CteBase();
+
+	VOID Finalize();
 private:
 	LONG		m_cRef;
 };

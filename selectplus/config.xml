@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.25</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.6.17</MinVersion>
     <pubDate>Wed, 17 Jun 2020 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
@@ -9,11 +9,11 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>X-Finder</Name>
-    <Description>X-Finder</Description>
+    <Name>Select plus</Name>
+    <Description>Selects items after background file operations.(Not perfect)</Description>
   </en>
   <ja>
-    <Name>X-Finder</Name>
-    <Description>X-Finderのビルトインコマンドや環境変数が使えるようになります。</Description>
+    <Name>項目選択プラス</Name>
+    <Description>バックグラウンドのファイル操作後に項目を選択します。(完璧ではありません)</Description>
   </ja>
 </TablacusExplorer>

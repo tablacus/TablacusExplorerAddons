@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2017.3.14</MinVersion>
-    <pubDate>Tue, 14 Mar 2017 00:00:00 GMT</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2020.6.17</MinVersion>
+    <pubDate>Wed, 17 Jun 2020 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
@@ -14,6 +14,8 @@
   </en>
   <ja>
     <Name>選択したカラムを強調しない</Name>
-    <Description>選択したカラムを強調しない</Description>
   </ja>
+  <zh>
+    <Name>無需強調排序欄位</Name>
+  </zh>
 </TablacusExplorer>

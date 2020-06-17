@@ -20,3 +20,5 @@ rmdir ticonoverlay\x64\Debug
 rmdir ticonoverlay\x64
 del /q /s *.sdf
 rmdir /q /s ipch
+rmdir /q /s Debug
+rmdir /q /s .vs

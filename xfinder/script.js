@@ -4,8 +4,7 @@ if (window.Addon == 1) {
 		SW: SW_SHOWNORMAL,
 		Command:
 		{
-			newtab: function (Ctrl, hwnd, pt, line)
-			{
+			newtab: function (Ctrl, hwnd, pt, line) {
 				var p = ExtractMacro(Ctrl, line);
 				if (p) {
 					Navigate(line, SBSP_NEWBROWSER);
@@ -14,8 +13,7 @@ if (window.Addon == 1) {
 				return Exec(Ctrl, "New Tab", "Tabs", hwnd, pt);
 			},
 
-			close: function (Ctrl, hwnd, pt, line)
-			{
+			close: function (Ctrl, hwnd, pt, line) {
 				var p = ExtractMacro(Ctrl, line);
 				if (api.StrCmpI(p, "Window") == 0) {
 					return Exec(Ctrl, "Close Application", "Tools", hwnd, pt);
@@ -78,8 +76,7 @@ if (window.Addon == 1) {
 				}
 			},
 
-			closed: function (Ctrl, hwnd, pt, line)
-			{
+			closed: function (Ctrl, hwnd, pt, line) {
 				if (Addons.UndoCloseTab) {
 					var FV = GetFolderView(Ctrl, pt);
 					if (FV) {
@@ -94,7 +91,7 @@ if (window.Addon == 1) {
 							mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
 							mii.wId = i + 1;
 							var s = Addons.UndoCloseTab.db[i];
-							if (typeof(s) == "string") {
+							if (typeof (s) == "string") {
 								s = s.split("\n");
 								s = s[s[s.length - 1]];
 								if (api.PathIsNetworkPath(s)) {
@@ -120,7 +117,7 @@ if (window.Addon == 1) {
 						s = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
 						if (s) {
 							var s = Addons.UndoCloseTab.db[s - 1];
-							if (typeof(s) == "string") {
+							if (typeof (s) == "string") {
 								var a = s.split(/\n/);
 								if (a.length > 1) {
 									s = te.FolderItems(a.length - 1);
@@ -137,13 +134,11 @@ if (window.Addon == 1) {
 				return S_OK;
 			},
 
-			refresh: function (Ctrl, hwnd, pt, line)
-			{
+			refresh: function (Ctrl, hwnd, pt, line) {
 				return Exec(Ctrl, "Refresh", "Tabs", hwnd, pt);
 			},
 
-			rename: function (Ctrl, hwnd, pt, line)
-			{
+			rename: function (Ctrl, hwnd, pt, line) {
 				var FV = GetFolderView(Ctrl, pt);
 				setTimeout(function () {
 					if (FV) {
@@ -155,8 +150,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			},
 
-			go: function (Ctrl, hwnd, pt, line)
-			{
+			go: function (Ctrl, hwnd, pt, line) {
 				var p = api.QuadPart(ExtractMacro(Ctrl, line));
 				if (p == -1) {
 					return Exec(Ctrl, "Back", "Tabs", hwnd, pt);
@@ -167,8 +161,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			},
 
-			newfolder: function (Ctrl, hwnd, pt, line)
-			{
+			newfolder: function (Ctrl, hwnd, pt, line) {
 				var p = ExtractMacro(Ctrl, line);
 				p = /\//.test(p) ? p.replace(/\\\//g, "") : InputDialog(GetText("New Folder"), p);
 				if (p) {
@@ -181,8 +174,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			},
 
-			folder: function (Ctrl, hwnd, pt, line)
-			{
+			folder: function (Ctrl, hwnd, pt, line) {
 				var p = ExtractMacro(Ctrl, line);
 				if (p.length) {
 					if (api.StrCmpI(p, "Find") == 0) {
@@ -205,8 +197,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			},
 
-			newfile: function (Ctrl, hwnd, pt, line)
-			{
+			newfile: function (Ctrl, hwnd, pt, line) {
 				var p = ExtractMacro(Ctrl, line);
 				p = /\//.test(p) ? p.replace(/\\\//g, "") : InputDialog(GetText("New File"), p);
 				if (p) {
@@ -219,8 +210,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			},
 
-			exec: function (Ctrl, hwnd, pt, line)
-			{
+			exec: function (Ctrl, hwnd, pt, line) {
 				if (line.length) {
 					var FV = GetFolderView(Ctrl, pt);
 					if (FV) {
@@ -235,13 +225,11 @@ if (window.Addon == 1) {
 				return S_OK;
 			},
 
-			command: function (Ctrl, hwnd, pt, line)
-			{
+			command: function (Ctrl, hwnd, pt, line) {
 				return Exec(Ctrl, "Run Dialog", "Tools", hwnd, pt);
 			},
 
-			clippath: function (Ctrl, hwnd, pt, line)
-			{
+			clippath: function (Ctrl, hwnd, pt, line) {
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV) {
 					var p = api.sscanf(line, "%x");
@@ -271,13 +259,11 @@ if (window.Addon == 1) {
 				return S_OK;
 			},
 
-			preview: function (Ctrl, hwnd, pt, line)
-			{
+			preview: function (Ctrl, hwnd, pt, line) {
 				return S_OK;
 			},
 
-			viewstyle: function (Ctrl, hwnd, pt, line)
-			{
+			viewstyle: function (Ctrl, hwnd, pt, line) {
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV) {
 					if (api.StrCmpI(line, "Menu") == 0) {
@@ -308,8 +294,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			},
 
-			sort: function (Ctrl, hwnd, pt, line)
-			{
+			sort: function (Ctrl, hwnd, pt, line) {
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV) {
 					var s = ExtractMacro(Ctrl, line);
@@ -322,30 +307,26 @@ if (window.Addon == 1) {
 				return S_OK;
 			},
 
-			confirm: function (Ctrl, hwnd, pt, line)
-			{
+			confirm: function (Ctrl, hwnd, pt, line) {
 				var ar = WScript.Col(ExtractMacro(Ctrl, line));
 				return wsh.Popup(ar[1], 0, ar[0], MB_OKCANCEL | MB_ICONQUESTION | MB_SYSTEMMODAL) != IDCANCEL ? S_OK : E_ABORT;
 			},
 
-			columns: function (Ctrl, hwnd, pt, line)
-			{
+			columns: function (Ctrl, hwnd, pt, line) {
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV) {
 					FV.Columns = ExtractMacro(FV, line.replace(/^\s+|\s+$/, "")).replace(/,/g, " ");
 				}
-			 	return S_OK;
+				return S_OK;
 			},
 
-			sendkeys: function (Ctrl, hwnd, pt, line)
-			{
+			sendkeys: function (Ctrl, hwnd, pt, line) {
 				api.SetFocus(Ctrl.hwnd);
 				wsh.SendKeys(ExtractMacro(Ctrl, line.replace(/^\s+|\s+$/, "")));
-			 	return S_OK;
+				return S_OK;
 			},
 
-			set: function (Ctrl, hwnd, pt, line)
-			{
+			set: function (Ctrl, hwnd, pt, line) {
 				var ar = line.split("=");
 				var a = ar.shift().toLowerCase();
 				var d = ExtractMacro(Ctrl, ar.join("="));
@@ -354,45 +335,41 @@ if (window.Addon == 1) {
 					return fn(Ctrl, hwnd, pt, d)
 				}
 				AddEnv(a, d);
-			 	return S_OK;
+				return S_OK;
 			},
 
-			swap: function (Ctrl, hwnd, pt, line)
-			{
+			swap: function (Ctrl, hwnd, pt, line) {
 				var ar = line.toLowerCase().split(",");
 				var a = ExtractMacro(Ctrl, "%" + ar[0] + "%");
 				Addons.XFinder.Command.set(Ctrl, hwnd, pt, ar[0] + "=%" + ar[1] + "%");
 				Addons.XFinder.Command.set(Ctrl, hwnd, pt, ar[1] + "=" + a);
-			 	return S_OK;
+				return S_OK;
 			},
 
-			input: function (Ctrl, hwnd, pt, line)
-			{
+			input: function (Ctrl, hwnd, pt, line) {
 				var ar = WScript.Col(ExtractMacro(Ctrl, line));
-				var r = InputDialog([ar[1], ar[2]].join("\n"), ar[3] || "", ar[0]);
-				if (typeof(r) == "string") {
+				var r = InputDialog([ar[1], ar[2]].join("\n"), ar[3] || "");
+				if (typeof (r) == "string") {
 					AddEnv("inputdata", r);
-				 	return S_OK;
+					return S_OK;
 				}
 				AddEnv("inputdata", "");
 				return E_ABORT;
 			},
 
-			choosefolder: function (Ctrl, hwnd, pt, line)
-			{
+			choosefolder: function (Ctrl, hwnd, pt, line) {
 				var pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
 				var ar = WScript.Col(ExtractMacro(Ctrl, line));
 				var FolderItem = FolderMenu.Open(ar[0], pt.x, pt.y, ar[1]);
 				if (FolderItem) {
 					AddEnv("inputdata", api.GetDisplayNameOf(FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX));
-				 	return S_OK;
+					return S_OK;
 				}
 				return S_FALSE;
 			},
 
-			lock: function (Ctrl, hwnd, pt, line)
-			{
+			lock: function (Ctrl, hwnd, pt, line) {
 				var p = ExtractMacro(Ctrl, line);
 				var TC = te.Ctrl(CTRL_TC);
 				if (TC) {
@@ -404,11 +381,10 @@ if (window.Addon == 1) {
 					}
 					Lock(TC, TC.SelectedIndex, true);
 				}
-			 	return S_OK;
+				return S_OK;
 			},
 
-			foreach: function (Ctrl, hwnd, pt, line)
-			{
+			foreach: function (Ctrl, hwnd, pt, line) {
 				var FV = GetFolderView(Ctrl, pt);
 				if (FV) {
 					var Selected = FV.SelectedItems();
@@ -422,12 +398,10 @@ if (window.Addon == 1) {
 				}
 			},
 
-			numbering: function (Ctrl, hwnd, pt, line)
-			{
+			numbering: function (Ctrl, hwnd, pt, line) {
 				var FileList, FileIndex, i, strPath, nMode;
 				var nStart, nInc, wsSrc, wsDist;
-				var DoRename = function(n)
-				{
+				var DoRename = function (n) {
 					try {
 						var wsPath, nSame;
 						var strPath = FileList[n];
@@ -463,7 +437,7 @@ if (window.Addon == 1) {
 							arFrom.push(FileList[n]);
 							arTo.push(wsPath);
 						}
-					} catch (e) {}
+					} catch (e) { }
 					FileList.splice(n, 1);
 					FileIndex.splice(n, 1);
 				}
@@ -477,8 +451,7 @@ if (window.Addon == 1) {
 							FileList = [];
 							FileIndex = [];
 							if (!FileList.indexOf) {
-								FileList.indexOf = function (s)
-								{
+								FileList.indexOf = function (s) {
 									var n = FileList.length;
 									for (var i = 0; i < n; i++) {
 										if (s === FileList[i]) {
@@ -534,34 +507,29 @@ if (window.Addon == 1) {
 				}
 			},
 
-			"delete": function (Ctrl, hwnd, pt, line)
-			{
+			"delete": function (Ctrl, hwnd, pt, line) {
 				Addons.XFinder.FileOperation(Ctrl, hwnd, FO_DELETE, line);
 			},
 
-			copy: function (Ctrl, hwnd, pt, line)
-			{
+			copy: function (Ctrl, hwnd, pt, line) {
 				Addons.XFinder.FileOperation(Ctrl, hwnd, FO_COPY, line);
 			},
 
-			move: function (Ctrl, hwnd, pt, line)
-			{
+			move: function (Ctrl, hwnd, pt, line) {
 				Addons.XFinder.FileOperation(Ctrl, hwnd, FO_MOVE, line);
 			},
 
-			unlock: function (Ctrl, hwnd, pt, line)
-			{
+			unlock: function (Ctrl, hwnd, pt, line) {
 				var ar = WScript.Col(ExtractMacro(Ctrl, line));
 				for (var i in ar) {
 					UnlockFV(api.ILCreateFromPath(ar[i]));
 				}
 				try {
 					wsh.CurrentDirectory = fso.GetSpecialFolder(2).Path;
-				} catch (e) {}
+				} catch (e) { }
 			},
 
-			thumbnail: function (Ctrl, hwnd, pt, line)
-			{
+			thumbnail: function (Ctrl, hwnd, pt, line) {
 				var hFind;
 				var ar = api.CommandLineToArgv(ExtractMacro(Ctrl, line));
 				var Size = (WScript.Env("ImageSize") || "96").split(/,/);
@@ -614,15 +582,14 @@ if (window.Addon == 1) {
 				var FV = GetFolderView(Ctrl, pt);
 				te.OnCommand(FV, FV.hwnd, WM_NULL, 0, 0);
 			}
-/*
-			: function (Ctrl, hwnd, pt, line)
-			{
-			}
-*/
+			/*
+						: function (Ctrl, hwnd, pt, line)
+						{
+						}
+			*/
 		},
 
-		FileOperation: function (Ctrl, hwnd, wFunc, line)
-		{
+		FileOperation: function (Ctrl, hwnd, wFunc, line) {
 			var fFlags = 0;
 			var bTo = false;
 			var bBG = false;
@@ -640,7 +607,7 @@ if (window.Addon == 1) {
 						bSame = true;
 					}
 					if (s == '/t') {
-					 	bTo = true;
+						bTo = true;
 					}
 					if (s == '/f') {
 						fFlags |= FOF_FILESONLY;
@@ -692,20 +659,17 @@ if (window.Addon == 1) {
 
 		Env:
 		{
-			address: function (Ctrl, hwnd, pt, s)
-			{
+			address: function (Ctrl, hwnd, pt, s) {
 				SetAddress(s);
-			 	return S_OK;
+				return S_OK;
 			},
 
-			clipboard: function (Ctrl, hwnd, pt, s)
-			{
+			clipboard: function (Ctrl, hwnd, pt, s) {
 				clipboardData.setData("text", s);
-			 	return S_OK;
+				return S_OK;
 			},
 
-			windowposition: function (Ctrl, hwnd, pt, s)
-			{
+			windowposition: function (Ctrl, hwnd, pt, s) {
 				var pt = s.split(/,/);
 				if (pt.length < 4) {
 					var rc = api.Memory("RECT");
@@ -714,29 +678,26 @@ if (window.Addon == 1) {
 				} else {
 					api.MoveWindow(te.hwnd, pt[0], pt[1], pt[2], pt[3], 1);
 				}
-			 	return S_OK;
+				return S_OK;
 			},
 
-			windowsize: function (Ctrl, hwnd, pt, s)
-			{
+			windowsize: function (Ctrl, hwnd, pt, s) {
 				var rc = api.Memory("RECT");
 				api.GetWindowRect(te.hwnd, rc);
 				var size = s.split(/,/);
 				api.MoveWindow(te.hwnd, rc.left, rc.top, size[0], size[1], 1);
-			 	return S_OK;
+				return S_OK;
 			},
 
-			timestamp: function (Ctrl, hwnd, pt, s)
-			{
+			timestamp: function (Ctrl, hwnd, pt, s) {
 				var ar = WScript.Col(s);
 				for (var i = 1; i < ar.length; i++) {
 					api.SetFileTime(ar[i], null, null, ar[0]);
 				}
-			 	return S_OK;
+				return S_OK;
 			},
 
-			tabname: function (Ctrl, hwnd, pt, s)
-			{
+			tabname: function (Ctrl, hwnd, pt, s) {
 				if (Addons.TabName) {
 					var FV = GetFolderView(Ctrl, pt);
 					if (FV) {
@@ -745,8 +706,7 @@ if (window.Addon == 1) {
 				}
 			},
 
-			tabcolor: function (Ctrl, hwnd, pt, s)
-			{
+			tabcolor: function (Ctrl, hwnd, pt, s) {
 				if (Addons.TabColor) {
 					var FV = GetFolderView(Ctrl, pt);
 					if (FV) {
@@ -756,24 +716,20 @@ if (window.Addon == 1) {
 				}
 			},
 
-			sortmode: function (Ctrl, hwnd, pt, s)
-			{
+			sortmode: function (Ctrl, hwnd, pt, s) {
 				return Addons.XFinder.Command.sort(Ctrl, hwnd, pt, s);
 			},
 
-			viewmode:  function (Ctrl, hwnd, pt, s)
-			{
+			viewmode: function (Ctrl, hwnd, pt, s) {
 				return Addons.XFinder.Command.viewstyle(Ctrl, hwnd, pt, s);
 			},
 
-			columns:  function (Ctrl, hwnd, pt, s)
-			{
+			columns: function (Ctrl, hwnd, pt, s) {
 				return Addons.XFinder.Command.columns(Ctrl, hwnd, pt, s);
 			}
 		},
 
-		Exec: function (Ctrl, hwnd, pt, line)
-		{
+		Exec: function (Ctrl, hwnd, pt, line) {
 			if (/^\/\//.test(line)) {
 				return S_OK;
 			}
@@ -815,8 +771,7 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
-		Popup: function (FV, re)
-		{
+		Popup: function (FV, re) {
 			var hMenu = api.CreatePopupMenu();
 			var ContextMenu = FV.ViewMenu();
 			if (ContextMenu) {
@@ -837,8 +792,7 @@ if (window.Addon == 1) {
 			api.DestroyMenu(hMenu);
 		},
 
-		Run: function (Item, FV, s)
-		{
+		Run: function (Item, FV, s) {
 			var hMenu = api.CreatePopupMenu();
 			var ContextMenu = api.ContextMenu(Item);
 			if (ContextMenu) {
@@ -852,8 +806,7 @@ if (window.Addon == 1) {
 			api.DestroyMenu(hMenu);
 		},
 
-		ExecEx: function (s, nMode, Ctrl, hwnd, pt)
-		{
+		ExecEx: function (s, nMode, Ctrl, hwnd, pt) {
 			if (!Ctrl) {
 				Ctrl = te.Ctrl(CTRL_FV);
 			}
@@ -882,14 +835,13 @@ if (window.Addon == 1) {
 			return hr;
 		},
 
-		FormatDateTime: function (fmt, dt)
-		{
+		FormatDateTime: function (fmt, dt) {
 			var ar =
-			[
-				["dddddd", LOCALE_SLONGDATE],
-				["ddddd", LOCALE_SSHORTDATE],
-				["tt", LOCALE_STIMEFORMAT]
-			];
+				[
+					["dddddd", LOCALE_SLONGDATE],
+					["ddddd", LOCALE_SSHORTDATE],
+					["tt", LOCALE_STIMEFORMAT]
+				];
 			var s = fmt.split("'");
 			for (var j = 0; j < s.length; j += 2) {
 				for (var i in ar) {
@@ -903,13 +855,11 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEnv("X-Finder", function(Ctrl)
-	{
+	AddEnv("X-Finder", function (Ctrl) {
 		return (fso.GetParentFolderName(api.GetModuleFileName(null)) + "\\").replace(/\\\\$/, "\\");
 	});
 
-	AddEnv("Focused", function(Ctrl)
-	{
+	AddEnv("Focused", function (Ctrl) {
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
 			var Focused = FV.FocusedItem;
@@ -919,8 +869,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEnv("FocusedName", function(Ctrl)
-	{
+	AddEnv("FocusedName", function (Ctrl) {
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
 			var Focused = FV.FocusedItem;
@@ -930,18 +879,15 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEnv("InstallDrive", function(Ctrl)
-	{
+	AddEnv("InstallDrive", function (Ctrl) {
 		return fso.GetDriveName(api.GetModuleFileName(null));
 	});
 
-	AddEnv("sysdir", function(Ctrl)
-	{
+	AddEnv("sysdir", function (Ctrl) {
 		return system32;
 	});
 
-	AddEnv("CurrentSelected", function(Ctrl)
-	{
+	AddEnv("CurrentSelected", function (Ctrl) {
 		var ar = [];
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
@@ -954,8 +900,7 @@ if (window.Addon == 1) {
 		return ar.join(" ");
 	});
 
-	AddEnv("Other", function(Ctrl)
-	{
+	AddEnv("Other", function (Ctrl) {
 		var TC = te.Ctrl(CTRL_TC);
 		var cTC = te.Ctrls(CTRL_TC);
 		var nId = TC.Id;
@@ -973,13 +918,11 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEnv("SendTo", function(Ctrl)
-	{
+	AddEnv("SendTo", function (Ctrl) {
 		return api.GetDisplayNameOf(ssfSENDTO, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 	});
 
-	AddEnv("FileContents", function(Ctrl)
-	{
+	AddEnv("FileContents", function (Ctrl) {
 		var s = "";
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
@@ -997,8 +940,7 @@ if (window.Addon == 1) {
 		return s;
 	});
 
-	AddEnv("Clipboard", function(Ctrl)
-	{
+	AddEnv("Clipboard", function (Ctrl) {
 		var s = clipboardData.getData("text");
 		if (!s) {
 			s = "";
@@ -1010,8 +952,7 @@ if (window.Addon == 1) {
 		return s;
 	});
 
-	AddEnv("Clipboard1", function(Ctrl)
-	{
+	AddEnv("Clipboard1", function (Ctrl) {
 		var s = clipboardData.getData("text");
 		if (!s) {
 			s = [];
@@ -1024,14 +965,13 @@ if (window.Addon == 1) {
 		return s.replace(/[\r\n]/g, " ");
 	});
 
-	AddEnv("Attrib", function(Ctrl)
-	{
+	AddEnv("Attrib", function (Ctrl) {
 		var s = [];
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
 			var FindData = api.Memory("WIN32_FIND_DATA");
 			api.SHGetDataFromIDList(FV.FocusedItem, SHGDFIL_FINDDATA, FindData, FindData.Size);
-			var a = {R: FILE_ATTRIBUTE_READONLY, A:FILE_ATTRIBUTE_ARCHIVE, S:FILE_ATTRIBUTE_SYSTEM, H:FILE_ATTRIBUTE_HIDDEN};
+			var a = { R: FILE_ATTRIBUTE_READONLY, A: FILE_ATTRIBUTE_ARCHIVE, S: FILE_ATTRIBUTE_SYSTEM, H: FILE_ATTRIBUTE_HIDDEN };
 			for (var i in a) {
 				s.push((FindData.dwFileAttributes & a[i] ? "+" : "-") + i);
 			}
@@ -1039,31 +979,33 @@ if (window.Addon == 1) {
 		return s.join(" ");
 	});
 
-	AddEnv("TabName", function(Ctrl)
-	{
+	AddEnv("TabName", function (Ctrl) {
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
 			return GetTabName(FV);
 		}
 	});
 
-	AddEnv("TabColor", function(Ctrl)
-	{
+	AddEnv("TabColor", function (Ctrl) {
 		var FV = GetFolderView(Ctrl);
 		if (FV) {
 			return RunEvent4("GetTabColor", FV);
 		}
 	});
 
+	AddEnv("Address", function (Ctrl) {
+		if (GetAddress) {
+			return GetAddress();
+		}
+	});
+
 	AddEnv("ImageSize", "96,96");
 
-	AddEvent("ReplaceMacroEx", [/%DateTime:([^%]*)%/ig, function (strMatch, ref1)
-	{
+	AddEvent("ReplaceMacroEx", [/%DateTime:([^%]*)%/ig, function (strMatch, ref1) {
 		return Addons.XFinder.FormatDateTime(ref1, new Date());
 	}]);
 
-	AddEvent("ReplaceMacro", [/%TimeStamp:([^%]*)%/ig, function (Ctrl, re, res)
-	{
+	AddEvent("ReplaceMacro", [/%TimeStamp:([^%]*)%/ig, function (Ctrl, re, res) {
 		var FV = GetFolderView(Ctrl, pt);
 		if (FV) {
 			return Addons.XFinder.FormatDateTime(res[1], FV.FocusedItem.ModifyDate);
@@ -1071,60 +1013,51 @@ if (window.Addon == 1) {
 	}]);
 
 	AddType("X-Finder",
-	{
-		Exec: function (Ctrl, s, type, hwnd, pt)
 		{
-			return Addons.XFinder.ExecEx(s, 1, Ctrl, hwnd, pt);
-		},
+			Exec: function (Ctrl, s, type, hwnd, pt) {
+				return Addons.XFinder.ExecEx(s, 1, Ctrl, hwnd, pt);
+			},
 
-		Ref: function (s, pt)
-		{
-			var ar = [];
-			for (var i in Addons.XFinder.Command) {
-				ar.push(i.replace(/^[a-z]/g, function (s){ return s.toUpperCase();}) + ":");
+			Ref: function (s, pt) {
+				var ar = [];
+				for (var i in Addons.XFinder.Command) {
+					ar.push(i.replace(/^[a-z]/g, function (s) { return s.toUpperCase(); }) + ":");
+				}
+				ar.sort();
+				return (s ? s + "\n" : "") + g_basic.Popup(ar, s, pt);
 			}
-			ar.sort();
-			return (s ? s + "\n" : "") + g_basic.Popup(ar, s, pt);
-		}
 
-	});
+		});
 
 	if (!window.WScript) {
 		WScript = {};
 	}
 
-	WScript.CreateObject = function (strProgID)
-	{
+	WScript.CreateObject = function (strProgID) {
 		return te.CreateObject(strProgID);
 	}
 
-	WScript.GetObject = function (strProgID)
-	{
+	WScript.GetObject = function (strProgID) {
 		return te.GetObject(strProgID);
 	}
 
-	WScript.Echo = function (s)
-	{
+	WScript.Echo = function (s) {
 		return MessageBox(s);
 	}
 
-	WScript.Sleep = function (intTime)
-	{
+	WScript.Sleep = function (intTime) {
 		return api.Sleep(intTime);
 	}
 
-	WScript.Open = function (path, bNew)
-	{
+	WScript.Open = function (path, bNew) {
 		return Navigate(path, bNew ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
 	}
 
-	WScript.Exec = function (s, nMode)
-	{
+	WScript.Exec = function (s, nMode) {
 		return Addons.XFinder.ExecEx(s, nMode !== undefined ? nMode : 1) == S_OK;
 	}
 
-	WScript.Env = function (s, strNew)
-	{
+	WScript.Env = function (s, strNew) {
 		if (strNew === undefined) {
 			if (/%/.test(s)) {
 				return ExtractMacro(te, s);
@@ -1134,11 +1067,9 @@ if (window.Addon == 1) {
 		return Addons.XFinder.set(te, te.hwnd, pt, [s, strNew].join("="));
 	}
 
-	WScript.Col = function (s)
-	{
+	WScript.Col = function (s) {
 		var ar = [];
-		s = s.replace(/ *"([^"]*)"([, ]?)| *([^, ]*)([, ]?)/g, function (strMatch, r1, r2, r3, r4)
-		{
+		s = s.replace(/ *"([^"]*)"([, ]?)| *([^, ]*)([, ]?)/g, function (strMatch, r1, r2, r3, r4) {
 			if (r1 || r2 || r3 || r4) {
 				ar.push(r1 || r3);
 			}
@@ -1147,14 +1078,12 @@ if (window.Addon == 1) {
 		return api.CommandLineToArgv('"' + ar.join('" "') + '"');
 	}
 
-	WScript.DoDragDrop = function (Items)
-	{
+	WScript.DoDragDrop = function (Items) {
 		var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 		return api.SHDoDragDrop(null, Items, te, pdwEffect[0], pdwEffect);
 	}
 
-	WScript.Include = function (fn)
-	{
+	WScript.Include = function (fn) {
 		importScripts(fn);
 	}
 }
