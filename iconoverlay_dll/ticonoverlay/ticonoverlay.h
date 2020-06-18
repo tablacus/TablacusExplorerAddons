@@ -5,6 +5,7 @@
 #include <shlobj.h>
 #include <process.h>
 #include <vector>
+#include <algorithm>
 #pragma comment (lib, "shlwapi.lib")
 
 #define MAX_OBJ 256

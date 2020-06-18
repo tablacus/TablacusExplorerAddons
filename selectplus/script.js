@@ -119,7 +119,7 @@
 								Addons.SelectPlus.Select(FV, db, path);
 							}
 							if (pidls.lEvent & (SHCNE_UPDATEITEM | SHCNE_UPDATEDIR)) {
-								if (path === FV.FolderItem.Path) {
+								if (FV.FolderItem && path === FV.FolderItem.Path) {
 									delete Addons.SelectPlus.db[FV.Id];
 									Addons.SelectPlus.Selects(FV, db, 99);
 								}
