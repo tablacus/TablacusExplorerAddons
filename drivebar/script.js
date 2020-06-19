@@ -4,16 +4,16 @@ var Default = "ToolBar1Right";
 if (window.Addon == 1) {
 	Addons.DriveBar =
 	{
+		Filter: ExtractFilter(GetAddonOption(Addon_Id, "Filter") || "*"),
+		Disable: ExtractFilter(GetAddonOption(Addon_Id, "Disable") || "-"),
 		Items: [],
 
-		Open: function (o)
-		{
+		Open: function (o) {
 			var path = o.path || o.getAttribute("path");
 			Navigate(path, SBSP_NEWBROWSER);
 		},
 
-		Popup: function (o)
-		{
+		Popup: function (o) {
 			var path = o.path || o.getAttribute("path");
 			var ContextMenu = api.ContextMenu(path);
 			var hMenu = api.CreatePopupMenu();
@@ -29,21 +29,22 @@ if (window.Addon == 1) {
 			api.DestroyMenu(hMenu);
 		},
 
-		Update: function (Ctrl)
-		{
+		Update: function (Ctrl) {
 			var h = GetIconSize(0, 16);
 			var icon = [53, 7, 8, 9, 11, 12];
-			var image = api.CreateObject("WICBitmap");
 			var arDrive = [];
 			var Items = sha.NameSpace(ssfDRIVES).Items();
-			for (var i = 0; i < Items.Count; i++) {
+			for (var i = 0; i < Items.Count; ++i) {
 				var Item = Items.Item(i);
 				var path = Item.Path;
 				var letter = path.charAt(0);
+				if (!PathMatchEx(path, Addons.DriveBar.Filter) || PathMatchEx(path, Addons.DriveBar.Disable)) {
+					continue;
+				}
 				if (path.length == 3 || (letter.match(/^[:;]/) && !IsUseExplorer(Item))) {
 					var vol = api.GetDisplayNameOf(Item, SHGDN_INFOLDER);
 					var src = '';
-					if (document.documentMode) { //IE8-
+					if (g_.IEVer >= 8) {
 						src = GetIconImage(Item, GetSysColor(COLOR_BTNFACE));
 					}
 					if (!src) {
@@ -62,19 +63,24 @@ if (window.Addon == 1) {
 				}
 			}
 			document.getElementById("drivebar").innerHTML = arDrive.join("");
-		}	
+		}
 	};
 
 	AddEvent("Load", Addons.DriveBar.Update);
 
 	AddEvent("DeviceChanged", Addons.DriveBar.Update);
 
-	AddEvent("ChangeNotify", function (Ctrl, pidls, wParam, lParam)
-	{
+	AddEvent("ChangeNotify", function (Ctrl, pidls, wParam, lParam) {
 		if (pidls.lEvent & (SHCNE_MEDIAINSERTED | SHCNE_MEDIAREMOVED | SHCNE_DRIVEREMOVED | SHCNE_DRIVEADD | SHCNE_NETSHARE | SHCNE_NETUNSHARE)) {
 			Addons.DriveBar.Update();
 		}
 	});
 
 	SetAddon(Addon_Id, Default, '<span id="drivebar"></span>');
+} else {
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }

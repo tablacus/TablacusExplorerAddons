@@ -8,9 +8,6 @@
 #include <algorithm>
 #pragma comment (lib, "shlwapi.lib")
 
-#define MAX_OBJ 256
-#define SIZE_BUFF 32768
-
 struct TEmethod
 {
 	LONG   id;

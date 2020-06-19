@@ -565,33 +565,33 @@ static void threadGetOverlayIconIndex(void *args)
 		while (!g_pIconOverlay.empty()) {
 			TEGetOverlayIcon *pGOI = g_pIconOverlay.back();
 			g_pIconOverlay.pop_back();
-			BOOL bGet = TRUE;
-			LPITEMIDLIST pidl = ILCreateFromPath(pGOI->bsPath);
-			if (pidl) {
-				IShellIconOverlay *pShellIconOverlay;
-				LPCITEMIDLIST pidlLast;
-				if SUCCEEDED(::SHBindToParent(pidl, IID_PPV_ARGS(&pShellIconOverlay), &pidlLast)) {
-					int iIndex;
-					if SUCCEEDED(pShellIconOverlay->GetOverlayIndex(pidlLast, &iIndex)) {
-						if (iIndex) {
-							bGet = FALSE;
-						}
-					}
-					pShellIconOverlay->Release();
+			for (size_t i = 0; g_bAlive && i < g_pIconOverlayHandlers.size(); i++) {
+				IShellIconOverlayIdentifier *psio;
+				if (i < pIconOverlayHandlers.size()) {
+					psio = pIconOverlayHandlers[i];
 				}
-				::ILFree(pidl);
-			}
-			if (bGet) {
-				for (size_t i = 0; g_bAlive && i < g_pIconOverlayHandlers.size(); i++) {
-					IShellIconOverlayIdentifier *psio;
-					if (i < pIconOverlayHandlers.size()) {
-						psio = pIconOverlayHandlers[i];
+				else {
+					pGlobalInterfaceTable->GetInterfaceFromGlobal(g_pIconOverlayHandlers[i], IID_PPV_ARGS(&psio));
+					pIconOverlayHandlers.push_back(psio);
+				}
+				if (psio->IsMemberOf(pGOI->bsPath, pGOI->dwAttrib) == S_OK) {
+					BOOL bGet = TRUE;
+					LPITEMIDLIST pidl = ILCreateFromPath(pGOI->bsPath);
+					if (pidl) {
+						IShellIconOverlay *pShellIconOverlay;
+						LPCITEMIDLIST pidlLast;
+						if SUCCEEDED(::SHBindToParent(pidl, IID_PPV_ARGS(&pShellIconOverlay), &pidlLast)) {
+							int iIndex;
+							if (pShellIconOverlay->GetOverlayIndex(pidlLast, &iIndex) == S_OK) {
+								if (iIndex > 0) {
+									bGet = FALSE;
+								}
+							}
+							pShellIconOverlay->Release();
+						}
+						::ILFree(pidl);
 					}
-					else {
-						pGlobalInterfaceTable->GetInterfaceFromGlobal(g_pIconOverlayHandlers[i], IID_PPV_ARGS(&psio));
-						pIconOverlayHandlers.push_back(psio);
-					}
-					if (psio->IsMemberOf(pGOI->bsPath, pGOI->dwAttrib) == S_OK) {
+					if (bGet) {
 						if (!pCB) {
 							pGlobalInterfaceTable->GetInterfaceFromGlobal(g_dwCookie, IID_PPV_ARGS(&pCB));
 						}
@@ -602,8 +602,8 @@ static void threadGetOverlayIconIndex(void *args)
 							teSetLong(&pv[0], pGOI->Id);
 							Invoke4(pCB, NULL, 3, pv);
 						}
-						break;
 					}
+					break;
 				}
 			}
 			teSysFreeString(&pGOI->bsPath);
