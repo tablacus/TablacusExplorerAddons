@@ -9,7 +9,7 @@
 				if (Selected && Selected.Count != FV.ItemCount(SVGIO_SELECTION)) {
 					var wFlags = SVSI_DESELECTOTHERS;
 					for (var i = 0; i < Selected.Count; ++i) {
-						FV.SelectItem(Selected.Item(i), SVSI_SELECT | wFlags);
+						FV.SelectItem(Selected.Item(i), SVSI_SELECT | SVSI_NOTAKEFOCUS | wFlags);
 						wFlags = 0;
 					}
 					delete FV.Data.Selected;
@@ -61,10 +61,10 @@
 			(function (Selected) {
 				setTimeout(function () {
 					delete Addons.FixSelection.Refresh;
-					if (Selected && Selected.Count != FV.ItemCount(SVGIO_SELECTION)) {
+					if (Selected && Selected.Count != Ctrl.ItemCount(SVGIO_SELECTION)) {
 						var wFlags = SVSI_FOCUSED | SVSI_DESELECTOTHERS;
 						for (var i = 0; i < Selected.Count; ++i) {
-							FV.SelectItem(Selected.Item(i), SVSI_SELECT | wFlags);
+							Ctrl.SelectItem(Selected.Item(i), SVSI_SELECT | SVSI_NOTAKEFOCUS | wFlags);
 							wFlags = 0;
 						}
 					}
