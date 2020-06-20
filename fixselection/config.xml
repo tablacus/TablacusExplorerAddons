@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
-    <MinVersion>2018.12.14</MinVersion>
-    <pubDate>Mon, 17 Dec 2018 00:00:00 GMT</pubDate>
+    <Version>1.07</Version>
+    <MinVersion>2020.6.20</MinVersion>
+    <pubDate>Sat, 20 Jun 2020 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
@@ -16,4 +16,7 @@
     <Name>並べ替え時等の選択を修正</Name>
     <Description>並べ替え時や更新時の選択を修正 (修正時に選択が多いと重くなります)</Description>
   </ja>
+  <zh>
+    <Name>修正選取和排序問題</Name>
+  </zh>
 </TablacusExplorer>
