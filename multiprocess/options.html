@@ -1,0 +1,21 @@
+<label><input type="checkbox" id="Delete">Delete</label><br>
+<label><input type="checkbox" id="Paste">@shell32.dll,-33562</label><br>
+<label><input type="checkbox" id="Drop">Drag-and-Drop</label><br>
+<label><input type="checkbox" id="RDrop">Right<i> </i>Drag-and-Drop</label><br>
+<label><input type="checkbox" id="!NoTemp">@shell32.dll,-21815[Temporary Burn Folder]</label><br>
+<hr>
+<table>
+    <tr>
+        <td><label><input type="checkbox" name="TimeOver" id="TimeOver">Time over</label>
+            <input type="text" name="Sec" style="width: 3em">s</td>
+    </tr>
+    <tr>
+        <td style="width: 100%"><label>@wmploc.dll,-2575[Audio]<i> </i>file</label></td>
+    </tr>
+    <tr>
+        <td><input type="text" name="File" style="width: 100%" onchange="Addons.MultiProcess.Player()"></td>
+        <td><input type="button" value="Browse..." onclick="RefX('File',0,0,1)"></td>
+        <td><input type="button" value="Portable" onclick="PortableX('File')"></td>
+    </tr>
+</table>
+<div id="multiprocess_player" style="width: 100%"></div>

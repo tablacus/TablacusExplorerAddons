@@ -14,6 +14,7 @@ Addons.MultiProcess =
 	Paste: api.LowPart(item.getAttribute("Paste")),
 	Drop: api.LowPart(item.getAttribute("Drop")),
 	RDrop: api.LowPart(item.getAttribute("RDrop")),
+	NoTemp: item.getAttribute("NoTemp"),
 
 	FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, nMode)
 	{
@@ -42,6 +43,9 @@ Addons.MultiProcess =
 				if (IsExists(path1)) {
 					if (!api.StrCmpNI(path1, strTemp, strTemp.length)) {
 						if (!arRen1.length) {
+							if (Addons.MultiProcess.NoTemp) {
+								return false;
+							}
 							strTemp2 = strTemp + "tablacus\\" + fso.GetTempName() + "\\";
 							DeleteItem(strTemp2);
 						}
@@ -228,12 +232,11 @@ if (window.Addon == 1) {
 	});
 	document.getElementById('None').insertAdjacentHTML("BeforeEnd", '<div id="multiprocess_player"></div>');
 } else {
-	SetTabContents(0, "General", '<input type="checkbox" id="Delete"><label for="Delete">Delete</label><br>\
-	<input type="checkbox" id="Paste"><label for="Paste">@shell32.dll,-33562</label><br>\
-	<input type="checkbox" id="Drop"><label for="Drop">Drop</label><br>\
-	<input type="checkbox" id="RDrop"><label for="RDrop">Right</label> <label for="RDrop">Drop</label><hr>\
-	<table><tr><td><input type="checkbox" name="TimeOver" id="TimeOver"><label for="TimeOver">Time over</label>\
-	<input type="text" name="Sec" style="width: 3em">s</td></tr><tr><td style="width: 100%"><label>Audio file</label></td></tr><tr><td><input type="text" name="File" style="width: 100%" onchange="Addons.MultiProcess.Player()"></td><td><input type="button" value="Browse..." onclick="RefX(\'File\',0,0,1)"></td><td><input type="button" value="Portable" onclick="PortableX(\'File\')"></td></tr></table><div id="multiprocess_player" style="width: 100%"></div>');
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 
 	AddEventEx(window, "load", Addons.MultiProcess.Player);
 }

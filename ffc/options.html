@@ -1,30 +1,31 @@
 <div class="panel" style="display: block">
   <label>Path</label> (dll)
-  <input type="text" id="Path" style="width: 100%" />
-  <input type="button" value="Browse..." onclick="RefX('Path',0,0,1,'*.dll')" />
-  <input type="button" value="Default" title="" onclick="SetDefault(document.F.Path, '')" />
-  <input type="button" value="Portable" onclick="PortableX('Path')" />
+  <input type="text" id="Path" style="width: 100%">
+  <input type="button" value="Browse..." onclick="RefX('Path',0,0,1,'*.dll')">
+  <input type="button" value="Default" title="" onclick="SetDefault(document.F.Path, '')">
+  <input type="button" value="Portable" onclick="PortableX('Path')">
 </div>
 <div class="panel" style="display: block">
   <label>Class</label>
-  <input type="text" id="Class" style="width: 100%" />
-  <input type="button" value="Browse..." onclick="RefClass(this, 'Class')" />
-  <input type="button" value="Default" title="{E6385E40-E2A6-11d5-ABE6-9EB61339EA35}" onclick="SetDefault(document.F.Class, this.title)" />
+  <input type="text" id="Class" style="width: 100%">
+  <input type="button" value="Browse..." onclick="RefClass(this, 'Class')">
+  <input type="button" value="Default" title="{E6385E40-E2A6-11d5-ABE6-9EB61339EA35}" onclick="SetDefault(document.F.Class, this.title)">
 </div>
 <div class="panel" style="display: block">
   <label>Copy</label>
-  <input type="text" id="Copy" style="width: 100%" />
-  <input type="button" value="Browse..." onclick="RefId(this, 'Copy')" />
-  <input type="button" value="None" title="0" onclick="SetDefault(GetElement('Copy'), this.title)" />
-  <input type="button" value="Default" title="1" onclick="SetDefault(GetElement('Copy'), this.title)" />
+  <input type="text" id="Copy" style="width: 100%">
+  <input type="button" value="Browse..." onclick="RefId(this, 'Copy')">
+  <input type="button" value="None" title="0" onclick="SetDefault(GetElement('Copy'), this.title)">
+  <input type="button" value="Default" title="1" onclick="SetDefault(GetElement('Copy'), this.title)">
+  <label><input type="checkbox" id="!NoTemp">@shell32.dll,-21815[Temporary Burn Folder]</label>
 </div>
 <div class="panel" style="display: block">
   <label>Move</label>
-  <input type="text" id="Move" style="width: 100%" />
-  <input type="button" value="Browse..." onclick="RefId(this, 'Move')" />
-  <input type="button" value="None" title="0" onclick="SetDefault(GetElement('Move'), this.title)" />
-  <input type="button" value="Default" title="2" onclick="SetDefault(GetElement('Move'), this.title)" />
-  <input type="checkbox" id="DiffDriveOnly" />
+  <input type="text" id="Move" style="width: 100%">
+  <input type="button" value="Browse..." onclick="RefId(this, 'Move')">
+  <input type="button" value="None" title="0" onclick="SetDefault(GetElement('Move'), this.title)">
+  <input type="button" value="Default" title="2" onclick="SetDefault(GetElement('Move'), this.title)">
+  <input type="checkbox" id="DiffDriveOnly">
   <label for="DiffDriveOnly">Different drive only</label>
 </div>
-<input type="button" id="GetFFC" value="Get Fire File Copy..." title="http://www.k3.dion.ne.jp/~kitt/pc/sw/ffc/" onclick="wsh.Run(this.title)" />
+<input type="button" id="GetFFC" value="Get Fire File Copy..." title="http://www.k3.dion.ne.jp/~kitt/pc/sw/ffc/" onclick="wsh.Run(this.title)">

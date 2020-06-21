@@ -31,6 +31,9 @@
 					if (IsExists(path1)) {
 						if (!bDelete && !api.StrCmpNI(path1, strTemp, strTemp.length)) {
 							if (!arRen1.length) {
+								if (item.getAttribute("NoTemp")) {
+									return false;
+								}
 								strTemp2 = strTemp + "tablacus\\" + fso.GetTempName() + "\\";
 								DeleteItem(strTemp2);
 							}
@@ -153,4 +156,6 @@
 				break;
 		}
 	});
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

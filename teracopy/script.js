@@ -11,6 +11,7 @@ if (window.Addon == 1) {
 	Addons.TeraCopy =
 	{
 		bDiffDriveOnly: item.getAttribute("DiffDriveOnly"),
+		NoTemp: item.getAttribute("NoTemp"),
 
 		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver) {
 			var i = Items.Count;
@@ -33,6 +34,9 @@ if (window.Addon == 1) {
 						if (IsExists(path1)) {
 							if (!api.StrCmpNI(path1, strTemp, strTemp.length)) {
 								if (!arRen1.length) {
+									if (Addons.TeraCopy.NoTemp) {
+										return false;
+									}
 									strTemp2 = strTemp + "tablacus\\" + fso.GetTempName() + "\\";
 									DeleteItem(strTemp2);
 								}

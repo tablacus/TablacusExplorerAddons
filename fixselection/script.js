@@ -1,11 +1,10 @@
-﻿if (window.Addon == 1) {
+if (window.Addon == 1) {
 	Addons.FixSelection = {
 		tid: {},
 
-		Exec: function (FV) {
+		Exec: function (FV, Selected) {
 			delete Addons.FixSelection.tid[FV.Id];
-			if (FV.Type == CTRL_SB && FV.Data) {
-				var Selected = FV.Data.Selected;
+			if (FV.Type == CTRL_SB) {
 				if (Selected && Selected.Count != FV.ItemCount(SVGIO_SELECTION)) {
 					var wFlags = SVSI_DESELECTOTHERS;
 					for (var i = 0; i < Selected.Count; ++i) {
@@ -23,18 +22,18 @@
 					clearTimeout(Addons.FixSelection.tid[FV.Id]);
 				}
 				Addons.FixSelection.tid[FV.Id] = setTimeout(function () {
-					Addons.FixSelection.Exec(FV);
+					Addons.FixSelection.Exec(FV, FV.Data.Selected);
 				}, 99)
 			}
 		}
 	}
-
+1
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 		Ctrl.Data.Selected = null;
 	});
 
 	AddEvent("SelectionChanged", function (Ctrl, uChange) {
-		if (Ctrl.Type == CTRL_SB && Ctrl.Data && !Addons.FixSelection.Refresh) {
+		if (Ctrl.Type == CTRL_SB && Ctrl.Data) {
 			var Selected = Ctrl.SelectedItems();
 			if (Selected.Count == 0) {
 				setTimeout(function () {
@@ -52,25 +51,7 @@
 
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 		if (msg == WM_NULL) {
-			Addons.FixSelection.Refresh = Ctrl.Data.Selected;
-		}
-	});
-
-	AddEvent("NavigateComplete", function (Ctrl) {
-		if (Addons.FixSelection.Refresh) {
-			(function (Selected) {
-				setTimeout(function () {
-					delete Addons.FixSelection.Refresh;
-					if (Selected && Selected.Count != Ctrl.ItemCount(SVGIO_SELECTION)) {
-						var wFlags = SVSI_FOCUSED | SVSI_DESELECTOTHERS;
-						for (var i = 0; i < Selected.Count; ++i) {
-							Ctrl.SelectItem(Selected.Item(i), SVSI_SELECT | SVSI_NOTAKEFOCUS | wFlags);
-							wFlags = 0;
-						}
-					}
-				}, 99);
-			})(Addons.FixSelection.Refresh);
-			delete Addons.FixSelection.Refresh;
+			Addons.FixSelection.ChangeNotify(GetFolderView(Ctrl));
 		}
 	});
 
