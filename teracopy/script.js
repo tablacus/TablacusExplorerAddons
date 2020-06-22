@@ -25,7 +25,9 @@ if (window.Addon == 1) {
 					path = Dest.Path || Dest;
 				}
 				if (path && fso.FolderExists(path)) {
-					var strTemp = (fso.GetSpecialFolder(2).Path + "\\").replace(/\\\\$/, "\\");
+					var pidTemp = api.ILCreateFromPath(fso.GetSpecialFolder(2).Path);
+					pidTemp.IsFolder;
+					var strTemp = pidTemp.Path + "\\";
 					var strTemp2;
 					var arRen1 = [], arRen2 = [];
 					var Items2 = api.CreateObject("FolderItems");

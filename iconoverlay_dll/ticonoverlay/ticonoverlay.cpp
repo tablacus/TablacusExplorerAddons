@@ -569,12 +569,11 @@ static void threadGetOverlayIconIndex(void *args)
 				IShellIconOverlayIdentifier *psio;
 				if (i < pIconOverlayHandlers.size()) {
 					psio = pIconOverlayHandlers[i];
-				}
-				else {
+				} else {
 					pGlobalInterfaceTable->GetInterfaceFromGlobal(g_pIconOverlayHandlers[i], IID_PPV_ARGS(&psio));
 					pIconOverlayHandlers.push_back(psio);
 				}
-				if (psio->IsMemberOf(pGOI->bsPath, pGOI->dwAttrib) == S_OK) {
+				if (psio && psio->IsMemberOf(pGOI->bsPath, pGOI->dwAttrib) == S_OK) {
 					BOOL bGet = TRUE;
 					LPITEMIDLIST pidl = ILCreateFromPath(pGOI->bsPath);
 					if (pidl) {
@@ -612,7 +611,7 @@ static void threadGetOverlayIconIndex(void *args)
 	} catch (...) {}
 	::InterlockedDecrement(&g_lThreads);
 	while (!pIconOverlayHandlers.empty()) {
-		pIconOverlayHandlers.back()->Release();
+		SafeRelease(&pIconOverlayHandlers.back());
 		pIconOverlayHandlers.pop_back();
 	}
 	SafeRelease(&pCB);
@@ -842,8 +841,9 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 										IShellIconOverlayIdentifier *psio = NULL;
 										if SUCCEEDED(CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&psio))) {
 											DWORD dwCookie;
-											pGlobalInterfaceTable->RegisterInterfaceInGlobal(psio, IID_IShellIconOverlayIdentifier, &dwCookie);
-											g_pIconOverlayHandlers.push_back(dwCookie);
+											if SUCCEEDED(pGlobalInterfaceTable->RegisterInterfaceInGlobal(psio, IID_IShellIconOverlayIdentifier, &dwCookie)) {
+												g_pIconOverlayHandlers.push_back(dwCookie);
+											}
 											psio->Release();
 										}
 									}
@@ -881,28 +881,29 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 						IShellIconOverlayIdentifier *psio = NULL;
 						IGlobalInterfaceTable *pGlobalInterfaceTable;
 						CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pGlobalInterfaceTable));
-						pGlobalInterfaceTable->GetInterfaceFromGlobal(g_pIconOverlayHandlers[dwIndex], IID_PPV_ARGS(&psio));
-						hr = psio->GetOverlayInfo(pszIconFile, sizeof(pszIconFile), &iIndex, &dwFlags);
-						if SUCCEEDED(hr) {
-							VARIANT v;
-							teSetSZ(&v, pszIconFile);
-							tePutProperty(punk, L"IconFile", &v);
-							VariantClear(&v);
-							teSetLong(&v, iIndex);
-							tePutProperty(punk, L"Index", &v);
-							VariantClear(&v);
-							teSetLong(&v, dwFlags);
-							tePutProperty(punk, L"dwFlags", &v);
-							VariantClear(&v);
+						if SUCCEEDED(pGlobalInterfaceTable->GetInterfaceFromGlobal(g_pIconOverlayHandlers[dwIndex], IID_PPV_ARGS(&psio))) {
+							hr = psio->GetOverlayInfo(pszIconFile, sizeof(pszIconFile), &iIndex, &dwFlags);
+							if SUCCEEDED(hr) {
+								VARIANT v;
+								teSetSZ(&v, pszIconFile);
+								tePutProperty(punk, L"IconFile", &v);
+								VariantClear(&v);
+								teSetLong(&v, iIndex);
+								tePutProperty(punk, L"Index", &v);
+								VariantClear(&v);
+								teSetLong(&v, dwFlags);
+								tePutProperty(punk, L"dwFlags", &v);
+								VariantClear(&v);
 #ifdef _DEBUG
-							int iPriority;
-							psio->GetPriority(&iPriority);
-							teSetLong(&v, iPriority);
-							tePutProperty(punk, L"Priority", &v);
-							VariantClear(&v);
+								int iPriority;
+								psio->GetPriority(&iPriority);
+								teSetLong(&v, iPriority);
+								tePutProperty(punk, L"Priority", &v);
+								VariantClear(&v);
 #endif
+							}
+							psio->Release();
 						}
-						psio->Release();
 						pGlobalInterfaceTable->Release();
 						hr &= MAXINT;
 					}

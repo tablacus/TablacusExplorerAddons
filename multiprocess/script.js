@@ -34,7 +34,9 @@ Addons.MultiProcess =
 				var DropTarget = api.DropTarget(Dest);
 				DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 			}
-			var strTemp = (fso.GetSpecialFolder(2).Path + "\\").replace(/\\\\$/, "\\");
+			var pidTemp = api.ILCreateFromPath(fso.GetSpecialFolder(2).Path);
+			pidTemp.IsFolder;
+			var strTemp = pidTemp.Path + "\\";
 			var strTemp2;
 			var arRen1 = [], arRen2 = [];
 			var Items2 = api.CreateObject("FolderItems");
