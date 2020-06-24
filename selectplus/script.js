@@ -21,18 +21,10 @@
 			var bAdd = false;
 			for (var i = 0; i < Items.Count; ++i) {
 				var path1 = fso.BuildPath(path, fso.GetFileName(Items.Item(i).Path));
-				if (IsExists(path1)) {
-					FV.SelectItem(path1, db.Flag | SVSI_SELECT | SVSI_NOTAKEFOCUS);
-					db.Flag = 0;
-				} else {
-					db.paths[path1] = 1;
-					bAdd = true;
-				}
+				db.paths[path1] = 1;
 			}
-			if (bAdd) {
-				Addons.SelectPlus.db[FV.Id] = db;
-				Addons.SelectPlus.Selects(FV, db, 5000);
-			}
+			Addons.SelectPlus.db[FV.Id] = db;
+			Addons.SelectPlus.Selects(FV, db, 5000);
 		},
 
 		Select: function(FV, db, path) {

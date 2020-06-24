@@ -47,7 +47,9 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Sort", Addons.FixSelection.Exec);
+	AddEvent("Sort", function (Ctrl) {
+		Addons.FixSelection.Exec(Ctrl, Ctrl.Data.Selected);
+	});
 
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 		if (msg == WM_NULL) {
