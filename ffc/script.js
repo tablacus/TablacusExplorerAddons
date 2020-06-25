@@ -28,33 +28,38 @@ if (window.Addon == 1) {
 					pidTemp.IsFolder;
 					var strTemp = pidTemp.Path + "\\";
 					var strTemp2;
-					var arRen1 = [], arRen2 = [];
+					var wfd = api.Memory("WIN32_FIND_DATA");
 					var Items2 = api.CreateObject("FolderItems");
 					while (i--) {
 						var path1 = Items.Item(i).Path;
-						if (IsExists(path1)) {
+						var hFind = api.FindFirstFile(path1, wfd);
+						api.FindClose(hFind);
+						if (hFind != INVALID_HANDLE_VALUE) {
 							if (!api.StrCmpNI(path1, strTemp, strTemp.length)) {
-								if (!arRen1.length) {
+								if (!strTemp2) {
 									if (Addons.FFC.NoTemp) {
 										return false;
 									}
-									strTemp2 = strTemp + "tablacus\\" + fso.GetTempName() + "\\";
-									DeleteItem(strTemp2);
+									do {
+										strTemp2 = strTemp + "tablacus\\" + fso.GetTempName() + "\\";
+									} while (IsExists(strTemp2));
+									CreateFolder(strTemp2);
 								}
-								arRen1.unshift(path1);
-								path1 = strTemp2 + path1.slice(strTemp.length);
-								arRen2.unshift(path1);
-								CreateFolder(fso.GetParentFolderName(path1));
+								if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+									fso.MoveFolder(path1, strTemp2);
+								} else {
+									fso.MoveFile(path1, strTemp2);
+								}
+								path1 = strTemp2 + fso.GetFileName(path1);
 							}
 						} else {
-							arRen1.length = 0;
+							delete strTemp2;
 							pdwEffect[0] = DROPEFFECT_NONE;
 							break;
 						}
 						Items2.AddItem(path1);
 					}
-					if (arRen1.length) {
-						api.SHFileOperation(FO_MOVE, arRen1.join("\0"), arRen2.join("\0"), FOF_MULTIDESTFILES | FOF_SILENT, false);
+					if (strTemp2) {
 						Items = Items2;
 					}
 					if (pdwEffect[0]) {

@@ -7,17 +7,19 @@ if (window.Addon == 1) {
 		arExpand: GetAddonOptionEx("favoritesbar", "Expanded") ? [BUTTONS.opened, ''] : [BUTTONS.closed, ' style="display: none"'],
 		Height: GetAddonOption(Addon_Id, "Height") || '100%',
 
-		Init: function ()
-		{
+		Init: function () {
 			if (!te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"]) {
 				te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"] = 178;
 			}
 			Addons.FavoritesBar.Width = te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"];
-			SetAddon(Addon_Id, Addons.FavoritesBar.Align + "Bar2", ['<div id="favoritesbar" class="pane" style="width: 100%; height:', EncodeSC(Addons.FavoritesBar.Height), '; overflow: auto;">']);
+			var h = Addons.FavoritesBar.Height;
+			if (isFinite(h)) {
+				h += "px";
+			}
+			SetAddon(Addon_Id, Addons.FavoritesBar.Align + "Bar2", ['<div id="favoritesbar" class="pane" style="width: 100%; height:', EncodeSC(h), '; overflow: auto;">']);
 		},
 
-		Open: function (i, bNew)
-		{
+		Open: function (i, bNew) {
 			var menus = te.Data.xmlMenus.getElementsByTagName("Favorites");
 			if (menus && menus.length) {
 				var items = menus[0].getElementsByTagName("Item");
@@ -44,16 +46,14 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Down: function (i)
-		{
+		Down: function (i) {
 			if (api.GetKeyState(VK_MBUTTON) < 0) {
 				this.Open(i, true);
 				return false;
 			}
 		},
 
-		Popup: function (i)
-		{
+		Popup: function (i) {
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
 			if (menus && menus.length) {
 				var items = menus[0].getElementsByTagName("Item");
@@ -94,8 +94,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Arrange: function ()
-		{
+		Arrange: function () {
 			var s = [];
 			var nLevel = 0;
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
@@ -123,7 +122,7 @@ if (window.Addon == 1) {
 						}
 					}
 					if (strName == "-") {
-						s.splice(s.length, 0, '<div style="width: 90%; width: calc(100% - 8px); height: 3px; background-color: ActiveBorder; border: 1px solid window; font-size: 1px"></div>');
+						s.splice(s.length, 0, '<div style="width: 90%; width: calc(100% - 8px); height: 3px; background-color: ' + GetWebColor(GetSysColor(COLOR_ACTIVEBORDER)) + '; border: 1px solid ' + GetWebColor(GetSysColor(COLOR_WINDOW)) + '; font-size: 1px"></div>');
 						continue;
 					}
 					path = Addons.FavoritesBar.GetPath(items, i);
@@ -158,29 +157,24 @@ if (window.Addon == 1) {
 			ApplyLang(document.getElementById("favoritesbar"));
 		},
 
-		ShowOptions: function (i)
-		{
+		ShowOptions: function (i) {
 			ShowOptions("Tab=Menus&Menus=Favorites" + (isFinite(i) ? "," + i : ""));
 		},
 
-		OpenContains: function (path)
-		{
+		OpenContains: function (path) {
 			Navigate(fso.GetParentFolderName(path), SBSP_NEWBROWSER);
-			setTimeout(function ()
-			{
+			setTimeout(function () {
 				FV = te.Ctrl(CTRL_FV);
 				FV.SelectItem(path, SVSI_SELECT | SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS);
 			}, 99);
 		},
 
-		GetPath: function (items, i)
-		{
+		GetPath: function (items, i) {
 			var line = items[i].text.split("\n");
 			return api.PathUnquoteSpaces(ExtractMacro(null, line[0]));
 		},
 
-		FromPt: function (pt)
-		{
+		FromPt: function (pt) {
 			var ptc = pt.Clone();
 			api.ScreenToClient(api.GetWindow(document), ptc);
 			for (var el = document.elementFromPoint(ptc.x, ptc.y); el; el = el.parentElement) {
@@ -194,15 +188,13 @@ if (window.Addon == 1) {
 
 	};
 
-	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type == CTRL_WB) {
 			return S_OK;
 		}
 	});
 
-	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type == CTRL_WB) {
 			var menus = te.Data["xmlMenus"].getElementsByTagName('Favorites');
 			if (menus && menus.length) {
@@ -225,8 +217,7 @@ if (window.Addon == 1) {
 		MouseOut();
 	});
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		MouseOut();
 		if (Ctrl.Type == CTRL_WB) {
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
@@ -246,8 +237,7 @@ if (window.Addon == 1) {
 
 	AddEvent("DragLeave", MouseOut);
 
-	AddEvent("Resize", function ()
-	{
+	AddEvent("Resize", function () {
 		var w = te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"];
 		Addons.FavoritesBar.Width = w;
 		document.getElementById('favoritesbar').style.width = w + "px";

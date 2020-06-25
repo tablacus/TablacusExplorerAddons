@@ -34,8 +34,7 @@ if (/ja/i.test(GetLangId())) {
 	document.getElementById("GetFastCopy").title = 'https://fastcopy.jp';
 }
 
-function SetDataZ(o, s)
-{
+SetDataZ = function (o, s) {
 	if (confirmYN(GetText("Are you sure?"))) {
 		SetValue(document.F.elements[s], o.title);
 	}

@@ -163,7 +163,8 @@ if (window.Addon == 1) {
 		var w = te.Data["Conf_" + Addons.Preview.Align + "BarWidth"];
 		Addons.Preview.Width = w;
 		o.style.width = w + "px";
-		o.style.height = Addons.Preview.Height || w + "px";
+		var h = Addons.Preview.Height || w;
+		o.style.height = isFinite(h) ? h + "px" : h;
 	});
 } else {
 	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
