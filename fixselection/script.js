@@ -4,7 +4,7 @@ if (window.Addon == 1) {
 
 		Exec: function (FV, Selected) {
 			delete Addons.FixSelection.tid[FV.Id];
-			if (FV.hwndList && Selected && Selected.Count != FV.ItemCount(SVGIO_SELECTION)) {
+			if (Selected && Selected.Count != FV.ItemCount(SVGIO_SELECTION)) {
 				var wFlags = SVSI_DESELECTOTHERS;
 				for (var i = 0; i < Selected.Count; ++i) {
 					FV.SelectItem(Selected.Item(i), SVSI_SELECT | SVSI_NOTAKEFOCUS | wFlags);
@@ -15,7 +15,7 @@ if (window.Addon == 1) {
 		},
 
 		ChangeNotify: function (FV) {
-			if (FV.hwndList && FV.Data && FV.Data.Selected) {
+			if (FV.Data && FV.Data.Selected) {
 				if (Addons.FixSelection.tid[FV.Id]) {
 					clearTimeout(Addons.FixSelection.tid[FV.Id]);
 				}
@@ -31,11 +31,11 @@ if (window.Addon == 1) {
 	});
 
 	AddEvent("SelectionChanged", function (Ctrl, uChange) {
-		if (Ctrl.hwndList && Ctrl.Data) {
+		if (Ctrl.Data && Ctrl.SelectedItems) {
 			var Selected = Ctrl.SelectedItems();
 			if (Selected.Count == 0) {
 				setTimeout(function () {
-					if (Ctrl.Data) {
+					if (Ctrl.Data && Ctrl.SelectedItems) {
 						Ctrl.Data.Selected = Ctrl.SelectedItems();
 					}
 				}, 99);
