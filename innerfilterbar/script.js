@@ -10,8 +10,7 @@ if (window.Addon == 1) {
 		Icon: '../addons/innerfilterbar/filter.png',
 		Width: '176px',
 
-		KeyDown: function (o, Id)
-		{
+		KeyDown: function (o, Id) {
 			var k = window.event.keyCode;
 			if (k != VK_PROCESSKEY) {
 				this.filter[Id] = o.value;
@@ -25,8 +24,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		KeyUp: function (o, Id)
-		{
+		KeyUp: function (o, Id) {
 			var k = window.event.keyCode;
 			if (k == VK_UP || k == VK_DOWN) {
 				var TC = te.Ctrl(CTRL_TC, Id);
@@ -40,11 +38,10 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Change: function (Id)
-		{
+		Change: function (Id) {
 			var o = document.F.elements["filter_" + Id];
 			Addons.InnerFilterBar.ShowButton(o, Id);
-			var FV =  GetInnerFV(Id);
+			var FV = GetInnerFV(Id);
 			s = o.value;
 
 			if (s) {
@@ -69,8 +66,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Focus: function (o, Id)
-		{
+		Focus: function (o, Id) {
 			Activate(o, Id);
 			o.select();
 			if (this.iCaret[Id] >= 0) {
@@ -81,28 +77,25 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Clear: function (flag, Id)
-		{
+		Clear: function (flag, Id) {
 			var o = document.F.elements["filter_" + Id];
 			o.value = "";
 			this.ShowButton(o, Id);
 			if (flag) {
-				var FV =  GetInnerFV(Id);
+				var FV = GetInnerFV(Id);
 				FV.FilterView = null;
 				FV.Refresh();
 				FV.Focus();
 			}
 		},
 
-		ShowButton: function (oFilter, Id)
-		{
+		ShowButton: function (oFilter, Id) {
 			if (WINVER < 0x602) {
 				document.getElementById("ButtonFilterClear_" + Id).style.display = oFilter.value.length ? "inline" : "none";
 			}
 		},
 
-		Exec: function (Ctrl, pt)
-		{
+		Exec: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			var o = document.F.elements["filter_" + FV.Parent.Id];
 			if (o) {
@@ -111,8 +104,7 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
-		GetFilter: function (Ctrl)
-		{
+		GetFilter: function (Ctrl) {
 			if (Ctrl.Type <= CTRL_EB) {
 				var Id = Ctrl.Parent.Id;
 				var o = document.F.elements["filter_" + Id];
@@ -127,8 +119,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		GetString: function (s)
-		{
+		GetString: function (s) {
 			if (Addons.InnerFilterBar.RE) {
 				var res = /^\/(.*)\/i/.exec(s);
 				if (res) {
@@ -147,8 +138,7 @@ if (window.Addon == 1) {
 			return s;
 		},
 
-		FilterList: function (o, id)
-		{
+		FilterList: function (o, id) {
 			if (Addons.FilterList) {
 				Addons.FilterList.Exec(o, null, id);
 			}
@@ -156,8 +146,7 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("PanelCreated", function (Ctrl)
-	{
+	AddEvent("PanelCreated", function (Ctrl) {
 		var s = ['<input type="text" name="filter_$" placeholder="Filter" onkeydown="return Addons.InnerFilterBar.KeyDown(this,$)"  onkeyup="return Addons.InnerFilterBar.KeyUp(this, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this,$)" onfocus="Addons.InnerFilterBar.Focus(this, $)" onblur="Addons.InnerFilterBar.ShowButton(this,$)" ondblclick="return Addons.InnerFilterBar.FilterList(this,$)" style="width: ', EncodeSC(Addons.InnerFilterBar.Width), '; padding-right: 12pt; vertical-align: middle"><span style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerFilterBar.Icon), '" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width: 12pt; height: 12pt" onclick="return Addons.InnerFilterBar.FilterList(this,$)" oncontextmenu="return Addons.InnerFilterBar.FilterList(this,$)"><span id="ButtonFilterClear_$" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt" class="button" onclick="Addons.InnerFilterBar.Clear(true, $)">r</span></span>'];
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
@@ -183,8 +172,7 @@ if (window.Addon == 1) {
 			if (s && s != "") {
 				Addons.InnerFilterBar.strName = s;
 			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
+			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 				api.InsertMenu(hMenu, Addons.InnerFilterBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.InnerFilterBar.strName));
 				ExtraMenuCommand[nPos] = Addons.InnerFilterBar.Exec;
 				return nPos;
@@ -201,5 +189,6 @@ if (window.Addon == 1) {
 		AddTypeEx("Add-ons", "Inner Filter Bar", Addons.InnerFilterBar.Exec);
 	}
 } else {
-	SetTabContents(0, "General", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr><tr><td><label>Filter</label></td></tr><tr><td><input type="checkbox" id="RE" name="RE" /><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr></table>');
+	SetTabContents(0, "General", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10"></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'"></td></tr><tr><td><label>Filter</label></td></tr><tr><td><input type="checkbox" id="RE" name="RE"><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr></table>');
+	ChangeForm([["__IconSize", "style/display", "none"]]);
 }

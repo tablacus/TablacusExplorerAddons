@@ -10,10 +10,8 @@ if (window.Addon == 1) {
 		Icon: "bitmap:ieframe.dll,216,16,17",
 		Width: '176px',
 
-		Change: function (o, Id)
-		{
-			setTimeout(function ()
-			{
+		Change: function (o, Id) {
+			setTimeout(function () {
 				if (o.value.length == 0) {
 					var FV = GetInnerFV(Id);
 					if (IsSearchPath(FV)) {
@@ -23,23 +21,22 @@ if (window.Addon == 1) {
 			}, 99);
 		},
 
-		KeyDown: function (o, Id)
-		{
-			setTimeout(function ()
-			{
+		KeyDown: function (o, Id) {
+			setTimeout(function () {
 				Addons.InnerSearchBar.ShowButton(Id)
 			}, 99);
 			if (event.keyCode == VK_RETURN) {
 				Addons.InnerSearchBar.Search(Id);
-				(function (o) { setTimeout(function () {
-					o.focus();
-				}, 999);}) (o);
+				(function (o) {
+					setTimeout(function () {
+						o.focus();
+					}, 999);
+				})(o);
 				return false;
 			}
 		},
 
-		Search: function (Id)
-		{
+		Search: function (Id) {
 			var FV = GetInnerFV(Id);
 			var s = document.F.elements["search_" + Id].value;
 			if (s.length) {
@@ -50,8 +47,7 @@ if (window.Addon == 1) {
 			this.ShowButton(Id);
 		},
 
-		Focus: function (o, Id)
-		{
+		Focus: function (o, Id) {
 			Activate(o, Id);
 			o.select();
 			if (this.iCaret[Id] >= 0) {
@@ -62,14 +58,12 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Clear: function (flag, Id)
-		{
+		Clear: function (flag, Id) {
 			document.F.elements["search_" + Id].value = "";
 			this.ShowButton(Id);
 		},
 
-		ShowButton: function (Id)
-		{
+		ShowButton: function (Id) {
 			if (WINVER < 0x602) {
 				var o = document.F.elements["search_" + Id];
 				if (o) {
@@ -78,8 +72,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Exec: function (Ctrl, pt)
-		{
+		Exec: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			var o = document.F.elements["search_" + FV.Parent.Id];
 			if (o) {
@@ -89,14 +82,12 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("PanelCreated", function (Ctrl)
-	{
+	AddEvent("PanelCreated", function (Ctrl) {
 		var s = ['<input type="text" name="search_$" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(this,$)" onmouseup="Addons.InnerSearchBar.Change(this,$)" onfocus="Addons.InnerSearchBar.Focus(this, $)" style="width: ', EncodeSC(Addons.InnerSearchBar.Width), '; padding-right: 12pt; vertical-align: middle"><span style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerSearchBar.Icon), '" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width: 12pt; height: 12pt" oncontextmenu="return false" onclick="Addons.InnerSearchBar.Search($)"><span id="ButtonSearchClear_$" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt" class="button" onclick="Addons.InnerSearchBar.Clear(true, $)">r</span></span>'];
 		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
 	});
 
-	AddEvent("ChangeView", function (Ctrl)
-	{
+	AddEvent("ChangeView", function (Ctrl) {
 		if (Ctrl.Type <= CTRL_EB) {
 			var Id = Ctrl.Parent.Id;
 			var o = document.F.elements["search_" + Id];
@@ -125,8 +116,7 @@ if (window.Addon == 1) {
 			if (s && s != "") {
 				Addons.InnerSearchBar.strName = s;
 			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
+			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 				api.InsertMenu(hMenu, Addons.InnerSearchBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.InnerSearchBar.strName));
 				ExtraMenuCommand[nPos] = Addons.InnerSearchBar.Exec;
 				return nPos;
@@ -143,5 +133,6 @@ if (window.Addon == 1) {
 		AddTypeEx("Add-ons", "Inner Search Bar", Addons.InnerSearchBar.Exec);
 	}
 } else {
-	SetTabContents(0, "General", '<table style="width: 100%"><tr><td style="width: 100%"><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr></table>');
+	SetTabContents(0, "General", '<table style="width: 100%"><tr><td style="width: 100%"><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10"></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'"></td></tr></table>');
+	ChangeForm([["__IconSize", "style/display", "none"]]);
 }

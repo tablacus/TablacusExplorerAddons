@@ -6,9 +6,13 @@ if (window.Addon == 1) {
 			delete Addons.FixSelection.tid[FV.Id];
 			if (Selected && Selected.Count != FV.ItemCount(SVGIO_SELECTION)) {
 				var wFlags = SVSI_DESELECTOTHERS;
-				for (var i = 0; i < Selected.Count; ++i) {
-					FV.SelectItem(Selected.Item(i), SVSI_SELECT | SVSI_NOTAKEFOCUS | wFlags);
-					wFlags = 0;
+				if (Selected.Count) {
+					for (var i = 0; i < Selected.Count; ++i) {
+						FV.SelectItem(Selected.Item(i), SVSI_SELECT | SVSI_NOTAKEFOCUS | wFlags);
+						wFlags = 0;
+					}
+				} else {
+					FV.SelectItem(null, wFlags);
 				}
 				delete FV.Data.Selected;
 			}

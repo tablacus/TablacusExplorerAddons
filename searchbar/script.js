@@ -12,10 +12,8 @@ if (window.Addon == 1) {
 		iCaret: -1,
 		strName: "Search Bar",
 
-		Change: function (o)
-		{
-			setTimeout(function ()
-			{
+		Change: function (o) {
+			setTimeout(function () {
 				Addons.SearchBar.ShowButton();
 				if (document.F.search.value.length == 0) {
 					var FV = te.Ctrl(CTRL_FV);
@@ -26,20 +24,20 @@ if (window.Addon == 1) {
 			}, 99);
 		},
 
-		KeyDown: function (o)
-		{
+		KeyDown: function (o) {
 			setTimeout(Addons.SearchBar.ShowButton, 99);
 			if (event.keyCode == VK_RETURN) {
 				Addons.SearchBar.Search();
-				(function (o) { setTimeout(function () {
-					o.focus();
-				}, 999);}) (o);
+				(function (o) {
+					setTimeout(function () {
+						o.focus();
+					}, 999);
+				})(o);
 				return false;
 			}
 		},
 
-		Search: function ()
-		{
+		Search: function () {
 			var FV = te.Ctrl(CTRL_FV);
 			var s = document.F.search.value;
 			if (s.length) {
@@ -50,8 +48,7 @@ if (window.Addon == 1) {
 			Addons.SearchBar.ShowButton();
 		},
 
-		Focus: function (o)
-		{
+		Focus: function (o) {
 			o.select();
 			if (this.iCaret >= 0) {
 				var range = o.createTextRange();
@@ -61,28 +58,24 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Clear: function ()
-		{
+		Clear: function () {
 			document.F.search.value = "";
 			this.ShowButton();
 		},
 
-		ShowButton: function ()
-		{
+		ShowButton: function () {
 			if (WINVER < 0x602) {
 				document.getElementById("ButtonSearchClear").style.display = document.F.search.value.length ? "inline" : "none";
 			}
 		},
 
-		Exec: function ()
-		{
+		Exec: function () {
 			document.F.search.focus();
 			return S_OK;
 		}
 	};
 
-	AddEvent("ChangeView", function (Ctrl)
-	{
+	AddEvent("ChangeView", function (Ctrl) {
 		document.F.search.value = IsSearchPath(Ctrl) ? api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER | SHGDN_ORIGINAL) : "";
 		Addons.SearchBar.ShowButton();
 	});
@@ -100,8 +93,7 @@ if (window.Addon == 1) {
 		if (s && s != "") {
 			Addons.SearchBar.strName = s;
 		}
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 			api.InsertMenu(hMenu, Addons.SearchBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.SearchBar.strName));
 			ExtraMenuCommand[nPos] = Addons.SearchBar.Exec;
 			return nPos;
@@ -117,8 +109,9 @@ if (window.Addon == 1) {
 	}
 	AddTypeEx("Add-ons", "Search Bar", Addons.SearchBar.Exec);
 
-	SetAddon(Addon_Id, Default, ['<input type="text" name="search" placeholder="Search" onkeydown="return Addons.SearchBar.KeyDown(this)" onmouseup="Addons.SearchBar.Change(this)" onfocus="Addons.SearchBar.Focus(this)" style="width:', EncodeSC(width), '; padding-right:', WINVER < 0x602 ? "24": "12", 'pt; vertical-align: middle"><span style="position: relative"><span id="ButtonSearchClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.SearchBar.Clear()" class="button" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt" >r</span><input type="image" src="', EncodeSC(icon), '" onclick="Addons.SearchBar.Search()" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width 12pt; height: 12pt"></span>'], "middle");
+	SetAddon(Addon_Id, Default, ['<input type="text" name="search" placeholder="Search" onkeydown="return Addons.SearchBar.KeyDown(this)" onmouseup="Addons.SearchBar.Change(this)" onfocus="Addons.SearchBar.Focus(this)" style="width:', EncodeSC(width), '; padding-right:', WINVER < 0x602 ? "24" : "12", 'pt; vertical-align: middle"><span style="position: relative"><span id="ButtonSearchClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.SearchBar.Clear()" class="button" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt" >r</span><input type="image" src="', EncodeSC(icon), '" onclick="Addons.SearchBar.Search()" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width 12pt; height: 12pt"></span>'], "middle");
 }
 else {
-	SetTabContents(0, "View", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10" /></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'" /></td></tr></table>');
+	SetTabContents(0, "View", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10"></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'"></td></tr></table>');
+	ChangeForm([["__IconSize", "style/display", "none"]]);
 }

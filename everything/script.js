@@ -14,17 +14,14 @@ if (window.Addon == 1) {
 		fncb: {},
 		nDog: 0,
 
-		IsHandle: function (Ctrl)
-		{
-			return api.PathMatchSpec(typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), Addons.Everything.PATH + "*");
+		IsHandle: function (Ctrl) {
+			return api.PathMatchSpec(typeof (Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), Addons.Everything.PATH + "*");
 		},
 
-		Change: function (o)
-		{
+		Change: function (o) {
 		},
 
-		KeyDown: function (o)
-		{
+		KeyDown: function (o) {
 			setTimeout(Addons.Everything.ShowButton, 99);
 			if (event.keyCode == VK_RETURN) {
 				Addons.Everything.Search();
@@ -32,12 +29,11 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Search: function (s)
-		{
+		Search: function (s) {
 			var FV = te.Ctrl(CTRL_FV);
 			var s = s || document.F.everythingsearch.value;
 			if (s.length) {
-				if (!/path:.+/.test(s) && ((api.GetAsyncKeyState(VK_SHIFT) < 0 ? 1: 0) ^ Addons.Everything.Subfolders)) {
+				if (!/path:.+/.test(s) && ((api.GetAsyncKeyState(VK_SHIFT) < 0 ? 1 : 0) ^ Addons.Everything.Subfolders)) {
 					var path = FV.FolderItem.Path;
 					if (/^[A-Z]:\\|^\\\\/i.test(path)) {
 						s += " path:" + api.PathQuoteSpaces((path + "\\").replace(/\\\\$/, "\\"));
@@ -47,8 +43,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Focus: function (o)
-		{
+		Focus: function (o) {
 			o.select();
 			if (this.iCaret >= 0) {
 				var range = o.createTextRange();
@@ -59,36 +54,31 @@ if (window.Addon == 1) {
 			Addons.Everything.ShowButton();
 		},
 
-		Clear: function ()
-		{
+		Clear: function () {
 			document.F.everythingsearch.value = "";
 			Addons.Everything.ShowButton();
 		},
 
-		ShowButton: function ()
-		{
+		ShowButton: function () {
 			if (WINVER < 0x602) {
 				document.getElementById("ButtonEverythingClear").style.display = document.F.everythingsearch.value.length ? "inline" : "none";
 			}
 		},
 
-		GetSearchString: function(Ctrl)
-		{
-			var Path = typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+		GetSearchString: function (Ctrl) {
+			var Path = typeof (Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			if (Addons.Everything.IsHandle(Path)) {
 				return Path.replace(new RegExp("^" + Addons.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
 			}
 			return "";
 		},
 
-		Exec: function ()
-		{
+		Exec: function () {
 			document.F.everythingsearch.focus();
 			return S_OK;
 		},
 
-		Delete: function (pidl)
-		{
+		Delete: function (pidl) {
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
 				var FV = cFV[i];
@@ -98,8 +88,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Rename: function (pidl, pidl2)
-		{
+		Rename: function (pidl, pidl2) {
 			var fn = api.GetDisplayNameOf(pidl2, SHGDN_INFOLDER);
 			var cFV = te.Ctrls(CTRL_FV);
 			for (var i in cFV) {
@@ -115,8 +104,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Enum: function (pid, Ctrl, fncb, SessionId)
-		{
+		Enum: function (pid, Ctrl, fncb, SessionId) {
 			if (fncb) {
 				var Path = Addons.Everything.GetSearchString(pid);
 				if (Addons.Everything.RE) {
@@ -146,11 +134,10 @@ if (window.Addon == 1) {
 						if (Addons.Everything.nDog++ < 9) {
 							try {
 								wsh.Run(ExtractMacro(te, Addons.Everything.ExePath), SW_SHOWNORMAL);
-								setTimeout(function()
-								{
+								setTimeout(function () {
 									Addons.Everything.Enum(pid, Ctrl, fncb, SessionId);
 								}, Addons.Everything.nDog * 99);
-							} catch (e) {}
+							} catch (e) { }
 						} else {
 							Addons.Everything.nDog = 0;
 						}
@@ -159,8 +146,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Open: function (Path, hwndView)
-		{
+		Open: function (Path, hwndView) {
 			var hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
 			if (hwnd) {
 				var query = new ApiStruct({
@@ -187,16 +173,14 @@ if (window.Addon == 1) {
 
 	};
 
-	AddEvent("TranslatePath", function (Ctrl, Path)
-	{
+	AddEvent("TranslatePath", function (Ctrl, Path) {
 		if (Addons.Everything.IsHandle(Path)) {
 			Ctrl.Enum = Addons.Everything.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
 
-	AddEvent("CopyData", function (Ctrl, cd, wParam)
-	{
+	AddEvent("CopyData", function (Ctrl, cd, wParam) {
 		if (cd.dwData == 2 && cd.cbData) {
 			var data = api.Memory("BYTE", cd.cbData, cd.lpData);
 			var EVERYTHING_IPC_LIST =
@@ -234,29 +218,25 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("GetFolderItemName", function (pid)
-	{
+	AddEvent("GetFolderItemName", function (pid) {
 		if (Addons.Everything.IsHandle(pid)) {
 			var res = /(.*?) *path:"?.+?"?/.exec(pid.Path);
 			return res ? res[1] : pid.Path;
 		}
 	}, true);
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
-	{
+	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
 		if (Addons.Everything.IsHandle(Ctrl)) {
 			return MakeImgDataEx(Addons.Everything.Icon, bSimple, 16);
 		}
 	});
 
-	AddEvent("ChangeView", function (Ctrl)
-	{
+	AddEvent("ChangeView", function (Ctrl) {
 		document.F.everythingsearch.value = Addons.Everything.GetSearchString(Ctrl);
 		Addons.Everything.ShowButton();
 	});
 
-	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
-	{
+	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 		if (Addons.Everything.IsHandle(Ctrl)) {
 			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
 			ExtraMenuCommand[nPos] = OpenContains;
@@ -264,8 +244,7 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
-	{
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 		if (!Verb || Verb == CommandID_STORE - 1) {
 			if (ContextMenu.Items.Count >= 1) {
 				var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
@@ -278,8 +257,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ChangeNotify", function (Ctrl, pidls)
-	{
+	AddEvent("ChangeNotify", function (Ctrl, pidls) {
 		if (pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR)) {
 			Addons.Everything.Delete(pidls[0]);
 		}
@@ -288,8 +266,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ILGetParent", function (FolderItem)
-	{
+	AddEvent("ILGetParent", function (FolderItem) {
 		if (Addons.Everything.IsHandle(FolderItem)) {
 			var res = /path:"?(.+?)"?/.exec(Addons.Everything.GetSearchString(FolderItem));
 			return res ? res[1] : ssfDESKTOP;
@@ -333,8 +310,7 @@ if (window.Addon == 1) {
 	Addons.Everything.Subfolders = api.LowPart(item.getAttribute("Subfolders")) ? 1 : 0;
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 			api.InsertMenu(hMenu, Addons.Everything.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Everything.strName));
 			ExtraMenuCommand[nPos] = Addons.Everything.Exec;
 			return nPos;

@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.6.27</MinVersion>
     <pubDate>Sat, 27 Jun 2020 00:00:00 GMT</pubDate>
-    <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Folder list menu</Name>
-    <Description>Show a menu of folders listed in a text file</Description>
+    <Name>Emulate drop</Name>
+    <Description>Add "Emulate drop" to the type.</Description>
   </en>
   <ja>
-    <Name>フォルダーリストメニュー</Name>
+    <Name>ドロップをエミュレート</Name>
+    <Description>タイプに「Emulate drop」を追加します。</Description>
   </ja>
-  <zh>
-    <Name>自訂文字檔選單</Name>
-  </zh>
 </TablacusExplorer>

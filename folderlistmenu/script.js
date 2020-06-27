@@ -109,13 +109,15 @@ if (window.Addon == 1) {
 					api.GetCursorPos(pt);
 				}
 			}
-			var nVerb = api.TrackPopupMenuEx(oMenu['\\'], TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
-			for (var i in oMenu) {
-				api.DestroyMenu(oMenu[i]);
-			}
-			if (nVerb) {
-				FolderMenu.Invoke(api.ILCreateFromPath(items[nVerb - 1]), GetAddonOption("folderlistmenu", "NewTab") ? SBSP_NEWBROWSER : undefined);
-			}
+			setTimeout(function () {
+				var nVerb = api.TrackPopupMenuEx(oMenu['\\'], TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
+				for (var i in oMenu) {
+					api.DestroyMenu(oMenu[i]);
+				}
+				if (nVerb) {
+					FolderMenu.Invoke(api.ILCreateFromPath(items[nVerb - 1]), GetAddonOption("folderlistmenu", "NewTab") ? SBSP_NEWBROWSER : undefined);
+				}
+			}, 99);
 			return S_OK;
 		},
 
