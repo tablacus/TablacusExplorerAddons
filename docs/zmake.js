@@ -70,18 +70,28 @@ for (var i in arSorted) {
 			if (items.length) {
 				var item2 = xmlSave.createElement(arLangs[k]);
 				var item = items[0].childNodes;
+				var ver = "";
 				for (var i = 0; i < item.length; i++) {
 					if (/Version$|^pubDate$|^Creator$|^Name$|^Description$/.test(item[i].tagName)) {
 						var item3 = xmlSave.createElement(item[i].tagName);
 						item3.text = item[i].text;
 						item2.appendChild(item3);
+						if (item[i].tagName === "Version") {
+							ver = item[i].text;
+						}
 					}
 				}
-				if (k == 0 && fso.FileExists('..\\..\\TablacusExplorerAddons.wiki\\' + name + '.md')) {
-					var item3 = xmlSave.createElement("Details");
-					item3.text = 'https://tablacus.github.io/wiki/addons/' + name + '.html';
-					item2.appendChild(item3);
-			}
+				if (k == 0) {
+					if (fso.FileExists('..\\..\\TablacusExplorerAddons.wiki\\' + name + '.md')) {
+						var item3 = xmlSave.createElement("Details");
+						item3.text = 'https://tablacus.github.io/wiki/addons/' + name + '.html';
+						item2.appendChild(item3);
+					}
+					var zip = [name, "\\", name, "_", ver.replace(/\./, ""), ".zip"].join("");
+					if (!fso.FileExists(zip)) {
+						WScript.Echo(zip);
+					}
+				}
 				item1.appendChild(item2);
 			}
 		}
