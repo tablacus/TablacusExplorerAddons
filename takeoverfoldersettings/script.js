@@ -26,7 +26,7 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			var path = Ctrl.FolderItem.Path;
+			var path = (Ctrl.FolderItem || {}).Path;
 			if (PathMatchEx(path, Addons.TakeOverFolderSettings.Filter) && !PathMatchEx(path, Addons.TakeOverFolderSettings.Disable)) {
 				var ar = Addons.TakeOverFolderSettings.db.split("\t");
 				if (ar) {

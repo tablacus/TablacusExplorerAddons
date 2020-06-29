@@ -1,13 +1,11 @@
-CreateXml = function ()
-{
+CreateXml = function () {
 	var xml = new ActiveXObject("Msxml2.DOMDocument");
 	xml.async = false;
 	xml.appendChild(xml.createProcessingInstruction("xml", 'version="1.0" encoding="UTF-8"'));
 	return xml;
 }
 
-GetAddonInfo2 = function (xml, info, Tag)
-{
+GetAddonInfo2 = function (xml, info, Tag) {
 	var items = xml.getElementsByTagName(Tag);
 	if (items.length) {
 		var item = items[0].childNodes;
@@ -18,14 +16,15 @@ GetAddonInfo2 = function (xml, info, Tag)
 }
 
 var fso = new ActiveXObject("Scripting.FileSystemObject");
-var folder = fso.GetFolder(".");
-
+var wsh = new ActiveXObject("WScript.Shell");
+var folder = fso.GetFolder("..");
+var results = [];
 var em = new Enumerator(folder.SubFolders);
 var arLangs = ["General", "en", "ja", "zh"];
 var arAddon = [];
 for (em.moveFirst(); !em.atEnd(); em.moveNext()) {
 	var name = em.item().Name;
-	if (/^migemo$|^iconsize$|^smallicons$/i.test(name)) {
+	if (/^breadcrumbsaddressbar$|^migemo$|^iconsize$|^smallicons$|^docs$/i.test(name)) {
 		continue;
 	}
 	var xml = new ActiveXObject("Msxml2.DOMDocument");
@@ -41,7 +40,16 @@ for (em.moveFirst(); !em.atEnd(); em.moveNext()) {
 			name: name,
 			order: ("0000000000000000000" + dt.getTime()).slice(-20) + (9999 - ver)
 		});
-	} else if (name != "te") {
+
+		var zip = [name, "\\", name, "_", Math.floor(ver), ".zip"].join("");
+		if (!fso.FileExists(zip)) {
+			if (!fso.FolderExists(name)) {
+				fso.CreateFolder(name);
+			}
+			wsh.Run(['"C:\\Program Files\\7-Zip\\7zG.exe"', "a", zip.replace(/\\/g, "\\\\"), "..\\" + name, "-mx9"].join(" "));
+			results.push(zip);
+		}
+	} else if (!/^\.|_dll$/.test(name)) {
 		WScript.Echo([name, fso.FileExists("..\\" + name + "\\config.xml")].join(","));
 	}
 }
@@ -70,15 +78,11 @@ for (var i in arSorted) {
 			if (items.length) {
 				var item2 = xmlSave.createElement(arLangs[k]);
 				var item = items[0].childNodes;
-				var ver = "";
 				for (var i = 0; i < item.length; i++) {
 					if (/Version$|^pubDate$|^Creator$|^Name$|^Description$/.test(item[i].tagName)) {
 						var item3 = xmlSave.createElement(item[i].tagName);
 						item3.text = item[i].text;
 						item2.appendChild(item3);
-						if (item[i].tagName === "Version") {
-							ver = item[i].text;
-						}
 					}
 				}
 				if (k == 0) {
@@ -86,10 +90,6 @@ for (var i in arSorted) {
 						var item3 = xmlSave.createElement("Details");
 						item3.text = 'https://tablacus.github.io/wiki/addons/' + name + '.html';
 						item2.appendChild(item3);
-					}
-					var zip = [name, "\\", name, "_", ver.replace(/\./, ""), ".zip"].join("");
-					if (!fso.FileExists(zip)) {
-						WScript.Echo(zip);
 					}
 				}
 				item1.appendChild(item2);
@@ -109,10 +109,13 @@ ado.Mode = 3;
 ado.Type = 2;
 ado.Charset = "UTF-8";
 ado.Open();
-ado.LoadFromFile (fnXml);
+ado.LoadFromFile(fnXml);
 ado.Position = 0;
 var strData = ado.ReadText().replace(/(<\/Item>)/ig, "$1\n");
 ado.Position = 0;
 ado.WriteText(strData);
 ado.SaveToFile(fnXml, 2);
 ado.Close();
+if (results.length) {
+	WScript.Echo(results.join("\n"));
+}
