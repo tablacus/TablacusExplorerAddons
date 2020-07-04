@@ -85,7 +85,7 @@ if (window.Addon == 1) {
 			for (; nTC < nMax; nTC++) {
 				var type = CTRL_SB;
 				var viewmode = FVM_DETAILS;
-				var flags = FWF_SHOWSELALWAYS | FWF_NOWEBVIEW | FWF_AUTOARRANGE;
+				var flags = FWF_SHOWSELALWAYS | FWF_NOWEBVIEW;
 				var icon = 0;
 				var options = EBO_SHOWFRAMES | EBO_ALWAYSNAVIGATE;
 				var viewflags = 8;
@@ -175,6 +175,51 @@ if (window.Addon == 1) {
 					return cTC[b].Visible ? 1 : a - b;
 				}
 			);
+		},
+
+		Over: function (e, bCursor) {
+			var r = [], nCursor = 0, d = 8;
+			var cTC = te.Ctrls(CTRL_TC, true);
+			for (var i = cTC.length; i-- > 0;) {
+				var id = cTC[i].Id;
+				var o = document.getElementById("Panel_" + id);
+				if (!o) {
+					return;
+				}
+				var right = o.offsetLeft + o.offsetWidth;
+				var bottom = o.offsetTop + o.offsetHeight;
+				if (cTC[i].Left && e.clientX > o.offsetLeft - d && e.clientX < o.offsetLeft + d) {
+					r.push({ left: id });
+					nCursor |= 1;
+				}
+				if (e.clientX > right - d && e.clientX < right + d) {
+					r.push({ width: id });
+					nCursor |= 1;
+				}
+				if (cTC[i].Top && e.clientY > o.offsetTop - d && e.clientY < o.offsetTop + d) {
+					r.push({ top: id });
+					nCursor |= 2;
+				}
+				if (e.clientY > bottom - d && e.clientY < bottom + d) {
+					r.push({ height: id });
+					nCursor |= 2;
+				}
+			}
+			if (nCursor) {
+				var o = document.getElementById("client");
+				o.style.cursor = nCursor == 1 ? "w-resize" : nCursor == 2 ? "s-resize" : "move";
+				Addons.Split.hCursor = api.LoadCursor(null, nCursor + 32643);
+				api.SetCursor(Addons.Split.hCursor);
+			}
+			return r;
+		},
+
+		Down: function (e) {
+			var r = Addons.Split.Over(e);
+			if (r.length) {
+				api.SetCapture(te.hwnd);
+				Addons.Split.Capture = r;
+			}
 		}
 	};
 
@@ -189,6 +234,137 @@ if (window.Addon == 1) {
 			{ id: "2x2", exec: "4, 4", img: "4tabs" }
 		]);
 	});
+
+	var o = document.getElementById("client");
+	AddEventEx(o, "mouseover", Addons.Split.Over);
+	AddEventEx(o, "mousedown", Addons.Split.Down);
+
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
+		if (Addons.Split.Capture) {
+			var rc = api.Memory("RECT");
+			api.GetClientRect(te.hwnd, rc);
+			rc.right -= te.offsetLeft + te.offsetRight;
+			rc.bottom -= te.offsetTop + te.offsetBottom;
+			var o = document.getElementById("Panel");
+
+			api.ScreenToClient(te.hwnd, pt);
+			pt.x -= te.offsetLeft;
+			pt.y -= te.offsetTop;
+			var arSet = [];
+			for (var i = Addons.Split.Capture.length; i--;) {
+				var v = Addons.Split.Capture[i];
+				if (v.left) {
+					var TC = te.Ctrl(CTRL_TC, v.left);
+					var left = TC.Left;
+					if ("string" === typeof left) {
+						left = Number(String(left).replace(/%$/, "")) * rc.right / 100;
+					}
+					var width = TC.Width;
+					if ("string" === typeof width) {
+						width = Number(String(width).replace(/%$/, "")) * rc.right / 100;
+					}
+					width = Math.round(left + width - pt.x);
+					if (width < 4) {
+						nCursor = 0;
+						break;
+					}
+					left = pt.x;
+					if ("string" === typeof TC.Width) {
+						width = (100 * width / rc.right).toFixed(2) + "%";
+					}
+					if ("string" === typeof TC.Left) {
+						left = (100 * left / rc.right).toFixed(2) + "%";
+					}
+					arSet.push([TC, "Width", width]);
+					arSet.push([TC, "Left", left]);
+				}
+				if (v.width) {
+					var TC = te.Ctrl(CTRL_TC, v.width);
+					var left = TC.Left;
+					if ("string" === typeof left) {
+						left = Number(String(left).replace(/%$/, "")) * rc.right / 100;
+					}
+					var width = Math.round(pt.x - left);
+					if (width < 4) {
+						arSet.length = 0;
+						break;
+					}
+					if ("string" === typeof TC.Width) {
+						width = (100 * width / rc.right).toFixed(2) + "%";
+					}
+					arSet.push([TC, "Width", width]);
+				}
+				if (v.top) {
+					var TC = te.Ctrl(CTRL_TC, v.top);
+					var top = TC.Top;
+					if ("string" === typeof top) {
+						top = Number(String(top).replace(/%$/, "")) * rc.bottom / 100;
+					}
+					var height = TC.Height;
+					if ("string" === typeof height) {
+						height = Number(String(height).replace(/%$/, "")) * rc.bottom / 100;
+					}
+					height = Math.round(top + height - pt.y);
+					if (height < 4) {
+						arSet.length = 0;
+						break;
+					}
+					top = pt.y;
+					if ("string" === typeof TC.height) {
+						height = (100 * height / rc.bottom).toFixed(2) + "%";
+					}
+					if ("string" === typeof TC.top) {
+						top = (100 * top / rc.bottom).toFixed(2) + "%";
+					}
+					arSet.push([TC, "Height", height]);
+					arSet.push([TC, "Top", top]);
+				}
+				if (v.height) {
+					var TC = te.Ctrl(CTRL_TC, v.height);
+					var top = TC.Top;
+					if ("string" === typeof top) {
+						top = Number(String(top).replace(/%$/, "")) * rc.bottom / 100;
+					}
+					var height = Math.round(pt.y - top);
+					if (height < 4) {
+						arSet.length = 0;
+						break;
+					}
+					if ("string" === typeof TC.height) {
+						height = (100 * height / rc.bottom).toFixed(2) + "%";
+					}
+					arSet.push([TC, "Height", height]);
+				}
+			}
+			if (arSet.length) {
+				for (var i = arSet.length; i--;) {
+					arSet[i][0][arSet[i][1]] = arSet[i][2];
+				}
+			}
+			if (msg == WM_LBUTTONUP || api.GetKeyState(VK_LBUTTON) >= 0) {
+				api.ReleaseCapture();
+				delete Addons.Split.Capture;
+			}
+			return S_OK;
+		}
+	}, true);
+
+	AddEvent("Load", function () {
+		AddEvent("Arrange", function (Ctrl, rc) {
+			if (Addons.Split.Capture) {
+				api.SetCursor(Addons.Split.hCursor);
+				if (Addons.Split.tid) {
+					clearTimeout(Addons.Split.tid);
+				}
+				Addons.Split.tid = setTimeout(function () {
+					if (Addons.Split.Capture) {
+						api.SetCursor(Addons.Split.hCursor);
+					}
+				}, 500);
+			}
+		});
+	});
+
 } else {
 	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 	if (ado) {
