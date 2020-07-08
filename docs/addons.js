@@ -102,14 +102,14 @@ function ArrangeAddon(xml, Id, td, ts)
 		if (info.Details) {
 			s.push('<a href="' + info.Details + '" target="_blank">' + GetText("Details") + '</a>');			
 		}
-		s.push('<div style="col-6">' + pubDate + '</div><div style="col-6 text-rught">');
+		s.push('<div class="row"><div style="col-6">' + pubDate + '</div><div style="col-6 text-right">');
 		var filename = info.filename;
 		if (!filename) {
 			filename = Id + '_' + info.Version.replace(/\D/, '') + '.zip';
 		}
 		var dt2 = (dt.getTime() / (24 * 60 * 60 * 1000)) - info.Version;
 		s.push('<a href="' + Id + '/' + filename + '">' + 'Download' + '</a>');
-		s.push('</div>');
+		s.push('</div></div>');
 		var nInsert = 0;
 		while (nInsert <= nCount && dt2 < ts[nInsert]) {
 			nInsert++;
