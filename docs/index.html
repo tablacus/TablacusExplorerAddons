@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title>Tablacus Explorer Add-ons</title>
-<link rel="stylesheet" type="text/css" href="/common.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <script type="text/javascript" src="common.js"></script>
 <script type="text/javascript" src="addons.js"></script>
 <style type="text/css">
@@ -13,36 +13,51 @@
 }
 </style>
 </head>
-<body bgcolor="#ffffff" text="#000000" link="#0000cc" vlink="#8b0000" alink="#ff0000">
-<table width="100%"><tr><td>
-	<a href="/">[Softwares]</a>
-</td>
-<td align="right">
-	<a href="/explorer_en.html">[English]</a>
-	<a href="/explorer.html">[Japanese]</a>
-</td></tr></table>
-<table width="100%" summary="top" border=0 cellpadding=0 cellspacing=0 class="bar">
-<tr>
-<tr>
-<td width="48px" height="48px"><img src="/img/te48.png"></td>
-<td align="center" nowrap>
-<b>Tablacus Explorer <label>Add-ons</label></b>
-</td>
-</tr>
-</table>
-<div class="info">
-Tablacus Explorer <label>Add-ons</label> <label>List</label>
-<form name="F" onsubmit="AddonsSearch(); return false"><input type="text" name="q" style="width: 300px" onkeydown="FindKeyEvent(this)">
-<script type="text/javascript">
-try {
-	var rng = document.body.createTextRange();
-	if (rng) {
-		document.write('<input type="button" value="Search" onclick="FindText(document.F.q.value)" />');
-	}
-} catch(e) {}
+<body>
+<nav class="navbar navbar-light bg-light">
+  <div><button class="navbar-toggler" type="button"
+      data-toggle="collapse"
+      data-target="#navmenu1"
+      aria-controls="navmenu1"
+      aria-expanded="false"
+      aria-label="Toggle navigation">Tablacus Explorer</button>
+Add-ons</div>
+  <button class="navbar-toggler" type="button"
+      data-toggle="collapse"
+      data-target="#navmenu1"
+      aria-controls="navmenu1"
+      aria-expanded="false"
+      aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navmenu1">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link nav-block" href="/">Softwares</a>
+      <a class="nav-item nav-link nav-block" href="/explorer_en.html">English</a>
+      <a class="nav-item nav-link nav-block" href="/explorer.html">Japanese</a>
+      <a class="nav-item nav-link nav-block" href="/privacy_en">Privacy policy</a>
+    </div>
+  </div>
+</nav>
+<form name="F" onsubmit="AddonsSearch(); return false">
+<div class="input-group">
+	<input type="text" name="q" class="form-control" onkeydown="FindKeyEvent(this)">
+	<span class="input-group-btn">
+		<input type="button" name="b" value="Filter" class="btn btn-primary" onclick="AddonsSearch()">
+	</span>
+</div>
+</form>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Tablacus Explorer Add-ons -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-3159527702624987"
+     data-ad-slot="8290404407"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-<input type="button" name="b" value="Filter" onclick="AddonsSearch()">
-</form></div>
 <noscript class="info" width="100%"><label>This page uses JavaScript.</label><br></noscript>
 <table id="addons" style="width: 100%; border: 1px">
 <tr><td>cbcopy</td>
@@ -210,20 +225,12 @@ try {
 	<td>Extract the compressed files</td>
 </tr>
 </table>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- Tablacus Explorer Add-ons -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-3159527702624987"
-     data-ad-slot="8290404407"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
 <div class="bar"><b>How to install add-ons</b></div>
 <ul>
 <li>Extract a ZIP file to your "addons" folder.</li>
 <li>Can be installed from the button "Get Add-ons..." in the options.</li>
 </ul>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body></html>
