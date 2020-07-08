@@ -41,15 +41,7 @@ Add-ons</div>
 </nav>
 <div class="container-fluid bg-light">
 <div class="row">
-<div class="col-12 text-center">
-<form name="F" onsubmit="AddonsSearch(); return false">
-<div class="input-group">
-	<input type="text" name="q" class="form-control" onkeydown="FindKeyEvent(this)">
-	<span class="input-group-btn">
-		<input type="button" name="b" value="Filter" class="btn btn-primary" onclick="AddonsSearch()">
-	</span>
-</div>
-</form>
+<div class="col-12">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <!-- Tablacus Explorer Add-ons -->
 <ins class="adsbygoogle"
@@ -61,7 +53,15 @@ Add-ons</div>
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-<noscript class="info" width="100%"><label>This page uses JavaScript.</label><br></noscript>
+<form name="F" onsubmit="AddonsSearch(); return false">
+<div class="input-group">
+	<input type="text" name="q" class="form-control" onkeydown="FindKeyEvent(this)">
+	<span class="input-group-btn">
+		<input type="button" name="b" value="Filter" class="btn btn-primary" onclick="AddonsSearch()">
+	</span>
+</div>
+</form>
+<noscript class="bg-warning" width="100%"><label>This page uses JavaScript.</label><br></noscript>
 <table id="addons" style="width: 100%; border: 1px">
 <tr><td>cbcopy</td>
 	<td>Clipboard Copy</td>
@@ -228,7 +228,7 @@ Add-ons</div>
 	<td>Extract the compressed files</td>
 </tr>
 </table>
-<div class="bar"><b>How to install add-ons</b></div>
+<div class="text-white bg-secondary"><b>How to install add-ons</b></div>
 <ul>
 <li>Extract a ZIP file to your "addons" folder.</li>
 <li>Can be installed from the button "Get Add-ons..." in the options.</li>
