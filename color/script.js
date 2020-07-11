@@ -70,7 +70,6 @@ if (window.Addon == 1) {
 	{
 		SetSysColor(COLOR_WINDOWTEXT, void 0);
 		SetSysColor(COLOR_WINDOW, void 0);
-		SetSysColor(COLOR_BTNFACE, void 0);
 		Addons.Color.clrText = GetSysColor(COLOR_WINDOWTEXT);
 		Addons.Color.clrBk = GetSysColor(COLOR_WINDOW);
 		Addons.Color.clrLine = GetSysColor(COLOR_WINDOWTEXT);
@@ -79,7 +78,6 @@ if (window.Addon == 1) {
 
 	SetSysColor(COLOR_WINDOWTEXT, Addons.Color.clrText);
 	SetSysColor(COLOR_WINDOW, Addons.Color.clrBk);
-	SetSysColor(COLOR_BTNFACE, GetWinColor(item.getAttribute("Buttons") || GetWebColor(GetSysColor(COLOR_BTNFACE))));
 
 	var clSelected = item.getAttribute("Selected");
 
@@ -123,5 +121,4 @@ if (window.Addon == 1) {
 	}
 	document.F.Default.placeholder = GetWebColor(api.GetSysColor(COLOR_WINDOWTEXT));
 	document.F.Background.placeholder = GetWebColor(api.GetSysColor(COLOR_WINDOW));
-	document.F.Buttons.placeholder = GetWebColor(api.GetSysColor(COLOR_BTNFACE));
 }
