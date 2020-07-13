@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.28</Version>
-    <MinVersion>2019.3.17</MinVersion>
-    <pubDate>Fri, 22 Mar 2019 00:00:00 GMT</pubDate>
+    <Version>1.29</Version>
+    <MinVersion>2020.7.13</MinVersion>
+    <pubDate>Mon, 13 Jul 2020 00:00:00 GMT</pubDate>
     <Options>Default</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -15,6 +15,8 @@
   </en>
   <ja>
     <Name>フォルダ設定</Name>
-    <Description>フォルダ設定</Description>
   </ja>
+  <zh>
+    <Name>資料夾檢視規則</Name>
+  </zh>
 </TablacusExplorer>

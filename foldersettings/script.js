@@ -38,16 +38,16 @@ if (window.Addon == 1) {
 				if (res) {
 					fs.ImageSize = res[1];
 				}
+				Ctrl.Data.Setting = 'FolderSettings';
 			}
 		}
 	});
 
 	AddEvent("NavigateComplete", function (Ctrl)
 	{
-		if (Ctrl.Data && !Ctrl.Data.Setting) {
+		if (Ctrl.Data && Ctrl.Data.Setting === 'FolderSettings') {
 			var item = Addons.FolderSettings.Get(Ctrl);
 			if (item && item.text) {
-				Ctrl.Data.Setting = 'FolderSettings';
 				Exec(Ctrl, item.text, item.getAttribute("Type"), null);
 			}
 		}
