@@ -8,10 +8,6 @@ if (window.Addon == 1) {
 		Exec: function (Ctrl, pt) {
 			setTimeout(function () {
 				var hMenu = api.CreatePopupMenu();
-				if (!pt) {
-					pt = api.Memory("POINT");
-					api.GetCursorPos(pt);
-				}
 				var ar = [];
 				var TC = te.Ctrl(CTRL_TC);
 				for (var i = TC.length; i--;) {
@@ -29,6 +25,10 @@ if (window.Addon == 1) {
 					mii.dwTypeData = FV.FolderItem.Path;
 					AddMenuIconFolderItem(mii, FV.FolderItem);
 					api.InsertMenuItem(hMenu, MAXINT, false, mii);
+				}
+				var o = document.getElementById("Panel_" + GetFolderView(Ctrl, pt).Parent.Id);
+				if (o) {
+					pt = GetPos(o, true);
 				}
 				wsh.SendKeys("{DOWN}");
 				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd,
