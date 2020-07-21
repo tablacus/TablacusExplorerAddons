@@ -12,11 +12,8 @@ if (window.Addon == 1) {
 					this.bZoom = true;
 					return S_OK;
 				}
+				api.SendMessage(te.hwnd, 0xA1, 2, 0);
 				Addons.GrabBar.dt = dt;
-				Addons.GrabBar.pt = api.Memory("POINT");
-				api.GetCursorPos(Addons.GrabBar.pt);
-				api.SetCapture(te.hwnd);
-				Addons.GrabBar.Capture = true;
 			}
 		},
 
@@ -35,43 +32,6 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
-		if (Addons.GrabBar.Capture) {
-			if (msg == WM_LBUTTONUP || api.GetKeyState(VK_LBUTTON) >= 0) {
-				api.ReleaseCapture();
-				Addons.GrabBar.Capture = false;
-			} else {
-				if (api.IsZoomed(te.hwnd)) {
-					if (IsDrag(pt, Addons.GrabBar.pt)) {
-						var rcZoomed = api.Memory("RECT");
-						api.GetWindowRect(te.hwnd, rcZoomed);
-						api.ReleaseCapture();
-						api.SendMessage(te.hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
-						api.SetCapture(te.hwnd);
-						var rc = api.Memory("RECT");
-						api.GetWindowRect(te.hwnd, rc);
-						var w = rc.right - rc.left;
-						var h = rc.bottom - rc.top;
-						var x = pt.x - (pt.x - rcZoomed.Left) * (w / (rcZoomed.right - rcZoomed.left));
-						var y = pt.y - (pt.y - rcZoomed.top) * (h / (rcZoomed.bottom - rcZoomed.top));
-						api.MoveWindow(te.hwnd, x, y, w, h, true);
-						Addons.GrabBar.pt = pt.Clone();
-					}
-					return S_OK;
-				}
-				var dx = pt.x - Addons.GrabBar.pt.x;
-				var dy = pt.y - Addons.GrabBar.pt.y;
-				if (dx || dy) {
-					var rc = api.Memory("RECT");
-					api.GetWindowRect(te.hwnd, rc);
-					api.MoveWindow(te.hwnd, rc.left + dx, rc.top + dy, rc.right - rc.left, rc.bottom - rc.top, true);
-				}
-				Addons.GrabBar.pt = pt.Clone();
-			}
-			return S_OK;
-		}
-	}, true);
-
 	AddEvent("ChangeView", function (Ctrl) {
 		if (Ctrl.Parent.Visible && Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
 			if (Addons.GrabBar.tid) {
@@ -79,7 +39,7 @@ if (window.Addon == 1) {
 			}
 			Addons.GrabBar.tid = setTimeout(function () {
 				delete Addons.GrabBar.tid;
-				document.getElementById(Addon_Id).innerText = Ctrl.Title + ' - Tablacus Explorer';
+				document.getElementById(Addon_Id).innerText = Ctrl.Title + ' - ' + TITLE;
 			}, 99);
 		}
 	});
