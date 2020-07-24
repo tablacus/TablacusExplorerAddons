@@ -10,6 +10,7 @@ if (window.Addon == 1) {
 		Align: api.LowPart(item.getAttribute("Align")) ? "Right" : "Left",
 		Depth: api.LowPart(item.getAttribute("Depth")),
 		Height: item.getAttribute("Height") || '100%',
+		tid: {},
 
 		Init: function () {
 			if (!te.Data["Conf_" + this.Align + "BarWidth"]) {
@@ -33,7 +34,6 @@ if (window.Addon == 1) {
 
 			if (item.getAttribute("List")) {
 				AddEvent("ChangeView", Addons.SideTreeView.Expand);
-				this.tid2 = -1;
 			}
 
 			AddEvent("Resize", function () {
@@ -41,15 +41,7 @@ if (window.Addon == 1) {
 				var pt = GetPos(o);
 				api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
 				api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
-				if (Addons.SideTreeView.tid2) {
-					if (Addons.SideTreeView.tid2 != -1) {
-						clearTimeout(Addons.SideTreeView.tid2);
-					}
-					Addons.SideTreeView.tid2 = setTimeout(function () {
-						delete Addons.SideTreeView.tid2;
-						Addons.SideTreeView.Expand(te.Ctrl(CTRL_FV));
-					}, 999);
-				}
+				Addons.SideTreeView.Expand(te.Ctrl(CTRL_FV));
 			});
 
 			AddEventEx(document, "MSFullscreenChange", function () {
@@ -62,18 +54,18 @@ if (window.Addon == 1) {
 		},
 
 		Expand: function (Ctrl) {
-			if (Ctrl.FolderItem && !IsSearchPath(Ctrl.FolderItem)) {
+			if (Addons.SideTreeView.tid) {
+				clearTimeout(Addons.SideTreeView.tid);
+			}
+			Addons.SideTreeView.tid = setTimeout(Addons.SideTreeView.Expand2, 99);
+		},
+
+		Expand2: function () {
+			var FV = te.Ctrl(CTRL_FV);
+			if (FV && FV.FolderItem) {
 				var TV = Addons.SideTreeView.TV;
 				if (TV && Addons.SideTreeView.TV.Visible) {
-					if (Addons.SideTreeView.tid) {
-						clearTimeout(Addons.SideTreeView.tid);
-						delete Addons.SideTreeView.tid;
-					}
-					TV.Expand(Ctrl.FolderItem, Addons.SideTreeView.Depth);
-					Addons.SideTreeView.tid = setTimeout(function () {
-						delete Addons.SideTreeView.tid;
-						TV.Expand(Ctrl.FolderItem, 0);
-					}, 99);
+					TV.Expand(FV.FolderItem, Addons.SideTreeView.Depth);
 				}
 			}
 		}

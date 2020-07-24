@@ -35,13 +35,13 @@ for (em.moveFirst(); !em.atEnd(); em.moveNext()) {
 			GetAddonInfo2(xml, info, arLangs[i]);
 		}
 		var dt = new Date(info.pubDate);
-		var ver = info.Version * 100;
+		var ver = Math.round(info.Version * 100);
 		arAddon.push({
 			name: name,
 			order: ("0000000000000000000" + dt.getTime()).slice(-20) + (9999 - ver)
 		});
 
-		var zip = [name, "\\", name, "_", Math.floor(ver), ".zip"].join("");
+		var zip = [name, "\\", name, "_", ver, ".zip"].join("");
 		if (!fso.FileExists(zip)) {
 			if (!fso.FolderExists(name)) {
 				fso.CreateFolder(name);

@@ -216,7 +216,7 @@ if (window.Addon == 1) {
 
 		Down: function (e) {
 			var r = Addons.Split.Over(e);
-			if (r.length) {
+			if (r && r.length) {
 				api.SetCapture(te.hwnd);
 				Addons.Split.Capture = r;
 			}
