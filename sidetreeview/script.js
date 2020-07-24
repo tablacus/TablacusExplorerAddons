@@ -8,6 +8,7 @@ if (window.Addon == 1) {
 	Addons.SideTreeView =
 	{
 		Align: api.LowPart(item.getAttribute("Align")) ? "Right" : "Left",
+		List: item.getAttribute("List"),
 		Depth: api.LowPart(item.getAttribute("Depth")),
 		Height: item.getAttribute("Height") || '100%',
 		tid: {},
@@ -32,17 +33,11 @@ if (window.Addon == 1) {
 			this.TV.SetRoot(te.Data.Tree_Root, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle);
 			this.TV.Visible = true;
 
-			if (item.getAttribute("List")) {
+			if (Addons.SideTreeView.List) {
 				AddEvent("ChangeView", Addons.SideTreeView.Expand);
 			}
 
-			AddEvent("Resize", function () {
-				var o = document.getElementById("sidetreeview");
-				var pt = GetPos(o);
-				api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
-				api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
-				Addons.SideTreeView.Expand(te.Ctrl(CTRL_FV));
-			});
+			AddEvent("Resize", Addons.SideTreeView.Resize);
 
 			AddEventEx(document, "MSFullscreenChange", function () {
 				Addons.SideTreeView.TV.Visible = !document.msFullscreenElement;
@@ -67,6 +62,20 @@ if (window.Addon == 1) {
 				if (TV && Addons.SideTreeView.TV.Visible) {
 					TV.Expand(FV.FolderItem, Addons.SideTreeView.Depth);
 				}
+			}
+		},
+
+		Resize: function () {
+			var o = document.getElementById("sidetreeview");
+			var pt = GetPos(o);
+			api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
+			api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+			if (api.IsWindowVisible(Addons.SideTreeView.TV.hwnd)) {
+				if (Addons.SideTreeView.List) {
+					Addons.SideTreeView.Expand(GetFolderView());
+				}
+			} else {
+				setTimeout(Addons.SideTreeView.Resize, 999);
 			}
 		}
 	};
