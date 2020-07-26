@@ -102,7 +102,7 @@ function ArrangeAddon(xml, Id, td, ts)
 		if (info.Details) {
 			s.push('<a href="' + info.Details + '" target="_blank">' + GetText("Details") + '</a>');			
 		}
-		s.push('<div>' + pubDate + '</div><div style="float-right">');
+		s.push('<div>' + pubDate + '</div><div style="text-right">');
 		var filename = info.filename;
 		if (!filename) {
 			filename = Id + '_' + info.Version.replace(/\D/, '') + '.zip';
