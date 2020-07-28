@@ -119,6 +119,7 @@ if (window.Addon == 1) {
 			var o = document.getElementById("breadcrumbsbuttons_" + Id);
 			if (o) {
 				o.style.display = "inline-block";
+				ClearAutocomplete();
 			}
 		},
 
@@ -224,7 +225,7 @@ if (window.Addon == 1) {
 				};
 				MouseOver(o);
 				var pt = GetPos(o, true);
-				var nVerb = FolderMenu.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight);
+				var nVerb = FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight);
 				FolderItem = nVerb ? FolderMenu.Items[nVerb - 1] : null;
 				FolderMenu.Clear();
 				FolderMenu.Invoke(FolderItem, SBSP_SAMEBROWSER, FV);

@@ -5,7 +5,7 @@
 		var TC = Ctrl.Parent;
 		for (var i = TC.Count; i-- > 0;) {
 			var Item = TC.Item(i);
-			if (Ctrl.Id != Item.Id && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem)) {
+			if (Ctrl.Id != Item.Id && api.ILIsEqual(Ctrl.FolderItem, Item.FolderItem) && Ctrl.FilterView == Item.FilterView) {
 				if (CanClose(Item)) {
 					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.Id == Ctrl.Id) {
 						(function (TC, Item, Selected) {
@@ -22,7 +22,7 @@
 					Item.Close();
 				}
 			}
-			var path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+			var path = [api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX), Item.FilterView].join("\n");
 			if (db[path]) {
 				db[path].push(Item);
 			} else {
