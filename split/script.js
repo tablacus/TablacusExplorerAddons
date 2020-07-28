@@ -178,7 +178,7 @@ if (window.Addon == 1) {
 		},
 
 		Over: function (e, bCursor) {
-			if (!/^Background$/i.test(e.srcElement.id)) {
+			if (!/^Background$|^client$/i.test(e.srcElement.id)) {
 				document.getElementById("client").style.cursor = "";
 				return;
 			}
