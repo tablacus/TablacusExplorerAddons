@@ -178,7 +178,11 @@ if (window.Addon == 1) {
 		},
 
 		Over: function (e, bCursor) {
-			var r = [], nCursor = 0, d = 8;
+			if (!/^Background$/i.test(e.srcElement.id)) {
+				document.getElementById("client").style.cursor = "";
+				return;
+			}
+			var r = [], nCursor = 0, c = 6, d = 8;
 			var cTC = te.Ctrls(CTRL_TC, true);
 			for (var i = cTC.length; i-- > 0;) {
 				var id = cTC[i].Id;
@@ -188,19 +192,19 @@ if (window.Addon == 1) {
 				}
 				var right = o.offsetLeft + o.offsetWidth;
 				var bottom = o.offsetTop + o.offsetHeight;
-				if (cTC[i].Left && e.clientX > o.offsetLeft - d && e.clientX < o.offsetLeft + d) {
+				if (cTC[i].Left && e.clientX > o.offsetLeft - d && e.clientX < o.offsetLeft + c) {
 					r.push({ left: id });
 					nCursor |= 1;
 				}
-				if (e.clientX > right - d && e.clientX < right + d) {
+				if (e.clientX > right - d && e.clientX < right + c) {
 					r.push({ width: id });
 					nCursor |= 1;
 				}
-				if (cTC[i].Top && e.clientY > o.offsetTop - d && e.clientY < o.offsetTop + d) {
+				if (cTC[i].Top && e.clientY > o.offsetTop - d && e.clientY < o.offsetTop + c) {
 					r.push({ top: id });
 					nCursor |= 2;
 				}
-				if (e.clientY > bottom - d && e.clientY < bottom + d) {
+				if (e.clientY > bottom - d && e.clientY < bottom + c) {
 					r.push({ height: id });
 					nCursor |= 2;
 				}
