@@ -596,7 +596,7 @@ if (window.Addon == 1) {
 			var bSame = false;
 			var pFrom = [];
 			var pTo = [];
-			var ar = WScript.Col(ExtractMacro(Ctrl, line));
+			var ar = api.CommandLineToArgv(ExtractMacro(Ctrl, line));
 			for (var i = 0; i < ar.length; i++) {
 				var s = ar[i].toLowerCase();
 				if (api.PathMatchSpec(s, '/*')) {
@@ -1075,7 +1075,7 @@ if (window.Addon == 1) {
 			}
 			return "";
 		});
-		return api.CommandLineToArgv('"' + ar.join('" "') + '"');
+		return ar;
 	}
 
 	WScript.DoDragDrop = function (Items) {

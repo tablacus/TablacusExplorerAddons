@@ -8,7 +8,7 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
-		if (GetLock(Ctrl)) {
+		if (GetLock(Ctrl) || /search\-ms:.*?crumb=[^&]+/.test(Ctrl.FilterView)) {
 			return;
 		}
 		var hr;

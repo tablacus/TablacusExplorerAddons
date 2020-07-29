@@ -3,10 +3,12 @@ var Default = "ToolBar1Right";
 
 var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
+	if (!Addons.Split) {
+		return;
+	}
 	Addons.Split6 =
 	{
-		Exec: function (nMax, nMode)
-		{
+		Exec: function (nMax, nMode) {
 			var TC = [te.Ctrl(CTRL_TC)];
 			Addons.Split.Exec2(nMax, TC);
 			switch (nMode) {
@@ -79,13 +81,12 @@ if (window.Addon == 1) {
 
 	SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
 
-	AddEvent("load", function ()
-	{
+	AddEvent("load", function () {
 		Addons.Split.SetButtons(Addon_Id, Default, item, 6,
-		[
-			{ id: "3x2", exec: "6, 1" },
-			{ id: "2x3", exec: "6, 2" }
-		]);
+			[
+				{ id: "3x2", exec: "6, 1" },
+				{ id: "2x3", exec: "6, 2" }
+			]);
 	});
 } else {
 	var s = ['<label>View</label><br>'];
