@@ -1075,7 +1075,7 @@ if (window.Addon == 1) {
 			}
 			return "";
 		});
-		return ar;
+		return api.CommandLineToArgv(ar);
 	}
 
 	WScript.DoDragDrop = function (Items) {

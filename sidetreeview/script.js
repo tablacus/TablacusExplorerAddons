@@ -11,6 +11,7 @@ if (window.Addon == 1) {
 		List: item.getAttribute("List"),
 		Depth: api.LowPart(item.getAttribute("Depth")),
 		Height: item.getAttribute("Height") || '100%',
+		Root: item.getAttribute("Root"),
 		tid: {},
 
 		Init: function () {
@@ -30,8 +31,7 @@ if (window.Addon == 1) {
 		Create: function () {
 			this.TV = te.CreateCtrl(CTRL_TV);
 			this.TV.Style = te.Data.Tree_Style;
-			this.TV.SetRoot(te.Data.Tree_Root, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle);
-			this.TV.Visible = true;
+			this.TV.SetRoot(Addons.SideTreeView.Root || te.Data.Tree_Root, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle);
 
 			if (Addons.SideTreeView.List) {
 				AddEvent("ChangeView", Addons.SideTreeView.Expand);
@@ -49,15 +49,8 @@ if (window.Addon == 1) {
 		},
 
 		Expand: function (Ctrl) {
-			if (Addons.SideTreeView.tid) {
-				clearTimeout(Addons.SideTreeView.tid);
-			}
-			Addons.SideTreeView.tid = setTimeout(Addons.SideTreeView.Expand2, 99);
-		},
-
-		Expand2: function () {
-			var FV = te.Ctrl(CTRL_FV);
-			if (FV && FV.FolderItem) {
+			var FV = GetFolderView();
+			if (Addons.SideTreeView.List && FV && FV.FolderItem) {
 				var TV = Addons.SideTreeView.TV;
 				if (TV && Addons.SideTreeView.TV.Visible) {
 					TV.Expand(FV.FolderItem, Addons.SideTreeView.Depth);
@@ -66,15 +59,14 @@ if (window.Addon == 1) {
 		},
 
 		Resize: function () {
-			var o = document.getElementById("sidetreeview");
-			var pt = GetPos(o);
-			api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
-			api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 			if (api.IsWindowVisible(Addons.SideTreeView.TV.hwnd)) {
-				if (Addons.SideTreeView.List) {
-					Addons.SideTreeView.Expand(GetFolderView());
-				}
+				var o = document.getElementById("sidetreeview");
+				var pt = GetPos(o);
+				api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
+				api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+				Addons.SideTreeView.Expand(GetFolderView());
 			} else {
+				Addons.SideTreeView.TV.Visible = true;
 				setTimeout(Addons.SideTreeView.Resize, 999);
 			}
 		}
@@ -92,7 +84,7 @@ if (window.Addon == 1) {
 			return;
 		}
 		SetGestureExec("Tree", "1", function (Ctrl, pt) {
-			var Item = Ctrl.SelectedItem;
+			var Item = Ctrl.HitTest(pt);
 			if (Item) {
 				var FV = Ctrl.FolderView;
 				if (!api.ILIsEqual(FV.FolderItem, Item)) {
