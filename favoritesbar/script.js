@@ -100,8 +100,7 @@ if (window.Addon == 1) {
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
 			if (menus && menus.length) {
 				var items = menus[0].getElementsByTagName("Item");
-				var image = te.WICBitmap;
-				for (var i = 0; i < items.length; i++) {
+				for (var i = 0; i < items.length; ++i) {
 					var strName = items[i].getAttribute("Name");
 					if (!items[i].getAttribute("Org")) {
 						strName = GetText(strName);
@@ -115,7 +114,7 @@ if (window.Addon == 1) {
 							nOpen = 1;
 						} else if (api.StrCmpI(path, "Close") == 0) {
 							s.push('</div>');
-							nLevel && nLevel--;
+							nLevel && --nLevel;
 							continue;
 						} else {
 							strName = "-";
@@ -142,10 +141,10 @@ if (window.Addon == 1) {
 					} else {
 						img = GetImgTag({ src: "icon:shell32.dll,0", class: "favicon" });
 					}
-					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(items[i].text), '" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", EncodeSC(strName.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")), '</div> ');
+					s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(items[i].text), '" draggable="true" ondragstart="Addons.FavoritesBar.Start5(this)" ondragend="Addons.FavoritesBar.End5(this)" ondragover="Addons.FavoritesBar.Over5(this)" ondrop="Addons.FavoritesBar.Drop5(this)"  style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", EncodeSC(strName.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")), '</div> ');
 					if (nOpen) {
 						s.push(api.sprintf(99, '<div id="fav%d_"%s>', i, Addons.FavoritesBar.arExpand[1]));
-						nLevel++;
+						++nLevel;
 					}
 				}
 			}
@@ -184,7 +183,95 @@ if (window.Addon == 1) {
 				}
 			}
 			return -1;
-		}
+		},
+
+		Start5: function (o) {
+			if (api.GetKeyState(VK_LBUTTON) < 0) {
+				event.dataTransfer.effectAllowed = 'move';
+				Addons.FavoritesBar.drag5 = o.id;
+				var xml = te.Data.xmlMenus;
+				var menus = xml.getElementsByTagName("Favorites");
+				var nCount = 0, nLevel = 0;
+				if (menus && menus.length) {
+					var items = menus[0].getElementsByTagName("Item");
+					var src = o.id.replace(/\D/g, "");
+					for (var i = src; i < items.length; ++i) {
+						var strType = items[i].getAttribute("Type");
+						var path = items[i].text;
+						if (nLevel || i == src) {
+							if (api.StrCmpI(strType, "Menus") == 0) {
+								if (api.StrCmpI(path, "Open") == 0) {
+									++nLevel;
+								} else if (api.StrCmpI(path, "Close") == 0 && nLevel) {
+									--nLevel;
+								}
+							}
+							++nCount;
+							continue;
+						}
+						break;
+					}
+				}
+				Addons.FavoritesBar.count5 = nCount;
+				return true;
+			}
+			return false;
+		},
+
+		End5: function () {
+			Addons.FavoritesBar.drag5 = false;
+		},
+
+		Over5:function (o) {
+			if (Addons.FavoritesBar.drag5) {
+				var handle = event.preventDefault && true;
+				var i = o.id.replace(/\D/g, "");
+				var d = Addons.FavoritesBar.drag5.replace(/\D/g, "") - 0;
+				if (i >= d && i < d + Addons.FavoritesBar.count5) {
+					handle = false;
+				}
+				if (handle) {
+					event.preventDefault();
+				} else {
+					event.returnValue = false;
+				}
+			}
+		},
+
+		Drop5: function (o) {
+			var src = Addons.FavoritesBar.drag5;
+			if (Addons.FavoritesBar.drag5) {
+				src = src.replace(/\D/g, "") - 0;
+				var dst = o.id.replace(/\D/g, "");
+				var xml = te.Data.xmlMenus;
+				var menus = xml.getElementsByTagName("Favorites");
+				if (menus && menus.length) {
+					var items = menus[0].getElementsByTagName("Item");
+					var stack = [];
+					var nCount = Addons.FavoritesBar.count5;
+					for (var i = 0; i < items.length; ++i) {
+						if (i >= src && i < src + nCount) {
+							continue;
+						}
+						stack.push(items[i]);		
+					}
+					if (dst > src) {
+						dst -= nCount - 1;
+					}
+					while (nCount-- > 0) {
+						stack.splice(dst++, 0, items[src++]);
+					}
+					items.removeAll();
+					while (stack.length) {
+						menus[0].appendChild(stack.shift());
+					}
+					SaveXmlEx("menus.xml", xml);
+					FavoriteChanged();
+				}
+				return true;
+			}
+			return false;
+		},
 
 	};
 
@@ -196,7 +283,7 @@ if (window.Addon == 1) {
 
 	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type == CTRL_WB) {
-			var menus = te.Data["xmlMenus"].getElementsByTagName('Favorites');
+			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
 			if (menus && menus.length) {
 				var items = menus[0].getElementsByTagName("Item");
 				var i = Addons.FavoritesBar.FromPt(pt);
@@ -205,7 +292,7 @@ if (window.Addon == 1) {
 					if (hr == S_OK && pdwEffect[0]) {
 						MouseOver(document.getElementById("fav" + i));
 					}
-					return S_OK;
+					return hr;
 				}
 			}
 			if (HitTest(document.getElementById("favoritesbar"), pt) && dataObj.Count) {

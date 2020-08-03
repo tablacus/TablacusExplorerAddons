@@ -26,12 +26,17 @@ if (window.Addon == 1) {
 						}
 						break;
 					case 1:
-						var Parent = api.ILGetParent(Ctrl);
-						for (var i in TC) {
-							FV = TC[i];
-							if (FV && api.ILIsEqual(FV, Parent)) {
-								nIndex = i;
-								break;
+						var Done = false;
+						var Parent = Ctrl;
+						while (!Done) {
+							Parent = api.ILGetParent(Parent);
+							for (var i in TC) {
+								FV = TC[i];
+								if (FV && api.ILIsEqual(FV, Parent)) {
+									nIndex = i;
+									Done = true;
+									break;
+								}
 							}
 						}
 						break;
