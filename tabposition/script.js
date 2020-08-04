@@ -28,7 +28,7 @@ if (window.Addon == 1) {
 					case 1:
 						var Done = false;
 						var Parent = Ctrl;
-						while (!Done) {
+						do {
 							Parent = api.ILGetParent(Parent);
 							for (var i in TC) {
 								FV = TC[i];
@@ -38,7 +38,7 @@ if (window.Addon == 1) {
 									break;
 								}
 							}
-						}
+						} while (!Done && !api.ILIsEmpty(Parent));
 						break;
 					case 2:
 						return;
