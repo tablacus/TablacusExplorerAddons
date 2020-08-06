@@ -14,6 +14,7 @@ Addons.Flat =
 	iCaret: -1,
 	strName: item.getAttribute("MenuName") || GetText("Flat"),
 	nPos: api.LowPart(item.getAttribute("MenuPos")),
+	Icon: item.getAttribute("Icon"),
 
 	GetSearchString: function(Ctrl)
 	{
@@ -144,7 +145,7 @@ if (window.Addon == 1) {
 	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.Flat.GetSearchString(Ctrl)) {
-			return MakeImgDataEx("icon:shell32.dll,4,16", bSimple, 16);
+			return MakeImgDataEx(Addons.Flat.Icon || "folder:closed", bSimple, 16);
 		}
 	});
 
@@ -193,7 +194,7 @@ if (window.Addon == 1) {
 		AddTypeEx("Add-ons", "Flat", Addons.Flat.Exec);
 	}
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Flat.Exec(this);" oncontextmenu="Addons.Flat.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Flat.strName, src: GetAddonOption(Addon_Id, "Icon") }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Flat.Exec(this);" oncontextmenu="Addons.Flat.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Flat.strName, src: Addons.Flat.Icon }, h), '</span>']);
 } else {
 	EnableInner();
 }

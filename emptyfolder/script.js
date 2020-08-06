@@ -6,6 +6,7 @@ if (window.Addon == 1) {
 	Addons.EmptyFolder =
 	{
 		PATH: "emptyfolder:",
+		Icon: item.getAttribute("Icon"),
 		iCaret: -1,
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
@@ -112,7 +113,7 @@ if (window.Addon == 1) {
 				SessionId: Ctrl.SessionId,
 				hwnd: te.hwnd,
 				ProgressDialog: api.CreateObject("ProgressDialog"),
-				Locale: document.documentMode > 8 ? 999 : Infinity,
+				Locale: g_.IEVer > 8 ? 999 : Infinity,
 				NavigateComplete: te.OnNavigateComplete
 			});
 			return S_FALSE;
@@ -122,7 +123,7 @@ if (window.Addon == 1) {
 	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
 	{
 		if (Addons.EmptyFolder.GetSearchString(Ctrl)) {
-			return MakeImgDataEx("folder:closed", bSimple, 16);
+			return MakeImgDataEx(Addons.EmptyFolder.Icon || "folder:closed", bSimple, 16);
 		}
 	});
 
@@ -198,7 +199,7 @@ if (window.Addon == 1) {
 		AddTypeEx("Add-ons", "Empty folder", Addons.EmptyFolder.Exec);
 	}
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyFolder.Exec(this)" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.EmptyFolder.strName, src: item.getAttribute("Icon") }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyFolder.Exec(this)" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.EmptyFolder.strName, src: Addons.EmptyFolder.Icon }, h), '</span>']);
 } else {
 	EnableInner();
 }
