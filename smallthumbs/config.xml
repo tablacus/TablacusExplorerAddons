@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2020.8.6</MinVersion>
+    <pubDate>Fri, 07 Aug 2020 00:00:00 GMT</pubDate>
+    <Options>Common:0:0</Options>
+    <Creator>Gaku</Creator>
+    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Show thumbnails with small icons</Name>
+    <Description>Show thumbnails with small icons</Description>
+  </en>
+  <ja>
+    <Name>小さいアイコンで縮小版表示</Name>
+  </ja>
+</TablacusExplorer>
