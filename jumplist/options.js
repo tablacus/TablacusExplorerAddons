@@ -1,6 +1,6 @@
 var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
 if (ado) {
-	SetTabContents(4, "", ado.ReadText(adReadAll));
+	SetTabContents(4, "General", ado.ReadText(adReadAll));
 	ado.Close();
 }
 
@@ -63,6 +63,16 @@ ShowIconX = function () {
 	var fn = api.PathUnquoteSpaces(ExtractMacro(te, document.E.Icon1.value));
 	var h = api.GetSystemMetrics(SM_CYSMICON);
 	document.getElementById('icon_').src = /^icon:|\.ico/.test(fn) ? MakeImgSrc(fn, 0, h) : "";
+}
+
+GetCurrentX = function () {
+	if (confirmOk()) {
+		var FV = te.Ctrl(CTRL_FV);
+		document.E.Name.value = FV.FolderItem.Name;
+		document.E.Path.value = FV.FolderItem.Path;
+		document.E.Icon1.value = "";
+		document.E.Category.value = "";
+	}
 }
 
 g_x.List = document.E.List;
