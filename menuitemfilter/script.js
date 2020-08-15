@@ -4,8 +4,7 @@ if (window.Addon == 1) {
 	Addons.MenuItemFilter = {
 		Menus: {},
 
-		Remove: function (hMenu, Menus, path)
-		{
+		Remove: function (hMenu, Menus, path) {
 			for (var i = api.GetMenuItemCount(hMenu); i-- > 0;) {
 				var s = api.GetMenuString(hMenu, i, MF_BYPOSITION).replace(/\t/g, "|");
 				var hSubMenu = api.GetSubMenu(hMenu, i);
@@ -39,11 +38,14 @@ if (window.Addon == 1) {
 			}
 		}
 		ado.Close();
-	} catch (e) {}
+	} catch (e) { }
 
-	AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt)
-	{
-		Addons.MenuItemFilter.Remove(hMenu, Addons.MenuItemFilter.Menus[Name], api.GetDisplayNameOf(SelItem || GetFolderView(Ctrl, pt), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+	AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt) {
+		if (api.GetKeyState(VK_SHIFT) >= 0) {
+			Addons.MenuItemFilter.Remove(hMenu, Addons.MenuItemFilter.Menus[Name], api.GetDisplayNameOf(SelItem || GetFolderView(Ctrl, pt), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+		}
 		return nPos;
 	});
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

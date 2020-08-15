@@ -1,18 +1,14 @@
-﻿var Addon_Id = "menuitemfilter";
+var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+if (ado) {
+	var ar = ado.ReadText(adReadAll).split("<!--toolbar-->");
+	SetTabContents(4, "", ar[0]);
+	ado.Close();
+	document.getElementById("toolbar").innerHTML = ar[1];
+}
+
 g_arMenuTypes = ["Default", "Context", "Background", "Tabs", "Tree", "File", "Edit", "View", "Favorites", "Tools", "Help", "Systray", "System", "Alias"];
 
-function DialogResize1()
-{
-	var h = document.documentElement.clientHeight || document.body.clientHeight;
-	var i = document.getElementById("buttons").offsetHeight * screen.deviceYDPI / screen.logicalYDPI + 6;
-	h -= i > 34 ? i : 34;
-	if (h > 0) {
-		document.getElementById("panel0").style.height = h + 'px';
-	}
-};
-
-function Add(ar)
-{
+Add = function (ar) {
 	var table = document.getElementById("T");
 	var nRows = table.rows.length;
 	s = ['<td><input type="radio" name="sel" id="i', nRows, '" /></td>'];
@@ -31,81 +27,86 @@ function Add(ar)
 	return tr;
 }
 
-function Get(i)
-{
-	var o = document.F.elements['m' + i];
-	return [o[o.selectedIndex].value, document.F.elements['p' + i].value, document.F.elements['f' + i].value].join("\t");
+Get = function (i) {
+	var o = document.E.elements['m' + i];
+	return [o[o.selectedIndex].value, document.E.elements['p' + i].value, document.E.elements['f' + i].value].join("\t");
 }
 
-function Set(i, ar)
-{
-	if (typeof(ar) == "string") {
+Set = function (i, ar) {
+	if ("string" === typeof ar) {
 		ar = ar.split("\t");
 	}
-	var o = document.F.elements['m' + i];
+	var o = document.E.elements['m' + i];
 	for (var j = o.length; j--;) {
 		if (o[j].value == ar[0]) {
 			o.selectedIndex = j;
 			break;
 		}
 	}
-	document.F.elements['p' + i].value = ar[1];
-	document.F.elements['f' + i].value = ar[2];
+	document.E.elements['p' + i].value = ar[1];
+	document.E.elements['f' + i].value = ar[2];
 }
 
-function BrowseFilter(o, n)
-{
+BrowseFilter = function (o, n) {
 	setTimeout(function () {
-		var m = document.F.elements["m" + n].selectedIndex;
+		var m = document.E.elements["m" + n].selectedIndex;
 		if (m) {
 			var pt = GetPos(o, true);
 			pt.y = pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
 			if (MainWindow.ExecMenu(te, g_arMenuTypes[m - 1], pt, 0, true) == S_OK) {
-				document.F.elements["f" + n].value = MainWindow.g_menu_string.replace(/\t/g, "|");
+				document.E.elements["f" + n].value = MainWindow.g_menu_string.replace(/\t/g, "|");
 			}
 		}
 	}, 99);
 }
 
-try {
-	var ado = te.CreateObject("Adodb.Stream");
-	ado.CharSet = "utf-8";
-	ado.Open();
-	ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
-	var o;
-	while (!ado.EOS) {
-		o = Add(ado.ReadText(adReadLine));
+GetIndex = function () {
+	var table = document.getElementById("T");
+	for (var i = table.rows.length; i--;) {
+		if (document.getElementById("i" + i).checked) {
+			return i;
+		}
 	}
-	ado.Close();
-	if (o) {
-		ApplyLang(o);
+	return -1;
+}
+
+Up = function () {
+	var nPos = GetIndex();
+	if (nPos <= 0) {
+		return;
 	}
-} catch (e) {}
+	var s = Get(nPos);
+	Set(nPos, Get(nPos - 1));
+	Set(--nPos, s);
+	document.E.elements["i" + nPos].checked = true;
+}
 
-ApplyLang(document);
-var info = GetAddonInfo(Addon_Id);
-document.title = info.Name;
-DialogResize1();
+Down = function () {
+	var table = document.getElementById("T");
+	var nPos = GetIndex();
+	if (nPos < 0 || nPos >= table.rows.length - 1) {
+		return;
+	}
+	var s = Get(nPos);
+	Set(nPos, Get(nPos + 1));
+	Set(++nPos, s);
+	document.E.elements["i" + nPos].checked = true;
+}
 
-AddEventEx(window, "resize", function ()
-{
-	clearTimeout(g_tidResize);
-	g_tidResize = setTimeout(function ()
-	{
-		DialogResize1();
-	}, 500);
-});
+Remove = function () {
+	var nPos = GetIndex();
+	if (nPos < 0 || !confirmOk("Are you sure?")) {
+		return;
+	}
+	var table = document.getElementById("T");
+	var nRows = table.rows.length;
+	for (var i = nPos; i < nRows - 1; i++) {
+		Set(i, Get(i + 1));
+	}
+	table.deleteRow(nRows - 1);
+}
 
-AddEventEx(window, "beforeunload", function ()
-{
-	SetOptions(function () {
-		Save();
-		TEOk();
-	});
-});
-
-function Save()
-{
+SaveLocation = function () {
 	var table = document.getElementById("T");
 	var nRows = table.rows.length;
 	try {
@@ -127,52 +128,18 @@ function Save()
 	}
 }
 
-function GetIndex()
-{
-	var table = document.getElementById("T");
-	for (var i = table.rows.length; i--;) {
-		if (document.getElementById("i" + i).checked) {
-			return i;
-		}
+try {
+	var ado = te.CreateObject("Adodb.Stream");
+	ado.CharSet = "utf-8";
+	ado.Open();
+	ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
+	var o;
+	while (!ado.EOS) {
+		o = Add(ado.ReadText(adReadLine));
 	}
-	return -1;
-}
+	ado.Close();
+	if (o) {
+		ApplyLang(o);
+	}
+} catch (e) { }
 
-function Up()
-{
-	var nPos = GetIndex();
-	if (nPos <= 0) {
-		return;
-	}
-	var s = Get(nPos);
-	Set(nPos, Get(nPos - 1));
-	Set(--nPos, s);
-	document.F.elements["i" + nPos].checked = true;
-}
-
-function Down()
-{
-	var table = document.getElementById("T");
-	var nPos = GetIndex();
-	if (nPos < 0 || nPos >= table.rows.length - 1) {
-		return;
-	}
-	var s = Get(nPos);
-	Set(nPos, Get(nPos + 1));
-	Set(++nPos, s);
-	document.F.elements["i" + nPos].checked = true;
-}
-
-function Remove()
-{
-	var nPos = GetIndex();
-	if (nPos < 0 || !confirmOk("Are you sure?")) {
-		return;
-	}
-	var table = document.getElementById("T");
-	var nRows = table.rows.length;
-	for (var i = nPos; i < nRows - 1; i++) {
-		Set(i, Get(i + 1));
-	}
-	table.deleteRow(nRows - 1);
-}
