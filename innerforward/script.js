@@ -52,12 +52,6 @@ if (window.Addon == 1) {
 					var Log = Ctrl.History;
 					DisableImage(o, Log && Log.Index < 1);
 				}
-			} else {
-				(function (Ctrl) {
-					setTimeout(function () {
-						Addons.InnerForward.ChangeView(Ctrl);
-					}, 999);
-				})(Ctrl);
 			}
 		}
 	};
