@@ -8,19 +8,17 @@ if (window.Addon == 1) {
 		All: GetAddonOptionEx("checkbox", "All"),
 		Background: GetAddonOptionEx("checkbox", "Background"),
 
-		Init: function (Ctrl)
-		{
+		Init: function (Ctrl) {
 			var fFlags = Ctrl.FolderFlags;
 			if ((fFlags & (FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) != Addons.CheckBox.FWF) {
 				Ctrl.FolderFlags = fFlags & (~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) | Addons.CheckBox.FWF;
 			}
 		},
 
-		Arrange: function (Id)
-		{
-			Addons.CheckBox.tid[Id] = null;
+		Arrange: function (Id) {
+			delete Addons.CheckBox.tid[Id];
 			if (api.GetKeyState(VK_LBUTTON) < 0) {
-				Addons.CheckBox.tid[Id] = setTimeout("Addons.CheckBox.Arrange(" + Id + ")", 99);
+				Addons.CheckBox.tid[Id] = setTimeout(Addons.CheckBox.Arrange, 99, Id);
 				return;
 			}
 			var Ctrl = te.Ctrl(CTRL_FV, Id);
@@ -36,8 +34,7 @@ if (window.Addon == 1) {
 			Addons.CheckBox.tid[Ctrl.Id] = null;
 		},
 
-		SetCtrl: function (bCtrl)
-		{
+		SetCtrl: function (bCtrl) {
 			var KeyState = api.Memory("KEYSTATE");
 			api.GetKeyboardState(KeyState);
 			KeyState.Write(VK_CONTROL, VT_UI1, bCtrl ? 0x80 : 0);
@@ -46,8 +43,7 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo)
-	{
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo) {
 		if (Ctrl.Type != CTRL_SB) {
 			return;
 		}
@@ -85,10 +81,10 @@ if (window.Addon == 1) {
 				if (ht.iItem >= 0 && ht.flags & LVHT_ABOVE) {
 					var item = api.Memory("LVITEM");
 					item.stateMask = LVIS_SELECTED | LVIS_STATEIMAGEMASK;
-					item.state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_SELECTED) ? 0x1000 : LVIS_SELECTED | 0x2000;Ctrl.SelectItem(ht.iItem, SVSI_FOCUSED | (Boolean(Addons.CheckBox.FWF & FWF_CHECKSELECT) ^ Boolean(item.state & LVIS_SELECTED) ? SVSI_DESELECT : SVSI_SELECT));
+					item.state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_SELECTED) ? 0x1000 : LVIS_SELECTED | 0x2000; Ctrl.SelectItem(ht.iItem, SVSI_FOCUSED | (Boolean(Addons.CheckBox.FWF & FWF_CHECKSELECT) ^ Boolean(item.state & LVIS_SELECTED) ? SVSI_DESELECT : SVSI_SELECT));
 					api.SendMessage(Ctrl.hwndList, 0x1000 + 67, 0, ht.iItem);
 					clearTimeout(Addons.CheckBox.tid[Ctrl.Id]);
-					Addons.CheckBox.tid[Ctrl.Id] = setTimeout("Addons.CheckBox.Arrange(" + Ctrl.Id + ")", 99);
+					Addons.CheckBox.tid[Ctrl.Id] = setTimeout(Addons.CheckBox.Arrange, 99, Ctrl.Id);
 				}
 			}
 		}
@@ -99,22 +95,19 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("SelectionChanged", function (Ctrl, uChange)
-	{
+	AddEvent("SelectionChanged", function (Ctrl, uChange) {
 		if (Ctrl.Type <= CTRL_EB) {
 			clearTimeout(Addons.CheckBox.tid[Ctrl.Id]);
-			Addons.CheckBox.tid[Ctrl.Id] = setTimeout("Addons.CheckBox.Arrange(" + Ctrl.Id + ")", 99);
+			Addons.CheckBox.tid[Ctrl.Id] = setTimeout(Addons.CheckBox.Arrange, 99, Ctrl.Id);
 		}
 	});
 
-	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
-	{
+	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 		Addons.CheckBox.Init(Ctrl);
 		return S_OK;
 	});
 
-	AddEventEx(window, "load", function ()
-	{
+	AddEventEx(window, "load", function () {
 		var cFV = te.Ctrls(CTRL_FV);
 		for (i in cFV) {
 			Addons.CheckBox.Init(cFV[i]);
@@ -123,11 +116,9 @@ if (window.Addon == 1) {
 		te.Data.View_fFlags |= Addons.CheckBox.FWF;
 	});
 
-	AddEvent("AddonDisabled", function (Id)
-	{
+	AddEvent("AddonDisabled", function (Id) {
 		if (Id.toLowerCase() == "checkbox") {
-			AddEventEx(window, "beforeunload", function ()
-			{
+			AddEventEx(window, "beforeunload", function () {
 				var cFV = te.Ctrls(CTRL_FV);
 				for (i in cFV) {
 					var FV = cFV[i];
@@ -141,5 +132,5 @@ if (window.Addon == 1) {
 		}
 	});
 } else {
-	SetTabContents(0, "General", '<input type="checkbox" id="All" /><label for="All">All</label> (<input type="checkbox" id="Background" /><label for="Background">Background</label>)<br /><input type="checkbox" id="XP" /><label for="XP">XP ' + (GetText("Style").toLowerCase()) + '</label>');
+	SetTabContents(0, "General", '<input type="checkbox" id="All"><label for="All">All</label> (<input type="checkbox" id="Background"><label for="Background">Background</label>)<br><input type="checkbox" id="XP"><label for="XP">XP ' + (GetText("Style").toLowerCase()) + '</label>');
 }

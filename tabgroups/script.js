@@ -1,6 +1,7 @@
 var Addon_Id = "tabgroups";
 var Default = "ToolBar5Center";
 
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Tabgroups =
 	{
@@ -10,7 +11,8 @@ if (window.Addon == 1) {
 		WheelButton: 0,
 		tid: null,
 		pt: api.Memory("POINT"),
-		bTab: !GetAddonOptionEx("tabgroups", "Mode"),
+		bTab: !api.LowPart(item.getAttribute("Mode")),
+		DragOpen: !api.LowPart(item.getAttribute("NoDragOpen")),
 
 		Init: function () {
 			SetAddon(Addon_Id, Default, ['<ul class="', Addons.Tabgroups.bTab ? "tab0" : "menu0", '" id="tabgroups"><li> </li></ul>']);
@@ -126,21 +128,21 @@ if (window.Addon == 1) {
 		},
 
 		Arrange: function (bForce) {
-			this.Fix();
+			Addons.Tabgroups.Fix();
 			var s = [];
 			var o = document.getElementById("tabgroups");
 			var tabs = o.getElementsByTagName("li");
 			if (bForce || tabs.length != te.Data.Tabgroups.Data.length + 1) {
 				for (var i = 0; i < te.Data.Tabgroups.Data.length; i++) {
-					this.Tab(s, i + 1);
+					Addons.Tabgroups.Tab(s, i + 1);
 				}
 				s.push('<li class=', Addons.Tabgroups.bTab ? ' "tab3"' : "menu", ' title="', GetText("New Tab"), '" onclick="return Addons.Tabgroups.Add()">+</li>');
 				o.innerHTML = s.join("");
 			}
 			for (var i = 0; i < te.Data.Tabgroups.Data.length; i++) {
-				this.Style(tabs, i + 1);
+				Addons.Tabgroups.Style(tabs, i + 1);
 			}
-			this.Change();
+			Addons.Tabgroups.Change();
 		},
 
 		Tab: function (s, i) {
@@ -160,7 +162,7 @@ if (window.Addon == 1) {
 			var data = te.Data.Tabgroups.Data[i - 1];
 			var s = [data.Name];
 			if (data.Lock) {
-				s.unshift('<img src="', Addons.TabPlus ? Addons.TabPlus.ImgLock : MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13), '" style="width: 13px; padding-right: 2px">');
+				s.unshift(Addons.Tabgroups.ImgLock);
 			}
 			o.innerHTML = s.join("");
 			var style = o.style;
@@ -214,7 +216,7 @@ if (window.Addon == 1) {
 		},
 
 		New: function (a1, a2, a3) {
-			var o = te.Object();
+			var o = api.CreateObject("Object");
 			o.Name = a1 || "";
 			o.Color = a2 || "";
 			o.Lock = api.LowPart(a3) & 1;
@@ -565,9 +567,9 @@ if (window.Addon == 1) {
 	Addons.Tabgroups.Init();
 
 	AddEventEx(window, "load", function () {
-		setTimeout(function () {
-			Addons.Tabgroups.Arrange();
-		}, 500);
+		Addons.Tabgroups.ImgLock = Addons.TabPlus ? Addons.TabPlus.ImgLock2 : '<img src="' + MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13) + '" style="width: 13px; padding-right: 2px">';
+
+		setTimeout(Addons.Tabgroups.Arrange, 500);
 	});
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
@@ -577,7 +579,7 @@ if (window.Addon == 1) {
 	});
 
 	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
-		if (Ctrl.Type == CTRL_WB) {
+		if (Ctrl.Type == CTRL_WB && Addons.Tabgroups.DragOpen) {
 			var i = Addons.Tabgroups.FromPt(pt);
 			if (i >= 0) {
 				if (i != te.Data.Tabgroups.Index) {

@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2018.4.28</MinVersion>
-    <pubDate>Sat, 28 Apr 2018 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2020.8.21</MinVersion>
+    <pubDate>Fri, 21 Aug 2020 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <Options>Common:0:0</Options>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -15,6 +15,8 @@
   </en>
   <ja>
     <Name>チェックボックス</Name>
-    <Description>チェックボックス</Description>
   </ja>
+  <zh>
+    <Name>核取方塊</Name>
+  </zh>
 </TablacusExplorer>
