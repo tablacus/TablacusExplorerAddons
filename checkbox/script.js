@@ -107,6 +107,18 @@ if (window.Addon == 1) {
 		return S_OK;
 	});
 
+	AddEvent("BeginLabelEdit", function (Ctrl, Name) {
+		if (Ctrl.Type == CTRL_SB) {
+			if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
+				setTimeout(function (FV, Item) {
+					if (Ctrl.ItemCount(SVGIO_SELECTION) > 1) {
+						FV.SelectItem(Item, SVSI_SELECT | SVSI_DESELECTOTHERS);
+					}
+				}, 99, Ctrl, Ctrl.SelectedItems().Item(0));
+			}
+		}
+	}, true);
+
 	AddEventEx(window, "load", function () {
 		var cFV = te.Ctrls(CTRL_FV);
 		for (i in cFV) {
