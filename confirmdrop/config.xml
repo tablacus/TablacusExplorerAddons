@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.8.24</MinVersion>
     <pubDate>Mon, 24 Aug 2020 00:00:00 UTC</pubDate>
     <Creator>Gaku</Creator>
@@ -9,13 +9,10 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Disable Tree drop</Name>
-    <Description>Disable drop in tree view.</Description>
+    <Name>Confirm drop</Name>
+    <Description>Confirm drop</Description>
   </en>
   <ja>
-    <Name>ツリーでドロップ禁止</Name>
+    <Name>ドロップを確認</Name>
   </ja>
-  <zh>
-    <Name>停用拖放到樹狀目錄</Name>
-  </zh>
 </TablacusExplorer>

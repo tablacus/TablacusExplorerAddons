@@ -234,13 +234,6 @@ if (window.Addon == 1) {
 				this.Arrange();
 			}
 			te.LockUpdate();
-			setTimeout(function () {
-				te.UnlockUpdate();
-				if (Addons.Tabgroups.elDrag5) {
-					Addons.TabPlus.Drop5(Addons.Tabgroups.elDrag5);
-					delete Addons.Tabgroups.elDrag5;
-				}
-			}, 200);
 			var bDisp = false;
 			var freeTC = [];
 			var preTC = [];
@@ -286,6 +279,11 @@ if (window.Addon == 1) {
 					TC.Data.Group = te.Data.Tabgroups.Index;
 					TC.Selected.Navigate2(HOME_PATH, SBSP_NEWBROWSER, te.Data.View_Type, te.Data.View_ViewMode, te.Data.View_fFlags, te.Data.View_Options, te.Data.View_ViewFlags, te.Data.View_IconSize, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root);
 				}
+			}
+			te.UnlockUpdate();
+			if (Addons.Tabgroups.elDrag5) {
+				Addons.TabPlus.Drop5(Addons.Tabgroups.elDrag5);
+				delete Addons.Tabgroups.elDrag5;
 			}
 			Resize();
 		},
