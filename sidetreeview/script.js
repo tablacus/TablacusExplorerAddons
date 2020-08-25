@@ -77,9 +77,9 @@ if (window.Addon == 1) {
 			Addons.SideTreeView.Create();
 		}
 	});
-	Addons.SideTreeView.Init();
 
 	AddEvent("Load", function () {
+		Addons.SideTreeView.Init();
 		if (Addons.TreeView) {
 			return;
 		}

@@ -13,6 +13,7 @@ if (window.Addon == 1) {
 		pt: api.Memory("POINT"),
 		bTab: !api.LowPart(item.getAttribute("Mode")),
 		DragOpen: !api.LowPart(item.getAttribute("NoDragOpen")),
+		Focused: {},
 
 		Init: function () {
 			SetAddon(Addon_Id, Default, ['<ul class="', Addons.Tabgroups.bTab ? "tab0" : "menu0", '" id="tabgroups"><li> </li></ul>']);
@@ -43,7 +44,7 @@ if (window.Addon == 1) {
 			}
 			if (items.length) {
 				te.Data.Tabgroups.Data = te.Array();
-				for (i = 0; i < items.length; i++) {
+				for (var i = 0; i < items.length; i++) {
 					Addons.Tabgroups.New(items[i].getAttribute("Name"), items[i].getAttribute("Color"), items[i].getAttribute("Lock"));
 				}
 			}
@@ -228,59 +229,63 @@ if (window.Addon == 1) {
 			if (n > 0) {
 				te.Data.Tabgroups.Click = n;
 			}
+			var nFocusedId = Addons.Tabgroups.Focused[te.Data.Tabgroups.Click];
 			this.Fix();
 			if (te.Data.Tabgroups.Click != te.Data.Tabgroups.Index && te.Data.Tabgroups.Click < te.Data.Tabgroups.Data.length + 1) {
 				te.Data.Tabgroups.Index = te.Data.Tabgroups.Click;
 				this.Arrange();
-			}
-			te.LockUpdate();
-			var bDisp = false;
-			var freeTC = [];
-			var preTC = [];
-			var cTC = te.Ctrls(CTRL_TC);
-			for (var i = 0; i < cTC.length; i++) {
-				var TC = cTC[i];
-				if (TC.Visible) {
-					preTC.push(TC);
-				} else if (!TC.Data.Group) {
-					freeTC.push(TC);
-				}
-				var b = TC.Data.Group == te.Data.Tabgroups.Index;
-				if (b) {
-					var s = [TC.Left, TC.Top, TC.Width, TC.Height].join(",");
-					if (oShow[s]) {
-						b = false;
-						delete TC.Data.Group;
-					} else {
-						oShow[s] = true;
+				te.LockUpdate();
+				var bDisp = false;
+				var freeTC = [];
+				var preTC = [];
+				var cTC = te.Ctrls(CTRL_TC);
+				for (var i = 0; i < cTC.length; i++) {
+					var TC = cTC[i];
+					if (TC.Visible) {
+						preTC.push(TC);
+					} else if (!TC.Data.Group) {
+						freeTC.push(TC);
 					}
-				}
-				TC.Visible = b;
-				bDisp |= b;
-			}
-			if (!bDisp) {
-				if (preTC.length) {
-					for (var i = 0; i < preTC.length; i++) {
-						var PT = preTC[i];
-						var TC = this.CreateTC(freeTC, PT.Left, PT.Top, PT.Width, PT.Height, PT.Style, PT.Align, PT.TabWidth, PT.TabHeight);
-						if (TC.Count == 0) {
-							var FV = PT.Selected;
-							if (FV) {
-								var TV = FV.TreeView;
-								TC.Selected.Navigate2(FV.FolderItem, SBSP_NEWBROWSER, FV.Type, FV.CurrentViewMode, FV.FolderFlags, FV.Options, FV.ViewFlags, FV.IconSize, TV.Align, TV.Width, TV.Style, TV.EnumFlags, TV.RootStyle, TV.Root);
-							} else {
-								TC.Selected.Navigate2(HOME_PATH, SBSP_NEWBROWSER, te.Data.View_Type, te.Data.View_ViewMode, te.Data.View_fFlags, te.Data.View_Options, te.Data.View_ViewFlags, te.Data.View_IconSize, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root);
-							}
-							TC.Visible = true;
+					var b = TC.Data.Group == te.Data.Tabgroups.Index;
+					if (b) {
+						var s = [TC.Left, TC.Top, TC.Width, TC.Height].join(",");
+						if (oShow[s]) {
+							b = false;
+							delete TC.Data.Group;
+						} else {
+							oShow[s] = true;
 						}
 					}
-				} else {
-					var TC = this.CreateTC(freeTC, 0, 0, "100%", "100%", te.Data.Tab_Style, te.Data.Tab_Align, te.Data.Tab_TabWidth, te.Data.Tab_TabHeight);
-					TC.Data.Group = te.Data.Tabgroups.Index;
-					TC.Selected.Navigate2(HOME_PATH, SBSP_NEWBROWSER, te.Data.View_Type, te.Data.View_ViewMode, te.Data.View_fFlags, te.Data.View_Options, te.Data.View_ViewFlags, te.Data.View_IconSize, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root);
+					TC.Visible = b;
+					if (TC.Id === nFocusedId) {
+						TC.Selected.Focus();
+					}
+					bDisp |= b;
 				}
+				if (!bDisp) {
+					if (preTC.length) {
+						for (var i = 0; i < preTC.length; i++) {
+							var PT = preTC[i];
+							var TC = this.CreateTC(freeTC, PT.Left, PT.Top, PT.Width, PT.Height, PT.Style, PT.Align, PT.TabWidth, PT.TabHeight);
+							if (TC.Count == 0) {
+								var FV = PT.Selected;
+								if (FV) {
+									var TV = FV.TreeView;
+									TC.Selected.Navigate2(FV.FolderItem, SBSP_NEWBROWSER, FV.Type, FV.CurrentViewMode, FV.FolderFlags, FV.Options, FV.ViewFlags, FV.IconSize, TV.Align, TV.Width, TV.Style, TV.EnumFlags, TV.RootStyle, TV.Root);
+								} else {
+									TC.Selected.Navigate2(HOME_PATH, SBSP_NEWBROWSER, te.Data.View_Type, te.Data.View_ViewMode, te.Data.View_fFlags, te.Data.View_Options, te.Data.View_ViewFlags, te.Data.View_IconSize, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root);
+								}
+								TC.Visible = true;
+							}
+						}
+					} else {
+						var TC = this.CreateTC(freeTC, 0, 0, "100%", "100%", te.Data.Tab_Style, te.Data.Tab_Align, te.Data.Tab_TabWidth, te.Data.Tab_TabHeight);
+						TC.Data.Group = te.Data.Tabgroups.Index;
+						TC.Selected.Navigate2(HOME_PATH, SBSP_NEWBROWSER, te.Data.View_Type, te.Data.View_ViewMode, te.Data.View_fFlags, te.Data.View_Options, te.Data.View_ViewFlags, te.Data.View_IconSize, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root);
+					}
+				}
+				te.UnlockUpdate();
 			}
-			te.UnlockUpdate();
 			if (Addons.Tabgroups.elDrag5) {
 				Addons.TabPlus.Drop5(Addons.Tabgroups.elDrag5);
 				delete Addons.Tabgroups.elDrag5;
@@ -326,7 +331,7 @@ if (window.Addon == 1) {
 			}
 			te.Data.Tabgroups.Data.splice(nPos - 1, 1);
 			if (te.Data.Tabgroups.Index >= te.Data.Tabgroups.Data.length + 1 && te.Data.Tabgroups.Index > 1) {
-				te.Data.Tabgroups.Index--;
+				--te.Data.Tabgroups.Index;
 			}
 			if (!bNotUpdate) {
 				this.Arrange();
@@ -469,6 +474,10 @@ if (window.Addon == 1) {
 				if (!TC.Data.Group && TC.Visible) {
 					TC.Data.Group = te.Data.Tabgroups.Index;
 				}
+			}
+			var TC = te.Ctrl(CTRL_TC);
+			if (TC) {
+				Addons.Tabgroups.Focused[te.Data.Tabgroups.Index] = TC.Id;
 			}
 		},
 
