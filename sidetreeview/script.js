@@ -64,6 +64,7 @@ if (window.Addon == 1) {
 				var pt = GetPos(o);
 				api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
 				api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+				api.BringWindowToTop(Addons.SideTreeView.TV.hwnd);
 				Addons.SideTreeView.Expand(GetFolderView());
 			} else {
 				Addons.SideTreeView.TV.Visible = true;

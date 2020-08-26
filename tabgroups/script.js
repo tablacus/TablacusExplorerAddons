@@ -320,7 +320,7 @@ if (window.Addon == 1) {
 			var cTC = te.Ctrls(CTRL_TC);
 			var i = cTC.length;
 			if (i > 1) {
-				while (i-- > 0) {
+				while (--i >= 0) {
 					var TC = cTC[i];
 					if (TC.Data.Group == nPos) {
 						TC.Close();
@@ -334,6 +334,13 @@ if (window.Addon == 1) {
 				--te.Data.Tabgroups.Index;
 			}
 			if (!bNotUpdate) {
+				var cTC = te.Ctrls(CTRL_TC);
+				for (var i = cTC.length; --i >= 0;) {
+					var TC = cTC[i];
+					if (TC.Data.Group == te.Data.Tabgroups.Index) {
+						TC.Visible = true;
+					}
+				}
 				this.Arrange();
 			}
 		},
