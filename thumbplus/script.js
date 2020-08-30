@@ -106,6 +106,18 @@ if (window.Addon == 1) {
 
 	AddEvent("IconSizeChanged", Addons.ThumbPlus.Clear2);
 
+	AddEvent("ChangeNotify", function (Ctrl, pidls, wParam, lParam) {
+		if (pidls.lEvent & (SHCNE_UPDATEITEM | SHCNE_RENAMEITEM | SHCNE_DELETE)) {
+			var path1 = pidls[0].Path;
+			for (var Id in Addons.ThumbPlus.FV) {
+				var db = Addons.ThumbPlus.FV[Id];
+				if (db) {
+					delete db[path1];
+				}
+			}
+		}
+	});
+
 	if (api.IsAppThemed() && WINVER >= 0x600) {
 		AddEvent("Load", function () {
 			if (!Addons.ClassicStyle) {
