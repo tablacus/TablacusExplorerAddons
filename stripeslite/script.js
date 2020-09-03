@@ -15,7 +15,8 @@ if (window.Addon == 1) {
 			if (nmcd.uItemState & CDIS_SELECTED) {
 				var rc = api.Memory("RECT");
 				api.GetWindowRect(Ctrl.hwndList, rc);
-				rc.left = 0; 
+				rc.right -= rc.left;
+				rc.left = 0;
 				rc.top = nmcd.rc.top;
 				rc.bottom = nmcd.rc.bottom;
 				api.SetDCBrushColor(nmcd.hdc, Addons.StripesLite.Color2);

@@ -5,18 +5,16 @@ Addons.WCX =
 {
 	xml: OpenXml("wcx.xml", false, true),
 
-	IsHandle: function (Ctrl)
-	{
+	IsHandle: function (Ctrl) {
 		return Addons.WCX.GetObject(Ctrl) != null;
 	},
 
-	GetObject: function (Ctrl)
-	{
+	GetObject: function (Ctrl) {
 		if (!Addons.WCX.DLL) {
 			return;
 		}
 		var lib = {
-			file: typeof(Ctrl) == "string" ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL),
+			file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL),
 			path: ""
 		}
 		if (!Addons.WCX.Obj) {
@@ -38,8 +36,7 @@ Addons.WCX =
 		}
 	},
 
-	Init: function ()
-	{
+	Init: function () {
 		Addons.WCX.Obj = [];
 		var items = Addons.WCX.xml.getElementsByTagName("Item");
 		for (var i = 0; i < items.length; i++) {
@@ -48,7 +45,7 @@ Addons.WCX =
 			var dllPath = (ExtractMacro(te, api.PathUnquoteSpaces(item.getAttribute("Path"))) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1");
 			var WCX = Addons.WCX.DLL.open(dllPath);
 			if (WCX && WCX.OpenArchive) {
-				Addons.WCX.Obj.push({ X: WCX, filter: filter});
+				Addons.WCX.Obj.push({ X: WCX, filter: filter });
 				WCX.PackSetDefaultParams(fso.BuildPath(te.Data.DataFolder, "config\\pkplugin.ini"));
 				WCX.SetChangeVolProc(-1, Addons.WCX.ChangeVolProc);
 				WCX.SetProcessDataProc(-1, Addons.WCX.ProcessDataProc);
@@ -56,23 +53,21 @@ Addons.WCX =
 		}
 	},
 
-	Refresh: function (Ctrl)
-	{
+	Refresh: function (Ctrl) {
 		Ctrl.Refresh();
 	},
 
 	StringToVerb: {
-		"paste" : CommandID_PASTE,
+		"paste": CommandID_PASTE,
 		"delete": CommandID_DELETE,
 		"copy": CommandID_COPY,
 		"cut": CommandID_CUT,
 		"properties": CommandID_PROPERTIES,
 	},
 
-	Command: function (Ctrl, Verb)
-	{
+	Command: function (Ctrl, Verb) {
 		if (Ctrl && Ctrl.Type <= CTRL_EB && Addons.WCX.IsHandle(Ctrl)) {
-			switch (typeof(Verb) == "string" ? Addons.WCX.StringToVerb[Verb.toLowerCase()] : Verb + 1) {
+			switch ("string" === typeof Verb ? Addons.WCX.StringToVerb[Verb.toLowerCase()] : Verb + 1) {
 				case CommandID_PASTE:
 					Addons.WCX.Append(Ctrl, api.OleGetClipboard());
 					return S_OK;
@@ -92,8 +87,7 @@ Addons.WCX =
 		}
 	},
 
-	LocalList: function (Items, fl, nLevel)
-	{
+	LocalList: function (Items, fl, nLevel) {
 		for (var i = 0; i < Items.Count; i++) {
 			if (Addons.WCX.Progress.HasUserCancelled()) {
 				return 1;
@@ -111,8 +105,7 @@ Addons.WCX =
 		return 0;
 	},
 
-	ArcList: function (lib, fh, sh)
-	{
+	ArcList: function (lib, fh, sh) {
 		var OpenData = {
 			ArcName: lib.file,
 			OpenMode: 0
@@ -147,8 +140,7 @@ Addons.WCX =
 		return 0;
 	},
 
-	Append: function (Ctrl, Items)
-	{
+	Append: function (Ctrl, Items) {
 		if (!Items.Count) {
 			return;
 		}
@@ -169,14 +161,13 @@ Addons.WCX =
 						Addons.WCX.Refresh(Ctrl);
 					}
 				}
-			} catch (e) {}
+			} catch (e) { }
 			Addons.WCX.Progress.StopProgressDialog();
 			delete Addons.WCX.Progress;
 		}
 	},
 
-	Delete: function (Ctrl)
-	{
+	Delete: function (Ctrl) {
 		var Items = Ctrl.SelectedItems();
 		if (!Items.Count || !confirmOk("Are you sure?")) {
 			return;
@@ -206,18 +197,17 @@ Addons.WCX =
 				if (lib.X.DeleteFiles(lib.file, fl.join("\0")) == 0) {
 					Addons.WCX.Refresh(Ctrl);
 				}
-			} catch (e) {}
+			} catch (e) { }
 			Addons.WCX.Progress.StopProgressDialog();
 			delete Addons.WCX.Progress;
 		}
 	},
 
-	Enum: function (pid, Ctrl, fncb)
-	{
+	Enum: function (pid, Ctrl, fncb) {
 		var lib = Addons.WCX.GetObject(pid.Path);
 		if (Ctrl && lib) {
 			var Items = te.FolderItems();
-			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
+			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
 			var OpenData = {
 				ArcName: lib.file,
 				OpenMode: 0
@@ -264,8 +254,7 @@ Addons.WCX =
 		}
 	},
 
-	CreateFolder: function (path)
-	{
+	CreateFolder: function (path) {
 		var s = fso.GetParentFolderName(path);
 		if (s.length > 3 && !fso.FolderExists(s)) {
 			this.CreateFolder(s);
@@ -273,44 +262,38 @@ Addons.WCX =
 		if (!fso.FolderExists(path)) {
 			try {
 				fso.CreateFolder(path);
-			} catch (e) {}
+			} catch (e) { }
 		}
 	},
 
-	ShowLine: function (s1, s2, i)
-	{
+	ShowLine: function (s1, s2, i) {
 		var s3 = 6466;
-		if (document.documentMode > 8) {
+		if (g_.IEVer > 8) {
 			s3 = i > 1 ? 38192 : 38193;
 			if (i > 999) {
 				i = i.toLocaleString();
 			}
 		}
-		this.Progress.SetLine(1, [api.LoadString(hShell32, s1) || api.LoadString(hShell32, s2), " ", (api.LoadString(hShell32, s3) || "%s items").replace(/%1!ls!|%s/g, i), " (", api.StrFormatByteSize(Addons.WCX.SizeTotal) ,")"].join(""), true);
+		this.Progress.SetLine(1, [api.LoadString(hShell32, s1) || api.LoadString(hShell32, s2), " ", (api.LoadString(hShell32, s3) || "%s items").replace(/%1!ls!|%s/g, i), " (", api.StrFormatByteSize(Addons.WCX.SizeTotal), ")"].join(""), true);
 		this.Progress.Timer(1);
 	},
 
-	ChangeVolProc: function (ArcName, Mode)
-	{
+	ChangeVolProc: function (ArcName, Mode) {
 		var r = 1;
 		if (Mode) {
 			MessageBox(GetText("Change Volume") + "?\n\n" + ArcName, TITLE, MB_OK);
 		} else {
-			r = confirmOk(GetText("Change Volume") + "\n\n" + ArcName ,TITLE) ? 1 : 0;
+			r = confirmOk(GetText("Change Volume") + "\n\n" + ArcName, TITLE) ? 1 : 0;
 		}
 		return r;
 	},
 
-	ProcessDataProc: function (FileName, Size)
-	{
+	ProcessDataProc: function (FileName, Size) {
 		if (Addons.WCX.Progress) {
 			var points = 0;
 			if (Size >= 0) {
 				Addons.WCX.SizeCurrent += Size;
-				points = Math.floor(Addons.WCX.SizeCurrent * 100 / Addons.WCX.SizeTotal);
-				if (points > 100) {
-					points = 100;
-				}
+				points = Math.min(Math.floor(Addons.WCX.SizeCurrent * 100 / Addons.WCX.SizeTotal), 100);
 			} else if (Size >= -100) {
 				points = Math.abs(Size);
 			}
@@ -326,8 +309,7 @@ Addons.WCX =
 		return 1;
 	},
 
-	Finalize: function ()
-	{
+	Finalize: function () {
 		delete Addons.WCX.Obj;
 		CollectGarbage();
 		delete Addons.WCX.DLL;
@@ -339,16 +321,14 @@ if (window.Addon == 1) {
 
 	AddEvent("Finalize", Addons.WCX.Finalize);
 
-	AddEvent("TranslatePath", function (Ctrl, Path)
-	{
+	AddEvent("TranslatePath", function (Ctrl, Path) {
 		if (Addons.WCX.IsHandle(Path)) {
 			Ctrl.Enum = Addons.WCX.Enum;
 			return ssfRESULTSFOLDER;
 		}
 	}, true);
 
-	AddEvent("BeginDrag", function (Ctrl)
-	{
+	AddEvent("BeginDrag", function (Ctrl) {
 		if (Addons.WCX.IsHandle(Ctrl)) {
 			var pdwEffect = { 0: DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK };
 			api.SHDoDragDrop(Ctrl.hwndView, Ctrl.SelectedItems(), Ctrl, pdwEffect[0], pdwEffect, true);
@@ -356,15 +336,14 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("BeforeGetData", function (Ctrl, Items, nMode)
-	{
+	AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 		if (!Items.Count) {
 			return;
 		}
 		var hr = S_OK;
 		var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, "tablacus");
 		var ar = [];
-		for (var i = Items.Count; i-- ;) {
+		for (var i = Items.Count; i--;) {
 			var path = Items.Item(i).Path;
 			if (!api.StrCmpNI(root, path, root.length) && !fso.FileExists(path)) {
 				ar.unshift(fso.GetFileName(path).toLowerCase());
@@ -445,24 +424,15 @@ if (window.Addon == 1) {
 		return hr;
 	});
 
-	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
-	{
-		var hr = Addons.WCX.Command(Ctrl, wParam & 0xfff);
-		if (isFinite(hr)) {
-			return hr;
-		}
+	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
+		return Addons.WCX.Command(Ctrl, wParam & 0xfff);
 	}, true);
 
-	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
-	{
-		var hr = Addons.WCX.Command(ContextMenu.FolderView, Verb);
-		if (isFinite(hr)) {
-			return hr;
-		}
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
+		return Addons.WCX.Command(ContextMenu.FolderView, Verb);
 	}, true);
 
-	AddEvent("DefaultCommand", function (Ctrl, Selected)
-	{
+	AddEvent("DefaultCommand", function (Ctrl, Selected) {
 		if (Selected.Count == 1) {
 			var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 			if (Addons.WCX.IsHandle(path)) {
@@ -472,7 +442,7 @@ if (window.Addon == 1) {
 			if (Selected.Item(0).IsFolder) {
 				var lib = Addons.WCX.GetObject(Ctrl);
 				if (lib) {
-					var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
+					var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
 					path = path.replace(root, lib.file);
 					Ctrl.Navigate(path);
 					return S_OK;
@@ -481,16 +451,13 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("ILGetParent", function (FolderItem)
-	{
-		var path = FolderItem.Path;
-		if (Addons.WCX.IsHandle(path)) {
-			return fso.GetParentFolderName(path);
+	AddEvent("ILGetParent", function (FolderItem) {
+		if (Addons.WCX.IsHandle(FolderItem)) {
+			return fso.GetParentFolderName(FolderItem.Path);
 		}
 	});
 
-	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
-	{
+	AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 		var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 		if (Addons.WCX.IsHandle(path)) {
 			RemoveCommand(hMenu, ContextMenu, "rename");
@@ -498,8 +465,7 @@ if (window.Addon == 1) {
 		return nPos;
 	});
 
-	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
 			if (Addons.WCX.IsHandle(Ctrl)) {
 				return S_OK;
@@ -507,8 +473,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
 			var lib = Addons.WCX.GetObject(Ctrl);
 			if (lib) {
@@ -518,36 +483,31 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Addons.WCX.IsHandle(Ctrl)) {
 			Addons.WCX.Append(Ctrl, dataObj);
 			return S_OK;
 		}
 	});
 
-	AddEvent("DragLeave", function (Ctrl)
-	{
+	AddEvent("DragLeave", function (Ctrl) {
 		return S_OK;
 	});
 
-	AddEvent("AddonDisabled", function (Id)
-	{
+	AddEvent("AddonDisabled", function (Id) {
 		if (Id.toLowerCase() == "wcx") {
 			Addons.WCX.Finalize();
 		}
 	});
 
-	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev)
-	{
+	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 		if (Ctrl.Type <= CTRL_EB && Addons.WCX.IsHandle(Prev)) {
-			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99,"tablacus\\%x", Ctrl.SessionId));
+			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
 			DeleteItem(root);
 		}
 	});
 
-	AddEvent("BeginLabelEdit", function (Ctrl, Name)
-	{
+	AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Addons.WCX.IsHandle(Ctrl)) {
 				return 1;
@@ -555,8 +515,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ToolTip", function (Ctrl, Index)
-	{
+	AddEvent("ToolTip", function (Ctrl, Index) {
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Addons.WCX.IsHandle(Ctrl)) {
 				var Item = Ctrl.Items.Item(Index);
