@@ -247,6 +247,7 @@ if (window.Addon == 1) {
 			if (!Addons.InnerBreadcrumbsAddressBar.bClose) {
 				Addons.InnerBreadcrumbsAddressBar.nLoopId = Id;
 				Addons.InnerBreadcrumbsAddressBar.bLoop = true;
+				Addons.InnerBreadcrumbsAddressBar.bClose = true;
 				AddEvent("ExitMenuLoop", function () {
 					Addons.InnerBreadcrumbsAddressBar.nLoopId = 0;
 					Addons.InnerBreadcrumbsAddressBar.bLoop = false;
@@ -315,10 +316,10 @@ if (window.Addon == 1) {
 					if (o) {
 						if (HitTest(o, pt)) {
 							api.PostMessage(hwnd, WM_KEYDOWN, VK_ESCAPE, 0);
-							(function (o, Id) { setTimeout(function () {
+							setTimeout(function (o) {
 								Addons.InnerBreadcrumbsAddressBar.bClose = false;
 								o.click();
-							}, 99);}) (o);
+							}, 99, o);
 						}
 					}
 				}

@@ -118,7 +118,7 @@ Addons.PreviewWindow =
 		MainWindow.Addons.PreviewWindow.Focus = bFocus;
 		var FV = te.Ctrl(CTRL_FV);
 		var nCount = FV.ItemCount(SVGIO_ALLVIEW);
-		var nIndex = (FV.GetFocusedItem() + nMove + nCount) % nCount;
+		var nIndex = (FV.GetFocusedItem + nMove + nCount) % nCount;
 		FV.SelectItem(nIndex, SVSI_SELECT | SVSI_DESELECTOTHERS | SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS);
 	},
 

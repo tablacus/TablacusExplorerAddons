@@ -1,8 +1,7 @@
-﻿if (window.Addon == 1) {
+if (window.Addon == 1) {
 	Addons.FastListMode =
 	{
-		Exec: function (Ctrl)
-		{
+		Exec: function (Ctrl) {
 			var hList = Ctrl.hwndList;
 			if (hList) {
 				var dwStyle = api.GetWindowLongPtr(hList, GWL_STYLE);
@@ -14,7 +13,7 @@
 					if (Ctrl.GroupBy) {
 						Ctrl.GroupBy = "System.Null";
 					}
-			} else  if (dwStyle & 0x800) {
+				} else if (dwStyle & 0x800) {
 					api.SetWindowLongPtr(hList, GWL_STYLE, dwStyle ^ 0x800);
 					var nView = api.SendMessage(Ctrl.hwndList, LVM_GETVIEW, 0, 0);
 					api.SendMessage(Ctrl.hwndList, LVM_SETVIEW, 1, 0);
@@ -23,12 +22,11 @@
 			}
 		},
 
-		Move: function (Ctrl, nMove, dwFlags)
-		{
+		Move: function (Ctrl, nMove, dwFlags) {
 			if (Ctrl.hwndList) {
 				var nViewMode = Ctrl.CurrentViewMode;
 				if (nViewMode == FVM_LIST) {
-					var nCurrent = Ctrl.GetFocusedItem();
+					var nCurrent = Ctrl.GetFocusedItem;
 					var nIndex = nCurrent + nMove;
 					var Items = Ctrl.Items;
 					if (nIndex >= 0 && nIndex < Items.Count) {
@@ -50,33 +48,27 @@
 			return S_FALSE;
 		},
 
-		SelectPrev: function (Ctrl)
-		{
+		SelectPrev: function (Ctrl) {
 			return Addons.FastListMode.Move(Ctrl, -1, SVSI_KEYBOARDSELECT | SVSI_DESELECTOTHERS | SVSI_ENSUREVISIBLE | SVSI_FOCUSED);
 		},
 
-		SelectNext: function (Ctrl)
-		{
+		SelectNext: function (Ctrl) {
 			return Addons.FastListMode.Move(Ctrl, 1, SVSI_KEYBOARDSELECT | SVSI_DESELECTOTHERS | SVSI_ENSUREVISIBLE | SVSI_FOCUSED);
 		},
 
-		AddPrev: function (Ctrl)
-		{
+		AddPrev: function (Ctrl) {
 			return Addons.FastListMode.Move(Ctrl, -1, SVSI_KEYBOARDSELECT | SVSI_ENSUREVISIBLE | SVSI_FOCUSED);
 		},
 
-		AddNext: function (Ctrl)
-		{
+		AddNext: function (Ctrl) {
 			return Addons.FastListMode.Move(Ctrl, 1, SVSI_KEYBOARDSELECT | SVSI_ENSUREVISIBLE | SVSI_FOCUSED);
 		},
 
-		FocusPrev: function (Ctrl)
-		{
+		FocusPrev: function (Ctrl) {
 			return Addons.FastListMode.Move(Ctrl, -1, SVSI_ENSUREVISIBLE | SVSI_FOCUSED);
 		},
 
-		FocusNext: function (Ctrl)
-		{
+		FocusNext: function (Ctrl) {
 			return Addons.FastListMode.Move(Ctrl, 1, SVSI_ENSUREVISIBLE | SVSI_FOCUSED);
 		}
 	}
@@ -84,8 +76,7 @@
 	AddEvent("ViewModeChanged", Addons.FastListMode.Exec);
 	AddEvent("ChangeView", Addons.FastListMode.Exec);
 
-	AddEventId("AddonDisabledEx", "fastlistmode", function()
-	{
+	AddEventId("AddonDisabledEx", "fastlistmode", function () {
 		var cFV = te.Ctrls(CTRL_FV);
 		for (var i in cFV) {
 			var hList = cFV[i].hwndList;
