@@ -5,26 +5,23 @@ var AddonName = "LinkBar";
 if (window.Addon == 1) {
 	Addons.LinkBar =
 	{
-		Click: function (i, bNew)
-		{
+		Click: function (i, bNew) {
 			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
 			var item = items[i];
 			if (item) {
 				var type = item.getAttribute("Type");
-				Exec(te, item.text, (bNew && api.PathMatchSpec(type, "Open;Open in background")) ? "Open in new tab": item.getAttribute("Type"), te.hwnd, null);
+				Exec(te, item.text, (bNew && api.PathMatchSpec(type, "Open;Open in background")) ? "Open in new tab" : item.getAttribute("Type"), te.hwnd, null);
 			}
 			return false;
 		},
 
-		Down: function (i)
-		{
+		Down: function (i) {
 			if (api.GetKeyState(VK_MBUTTON) < 0) {
 				return this.Click(i, true);
 			}
 		},
 
-		Open: function (i)
-		{
+		Open: function (i) {
 			if (Addons.LinkBar.bClose) {
 				return S_OK;
 			}
@@ -38,7 +35,7 @@ if (window.Addon == 1) {
 				}
 				var o = document.getElementById("_linkbar" + i);
 				var pt = GetPos(o, true);
-				pt.y += o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
+				pt.y += o.offsetHeight;
 				MakeMenus(hMenu, null, arMenu, items, te, pt);
 				AdjustMenuBreak(hMenu);
 				AddEvent("ExitMenuLoop", function () {
@@ -55,8 +52,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Popup: function (i)
-		{
+		Popup: function (i) {
 			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
 			if (i >= 0) {
 				var hMenu = api.CreatePopupMenu();
@@ -76,15 +72,31 @@ if (window.Addon == 1) {
 			return false;
 		},
 
-		Arrange: function ()
-		{
+		DropDown: function (i) {
+			var o = document.getElementById("_linkbar" + i);
+			MouseOver(o);
+			var pt = GetPos(o, true);
+			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
+			var strType = items[i].getAttribute("Type");
+			var wFlags = SBSP_SAMEBROWSER;
+			if (api.StrCmpI(strType, "Open in new tab") == 0) {
+				wFlags = SBSP_NEWBROWSER;
+			} else if (api.StrCmpI(strType, "Open in background") == 0) {
+				wFlags = SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS;
+			}
+			FolderMenu.Invoke(FolderMenu.Open(items[i].text.split("\n")[0], pt.x, pt.y + o.offsetHeight, "*", 1), wFlags);
+			return false;
+		},
+
+		Arrange: function () {
 			var s = [];
 			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
 			var menus = 0;
 			var image = te.GdiplusBitmap;
 			for (var i = 0; i < items.length; i++) {
 				var item = items[i];
-				var strFlag = (api.StrCmpI(item.getAttribute("Type"), "Menus") ? "" : item.text).toLowerCase();
+				var strType = item.getAttribute("Type");
+				var strFlag = (api.StrCmpI(strType, "Menus") ? "" : item.text).toLowerCase();
 				if (strFlag == "close" && menus) {
 					menus--;
 					continue;
@@ -109,7 +121,7 @@ if (window.Addon == 1) {
 					var icon = item.getAttribute("Icon");
 					if (icon) {
 						img = GetImgTag({ src: ExtractMacro(te, icon) }, h);
-					} else if (api.PathMatchSpec(item.getAttribute("Type"), "Open;Open in New Tab;Open in Background;Exec")) {
+					} else if (api.PathMatchSpec(strType, "Open;Open in new tab;Open in background;Exec")) {
 						var path = Addons.LinkBar.GetPath(items, i);
 						var pidl = api.ILCreateFromPath(path);
 						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
@@ -123,7 +135,12 @@ if (window.Addon == 1) {
 						}
 					}
 					s.push('<span id="_linkbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' + i + ')" onmousedown="Addons.LinkBar.Down(' : 'onmousedown="Addons.LinkBar.Open(');
-					s.push(i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(ExtractMacro(te, item.text)), '">', img, '<span class="linklabel"> ', EncodeSC(ExtractMacro(te, item.getAttribute("Name"))), '</span></span> ');
+					s.push(i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(ExtractMacro(te, item.text)), '">', img, '<span class="linklabel"> ', EncodeSC(ExtractMacro(te, item.getAttribute("Name"))), '</span></span>');
+					if (api.PathMatchSpec(strType, "Open;Open in new tab;Open in background")) {
+						s.push('<div class="button" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.LinkBar.DropDown(', i, ')" style="vertical-align: top; opacity: 0.6">', "v", '</div>');
+					} else {
+						s.push(" ");
+					}
 				}
 			}
 			s.push('<label id="Link', items.length, '" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
@@ -133,23 +150,19 @@ if (window.Addon == 1) {
 			Resize();
 		},
 
-		GetPath: function (items, i)
-		{
+		GetPath: function (items, i) {
 			var line = items[i].text.split("\n");
 			return api.PathUnquoteSpaces(ExtractMacro(null, line[0]));
 		},
 
-		ShowOptions: function (nEdit)
-		{
-			AddonOptions("linkbar", function ()
-			{
+		ShowOptions: function (nEdit) {
+			AddonOptions("linkbar", function () {
 				Addons.LinkBar.Arrange();
 				ApplyLang(document);
-			}, {nEdit: nEdit});
+			}, { nEdit: nEdit });
 		},
 
-		FromPt: function (n, pt)
-		{
+		FromPt: function (n, pt) {
 			while (--n >= 0) {
 				if (HitTest(document.getElementById("_linkbar" + n), pt)) {
 					return n;
@@ -158,8 +171,7 @@ if (window.Addon == 1) {
 			return -1;
 		},
 
-		Append: function (dataObj)
-		{
+		Append: function (dataObj) {
 			var xml = te.Data.xmlLinkBar;
 			var root = xml.documentElement;
 			if (!root) {
@@ -193,15 +205,13 @@ if (window.Addon == 1) {
 
 	AddEvent("Load", Addons.LinkBar.Arrange);
 
-	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type == CTRL_WB) {
 			return S_OK;
 		}
 	});
 
-	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type == CTRL_WB) {
 			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
 			var i = Addons.LinkBar.FromPt(items.length + 1, pt);
@@ -224,8 +234,7 @@ if (window.Addon == 1) {
 		MouseOut("_linkbar");
 	});
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		MouseOut();
 		if (Ctrl.Type == CTRL_WB) {
 			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
@@ -242,8 +251,7 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("DragLeave", function (Ctrl)
-	{
+	AddEvent("DragLeave", function (Ctrl) {
 		MouseOut();
 		return S_OK;
 	});

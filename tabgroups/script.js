@@ -22,6 +22,7 @@ if (window.Addon == 1) {
 				te.Data.Tabgroups.Data = api.CreateObject("Array");
 				te.Data.Tabgroups.Index = 1;
 			}
+			Addons.Tabgroups.Data = te.Data.Tabgroups.Data;
 
 			setTimeout(function () {
 				if (!te.Data.Tabgroups.Click) {
@@ -33,12 +34,12 @@ if (window.Addon == 1) {
 		LoadWindow: function (xml) {
 			var items = xml ? xml.getElementsByTagName("Group") : {};
 			if (items.length) {
-				te.Data.Tabgroups.Click = items.length ? items[0].getAttribute("Index") : 1;
+				te.Data.Tabgroups.Click = items.length ? api.LowPart(items[0].getAttribute("Index")) : 1;
 				items = items[0].getElementsByTagName("Item");
 			} else {
 				xml = OpenXml("tabgroups.xml", true, true);
 				items = xml.getElementsByTagName("Index");
-				te.Data.Tabgroups.Click = items.length ? items[0].text : 1;
+				te.Data.Tabgroups.Click = items.length ? api.LowPart(items[0].text) : 1;
 				items = xml.getElementsByTagName("Item");
 				Addons.Tabgroups.DeleteOldXml = items.length;
 			}

@@ -53,9 +53,9 @@ if (window.Addon == 1) {
 						item = items[nVerb - 1];
 						var strType = item.getAttribute("Type");
 						if (strType == "Open" && (window.g_menu_button == 3 || GetAddonOption("favbar", "NewTab"))) {
-							strType = "Open in New Tab";
+							strType = "Open in new tab";
 						}
-						if (window.g_menu_button == 2 && api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background")) {
+						if (window.g_menu_button == 2 && api.PathMatchSpec(strType, "Open;Open in new tab;Open in background")) {
 							PopupContextMenu(item.text);
 							return S_OK;
 						}
@@ -109,6 +109,25 @@ if (window.Addon == 1) {
 			return false;
 		},
 
+		DropDown: function (i) {
+			var o = document.getElementById("_favbar" + i);
+			MouseOver(o);
+			var pt = GetPos(o, true);
+			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
+			if (menus && menus.length) {
+				var items = menus[0].getElementsByTagName("Item");
+				var strType = items[i].getAttribute("Type");
+				var wFlags = SBSP_SAMEBROWSER;
+				if (api.StrCmpI(strType, "Open in new tab") == 0) {
+					wFlags = SBSP_NEWBROWSER;
+				} else if (api.StrCmpI(strType, "Open in background") == 0) {
+					wFlags = SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS;
+				}
+				FolderMenu.Invoke(FolderMenu.Open(items[i].text.split("\n")[0], pt.x, pt.y + o.offsetHeight, "*", 1), wFlags);
+			}
+			return false;
+		},
+
 		Arrange: function () {
 			var s = [];
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
@@ -147,7 +166,7 @@ if (window.Addon == 1) {
 						var h = GetIconSize(item.getAttribute("Height") || GetAddonOption("favbar", "Size"), 16);
 						if (icon) {
 							img = GetImgTag({ src: ExtractMacro(te, icon) }, h);
-						} else if (api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
+						} else if (api.PathMatchSpec(strType, "Open;Open in new tab;Open in background;Exec")) {
 							var path = Addons.FavBar.GetPath(items, i);
 							var pidl = api.ILCreateFromPath(path);
 							if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
@@ -162,7 +181,12 @@ if (window.Addon == 1) {
 						}
 					}
 					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.FavBar.Click(' + i + ')" onmousedown="Addons.FavBar.Down(' : 'onmousedown="Addons.FavBar.Open(');
-					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(item.text), '">', img, strName, '</span> ');
+					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(item.text), '">', img, strName, '</span>');
+					if (api.PathMatchSpec(strType, "Open;Open in new tab;Open in background")) {
+						s.push('<div class="button" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.FavBar.DropDown(', i, ')" style="vertical-align: top; opacity: 0.6">', "v", '</div>');
+					} else {
+						s.push(" ");
+					}
 				}
 				s.push('&nbsp;</label>');
 
@@ -243,5 +267,5 @@ if (window.Addon == 1) {
 
 	AddEvent("DragLeave", MouseOut);
 } else {
-	SetTabContents(0, "General", '<label><input type="checkbox" id="NewTab" value="2">Open in New Tab</label><br><label>Icon</label></label><br><input type="text" name="Size" size="4">');
+	SetTabContents(0, "General", '<label><input type="checkbox" id="NewTab" value="2">Open in new tab</label><br><label>Icon</label></label><br><input type="text" name="Size" size="4">');
 }

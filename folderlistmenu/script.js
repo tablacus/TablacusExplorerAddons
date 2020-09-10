@@ -1,13 +1,12 @@
 if (window.Addon == 1) {
-	AddType("Folder list menu",
+	AddType("Folder list menu", 
 	{
-		Exec: function (Ctrl, s, type, hwnd, pt)
-		{
+		Exec: function (Ctrl, s, type, hwnd, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
 			}
-			var oMenu = {'\\' : api.CreatePopupMenu()};
+			var oMenu = { '\\': api.CreatePopupMenu() };
 			var items = [];
 			s = api.PathUnquoteSpaces(ExtractMacro(te, s));
 			var ado = OpenAdodbFromTextFile(s);
@@ -24,6 +23,7 @@ if (window.Addon == 1) {
 			var hbmFolder = mii.hbmpItem;
 			var lines = ado.ReadText(adReadAll).split(/[\r?\n]/);
 			ado.Close();
+			var nextType = 0;
 			for (var i in lines) {
 				var path = ExtractMacro(te, lines[i]).replace(/^\s*|\s$/, "");
 				if (!path) {
@@ -94,11 +94,17 @@ if (window.Addon == 1) {
 				Name = arName.pop();
 				if (Name) {
 					mii.dwTypeData = Name;
-					mii.fType = Name == "-" ? MFT_SEPARATOR : 0;
+					mii.fType = Name == "-" ? MFT_SEPARATOR : nextType;
+					nextType = 0;
 					mii.hbmpItem = hbm;
 					mii.hSubMenu = 0;
 					mii.wID = items.length;
 					api.InsertMenuItem(hMenu, MAXINT, false, mii);
+				}
+				if (path == "/") {
+					nextType = MFT_MENUBREAK;
+				} else if (path == "//") {
+					nextType = MFT_MENUBARBREAK;
 				}
 				Name = "";
 				Img = "";
