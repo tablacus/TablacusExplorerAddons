@@ -1,9 +1,13 @@
 var Addon_Id = "favbar";
 var Default = "ToolBar4Center";
 
+var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.FavBar =
 	{
+		DD: !item.getAttribute("NoDD"),
+		NewTab: item.getAttribute("NewTab"),
+
 		Click: function (i, bNew) {
 			var menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
 			if (menus && menus.length) {
@@ -11,7 +15,7 @@ if (window.Addon == 1) {
 				var item = items[i];
 				if (item) {
 					var type = item.getAttribute("Type");
-					Exec(te, item.text, ((bNew && api.PathMatchSpec(s, "Open;Open in background")) || (type == "Open" && GetAddonOption("favbar", "NewTab"))) ? "Open in new tab" : type, te.hwnd, null);
+					Exec(te, item.text, ((bNew && api.PathMatchSpec(s, "Open;Open in background")) || (type == "Open" && Addons.FavBar.NewTab)) ? "Open in new tab" : type, te.hwnd, null);
 				}
 				return false;
 			}
@@ -52,7 +56,7 @@ if (window.Addon == 1) {
 					if (nVerb > 0) {
 						item = items[nVerb - 1];
 						var strType = item.getAttribute("Type");
-						if (strType == "Open" && (window.g_menu_button == 3 || GetAddonOption("favbar", "NewTab"))) {
+						if (strType == "Open" && (window.g_menu_button == 3 || Addons.FavBar.NewTab)) {
 							strType = "Open in new tab";
 						}
 						if (window.g_menu_button == 2 && api.PathMatchSpec(strType, "Open;Open in new tab;Open in background")) {
@@ -182,8 +186,8 @@ if (window.Addon == 1) {
 					}
 					s.push('<span id="_favbar', i, '" ', strType != "menus" || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.FavBar.Click(' + i + ')" onmousedown="Addons.FavBar.Down(' : 'onmousedown="Addons.FavBar.Open(');
 					s.push(i, ')" oncontextmenu="return Addons.FavBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(item.text), '">', img, strName, '</span>');
-					if (api.PathMatchSpec(strType, "Open;Open in new tab;Open in background")) {
-						s.push('<div class="button" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.FavBar.DropDown(', i, ')" style="vertical-align: top; opacity: 0.6">', "v", '</div>');
+					if (Addons.FavBar.DD && api.PathMatchSpec(strType, "Open;Open in new tab;Open in background")) {
+						s.push('<div class="button" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.FavBar.DropDown(', i, ')">', BUTTONS.dropdown, '</div>');
 					} else {
 						s.push(" ");
 					}
@@ -267,5 +271,9 @@ if (window.Addon == 1) {
 
 	AddEvent("DragLeave", MouseOut);
 } else {
-	SetTabContents(0, "General", '<label><input type="checkbox" id="NewTab" value="2">Open in new tab</label><br><label>Icon</label></label><br><input type="text" name="Size" size="4">');
+	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
+	if (ado) {
+		SetTabContents(0, "General", ado.ReadText(adReadAll));
+		ado.Close();
+	}
 }
