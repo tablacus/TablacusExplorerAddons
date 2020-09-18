@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.34</Version>
+    <Version>1.35</Version>
     <MinVersion>2020.9.3</MinVersion>
     <pubDate>Mon, 07 Sep 2020 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
@@ -14,8 +14,8 @@
     <Description>Breadcrumbs address bar for each pane</Description>
   </en>
   <ja>
-    <Name>Inner パンくずリスト アドレス バー</Name>
-    <Description>ペイン毎の パンくずリスト アドレス バー</Description>
+    <Name>Inner パンくずリスト アドレスバー</Name>
+    <Description>ペイン毎の パンくずリスト アドレスバー</Description>
   </ja>
   <zh>
     <Name>窗格內位址列</Name>
