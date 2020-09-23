@@ -9,23 +9,10 @@
     "creator": {
       "en": "Duarte Farrajota Ramos"
     },
-    "version": "0.01",
-    "pubDate" : "Mon, 21 Sep 2020 18:39:00 GMT",
+    "id": "Tablacus_Dark",
+    "version": "0.03",
+    "pubDate" : "Mon, 22 Sep 2020 22:59:00 GMT",
     "license": "MIT License",
     "URL": "https://duarteramos.pt"
-  },
-  "icons": {
-    "general": {
-      "size": 64,
-      "max": 43
-    },
-    "browser": {
-      "size": 64,
-      "max": 12
-    },
-    "shell32": {
-      "size": 64,
-      "max": 0
-    }
-  }
+  }  
 }
