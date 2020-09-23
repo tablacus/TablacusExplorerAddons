@@ -15,7 +15,7 @@ if (window.Addon == 1) {
 	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
 			if ((wParam & 0xfff) == CommandID_COPY - 1) {
-				return Addons.CBCopy.Copy(Ctrl.SelectedItems);
+				return Addons.CBCopy.Copy(Ctrl.SelectedItems());
 			}
 		}
 	});
