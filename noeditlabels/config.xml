@@ -9,7 +9,7 @@
   </General>
   <en>
     <Name>No edit labels</Name>
-    <Description>No edit labels</Description>
+    <Description>Prevent renaming of selected items on second click or slow double-click</Description>
   </en>
   <ja>
     <Name>名前の編集禁止</Name>
