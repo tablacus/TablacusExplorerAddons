@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2019.6.8</MinVersion>
-    <pubDate>Sat, 08 Jun 2019 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2020.9.3</MinVersion>
+    <pubDate>Fri, 25 Sep 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -14,7 +14,7 @@
     <Description>NETSCAPE Bookmarks</Description>
   </en>
   <ja>
-    <Name>NETSCAPE ブックマーク</Name>
+    <Name>NETSCAPEブックマーク</Name>
   </ja>
   <zh>
     <Name>網景格式書籤</Name>

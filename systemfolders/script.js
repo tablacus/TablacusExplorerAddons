@@ -19,9 +19,11 @@ if (window.Addon == 1) {
 			var FV = GetFolderView(Ctrl, pt);
 			FV.Focus();
 			var hMenu = Addons.SystemFolders.GetMenu(api.CreatePopupMenu(), 1);
-			var pt = GetPos(Ctrl, true, false, false, true);
 			if (Ctrl.Type) {
+				pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
+			} else {
+				pt = GetPos(Ctrl, 9);
 			}
 			var nVerb = FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y);
 			if (nVerb) {

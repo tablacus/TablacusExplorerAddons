@@ -1,14 +1,13 @@
 if (window.Addon == 1) {
 	AddType("NETSCAPE Bookmarks",
 	{
-		Exec: function (Ctrl, s, type, hwnd, pt)
-		{
+		Exec: function (Ctrl, s, type, hwnd, pt) {
 			var res, Name, path, tag;
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
 			}
-			var arMenu = [ api.CreatePopupMenu() ];
+			var arMenu = [api.CreatePopupMenu()];
 			var items = [];
 			s = api.PathUnquoteSpaces(ExtractMacro(te, s));
 			var ado = OpenAdodbFromTextFile(s);
@@ -63,9 +62,11 @@ if (window.Addon == 1) {
 				}
 			}
 			if (!pt) {
-				var pt = GetPos(Ctrl, true, false, false, true);
 				if (Ctrl.Type) {
+					pt = api.Memory("POINT");
 					api.GetCursorPos(pt);
+				} else {
+					pt = GetPos(Ctrl, 9);
 				}
 			}
 			hMenu = arMenu[0];

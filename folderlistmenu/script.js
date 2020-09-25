@@ -1,5 +1,5 @@
 if (window.Addon == 1) {
-	AddType("Folder list menu", 
+	AddType("Folder list menu",
 	{
 		Exec: function (Ctrl, s, type, hwnd, pt) {
 			var FV = GetFolderView(Ctrl, pt);
@@ -110,7 +110,7 @@ if (window.Addon == 1) {
 				Img = "";
 			}
 			if (!pt) {
-				var pt = GetPos(Ctrl, true, false, false, true);
+				var pt = GetPos(Ctrl, 9);
 				if (Ctrl.Type) {
 					api.GetCursorPos(pt);
 				}
