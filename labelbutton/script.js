@@ -6,8 +6,7 @@ if (window.Addon == 1) {
 
 	Addons.LabelButton =
 	{
-		Exec: function (o, mode)
-		{
+		Exec: function (o, mode) {
 			var pt;
 			MouseOver(o);
 			if (Addons.Label) {
@@ -78,8 +77,7 @@ if (window.Addon == 1) {
 			return false;
 		},
 
-		Add: function (hMenu, oList, arList, oListPos)
-		{
+		Add: function (hMenu, oList, arList, oListPos) {
 			var FV = te.Ctrl(CTRL_FV);
 			if (FV) {
 				Selected = FV.SelectedItems();
@@ -135,8 +133,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Popup: function (hMenu, arList, pt)
-		{
+		Popup: function (hMenu, arList, pt) {
 			window.g_menu_click = true;
 			var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
 			var FV = te.Ctrl(CTRL_FV);
@@ -167,8 +164,7 @@ if (window.Addon == 1) {
 			api.DestroyMenu(hMenu);
 		},
 
-		LabelGroup: function (hMenu, oList, arList, oListPos, nOffset)
-		{
+		LabelGroup: function (hMenu, oList, arList, oListPos, nOffset) {
 			var nRes = 0;
 			if (Addons.LabelGroups) {
 				var mii = api.Memory("MENUITEMINFO");
@@ -197,6 +193,6 @@ if (window.Addon == 1) {
 	};
 
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var src = item.getAttribute("Icon") || (h <= 16 ? "../addons/label/label16.png" : "../addons/label/label32.png");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="return Addons.LabelButton.Exec(this, 0)" oncontextmenu="return Addons.LabelButton.Exec(this, 1)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: api.PSGetDisplayName("System.Contact.Label"), src:src }, h), '</span>']);
+	var src = item.getAttribute("Icon") || (WINVER >= 0x600 ? "icon:shell32.dll,289" : "../addons/label/label16.png");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="return Addons.LabelButton.Exec(this, 0)" oncontextmenu="return Addons.LabelButton.Exec(this, 1)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: api.PSGetDisplayName("System.Contact.Label"), src: src }, h), '</span>']);
 }

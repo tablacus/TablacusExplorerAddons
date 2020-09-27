@@ -5,7 +5,6 @@ if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Context");
 	item.setAttribute("MenuPos", 1);
-	item.setAttribute("MenuName", "Attributes...");
 
 	item.setAttribute("KeyOn", "List");
 	item.setAttribute("MouseOn", "List");
@@ -14,28 +13,23 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.Attributes =
 	{
-		Exec: function (Ctrl)
-		{
+		strName: item.getAttribute("MenuName") || GetText("Attributes..."),
+		Exec: function (Ctrl) {
 			var Selected = GetSelectedArray(Ctrl, pt, true).shift();
 			if (Selected && Selected.Count) {
 				var h = 110 + 26 * Selected.Count;
 				if (h > 480) {
 					h = 480;
 				}
-				ShowDialog("../addons/attributes/dialog.html", {MainWindow: window, width: 640, height: h});
+				ShowDialog("../addons/attributes/dialog.html", { MainWindow: window, width: 640, height: h });
 			}
 		}
 	}
 
-	var s = item.getAttribute("MenuName");
-	if (s && s != "") {
-		Addons.Attributes.strName = GetText(s);
-	}
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		Addons.Attributes.nPos = api.LowPart(item.getAttribute("MenuPos"));
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
 			if (item && item.IsFileSystem) {
 				api.InsertMenu(hMenu, Addons.Attributes.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.Attributes.strName);
 				ExtraMenuCommand[nPos] = Addons.Attributes.Exec;
@@ -62,22 +56,19 @@ if (window.Addon == 2) {
 	arHelp = ["Read Only", "Hidden", "System", "Archive"];
 	cItems = [];
 
-	Resize = function ()
-	{
+	Resize = function () {
 		CalcElementHeight(document.getElementById("P"), 3);
 		return false;
 	}
 
-	CheckAll = function (e)
-	{
+	CheckAll = function (e) {
 		var o = e ? e.currentTarget : window.event.srcElement;
 		for (var i in cItems) {
 			cItems[i].ckbx[o.value].checked = o.checked;
 		}
 	}
 
-	SetAttributes = function ()
-	{
+	SetAttributes = function () {
 		var filter = 0;
 		for (var j in arAttrib) {
 			filter |= arAttrib[j];
@@ -97,8 +88,7 @@ if (window.Addon == 2) {
 		window.close();
 	}
 
-	AddEventEx(window, "load", function ()
-	{
+	AddEventEx(window, "load", function () {
 		ApplyLang(document);
 		var FV = te.Ctrl(CTRL_FV);
 		if (FV) {
@@ -137,7 +127,7 @@ if (window.Addon == 2) {
 					td = document.createElement('td');
 					var Item = Selected.Item(i);
 					var wfd = api.Memory("WIN32_FIND_DATA");
-					if  (api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size) == S_OK) {
+					if (api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size) == S_OK) {
 						oItem = {};
 						oItem.Path = Item.Path;
 						var attr = wfd.dwFileAttributes;
@@ -149,8 +139,8 @@ if (window.Addon == 2) {
 						for (var j = 0; j < 4; j++) {
 							td = document.createElement('th');
 							var input = document.createElement('input');
-							input.type="checkbox";
-							input.checked= (attr & arAttrib[j]);
+							input.type = "checkbox";
+							input.checked = (attr & arAttrib[j]);
 							oItem.ckbx[j] = input;
 							td.appendChild(input);
 							td.title = GetText(arHelp[j]);
@@ -167,8 +157,7 @@ if (window.Addon == 2) {
 
 	AddEventEx(window, "resize", Resize);
 
-	AddEventEx(document.body, "keydown", function (e)
-	{
+	AddEventEx(document.body, "keydown", function (e) {
 		var key = (e || event).keyCode;
 		if (key == VK_ESCAPE) {
 			window.close();

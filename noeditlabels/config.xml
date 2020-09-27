@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2018.12.22</MinVersion>
-    <pubDate>Sun, 23 Dec 2018 00:00:00 GMT</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2020.9.3</MinVersion>
+    <pubDate>Sun, 27 Sep 2020 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
   </General>
   <en>
     <Name>No edit labels</Name>
-    <Description>Prevent renaming of selected items on second click or slow double-click</Description>
+    <Description>Prevent renaming of selected items on second click or slow double-click or F2 key in listview</Description>
   </en>
   <ja>
     <Name>名前の編集禁止</Name>
