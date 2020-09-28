@@ -25,7 +25,7 @@ if (window.Addon == 1) {
 		SyncItem: {},
 		Initd: false,
 		Portable: api.LowPart(item.getAttribute("Portable")),
-		Icon: item.getAttribute("Icon") || WINVER >= 0x600 ? "icon:shell32.dll,289" : fso.BuildPath(te.Data.Installed, "/addons/label/label16.png"),
+		Icon: item.getAttribute("Icon") || (WINVER >= 0x600 ? "icon:shell32.dll,289" : fso.BuildPath(te.Data.Installed, "/addons/label/label16.png")),
 		tid: {},
 
 		IsHandle: function (Ctrl) {
