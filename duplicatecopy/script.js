@@ -9,8 +9,7 @@ if (window.Addon == 1) {
 		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 		nPos: api.LowPart(item.getAttribute("MenuPos")),
 
-		Exec: function (Ctrl, pt)
-		{
+		Exec: function (Ctrl, pt) {
 			var FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
@@ -18,8 +17,7 @@ if (window.Addon == 1) {
 			}
 		},
 
-		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bForce)
-		{
+		FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bForce) {
 			var path;
 			if (!(grfKeyState & MK_LBUTTON) || Items.Count == 0) {
 				return false;
@@ -72,8 +70,7 @@ if (window.Addon == 1) {
 								api.SHFileOperation(FO_COPY, arFrom[0], s, FOF_ALLOWUNDO | FOF_RENAMEONCOLLISION, true);
 								var FV = GetFolderView(Ctrl);
 								if (FV.Type <= CTRL_EB) {
-									setTimeout(function ()
-									{
+									setTimeout(function () {
 										FV.SelectItem(s, SVSI_FOCUSED | SVSI_SELECT | SVSI_ENSUREVISIBLE | SVSI_DESELECTOTHERS);
 									}, 99);
 								}
@@ -86,9 +83,14 @@ if (window.Addon == 1) {
 			return false;
 		},
 
-		GetTempName: function (fn)
-		{
-			var cp = api.LoadString(hShell32, 4178) || "%s - Copy";
+		GetTempName: function (fn) {
+			var cp;
+			try {
+				cp = wsh.regRead("HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\NamingTemplates\\CopyNameTemplate");
+			} catch (e) { }
+			if (!cp) {
+				cp = api.LoadString(hShell32, 4178) || "%s - Copy";
+			}
 			var pfn = fso.GetParentFolderName(fn);
 			var bn = fso.GetBaseName(fn);
 			var ext = fso.GetExtensionName(fn);
@@ -110,8 +112,7 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		switch (Ctrl.Type) {
 			case CTRL_SB:
 			case CTRL_EB:
@@ -139,8 +140,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam)
-	{
+	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
 			switch ((wParam & 0xfff) + 1) {
 				case CommandID_PASTE:
@@ -153,8 +153,7 @@ if (window.Addon == 1) {
 		}
 	}, true);
 
-	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
-	{
+	AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 		switch (Verb + 1) {
 			case CommandID_PASTE:
 				var Target = ContextMenu.Items();
@@ -170,8 +169,7 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
+		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 			api.InsertMenu(hMenu, Addons.DuplicateCopy.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.DuplicateCopy.strName);
 			ExtraMenuCommand[nPos] = Addons.DuplicateCopy.Exec;
 			return nPos;
