@@ -5,6 +5,8 @@ var AddonName = "LinkBar";
 if (window.Addon == 1) {
 	Addons.LinkBar =
 	{
+		DD: !GetAddonOptionEx(Addon_Id, "NoDD"),
+
 		Click: function (i, bNew) {
 			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
 			var item = items[i];
@@ -136,8 +138,8 @@ if (window.Addon == 1) {
 					}
 					s.push('<span id="_linkbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' + i + ')" onmousedown="Addons.LinkBar.Down(' : 'onmousedown="Addons.LinkBar.Open(');
 					s.push(i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(ExtractMacro(te, item.text)), '">', img, '<span class="linklabel"> ', EncodeSC(ExtractMacro(te, item.getAttribute("Name"))), '</span></span>');
-					if (api.PathMatchSpec(strType, "Open;Open in new tab;Open in background")) {
-						s.push('<div class="button" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.LinkBar.DropDown(', i, ')" style="vertical-align: top; opacity: 0.6">', "v", '</div>');
+					if (Addons.LinkBar.DD && api.PathMatchSpec(strType, "Open;Open in new tab;Open in background")) {
+						s.push('<div class="button" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.LinkBar.DropDown(', i, ')">', BUTTONS.dropdown, '</div>');
 					} else {
 						s.push(" ");
 					}
@@ -146,7 +148,8 @@ if (window.Addon == 1) {
 			s.push('<label id="Link', items.length, '" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
 			s.push('&nbsp;</label>');
 
-			document.getElementById('_linkbar').innerHTML = s.join("");
+			var o = document.getElementById('_linkbar');
+			o.innerHTML = s.join("");
 			Resize();
 		},
 
@@ -244,7 +247,7 @@ if (window.Addon == 1) {
 					Addons.LinkBar.Append(dataObj);
 					return S_OK;
 				}
-				return Exec(external, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
+				return Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
 			} else if (HitTest(Addons.LinkBar.Parent, pt) && dataObj.Count) {
 				Addons.LinkBar.Append(dataObj);
 			}
@@ -255,4 +258,6 @@ if (window.Addon == 1) {
 		MouseOut();
 		return S_OK;
 	});
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
