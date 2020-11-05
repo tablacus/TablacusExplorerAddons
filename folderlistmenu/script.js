@@ -1,134 +1,35 @@
+Addon_Id = "folderlistmenu";
 if (window.Addon == 1) {
-	AddType("Folder list menu",
-	{
-		Exec: function (Ctrl, s, type, hwnd, pt) {
-			var FV = GetFolderView(Ctrl, pt);
-			if (FV) {
-				FV.Focus();
-			}
-			var oMenu = { '\\': api.CreatePopupMenu() };
-			var items = [];
-			s = api.PathUnquoteSpaces(ExtractMacro(te, s));
-			var ado = OpenAdodbFromTextFile(s);
-			if (!ado) {
-				MessageBox(api.FormatMessage(api.LoadString(hShell32, 8720) || "Not found %1!ls!", s));
-				return;
-			}
-			var Parent = fso.GetParentFolderName(s);
-			var res, Name = "", Img = "";
-			var mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
-			mii.fMask = MIIM_ID | MIIM_BITMAP | MIIM_SUBMENU | MIIM_DATA | MIIM_STRING | MIIM_FTYPE;
-			MenusIcon(mii, "folder:closed");
-			var hbmFolder = mii.hbmpItem;
-			var lines = ado.ReadText(adReadAll).split(/[\r?\n]/);
-			ado.Close();
-			var nextType = 0;
-			for (var i in lines) {
-				var path = ExtractMacro(te, lines[i]).replace(/^\s*|\s$/, "");
-				if (!path) {
-					continue;
-				}
-				if (/^#/.test(path)) {
-					res = /^#EXTINF:[\d\s\-]+,\s*(.*)/i.exec(path);
-					if (res) {
-						Name = res[1];
-					}
-					res = /^#EXTIMG:\s*(.*)/i.exec(path);
-					if (res) {
-						Img = res[1];
-					}
-					continue;
-				}
-				if (!Name) {
-					res = /^(.*?)\s*\t([^\s].*)$/.exec(path) || /^(.*?)\s*(["`].*)$/i.exec(path) || /^(.*?)\s{4,}([^\s].*)$/.exec(path) || /^(.*?)\s*("?[a-z]+:.*)$/i.exec(path) || /^(.*?)\s*(\\\\.*)$/.exec(path) || /^(.*?)\s*(::{.*)$/.exec(path);
-					if (res) {
-						if (res[1]) {
-							Name = res[1];
-							path = res[2];
-						}
-					}
-				}
-				path = path.replace(/^\s*|\s*$/g, "");
-				items.push(path);
-				var hbm = hbmFolder;
-				if (Img) {
-					if (Img == "...") {
-						Img = path;
-					}
-					var ar = Img.split(/,/);
-					var fn = api.PathUnquoteSpaces(ExtractMacro(te, ar[0]));
-					var image = te.WICBitmap();
-					if (/\.ico$/i.test(fn) || !image.FromFile(fn)) {
-						var sfi = api.Memory("SHFILEINFO");
-						api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-						image.FromHICON(sfi.hIcon);
-						api.DestroyIcon(sfi.hIcon);
-					}
-					if (ar[1] > 0) {
-						image = GetThumbnail(image, ar[1], false);
-					}
-					AddMenuImage(mii, image, fn);
-					hbm = mii.hbmpItem;
-				}
-				var arName = (Name || fso.GetFileName(api.PathUnquoteSpaces(path.replace(/`/g, ""))) || path.replace(/\\/g, "")).split(/\\|\/|\|/);
-				var strPath = '';
-				var hMenu = oMenu['\\'];
-				while (arName.length > 1) {
-					var s = arName.shift();
-					if (s) {
-						strPath += '\\' + s;
-						if (oMenu[strPath]) {
-							hMenu = oMenu[strPath];
-						} else {
-							mii.dwTypeData = s;
-							mii.hSubMenu = api.CreateMenu();
-							mii.fType = 0;
-							mii.hbmpItem = arName.length > 1 || arName[0] ? hbmFolder : hbm;
-							oMenu[strPath] = mii.hSubMenu;
-							api.InsertMenuItem(hMenu, MAXINT, false, mii);
-							hMenu = mii.hSubMenu;
-						}
-					}
-				}
-				Name = arName.pop();
-				if (Name) {
-					mii.dwTypeData = Name;
-					mii.fType = Name == "-" ? MFT_SEPARATOR : nextType;
-					nextType = 0;
-					mii.hbmpItem = hbm;
-					mii.hSubMenu = 0;
-					mii.wID = items.length;
-					api.InsertMenuItem(hMenu, MAXINT, false, mii);
-				}
-				if (path == "/") {
-					nextType = MFT_MENUBREAK;
-				} else if (path == "//") {
-					nextType = MFT_MENUBARBREAK;
-				}
-				Name = "";
-				Img = "";
-			}
-			if (!pt) {
-				var pt = GetPos(Ctrl, 9);
-				if (Ctrl.Type) {
-					api.GetCursorPos(pt);
-				}
-			}
-			setTimeout(function () {
-				var nVerb = api.TrackPopupMenuEx(oMenu['\\'], TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
-				for (var i in oMenu) {
-					api.DestroyMenu(oMenu[i]);
-				}
-				if (nVerb) {
-					FolderMenu.Invoke(api.ILCreateFromPath(items[nVerb - 1]), GetAddonOption("folderlistmenu", "NewTab") ? SBSP_NEWBROWSER : undefined);
-				}
-			}, 99);
-			return S_OK;
-		},
+	Addons.FoldrListMenu = {
+		NewTab: await GetAddonOption("folderlistmenu", "NewTab") ? SBSP_NEWBROWSER : 0
+	}
 
-		Ref: OpenDialog
-	});
+	UI.Addons.FolderListMenu = function (oMenu, items, pt) {
+		setTimeout(async function () {
+			if (!pt) {
+				pt = await api.Memory("POINT");
+				await api.GetCursorPos(pt);
+				var Ctrl2 = await te.CtrlFromPoint(pt);
+				if (Ctrl2 && await Ctrl2.Type == CTRL_WB) {
+					var ptc = await pt.Clone();
+					await api.ScreenToClient(await WebBrowser.hwnd, ptc);
+					var el = document.elementFromPoint(await ptc.x, await ptc.y);
+					if (el) {
+						pt = GetPos(el, 9);
+					}
+				}
+			}
+			var nVerb = await api.TrackPopupMenuEx(await oMenu['\\'], TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, await te.hwnd, null);
+
+			for (var list = await api.CreateObject("Enum", oMenu); !await list.atEnd(); await list.moveNext()) {
+				api.DestroyMenu(await oMenu[await list.item()]);
+			}
+			if (nVerb) {
+				$.FolderMenu.Invoke(await api.ILCreateFromPath(await items[nVerb - 1]), Addons.FoldrListMenu.NewTab);
+			}
+		}, 99);
+	}
+	await importJScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	SetTabContents(0, "", '<table style="width: 100%"><tr><td><input type="checkbox" id="NewTab"><label for="NewTab">New Tab</label></td></tr></table>');
 }
