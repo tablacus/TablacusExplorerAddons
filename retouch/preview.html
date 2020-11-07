@@ -23,15 +23,7 @@
         border-collapse: collapse;
       }
     </style>
-    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript">
-      Addon = 2;
-    </script>
-    <script type="text/javascript" charset="utf-8" src="script.js">
-    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js"></script>
   </head>
   <body>
     <form name="F">
@@ -58,7 +50,13 @@
     </form>
     <img id="img1">
     <script type="text/javascript">
-      Addons.Retouch.Load()
+      document.body.style.display = "none";
+      ScriptBase = "../..";
+      LoadScript(["script/ui.js", "script/common.js"], function () {
+        LoadScripts(["script/sync.js"], ["addons/retouch/preview.js"], function () {
+          Addons.Retouch.Load();
+        });
+      });
     </script>
   </body>
 </html>

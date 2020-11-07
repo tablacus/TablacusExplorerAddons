@@ -1,7 +1,8 @@
 // Tablacus Susie Plug-in Wrapper (C)2017 Gaku
 // MIT Lisence
 // Visual C++ 2017 Express Edition
-// Windows SDK v7.1
+// 32-bit Visual Studio 2015 - Windows XP (v140_xp)
+// 64-bit Visual Studio 2017 (v141)
 // https://tablacus.github.io/
 
 #include "tspi.h"
@@ -19,31 +20,31 @@ DWORD		g_dwCookie = 0;
 DWORD		g_dwMainThreadId;
 BOOL		g_bUseGIT = FALSE;
 
-TEmethod methodBASE[] = {
-	{ 0x60010000, L"Open" },
-	{ 0x60010001, L"Clear" },
-	{ 0x6001000C, L"Close" },
-	{ 0x6001F010, L"GetImage" },
-	{ 0x6001F011, L"GetArchive" },
-	{ 0x6001F020, L"Callback" },
+std::unordered_map<std::wstring, DISPID> g_umBASE = {
+	{ L"open", 0x60010000 },
+	{ L"clear", 0x60010001 },
+	{ L"close", 0x6001000c },
+	{ L"getimage", 0x4001f010 },
+	{ L"getarchive", 0x4001f011 },
+	{ L"setgetimage", 0x6001f012 },
+	{ L"callback", 0x6001f020 },
 };
 
-TEmethod methodTSPI[] = {
-	{ 0x60010001, L"GetPluginInfo" },
-	{ 0x60010002, L"IsSupported" },
-	{ 0x60010003, L"GetPictureInfo" },
-	{ 0x60010004, L"GetPicture" },
-	{ 0x60010005, L"GetPreview" },
-	{ 0x60010006, L"GetArchiveInfo" },
-	{ 0x60010007, L"GetFileInfo" },
-	{ 0x60010008, L"GetFile" },
-	{ 0x60010009, L"ConfigurationDlg" },
-	{ 0x6001F000, L"Filter" },
-	{ 0x6001F001, L"Preview" },
-	{ 0x6001F002, L"Sync" },
-	{ 0x6001F003, L"IsPreview" },
-	{ 0x6001FFFF, L"IsUnicode" },
-	{ 0, NULL }
+std::unordered_map<std::wstring, DISPID> g_umTSPI = {
+	{ L"getplugininfo", 0x60010001 },
+	{ L"issupported", 0x60010002 },
+	{ L"getpictureinfo", 0x60010003 },
+	{ L"getpicture", 0x60010004 },
+	{ L"getpreview", 0x60010005 },
+	{ L"getarchiveinfo", 0x60010006 },
+	{ L"getfileinfo", 0x60010007 },
+	{ L"getfile", 0x60010008 },
+	{ L"configurationdlg", 0x60010009 },
+	{ L"filter", 0x6001f000 },
+	{ L"preview", 0x6001f001 },
+	{ L"sync", 0x6001f002 },
+	{ L"ispreview", 0x6001f003 },
+	{ L"isunicode", 0x6001ffff },
 };
 
 // Unit
@@ -109,48 +110,6 @@ LSTATUS CreateRegistryKey(HKEY hKeyRoot, LPTSTR lpszKey, LPTSTR lpszValue, LPTST
 	return lr;
 }
 
-/*
-int teBSearch(TEmethod *method, int nSize, int* pMap, LPOLESTR bs)
-{
-	int nMin = 0;
-	int nMax = nSize - 1;
-	int nIndex, nCC;
-
-	while (nMin <= nMax) {
-		nIndex = (nMin + nMax) / 2;
-		nCC = lstrcmpi(bs, method[pMap[nIndex]].name);
-		if (nCC < 0) {
-			nMax = nIndex - 1;
-			continue;
-		}
-		if (nCC > 0) {
-			nMin = nIndex + 1;
-			continue;
-		}
-		return pMap[nIndex];
-	}
-	return -1;
-}
-*/
-HRESULT teGetDispId(TEmethod *method, int nCount, int* pMap, LPOLESTR bs, DISPID *rgDispId)
-{
-/*	if (pMap) {
-		int nIndex = teBSearch(method, nCount, pMap, bs);
-		if (nIndex >= 0) {
-			*rgDispId = method[nIndex].id;
-			return S_OK;
-		}
-	} else {*/
-		for (int i = 0; method[i].name; i++) {
-			if (lstrcmpi(bs, method[i].name) == 0) {
-				*rgDispId = method[i].id;
-				return S_OK;
-			}
-		}
-//	}
-	return DISP_E_UNKNOWNNAME;
-}
-
 BSTR GetLPWSTRFromVariant(VARIANT *pv)
 {
 	switch (pv->vt) {
@@ -202,6 +161,20 @@ int GetIntFromVariantClear(VARIANT *pv)
 }
 
 #ifdef _WIN64
+BOOL teStartsText(LPWSTR pszSub, LPCWSTR pszFile)
+{
+	BOOL bResult = pszFile ? TRUE : FALSE;
+	WCHAR wc;
+	while (bResult && (wc = *pszSub++)) {
+		bResult = towlower(wc) == towlower(*pszFile++);
+	}
+	return bResult;
+}
+
+BOOL teVarIsNumber(VARIANT *pv) {
+	return pv->vt == VT_I4 || pv->vt == VT_R8 || pv->vt == (VT_ARRAY | VT_I4) || (pv->vt == VT_BSTR && ::SysStringLen(pv->bstrVal) == 18 && teStartsText(L"0x", pv->bstrVal));
+}
+
 LONGLONG GetLLFromVariant(VARIANT *pv)
 {
 	if (pv) {
@@ -220,6 +193,12 @@ LONGLONG GetLLFromVariant(VARIANT *pv)
 			if (::SafeArrayAccessData(pv->parray, &pvData) == S_OK) {
 				::CopyMemory(&ll, pvData, sizeof(LONGLONG));
 				::SafeArrayUnaccessData(pv->parray);
+				return ll;
+			}
+		}
+		if (teVarIsNumber(pv)) {
+			LONGLONG ll = 0;
+			if (swscanf_s(pv->bstrVal, L"0x%016llx", &ll) > 0) {
 				return ll;
 			}
 		}
@@ -275,17 +254,9 @@ VOID teSetLL(VARIANT *pv, LONGLONG ll)
 			pv->vt = VT_R8;
 			return;
 		}
-		SAFEARRAY *psa;
-		psa = SafeArrayCreateVector(VT_I4, 0, sizeof(LONGLONG) / sizeof(int));
-		if (psa) {
-			PVOID pvData;
-			if (::SafeArrayAccessData(psa, &pvData) == S_OK) {
-				::CopyMemory(pvData, &ll, sizeof(LONGLONG));
-				::SafeArrayUnaccessData(psa);
-				pv->vt = VT_ARRAY | VT_I4;
-				pv->parray = psa;
-			}
-		}
+		pv->bstrVal = ::SysAllocStringLen(NULL, 18);
+		swprintf_s(pv->bstrVal, 19, L"0x%016llx", ll);
+		pv->vt = VT_BSTR;
 	}
 }
 
@@ -1342,7 +1313,22 @@ STDMETHODIMP CteSPI::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 
 STDMETHODIMP CteSPI::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
-	return teGetDispId(methodTSPI, _countof(methodTSPI), NULL, *rgszNames, rgDispId);
+	BSTR bs = ::SysAllocString(*rgszNames);
+	for (int i = ::SysStringLen(bs); i-- > 0;) {
+		bs[i] = tolower(bs[i]);
+	}
+	auto itr = g_umTSPI.find(bs);
+	::SysFreeString(bs);
+	if (itr != g_umTSPI.end()) {
+		*rgDispId = itr->second;
+		return S_OK;
+	}
+#ifdef _DEBUG
+	OutputDebugStringA("GetIDsOfNames:");
+	OutputDebugString(rgszNames[0]);
+	OutputDebugStringA("\n");
+#endif
+	return DISP_E_UNKNOWNNAME;
 }
 
 STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
@@ -1379,7 +1365,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, GetPluginInfoW || GetPluginInfo);
+					if (GetPluginInfoW || GetPluginInfo) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			case 0x60010002://IsSupported
@@ -1400,7 +1388,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, IsSupportedW || IsSupported);
+					if (IsSupportedW || IsSupported) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			case 0x60010003://GetPictureInfo
@@ -1460,7 +1450,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, GetPictureInfoW || GetPictureInfo);
+					if (GetPictureInfoW || GetPictureInfo) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			case 0x60010004://GetPicture
@@ -1579,7 +1571,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 						teSysFreeString(&lpBuf);
 					}
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, dispIdMember == 0x60010004 ? GetPictureInfoW || GetPictureInfo : GetPreviewW || GetPreview);
+					if (dispIdMember == 0x60010004 ? GetPictureInfoW || GetPictureInfo : GetPreviewW || GetPreview) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			case 0x60010006://GetArchiveInfo
@@ -1639,7 +1633,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, GetArchiveInfoW || GetArchiveInfo);
+					if (GetArchiveInfoW || GetArchiveInfo) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			case 0x60010007://GetFileInfo
@@ -1673,7 +1669,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, GetFileInfoW || GetFileInfo);
+					if (GetFileInfoW || GetFileInfo) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			case 0x60010008://GetFile
@@ -1727,7 +1725,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, GetFileInfoW || GetFileInfo);
+					if (GetFileInfoW || GetFileInfo) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			case 0x60010009://ConfigurationDlg
@@ -1737,7 +1737,9 @@ STDMETHODIMP CteSPI::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, ConfigurationDlg != NULL);
+					if (ConfigurationDlg) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			case 0x6001F000://Filter
@@ -1839,13 +1841,32 @@ STDMETHODIMP CteBase::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 
 STDMETHODIMP CteBase::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
-	return teGetDispId(methodBASE, _countof(methodBASE), NULL, *rgszNames, rgDispId);
+	BSTR bs = ::SysAllocString(*rgszNames);
+	for (int i = ::SysStringLen(bs); i-- > 0;) {
+		bs[i] = tolower(bs[i]);
+	}
+	auto itr = g_umBASE.find(bs);
+	::SysFreeString(bs);
+	if (itr != g_umBASE.end()) {
+		*rgDispId = itr->second;
+		return S_OK;
+	}
+#ifdef _DEBUG
+	OutputDebugStringA("GetIDsOfNames:");
+	OutputDebugString(rgszNames[0]);
+	OutputDebugStringA("\n");
+#endif
+	return DISP_E_UNKNOWNNAME;
 }
 
 STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
 {
 	int nArg = pDispParams ? pDispParams->cArgs - 1 : -1;
 	HRESULT hr = S_OK;
+	if (wFlags == DISPATCH_PROPERTYGET && dispIdMember >= TE_METHOD) {
+		teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+		return S_OK;
+	}
 
 	switch (dispIdMember) {
 		case 0x60010000://Open
@@ -1888,14 +1909,16 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 				}
 			}
 			return S_OK;
-		case 0x6001F010://GetImage
+		case 0x4001F010://GetImage
+			teSetPtr(pVarResult, GetImage);
+			return S_OK;
+		case 0x4001F011://GetArchve
+			teSetPtr(pVarResult, GetArchive);
+			return S_OK;
+		case 0x6001F012://SetGetImage
 			if (nArg >= 0) {
 				lpfnGetImage = (LPFNGetImage)GetPtrFromVariant(&pDispParams->rgvarg[nArg]);
 			}
-			teSetPtr(pVarResult, GetImage);
-			return S_OK;
-		case 0x6001F011://GetArchve
-			teSetPtr(pVarResult, GetArchive);
 			return S_OK;
 		case 0x6001F020://Callback
 			if (nArg >= 2) {
@@ -1958,4 +1981,79 @@ STDMETHODIMP CteClassFactory::LockServer(BOOL fLock)
 {
 	LockModule(fLock);
 	return S_OK;
+}
+
+//CteDispatch
+
+CteDispatch::CteDispatch(IDispatch *pDispatch, int nMode, DISPID dispId)
+{
+	m_cRef = 1;
+	pDispatch->QueryInterface(IID_PPV_ARGS(&m_pDispatch));
+	m_dispIdMember = dispId;
+}
+
+CteDispatch::~CteDispatch()
+{
+	Clear();
+}
+
+VOID CteDispatch::Clear()
+{
+	SafeRelease(&m_pDispatch);
+}
+
+STDMETHODIMP CteDispatch::QueryInterface(REFIID riid, void **ppvObject)
+{
+	static const QITAB qit[] =
+	{
+		QITABENT(CteDispatch, IDispatch),
+		{ 0 },
+	};
+	return QISearch(this, qit, riid, ppvObject);
+}
+
+STDMETHODIMP_(ULONG) CteDispatch::AddRef()
+{
+	return ::InterlockedIncrement(&m_cRef);
+}
+
+STDMETHODIMP_(ULONG) CteDispatch::Release()
+{
+	if (::InterlockedDecrement(&m_cRef) == 0) {
+		delete this;
+		return 0;
+	}
+
+	return m_cRef;
+}
+
+STDMETHODIMP CteDispatch::GetTypeInfoCount(UINT *pctinfo)
+{
+	*pctinfo = 0;
+	return S_OK;
+}
+
+STDMETHODIMP CteDispatch::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
+{
+	return E_NOTIMPL;
+}
+
+STDMETHODIMP CteDispatch::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
+{
+	return DISP_E_UNKNOWNNAME;
+}
+
+STDMETHODIMP CteDispatch::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
+{
+	try {
+		if (pVarResult) {
+			VariantInit(pVarResult);
+		}
+		if (wFlags & DISPATCH_METHOD) {
+			return m_pDispatch->Invoke(m_dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr);
+		}
+		teSetObject(pVarResult, this);
+		return S_OK;
+	} catch (...) {}
+	return DISP_E_MEMBERNOTFOUND;
 }
