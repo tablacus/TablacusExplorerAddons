@@ -13,10 +13,11 @@ Addons.Retouch =
 			if (await Selected.Count) {
 				Addons.Retouch.File = await Selected.Item(0).Path;
 				document.title = Addons.Retouch.File;
-				Addons.Retouch.Image = await api.CreateObject("WICBitmap");
-				await Addons.Retouch.Image.FromFile(Addons.Retouch.File);
-				Addons.Retouch.Width = await Addons.Retouch.Image.GetWidth();
-				Addons.Retouch.Height = await Addons.Retouch.Image.GetHeight();
+				Addons.Retouch.Image = await api.CreateObject("WICBitmap").FromFile(Addons.Retouch.File);
+				if (await Addons.Retouch.Image) {
+					Addons.Retouch.Width = await Addons.Retouch.Image.GetWidth();
+					Addons.Retouch.Height = await Addons.Retouch.Image.GetHeight();
+				}
 				document.F.percent.value = 100;
 				document.F.rotation.value = 0;
 				Addons.Retouch.Change(document.F.percent);
@@ -51,7 +52,6 @@ Addons.Retouch =
 				break;
 		}
 		var img1 = document.getElementById("img1");
-		debugger;
 		if (ui_.IEVer < 10) {
 			img1.src = Addons.Retouch.File;
 			img1.style.width = document.F.width.value + "px";

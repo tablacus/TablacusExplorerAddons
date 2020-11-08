@@ -3,18 +3,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="MSThemeCompatible" content="Yes">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Find files</title>
+    <title>Tablacus Explorer</title>
     <link rel="stylesheet" type="text/css" href="../../script/options.css">
-    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript">
-      Addon = 2;
-      Addons = {};
-    </script>
-    <script type="text/javascript" charset="utf-8" src="script.js">
-    </script>
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js"></script>
   </head>
   <body>
     <div class="block" id="panel0">
@@ -34,11 +25,21 @@
     <br>
     <table id="R" class="full">
       <tr>
-        <td align="center">
-          <input type="button" value="OK" class="ok" onclick="FindFiles(); return true;">
-          <input type="button" value="Cancel" class="cancel" onclick="window.close(); return true;">
+        <td align="right">
+          <input type="button" value="OK" class="ok" onclick="FindFiles();">
+          <input type="button" value="Cancel" class="cancel" onclick="CloseWindow();">
+          &nbsp;
         </td>
       </tr>
     </table>
+    <script type="text/javascript">
+      document.body.style.display = "none";
+      ScriptBase = "../..";
+      LoadScript(["script/ui.js", "script/common.js"], function () {
+        LoadScripts(["script/sync.js"], ["addons/infosearch/dialog.js"], function () {
+          InitDialog();
+        });
+      });
+    </script>
   </body>
 </html>

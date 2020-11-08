@@ -1,88 +1,85 @@
 <html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="MSThemeCompatible" content="Yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Tablcus Add-ons</title>
-    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
-    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-    </script>
-    <script type="text/javascript">
-      var Addon = 2;
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/options.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="script.js">
-    </script>
-  </head>
-  <body>
-    <form name="F" style="display: inline;">
-      <div class="panel" style="display: block;">
-        <table width="100%">
-          <tr>
-            <td width="12em" valign="top">
-              <select name="List" size="19" style="width: 12em; height: 34em; height: calc(100vh - 6em); min-height: 20em" onchange="EditXEx(EditFS)" ondblclick="EditFS()" multiple>
-              </select>
-            </td>
-            <td valign="top">
-              <label>Filter</label>
-              <br>
-              <input type="text" name="Filter" style="width: 100%" onchange="ChangeX('List')" />
-              <label>Type</label>
-              <br>
-              <select name="Type" style="width: 100%" onchange="ChangeX('List')">
-              </select>
-              <br>
-              <table width="100%">
-                <td><label>Options</label></td>
-                <td align="right">
-                  <input type="button" value="Portable" onclick="PortableX('Path')" />
-                  <input type="button" value="Browse..." onclick="RefX('Path', true, this)" />
-                </td>
-              </table>
-              <textarea name="Path" style="width: 100%; height: 26em; height: calc(100vh - 15em); min-height: 2em" onchange="ChangeX('List')"></textarea>
-            </td>
-          </tr>
-        </table>
-        <table width="100%">
-          <tr>
-            <td>
-              <input type="button" value="Remove" onclick="RemoveX('List')" />
-              <input type="button" value="Up" onclick="MoveX('List', -1)" />
-              <input type="button" value="Down" onclick="MoveX('List', 1)" />
-              <label><input type="checkbox" id="_EDIT" checked />Edit</label>
-            </td>
-            <td align="right">
-              <input type="button" value="Add" onclick="AddX('List', ReplaceFS)" />
-              <input type="button" value="Replace" onclick="ReplaceFS()" />
-            </td>
-          </tr>
-        </table>
-        <!-- -->
-      </div>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="MSThemeCompatible" content="Yes">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Tablcus Add-ons</title>
+  <link rel="stylesheet" type="text/css" href="../../script/options.css">
+  <script type="text/javascript" charset="utf-8" src="../../script/consts.js"></script>
+</head>
+<body>
+  <form name="E" style="display: inline;">
+    <div class="panel" style="display: block;">
       <table width="100%">
         <tr>
-          <td style="width: 100%; white-space: nowrap">
-            <select name="Format">
-              <option value="0">Normal</option>
-              <option value="1">Path</option>
-              <option value="2">Key</option>
+          <td width="12em" valign="top">
+            <select name="List" size="19" style="width: 12em; height: 34em; height: calc(100vh - 6em); min-height: 20em" onchange="EditXEx(EditFS)" ondblclick="EditFS()" multiple>
             </select>
-            <label><input type="checkbox" name="XP" id="_XP" />XP</label>
-            <input type="button" value="Get the current folder view" onclick="GetCurrentSetting()" />
           </td>
-          <td style="white-space: nowrap">
-            <input type="button" value="OK" class="ok" onclick="SetResult(1)" />&nbsp;
-          </td>
-          <td style="white-space: nowrap">
-            <input type="button" value="Cancel" class="cancel" onclick="SetResult(2)" />&nbsp;
+          <td valign="top">
+            <label>Filter</label>
+            <br>
+            <input type="text" name="Filter" style="width: 100%" onchange="ChangeX('List')">
+            <label>Type</label>
+            <br>
+            <select name="Type" style="width: 100%" onchange="ChangeX('List')">
+            </select>
+            <br>
+            <table width="100%">
+              <td><label>Options</label></td>
+              <td align="right">
+                <input type="button" value="Portable" onclick="PortableX('Path')">
+                <input type="button" value="Browse..." onclick="RefX('Path', true, this)">
+              </td>
+            </table>
+            <textarea name="Path" style="width: 100%; height: 26em; height: calc(100vh - 15em); min-height: 2em" onchange="ChangeX('List')"></textarea>
           </td>
         </tr>
       </table>
-    </form>
-  </body>
-  <script type="text/javascript" charset="utf-8" src="options.js">
+      <table width="100%">
+        <tr>
+          <td>
+            <input type="button" value="Remove" onclick="RemoveX('List')">
+            <input type="button" value="Up" onclick="MoveX('List', -1)">
+            <input type="button" value="Down" onclick="MoveX('List', 1)">
+            <label><input type="checkbox" id="_EDIT" checked>Edit</label>
+          </td>
+          <td align="right">
+            <input type="button" value="Add" onclick="AddX('List', ReplaceFS)">
+            <input type="button" value="Replace" onclick="ReplaceFS()">
+          </td>
+        </tr>
+      </table>
+      <!-- -->
+    </div>
+    <table width="100%">
+      <tr>
+        <td style="width: 100%; white-space: nowrap">
+          <select name="Format">
+            <option value="0">Normal</option>
+            <option value="1">Path</option>
+            <option value="2">Key</option>
+          </select>
+          <label><input type="checkbox" name="XP" id="_XP">XP</label>
+          <input type="button" value="Get the current folder view" onclick="GetCurrentSetting()">
+        </td>
+        <td style="white-space: nowrap">
+          <input type="button" value="OK" class="ok hide" id="_ok" onclick="SetResult(1)">&nbsp;
+        </td>
+        <td style="white-space: nowrap">
+          <input type="button" value="Cancel" class="cancel hide" id="_cancel" onclick="SetResult(2)">&nbsp;
+        </td>
+      </tr>
+    </table>
+  </form>
+  <script type="text/javascript">
+    document.body.style.visibility = "hidden";
+    ScriptBase = "../..";
+    LoadScript(["script/ui.js", "script/common.js"], function () {
+      LoadScripts(["script/sync.js"], ["script/options.js", "addons/foldersettings/options.js"], function () {
+        Init1();
+      });
+    });
   </script>
+  </body>
 </html>

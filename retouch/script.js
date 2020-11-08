@@ -22,8 +22,7 @@ if (window.Addon == 1) {
 	}
 	var h = GetIconSize(await item.getAttribute("IconSize"), await item.getAttribute("Location") == "Inner" && 16);
 	var s = await item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,141,16" : "icon:shell32.dll,141,32");
-	s = ['<span class="button" id="RetouchButton" onclick="Addons.Retouch.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: await Sync.Retouch.strName, src: s }, h), '</span>'];
-	SetAddon(Addon_Id, Default, s);
+	SetAddon(Addon_Id, Default, ['<span class="button" id="RetouchButton" onclick="Addons.Retouch.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: await Sync.Retouch.strName, src: s }, h), '</span>']);
 } else {
 	EnableInner();
 }

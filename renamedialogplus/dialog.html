@@ -7,11 +7,6 @@
     <link rel="stylesheet" type="text/css" href="../../script/options.css">
     <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
     </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript">
-      Addon = 2;
-    </script>
   </head>
   <body>
     <form name="F" style="display: block; width: 100%; padding-bottom: 12pt"  class="panel">
@@ -30,11 +25,18 @@
           <input type="button" value="OK" class="ok" onclick="DoRename(); return true;">&nbsp;
         </td>
         <td style="width: 8em; white-space: nowrap">
-          <input type="button" value="Cancel" class="cancel" onclick="window.close(); return true;">&nbsp;
+          <input type="button" value="Cancel" class="cancel" onclick="CloseWindow(); return true;">&nbsp;
         </td>
       </tr>
     </table>
-    <script type="text/javascript" charset="utf-8" src="script.js">
+    <script type="text/javascript">
+      document.body.style.visibility = "hidden";
+      ScriptBase = "../..";
+      LoadScript(["script/ui.js", "script/common.js"], function () {
+        LoadScripts(["script/sync.js"], ["addons/renamedialogplus/dialog.js"], function () {
+          InitDialog();
+        });
+      });
     </script>
   </body>
 </html>

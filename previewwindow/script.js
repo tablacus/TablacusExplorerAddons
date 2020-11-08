@@ -1,8 +1,8 @@
 var Addon_Id = "previewwindow";
 var Default = "ToolBar2Left";
 
-var item = GetAddonElement(Addon_Id);
-if (!item.getAttribute("Set")) {
+var item = await GetAddonElement(Addon_Id);
+if (!await item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Edit");
 	item.setAttribute("MenuPos", -1);
@@ -13,128 +13,18 @@ if (!item.getAttribute("Set")) {
 }
 
 if (window.Addon == 1) {
-	if (!te.Data.AddonsData.PreviewWindow) {
-		te.Data.AddonsData.PreviewWindow = api.CreateObject("Object");
-		te.Data.AddonsData.PreviewWindow.r = 1;
+	await importJScript("addons\\" + Addon_Id + "\\sync.js");
+
+	Addons.PreviewWindow = {
+		Exec: async function (o) {
+			Sync.PreviewWindow.Exec(await GetFolderViewEx(o));
+		}
 	}
-	Addons.PreviewWindow =
-	{
-		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-		nPos: api.LowPart(item.getAttribute("MenuPos")),
-		ppid: api.Memory("DWORD"),
-		Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
-		TextFilter: api.LowPart(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
-		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
-		Charset: item.getAttribute("Charset"),
-		TextSize: item.getAttribute("TextSize") || 4000,
-		TextLimit: item.getAttribute("TextLimit") || 10000000,
-
-		Exec: function (Ctrl, pt) {
-			GetFolderView(Ctrl, pt).Focus();
-			if (Addons.PreviewWindow.dlg) {
-				Addons.PreviewWindow.dlg.Window.close();
-				delete Addons.PreviewWindow.dlg;
-			} else {
-				Addons.PreviewWindow.dlg = ShowDialog("../addons/previewwindow/preview.html", te.Data.AddonsData.PreviewWindow);
-			}
-		},
-
-		Arrange: function (Ctrl, Item) {
-			if (!Ctrl) {
-				Ctrl = te.Ctrl(CTRL_FV);
-			}
-			if (this.dlg) {
-				delete this.Item;
-				delete this.File;
-				if (!Item && Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
-					Item = Ctrl.SelectedItems().Item(0);
-				}
-				if (Item) {
-					this.Item = Item;
-					this.File = Item.Path;
-				}
-				var ppid = api.Memory("DWORD");
-				api.GetWindowThreadProcessId(api.GetFocus(), ppid);
-				if (Addons.PreviewWindow.ppid[0] == ppid[0]) {
-					this.dlg.Window.Addons.PreviewWindow.Change(te.hwnd);
-					var hwnd = api.GetWindow(this.dlg.Window.document);
-					var hwnd1 = hwnd;
-					while (hwnd1 = api.GetParent(hwnd)) {
-						hwnd = hwnd1;
-					}
-					if (hwnd) {
-						if (api.IsIconic(hwnd)) {
-							api.ShowWindow(hwnd, SW_RESTORE);
-						}
-						if (this.Focus) {
-							delete this.Focus;
-							this.dlg.focus();
-						}
-					}
-				}
-			}
-		}
-	};
-
-	AddEvent("StatusText", function (Ctrl, Text, iPart) {
-		if (Ctrl.Path) {
-			Addons.PreviewWindow.Arrange(null, Ctrl);
-		} else if (Ctrl.Type <= CTRL_EB && Text) {
-			Addons.PreviewWindow.Arrange(Ctrl);
-		}
-	});
-
-	AddEvent("LoadWindow", function (xml) {
-		var items = xml ? xml.getElementsByTagName("PreviewWindow") : {};
-		if (items.length) {
-			te.Data.AddonsData.PreviewWindow.width = items[0].getAttribute("Width");
-			te.Data.AddonsData.PreviewWindow.height = items[0].getAttribute("Height");
-			te.Data.AddonsData.PreviewWindow.left = items[0].getAttribute("Left");
-			te.Data.AddonsData.PreviewWindow.top = items[0].getAttribute("Top");
-		}
-	});
-
-	AddEvent("SaveWindow", function (xml, all) {
-		if (te.Data.AddonsData.PreviewWindow.width && te.Data.AddonsData.PreviewWindow.height) {
-			var item = xml.createElement("PreviewWindow");
-			item.setAttribute("Width", te.Data.AddonsData.PreviewWindow.width);
-			item.setAttribute("Height", te.Data.AddonsData.PreviewWindow.height);
-			item.setAttribute("Left", te.Data.AddonsData.PreviewWindow.left);
-			item.setAttribute("Top", te.Data.AddonsData.PreviewWindow.top);
-			xml.documentElement.appendChild(item);
-		}
-	});
-
-	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var s = item.getAttribute("Icon") || (h > 16 ? "bitmap:ieframe.dll,214,24,14" : "bitmap:ieframe.dll,216,16,14");
-	s = ['<span class="button" id="WindowPreviewButton" onclick="Addons.PreviewWindow.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.PreviewWindow.strName, src: s }, h), '</span>'];
+	var h = GetIconSize(await item.getAttribute("IconSize"), await item.getAttribute("Location") == "Inner" && 16);
+	var s = await item.getAttribute("Icon") || (h > 16 ? "bitmap:ieframe.dll,214,24,14" : "bitmap:ieframe.dll,216,16,14");
+	s = ['<span class="button" id="WindowPreviewButton" onclick="Addons.PreviewWindow.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: await Sync.PreviewWindow.strName, src: s }, h), '</span>'];
 	SetAddon(Addon_Id, Default, s);
-
-	//Menu
-	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-			api.InsertMenu(hMenu, Addons.PreviewWindow.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.PreviewWindow.strName);
-			ExtraMenuCommand[nPos] = Addons.PreviewWindow.Exec;
-			return nPos;
-		});
-	}
-	//Key
-	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.PreviewWindow.Exec, "Func");
-	}
-	//Mouse
-	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.PreviewWindow.Exec, "Func");
-	}
-
-	AddTypeEx("Add-ons", "Preview window", Addons.PreviewWindow.Exec);
-
-	api.GetWindowThreadProcessId(te.hwnd, Addons.PreviewWindow.ppid);
 } else {
 	EnableInner();
-	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
-	if (ado) {
-		SetTabContents(0, "General", ado.ReadText(adReadAll));
-		ado.Close();
-	}
+	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }
