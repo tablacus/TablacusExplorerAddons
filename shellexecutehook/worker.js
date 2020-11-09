@@ -1,5 +1,4 @@
-importScripts("..\\..\\script\\consts.js");
-importScripts("..\\..\\script\\common.js");
+importScripts("..\\..\\script\\consts.js", "..\\..\\script\\sync.js");
 var clsid = "{E840AAD2-1EF2-4F00-8BA8-CE7B57BF8878}";
 var s, dllpath, Result, pnReboot = [0, 0];
 
@@ -78,8 +77,8 @@ function SetDll(bit, wow64, sysdir, pnReboot)
 		s = false;
 	}
 	if (ex[bit]) {
-		dllpath[0] = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\shellexecutehook\\tshellexecutehook") + bit + ".dll";
-		dllpath[1] = fso.BuildPath(sysdir, "tshellexecutehook" + bit + ".dll");
+		dllpath[0] = BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\shellexecutehook\\tshellexecutehook") + bit + ".dll";
+		dllpath[1] = BuildPath(sysdir, "tshellexecutehook" + bit + ".dll");
 		for (var i = 2; i--;) {
 			try {
 				ver[i] = fso.GetFileVersion(dllpath[i]);
@@ -97,18 +96,18 @@ function SetDll(bit, wow64, sysdir, pnReboot)
 		}
 
 		if (!s) {
-			wsh.Run(api.PathQuoteSpaces(fso.BuildPath(sysdir, "regsvr32.exe")) + " /s " + api.PathQuoteSpaces(dllpath[1]));
+			wsh.Run(api.PathQuoteSpaces(BuildPath(sysdir, "regsvr32.exe")) + " /s " + api.PathQuoteSpaces(dllpath[1]));
 			pnReboot[0] |= 1;
 		}
 	}
 	if (!ex[bit] && s) {
 		if (!dllpath[2] || !fso.FileExists(dllpath[2])) {
-			dllpath[2] = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\shellexecutehook\\tshellexecutehook") + bit + ".dll";
+			dllpath[2] = BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\shellexecutehook\\tshellexecutehook") + bit + ".dll";
 			s = false;
 		}
 		if (dllpath[2] && fso.FileExists(dllpath[2])) {
 			pnReboot[0] |= 1;
-			wsh.Run(api.PathQuoteSpaces(fso.BuildPath(sysdir, "regsvr32.exe")) + " /u /s " + api.PathQuoteSpaces(dllpath[2]), 0, true);
+			wsh.Run(api.PathQuoteSpaces(BuildPath(sysdir, "regsvr32.exe")) + " /u /s " + api.PathQuoteSpaces(dllpath[2]), 0, true);
 			if (s) {
 				try {
 					fso.DeleteFile(dllpath[2], true);
@@ -124,7 +123,7 @@ function SetDll(bit, wow64, sysdir, pnReboot)
 function DeleteFileEx(path)
 {
 	try {
-		var temp = fso.BuildPath(fso.GetParentFolderName(path), fso.GetTempName());
+		var temp = BuildPath(fso.GetParentFolderName(path), fso.GetTempName());
 		fso.MoveFile(path, temp);
 		api.MoveFileEx(temp, null, MOVEFILE_DELAY_UNTIL_REBOOT);
 	} catch (e) {}
