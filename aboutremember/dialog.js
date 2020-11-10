@@ -1,69 +1,73 @@
-MainWindow.RunEvent1("BrowserCreated", document);
+RunEventUI("BrowserCreatedEx");
 
-document.onkeydown = function ()
-{
-	if (event.keyCode == VK_ESCAPE) {
-		window.close();
-	}
-	if (event.keyCode == VK_RETURN) {
+AddEventEx(document.body, "keydown", function (e) {
+	if (e.keyCode == VK_RETURN || /^Enter/i.test(e.key)) {
 		SetFolderData();
 	}
+	if (e.keyCode == VK_ESCAPE || /^Esc/i.test(e.key)) {
+		CloseWindow();
+	}
 	return true;
-};
+});
 
-AddEventEx(window, "load", function ()
-{
+InitDialog = async function () {
 	ApplyLang(document);
-	var path = dialogArguments.path;
+	var path = await dialogArguments.path;
 	g_path = path;
 	if (/^([1-9]+\d*)$/.test(path)) {
-		var Item = /^([1-9]+\d*)$/.test(path) ? api.ILCreateFromPath(path) : api.SHSimpleIDListFromPath(path, FILE_ATTRIBUTE_DIRECTORY, new Date(ar[0] - 0), 0);
+		var Item = /^([1-9]+\d*)$/.test(path) ? await api.ILCreateFromPath(path) : await api.SHSimpleIDListFromPath(path, FILE_ATTRIBUTE_DIRECTORY, new Date(ar[0] - 0).getTime(), 0);
 		Item.IsFolder;
-		path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+		path = await api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 	}
 	document.title = path + " - Tablacus Explorer";
-
-	var ar = MainWindow.Addons.Remember.db[dialogArguments.path];
+	var ar = await MainWindow.Common.Remember.db[g_path];
+	if (window.chrome) {
+		ar = await api.CreateObject("SafeArray", ar);
+	}
 	document.F.Columns.value = ar[3];
 	document.F.Sort.value = ar[4];
 	document.F.Sort2.value = ar[6];
 	document.F.Group.value = ar[5];
 	document.F.View.value = ar[1];
 	document.F.Icon.value = ar[2];
-});
+	document.body.style.visibility = "";
+};
 
-function GetCurrentSetting()
-{
-	var nFormat = MainWindow.Addons.Remember.nFormat;
-	var FV = te.Ctrl(CTRL_FV);
+GetCurrentSetting = async function () {
+	var nFormat = await MainWindow.Sync.Remember.nFormat;
+	var FV = await te.Ctrl(CTRL_FV);
 	if (FV) {
-		document.F.Columns.value = FV.Columns(nFormat);
-		document.F.Sort.value = FV.SortColumn(nFormat);
-		var s = FV.SortColumns;
+		document.F.Columns.value = await FV.GetColumns(nFormat);
+		document.F.Sort.value = await FV.GetSortColumn(nFormat);
+		var s = await FV.SortColumns;
 		document.F.Sort2.value = /;/.test(s) ? s : "";
-		document.F.Group.value = FV.GroupBy;
-		document.F.View.value = FV.CurrentViewMode;
-		document.F.Icon.value = FV.IconSize;
+		document.F.Group.value = await FV.GroupBy;
+		document.F.View.value = await FV.CurrentViewMode;
+		document.F.Icon.value = await FV.IconSize;
 	}
 }
 
-function SetSetting ()
-{
-	var ar = [new Date().getTime(), document.F.View.value, document.F.Icon.value, document.F.Columns.value, document.F.Sort.value, document.F.Group.value, document.F.Sort2.value];
-	MainWindow.Addons.Remember.db[g_path] = ar;
+SetSetting = async function () {
+	var ar = await api.CreateObject("Array");
+	ar.push(new Date().getTime(), document.F.View.value, document.F.Icon.value, document.F.Columns.value, document.F.Sort.value, document.F.Group.value, document.F.Sort2.value);
+	MainWindow.Common.Remember.db[g_path] = ar;
+	if (window.chrome) {
+		ar = await api.CreateObject("SafeArray", ar);
+	}
 
-	var cFV = te.Ctrls(CTRL_FV);
-	for (var i in cFV) {
-		var FV = cFV[i];
-		var path = MainWindow.Addons.Remember.GetPath(FV);
+	var cFV = await te.Ctrls(CTRL_FV);
+	var nLen = await GetLength(cFV);
+	for (var i = 0; i < nLen; ++i) {
+		var FV = await cFV[i];
+		var path = await MainWindow.Sync.Remember.GetPath(FV);
 		if (path === g_path) {
-			if (FV.hwndView) {
-				FV.CurrentViewMode(ar[1], ar[2]);
+			if (await FV.hwndView) {
+				FV.SetViewMode(ar[1], ar[2]);
 				FV.Columns = ar[3];
-				if (FV.GroupBy && ar[5]) {
+				if (await FV.GroupBy && ar[5]) {
 					FV.GroupBy = ar[5];
 				}
-				if ((ar[6] || "").split(/;/).length > 2 && FV.SortColumns) {
+				if ((ar[6] || "").split(/;/).length > 2 && await FV.SortColumns) {
 					FV.SortColumns = ar[6];
 				} else {
 					FV.SortColumn = ar[4];
@@ -71,6 +75,6 @@ function SetSetting ()
 			}
 		}
 	}
-	window.close();
+	CloseWindow();
 	return true;
 };

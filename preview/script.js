@@ -1,103 +1,104 @@
 var Addon_Id = "preview";
-var item = GetAddonElement(Addon_Id);
+var item = await GetAddonElement(Addon_Id);
 
 if (window.Addon == 1) {
-	Addons.Preview =
-	{
-		Align: api.StrCmpI(item.getAttribute("Align"), "Right") ? "Left" : "Right",
+	Addons.Preview = {
+		Align: SameText(item.getAttribute("Align"), "Right") ? "Right" : "Left",
 		Height: item.getAttribute("Height"),
-		TextFilter: api.LowPart(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
+		TextFilter: GetNum(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
 		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
-		Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
+		Extract: GetNum(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 		Width: 0,
 		Charset: item.getAttribute("Charset"),
 		TextSize: item.getAttribute("TextSize") || 4000,
 		TextLimit: item.getAttribute("TextLimit") || 10000000,
 
-		Arrange: function (Item, Ctrl) {
-			if (api.ILIsEqual(Addons.Preview.Item, Item)) {
+		Arrange: async function (Item, Ctrl) {
+			if (await api.ILIsEqual(await Addons.Preview.Item, Item)) {
 				return;
 			}
 			Addons.Preview.Item = Item;
 			var o = document.getElementById('PreviewBar');
 			var s = [];
 			if (Item) {
-				var info = EncodeSC(Item.Name + "\n" + Item.ExtendedProperty("infotip")) + "\n";
-				if (Item.IsLink) {
-					var path = Item.ExtendedProperty("linktarget");
-					if (path) {
-						Item = api.ILCreateFromPath(path);
-					}
-				}
-				var path = Item.Path;
-				if (Ctrl && path == Item.Name) {
-					path = EncodeSC(fso.BuildPath(Ctrl.FolderItem.Path, path));
-				}
-				var nWidth = 0, nHeight = 0;
-				if (PathMatchEx(path, Addons.Preview.TextFilter)) {
-					if (Item.ExtendedProperty("size") <= Addons.Preview.TextLimit) {
-						var ado = OpenAdodbFromTextFile(path, Addons.Preview.Charset);
-						if (ado) {
-							o.innerText = ado.ReadText(Addons.Preview.TextSize);
-							ado.Close()
-							return;
+				var infoName = await Item.Name;
+				if ("string" === typeof infoName) {
+					var info = EncodeSC(infoName + "\n" + (await Item.ExtendedProperty("infotip"))) + "\n";
+					if (await Item.IsLink) {
+						var path = await Item.ExtendedProperty("linktarget");
+						if (path) {
+							Item = await api.ILCreateFromPath(path);
 						}
 					}
+					var path = await Item.Path;
+					if (Ctrl && path == await Item.Name) {
+						path = EncodeSC(BuildPath(await Ctrl.FolderItem.Path, path));
+					}
+					var nWidth = 0, nHeight = 0;
+					if (await PathMatchEx(path, Addons.Preview.TextFilter)) {
+						if (await Item.ExtendedProperty("size") <= Addons.Preview.TextLimit) {
+							var ado = await OpenAdodbFromTextFile(path, Addons.Preview.Charset);
+							if (ado) {
+								o.innerText = await ado.ReadText(Addons.Preview.TextSize);
+								ado.Close()
+								return;
+							}
+						}
+					}
+					var style;
+					nWidth = await Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 3");
+					nHeight = await Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 4");
+					if (ui_.IEVer > 6) {
+						style = "max-width: 100%; max-height: 100%";
+					} else {
+						style = nWidth > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
+					}
+					s.splice(s.length, 0, '<div align="center" id="previewimg1"><img id="previewimg2" src="', path, '" style="display: none;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)" onload="Addons.Preview.Loaded(this)"></div>');
+					if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
+						s.push('<input id="previewplay1" type="button" value=" &#x25B6; " title="Play" onclick="Addons.Preview.Play()"><br>');
+					}
+					s.push(info.replace(/\n/, "<br>"));
 				}
-				var style;
-				nWidth = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 3");
-				nHeight = Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 4");
-				if (g_.IEVer > 6) {
-					style = "max-width: 100%; max-height: 100%";
-				} else {
-					style = nWidth > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
-				}
-				s.splice(s.length, 0, '<div align="center" id="previewimg1"><img src="', path, '" style="display: none;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(this); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)" onload="Addons.Preview.Loaded(this)"></div>');
-				if (api.PathMatchSpec(path, Addons.Preview.Embed)) {
-					s.push('<input id="previewplay1" type="button" value=" &#x25B6; " title="Play" onclick="Addons.Preview.Play()"><br>');
-				}
-				s.push(info.replace(/\n/, "<br>"));
 			}
 			o.innerHTML = s.join("");
 		},
 
-		FromFile: function (img) {
+		FromFile: async function (img) {
 			img.onerror = null;
-			Threads.GetImage({
-				path: Addons.Preview.Item,
-				img: img,
-				Extract: Addons.Preview.Extract,
-
-				onload: function (o) {
-					if (o.path === Addons.Preview.Item) {
-						o.img.src = o.out.DataURI();
-					}
-				},
-				onerror: function (o) {
-					if (!IsFolderEx(o.path) && api.PathMatchSpec(o.path.Path, o.Extract)) {
-						var Items = api.CreateObject("FolderItems");
-						Items.AddItem(o.path);
-						te.OnBeforeGetData(te.Ctrl(CTRL_FV), Items, 11);
-						if (IsExists(o.path.Path)) {
-							o.onerror = null;
-							MainWindow.Threads.GetImage(o);
-						}
+			var o = await api.CreateObject("Object");
+			o.path = Addons.Preview.Item;
+			o.onload = async function (o) {
+				var org = Addons.Preview.Item;
+				if (org && SameText(await o.path.Path, await org.Path)) {
+					var img = document.getElementById("previewimg2");
+					img.src = o.out.DataURI();
+				}
+			}
+			o.onerror = async function (o) {
+				if (!await IsFolderEx(await o.path) && await api.PathMatchSpec(await o.path.Path, Addons.Preview.Extract)) {
+					var Items = await api.CreateObject("FolderItems");
+					await Items.AddItem(await o.path);
+					te.OnBeforeGetData(await te.Ctrl(CTRL_FV), Items, 11);
+					if (await IsExists(await o.path.Path)) {
+						o.onerror = null;
+						MainWindow.Threads.GetImage(o);
 					}
 				}
-			});
+			}
+			Threads.GetImage(o);
 		},
 
-		Popup: function (o) {
+		Popup: async function (o) {
 			if (Addons.Preview.Item) {
-				var hMenu = api.CreatePopupMenu();
-				var ContextMenu = api.ContextMenu(Addons.Preview.Item);
+				var hMenu = await api.CreatePopupMenu();
+				var ContextMenu = await api.ContextMenu(Addons.Preview.Item);
 				if (ContextMenu) {
-					ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_NORMAL);
-					var pt = api.Memory("POINT");
-					api.GetCursorPos(pt);
-					var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, ContextMenu);
+					await ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_NORMAL);
+					var pt = await api.Memory("POINT");
+					await api.GetCursorPos(pt);
+					var nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, await te.hwnd, null, ContextMenu);
 					if (nVerb) {
-						ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 1, null, null, SW_SHOWNORMAL, 0, 0);
+						ContextMenu.InvokeCommand(0, await te.hwnd, nVerb - 1, null, null, SW_SHOWNORMAL, 0, 0);
 					}
 				}
 				api.DestroyMenu(hMenu);
@@ -109,67 +110,75 @@ if (window.Addon == 1) {
 			api.SHDoDragDrop(null, Addons.Preview.Item, te, pdwEffect[0], pdwEffect);
 		},
 
-		Loaded: function (o) {
+		Loaded: async function (o) {
 			o.style.display = "block";
-			var path = MainWindow.Addons.Preview.Item.Path;
-			if (api.PathMatchSpec(path, Addons.Preview.Embed)) {
+			var path = await MainWindow.Addons.Preview.Item.Path;
+			if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
 				o.onclick = Addons.Preview.Play;
 				o.style.cursor = "pointer";
 			}
 		},
 
-		Play: function () {
+		Play: async function () {
 			var div1 = document.getElementById("PreviewBar");
-			var path = MainWindow.Addons.Preview.Item.Path;
-			if (api.PathMatchSpec(path, "*.wav")) {
+			var path = await MainWindow.Addons.Preview.Item.Path;
+			if (await api.PathMatchSpec(path, "*.wav")) {
 				api.PlaySound(path, null, 3);
-			} else if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.mp3;*.m4a")) {
+			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp3;*.m4a")) {
 				document.getElementById("previewplay1").style.display = "none";
 				document.getElementById("previewimg1").innerHTML = '<audio controls autoplay width="100%" height="100%"><source src="' + path + '"></audio>';
-			} else if (document.documentMode >= 11 && api.PathMatchSpec(path, "*.webm;*.mp4")) {
+			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.webm;*.mp4")) {
 				div1.innerHTML = '<video controls autoplay width="100%" height="100%"><source src="' + path + '"></video>';
 			} else {
 				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
 			}
 		},
 
-		Init: function () {
-			this.Width = te.Data["Conf_" + this.Align + "BarWidth"];
-			if (!this.Width) {
-				this.Width = 178;
-				te.Data["Conf_" + this.Align + "BarWidth"] = this.Width;
+		Init: async function () {
+			Addons.Preview.Width = await te.Data["Conf_" + Addons.Preview.Align + "BarWidth"];
+			if (!Addons.Preview.Width) {
+				Addons.Preview.Width = 178;
+				te.Data["Conf_" + Addons.Preview.Align + "BarWidth"] = Addons.Preview.Width;
 			}
-			SetAddon(Addon_Id, this.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"></div>');
-			setTimeout(this.Arrange, 99);
+			SetAddon(Addon_Id, Addons.Preview.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"></div>');
+			setTimeout(Addons.Preview.Arrange, 99);
 		}
 	}
 
 	Addons.Preview.Init();
 
-	AddEvent("StatusText", function (Ctrl, Text, iPart) {
+	AddEvent("StatusText", async function (Ctrl, Text, iPart) {
 		if (Addons.Preview.Width && !/^none$/i.test(document.getElementById('PreviewBar').style.display)) {
-			if (Ctrl.Path) {
+			if ("string" === typeof await Ctrl.Path) {
 				Addons.Preview.Arrange(Ctrl);
-			} else if (Ctrl.Type <= CTRL_EB && Text) {
-				if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
-					Addons.Preview.Arrange(Ctrl.SelectedItems().Item(0), Ctrl);
+			} else {1
+				var nType = await Ctrl.Type;
+				if ((nType == CTRL_SB || nType == CTRL_EB) && Text) {
+					if (await Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
+						Addons.Preview.Arrange(await Ctrl.SelectedItems().Item(0), Ctrl);
+					}
 				}
 			}
 		}
 	});
 
-	AddEvent("Resize", function () {
+	AddEvent("ToolTip", async function (Ctrl, Index) {
+		if (await Ctrl.Type == CTRL_SB && Index >= 0) {
+			var Item = await Ctrl.Item(Index);
+			if (Item) {
+				Addons.Preview.Arrange(Item, Ctrl);
+			}
+		}
+	});
+
+	AddEvent("Resize", async function () {
 		var o = document.getElementById('PreviewBar');
-		var w = te.Data["Conf_" + Addons.Preview.Align + "BarWidth"];
+		var w = await te.Data["Conf_" + Addons.Preview.Align + "BarWidth"];
 		Addons.Preview.Width = w;
 		o.style.width = w + "px";
 		var h = Addons.Preview.Height || w;
 		o.style.height = isFinite(h) ? h + "px" : h;
 	});
 } else {
-	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
-	if (ado) {
-		SetTabContents(0, "", ado.ReadText(adReadAll));
-		ado.Close();
-	}
+	SetTabContents(0, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }
