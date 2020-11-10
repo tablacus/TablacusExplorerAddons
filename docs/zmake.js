@@ -1,3 +1,4 @@
+// Tabacus Explorer
 CreateXml = function () {
 	var xml = new ActiveXObject("Msxml2.DOMDocument");
 	xml.async = false;
