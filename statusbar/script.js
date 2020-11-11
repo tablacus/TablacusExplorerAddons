@@ -3,20 +3,22 @@ var Default = "BottomBar3Left";
 
 if (window.Addon == 1) {
 	Addons.StatusBar = {
-		Set: GetAddonOptionEx(Addon_Id, "Title") ? function (s) {
-			api.SetWindowText(te.hwnd, s + " - " + TITLE);
+		Set: await GetAddonOptionEx(Addon_Id, "Title") ? function (s) {
+			document.title = s + " - " + TITLE;
 		} : function (s) {
 			document.getElementById("statusbar").innerHTML = "&nbsp;" + EncodeSC(s);
 		}
 	};
 
-	AddEvent("StatusText", function (Ctrl, Text, iPart) {
-		if (Ctrl.Type <= CTRL_EB && /^\d/.test(Text) && Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
-			api.ExecScript('Set(Item.ExtendedProperty("infotip") || Text);', "JScript", {
-				Item: Ctrl.SelectedItems().Item(0),
-				Set: Addons.StatusBar.Set,
-				Text: Text
-			}, true);
+	AddEvent("StatusText", async function (Ctrl, Text, iPart) {
+		if (await Ctrl.Type <= CTRL_EB && /^\d/.test(Text) && await Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
+			var o = await api.CreateObject("Object");
+			o.api = api;
+			o.Item = await Ctrl.SelectedItems().Item(0);
+			o.Set = Addons.StatusBar.Set;
+			o.Text = await api.CreateObject("Object");
+			o.Text.Text = Text;
+			api.ExecScript('api.Invoke(Set, Item.ExtendedProperty("infotip") || Text.Text);', "JScript", o, true);
 		} else {
 			Addons.StatusBar.Set(Text);
 		}

@@ -1,19 +1,11 @@
 ﻿<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="MSThemeCompatible" content="Yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="MSThemeCompatible" content="Yes">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Change the Time Stamp</title>
-    <link rel="stylesheet" type="text/css" href="../../script/options.css" />
-    <script type="text/javascript" charset="utf-8" src="../../script/consts.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="../../script/common.js">
-    </script>
-    <script type="text/javascript">
-      Addon = 2
-    </script>
-    <script type="text/javascript" charset="utf-8" src="script.js">
-    </script>
+    <link rel="stylesheet" type="text/css" href="../../script/options.css">
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js"></script>
   </head>
   <body>
     <form name="F" style="width: 100%">
@@ -22,22 +14,32 @@
         <div id="Path"></div>
         <label id="label_0">Creation Time</label>
         <div id="od_0" style="margin-left: 3px"></div>
-        <input type="text" name="dt_0" style="width: 100%" />
+        <input type="text" name="dt_0" style="width: 100%">
         <label id="label_1">Last Access Time</label>
         <div id="od_1" style="margin-left: 3px"></div>
-        <input type="text" name="dt_1" style="width: 100%" />
+        <input type="text" name="dt_1" style="width: 100%">
         <label id="label_2">Last Write Time</label>
         <div id="od_2" style="margin-left: 3px"></div>
-        <input type="text" name="dt_2" style="width: 100%" />
+        <input type="text" name="dt_2" style="width: 100%">
       </div>
+      <table style="width: 100%">
+        <tr>
+          <td align="right">
+            <input type="button" value="OK" class="ok" onclick="return SetTimeStamp();">
+            <input type="button" value="Cancel" class="cancel" onclick="CloseWindow();">
+            &nbsp;
+          </td>
+        </tr>
+      </table>
     </form>
-    <table style="width: 100%">
-      <tr>
-        <td align="center">
-          <input type="button" value="OK" class="ok" onclick="return SetTimeStamp();" />
-          <input type="button" value="Cancel" class="cancel" onclick="window.close();return true;" />
-        </td>
-      </tr>
-    </table>
+    <script type="text/javascript">
+      document.F.style.display = "none";
+      ScriptBase = "../..";
+      LoadScript(["script/ui.js", "script/common.js"], function () {
+        LoadScripts(["script/sync.js"], ["addons/touchex/dialog.js"], function () {
+          InitDialog();
+        });
+      });
+    </script>
   </body>
 </html>

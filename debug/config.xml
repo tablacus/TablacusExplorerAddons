@@ -1,12 +1,13 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2012.2.5</MinVersion>
-    <Options>Location</Options>
-    <pubDate>Mon, 2 Mar 2015 00:00:00 UTC</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2020.11.10</MinVersion>
+    <pubDate>Wed, 11 Nov 2020 00:00:00 GMT</pubDate>
+    <Options>Common:6:6</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -15,6 +16,6 @@
   </en>
   <ja>
     <Name>デバッグ</Name>
-    <Description>開発者向けのデバッグ ビュー</Description>
+    <Description>開発者向けのデバッグビュー</Description>
   </ja>
 </TablacusExplorer>
