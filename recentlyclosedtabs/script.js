@@ -1,119 +1,95 @@
 var Addon_Id = "recentlyclosedtabs";
 var Default = "ToolBar2Left";
 
-var item = GetAddonElement(Addon_Id);
+var item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Tabs");
 	item.setAttribute("MenuPos", -1);
 }
 if (window.Addon == 1) {
-	Addons.RecentlyClosedTabs =
-	{
-		nPos: 0,
-		strName: "",
-		nCommand: 1,
-
-		Exec: function (Ctrl, pt)
-		{
-			GetFolderView(Ctrl, pt).Focus();
+	Addons.RecentlyClosedTabs = {
+		Exec: async function (Ctrl, pt) {
+			var FV = await GetFolderView(Ctrl, pt);
+			FV.Focus();
 			if (!pt) {
-				pt = api.Memory("POINT");
-				api.GetCursorPos(pt);
+				pt = await api.Memory("POINT");
+				await api.GetCursorPos(pt);
 			}
-			Addons.RecentlyClosedTabs.nCommand = 1;
-			var hMenu = Addons.RecentlyClosedTabs.CreateMenu();
-			Addons.RecentlyClosedTabs.MenuCommand(Ctrl, pt, "", api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null), hMenu);
+			Common.RecentlyClosedTabs.nCommand = 1;
+			var hMenu = await Addons.RecentlyClosedTabs.CreateMenu();
+			Addons.RecentlyClosedTabs.MenuCommand(Ctrl, pt, "", await api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, await te.hwnd, null, null), hMenu);
 			api.DestroyMenu(hMenu);
 			return S_OK;
 		},
 
-		Popup: function ()
-		{
-			return false;
+		ExecEx: async function (el) {
+			Addons.RecentlyClosedTabs.Exec(await GetFolderViewEx(el));
 		},
 
-		MenuCommand: function (Ctrl, pt, Name, nVerb, hMenu)
-		{
-			nVerb -= Addons.RecentlyClosedTabs.nCommand;
+		MenuCommand: async function (Ctrl, pt, Name, nVerb, hMenu) {
+			nVerb -= await Common.RecentlyClosedTabs.nCommand;
 			if (nVerb >= 0) {
-				Addons.UndoCloseTab.Open(GetFolderView(Ctrl, pt), nVerb);
+				Sync.UndoCloseTab.Open(await GetFolderView(Ctrl, pt), nVerb);
 				return S_OK;
 			}
 		},
 
-		CreateMenu: function ()
-		{
-			var hMenu = api.CreatePopupMenu();
+		CreateMenu: async function () {
+			var hMenu = await api.CreatePopupMenu();
 			var db = {};
-			if (Addons.UndoCloseTab && Addons.UndoCloseTab.Get) {
+			if (Addons.UndoCloseTab && await Sync.UndoCloseTab.Get) {
 				var seed = new Date().getTime();
-				for (var i = 0; i < Addons.UndoCloseTab.db.length; i++) {
-					var Items = Addons.UndoCloseTab.Get(i);
+				var nLen = await GetLength(await Common.UndoCloseTab.db);
+				for (var i = 0; i < nLen; i++) {
+					var Items = await Sync.UndoCloseTab.Get(i);
 					s = [seed];
-					for (var j = Items.length; j--;) {
-						s.unshift(api.PathQuoteSpaces(api.GetDisplayNameOf(Items.Item(j), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL)));
+					for (var j = await GetLength(Items); j--;) {
+						s.unshift(await api.PathQuoteSpaces(await Items.Item(j).Path));
 					}
-					s = api.CRC32(s.join(" "));
-					var Item = Items.Item(Items.Index);
+					s = s.join(" ");
+					var Item = await Items.Item(await Items.Index);
 					if (Item && !db[s]) {
 						db[s] = 1;
-						var mii = api.Memory("MENUITEMINFO");
-						mii.cbSize = mii.Size;
+						var mii = await api.Memory("MENUITEMINFO");
+						mii.cbSize = await mii.Size;
 						mii.fMask = MIIM_STRING | MIIM_ID | MIIM_BITMAP;
-						AddMenuIconFolderItem(mii, Item);
-						var s = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
-						if (Items.Count > 1) {
-							s += "...\t" + Items.Count;
+						await AddMenuIconFolderItem(mii, Item);
+						var s = await Item.Path;
+						var nCount = await Items.Count;
+						if (nCount > 1) {
+							s += "...\t" + nCount;
 						}
 						mii.dwTypeData = s;
-						mii.wId = i + this.nCommand;
-						api.InsertMenuItem(hMenu, MAXINT, true, mii);
+						mii.wId = i + await Common.RecentlyClosedTabs.nCommand;
+						await api.InsertMenuItem(hMenu, MAXINT, true, mii);
 					}
 				}
 			}
 			return hMenu;
 		}
 	};
-	if (item) {
-		var s = item.getAttribute("MenuName");
-		if (!s || s == "") {
-			var info = GetAddonInfo(Addon_Id);
-			s = info.Name;
-		}
-		Addons.RecentlyClosedTabs.strName = GetText(s);
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.RecentlyClosedTabs.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-			{
-				if (Addons.UndoCloseTab && Addons.UndoCloseTab.db.length) {
-					Addons.RecentlyClosedTabs.nCommand = nPos + 1;
-					var mii = api.Memory("MENUITEMINFO");
-					mii.cbSize = mii.Size;
-					mii.fMask = MIIM_STRING | MIIM_SUBMENU;
-					mii.dwTypeData = Addons.RecentlyClosedTabs.strName;
-					mii.hSubMenu = Addons.RecentlyClosedTabs.CreateMenu();
-					api.InsertMenuItem(hMenu, Addons.RecentlyClosedTabs.nPos, true, mii);
-					AddEvent("MenuCommand", Addons.RecentlyClosedTabs.MenuCommand);
-					nPos += Addons.UndoCloseTab.db.length;
-				}
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.RecentlyClosedTabs.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.RecentlyClosedTabs.Exec, "Func");
-		}
-		AddTypeEx("Add-ons", "Recently closed tabs", Addons.RecentlyClosedTabs.Exec);
+	Common.RecentlyClosedTabs = await api.CreateObject("Object");
+	Common.RecentlyClosedTabs.nCommand = 1;
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Common.RecentlyClosedTabs.strMenu = item.getAttribute("Menu");
+		Common.RecentlyClosedTabs.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
+		Common.FilterBar.nPos = GetNum(item.getAttribute("MenuPos"));
+		importJScript("addons\\" + Addon_Id + "\\sync.js");
 	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.RecentlyClosedTabs.Exec, "Async");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.RecentlyClosedTabs.Exec, "Async");
+	}
+	AddTypeEx("Add-ons", "Recently closed tabs", Addons.RecentlyClosedTabs.Exec);
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var s = item.getAttribute("Icon") || "icon:dsuiext.dll,0";
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.RecentlyClosedTabs.Exec(this);" oncontextmenu="Addons.RecentlyClosedTabs.Popup(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.RecentlyClosedTabs.strName, src: s }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.RecentlyClosedTabs.ExecEx(this);" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: s }, h), '</span>']);
 } else {
 	EnableInner();
 }

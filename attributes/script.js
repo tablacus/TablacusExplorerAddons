@@ -1,6 +1,6 @@
 var Addon_Id = "attributes";
 
-var item = GetAddonElement(Addon_Id);
+var item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Context");
