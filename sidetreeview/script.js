@@ -1,21 +1,21 @@
 var Addon_Id = "sidetreeview";
 
-var item = GetAddonElement(Addon_Id);
+var item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("List", 1);
 }
 if (window.Addon == 1) {
 	Addons.SideTreeView =
 	{
-		Align: api.LowPart(item.getAttribute("Align")) ? "Right" : "Left",
+		Align: GetNum(item.getAttribute("Align")) ? "Right" : "Left",
 		List: item.getAttribute("List"),
-		Depth: api.LowPart(item.getAttribute("Depth")),
+		Depth: GetNum(item.getAttribute("Depth")),
 		Height: item.getAttribute("Height") || '100%',
 		Root: item.getAttribute("Root"),
 		tid: {},
 
-		Init: function () {
-			if (!te.Data["Conf_" + this.Align + "BarWidth"]) {
+		Init: async function () {
+			if (!await te.Data["Conf_" + this.Align + "BarWidth"]) {
 				te.Data["Conf_" + this.Align + "BarWidth"] = 178;
 			}
 			var h = Addons.SideTreeView.Height;
@@ -23,15 +23,16 @@ if (window.Addon == 1) {
 				h += 'px';
 			}
 			SetAddon(Addon_Id, this.Align + "Bar2", ['<div id="sidetreeview" style="width: 100%; height: ', EncodeSC(h), '"></div>']);
-			if (te.Ctrls(CTRL_FV).Count) {
+			if (await te.Ctrls(CTRL_FV).Count) {
 				this.Create();
 			}
 		},
 
-		Create: function () {
-			this.TV = te.CreateCtrl(CTRL_TV);
-			this.TV.Style = te.Data.Tree_Style;
-			this.TV.SetRoot(Addons.SideTreeView.Root || te.Data.Tree_Root, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle);
+		Create: async function () {
+			Common.SideTreeView = await api.CreateObject("Object");
+			Common.SideTreeView.TV = await te.CreateCtrl(CTRL_TV);
+			Common.SideTreeView.TV.Style = await te.Data.Tree_Style;
+			Common.SideTreeView.TV.SetRoot(Addons.SideTreeView.Root || await te.Data.Tree_Root, await te.Data.Tree_EnumFlags, await te.Data.Tree_RootStyle);
 
 			if (Addons.SideTreeView.List) {
 				AddEvent("ChangeView", Addons.SideTreeView.Expand);
@@ -39,112 +40,88 @@ if (window.Addon == 1) {
 
 			AddEvent("Resize", Addons.SideTreeView.Resize);
 
-			AddEventEx(document, "MSFullscreenChange", function () {
-				Addons.SideTreeView.TV.Visible = !document.msFullscreenElement;
+			AddEvent("FullscreenChanged", function (bFullscreen) {
+				Common.SideTreeView.TV.Visible = !bFullscreen;
 			});
 
 			AddEvent("Finalize", function () {
-				Addons.SideTreeView.TV.Close();
+				Common.SideTreeView.TV.Close();
 			});
 		},
 
-		Expand: function (Ctrl) {
-			var FV = GetFolderView();
-			if (Addons.SideTreeView.List && FV && FV.FolderItem) {
-				var TV = Addons.SideTreeView.TV;
-				if (TV && Addons.SideTreeView.TV.Visible) {
-					TV.Expand(FV.FolderItem, Addons.SideTreeView.Depth);
+		Expand: async function (Ctrl) {
+			if (Addons.SideTreeView.List) {
+				FV = await GetFolderView();
+				if (FV) {
+					var FolderItem = await FV.FolderItem;
+					if (FolderItem) {
+						var TV = await Common.SideTreeView.TV;
+						if (TV && await Common.SideTreeView.TV.Visible) {
+							TV.Expand(FolderItem, Addons.SideTreeView.Depth);
+						}
+					}
 				}
 			}
 		},
 
-		Resize: function () {
-			if (api.IsWindowVisible(Addons.SideTreeView.TV.hwnd)) {
+		Resize: async function () {
+			var hwnd = await Common.SideTreeView.TV.hwnd;
+			if (await api.IsWindowVisible(hwnd)) {
 				var o = document.getElementById("sidetreeview");
 				var pt = GetPos(o);
-				api.MoveWindow(Addons.SideTreeView.TV.hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
-				api.RedrawWindow(Addons.SideTreeView.TV.hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
-				api.BringWindowToTop(Addons.SideTreeView.TV.hwnd);
-				Addons.SideTreeView.Expand(GetFolderView());
+				api.MoveWindow(hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
+				api.RedrawWindow(hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+				api.BringWindowToTop(hwnd);
+				Addons.SideTreeView.Expand(await GetFolderView());
 			} else {
-				Addons.SideTreeView.TV.Visible = true;
+				Common.SideTreeView.TV.Visible = true;
 				setTimeout(Addons.SideTreeView.Resize, 999);
 			}
 		}
 	};
 
-	AddEvent("Create", function (Ctrl) {
-		if (Ctrl.Type == CTRL_TE) {
-			Addons.SideTreeView.Create();
-		}
-	});
-
-	AddEvent("Load", function () {
+	AddEvent("Load", async function () {
 		Addons.SideTreeView.Init();
+		if (WINVER >= 0x600) {
+			importJScript("addons\\" + Addon_Id + "\\sync.js");
+		}
 		if (Addons.TreeView) {
 			return;
 		}
-		SetGestureExec("Tree", "1", function (Ctrl, pt) {
-			var Item = Ctrl.HitTest(pt);
+		SetGestureExec("Tree", "1", async function (Ctrl, pt) {
+			var Item = await Ctrl.HitTest(pt);
 			if (Item) {
-				var FV = Ctrl.FolderView;
-				if (!api.ILIsEqual(FV.FolderItem, Item)) {
-					setTimeout(function () {
-						FV.Navigate(Item, GetNavigateFlags(FV));
+				var FV = await Ctrl.FolderView;
+				if (!await api.ILIsEqual(await FV.FolderItem, Item)) {
+					setTimeout(async function () {
+						FV.Navigate(Item, await GetNavigateFlags(FV));
 					}, 99);
 				}
 			}
-			return S_OK;
-		}, "Func", true);
+		}, "Async", true);
 
-		SetGestureExec("Tree", "3", function (Ctrl, pt) {
-			var Item = Ctrl.SelectedItem;
+		SetGestureExec("Tree", "3", async function (Ctrl, pt) {
+			var Item = await Ctrl.SelectedItem;
 			if (Item) {
 				setTimeout(function () {
 					Ctrl.FolderView.Navigate(Item, SBSP_NEWBROWSER);
 				}, 99);
 			}
-			return S_OK;
-		}, "Func", true);
+		}, "Async", true);
 
 		//Tab
-		SetKeyExec("Tree", "$f", function (Ctrl, pt) {
-			var FV = GetFolderView(Ctrl, pt);
-			FV.focus();
-			return S_OK;
-		}, "Func", true);
+		SetKeyExec("Tree", "$f", async function (Ctrl, pt) {
+			var FV = await GetFolderView(Ctrl, pt);
+			FV.Focus();
+		}, "Async", true);
 		//Enter
-		SetKeyExec("Tree", "$1c", function (Ctrl, pt) {
-			var FV = GetFolderView(Ctrl, pt);
-			FV.Navigate(Ctrl.SelectedItem, GetNavigateFlags(FV));
-			return S_OK;
-		}, "Func", true);
+		SetKeyExec("Tree", "$1c", async function (Ctrl, pt) {
+			var FV = await GetFolderView(Ctrl, pt);
+			FV.Navigate(await Ctrl.SelectedItem, GetNavigateFlags(FV));
+		}, "Async", true);
 
-		if (WINVER >= 0x600) {
-			AddEvent("AppMessage", function (Ctrl, hwnd, msg, wParam, lParam) {
-				if (msg == Addons.SideTreeView.WM) {
-					var pidls = {};
-					var hLock = api.SHChangeNotification_Lock(wParam, lParam, pidls);
-					if (hLock) {
-						api.SHChangeNotification_Unlock(hLock);
-						Addons.SideTreeView.TV.Notify(pidls.lEvent, pidls[0], pidls[1], wParam, lParam);
-					}
-					return S_OK;
-				}
-			});
-
-			AddEvent("Finalize", function () {
-				api.SHChangeNotifyDeregister(Addons.SideTreeView.uRegisterId);
-			});
-
-			Addons.SideTreeView.WM = TWM_APP++;
-			Addons.SideTreeView.uRegisterId = api.SHChangeNotifyRegister(te.hwnd, SHCNRF_InterruptLevel | SHCNRF_NewDelivery, SHCNE_MKDIR | SHCNE_MEDIAINSERTED | SHCNE_DRIVEADD | SHCNE_NETSHARE | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RENAMEFOLDER | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT | SHCNE_UPDATEDIR, Addons.SideTreeView.WM, ssfDESKTOP, true);
-		}
 	});
+	Addons.SideTreeView.Create();
 } else {
-	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
-	if (ado) {
-		SetTabContents(0, "", ado.ReadText(adReadAll));
-		ado.Close();
-	}
+	SetTabContents(0, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }

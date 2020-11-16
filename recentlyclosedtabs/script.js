@@ -75,7 +75,7 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MenuExec")) {
 		Common.RecentlyClosedTabs.strMenu = item.getAttribute("Menu");
 		Common.RecentlyClosedTabs.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
-		Common.FilterBar.nPos = GetNum(item.getAttribute("MenuPos"));
+		Common.RecentlyClosedTabs.nPos = GetNum(item.getAttribute("MenuPos"));
 		importJScript("addons\\" + Addon_Id + "\\sync.js");
 	}
 	//Key
