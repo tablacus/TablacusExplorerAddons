@@ -1,16 +1,13 @@
-var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
-if (ado) {
-	SetTabContents(0, "General", ado.ReadText(adReadAll) + '<input type="button" value="' + api.sprintf(999, GetText(" Get % s..."), "Everything") + '" title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">');
-	ado.Close();
-}
+var s = await ReadTextFile("addons\\" + Addon_Id + "\\options.html");
+SetTabContents(0, "General", s + '<input type="button" value="' + await api.sprintf(999, await GetText(" Get % s..."), "Everything") + '" title="http://www.voidtools.com/" onclick="wsh.Run(this.title)">');
 ChangeForm([["__IconSize", "style/display", "none"]]);
 
-SetExe = function () {
-	var path = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
-	if (!fso.FileExists(path)) {
+SetExe = async function () {
+	var path = BuildPath(await api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
+	if (!await $.fso.FileExists(path)) {
 		path = path.replace(/ \(x86\)\\/, "\\");
 	}
-	if (fso.FileExists(path) && confirmOk("Are you sure?")) {
-		document.F.Exec.value = api.PathQuoteSpaces(path) + " -startup";
+	if (await $.fso.FileExists(path) && await confirmOk()) {
+		document.F.Exec.value = await api.PathQuoteSpaces(path) + " -startup";
 	}
 }
