@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
-    <MinVersion>2020.5.15</MinVersion>
-    <pubDate>Fri, 15 May 2020 00:00:00 GMT</pubDate>
+    <Version>1.07</Version>
+    <MinVersion>2020.11.17</MinVersion>
+    <pubDate>Wed, 18 Nov 2020 00:00:00 GMT</pubDate>
     <Options>Common:5:5</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -15,7 +16,7 @@
   </en>
   <ja>
     <Name>Inner 上へ</Name>
-    <Description>ペイン毎の 上へ ボタン</Description>
+    <Description>ペイン毎の上へボタン</Description>
   </ja>
   <zh>
     <Name>窗格內上移</Name>

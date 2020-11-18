@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.22</Version>
-    <MinVersion>2020.6.27</MinVersion>
-    <pubDate>Sat, 27 Jun 2020 00:00:00 GMT</pubDate>
+    <Version>1.23</Version>
+    <MinVersion>2020.11.17</MinVersion>
+    <pubDate>Wed, 18 Nov 2020 00:00:00 GMT</pubDate>
     <Options>Common:0,5,7,8,9:0</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -14,8 +15,8 @@
     <Description>Filter bar for each pane</Description>
   </en>
   <ja>
-    <Name>Inner フィルター バー</Name>
-    <Description>ペイン毎のフィルター バー</Description>
+    <Name>Inner フィルターバー</Name>
+    <Description>ペイン毎のフィルターバー</Description>
   </ja>
   <zh>
     <Name>窗格內篩選列</Name>

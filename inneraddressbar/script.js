@@ -1,6 +1,5 @@
 var Addon_Id = "inneraddressbar";
-
-var item = GetAddonElement(Addon_Id);
+var item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Menu", "Edit");
 	item.setAttribute("MenuPos", -1);
@@ -22,20 +21,17 @@ if (window.Addon == 1) {
 		bClose: false,
 		nPos: 0,
 		strName: "Inner address bar",
+		nSize: await api.GetSystemMetrics(SM_CYSMICON),
 
-		KeyDown: function (o, Id)
-		{
-			if (event.keyCode == VK_RETURN) {
+		KeyDown: function (ev, o, Id) {
+			if (ev.keyCode == VK_RETURN || window.chrome && /^Enter/i.test(ev.key)) {
 				(function (o, Id, str) {
-					setTimeout(function () {
+					setTimeout(async function () {
 						if (str == o.value) {
-							var p = GetPos(o);
-							var pt = api.Memory("POINT");
-							pt.x = screenLeft + p.x;
-							pt.y = screenTop + p.y + o.offsetHeight;
-							window.Input = o.value;
-							if (ExecMenu(te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
-								NavigateFV(GetInnerFV(Id), o.value, GetNavigateFlags(), true);
+							var pt = await GetPosEx(o, 9);
+							$.Input = o.value;
+							if (await ExecMenu(await te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
+								NavigateFV(await GetInnerFV(Id), o.value, null, true);
 							}
 						}
 					}, 99);
@@ -44,29 +40,24 @@ if (window.Addon == 1) {
 			return true;
 		},
 
-		Resize: function (Id)
-		{
+		Resize: function (Id) {
 			clearTimeout(this.tid[Id]);
 			this.tid[Id] = setTimeout("Addons.InnerAddressBar.Arrange(null, " + Id + ");", 500);
 		},
 
-		Arrange: function (FolderItem, Id)
-		{
+		Arrange: async function (FolderItem, Id) {
 			this.tid[Id] = null;
 			if (!FolderItem) {
-				var TC = te.Ctrl(CTRL_TC, Id);
-				if (TC && TC.Selected) {
-					FolderItem = TC.Selected.FolderItem;
+				var TC = await te.Ctrl(CTRL_TC, Id);
+				if (TC && await TC.Selected) {
+					FolderItem = await TC.Selected.FolderItem;
 				}
 			}
 			if (FolderItem) {
-				var bRoot = api.ILIsEmpty(FolderItem);
-				var s = [];
 				var oAddr = document.getElementById("inneraddressbar_" + Id);
 				if (!oAddr) {
 					return;
 				}
-				var height = oAddr.offsetHeight - 6;
 				var oPopup = document.getElementById("inneraddrselect_" + Id);
 				oPopup.style.left = (oAddr.offsetWidth - oPopup.offsetWidth - 1) + "px";
 				oPopup.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
@@ -75,50 +66,45 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Focus: function (o, Id)
-		{
+		Focus: function (o, Id) {
 			Activate(o, Id);
 			o.select();
 		},
 
-		Go: function (n, Id)
-		{
-			var FV = GetInnerFV(Id);
-			NavigateFV(FV, this.GetPath(n, Id), OpenMode);
+		Go: async function (n, Id) {
+			var FV = await GetInnerFV(Id);
+			NavigateFV(FV, await this.GetPath(n, Id));
 		},
 
-		GetPath: function(n, Id)
-		{
-			var FV = GetInnerFV(Id);
+		GetPath: async function (n, Id) {
+			var FV = await GetInnerFV(Id);
 			if (FV) {
-				FolderItem = FV.FolderItem;
+				FolderItem = await FV.FolderItem;
 			}
 			while (n--) {
-				FolderItem = api.ILRemoveLastID(FolderItem);
+				FolderItem = await api.ILRemoveLastID(FolderItem);
 			}
 			return FolderItem;
 		},
 
-		Popup: function (o, n, Id)
-		{
+		Popup: async function (o, n, Id) {
 			if (Addons.AddressBar.CanPopup(o, Id)) {
 				Addons.InnerAddressBar.Item = o;
-				var pt = GetPos(o, true);
+				var pt = GetPos(o, 9);
 				MouseOver(o);
-				FolderMenu.Invoke(FolderMenu.Open(this.GetPath(n, Id), pt.x, pt.y + o.offsetHeight));
+				$.FolderMenu.Invoke($.FolderMenu.Open(await this.GetPath(n, Id), pt.x, pt.y));
 			}
 		},
 
-		Popup2: function (o, Id)
-		{
-			var FV = GetInnerFV(Id);
+		Popup2: async function (o, Id) {
+			var FV = await GetInnerFV(Id);
 			if (FV) {
-				var FolderItem = FV.FolderItem;
-				FolderMenu.Clear();
-				var hMenu = api.CreatePopupMenu();
-				while (!api.ILIsEmpty(FolderItem)) {
-					FolderItem = api.ILRemoveLastID(FolderItem);
-					FolderMenu.AddMenuItem(hMenu, FolderItem);
+				var FolderItem = await FV.FolderItem;
+				await $.FolderMenu.Clear();
+				var hMenu = await api.CreatePopupMenu();
+				while (!await api.ILIsEmpty(FolderItem)) {
+					FolderItem = await api.ILRemoveLastID(FolderItem);
+					await $.FolderMenu.AddMenuItem(hMenu, FolderItem);
 				}
 				Addons.InnerAddressBar.Item = o;
 				Addons.InnerAddressBar.nLoopId = Id;
@@ -126,26 +112,25 @@ if (window.Addon == 1) {
 					Addons.InnerAddressBar.nLoopId = 0;
 				};
 				MouseOver(o);
-				var pt = GetPos(o, true);
-				var nVerb = FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y + o.offsetHeight);
-				FolderItem = nVerb ? FolderMenu.Items[nVerb - 1] : null;
-				FolderMenu.Clear();
-				FolderMenu.Invoke(FolderItem, SBSP_SAMEBROWSER, FV);
+				var pt = GetPos(o, 9);
+				var nVerb = await $.FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y);
+				FolderItem = nVerb ? $.FolderMenu.Items[nVerb - 1] : null;
+				$.FolderMenu.Clear();
+				$.FolderMenu.Invoke(FolderItem, SBSP_SAMEBROWSER, FV);
 			}
 		},
 
-		Popup3: function (o, Id)
-		{
+		Popup3: async function (o, Id) {
 			if (Addons.InnerAddressBar.CanPopup(o, Id)) {
-				var FV = GetInnerFV(Id);
+				var FV = await GetInnerFV(Id);
 				if (FV) {
-					FolderMenu.Location(o);
+					var pt = GetPos(o, 9);
+					$.FolderMenu.LocationEx(pt.x + o.offsetWidth, pt.y);
 				}
 			}
 		},
 
-		CanPopup: function (o, Id)
-		{
+		CanPopup: function (o, Id) {
 			if (!Addons.InnerAddressBar.bClose) {
 				Addons.InnerAddressBar.nLoopId = Id;
 				Addons.InnerAddressBar.bLoop = true;
@@ -163,24 +148,23 @@ if (window.Addon == 1) {
 			return false;
 		},
 
-		Exec: function ()
-		{
-			var TC = te.Ctrl(CTRL_TC);
+		Exec: async function () {
+			var TC = await te.Ctrl(CTRL_TC);
 			if (TC) {
-				Addons.InnerAddressBar.ExecEx(TC.Id);
+				Addons.InnerAddressBar.ExecEx(await TC.Id);
 			}
 			return S_OK;
 		},
 
-		ExecEx: function (Id)
-		{
+		ExecEx: async function (Id) {
 			if (isNaN(Id)) {
-				var TC = te.Ctrl(CTRL_TC);
+				var TC = await te.Ctrl(CTRL_TC);
 				if (TC) {
-					Id = TC.Id;
+					Id = await TC.Id;
 				}
 			}
 			if (isFinite(Id)) {
+				WebBrowser.Focus();
 				document.getElementById("inneraddressbar_" + Id).focus();
 			}
 			return S_OK;
@@ -188,68 +172,57 @@ if (window.Addon == 1) {
 
 	};
 
-	AddEvent("ChangeView", function (Ctrl)
-	{
-		if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id) {
-			var Id = Ctrl.Parent.Id;
-			var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+	AddEvent("ChangeView", async function (Ctrl) {
+		if (await Ctrl.FolderItem && await Ctrl.Id == await Ctrl.Parent.Selected.Id) {
+			var Id = await Ctrl.Parent.Id;
+			var path = await api.GetDisplayNameOf(await Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			Addons.InnerAddressBar.path2[Id] = path
 			var o = document.getElementById("inneraddressbar_" + Id);
 			if (o) {
 				o.value = path;
 			}
-			Addons.InnerAddressBar.Arrange(Ctrl.FolderItem, Id);
+			Addons.InnerAddressBar.Arrange(await Ctrl.FolderItem, Id);
 			o = document.getElementById("inneraddr_img_" + Id);
 			if (o) {
-				o.src = GetIconImage(Ctrl, api.GetSysColor(COLOR_WINDOW));
+				o.src = await GetIconImage(Ctrl, await GetSysColor(COLOR_WINDOW));
 			}
 		}
 	});
 
-	AddEvent("PanelCreated", function (Ctrl)
-	{
-		var nSize = api.GetSystemMetrics(SM_CYSMICON);
-		var s = (Addons.InnerAddressBar.path2[Ctrl.Id] || "").replace(/"/, "");
-		s = ['<div style="position: relative; width; 100px; overflow: hidden"><input id="inneraddressbar_$" type="text" value="' + s + '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerAddressBar.KeyDown(this, $)" oninput="AdjustAutocomplete(this.value)" onfocus="Addons.InnerAddressBar.Focus(this, $)" onresize="Addons.InnerAddressBar.Resize($)" style="width: 100%; vertical-align: middle; padding-left: ', nSize + 4, 'px; padding-right: 16px;"><div id="inneraddrselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</span></div>'];
+	AddEvent("PanelCreated", function (Ctrl, Id) {
+		var nSize = Addons.InnerAddressBar.nSize;
+		var s = (Addons.InnerAddressBar.path2[Id] || "").replace(/"/, "");
+		s = ['<div style="position: relative; width; 100px; overflow: hidden"><input id="inneraddressbar_$" type="text" value="' + s + '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerAddressBar.KeyDown(event, this, $)" oninput="AdjustAutocomplete(this.value)" onfocus="Addons.InnerAddressBar.Focus(this, $)" onresize="Addons.InnerAddressBar.Resize($)" style="width: 100%; vertical-align: middle; padding-left: ', nSize + 4, 'px; padding-right: 16px;"><div id="inneraddrselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</span></div>'];
 		s.push('<img id="inneraddr_img_$" src="icon:shell32.dll,3,16"');
 		s.push(' onclick="return Addons.InnerAddressBar.ExecEx($);"');
 		s.push(' oncontextmenu="Addons.InnerAddressBar.ExecEx($); return false;"');
 		s.push(' style="position: absolute; left: 4px; top: 1.5pt; width: ', nSize, 'px; height: ', nSize, 'px; z-index: 3; border: 0px"></div>');
-		SetAddon(null, "Inner1Center_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
+		SetAddon(null, "Inner1Center_" + Id, s.join("").replace(/\$/g, Id));
 	});
 
-	AddEvent("Arrange", function (Ctrl, rc)
-	{
-		if (Ctrl.Type == CTRL_TC) {
-			if (Ctrl.Selected) {
-				Addons.InnerAddressBar.Resize(Ctrl.Id);
+	AddEvent("Arrange", async function (Ctrl, rc) {
+		if (await Ctrl.Type == CTRL_TC) {
+			if (await Ctrl.Selected) {
+				Addons.InnerAddressBar.Resize(await Ctrl.Id);
 			}
 		}
 	});
 
-	if (items.length) {
-		//Menu
-		if (item.getAttribute("MenuExec")) {
-			Addons.InnerAddressBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.InnerAddressBar.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-			{
-				api.InsertMenu(hMenu, Addons.InnerAddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.InnerAddressBar.strName));
-				ExtraMenuCommand[nPos] = Addons.InnerAddressBar.Exec;
-				return nPos;
-			});
-		}
-		//Key
-		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.InnerAddressBar.Exec, "Func");
-		}
-		//Mouse
-		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerAddressBar.Exec, "Func");
-		}
+	//Menu
+	if (item.getAttribute("MenuExec")) {
+		Common.InnerAddressBar = await api.CreateObject("Object");
+		Common.InnerAddressBar.strMenu = item.getAttribute("Menu");
+		Common.InnerAddressBar.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
+		Common.InnerAddressBar.nPos = GetNum(item.getAttribute("MenuPos"));
+		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+	}
+	//Key
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.InnerAddressBar.Exec, "Func");
+	}
+	//Mouse
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerAddressBar.Exec, "Func");
 	}
 	AddTypeEx("Add-ons", "Inner Address Bar", Addons.InnerAddressBar.Exec);
 } else {

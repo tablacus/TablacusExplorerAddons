@@ -1,17 +1,16 @@
 var Addon_Id = "innerfilterbar";
-
-var item = GetAddonElement(Addon_Id);
+var item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
-	Addons.InnerFilterBar =
-	{
+	Addons.InnerFilterBar = {
 		tid: [],
 		filter: [],
 		iCaret: [],
 		Icon: '../addons/innerfilterbar/filter.png',
 		Width: '176px',
+		RE: item.getAttribute("RE"),
 
-		KeyDown: function (o, Id) {
-			var k = window.event.keyCode;
+		KeyDown: function (ev, o, Id) {
+			var k = ev.keyCode;
 			if (k != VK_PROCESSKEY) {
 				this.filter[Id] = o.value;
 				clearTimeout(this.tid[Id]);
@@ -24,24 +23,26 @@ if (window.Addon == 1) {
 			}
 		},
 
-		KeyUp: function (o, Id) {
-			var k = window.event.keyCode;
+		KeyUp: function (ev, Id) {
+			var k = ev.keyCode;
 			if (k == VK_UP || k == VK_DOWN) {
-				var TC = te.Ctrl(CTRL_TC, Id);
-				if (TC) {
-					var FV = TC.Selected;
-					if (FV) {
-						FV.Focus();
-						return false;
+				(async function () {
+					var TC = await te.Ctrl(CTRL_TC, Id);
+					if (TC) {
+						var FV = await TC.Selected;
+						if (FV) {
+							FV.Focus();
+						}
 					}
-				}
+				})();
+				return false;
 			}
 		},
 
-		Change: function (Id) {
+		Change: async function (Id) {
 			var o = document.F.elements["filter_" + Id];
 			Addons.InnerFilterBar.ShowButton(o, Id);
-			var FV = GetInnerFV(Id);
+			var FV = await GetInnerFV(Id);
 			s = o.value;
 
 			if (s) {
@@ -60,7 +61,7 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			if (String(s).toLowerCase() != FV.FilterView.toLowerCase()) {
+			if (!SameText(s, await FV.FilterView)) {
 				FV.FilterView = s || null;
 				FV.Refresh();
 			}
@@ -77,12 +78,12 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Clear: function (flag, Id) {
+		Clear: async function (flag, Id) {
 			var o = document.F.elements["filter_" + Id];
 			o.value = "";
 			this.ShowButton(o, Id);
 			if (flag) {
-				var FV = GetInnerFV(Id);
+				var FV = await GetInnerFV(Id);
 				FV.FilterView = null;
 				FV.Refresh();
 				FV.Focus();
@@ -90,27 +91,28 @@ if (window.Addon == 1) {
 		},
 
 		ShowButton: function (oFilter, Id) {
-			if (WINVER < 0x602) {
+			if (WINVER < 0x602 || window.chrome) {
 				document.getElementById("ButtonFilterClear_" + Id).style.display = oFilter.value.length ? "inline" : "none";
 			}
 		},
 
-		Exec: function (Ctrl, pt) {
-			var FV = GetFolderView(Ctrl, pt);
+		Exec: async function (Ctrl, pt) {
+			var FV = await GetFolderView(Ctrl, pt);
 			var o = document.F.elements["filter_" + FV.Parent.Id];
 			if (o) {
+				WebBrowser.Focus();
 				o.focus();
 			}
 			return S_OK;
 		},
 
-		GetFilter: function (Ctrl) {
-			if (Ctrl.Type <= CTRL_EB) {
-				var Id = Ctrl.Parent.Id;
+		GetFilter: async function (Ctrl) {
+			if (await Ctrl.Type <= CTRL_EB) {
+				var Id = await Ctrl.Parent.Id;
 				var o = document.F.elements["filter_" + Id];
 				if (o) {
 					clearTimeout(Addons.InnerFilterBar.tid[Id]);
-					var s = Addons.InnerFilterBar.GetString(Ctrl.FilterView);
+					var s = Addons.InnerFilterBar.GetString(await Ctrl.FilterView);
 					if (s != Addons.InnerFilterBar.GetString(o.value)) {
 						o.value = s;
 						Addons.InnerFilterBar.ShowButton(o, Id);
@@ -146,9 +148,9 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("PanelCreated", function (Ctrl) {
-		var s = ['<input type="text" name="filter_$" placeholder="Filter" onkeydown="return Addons.InnerFilterBar.KeyDown(this,$)"  onkeyup="return Addons.InnerFilterBar.KeyUp(this, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this,$)" onfocus="Addons.InnerFilterBar.Focus(this, $)" onblur="Addons.InnerFilterBar.ShowButton(this,$)" ondblclick="return Addons.InnerFilterBar.FilterList(this,$)" style="width: ', EncodeSC(Addons.InnerFilterBar.Width), '; padding-right: 12pt; vertical-align: middle"><span style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerFilterBar.Icon), '" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width: 12pt; height: 12pt" onclick="return Addons.InnerFilterBar.FilterList(this,$)" oncontextmenu="return Addons.InnerFilterBar.FilterList(this,$)"><span id="ButtonFilterClear_$" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt" class="button" onclick="Addons.InnerFilterBar.Clear(true, $)">r</span></span>'];
-		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
+	AddEvent("PanelCreated", function (Ctrl, Id) {
+		var s = ['<input type="text" name="filter_$" placeholder="Filter" onkeydown="return Addons.InnerFilterBar.KeyDown(event, this, $)"  onkeyup="return Addons.InnerFilterBar.KeyUp(event, $)" onmouseup="Addons.InnerFilterBar.KeyDown(this,$)" onfocus="Addons.InnerFilterBar.Focus(this, $)" onblur="Addons.InnerFilterBar.ShowButton(this,$)" ondblclick="return Addons.InnerFilterBar.FilterList(this,$)" style="width: ', EncodeSC(Addons.InnerFilterBar.Width), '; padding-right: 12pt; vertical-align: middle"><span style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerFilterBar.Icon), '" id="ButtonFilter_$" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width: 12pt; height: 12pt" onclick="return Addons.InnerFilterBar.FilterList(this,$)" oncontextmenu="return Addons.InnerFilterBar.FilterList(this,$)"><span id="ButtonFilterClear_$" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt" class="button" onclick="Addons.InnerFilterBar.Clear(true, $)">r</span></span>'];
+		SetAddon(null, "Inner1Right_" + Id, s.join("").replace(/\$/g, Id));
 	});
 
 	AddEvent("ChangeView", Addons.InnerFilterBar.GetFilter);
@@ -157,26 +159,16 @@ if (window.Addon == 1) {
 	if (item) {
 		var s = item.getAttribute("Width");
 		if (s) {
-			Addons.InnerFilterBar.Width = (api.QuadPart(s) == s) ? (s + "px") : s;
+			Addons.InnerFilterBar.Width = (GetNum(s) == s) ? (s + "px") : s;
 		}
-		var s = item.getAttribute("Icon");
-		if (s) {
-			Addons.InnerFilterBar.Icon = ExtractMacro(te, api.PathUnquoteSpaces(s));
-		}
-		Addons.InnerFilterBar.RE = item.getAttribute("RE");
-
+		Addons.InnerFilterBar.Icon = item.getAttribute("Icon") ? await ExtractMacro(te, await api.PathUnquoteSpaces(item.getAttribute("Icon"))) : await MakeImgSrc("bitmap:comctl32.dll,140,13,0", 0, false, 13);
 		//Menu
 		if (item.getAttribute("MenuExec")) {
-			Addons.InnerFilterBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.InnerFilterBar.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-				api.InsertMenu(hMenu, Addons.InnerFilterBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.InnerFilterBar.strName));
-				ExtraMenuCommand[nPos] = Addons.InnerFilterBar.Exec;
-				return nPos;
-			});
+			Common.InnerFilterBar = await api.CreateObject("Object");
+			Common.InnerFilterBar.strMenu = item.getAttribute("Menu");
+			Common.InnerFilterBar.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
+			Common.InnerFilterBar.nPos = GetNum(item.getAttribute("MenuPos"));
+			$.importScript("addons\\" + Addon_Id + "\\sync.js");
 		}
 		//Key
 		if (item.getAttribute("KeyExec")) {

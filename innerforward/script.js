@@ -1,8 +1,10 @@
 if (window.Addon == 1) {
-	Addons.InnerForward =
-	{
-		Click: function (Id) {
-			var FV = GetInnerFV(Id);
+	var Addon_Id = "innerback";
+	var item = await GetAddonElement(Addon_Id);
+
+	Addons.InnerForward = {
+		Click: async function (Id) {
+			var FV = await GetInnerFV(Id);
 			if (FV) {
 				FV.Focus();
 				Exec(FV, "Forward", "Tabs");
@@ -10,31 +12,30 @@ if (window.Addon == 1) {
 			return false;
 		},
 
-		Popup: function (o, Id) {
-			var FV = GetInnerFV(Id);
+		Popup: async function (ev, Id) {
+			var FV = await GetInnerFV(Id);
 			if (FV) {
 				FV.Focus();
-				var Log = FV.History;
-				var hMenu = api.CreatePopupMenu();
-				var mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
+				var Log = await FV.History;
+				var hMenu = await api.CreatePopupMenu();
+				var mii = await api.Memory("MENUITEMINFO");
+				mii.cbSize = await mii.Size;
 				mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
-				var arBM = [];
-				for (var i = Log.Index; i-- > 0;) {
-					var FolderItem = Log.Item(i);
-					AddMenuIconFolderItem(mii, FolderItem);
-					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER | SHGDN_ORIGINAL);
+				for (var i = await Log.Index; i-- > 0;) {
+					var FolderItem = await Log[i];
+					await AddMenuIconFolderItem(mii, FolderItem);
+					mii.dwTypeData = await FolderItem.Name;
 					mii.wID = i + 1;
-					api.InsertMenuItem(hMenu, MAXINT, false, mii);
+					await api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				}
-				var pt = api.Memory("POINT");
-				api.GetCursorPos(pt);
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
+				var x = ec.screenX * ui_.Zoom;
+				var y = ec.screenY * ui_.Zoom;
+				var nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, await te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				if (nVerb) {
-					var wFlags = GetNavigateFlags(FV);
+					var wFlags = await GetNavigateFlags(FV);
 					if (wFlags & SBSP_NEWBROWSER) {
-						FV.Navigate(Log[nVerb - 1], wFlags);
+						FV.Navigate(await Log[nVerb - 1], wFlags);
 					} else {
 						Log.Index = nVerb - 1;
 						FV.History = Log;
@@ -44,23 +45,24 @@ if (window.Addon == 1) {
 			return false;
 		},
 
-		ChangeView: function (Ctrl) {
-			var TC = Ctrl.Parent;
+		ChangeView: async function (Ctrl) {
+			var TC = await Ctrl.Parent;
 			var o = document.getElementById("ImgForward_" + TC.Id);
 			if (o) {
-				if (TC && Ctrl.Id == TC.Selected.Id) {
-					var Log = Ctrl.History;
-					DisableImage(o, Log && Log.Index < 1);
+				if (TC && await Ctrl.Id == await TC.Selected.Id) {
+					var Log = await Ctrl.History;
+					DisableImage(o, Log && await Log.Index < 1);
 				}
 			}
 		}
 	};
 
-	AddEvent("PanelCreated", function (Ctrl) {
-		var h = GetIconSize(GetAddonOption("innerforward", "IconSize"), 16);
-		var src = GetAddonOption("innerforward", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,1" : "bitmap:ieframe.dll,214,24,1");
-		var s = ['<span class="button" onclick="return Addons.InnerForward.Click($)" oncontextmenu="return Addons.InnerForward.Popup(this, $)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', , GetImgTag({ id: "ImgForward_$", title: "Forward", src: src }, h), '</span>'];
-		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
+	var h = await GetIconSize(item.getAttribute("IconSize"), 16);
+	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,1" : "bitmap:ieframe.dll,214,24,1");
+	Addons.InnerForward.src = ['<span class="button" onclick="return Addons.InnerForward.Click($)" oncontextmenu="return Addons.InnerForward.Popup(event, $)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ id: "ImgForward_$", title: "Forward", src: src }, h), '</span>'].join("");
+
+	AddEvent("PanelCreated", function (Ctrl, Id) {
+		SetAddon(null, "Inner1Left_" + Id, Addons.InnerForward.src.replace(/\$/g, Id));
 	});
 
 	AddEvent("ChangeView", Addons.InnerForward.ChangeView);
