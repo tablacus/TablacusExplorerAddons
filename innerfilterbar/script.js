@@ -40,7 +40,7 @@ if (window.Addon == 1) {
 		},
 
 		Change: async function (Id) {
-			var o = document.F.elements["filter_" + Id];
+			var o = document.F["filter_" + Id];
 			Addons.InnerFilterBar.ShowButton(o, Id);
 			var FV = await GetInnerFV(Id);
 			s = o.value;

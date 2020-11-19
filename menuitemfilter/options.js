@@ -1,10 +1,7 @@
-var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
-if (ado) {
-	var ar = ado.ReadText(adReadAll).split("<!--toolbar-->");
-	SetTabContents(4, "", ar[0]);
-	ado.Close();
-	document.getElementById("toolbar").innerHTML = ar[1];
-}
+
+var ar = (await ReadTextFile("addons\\" + Addon_Id + "\\options.html")).split("<!--toolbar-->");
+SetTabContents(4, "", ar[0]);
+document.getElementById("toolbar").innerHTML = ar[1];
 
 g_arMenuTypes = ["Default", "Context", "Background", "Tabs", "Tree", "File", "Edit", "View", "Favorites", "Tools", "Help", "Systray", "System", "Alias"];
 
@@ -48,13 +45,12 @@ Set = function (i, ar) {
 }
 
 BrowseFilter = function (o, n) {
-	setTimeout(function () {
+	setTimeout(async function () {
 		var m = document.E.elements["m" + n].selectedIndex;
 		if (m) {
-			var pt = GetPos(o, true);
-			pt.y = pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
-			if (MainWindow.ExecMenu(te, g_arMenuTypes[m - 1], pt, 0, true) == S_OK) {
-				document.E.elements["f" + n].value = MainWindow.g_menu_string.replace(/\t/g, "|");
+			var pt = await GetPosEx(o, 9);
+			if (await MainWindow.ExecMenu(te, g_arMenuTypes[m - 1], pt, 0, true) == S_OK) {
+				document.E.elements["f" + n].value = (await MainWindow.g_menu_string).replace(/\t/g, "|");
 			}
 		}
 	}, 99);
@@ -93,9 +89,9 @@ Down = function () {
 	document.E.elements["i" + nPos].checked = true;
 }
 
-Remove = function () {
+Remove = async function () {
 	var nPos = GetIndex();
-	if (nPos < 0 || !confirmOk("Are you sure?")) {
+	if (nPos < 0 || !await confirmOk()) {
 		return;
 	}
 	var table = document.getElementById("T");
@@ -106,36 +102,36 @@ Remove = function () {
 	table.deleteRow(nRows - 1);
 }
 
-SaveLocation = function () {
+SaveLocation = async function () {
 	var table = document.getElementById("T");
 	var nRows = table.rows.length;
-	try {
-		var ado = te.CreateObject("Adodb.Stream");
+	debugger;
+
+//	try {
+		var ado = await api.CreateObject("ads");
 		ado.CharSet = "utf-8";
-		ado.Open();
+		await ado.Open();
 		var empty = ["", "", ""].join("\t");
 		var empty2 = ["", "*", ""].join("\t");
 		for (var i = 0; i < nRows; i++) {
 			var s = Get(i);
 			if (s != empty && s != empty2) {
-				ado.WriteText(s + "\r\n");
+				await ado.WriteText(s + "\r\n");
 			}
 		}
-		ado.SaveToFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"), adSaveCreateOverWrite);
+		await ado.SaveToFile(BuildPath(await te.Data.DataFolder, "config", Addon_Id + ".tsv"), adSaveCreateOverWrite);
 		ado.Close();
-	}
-	catch (e) {
-	}
+//	} catch (e) { }
 }
 
 try {
-	var ado = te.CreateObject("Adodb.Stream");
+	var ado = await api.CreateObject("ads");
 	ado.CharSet = "utf-8";
 	ado.Open();
-	ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
+	ado.LoadFromFile(BuildPath(await te.Data.DataFolder, "config", Addon_Id + ".tsv"));
 	var o;
-	while (!ado.EOS) {
-		o = Add(ado.ReadText(adReadLine));
+	while (!await ado.EOS) {
+		o = Add(await ado.ReadText(adReadLine));
 	}
 	ado.Close();
 	if (o) {
