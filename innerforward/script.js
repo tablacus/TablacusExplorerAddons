@@ -28,8 +28,8 @@ if (window.Addon == 1) {
 					mii.wID = i + 1;
 					await api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				}
-				var x = ec.screenX * ui_.Zoom;
-				var y = ec.screenY * ui_.Zoom;
+				var x = ev.screenX * ui_.Zoom;
+				var y = ev.screenY * ui_.Zoom;
 				var nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, await te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				if (nVerb) {
@@ -42,12 +42,11 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			return false;
 		},
 
 		ChangeView: async function (Ctrl) {
 			var TC = await Ctrl.Parent;
-			var o = document.getElementById("ImgForward_" + TC.Id);
+			var o = document.getElementById("ImgForward_" + await TC.Id);
 			if (o) {
 				if (TC && await Ctrl.Id == await TC.Selected.Id) {
 					var Log = await Ctrl.History;
@@ -59,7 +58,7 @@ if (window.Addon == 1) {
 
 	var h = await GetIconSize(item.getAttribute("IconSize"), 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,1" : "bitmap:ieframe.dll,214,24,1");
-	Addons.InnerForward.src = ['<span class="button" onclick="return Addons.InnerForward.Click($)" oncontextmenu="return Addons.InnerForward.Popup(event, $)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ id: "ImgForward_$", title: "Forward", src: src }, h), '</span>'].join("");
+	Addons.InnerForward.src = ['<span class="button" onclick="return Addons.InnerForward.Click($)" oncontextmenu="Addons.InnerForward.Popup(event, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ id: "ImgForward_$", title: "Forward", src: src }, h), '</span>'].join("");
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {
 		SetAddon(null, "Inner1Left_" + Id, Addons.InnerForward.src.replace(/\$/g, Id));

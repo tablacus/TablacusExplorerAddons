@@ -25,12 +25,12 @@ if (window.Addon == 1) {
 				for (var i = await Log.Index + 1; i < nCount; i++) {
 					var FolderItem = await Log[i];
 					await AddMenuIconFolderItem(mii, FolderItem);
-					mii.dwTypeData = await FolderItem,Name;
+					mii.dwTypeData = await FolderItem.Name;
 					mii.wID = i;
 					await api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				}
 				var x = ev.screenX * ui_.Zoom;
-				var y = ev.screenX * ui_.Zoom;
+				var y = ev.screenY * ui_.Zoom;
 				var nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, await te.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				if (nVerb) {
@@ -43,7 +43,6 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			return false;
 		},
 
 		ChangeView: async function (Ctrl) {
@@ -60,7 +59,7 @@ if (window.Addon == 1) {
 
 	var h = await GetIconSize(item.getAttribute("IconSize"), 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,0" : "bitmap:ieframe.dll,214,24,0");
-	Addons.InnerBack.src = ['<span class="button" onclick="return Addons.InnerBack.Click($)" oncontextmenu="return Addons.InnerBack.Popup(event, $)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ id: "ImgBack_$", title: "Back", src: src }, h), '</span>'].join("");
+	Addons.InnerBack.src = ['<span class="button" onclick="return Addons.InnerBack.Click($)" oncontextmenu="Addons.InnerBack.Popup(event, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ id: "ImgBack_$", title: "Back", src: src }, h), '</span>'].join("");
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {
 		SetAddon(null, "Inner1Left_" + Id, Addons.InnerBack.src.replace(/\$/g, Id));
