@@ -43,8 +43,7 @@ if (window.Addon == 1) {
 			var o = document.F["filter_" + Id];
 			Addons.InnerFilterBar.ShowButton(o, Id);
 			var FV = await GetInnerFV(Id);
-			s = o.value;
-
+			var s = o ? o.value : "";
 			if (s) {
 				if (Addons.InnerFilterBar.RE && !/^\*|\//.test(s)) {
 					s = "/" + s + "/i";
