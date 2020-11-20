@@ -1,5 +1,5 @@
 if (window.Addon == 1) {
-	var Addon_Id = "innerback";
+	var Addon_Id = "innerforward";
 	var item = await GetAddonElement(Addon_Id);
 
 	Addons.InnerForward = {
