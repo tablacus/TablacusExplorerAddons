@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.13</Version>
-    <MinVersion>2020.6.17</MinVersion>
-    <pubDate>Fri, 19 Jun 2020 00:00:00 GMT</pubDate>
+    <Version>1.14</Version>
+    <MinVersion>2020.11.22</MinVersion>
+    <pubDate>Mon, 23 Nov 2020 00:00:00 GMT</pubDate>
     <Options>Common:0,6:0</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
     <Contributors>nkay08</Contributors>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -15,7 +16,7 @@
     <Description>Drive bar</Description>
   </en>
   <ja>
-    <Name>ドライブ バー</Name>
+    <Name>ドライブバー</Name>
   </ja>
   <zh>
     <Name>磁碟列</Name>
