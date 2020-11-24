@@ -1,22 +1,21 @@
 ﻿if (window.Addon == 1) {
-	Addons.ClassicStyle =
-	{
-		SetThemeAll: function (s) {
-			var cFV = te.Ctrls(CTRL_FV);
-			for (var i in cFV) {
-				var FV = cFV[i];
-				if (FV.hwndList) {
-					api.SetWindowTheme(FV.hwndList, s, null);
-				}
+	Addons.ClassicStyle = {
+		SetTheme: async function(Ctrl, s) {
+			var hwnd = await Ctrl.hwndList;
+			if (hwnd) {
+				api.SetWindowTheme(hwnd, s || null, null);
+			}
+		},
+
+		SetThemeAll: async function (s) {
+			var cFV = await te.Ctrls(CTRL_FV);
+			for (var i = await cFV.Count; --i >= 0;) {
+				Addons.ClassicStyle.SetTheme(await cFV[i], s);
 			}
 		}
 	};
 
-	AddEvent("ListViewCreated", function (Ctrl) {
-		if (Ctrl.hwndList) {
-			api.SetWindowTheme(Ctrl.hwndList, null, null);
-		}
-	});
+	AddEvent("ListViewCreated", Addons.ClassicStyle.SetTheme);
 
 	AddEventId("AddonDisabledEx", "classicstyle", function () {
 		Addons.ClassicStyle.SetThemeAll("explorer");

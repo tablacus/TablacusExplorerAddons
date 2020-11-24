@@ -1,7 +1,8 @@
 // Tablacus Total Commander Packer Plugin (C)2016 Gaku
 // MIT Lisence
-// Visual C++ 2008 Express Edition SP1
-// Windows SDK v7.0
+// Visual Studio Express 2017 for Windows Desktop
+// 32-bit Visual Studio 2015 - Windows XP (v140_xp)
+// 64-bit Visual Studio 2017 (v141)
 // http://www.eonet.ne.jp/~gakana/tablacus/
 
 #include "twfx.h"
@@ -12,39 +13,38 @@ const TCHAR g_szClsid[] = TEXT("{5396F915-5592-451c-8811-87314FC0EF11}");
 HINSTANCE	g_hinstDll = NULL;
 LONG		g_lLocks = 0;
 CteBase		*g_pBase = NULL;
-CteWFX		*g_ppObject[MAX_OBJ];
+std::vector <CteWFX *> g_ppObject;
 IDispatch	*g_pdispArrayProc = NULL;
 IDispatch	*g_pdispProgressProc = NULL;
 IDispatch	*g_pdispLogProc = NULL;
 IDispatch	*g_pdispRequestProc = NULL;
 IDispatch	*g_pdispCryptProc = NULL;
 
-TEmethod methodBASE[] = {
-	{ 0x60010000, L"Open" },
-	{ 0x6001000C, L"Close" },
+std::unordered_map<std::wstring, DISPID> g_umBASE = {
+	{ L"open", 0x60010000 },
+	{ L"close", 0x6001000C },
 };
 
-TEmethod methodTWFX[] = {
-	{ 0x60010001, L"FsInit" },
-	{ 0x60010002, L"FsFindFirst" },
-	{ 0x60010003, L"FsFindNext" },
-	{ 0x60010004, L"FsFindClose" },
-	{ 0x60010005, L"FsGetDefRootName" },
-	{ 0x60010006, L"FsGetFile" },
-	{ 0x60010007, L"FsPutFile" },
-	{ 0x60010008, L"FsRenMovFile" },
-	{ 0x60010009, L"FsDeleteFile" },
-	{ 0x6001000A, L"FsRemoveDir" },
-	{ 0x6001000B, L"FsMkDir" },
-	{ 0x6001000C, L"FsExecuteFile" },
-	{ 0x6001000D, L"FsSetAttr" },
-	{ 0x6001000E, L"FsSetTime" },
-	{ 0x6001000F, L"FsDisconnect" },
-	{ 0x60010010, L"FsExtractCustomIcon" },
-	{ 0x60010011, L"FsSetCryptCallback" },
-	{ 0x60010012, L"FsSetDefaultParams" },
-	{ 0x6001FFFF, L"IsUnicode" },
-	{ 0, NULL }
+std::unordered_map<std::wstring, DISPID> g_umTWFX = {
+	{ L"fsinit", 0x60010001 },
+	{ L"fsfindfirst", 0x60010002 },
+	{ L"fsfindnext", 0x60010003 },
+	{ L"fsfindclose", 0x60010004 },
+	{ L"fsgetdefrootname", 0x60010005 },
+	{ L"fsgetfile", 0x60010006 },
+	{ L"fsputfile", 0x60010007 },
+	{ L"fsrenmovfile", 0x60010008 },
+	{ L"fsdeletefile", 0x60010009 },
+	{ L"fsremovedir", 0x6001000A },
+	{ L"fsmkdir", 0x6001000B },
+	{ L"fsexecutefile", 0x6001000C },
+	{ L"fssetattr", 0x6001000D },
+	{ L"fssettime", 0x6001000E },
+	{ L"fsdisconnect", 0x6001000F },
+	{ L"fsextractcustomicon", 0x60010010 },
+	{ L"fssetcryptcallback", 0x60010011 },
+	{ L"fssetdefaultparams", 0x60010012 },
+	{ L"isunicode", 0x4001FFFF },
 };
 
 // Unit
@@ -109,48 +109,6 @@ LSTATUS CreateRegistryKey(HKEY hKeyRoot, LPTSTR lpszKey, LPTSTR lpszValue, LPTST
 	return lr;
 }
 
-/*
-int teBSearch(TEmethod *method, int nSize, int* pMap, LPOLESTR bs)
-{
-	int nMin = 0;
-	int nMax = nSize - 1;
-	int nIndex, nCC;
-
-	while (nMin <= nMax) {
-		nIndex = (nMin + nMax) / 2;
-		nCC = lstrcmpi(bs, method[pMap[nIndex]].name);
-		if (nCC < 0) {
-			nMax = nIndex - 1;
-			continue;
-		}
-		if (nCC > 0) {
-			nMin = nIndex + 1;
-			continue;
-		}
-		return pMap[nIndex];
-	}
-	return -1;
-}
-*/
-HRESULT teGetDispId(TEmethod *method, int nCount, int* pMap, LPOLESTR bs, DISPID *rgDispId)
-{
-/*	if (pMap) {
-		int nIndex = teBSearch(method, nCount, pMap, bs);
-		if (nIndex >= 0) {
-			*rgDispId = method[nIndex].id;
-			return S_OK;
-		}
-	} else {*/
-		for (int i = 0; method[i].name; i++) {
-			if (lstrcmpi(bs, method[i].name) == 0) {
-				*rgDispId = method[i].id;
-				return S_OK;
-			}
-		}
-//	}
-	return DISP_E_UNKNOWNNAME;
-}
-
 BSTR GetLPWSTRFromVariant(VARIANT *pv)
 {
 	if (pv->vt == (VT_VARIANT | VT_BYREF)) {
@@ -203,31 +161,62 @@ int GetIntFromVariantClear(VARIANT *pv)
 }
 
 #ifdef _WIN64
+BOOL teStartsText(LPWSTR pszSub, LPCWSTR pszFile)
+{
+	BOOL bResult = pszFile ? TRUE : FALSE;
+	WCHAR wc;
+	while (bResult && (wc = *pszSub++)) {
+		bResult = towlower(wc) == towlower(*pszFile++);
+	}
+	return bResult;
+}
+
+BOOL teVarIsNumber(VARIANT *pv) {
+	return pv->vt == VT_I4 || pv->vt == VT_R8 || pv->vt == (VT_ARRAY | VT_I4) || (pv->vt == VT_BSTR && ::SysStringLen(pv->bstrVal) == 18 && teStartsText(L"0x", pv->bstrVal));
+}
+
+BOOL GetLLFromVariant2(LONGLONG *pll, VARIANT *pv) {
+	if (pv->vt == VT_I4) {
+		*pll = pv->lVal;
+		return TRUE;
+	}
+	if (pv->vt == VT_R8) {
+		*pll = (LONGLONG)pv->dblVal;
+		return TRUE;
+	}
+	if (pv->vt == (VT_ARRAY | VT_I4)) {
+		LONGLONG ll = 0;
+		PVOID pvData;
+		if (::SafeArrayAccessData(pv->parray, &pvData) == S_OK) {
+			::CopyMemory(&ll, pvData, sizeof(LONGLONG));
+			::SafeArrayUnaccessData(pv->parray);
+			return ll;
+		}
+	}
+	if (teVarIsNumber(pv)) {
+		if (swscanf_s(pv->bstrVal, L"0x%016llx", pll) > 0) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 LONGLONG GetLLFromVariant(VARIANT *pv)
 {
 	if (pv) {
 		if (pv->vt == (VT_VARIANT | VT_BYREF)) {
 			return GetLLFromVariant(pv->pvarVal);
 		}
-		if (pv->vt == VT_I4) {
-			return pv->lVal;
+		LONGLONG ll = 0;
+		if (GetLLFromVariant2(&ll, pv)) {
+			return ll;
 		}
-		if (pv->vt == VT_R8) {
-			return (LONGLONG)pv->dblVal;
-		}
-		if (pv->vt == (VT_ARRAY | VT_I4)) {
-			LONGLONG ll = 0;
-			PVOID pvData;
-			if (::SafeArrayAccessData(pv->parray, &pvData) == S_OK) {
-				::CopyMemory(&ll, pvData, sizeof(LONGLONG));
-				::SafeArrayUnaccessData(pv->parray);
-				return ll;
+		if (pv->vt != VT_DISPATCH) {
+			VARIANT vo;
+			VariantInit(&vo);
+			if SUCCEEDED(VariantChangeType(&vo, pv, 0, VT_I8)) {
+				return vo.llVal;
 			}
-		}
-		VARIANT vo;
-		VariantInit(&vo);
-		if SUCCEEDED(VariantChangeType(&vo, pv, 0, VT_I8)) {
-			return vo.llVal;
 		}
 	}
 	return 0;
@@ -271,17 +260,9 @@ VOID teSetLL(VARIANT *pv, LONGLONG ll)
 			pv->vt = VT_R8;
 			return;
 		}
-		SAFEARRAY *psa;
-		psa = SafeArrayCreateVector(VT_I4, 0, sizeof(LONGLONG) / sizeof(int));
-		if (psa) {
-			PVOID pvData;
-			if (::SafeArrayAccessData(psa, &pvData) == S_OK) {
-				::CopyMemory(pvData, &ll, sizeof(LONGLONG));
-				::SafeArrayUnaccessData(psa);
-				pv->vt = VT_ARRAY | VT_I4;
-				pv->parray = psa;
-			}
-		}
+		pv->bstrVal = ::SysAllocStringLen(NULL, 18);
+		swprintf_s(pv->bstrVal, 19, L"0x%016llx", ll);
+		pv->vt = VT_BSTR;
 	}
 }
 
@@ -837,19 +818,15 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
-			for (int i = MAX_OBJ; i--;) {
-				g_ppObject[i] = NULL;
-			}
 			g_pBase = new CteBase();
 			g_hinstDll = hinstDll;
 			break;
 		case DLL_PROCESS_DETACH:
-			for (int i = MAX_OBJ; i--;) {
-				if (g_ppObject[i]) {
-					g_ppObject[i]->Close();
-					SafeRelease(&g_ppObject[i]);
-				}
+			for (size_t i = g_ppObject.size(); i--;) {
+				g_ppObject[i]->Close();
+				SafeRelease(&g_ppObject[i]);
 			}
+			g_ppObject.clear();
 			SafeRelease(&g_pBase);
 			SafeRelease(&g_pdispProgressProc);
 			SafeRelease(&g_pdispLogProc);
@@ -962,9 +939,9 @@ CteWFX::CteWFX(HMODULE hDll, LPWSTR lpLib)
 CteWFX::~CteWFX()
 {
 	Close();
-	for (int i = MAX_OBJ; i--;) {
+	for (size_t i = g_ppObject.size(); i--;) {
 		if (this == g_ppObject[i]) {
-			g_ppObject[i] = NULL;
+			g_ppObject.erase(g_ppObject.begin() + i);
 			break;
 		}
 	}
@@ -1048,7 +1025,22 @@ STDMETHODIMP CteWFX::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 
 STDMETHODIMP CteWFX::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
-	return teGetDispId(methodTWFX, _countof(methodTWFX), NULL, *rgszNames, rgDispId);
+	BSTR bs = ::SysAllocString(*rgszNames);
+	for (int i = ::SysStringLen(bs); i-- > 0;) {
+		bs[i] = tolower(bs[i]);
+	}
+	auto itr = g_umTWFX.find(bs);
+	::SysFreeString(bs);
+	if (itr != g_umTWFX.end()) {
+		*rgDispId = itr->second;
+		return S_OK;
+	}
+#ifdef _DEBUG
+	OutputDebugStringA("GetIDsOfNames:");
+	OutputDebugString(rgszNames[0]);
+	OutputDebugStringA("\n");
+#endif
+	return DISP_E_UNKNOWNNAME;
 }
 
 STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
@@ -1076,35 +1068,88 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsInitW || FsInit);
+					if (FsInitW || FsInit) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;		
 			//FsFindFirst
 			case 0x60010002:
 				if (nArg >= 1) {
 					HANDLE hFind = INVALID_HANDLE_VALUE;
+					tcWin32FindData *pHandle = new tcWin32FindData[1];
+					pHandle->nIndex = 1;
+					pHandle->nCount = 1;
+					pHandle->pNext = NULL;
 					IUnknown *punk;
 					if (FindUnknown(&pDispParams->rgvarg[nArg - 1], &punk)) {
 						LPWSTR lpPath = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
-						WIN32_FIND_DATAW wfd = { 0 };
+						::ZeroMemory(&pHandle->wfd[0], sizeof(WIN32_FIND_DATA));
 						if (FsFindFirstW) {
-							hFind = FsFindFirstW(lpPath, &wfd);
+							hFind = FsFindFirstW(lpPath, &pHandle->wfd[0]);
 						} else if (FsFindFirst) {
 							WIN32_FIND_DATAA wfda = { 0 };
 							BSTR bsPath = teWide2Ansi(lpPath, -1);
 							hFind = FsFindFirst((char *)bsPath, &wfda);
 							teSysFreeString(&bsPath);
 							if (hFind != INVALID_HANDLE_VALUE) {
-								ConvWin32FindDataFromA(&wfd, &wfda);
+								ConvWin32FindDataFromA(&pHandle->wfd[0], &wfda);
 							}
 						}
 						if (hFind != INVALID_HANDLE_VALUE) {
-							SetWin32FindData(punk, &wfd);
+							SetWin32FindData(punk, &pHandle->wfd[0]);
+							BOOL bResult = FALSE;
+							tcWin32FindData *pFind = pHandle;
+							tcWin32FindData *pPar = pFind;
+							DWORD dwFileAttributes = pFind->wfd[0].dwFileAttributes;
+
+							for (;;) {
+								if (FsFindNextW) {
+									::ZeroMemory(&pHandle->wfd[pFind->nCount], sizeof(WIN32_FIND_DATA));
+									pFind->wfd[pFind->nCount].dwFileAttributes = dwFileAttributes;
+									bResult = FsFindNextW(hFind, &pFind->wfd[pFind->nCount]);
+								} else if (FsFindNext) {
+									WIN32_FIND_DATAA wfda = { 0 };
+									wfda.dwFileAttributes = dwFileAttributes;
+									bResult = FsFindNext(hFind, &wfda);
+									if (bResult) {
+										ConvWin32FindDataFromA(&pFind->wfd[pFind->nCount], &wfda);
+									}
+								}
+								if (bResult) {
+									dwFileAttributes = pFind->wfd[pFind->nCount++].dwFileAttributes;
+									if (pFind->nCount >= MAX_WFD) {
+										pPar = pFind;
+										pFind = new tcWin32FindData[1];
+										pFind->pNext = NULL;
+										pFind->nIndex = 0;
+										pFind->nCount = 0;
+										pPar->pNext = pFind;
+									}
+								} else {
+									if (pFind->nCount == 0) {
+										delete [] pFind;
+										pPar->pNext = NULL;
+										pFind = pPar;
+									}
+									break;
+								}
+							}
+							if (FsFindClose) {
+								FsFindClose(hFind);
+							}
 						}
 					}
-					teSetLL(pVarResult, (LONGLONG)hFind);
+					if (hFind != INVALID_HANDLE_VALUE) {
+						teSetLL(pVarResult, (LONGLONG)pHandle);
+					} else {
+						teSetLong(pVarResult, (LONG)INVALID_HANDLE_VALUE);
+						delete [] pHandle;
+					}
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsFindFirstW || FsFindFirst);
+					if (FsFindFirstW || FsFindFirst) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsFindNext
@@ -1113,51 +1158,54 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					BOOL bResult = FALSE;
 					IDispatch *pdisp;
 					if (GetDispatch(&pDispParams->rgvarg[nArg - 1], &pdisp)) {
-						HANDLE hFind = (HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]);
-						WIN32_FIND_DATAW wfd = { 0 };
-						VARIANT v;
-						VariantInit(&v);
-						teGetProperty(pdisp, L"dwFileAttributes", &v);
-						wfd.dwFileAttributes = GetIntFromVariantClear(&v);
-						if (FsFindNextW) {
-							bResult = FsFindNextW(hFind, &wfd);
-						} else if (FsFindFirst) {
-							WIN32_FIND_DATAA wfda = { 0 };
-							wfda.dwFileAttributes = wfd.dwFileAttributes;
-							bResult = FsFindNext(hFind, &wfda);
-							if (bResult) {
-								ConvWin32FindDataFromA(&wfd, &wfda);
+						tcWin32FindData *pFind = (tcWin32FindData *)GetPtrFromVariant(&pDispParams->rgvarg[nArg]);
+						try {
+							while (pFind && pFind->nIndex >= pFind->nCount) {
+								pFind = pFind->pNext;
 							}
-						}
-						if (bResult) {
-							SetWin32FindData(pdisp, &wfd);
-						}
+							if (pFind) {
+								SetWin32FindData(pdisp, &pFind->wfd[pFind->nIndex++]);
+								bResult = TRUE;
+							}
+						} catch (...) {}
 						SafeRelease(&pdisp);
 					}
 					teSetBool(pVarResult, bResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsFindNextW || FsFindNext);
+					if (FsFindNextW || FsFindNext) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsFindClose
 			case 0x60010004:
 				if (nArg >= 0) {
-					int iResult = 1;
-					if (FsFindClose) {
-						iResult = FsFindClose((HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg]));
-					}
-					teSetLong(pVarResult, iResult);
+					tcWin32FindData *pFind = (tcWin32FindData *)GetPtrFromVariant(&pDispParams->rgvarg[nArg]);
+					try {
+						while (pFind) {
+							tcWin32FindData *pDel = pFind;
+							pFind = pFind->pNext;
+							delete [] pDel;
+						}
+					} catch (...) {}
+					teSetLong(pVarResult, 0);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsFindClose != NULL);
+					if (FsFindClose) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsGetDefRootName
 			case 0x60010005:
 				if (FsGetDefRootName) {
-					char DefRootName[MAX_PATH];
-					DefRootName[0] = NULL;
-					FsGetDefRootName(DefRootName, MAX_PATH);
-					teSetSZA(pVarResult, DefRootName, CP_ACP);
+					if (wFlags & DISPATCH_METHOD) {
+						char DefRootName[MAX_PATH];
+						DefRootName[0] = NULL;
+						FsGetDefRootName(DefRootName, MAX_PATH);
+						teSetSZA(pVarResult, DefRootName, CP_ACP);
+					} else if (wFlags == DISPATCH_PROPERTYGET) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsGetFile
@@ -1181,7 +1229,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsGetFileW || FsGetFile);
+					if (FsGetFileW || FsGetFile) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsPutFile
@@ -1202,7 +1252,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsPutFileW || FsPutFile);
+					if (FsPutFileW || FsPutFile) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsRenMovFile
@@ -1227,7 +1279,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsRenMovFileW || FsRenMovFile);
+					if (FsRenMovFileW || FsRenMovFile) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			case 0x60010009:
@@ -1244,7 +1298,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetBool(pVarResult, bResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsDeleteFileW || FsDeleteFile);
+					if (FsDeleteFileW || FsDeleteFile) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsRemoveDir
@@ -1261,7 +1317,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetBool(pVarResult, bResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsRemoveDirW || FsRemoveDir);
+					if (FsRemoveDirW || FsRemoveDir) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsMkDir
@@ -1278,7 +1336,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetBool(pVarResult, bResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsMkDirW || FsMkDir);
+					if (FsMkDirW || FsMkDir) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsExecuteFile
@@ -1312,7 +1372,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsExecuteFileW || FsExecuteFile);
+					if (FsExecuteFileW || FsExecuteFile) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsSetAttr
@@ -1330,7 +1392,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetBool(pVarResult, bResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsSetAttrW || FsSetAttr);
+					if (FsSetAttrW || FsSetAttr) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsSetTime
@@ -1352,7 +1416,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetBool(pVarResult, bResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsSetTimeW || FsSetTime);
+					if (FsSetTimeW || FsSetTime) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsDisconnect
@@ -1369,7 +1435,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetBool(pVarResult, bResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsDisconnectW || FsDisconnect);
+					if (FsDisconnectW || FsDisconnect) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsExtractCustomIcon
@@ -1395,7 +1463,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, iResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsSetAttrW || FsSetAttr);
+					if (FsSetAttrW || FsSetAttr) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsSetCryptCallback
@@ -1411,7 +1481,9 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 						FsSetCryptCallback(twfx_tCryptProc, iCryptoNr, iFlags);
 					}
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsSetCryptCallbackW || FsSetCryptCallback);
+					if (FsSetCryptCallbackW || FsSetCryptCallback) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//FsSetDefaultParams
@@ -1424,11 +1496,13 @@ STDMETHODIMP CteWFX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					FsSetDefaultParams(&dps);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, FsSetDefaultParams != NULL);
+					if (FsSetDefaultParams) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//IsUnicode
-			case 0x6001FFFF:
+			case 0x4001FFFF:
 				teSetBool(pVarResult, FsInitW != NULL);
 				return S_OK;
 			//this
@@ -1492,11 +1566,30 @@ STDMETHODIMP CteBase::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 
 STDMETHODIMP CteBase::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
-	return teGetDispId(methodBASE, _countof(methodBASE), NULL, *rgszNames, rgDispId);
+	BSTR bs = ::SysAllocString(*rgszNames);
+	for (int i = ::SysStringLen(bs); i-- > 0;) {
+		bs[i] = tolower(bs[i]);
+	}
+	auto itr = g_umBASE.find(bs);
+	::SysFreeString(bs);
+	if (itr != g_umBASE.end()) {
+		*rgDispId = itr->second;
+		return S_OK;
+	}
+#ifdef _DEBUG
+	OutputDebugStringA("GetIDsOfNames:");
+	OutputDebugString(rgszNames[0]);
+	OutputDebugStringA("\n");
+#endif
+	return DISP_E_UNKNOWNNAME;
 }
 
 STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
 {
+	if (wFlags == DISPATCH_PROPERTYGET && dispIdMember >= TE_METHOD) {
+		teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+		return S_OK;
+	}
 	int nArg = pDispParams ? pDispParams->cArgs - 1 : -1;
 	HRESULT hr = S_OK;
 
@@ -1506,26 +1599,19 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 
-				int nEmpty = -1;
 				CteWFX *pItem;
-				for (int i = MAX_OBJ; i--;) {
+				for (size_t i = g_ppObject.size(); i--;) {
 					pItem = g_ppObject[i];
-					if (pItem) {
-						if (lstrcmpi(lpLib, pItem->m_bsLib) == 0) {
-							teSetObject(pVarResult, pItem);
-							return S_OK;
-						}
-					} else if (nEmpty < 0) {
-						nEmpty = i;
+					if (lstrcmpi(lpLib, pItem->m_bsLib) == 0) {
+						teSetObject(pVarResult, pItem);
+						return S_OK;
 					}
 				}
-				if (nEmpty >= 0) {
-					HMODULE hDll = LoadLibrary(lpLib);
-					if (hDll) {
-						pItem = new CteWFX(hDll, lpLib);
-						g_ppObject[nEmpty] = pItem;
-						teSetObjectRelease(pVarResult, pItem);
-					}
+				HMODULE hDll = LoadLibrary(lpLib);
+				if (hDll) {
+					pItem = new CteWFX(hDll, lpLib);
+					g_ppObject.push_back(pItem);
+					teSetObject(pVarResult, pItem);
 				}
 			}
 			return S_OK;
@@ -1534,11 +1620,12 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 
-				for (int i = MAX_OBJ; i--;) {
+				for (size_t i = g_ppObject.size(); i--;) {
 					if (g_ppObject[i]) {
 						if (lstrcmpi(lpLib, g_ppObject[i]->m_bsLib) == 0) {
 							g_ppObject[i]->Close();
 							SafeRelease(&g_ppObject[i]);
+							g_ppObject.erase(g_ppObject.begin() + i);
 							break;
 						}
 					}
@@ -1593,4 +1680,79 @@ STDMETHODIMP CteClassFactory::LockServer(BOOL fLock)
 {
 	LockModule(fLock);
 	return S_OK;
+}
+
+//CteDispatch
+
+CteDispatch::CteDispatch(IDispatch *pDispatch, int nMode, DISPID dispId)
+{
+	m_cRef = 1;
+	pDispatch->QueryInterface(IID_PPV_ARGS(&m_pDispatch));
+	m_dispIdMember = dispId;
+}
+
+CteDispatch::~CteDispatch()
+{
+	Clear();
+}
+
+VOID CteDispatch::Clear()
+{
+	SafeRelease(&m_pDispatch);
+}
+
+STDMETHODIMP CteDispatch::QueryInterface(REFIID riid, void **ppvObject)
+{
+	static const QITAB qit[] =
+	{
+		QITABENT(CteDispatch, IDispatch),
+	{ 0 },
+	};
+	return QISearch(this, qit, riid, ppvObject);
+}
+
+STDMETHODIMP_(ULONG) CteDispatch::AddRef()
+{
+	return ::InterlockedIncrement(&m_cRef);
+}
+
+STDMETHODIMP_(ULONG) CteDispatch::Release()
+{
+	if (::InterlockedDecrement(&m_cRef) == 0) {
+		delete this;
+		return 0;
+	}
+
+	return m_cRef;
+}
+
+STDMETHODIMP CteDispatch::GetTypeInfoCount(UINT *pctinfo)
+{
+	*pctinfo = 0;
+	return S_OK;
+}
+
+STDMETHODIMP CteDispatch::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
+{
+	return E_NOTIMPL;
+}
+
+STDMETHODIMP CteDispatch::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
+{
+	return DISP_E_UNKNOWNNAME;
+}
+
+STDMETHODIMP CteDispatch::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
+{
+	try {
+		if (pVarResult) {
+			VariantInit(pVarResult);
+		}
+		if (wFlags & DISPATCH_METHOD) {
+			return m_pDispatch->Invoke(m_dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr);
+		}
+		teSetObject(pVarResult, this);
+		return S_OK;
+	} catch (...) {}
+	return DISP_E_MEMBERNOTFOUND;
 }
