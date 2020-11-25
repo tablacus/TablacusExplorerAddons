@@ -2,83 +2,75 @@ var Addon_Id = "drivebutton";
 var Default = "ToolBar2Left";
 
 if (window.Addon == 1) {
-	var item = GetAddonElement(Addon_Id);
+	var item = await GetAddonElement(Addon_Id);
 
-	Addons.DriveButton =
-	{
-		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-		nPos: api.LowPart(item.getAttribute("MenuPos")),
+	Addons.DriveButton = {
+		strName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+		nPos: GetNum(item.getAttribute("MenuPos")),
 
-		Exec: function (Ctrl, pt)
-		{
-			var o;
-			if (window.event && window.event.button == 2) {
+		Down: function (ev, el) {
+			if (ev.button == 2) {
 				return true;
 			}
-			var FV = GetFolderView(Ctrl, pt);
+			setTimeout(async function () {
+				MouseOver(el);
+				Addons.DriveButton.Exec(await GetFolderViewEx(el), await GetPosEx(el, 9));
+			}, 99);
+		},
+
+		Exec: async function (Ctrl, pt) {
+			var FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
 			}
-			setTimeout(function () {
-				if (Ctrl.className) {
-					o = Ctrl;
-					MouseOver(o);
+			var hMenu = await api.CreatePopupMenu();
+			var Items = await $.sha.NameSpace(ssfDRIVES).Items();
+			var mii = api.Memory("MENUITEMINFO");
+			mii.cbSize = await mii.Size;
+			mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
+			await $.FolderMenu.Clear();
+			var nCount = await Items.Count;
+			for (var i = 0; i < nCount; i++) {
+				var Item = Items.Item(i);
+				if (await api.PathIsRoot(await api.GetDisplayNameOf(Item, SHGDN_FORPARSING)) || await api.GetKeyState(VK_SHIFT) < 0) {
+					await $.FolderMenu.AddMenuItem(hMenu, Item);
 				}
-				var hMenu = api.CreatePopupMenu();
-				var Items = sha.NameSpace(ssfDRIVES).Items();
-				var mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
-				mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
-				FolderMenu.Clear();
-				for (var i = 0; i < Items.Count; i++) {
-					var Item = Items.Item(i);
-					if (api.PathIsRoot(api.GetDisplayNameOf(Item, SHGDN_FORPARSING))) {
-						FolderMenu.AddMenuItem(hMenu, Item);
-					}
-				}
-				if (!pt) {
-					if (o) {
-						pt = GetPos(o);
-						pt.x += screenLeft;
-						pt.y += screenTop + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI;
-					} else {
-						pt = api.Memory("POINT");
-						api.GetCursorPos(pt);
-					}
-				}
-				var nVerb = FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD,  pt.x, pt.y);
-				if (nVerb) {
-					FolderMenu.Invoke(FolderMenu.Items[nVerb - 1]);
-				}
-				FolderMenu.Clear();
-			}, 99);
+			}
+			if (!pt) {
+				pt = await api.Memory("POINT");
+				await api.GetCursorPos(pt);
+			}
+			var nVerb = await $.FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y);
+			if (nVerb) {
+				$.FolderMenu.Invoke(await $.FolderMenu.Items[nVerb - 1]);
+			}
+			$.FolderMenu.Clear();
 			return S_OK;
 		}
 	};
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
-			api.InsertMenu(hMenu, Addons.DriveButton.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.DriveButton.strName));
-			ExtraMenuCommand[nPos] = Addons.DriveButton.Exec;
-			return nPos;
-		});
+		Common.DriveButton = await api.CreateObject("Object");
+		Common.DriveButton.strMenu = item.getAttribute("Menu");
+		Common.DriveButton.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
+		Common.DriveButton.nPos = GetNum(item.getAttribute("MenuPos"));
+		importJScript("addons\\" + Addon_Id + "\\sync.js");
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.DriveButton.Exec, "Func");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.DriveButton.Exec, "Async");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.DriveButton.Exec, "Func");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.DriveButton.Exec, "Async");
 	}
 
 	AddTypeEx("Add-ons", "Drive button", Addons.DriveButton.Exec);
 
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,8,16" : "icon:shell32.dll,8,32");
-	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="return Addons.DriveButton.Exec(this)" oncontextmenu="PopupContextMenu(ssfDRIVES)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: "Drive", src: src }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="return Addons.DriveButton.Down(event, this)" oncontextmenu="PopupContextMenu(ssfDRIVES); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: "Drive", src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }
