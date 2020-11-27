@@ -1,23 +1,18 @@
-﻿if (window.Addon == 1) {
-	Addons.Firebug =
-	{
-		Resize:  function ()
-		{
+if (window.Addon == 1) {
+	Addons.Firebug = {
+		Resize: function () {
 			Addons.Firebug.div.style.height = Addons.Firebug.fbChrome.offsetHeight + "px";
 			Resize();
 		},
 
-		Init: function ()
-		{
+		Init: function () {
 			if (window.Firebug) {
-				Firebug.extend(function(FBL)
-				{
+				Firebug.extend(function (FBL) {
 					Addons.Firebug.fbChrome = FBL.$("fbChrome");
 					Addons.Firebug.fbChrome.onmouseup = Addons.Firebug.Resize;
 					Addons.Firebug.Resize();
 				});
-			}
-			else {
+			} else {
 				setTimeout(Addons.Firebug.Init, 1000);
 			}
 		}
@@ -31,5 +26,5 @@
 	Addons.Firebug.div = document.createElement('div');
 	document.getElementById("bottombar").appendChild(Addons.Firebug.div);
 
-	setTimeout(Addons.Firebug.Init, 1000);
+	setTimeout(Addons.Firebug.Init, 999);
 }
