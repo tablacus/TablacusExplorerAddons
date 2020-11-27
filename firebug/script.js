@@ -25,7 +25,7 @@
 	};
 
 	var firebug = document.createElement('script');
-	firebug.setAttribute('src', 'https://getfirebug.com/firebug-lite.js#overrideConsole=true,startOpened=true,enableTrace=true');
+	firebug.setAttribute('src', 'https://cdnjs.cloudflare.com/ajax/libs/firebug-lite/1.4.0/firebug-lite.js#overrideConsole=true,startOpened=true,enableTrace=true');
 	document.body.appendChild(firebug);
 
 	Addons.Firebug.div = document.createElement('div');
