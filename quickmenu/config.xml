@@ -1,20 +1,21 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.13</Version>
-    <MinVersion>2020.5.15</MinVersion>
-    <pubDate>Fri, 15 May 2020 00:00:00 GMT</pubDate>
+    <Version>1.14</Version>
+    <MinVersion>2020.11.27</MinVersion>
+    <pubDate>Sat, 28 Nov 2020 00:00:00 GMT</pubDate>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Quickly open menus</Name>
-    <Description>Open menus quickly by simplifying menus.</Description>
+    <Name>Quicker menu display</Name>
+    <Description>Quicker menu display by simplifying menus.</Description>
   </en>
   <ja>
-    <Name>クイック メニュー</Name>
-    <Description>メニューを簡素化して素早く開くようにします。</Description>
+    <Name>迅速なメニュー表示</Name>
+    <Description>メニューを簡素化することにより、メニューの表示を高速化します。</Description>
   </ja>
   <zh>
     <Name>簡潔內容功能選單</Name>
