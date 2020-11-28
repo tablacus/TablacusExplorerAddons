@@ -133,14 +133,14 @@ if (window.Addon == 1) {
 				var r0 = Addons.TabPlus.opt.IconSize;
 				var w = (Addons.TabPlus.opt.Close || bLock || bProtect) ? -r0 : 0;
 				if (!Addons.TabPlus.opt.NoLock && bLock) {
-					s.push('<td style="padding-right: 2px; vertical-align: middle; width: ', r0, 'px">', Addons.TabPlus.ImgLock2, '</td>');
+					s.push('<td class="lockcell" style="padding-right: 2px; vertical-align: middle; width: ', r0, 'px">', Addons.TabPlus.ImgLock2, '</td>');
 					w -= 2;
 				} else if (Addons.TabPlus.opt.Protected && bProtect) {
-					s.push('<td style="padding-right: 2px; vertical-align: middle; width: ', r0, 'px">', Addons.TabPlus.ImgProtect, '</td>');
+					s.push('<td class="protectcell" style="padding-right: 2px; vertical-align: middle; width: ', r0, 'px">', Addons.TabPlus.ImgProtect, '</td>');
 					w -= 2;
 				}
 				if (Addons.TabPlus.opt.Icon && (img = await GetIconImage(await FV, await GetSysColor(COLOR_BTNFACE)))) {
-					s.push('<td style="padding-right: 3px; vertical-align: middle; width: 20px">');
+					s.push('<td class="iconcell" style="padding-right: 3px; vertical-align: middle; width: 20px">');
 					if (Addons.TabPlus.opt.Drive) {
 						var res = /^([A-Z]):/i.exec(path);
 						if (res) {
@@ -150,7 +150,7 @@ if (window.Addon == 1) {
 					s.push('<img draggable="false" src="', img, '" style="width: 1pc; height: 1pc"></td>');
 					w -= 20;
 				} else if (Addons.TabPlus.opt.Drive) {
-					s.push('<td style="padding-right: 3px; vertical-align: middle; width: 12px">');
+					s.push('<td class="drivecell" style="padding-right: 3px; vertical-align: middle; width: 12px">');
 					var res = /^([A-Z]):/i.exec(path);
 					if (res) {
 						s.push('<span class="drive">', res[1], '</span>');
@@ -158,7 +158,7 @@ if (window.Addon == 1) {
 					s.push('&nbsp;</td>');
 					w -= 12;
 				}
-				s.push('<td style="vertical-align: middle;"><div style="overflow: hidden; white-space: nowrap;');
+				s.push('<td class="namecell" style="vertical-align: middle;"><div style="overflow: hidden; white-space: nowrap;');
 				var bUseClose = Addons.TabPlus.opt.Close && await CanClose(FV) == S_OK;
 				if (bUseClose && Addons.TabPlus.opt.Align > 1 && Addons.TabPlus.opt.Width) {
 					w -= r0;
@@ -179,7 +179,7 @@ if (window.Addon == 1) {
 				}
 				s.push('" >', n, '</div></td>');
 				if (bUseClose) {
-					s.push('<td style="vertical-align: middle; width: ', r0, 'px" align="right">', Addons.TabPlus.ImgClose, r0, 'px" onclick="Addons.TabPlus.Close(', TC.Id, ",", i, ')" class="button" title="', Addons.TabPlus.str.CloseTab, '" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', Addons.TabPlus.ImgClose2, '</td>');
+					s.push('<td class="closecell" style="vertical-align: middle; width: ', r0, 'px" align="right">', Addons.TabPlus.ImgClose, r0, 'px" onclick="Addons.TabPlus.Close(', TC.Id, ",", i, ')" class="button" title="', Addons.TabPlus.str.CloseTab, '" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', Addons.TabPlus.ImgClose2, '</td>');
 				}
 				s.push('</tr></table>');
 				if (!o.innerHTML || bRedraw) {
