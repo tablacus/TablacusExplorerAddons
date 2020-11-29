@@ -104,3 +104,40 @@ input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover
 .link {
   color: #29e;
 }
+::-webkit-scrollbar, ::-webkit-scrollbar-track {
+	background-color: #111;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: #555;
+}
+
+::-webkit-scrollbar-button:vertical:decrement {
+  border: .3rem solid #111;
+  background:linear-gradient(to top left, #555 50%, transparent 50%) top left/ 50% 100% no-repeat,
+    linear-gradient(to top right, #555 50%, transparent 50%) top right / 50% 100% no-repeat;
+}
+
+::-webkit-scrollbar-button:vertical:increment {
+  border: .3rem solid #111;
+  background:linear-gradient(to bottom left, #555 50%, transparent 50%) top left/ 50% 100% no-repeat,
+    linear-gradient(to bottom right, #555 50%, transparent 50%) top right / 50% 100% no-repeat;
+}
+
+::-webkit-scrollbar-button:horizontal:decrement {
+  border: .3rem solid #111;
+  background:linear-gradient(to bottom right, transparent 50%, #555 50%) top left/ 100% 50% no-repeat,
+    linear-gradient(to top right, transparent 50%, #555 50%) bottom left / 100% 50% no-repeat;
+}
+
+::-webkit-scrollbar-button:horizontal:increment {
+  border: .3rem solid #111;
+  background:linear-gradient(to bottom left, transparent 50%, #555 50%) top left/ 100% 50% no-repeat,
+    linear-gradient(to top left, transparent 50%, #555 50%) bottom left / 100% 50% no-repeat;
+  }
+
+::-webkit-resizer {
+  background-color: #111;
+  border: .2rem double;
+  border-color: transparent #555 #555 transparent;
+}

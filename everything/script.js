@@ -63,7 +63,6 @@ if (window.Addon == 1) {
 		Exec: function () {
 			WebBrowser.Focus();
 			document.F.everythingsearch.focus();
-			return S_OK;
 		}
 	};
 
@@ -75,7 +74,7 @@ if (window.Addon == 1) {
 	var width = "176px";
 	var s = item.getAttribute("Width");
 	if (s) {
-		width = (api.QuadPart(s) == s) ? (s + "px") : s;
+		width = (GetNum(s) == s) ? s + "px" : s;
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -89,7 +88,8 @@ if (window.Addon == 1) {
 
 	await $.importScript("addons\\" + Addon_Id + "\\sync.js");
 
-	SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(event)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', WINVER < 0x602 || window.chrome ? "24" : "12", 'pt; vertical-align: middle"><span style="position: relative"><span id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" class="button" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt">r</span><input type="image" src="', EncodeSC(await MakeImgDataEx(await Sync.Everything.Icon)), '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width 12pt; height: 12pt"></span>'], "middle");
+	var z = screen.deviceYDPI / 96;
+	SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(event)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', (WINVER < 0x602 || window.chrome ? 32 : 16) * z, 'px; vertical-align: middle"><span style="position: relative"><span id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" class="button" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left: ', -28 * z, 'px; top:', 4 * z, 'px">r</span><input type="image" src="', EncodeSC(await MakeImgDataEx(await Sync.Everything.Icon)), '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left:', -18 * z, 'px; top:', z, 'px; width:', 16 * z, 'px; height:', 16 * z, 'px"></span>'], "middle");
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }

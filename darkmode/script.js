@@ -1,15 +1,15 @@
-var Addon_Id = "darkmode";
+const Addon_Id = "darkmode";
 
 if (window.Addon == 1) {
 	Addons.DarkMode = {
-		SetCss: async function () {
+		SetCss: function () {
 			var link = document.createElement("link");
 			link.rel = "stylesheet";
 			link.type = "text/css";
-			link.href = await MainWindow.Sync.DarkMode.css;
+			link.href = "style.css";
 			document.head.appendChild(link);
 		}
 	}
-	importJScript("addons\\" + Addon_Id + "\\sync.js");
-	AddEvent("BrowserCreatedEx", Addons.DarkMode.SetCss.toString().replace(/^[^{]+{|}$/g, ""), true);
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
+	AddEvent("BrowserCreatedEx", Addons.DarkMode.SetCss.toString().replace(/^[^{]+{|}$/g, "").replace("style\.css", await api.UrlCreateFromPath(BuildPath(ui_.Installed, "addons\\darkmode\\style.css"))), true);
 }

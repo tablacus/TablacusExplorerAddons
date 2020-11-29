@@ -1,5 +1,5 @@
-var Addon_Id = "inneraddressbar";
-var item = await GetAddonElement(Addon_Id);
+const Addon_Id = "inneraddressbar";
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Menu", "Edit");
 	item.setAttribute("MenuPos", -1);
@@ -10,8 +10,7 @@ if (!item.getAttribute("Set")) {
 }
 
 if (window.Addon == 1) {
-	Addons.InnerAddressBar =
-	{
+	Addons.InnerAddressBar = {
 		tid: [],
 		Item: null,
 		nLoopId: 0,
@@ -48,20 +47,20 @@ if (window.Addon == 1) {
 		Arrange: async function (FolderItem, Id) {
 			this.tid[Id] = null;
 			if (!FolderItem) {
-				var TC = await te.Ctrl(CTRL_TC, Id);
+				const TC = await te.Ctrl(CTRL_TC, Id);
 				if (TC && await TC.Selected) {
 					FolderItem = await TC.Selected.FolderItem;
 				}
 			}
 			if (FolderItem) {
-				var oAddr = document.getElementById("inneraddressbar_" + Id);
+				const oAddr = document.getElementById("inneraddressbar_" + Id);
 				if (!oAddr) {
 					return;
 				}
-				var oPopup = document.getElementById("inneraddrselect_" + Id);
+				const oPopup = document.getElementById("inneraddrselect_" + Id);
 				oPopup.style.left = (oAddr.offsetWidth - oPopup.offsetWidth - 1) + "px";
 				oPopup.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
-				var oImg = document.getElementById("inneraddr_img_" + Id);
+				const oImg = document.getElementById("inneraddr_img_" + Id);
 				oImg.style.top = Math.abs(oAddr.offsetHeight - oImg.offsetHeight) / 2 + "px";
 			}
 		},
@@ -72,12 +71,11 @@ if (window.Addon == 1) {
 		},
 
 		Go: async function (n, Id) {
-			var FV = await GetInnerFV(Id);
-			NavigateFV(FV, await this.GetPath(n, Id));
+			NavigateFV(await GetInnerFV(Id), await this.GetPath(n, Id));
 		},
 
 		GetPath: async function (n, Id) {
-			var FV = await GetInnerFV(Id);
+			const FV = await GetInnerFV(Id);
 			if (FV) {
 				FolderItem = await FV.FolderItem;
 			}
@@ -90,18 +88,18 @@ if (window.Addon == 1) {
 		Popup: async function (o, n, Id) {
 			if (Addons.AddressBar.CanPopup(o, Id)) {
 				Addons.InnerAddressBar.Item = o;
-				var pt = GetPos(o, 9);
+				const pt = GetPos(o, 9);
 				MouseOver(o);
 				$.FolderMenu.Invoke($.FolderMenu.Open(await this.GetPath(n, Id), pt.x, pt.y));
 			}
 		},
 
 		Popup2: async function (o, Id) {
-			var FV = await GetInnerFV(Id);
+			const FV = await GetInnerFV(Id);
 			if (FV) {
-				var FolderItem = await FV.FolderItem;
+				let FolderItem = await FV.FolderItem;
 				await $.FolderMenu.Clear();
-				var hMenu = await api.CreatePopupMenu();
+				const hMenu = await api.CreatePopupMenu();
 				while (!await api.ILIsEmpty(FolderItem)) {
 					FolderItem = await api.ILRemoveLastID(FolderItem);
 					await $.FolderMenu.AddMenuItem(hMenu, FolderItem);
@@ -112,8 +110,8 @@ if (window.Addon == 1) {
 					Addons.InnerAddressBar.nLoopId = 0;
 				};
 				MouseOver(o);
-				var pt = GetPos(o, 9);
-				var nVerb = await $.FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y);
+				const pt = GetPos(o, 9);
+				const nVerb = await $.FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y);
 				FolderItem = nVerb ? $.FolderMenu.Items[nVerb - 1] : null;
 				$.FolderMenu.Clear();
 				$.FolderMenu.Invoke(FolderItem, SBSP_SAMEBROWSER, FV);
@@ -122,9 +120,9 @@ if (window.Addon == 1) {
 
 		Popup3: async function (o, Id) {
 			if (Addons.InnerAddressBar.CanPopup(o, Id)) {
-				var FV = await GetInnerFV(Id);
+				const FV = await GetInnerFV(Id);
 				if (FV) {
-					var pt = GetPos(o, 9);
+					const pt = GetPos(o, 9);
 					$.FolderMenu.LocationEx(pt.x + o.offsetWidth, pt.y);
 				}
 			}
@@ -149,7 +147,7 @@ if (window.Addon == 1) {
 		},
 
 		Exec: async function () {
-			var TC = await te.Ctrl(CTRL_TC);
+			const TC = await te.Ctrl(CTRL_TC);
 			if (TC) {
 				Addons.InnerAddressBar.ExecEx(await TC.Id);
 			}
@@ -158,7 +156,7 @@ if (window.Addon == 1) {
 
 		ExecEx: async function (Id) {
 			if (isNaN(Id)) {
-				var TC = await te.Ctrl(CTRL_TC);
+				const TC = await te.Ctrl(CTRL_TC);
 				if (TC) {
 					Id = await TC.Id;
 				}
@@ -168,36 +166,34 @@ if (window.Addon == 1) {
 				document.getElementById("inneraddressbar_" + Id).focus();
 			}
 			return S_OK;
-		}
+		},
 
-	};
-
-	AddEvent("ChangeView", async function (Ctrl) {
-		if (await Ctrl.FolderItem && await Ctrl.Id == await Ctrl.Parent.Selected.Id) {
-			var Id = await Ctrl.Parent.Id;
-			var path = await api.GetDisplayNameOf(await Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+		ChangeView: async function(Ctrl) {
+			const Id = await Ctrl.Parent.Id;
+			const path = await Ctrl.FolderItem.Path;
 			Addons.InnerAddressBar.path2[Id] = path
-			var o = document.getElementById("inneraddressbar_" + Id);
+			const o = document.getElementById("inneraddressbar_" + Id);
 			if (o) {
 				o.value = path;
-			}
-			Addons.InnerAddressBar.Arrange(await Ctrl.FolderItem, Id);
-			o = document.getElementById("inneraddr_img_" + Id);
-			if (o) {
-				o.src = await GetIconImage(Ctrl, await GetSysColor(COLOR_WINDOW));
+				Addons.InnerAddressBar.Arrange(await Ctrl.FolderItem, Id);
+				document.getElementById("inneraddr_img_" + Id).src = await GetIconImage(Ctrl, await GetSysColor(COLOR_WINDOW));
 			}
 		}
-	});
+	};
+
+	AddEvent("ChangeView2", Addons.InnerAddressBar.ChangeView);
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {
-		var nSize = Addons.InnerAddressBar.nSize;
-		var s = (Addons.InnerAddressBar.path2[Id] || "").replace(/"/, "");
-		s = ['<div style="position: relative; width; 100px; overflow: hidden"><input id="inneraddressbar_$" type="text" value="' + s + '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerAddressBar.KeyDown(event, this, $)" oninput="AdjustAutocomplete(this.value)" onfocus="Addons.InnerAddressBar.Focus(this, $)" onresize="Addons.InnerAddressBar.Resize($)" style="width: 100%; vertical-align: middle; padding-left: ', nSize + 4, 'px; padding-right: 16px;"><div id="inneraddrselect_$" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerAddressBar.Popup3(this, $)">', BUTTONS.dropdown, '</span></div>'];
-		s.push('<img id="inneraddr_img_$" src="icon:shell32.dll,3,16"');
-		s.push(' onclick="return Addons.InnerAddressBar.ExecEx($);"');
-		s.push(' oncontextmenu="Addons.InnerAddressBar.ExecEx($); return false;"');
+		const nSize = Addons.InnerAddressBar.nSize;
+		const s = ['<div style="position: relative; width; 100px; overflow: hidden"><input id="inneraddressbar_', Id, '" type="text" value="', (Addons.InnerAddressBar.path2[Id] || "").replace(/"/, ""), '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerAddressBar.KeyDown(event, this, ', Id, ')" oninput="AdjustAutocomplete(this.value)" onfocus="Addons.InnerAddressBar.Focus(this, ', Id, ')" onresize="Addons.InnerAddressBar.Resize(', Id, ')" style="width: 100%; vertical-align: middle; padding-left: ', nSize + 4, 'px; padding-right: 16px;"><div id="inneraddrselect_', Id, '" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerAddressBar.Popup3(this, ', Id, ')">', BUTTONS.dropdown, '</span></div>'];
+		s.push('<img id="inneraddr_img_', Id, '"');
+		s.push(' onclick="return Addons.InnerAddressBar.ExecEx(', Id, ');"');
+		s.push(' oncontextmenu="Addons.InnerAddressBar.ExecEx(', Id, '); return false;"');
 		s.push(' style="position: absolute; left: 4px; top: 1.5pt; width: ', nSize, 'px; height: ', nSize, 'px; z-index: 3; border: 0px"></div>');
-		SetAddon(null, "Inner1Center_" + Id, s.join("").replace(/\$/g, Id));
+		SetAddon(null, "Inner1Center_" + Id, s.join(""));
+		(async function () {
+			Addons.InnerAddressBar.ChangeView(await Ctrl.Selected);
+		})();
 	});
 
 	AddEvent("Arrange", async function (Ctrl, rc) {

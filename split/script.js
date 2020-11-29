@@ -1,14 +1,14 @@
-var Addon_Id = "split";
-var Default = "ToolBar1Right";
+const Addon_Id = "split";
+const Default = "ToolBar1Right";
 
-var item = await GetAddonElement(Addon_Id);
+const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Split = {
 		NoTop: item.getAttribute("NoTop"),
 		Close: item.getAttribute("Close"),
 
 		Exec: async function (nMax, nMode) {
-			var TC = [];
+			const TC = [];
 			await Addons.Split.Exec2(nMax, TC);
 			switch (nMode) {
 				case 1:
@@ -61,15 +61,15 @@ if (window.Addon == 1) {
 		},
 
 		Exec2: async function (nMax, TC) {
-			var TC0 = await te.Ctrl(CTRL_TC);
-			var cTC = await te.Ctrls(CTRL_TC);
-			var ix = await Addons.Split.Sort(cTC);
-			var Group = TC0 && await TC0.Count ? await TC0.Data.Group : 0;
-			var freeTC = [];
-			var nTC = 0;
-			for (var i = await GetLength(cTC); i-- > 0;) {
-				var TC1 = await cTC[ix[i].i];
-				var Group1 = await TC1.Data.Group;
+			const TC0 = await te.Ctrl(CTRL_TC);
+			const cTC = await te.Ctrls(CTRL_TC);
+			const ix = await Addons.Split.Sort(cTC);
+			const Group = TC0 && await TC0.Count ? await TC0.Data.Group : 0;
+			const freeTC = [];
+			let nTC = 0;
+			for (let i = await GetLength(cTC); i-- > 0;) {
+				const TC1 = await cTC[ix[i].i];
+				const Group1 = await TC1.Data.Group;
 				if (Group1 == 0 || Group1 == Group) {
 					if (await TC1.Count && nTC < nMax) {
 						TC1.Visible = true;
@@ -83,14 +83,14 @@ if (window.Addon == 1) {
 				}
 			}
 			for (; nTC < nMax; nTC++) {
-				var type = CTRL_SB;
-				var viewmode = FVM_DETAILS;
-				var flags = FWF_SHOWSELALWAYS | FWF_NOWEBVIEW;
-				var icon = 0;
-				var options = EBO_SHOWFRAMES | EBO_ALWAYSNAVIGATE;
-				var viewflags = 8;
+				let type = CTRL_SB;
+				let viewmode = FVM_DETAILS;
+				let flags = FWF_SHOWSELALWAYS | FWF_NOWEBVIEW;
+				let icon = 0;
+				let options = EBO_SHOWFRAMES | EBO_ALWAYSNAVIGATE;
+				let viewflags = 8;
 				if (TC[0]) {
-					var FV = await TC[0].Selected;
+					const FV = await TC[0].Selected;
 					if (FV) {
 						type = await FV.Type;
 						viewmode = await FV.CurrentViewMode;
@@ -114,7 +114,7 @@ if (window.Addon == 1) {
 		},
 
 		CreateTC: async function (freeTC, Left, Top, Width, Height, Style, Align, TabWidth, TabHeight, Group) {
-			var TC;
+			let TC;
 			if (freeTC.length) {
 				TC = freeTC.shift();
 				TC.Left = Left;
@@ -134,19 +134,20 @@ if (window.Addon == 1) {
 		},
 
 		SetButtons: async function (Addon_Id, Default, item, n, ar) {
-			var s = [];
-			for (var i = 0; i < ar.length; i++) {
+			const px = screen.deviceYDPI / 96 * 16;
+			const s = [];
+			for (let i = 0; i < ar.length; i++) {
 				if (!item.getAttribute("No" + ar[i].id)) {
-					s.push('<span class="button" onclick="Addons.Split', n, '.Exec(', ar[i].exec, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', ar[i].id, '" src="../addons/split', n, '/', ar[i].img || ar[i].id, '.png" style="width: 12pt"></span>');
+					s.push('<span class="button" onclick="Addons.Split', n, '.Exec(', ar[i].exec, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', ar[i].id, '" src="../addons/split', n, '/', ar[i].img || ar[i].id, '.png" style="width: ', px, 'px"></span>');
 				}
 			}
 			document.getElementById(Addon_Id).innerHTML = s.join("");
 		},
 
 		Sort: async function (cTC) {
-			var ix = [];
-			var rc = await api.Memory("RECT");
-			for (var i = await GetLength(cTC); i--;) {
+			const ix = [];
+			const rc = await api.Memory("RECT");
+			for (let i = await GetLength(cTC); i--;) {
 				api.GetWindowRect(await cTC[i].hwnd, rc);
 				ix.push({
 					i: i,
@@ -156,7 +157,7 @@ if (window.Addon == 1) {
 					left: await rc.left
 				});
 			}
-			var Id = Addons.Split.NoTop ? await te.Ctrl(CTRL_TC).Id : -1;
+			const Id = Addons.Split.NoTop ? await te.Ctrl(CTRL_TC).Id : -1;
 			return ix.sort(
 				function (b, a) {
 					if (a.Id == Id) {
@@ -186,48 +187,48 @@ if (window.Addon == 1) {
 				document.getElementById("client").style.cursor = "";
 				return;
 			}
-			var r = await api.CreateObject("Array");
-			var nCursor = 0, c = 6, d = 8;
-			var cTC = await te.Ctrls(CTRL_TC, true);
-			var nCount = await cTC.Count;
-			var ar = [nCount];
-			for (var i = nCount; i-- > 0;) {
-				var TC = await cTC[i];
-				var id = await TC.Id;
-				var o = document.getElementById("Panel_" + id);
+			const r = await api.CreateObject("Array");
+			let nCursor = 0, c = 6, d = 8;
+			const cTC = await te.Ctrls(CTRL_TC, true);
+			const nCount = await cTC.Count;
+			const ar = [nCount];
+			for (let i = nCount; i-- > 0;) {
+				const TC = await cTC[i];
+				const id = await TC.Id;
+				const o = document.getElementById("Panel_" + id);
 				if (!o) {
 					return;
 				}
-				var right = o.offsetLeft + o.offsetWidth;
-				var bottom = o.offsetTop + o.offsetHeight;
+				const right = o.offsetLeft + o.offsetWidth;
+				const bottom = o.offsetTop + o.offsetHeight;
 				if (await TC.Left && e.clientX > o.offsetLeft - d && e.clientX < o.offsetLeft + c) {
-					var q = await api.CreateObject("Object");
+					const q = await api.CreateObject("Object");
 					q.left = id;
 					r.push(q);
 					nCursor |= 1;
 				}
 				if (e.clientX > right - d && e.clientX < right + c) {
-					var q = await api.CreateObject("Object");
+					const q = await api.CreateObject("Object");
 					q.width = id;
 					r.push(q);
 					nCursor |= 1;
 				}
 				if (await TC.Top && e.clientY > o.offsetTop - d && e.clientY < o.offsetTop + c) {
 					ar.push(e.clientY > o.offsetTop - d, e.clientY < o.offsetTop + c);
-					var q = await api.CreateObject("Object");
+					const q = await api.CreateObject("Object");
 					q.top = id;
 					await r.push(q);
 					nCursor |= 2;
 				}
 				if (e.clientY > bottom - d && e.clientY < bottom + c) {
-					var q = await api.CreateObject("Object");
+					const q = await api.CreateObject("Object");
 					q.height = id;
 					await r.push(q);
 					nCursor |= 2;
 				}
 			}
 			if (nCursor) {
-				var o = document.getElementById("client");
+				const o = document.getElementById("client");
 				o.style.cursor = nCursor == 1 ? "w-resize" : nCursor == 2 ? "s-resize" : "move";
 				Addons.Split.hCursor = await api.LoadCursor(null, nCursor + 32643);
 				api.SetCursor(Addons.Split.hCursor);
@@ -236,9 +237,9 @@ if (window.Addon == 1) {
 		},
 
 		Down: async function (e) {
-			var r = await Addons.Split.Over(e);
+			const r = await Addons.Split.Over(e);
 			if (r && await GetLength(r)) {
-				api.SetCapture(await te.hwnd);
+				api.SetCapture(ui_.hwnd);
 				Common.Split = r;
 			}
 		}
@@ -246,7 +247,7 @@ if (window.Addon == 1) {
 
 	SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
 
-	var o = document.getElementById("client");
+	const o = document.getElementById("client");
 	AddEventEx(o, "mouseover", Addons.Split.Over);
 	AddEventEx(o, "mousedown", Addons.Split.Down);
 
