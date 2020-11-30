@@ -1,18 +1,17 @@
-﻿var Addon_Id = "inactivepane";
-var item = GetAddonElement(Addon_Id);
+﻿const Addon_Id = "inactivepane";
+const item = await GetAddonElement(Addon_Id);
 
-Addons.InactivePane =
-{
-	tid: {},
+Addons.InactivePane = {
+	TextColor: item.getAttribute("TextColor"),
+	Color: item.getAttribute("Color"),
 
-	Arrange: function (Ctrl) {
-		var FV = GetFolderView(Ctrl);
+	Arrange: async function (Ctrl) {
+		const FV = await GetFolderView(Ctrl);
 		if (FV) {
-			delete Addons.InactivePane.tid[FV.hwnd];
-			var hwnd = FV.hwndList;
+			var hwnd = await FV.hwndList;
 			if (hwnd) {
-				if (Addons.InactivePane.IsActive(FV)) {
-					return Addons.InactivePane.Active(FV);
+				if (await Addons.InactivePane.IsActive(FV)) {
+					return Addons.InactivePane.Active(FV, hwnd);
 				}
 				Addons.InactivePane.SetBKColor(FV, hwnd, Addons.InactivePane.Color, Addons.InactivePane.TextColor);
 				api.InvalidateRect(hwnd, null, true);
@@ -20,19 +19,19 @@ Addons.InactivePane =
 		}
 	},
 
-	SetBKColor: function (FV, hwnd, color, text) {
+	SetBKColor: async function (FV, hwnd, color, text) {
 		api.SendMessage(hwnd, LVM_SETTEXTCOLOR, 0, text);
 		api.SendMessage(hwnd, LVM_SETBKCOLOR, 0, color);
 		api.SendMessage(hwnd, LVM_SETTEXTBKCOLOR, 0, color);
 		api.SendMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
-		var TV = FV.TreeView;
-		hwnd = TV.hwndTree;
+		const TV = await FV.TreeView;
+		hwnd = await TV.hwndTree;
 		if (hwnd) {
 			api.SendMessage(hwnd, TVM_SETTEXTCOLOR, 0, text);
 			api.SendMessage(hwnd, TVM_SETBKCOLOR, 0, color);
 		}
-		if (FV.Type == CTRL_EB) {
-			hwnd = FindChildByClass(FV.hwnd, WC_TREEVIEW);
+		if (await FV.Type == CTRL_EB) {
+			hwnd = await FindChildByClass(await FV.hwnd, WC_TREEVIEW);
 			if (hwnd) {
 				api.SendMessage(hwnd, TVM_SETTEXTCOLOR, 0, text);
 				api.SendMessage(hwnd, TVM_SETBKCOLOR, 0, color);
@@ -40,20 +39,19 @@ Addons.InactivePane =
 		}
 	},
 
-	Active: function (FV) {
-		var hwnd = FV.hwndList;
+	Active: async function (FV, hwnd) {
 		if (hwnd) {
-			Addons.InactivePane.SetBKColor(FV, hwnd, GetSysColor(COLOR_WINDOW), GetSysColor(COLOR_WINDOWTEXT));
+			Addons.InactivePane.SetBKColor(FV, hwnd, await GetSysColor(COLOR_WINDOW), await GetSysColor(COLOR_WINDOWTEXT));
 			api.InvalidateRect(hwnd, null, true);
 		}
 	},
 
-	IsActive: function (Ctrl) {
-		return Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id;
+	IsActive: async function (Ctrl) {
+		return await Ctrl.Parent.Id == await te.Ctrl(CTRL_TC).Id;
 	},
 
-	IsDark: function () {
-		var cl = MainWindow.GetSysColor(COLOR_WINDOW);
+	IsDark: async function () {
+		var cl = await MainWindow.GetSysColor(COLOR_WINDOW);
 		return (cl & 0xff) * 299 + (cl & 0xff00) * 2.29296875 + (cl & 0xff0000) * 0.001739501953125 < 127500;
 	}
 }
@@ -66,35 +64,32 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEventId("AddonDisabledEx", "inactivepane", function () {
-		var cTC = te.Ctrls(CTRL_TC);
-		for (var i in cTC) {
-			var TC = cTC[i];
+	AddEventId("AddonDisabledEx", "inactivepane", async function () {
+		for (let i = await cTC.Count; i-- > 0;) {
+			const TC = await cTC[i];
 			if (TC) {
-				Addons.InactivePane.Active(TC.Selected);
+				Addons.InactivePane.Active(await TC.Selected, await TC.Selected.hwndList);
 			}
 		}
 	});
 
-	AddEvent("Load", function () {
-		var cl = item.getAttribute("TextColor");
-		Addons.InactivePane.TextColor = cl ? GetWinColor(cl) : Addons.InactivePane.IsDark() ? 0xaaaaaa : 0x444444;
-		cl = item.getAttribute("Color");
-		Addons.InactivePane.Color = cl ? GetWinColor(cl) : Addons.InactivePane.IsDark() ? 0x444444 : 0xaaaaaa;
-		var cTC = te.Ctrls(CTRL_TC, true);
-		for (var i in cTC) {
-			var TC = cTC[i];
+	AddEvent("Load", async function () {
+		let cl = Addons.InactivePane.TextColor;
+		const bDark = await Addons.InactivePane.IsDark();
+		Addons.InactivePane.TextColor = cl ? await GetWinColor(cl) : bDark ? 0xaaaaaa : 0x444444;
+		cl = Addons.InactivePane.Color;
+		Addons.InactivePane.Color = cl ? await GetWinColor(cl) : bDark ? 0x444444 : 0xaaaaaa;
+		const cTC = te.Ctrls(CTRL_TC, true);
+		for (let i = await cTC.Count; i-- > 0;) {
+			const TC = await cTC[i];
 			if (TC) {
-				Addons.InactivePane.Arrange(TC.Selected);
+				Addons.InactivePane.Arrange(await TC.Selected);
 			}
 		}
 	});
 } else {
-	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
-	if (ado) {
-		SetTabContents(0, "", ado.ReadText(adReadAll));
-		ado.Close();
-		document.getElementById("TextColor").setAttribute("placeholder", GetWebColor(Addons.InactivePane.IsDark() ? 0xaaaaaa : 0x444444));
-		document.getElementById("Color").setAttribute("placeholder", GetWebColor(Addons.InactivePane.IsDark() ? 0x444444 : 0xaaaaaa));
-	}
+	SetTabContents(0, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
+	const bDark = await Addons.InactivePane.IsDark();
+	document.getElementById("TextColor").setAttribute("placeholder", GetWebColor(bDark ? 0xaaaaaa : 0x444444));
+	document.getElementById("Color").setAttribute("placeholder", GetWebColor(bDark ? 0x444444 : 0xaaaaaa));
 }

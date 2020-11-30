@@ -1,12 +1,11 @@
-var Addon_Id = "sidetreeview";
+const Addon_Id = "sidetreeview";
 
-var item = await GetAddonElement(Addon_Id);
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("List", 1);
 }
 if (window.Addon == 1) {
-	Addons.SideTreeView =
-	{
+	Addons.SideTreeView = {
 		Align: GetNum(item.getAttribute("Align")) ? "Right" : "Left",
 		List: item.getAttribute("List"),
 		Depth: GetNum(item.getAttribute("Depth")),
@@ -18,7 +17,7 @@ if (window.Addon == 1) {
 			if (!await te.Data["Conf_" + this.Align + "BarWidth"]) {
 				te.Data["Conf_" + this.Align + "BarWidth"] = 178;
 			}
-			var h = Addons.SideTreeView.Height;
+			let h = Addons.SideTreeView.Height;
 			if (h == Number(h)) {
 				h += 'px';
 			}
@@ -53,10 +52,10 @@ if (window.Addon == 1) {
 			if (Addons.SideTreeView.List) {
 				FV = await GetFolderView();
 				if (FV) {
-					var FolderItem = await FV.FolderItem;
+					const FolderItem = await FV.FolderItem;
 					if (FolderItem) {
-						var TV = await Common.SideTreeView.TV;
-						if (TV && await Common.SideTreeView.TV.Visible) {
+						const TV = await Common.SideTreeView.TV;
+						if (TV && await TV.Visible) {
 							TV.Expand(FolderItem, Addons.SideTreeView.Depth);
 						}
 					}
@@ -65,16 +64,19 @@ if (window.Addon == 1) {
 		},
 
 		Resize: async function () {
-			var hwnd = await Common.SideTreeView.TV.hwnd;
-			if (await api.IsWindowVisible(hwnd)) {
-				var o = document.getElementById("sidetreeview");
-				var pt = GetPos(o);
+			const TV = await Common.SideTreeView.TV;
+			const hwnd = TV && await TV.hwnd;
+			const o = document.getElementById("sidetreeview");
+			if (o && TV && await api.IsWindowVisible(hwnd)) {
+				const pt = GetPos(o);
 				api.MoveWindow(hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
 				api.RedrawWindow(hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 				api.BringWindowToTop(hwnd);
 				Addons.SideTreeView.Expand(await GetFolderView());
 			} else {
-				Common.SideTreeView.TV.Visible = true;
+				if (TV) {
+					TV.Visible = true;
+				}
 				setTimeout(Addons.SideTreeView.Resize, 999);
 			}
 		}
@@ -89,9 +91,9 @@ if (window.Addon == 1) {
 			return;
 		}
 		SetGestureExec("Tree", "1", async function (Ctrl, pt) {
-			var Item = await Ctrl.HitTest(pt);
+			let Item = await Ctrl.HitTest(pt);
 			if (Item) {
-				var FV = await Ctrl.FolderView;
+				let FV = await Ctrl.FolderView;
 				if (!await api.ILIsEqual(await FV.FolderItem, Item)) {
 					setTimeout(async function () {
 						FV.Navigate(Item, await GetNavigateFlags(FV));
@@ -101,7 +103,7 @@ if (window.Addon == 1) {
 		}, "Async", true);
 
 		SetGestureExec("Tree", "3", async function (Ctrl, pt) {
-			var Item = await Ctrl.SelectedItem;
+			let Item = await Ctrl.SelectedItem;
 			if (Item) {
 				setTimeout(function () {
 					Ctrl.FolderView.Navigate(Item, SBSP_NEWBROWSER);
@@ -111,12 +113,12 @@ if (window.Addon == 1) {
 
 		//Tab
 		SetKeyExec("Tree", "$f", async function (Ctrl, pt) {
-			var FV = await GetFolderView(Ctrl, pt);
+			let FV = await GetFolderView(Ctrl, pt);
 			FV.Focus();
 		}, "Async", true);
 		//Enter
 		SetKeyExec("Tree", "$1c", async function (Ctrl, pt) {
-			var FV = await GetFolderView(Ctrl, pt);
+			let FV = await GetFolderView(Ctrl, pt);
 			FV.Navigate(await Ctrl.SelectedItem, GetNavigateFlags(FV));
 		}, "Async", true);
 

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.19</Version>
-    <MinVersion>2020.9.3</MinVersion>
-    <pubDate>Thu, 17 Sep 2020 00:00:00 GMT</pubDate>
+    <Version>1.20</Version>
+    <MinVersion>2020.11.29</MinVersion>
+    <pubDate>Mon, 30 Nov 2020 00:00:00 GMT</pubDate>
     <Options>Common:0,6:0</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -14,7 +15,7 @@
     <Description>Horizontal Favorites bar</Description>
   </en>
   <ja>
-    <Name>お気に入り バー(水平)</Name>
+    <Name>お気に入りバー(水平)</Name>
   </ja>
   <zh>
     <Name>我的最愛列</Name>
