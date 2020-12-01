@@ -408,7 +408,10 @@ if (window.Addon == 1) {
 					if (Addons.TabPlus.opt.Align > 1) {
 						const o = document.getElementById("Panel_" + id);
 						if (o) {
-							document.getElementById("tabplus_" + id).style.height = o.clientHeight + "px";
+							const p = document.getElementById("tabplus_" + id);
+							if (p) {
+								p.style.height = o.clientHeight + "px";
+							}
 						}
 					}
 				}
