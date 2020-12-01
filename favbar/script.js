@@ -9,15 +9,15 @@ if (window.Addon == 1) {
 		Size: item.getAttribute("Size"),
 
 		Click: function (i, bNew) {
-			var items = ui_.MenuFavorites;
-			var item = items[i];
+			let items = ui_.MenuFavorites;
+			let item = items[i];
 			if (item) {
 				Exec(te, item.text, ((bNew && /^Open$|^Open in background$/i.test(s)) || (SameText(item.Type, "Open") && Addons.FavBar.NewTab)) ? "Open in new tab" : item.Type, ui_.hwnd, null);
 			}
 		},
 
 		Down: function (ev, i) {
-			if (ev.button == 1) {
+			if ((ev.buttons != null ? ev.buttons : ev.button) == 4) {
 				this.Click(i, true);
 			}
 		},
@@ -26,18 +26,18 @@ if (window.Addon == 1) {
 			if (Addons.FavBar.bClose) {
 				return S_OK;
 			}
-			if (ev.button == 0) {
-				var menus = await te.Data.xmlMenus.getElementsByTagName('Favorites');
+			if ((ev.buttons != null ? ev.buttons : ev.button) == 1) {
+				let menus = await te.Data.xmlMenus.getElementsByTagName('Favorites');
 				if (menus && await GetLength(menus)) {
-					var items = await menus[0].getElementsByTagName("Item");
-					var item = items[i];
-					var hMenu = await api.CreatePopupMenu();
-					var arMenu = await api.CreateObject("Array");
-					for (var j = await GetLength(items); --j > i;) {
+					let items = await menus[0].getElementsByTagName("Item");
+					let item = items[i];
+					let hMenu = await api.CreatePopupMenu();
+					let arMenu = await api.CreateObject("Array");
+					for (let j = await GetLength(items); --j > i;) {
 						await arMenu.unshift(j);
 					}
-					var o = document.getElementById("_favbar" + i);
-					var pt = await GetPosEx(o, 9);
+					let o = document.getElementById("_favbar" + i);
+					let pt = await GetPosEx(o, 9);
 					await MakeMenus(hMenu, null, arMenu, items, te, pt);
 					await AdjustMenuBreak(hMenu);
 					AddEvent("ExitMenuLoop", function () {
@@ -47,11 +47,11 @@ if (window.Addon == 1) {
 						}, 99);
 					});
 					window.g_menu_click = 2;
-					var nVerb = await api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null);
+					let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null);
 					api.DestroyMenu(hMenu);
 					if (nVerb > 0) {
 						item = await items[nVerb - 1];
-						var strType = await item.getAttribute("Type");
+						let strType = await item.getAttribute("Type");
 						if (SameText(strType, "Open") && (window.g_menu_button == 3 || Addons.FavBar.NewTab)) {
 							strType = "Open in new tab";
 						}
@@ -67,12 +67,12 @@ if (window.Addon == 1) {
 		},
 
 		Popup: async function (ev, i) {
-			var items = ui_.MenuFavorites;
+			let items = ui_.MenuFavorites;
 			if (i >= 0) {
-				var hMenu = await api.CreatePopupMenu();
-				var ContextMenu = null;
+				let hMenu = await api.CreatePopupMenu();
+				let ContextMenu = null;
 				if (i < items.length) {
-					var path = this.GetPath(items, i);
+					let path = this.GetPath(items, i);
 					if (path != "") {
 						ContextMenu = await api.ContextMenu(path);
 					}
@@ -84,11 +84,11 @@ if (window.Addon == 1) {
 				}
 				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, await GetText("&Edit"));
 				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, await GetText("Add"));
-				var x = ev.screenX * ui_.Zoom;
-				var y = ev.screenY * ui_.Zoom;
-				var nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, ContextMenu);
+				let x = ev.screenX * ui_.Zoom;
+				let y = ev.screenY * ui_.Zoom;
+				let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, ContextMenu);
 				if (nVerb >= 0x1001) {
-					var s = await ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
+					let s = await ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
 					if (SameText(s, "delete")) {
 						this.ShowOptions();
 					} else {
@@ -106,12 +106,12 @@ if (window.Addon == 1) {
 		},
 
 		DropDown: async function (i) {
-			var o = document.getElementById("_favbar" + i);
+			let o = document.getElementById("_favbar" + i);
 			MouseOver(o);
-			var pt = GetPos(o, true);
-			var items = ui_.MenuFavorites;
-			var strType = items[i].Type;
-			var wFlags = SBSP_SAMEBROWSER;
+			let pt = GetPos(o, true);
+			let items = ui_.MenuFavorites;
+			let strType = items[i].Type;
+			let wFlags = SBSP_SAMEBROWSER;
 			if (SameText(strType, "Open in new tab")) {
 				wFlags = SBSP_NEWBROWSER;
 			} else if (SameText(strType, "Open in background")) {
@@ -125,14 +125,14 @@ if (window.Addon == 1) {
 			const items = await Addons.FavBar.GetFovorites();
 			let menus = 0;
 			for (let i = 0; i < items.length; i++) {
-				var item = items[i];
-				var strFlag = SameText(item.Type, "menus") ? item.text.toLowerCase() : "";
-				var strName = EncodeSC(await ExtractMacro(te, item.Name.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")));
+				let item = items[i];
+				let strFlag = SameText(item.Type, "menus") ? item.text.toLowerCase() : "";
+				let strName = EncodeSC(await ExtractMacro(te, item.Name.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")));
 				if (strFlag == "close" && menus) {
 					menus--;
 					continue;
 				}
-				var menus1 = menus;
+				let menus1 = menus;
 				if (strFlag == "open") {
 					if (menus++) {
 						continue;
@@ -149,17 +149,17 @@ if (window.Addon == 1) {
 				}  else if (menus) {
 					continue;
 				}
-				var img = '';
-				var icon = item.Icon;
+				let img = '';
+				let icon = item.Icon;
 				if (icon != "-") {
-					var h = GetIconSize(item.Height || Addons.FavBar.Size, 16);
+					let h = GetIconSize(item.Height || Addons.FavBar.Size, 16);
 					if (icon) {
 						img = await GetImgTag({ src: await ExtractMacro(te, icon) }, h);
 					} else if (/^Open$|^Open in new tab$|^Open in background$|^Exec$/i.test(item.Type)) {
-						var path = await Addons.FavBar.GetPath(items, i);
-						var pidl = await api.ILCreateFromPath(path);
+						let path = await Addons.FavBar.GetPath(items, i);
+						let pidl = await api.ILCreateFromPath(path);
 						if (await api.ILIsEmpty(pidl) || await pidl.Unavailable) {
-							var res = /"([^"]*)"/.exec(path) || /([^\s]*)/.exec(path);
+							let res = /"([^"]*)"/.exec(path) || /([^\s]*)/.exec(path);
 							if (res) {
 								pidl = await api.ILCreateFromPath(res[1]);
 							}
@@ -179,7 +179,7 @@ if (window.Addon == 1) {
 			}
 			s.push('&nbsp;</label>');
 
-			var o = document.getElementById('_favbar');
+			let o = document.getElementById('_favbar');
 			o.innerHTML = s.join("");
 			ApplyLang(o);
 			Resize();
@@ -187,7 +187,7 @@ if (window.Addon == 1) {
 
 		GetFovorites: async function () {
 			if(!ui_.MenuFavorites) {
-				var menus = await te.Data.xmlMenus.getElementsByTagName('Favorites');
+				let menus = await te.Data.xmlMenus.getElementsByTagName('Favorites');
 				if (menus && await GetLength(menus)) {
 					ui_.MenuFavorites = await GetXmlItems(await menus[0].getElementsByTagName("Item"));
 				}
@@ -200,7 +200,7 @@ if (window.Addon == 1) {
 		},
 
 		GetPath: async function (items, i) {
-			var line = items[i].text.split("\n");
+			let line = items[i].text.split("\n");
 			return await api.PathUnquoteSpaces(await ExtractMacro(null, line[0]));
 		},
 

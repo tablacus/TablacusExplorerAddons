@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.38</Version>
-    <MinVersion>2020.8.3</MinVersion>
-    <pubDate>Mon, 03 Aug 2020 00:00:00 GMT</pubDate>
+    <Version>1.39</Version>
+    <MinVersion>2020.11.30</MinVersion>
+    <pubDate>Tue, 01 Dec 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
-    <License>MIT License</License>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+   <License>MIT License</License>
   </General>
   <en>
     <Name>Favorites bar</Name>
     <Description>Favorites bar</Description>
   </en>
   <ja>
-    <Name>お気に入り バー</Name>
+    <Name>お気に入りバー</Name>
   </ja>
   <zh>
     <Name>我的最愛欄</Name>
