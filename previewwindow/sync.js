@@ -1,5 +1,5 @@
-var Addon_Id = "previewwindow";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "previewwindow";
+const item = GetAddonElement(Addon_Id);
 
 if (!te.Data.AddonsData.PreviewWindow) {
 	te.Data.AddonsData.PreviewWindow = api.CreateObject("Object");
@@ -8,10 +8,10 @@ if (!te.Data.AddonsData.PreviewWindow) {
 
 Sync.PreviewWindow = {
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-	nPos: api.LowPart(item.getAttribute("MenuPos")),
+	nPos: GetNum(item.getAttribute("MenuPos")),
 	ppid: api.Memory("DWORD"),
-	Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
-	TextFilter: api.LowPart(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
+	Extract: GetNum(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
+	TextFilter: GetNum(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
 	Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
 	Charset: item.getAttribute("Charset"),
 	TextSize: item.getAttribute("TextSize") || 4000,
