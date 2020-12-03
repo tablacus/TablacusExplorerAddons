@@ -1,16 +1,15 @@
-﻿var Addon_Id = "split3";
-var Default = "ToolBar1Right";
+const Addon_Id = "split3";
+const Default = "ToolBar1Right";
 
-var item = GetAddonElement(Addon_Id);
+const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
-	if (!Addons.Split) {
-		return;
-	}
-	Addons.Split3 =
-	{
-		Exec: function (nMax, nMode) {
-			var TC = [te.Ctrl(CTRL_TC)];
-			Addons.Split.Exec2(nMax, TC);
+	Addons.Split3 = {
+		Exec: async function (nMax, nMode) {
+			if (!Addons.Split) {
+				return;
+			}
+			const TC = [await te.Ctrl(CTRL_TC)];
+			await Addons.Split.Exec2(nMax, TC);
 			switch (nMode) {
 				case 1:
 					TC[0].Left = 0;
@@ -46,24 +45,23 @@ if (window.Addon == 1) {
 					break;
 			}
 			TC[0].Selected.Focus();
+			RunEvent1("VisibleChanged", TC[0]);
 		}
-
 	};
 
 	SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
 
 	AddEvent("load", function () {
-		Addons.Split.SetButtons(Addon_Id, Default, item, 3,
-			[
-				{ id: "3x1", exec: "3, 1" },
-				{ id: "1x3", exec: "3, 2" }
-			]);
+		Addons.Split.SetButtons(Addon_Id, Default, item, 3, [
+			{ id: "3x1", exec: "3, 1" },
+			{ id: "1x3", exec: "3, 2" }
+		]);
 	});
 } else {
-	var s = ['<label>View</label><br>'];
-	var ar = ["3x1", "1x3"];
-	for (var i = 0; i < ar.length; i++) {
-		s.push('<label><input type="checkbox" id="!No', ar[i], '" />', ar[i], '</label>&nbsp;');
+	const s = ['<label>View</label><br>'];
+	const ar = ["3x1", "1x3"];
+	for (let i = 0; i < ar.length; i++) {
+		s.push('<label><input type="checkbox" id="!No', ar[i], '">', ar[i], '</label>&nbsp;');
 	}
 	SetTabContents(0, "General", s);
 }

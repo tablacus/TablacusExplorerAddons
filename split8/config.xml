@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.12</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.12.1</MinVersion>
     <pubDate>Thu, 03 Dec 2020 00:00:00 GMT</pubDate>
-    <Options>Common:0,5:0</Options>
+    <Options>Common:6:6</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Hot button</Name>
-    <Description>Hot button</Description>
+    <Name>Split8</Name>
+    <Description>Split a window into 8 frames. *Require "Split"</Description>
   </en>
   <ja>
-    <Name>ホットボタン</Name>
+    <Name>8分割</Name>
+    <Description>画面の8分割 ※"分割"が必要</Description>
   </ja>
   <zh>
-    <Name>熱按鈕</Name>
+    <Name>劃分八個窗格</Name>
   </zh>
 </TablacusExplorer>
