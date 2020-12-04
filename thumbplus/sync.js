@@ -118,11 +118,3 @@ AddEvent("ChangeNotify", function (Ctrl, pidls, wParam, lParam) {
 		}
 	}
 });
-
-if (api.IsAppThemed() && WINVER >= 0x600) {
-	AddEvent("Load", function () {
-		if (!Sync.ClassicStyle) {
-			Sync.ThumbPlus.fStyle = LVIS_CUT;
-		}
-	});
-}

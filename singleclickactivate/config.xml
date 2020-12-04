@@ -1,11 +1,12 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
-  <General>0
-    <Version>1.02</Version>
-    <MinVersion>2018.4.18</MinVersion>
-    <pubDate>Thu, 19 Apr 2018 00:00:00 GMT</pubDate>
+  <General>
+    <Version>1.03</Version>
+    <MinVersion>2020.12.3</MinVersion>
+    <pubDate>Fri, 04 Dec 2020 00:00:00 GMT</pubDate>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -13,7 +14,10 @@
     <Description>Open item quickly with "Single click activate" style.</Description>
   </en>
   <ja>
-    <Name>ポイントで選択、クリックで実行改</Name>
+    <Name>ポイントで選択、クリックで実行プラス</Name>
     <Description>ポイントで選択、クリックで実行時に素早く項目を開く。</Description>
   </ja>
+  <zh>
+    <Name>按一下立刻開啟項目</Name>
+  </zh>
 </TablacusExplorer>

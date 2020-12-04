@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2019.1.17</MinVersion>
-    <pubDate>Sat, 19 Jan 2019 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2020.12.3</MinVersion>
+    <pubDate>Fri, 04 Dec 2020 00:00:00 GMT</pubDate>
     <Options>Common:4:4</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -15,6 +16,8 @@
   </en>
   <ja>
     <Name>拡張子で色分け</Name>
-    <Description>拡張子で色分け</Description>
   </ja>
+  <zh>
+    <Name>依副檔名著色</Name>
+  </zh>
 </TablacusExplorer>
