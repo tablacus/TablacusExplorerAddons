@@ -1,12 +1,13 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2016.2.29</MinVersion>
-    <pubDate>Mon, 29 Feb 2016 00:00:00 UTC</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2020.12.4</MinVersion>
+    <pubDate>Tue, 16 Apr 2019 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
-    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
-    <License>MIT License</License>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
   </General>
   <en>
     <Name>Auto Disable IME</Name>
@@ -14,6 +15,8 @@
   </en>
   <ja>
     <Name>IMEを自動的に無効にする</Name>
-    <Description>IMEを自動的に無効します。</Description>
   </ja>
+  <zh>
+    <Name>自動變成英文輸入</Name>
+  </zh>
 </TablacusExplorer>

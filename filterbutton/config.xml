@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
-    <MinVersion>2019.5.8</MinVersion>
-    <pubDate>Thu, 09 May 2019 00:00:00 GMT</pubDate>
+    <Version>1.07</Version>
+    <MinVersion>2020.12.4</MinVersion>
+    <pubDate>Tue, 16 Apr 2019 00:00:00 GMT</pubDate>
     <Options>Common:0,5,6,7,8,9:5</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -14,11 +15,9 @@
     <Description>Filter button</Description>
   </en>
   <ja>
-    <Name>フィルター ボタン</Name>
-    <Description>フィルター ボタン</Description>
+    <Name>フィルターボタン</Name>
   </ja>
   <zh>
     <Name>篩選按鈕</Name>
-    <Description>篩選按鈕</Description>
   </zh>
 </TablacusExplorer>

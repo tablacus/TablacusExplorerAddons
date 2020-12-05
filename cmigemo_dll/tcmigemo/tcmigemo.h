@@ -1,9 +1,13 @@
 #include "resource.h"
 #include <windows.h>
+#include <vector>
 #include <shlwapi.h>
 #pragma comment (lib, "shlwapi.lib")
 
-#define MAX_MIGEMO 8
+#define TE_METHOD		0x60010000
+#define TE_METHOD_MAX	0x6001ffff
+#define TE_METHOD_MASK	0x0000ffff
+#define TE_PROPERTY		0x40010000
 
 // C/Migemo functions
 typedef void* (WINAPI* LPFNmigemo_open)(const char* dict);
@@ -56,3 +60,26 @@ public:
 	STDMETHODIMP LockServer(BOOL fLock);
 };
 
+//CteDispatch
+class CteDispatch : public IDispatch
+{
+public:
+	STDMETHODIMP QueryInterface(REFIID riid, void **ppvObject);
+	STDMETHODIMP_(ULONG) AddRef();
+	STDMETHODIMP_(ULONG) Release();
+	//IDispatch
+	STDMETHODIMP GetTypeInfoCount(UINT *pctinfo);
+	STDMETHODIMP GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo);
+	STDMETHODIMP GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId);
+	STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr);
+
+	CteDispatch(IDispatch *pDispatch, int nMode, DISPID dispId);
+	~CteDispatch();
+
+	VOID Clear();
+public:
+	DISPID		m_dispIdMember;
+private:
+	IDispatch	*m_pDispatch;
+	LONG		m_cRef;
+};

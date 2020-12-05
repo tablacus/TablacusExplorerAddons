@@ -1,19 +1,32 @@
 // Tablacus C/Migemo Wrapper (C)2015 Gaku
 // MIT Lisence
-// Visual C++ 2008 Express Edition SP1
-// Windows SDK v7.0
-// http://www.eonet.ne.jp/~gakana/tablacus/
+// Visual Studio Express 2017 for Windows Desktop
+// 32-bit Visual Studio 2015 - Windows XP (v140_xp)
+// 64-bit Visual Studio 2017 (v141)
+// https://tablacus.github.io/
 
 #include "tcmigemo.h"
 
 // Global Variables:
 const TCHAR g_szProgid[] = TEXT("Tablacus.CMigemo");
 const TCHAR g_szClsid[] = TEXT("{08D62D88-0F74-4a37-9F24-628A385EEC5C}");
-CteMigemo *g_ppMigemo[MAX_MIGEMO];
+std::vector <CteMigemo *>	g_ppMigemo;
 LONG      g_lLocks = 0;
 HINSTANCE g_hinstDll = NULL;
 
 // Functions
+
+VOID SafeRelease(PVOID ppObj)
+{
+	try {
+		IUnknown **ppunk = static_cast<IUnknown **>(ppObj);
+		if (*ppunk) {
+			(*ppunk)->Release();
+			*ppunk = NULL;
+		}
+	} catch (...) {
+	}
+}
 
 VOID teSysFreeString(BSTR *pbs)
 {
@@ -191,17 +204,12 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
-			for (int i = MAX_MIGEMO; i--;) {
-				g_ppMigemo[i] = NULL;
-			}
 			g_hinstDll = hinstDll;
 			break;
 		case DLL_PROCESS_DETACH:
-			for (int i = MAX_MIGEMO; i--;) {
-				if (g_ppMigemo[i]) {
-					g_ppMigemo[i]->Close();
-					g_ppMigemo[i]->Release();
-				}
+			for (size_t i = g_ppMigemo.size(); i--;) {
+				g_ppMigemo[i]->Close();
+				g_ppMigemo[i]->Release();
 			}
 			break;
 	}
@@ -304,9 +312,10 @@ CteMigemo::CteMigemo()
 CteMigemo::~CteMigemo()
 {
 	Close();
-	for (int i = MAX_MIGEMO; i--;) {
+	for (size_t i = g_ppMigemo.size(); i--;) {
 		if (this == g_ppMigemo[i]) {
-			g_ppMigemo[i] = NULL;
+			g_ppMigemo.erase(g_ppMigemo.begin() + i);
+			break;
 		}
 	}
 }
@@ -392,6 +401,10 @@ STDMETHODIMP CteMigemo::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNa
 
 STDMETHODIMP CteMigemo::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
 {
+	if (wFlags == DISPATCH_PROPERTYGET && dispIdMember >= TE_METHOD) {
+		teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+		return S_OK;
+	}
 	int nArg = pDispParams ? pDispParams->cArgs - 1 : -1;
 	HRESULT hr = S_OK;
 
@@ -514,23 +527,88 @@ STDMETHODIMP CteClassFactory::CreateInstance(IUnknown *pUnkOuter, REFIID riid, v
 	if (pUnkOuter != NULL) {
 		return CLASS_E_NOAGGREGATION;
 	}
-	CteMigemo *pMigemo = NULL;
-	for (int i = MAX_MIGEMO; i--;) {
-		if (!g_ppMigemo[i]) {
-			pMigemo = new CteMigemo();
-			g_ppMigemo[i] = pMigemo;
-			break;
-		}
-		if (!g_ppMigemo[i]->m_hMigemo) {
-			pMigemo = g_ppMigemo[i];
-			break;
-		}
-	}
-	return pMigemo ? pMigemo->QueryInterface(riid, ppvObject) : CLASS_E_CLASSNOTAVAILABLE;
+	CteMigemo *pMigemo = new CteMigemo();
+	g_ppMigemo.push_back(pMigemo);
+	return pMigemo->QueryInterface(riid, ppvObject);
 }
 
 STDMETHODIMP CteClassFactory::LockServer(BOOL fLock)
 {
 	LockModule(fLock);
 	return S_OK;
+}
+
+//CteDispatch
+
+CteDispatch::CteDispatch(IDispatch *pDispatch, int nMode, DISPID dispId)
+{
+	m_cRef = 1;
+	pDispatch->QueryInterface(IID_PPV_ARGS(&m_pDispatch));
+	m_dispIdMember = dispId;
+}
+
+CteDispatch::~CteDispatch()
+{
+	Clear();
+}
+
+VOID CteDispatch::Clear()
+{
+	SafeRelease(&m_pDispatch);
+}
+
+STDMETHODIMP CteDispatch::QueryInterface(REFIID riid, void **ppvObject)
+{
+	static const QITAB qit[] =
+	{
+		QITABENT(CteDispatch, IDispatch),
+	{ 0 },
+	};
+	return QISearch(this, qit, riid, ppvObject);
+}
+
+STDMETHODIMP_(ULONG) CteDispatch::AddRef()
+{
+	return ::InterlockedIncrement(&m_cRef);
+}
+
+STDMETHODIMP_(ULONG) CteDispatch::Release()
+{
+	if (::InterlockedDecrement(&m_cRef) == 0) {
+		delete this;
+		return 0;
+	}
+
+	return m_cRef;
+}
+
+STDMETHODIMP CteDispatch::GetTypeInfoCount(UINT *pctinfo)
+{
+	*pctinfo = 0;
+	return S_OK;
+}
+
+STDMETHODIMP CteDispatch::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
+{
+	return E_NOTIMPL;
+}
+
+STDMETHODIMP CteDispatch::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
+{
+	return DISP_E_UNKNOWNNAME;
+}
+
+STDMETHODIMP CteDispatch::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
+{
+	try {
+		if (pVarResult) {
+			VariantInit(pVarResult);
+		}
+		if (wFlags & DISPATCH_METHOD) {
+			return m_pDispatch->Invoke(m_dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr);
+		}
+		teSetObject(pVarResult, this);
+		return S_OK;
+	} catch (...) {}
+	return DISP_E_MEMBERNOTFOUND;
 }
