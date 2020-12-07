@@ -1,68 +1,64 @@
-var Addon_Id = "linkbar";
-var Default = "ToolBar4Center";
-var AddonName = "LinkBar";
+const Addon_Id = "linkbar";
+const Default = "ToolBar4Center";
 
 if (window.Addon == 1) {
-	Addons.LinkBar =
-	{
-		DD: !GetAddonOptionEx(Addon_Id, "NoDD"),
+	Addons.LinkBar = {
+		DD: !await GetAddonOptionEx(Addon_Id, "NoDD"),
+		clWindow: await GetSysColor(COLOR_WINDOW),
 
-		Click: function (i, bNew) {
-			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
-			var item = items[i];
+		Click: async function (i, bNew) {
+			let items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
+			let item = items[i];
 			if (item) {
-				var type = item.getAttribute("Type");
-				Exec(te, item.text, (bNew && api.PathMatchSpec(type, "Open;Open in background")) ? "Open in new tab" : item.getAttribute("Type"), te.hwnd, null);
+				Exec(te, item.text, (bNew && /^Open$|^Open in background$/i.test(type)) ? "Open in new tab" : item.Type, ui_.hwnd, null);
 			}
 			return false;
 		},
 
-		Down: function (i) {
-			if (api.GetKeyState(VK_MBUTTON) < 0) {
+		Down: function (ev, i) {
+			if ((ev.buttons != null ? ev.buttons : ev.button) == 4) {
 				return this.Click(i, true);
 			}
 		},
 
-		Open: function (i) {
+		Open: async function (ev, i) {
 			if (Addons.LinkBar.bClose) {
 				return S_OK;
 			}
-			if (api.GetKeyState(VK_LBUTTON) < 0) {
-				var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
-				var item = items[i];
-				var hMenu = api.CreatePopupMenu();
-				var arMenu = [];
-				for (var j = items.length; --j > i;) {
-					arMenu.unshift(j);
+			if ((ev.buttons != null ? ev.buttons : ev.button) == 1) {
+				let items = await te.Data.xmlLinkBar.getElementsByTagName("Item");
+				let item = await items[i];
+				let hMenu = await api.CreatePopupMenu();
+				let arMenu = await api.CreateObject("Array");
+				for (let j = await GetLength(items); --j > i;) {
+					await arMenu.unshift(j);
 				}
-				var o = document.getElementById("_linkbar" + i);
-				var pt = GetPos(o, true);
-				pt.y += o.offsetHeight;
-				MakeMenus(hMenu, null, arMenu, items, te, pt);
-				AdjustMenuBreak(hMenu);
+				let o = document.getElementById("_linkbar" + i);
+				let pt = await GetPosEx(o, 9);
+				await MakeMenus(hMenu, null, arMenu, items, te, pt);
+				await AdjustMenuBreak(hMenu);
 				AddEvent("ExitMenuLoop", function () {
 					Addons.LinkBar.bClose = true;
-					setTimeout("Addons.LinkBar.bClose = false;", 100);
+					setTimeout(function () {
+						Addons.LinkBar.bClose = false;
+					}, 99);
 				});
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
+				let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null);
 				api.DestroyMenu(hMenu);
 				if (nVerb > 0) {
-					item = items[nVerb - 1];
-					Exec(te, item.text, item.getAttribute("Type"), te.hwnd, null);
+					item = await items[nVerb - 1];
+					Exec(te, await item.text, await item.getAttribute("Type"), ui_.hwnd, null);
 				}
 				return S_OK;
 			}
 		},
 
-		Popup: function (i) {
-			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
+		Popup: async function (ev, i) {
 			if (i >= 0) {
-				var hMenu = api.CreatePopupMenu();
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("&Edit"));
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Add"));
-				var pt = api.Memory("POINT");
-				api.GetCursorPos(pt);
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
+				let hMenu = await api.CreatePopupMenu();
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, await GetText("&Edit"));
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, await GetText("Add"));
+				let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, ev.screenX * ui_.Zoom, ev.screenY * ui_.Zoom, ui_.hwnd, null, null);
 				if (nVerb == 1) {
 					this.ShowOptions(i + 1);
 				}
@@ -71,39 +67,36 @@ if (window.Addon == 1) {
 				}
 				api.DestroyMenu(hMenu);
 			}
-			return false;
 		},
 
-		DropDown: function (i) {
-			var o = document.getElementById("_linkbar" + i);
+		DropDown: async function (i) {
+			const o = document.getElementById("_linkbar" + i);
 			MouseOver(o);
-			var pt = GetPos(o, true);
-			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
-			var strType = items[i].getAttribute("Type");
-			var wFlags = SBSP_SAMEBROWSER;
-			if (api.StrCmpI(strType, "Open in new tab") == 0) {
+			const pt = GetPos(o, 9);
+			let items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
+			const strType = items[i].Type;
+			let wFlags = SBSP_SAMEBROWSER;
+			if (SameText(strType, "Open in new tab")) {
 				wFlags = SBSP_NEWBROWSER;
-			} else if (api.StrCmpI(strType, "Open in background") == 0) {
+			} else if (SameText(strType, "Open in background")) {
 				wFlags = SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS;
 			}
-			FolderMenu.Invoke(FolderMenu.Open(items[i].text.split("\n")[0], pt.x, pt.y + o.offsetHeight, "*", 1), wFlags);
+			$.FolderMenu.Invoke(await $.FolderMenu.Open(items[i].text.split("\n")[0], pt.x, pt.y, "*", 1), wFlags);
 			return false;
 		},
 
-		Arrange: function () {
-			var s = [];
-			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
-			var menus = 0;
-			var image = te.GdiplusBitmap;
-			for (var i = 0; i < items.length; i++) {
-				var item = items[i];
-				var strType = item.getAttribute("Type");
-				var strFlag = (api.StrCmpI(strType, "Menus") ? "" : item.text).toLowerCase();
+		Arrange: async function () {
+			let s = [];
+			let items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
+			let menus = 0;
+			for (let i = 0; i < items.length; i++) {
+				let item = items[i];
+				let strType = item.Type;
+				let strFlag = (SameText(strType, "Menus") ? item.text : "").toLowerCase();
 				if (strFlag == "close" && menus) {
 					menus--;
 					continue;
 				}
-				var menus1 = menus;
 				if (strFlag == "open") {
 					if (menus++) {
 						continue;
@@ -112,33 +105,33 @@ if (window.Addon == 1) {
 					continue;
 				}
 				if (strFlag == "break") {
-					s.push('<br class="break" />');
+					s.push('<br class="break">');
 				} else if (strFlag == "barbreak") {
-					s.push('<hr class="barbreak" />');
+					s.push('<hr class="barbreak">');
 				} else if (strFlag == "separator") {
 					s.push('<span class="separator">|</span>');
 				} else {
-					var img = '';
-					var h = GetIconSize(item.getAttribute("Height"), 16);
-					var icon = item.getAttribute("Icon");
+					let img = '';
+					const h = GetIconSize(item.Height, 16);
+					const icon = item.Icon;
 					if (icon) {
-						img = GetImgTag({ src: ExtractMacro(te, icon) }, h);
-					} else if (api.PathMatchSpec(strType, "Open;Open in new tab;Open in background;Exec")) {
-						var path = Addons.LinkBar.GetPath(items, i);
-						var pidl = api.ILCreateFromPath(path);
-						if (api.ILIsEmpty(pidl) || pidl.Unavailable) {
-							var res = /"([^"]*)"/.exec(path) || /([^\s]*)/.exec(path);
+						img = await GetImgTag({ src: await ExtractMacro(te, icon) }, h);
+					} else if (/^Open$|^Open in new tab$|^Open in background$|^Exec$/i.test(strType)) {
+						const path = await Addons.LinkBar.GetPath(items, i);
+						let pidl = await api.ILCreateFromPath(path);
+						if (await api.ILIsEmpty(pidl) || await pidl.Unavailable) {
+							const res = /"([^"]*)"/.exec(path) || /([^\s]*)/.exec(path);
 							if (res) {
-								pidl = api.ILCreateFromPath(res[1]);
+								pidl = await api.ILCreateFromPath(res[1]);
 							}
 						}
 						if (pidl) {
-							img = GetImgTag({ src: GetIconImage(pidl, GetSysColor(COLOR_WINDOW)) }, h);
+							img = await GetImgTag({ src: await GetIconImage(pidl, Addons.LinkBar.clWindow) }, h);
 						}
 					}
-					s.push('<span id="_linkbar', i, '" ', api.StrCmpI(item.getAttribute("Type"), "Menus") || api.StrCmpI(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' + i + ')" onmousedown="Addons.LinkBar.Down(' : 'onmousedown="Addons.LinkBar.Open(');
-					s.push(i, ')" oncontextmenu="return Addons.LinkBar.Popup(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(ExtractMacro(te, item.text)), '">', img, '<span class="linklabel"> ', EncodeSC(ExtractMacro(te, item.getAttribute("Name"))), '</span></span>');
-					if (Addons.LinkBar.DD && api.PathMatchSpec(strType, "Open;Open in new tab;Open in background")) {
+					s.push('<span id="_linkbar', i, '" ', !SameText(item.Type, "Menus") || !SameText(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' + i + ')" onmousedown="Addons.LinkBar.Down(event,' : 'onmousedown="Addons.LinkBar.Open(event,');
+					s.push(i, ')" oncontextmenu="Addons.LinkBar.Popup(event,', i, '); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(await ExtractMacro(te, item.text)), '">', img, '<span class="linklabel"> ', EncodeSC(await ExtractMacro(te, item.Name)), '</span></span>');
+					if (Addons.LinkBar.DD && /^Open$|^Open in new tab$|^Open in background$/.test(strType)) {
 						s.push('<div class="button" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.LinkBar.DropDown(', i, ')">', BUTTONS.dropdown, '</div>');
 					} else {
 						s.push(" ");
@@ -148,14 +141,13 @@ if (window.Addon == 1) {
 			s.push('<label id="Link', items.length, '" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
 			s.push('&nbsp;</label>');
 
-			var o = document.getElementById('_linkbar');
-			o.innerHTML = s.join("");
+			document.getElementById('_linkbar').innerHTML = s.join("");
 			Resize();
 		},
 
-		GetPath: function (items, i) {
-			var line = items[i].text.split("\n");
-			return api.PathUnquoteSpaces(ExtractMacro(null, line[0]));
+		GetPath: async function (items, i) {
+			const line = items[i].text.split("\n");
+			return await ExtractPath(te, line[0]);
 		},
 
 		ShowOptions: function (nEdit) {
@@ -203,61 +195,64 @@ if (window.Addon == 1) {
 		}
 
 	};
-	te.Data.xmlLinkBar = OpenXml("linkbar.xml", false, true);
+	te.Data.xmlLinkBar = await OpenXml("linkbar.xml", false, true);
 	Addons.LinkBar.Parent = document.getElementById(SetAddon(Addon_Id, Default, '<span id="_linkbar"></span>'));
 
 	AddEvent("Load", Addons.LinkBar.Arrange);
 
-	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
-		if (Ctrl.Type == CTRL_WB) {
-			return S_OK;
-		}
-	});
+	if (!window.chrome) {
+		AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
+			if (Ctrl.Type == CTRL_WB) {
+				return S_OK;
+			}
+		});
 
-	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
-		if (Ctrl.Type == CTRL_WB) {
-			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
-			var i = Addons.LinkBar.FromPt(items.length + 1, pt);
-			if (i >= 0) {
-				if (i == items.length) {
+		AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
+			if (Ctrl.Type == CTRL_WB) {
+				var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
+				var i = Addons.LinkBar.FromPt(items.length + 1, pt);
+				if (i >= 0) {
+					if (i == items.length) {
+						pdwEffect[0] = DROPEFFECT_LINK;
+						MouseOver(document.getElementById("_linkbar" + i));
+						return S_OK;
+					}
+					var hr = Exec(external, items[i].text, items[i].getAttribute("Type"), ui_.hwnd, pt, dataObj, grfKeyState, pdwEffect);
+					if (hr == S_OK && pdwEffect[0]) {
+						MouseOver(document.getElementById("_linkbar" + i));
+					}
+					return S_OK;
+				} else if (HitTest(Addons.LinkBar.Parent, pt) && dataObj.Count) {
 					pdwEffect[0] = DROPEFFECT_LINK;
-					MouseOver(document.getElementById("_linkbar" + i));
 					return S_OK;
 				}
-				var hr = Exec(external, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect);
-				if (hr == S_OK && pdwEffect[0]) {
-					MouseOver(document.getElementById("_linkbar" + i));
-				}
-				return S_OK;
-			} else if (HitTest(Addons.LinkBar.Parent, pt) && dataObj.Count) {
-				pdwEffect[0] = DROPEFFECT_LINK;
-				return S_OK;
 			}
-		}
-		MouseOut("_linkbar");
-	});
+			MouseOut("_linkbar");
+		});
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
-		MouseOut();
-		if (Ctrl.Type == CTRL_WB) {
-			var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
-			var i = Addons.LinkBar.FromPt(items.length + 1, pt);
-			if (i >= 0) {
-				if (i == items.length) {
+		AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
+			MouseOut();
+			if (Ctrl.Type == CTRL_WB) {
+				var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
+				var i = Addons.LinkBar.FromPt(items.length + 1, pt);
+				if (i >= 0) {
+					if (i == items.length) {
+						Addons.LinkBar.Append(dataObj);
+						return S_OK;
+					}
+					return Exec(te, items[i].text, items[i].getAttribute("Type"), ui_.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
+				} else if (HitTest(Addons.LinkBar.Parent, pt) && dataObj.Count) {
 					Addons.LinkBar.Append(dataObj);
-					return S_OK;
 				}
-				return Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
-			} else if (HitTest(Addons.LinkBar.Parent, pt) && dataObj.Count) {
-				Addons.LinkBar.Append(dataObj);
 			}
-		}
-	});
+		});
 
-	AddEvent("DragLeave", function (Ctrl) {
-		MouseOut();
-		return S_OK;
-	});
+		AddEvent("DragLeave", function (Ctrl) {
+			MouseOut();
+			return S_OK;
+		});
+	}
 } else {
+	AddonName = "LinkBar";
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }

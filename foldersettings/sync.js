@@ -1,14 +1,14 @@
 te.Data.xmlFolderSettings = OpenXml("foldersettings.xml", false, true);
 Sync.FolderSettings = {
 	Get: function (Ctrl) {
-		var items = te.Data.xmlFolderSettings.getElementsByTagName("Item");
-		var path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-		var path2 = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+		const items = te.Data.xmlFolderSettings.getElementsByTagName("Item");
+		const path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+		let path2 = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 		if (path == path2) {
 			path2 = "";
 		}
-		for (var i = items.length; i-- > 0;) {
-			var filter = items[i].getAttribute("Filter");
+		for (let i = items.length; i-- > 0;) {
+			const filter = items[i].getAttribute("Filter");
 			if (PathMatchEx(path, filter) || (path2 && PathMatchEx(path2, filter))) {
 				return items[i];
 			}
@@ -19,9 +19,14 @@ Sync.FolderSettings = {
 
 AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 	if (Ctrl.Data && !Ctrl.Data.Setting) {
-		var item = Sync.FolderSettings.Get(Ctrl);
+		const item = Sync.FolderSettings.Get(Ctrl);
 		if (item) {
-			var res = /CurrentViewMode\(\s*(\-?\d)\s*,\s*(\d+)/i.exec(item.text);
+			let res = /SetViewMode\(\s*(\-?\d)\s*,\s*(\d+)/i.exec(item.text);
+			if (res) {
+				fs.ViewMode = res[1];
+				fs.ImageSize = res[2];
+			}
+			res = /CurrentViewMode\(\s*(\-?\d)\s*,\s*(\d+)/i.exec(item.text);
 			if (res) {
 				fs.ViewMode = res[1];
 				fs.ImageSize = res[2];
@@ -41,7 +46,7 @@ AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 
 AddEvent("NavigateComplete", function (Ctrl) {
 	if (Ctrl.Data && Ctrl.Data.Setting === 'FolderSettings') {
-		var item = Sync.FolderSettings.Get(Ctrl);
+		const item = Sync.FolderSettings.Get(Ctrl);
 		if (item && item.text) {
 			Exec(Ctrl, item.text, item.getAttribute("Type"), null);
 		}
@@ -50,7 +55,7 @@ AddEvent("NavigateComplete", function (Ctrl) {
 
 AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 	if (wParam == 28722 && Ctrl.Type <= CTRL_EB) {
-		var opt = api.CreateObject("Object");
+		const opt = api.CreateObject("Object");
 		opt.MainWindow = window;
 		opt.te = te;
 		opt.width = 640;

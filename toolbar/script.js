@@ -1,6 +1,5 @@
 const Addon_Id = "toolbar";
 const Default = "ToolBar2Left";
-const AddonName = "ToolBar";
 
 if (window.Addon == 1) {
 	Addons.ToolBar = {
@@ -28,11 +27,11 @@ if (window.Addon == 1) {
 				let item = await items[i];
 				let hMenu = await api.CreatePopupMenu();
 				let arMenu = await api.CreateObject("Array");
-				for (let j = GetLength(items); --j > i;) {
+				for (let j = await GetLength(items); --j > i;) {
 					await arMenu.unshift(j);
 				}
 				let o = document.getElementById("_toolbar" + i);
-				let pt = GetPosEx(o, 9);
+				let pt = await GetPosEx(o, 9);
 				await MakeMenus(hMenu, null, arMenu, items, te, pt);
 				await AdjustMenuBreak(hMenu);
 				AddEvent("ExitMenuLoop", function () {
@@ -103,7 +102,7 @@ if (window.Addon == 1) {
 				} else if (menus) {
 					continue;
 				}
-				let img = EncodeSC(await ExtractMacro(null, item.Name));
+				let img = EncodeSC(await ExtractMacro(te, item.Name));
 				if (img == "/" || strFlag == "break") {
 					s.push('<br class="break">');
 				} else if (img == "//" || strFlag == "barbreak") {
@@ -115,7 +114,7 @@ if (window.Addon == 1) {
 					if (icon) {
 						let h = (item.Height * screen.deviceYDPI / 96);
 						let sh = {
-							src: await api.PathUnquoteSpaces(await ExtractMacro(te, icon))
+							src: await ExtractPath(te, icon)
 						};
 						if (h && isFinite(h)) {
 							sh.style = 'width:' + h + 'px; height:' + h + 'px';
@@ -209,6 +208,7 @@ if (window.Addon == 1) {
 		});
 	}
 } else {
+	AddonName = "ToolBar";
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }
 

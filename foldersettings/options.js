@@ -1,25 +1,19 @@
-var AddonName = "FolderSettings";
-var Addon_Id = AddonName.toLowerCase();
-var g_Chg = { List: false };
+const AddonName = "FolderSettings";
+const Addon_Id = AddonName.toLowerCase();
+const g_Chg = { List: false };
 
 GetCurrentSetting = async function (bForce) {
-	debugger;
-	var nFormat = GetNum(document.E.Format.value);
-	var FV = await te.Ctrl(CTRL_FV);
-	var path = await api.GetDisplayNameOf(await FV.FolderItem, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-	var s = ["FV.CurrentViewMode(", await FV.CurrentViewMode];
-	s.push(",", await FV.IconSize);
-	s.push(");\n");
-	s.push("FV.Columns='", await FV.GetColumns(nFormat));
-	s.push("';\n");
-	s.push("FV.GroupBy='", await FV.GroupBy)
-	s.push("';\n");
-	if ((await FV.SortColumns || "").split(/;/).length > 2 && !document.E.XP.checked && await FV.SortColumn != "System.Null") {
-		s.push("FV.SortColumns='", await FV.SortColumns);
-		s.push("';\n");
+	const nFormat = GetNum(document.E.Format.value);
+	const FV = await te.Ctrl(CTRL_FV);
+	const r = await Promise.all([api.GetDisplayNameOf(FV, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING | SHGDN_FORPARSINGEX), FV.CurrentViewMode, FV.IconSize, FV.GetColumns(nFormat), FV.GroupBy, FV.SortColumns, FV.SortColumn, FV.GetSortColumn(nFormat)]);
+	const path = r[0];
+	let s = ["FV.SetViewMode(", r[1], ",", r[2], ");\n"];
+	s.push("FV.Columns='", r[3], "';\n");
+	s.push("FV.GroupBy='", r[4], "';\n");
+	if ((r[5] || "").split(/;/).length > 2 && !document.E.XP.checked && r[6] != "System.Null") {
+		s.push("FV.SortColumns='", r[5], "';\n");
 	} else {
-		s.push("FV.SortColumn='", await FV.GetSortColumn(nFormat));
-		s.push("';\n");
+		s.push("FV.SortColumn='", r[7], "';\n");
 	}
 	s = s.join("");
 	if (bForce || await confirmOk([path, s].join("\n"))) {
@@ -32,30 +26,32 @@ GetCurrentSetting = async function (bForce) {
 
 LoadFS = async function () {
 	if (!g_x.List) {
-		var arFunc = await api.CreateObject("Array");
+		let arFunc = await api.CreateObject("Array");
 		await MainWindow.RunEvent1("AddType", arFunc);
-		var oa = document.E.Type;
-		var nLen = await GetLength(arFunc);
-		for (var i = 0; i < nLen; ++i) {
-			var o = oa[++oa.length - 1];
-			var s = await arFunc[i];
+		const oa = document.E.Type;
+		if (window.chrome) {
+			arFunc = await api.CreateObject("SafeArray", arFunc);
+		}
+		for (let i = 0; i < arFunc.length; ++i) {
+			const o = oa[++oa.length - 1];
+			const s = arFunc[i];
 			o.value = s;
 			o.innerText = await GetText(s);
 		}
 		g_x.List = document.E.List;
 		g_x.List.length = 0;
-		var xml = await te.Data["xml" + AddonName];
+		let xml = await te.Data["xml" + AddonName];
 		if (!xml) {
 			xml = await OpenXml(AddonName + ".xml", false, false);
 			te.Data["xml" + AddonName] = xml;
 		}
 		if (xml) {
-			var items = await xml.getElementsByTagName("Item");
-			var i = await GetLength(items);
+			const items = await GetXmlItems(await xml.getElementsByTagName("Item"));
+			let i = items.length;
 			g_x.List.length = i;
 			while (--i >= 0) {
-				var item = await items[i];
-				SetData(g_x.List[i], [await item.getAttribute("Filter"), await item.text, await item.getAttribute("Type")]);
+				const item = items[i];
+				SetData(g_x.List[i], [item.Filter, item.text, item.Type]);
 			}
 		}
 		EnableSelectTag(g_x.List);
@@ -64,15 +60,15 @@ LoadFS = async function () {
 
 SaveFS = async function () {
 	if (g_Chg.List) {
-		var xml = await CreateXml();
-		var root = await xml.createElement("TablacusExplorer");
-		var o = document.E.List;
-		for (var i = 0; i < o.length; i++) {
-			var item = await xml.createElement("Item");
-			var a = o[i].value.split(g_sep);
-			item.setAttribute("Filter", a[0]);
+		const xml = await CreateXml();
+		const root = await xml.createElement("TablacusExplorer");
+		const o = document.E.List;
+		for (let i = 0; i < o.length; i++) {
+			const item = await xml.createElement("Item");
+			const a = o[i].value.split(g_sep);
+			await item.setAttribute("Filter", a[0]);
 			item.text = a[1];
-			item.setAttribute("Type", a[2]);
+			await item.setAttribute("Type", a[2]);
 			await root.appendChild(item);
 		}
 		await xml.appendChild(root);
@@ -85,7 +81,7 @@ EditFS = function() {
 	if (g_x.List.selectedIndex < 0) {
 		return;
 	}
-	var a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
+	const a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
 	document.E.Filter.value = a[0];
 	document.E.Path.value = a[1];
 	SetType(document.E.Type, a[2]);
@@ -97,7 +93,7 @@ ReplaceFS = function () {
 		g_x.List.selectedIndex = ++g_x.List.length - 1;
 		EnableSelectTag(g_x.List);
 	}
-	var sel = g_x.List[g_x.List.selectedIndex];
+	const sel = g_x.List[g_x.List.selectedIndex];
 	o = document.E.Type;
 	SetData(sel, [document.E.Filter.value, document.E.Path.value, o[o.selectedIndex].value]);
 	g_Chg.List = true;
@@ -111,7 +107,6 @@ TEOk = async function () {
 }
 
 Init1 = async function () {
-	debugger;
 	await ApplyLang(document);
 	await LoadFS();
 
@@ -129,16 +124,15 @@ Init1 = async function () {
 	}
 	document.body.style.visibility = "";
 	if (await dialogArguments.GetCurrent) {
-		var bNew = true;
-		var FV = await te.Ctrl(CTRL_FV);
-		var FolderItem = await FV.FolderItem;
-		var path = await api.GetDisplayNameOf(FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-		var path2 = await api.GetDisplayNameOf(FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+		let bNew = true;
+		const FV = await te.Ctrl(CTRL_FV);
+		let path = await api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+		const path2 = await api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 		if (path != path2) {
 			path += ";" + path2;
 		}
-		for (var i = g_x.List.length; i-- > 0;) {
-			var a = g_x.List[i].value.split(g_sep);
+		for (let i = g_x.List.length; i-- > 0;) {
+			const a = g_x.List[i].value.split(g_sep);
 			if (await api.PathMatchSpec(a[0], path)) {
 				g_x.List.selectedIndex = i;
 				await EditFS();
