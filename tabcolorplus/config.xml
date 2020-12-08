@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2018.4.26</MinVersion>
-    <pubDate>Fri, 27 Apr 2018 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2020.12.7</MinVersion>
+    <pubDate>Tue, 08 Dec 2020 00:00:00 UTC</pubDate>
     <Options>Common:4:4</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -17,4 +18,7 @@
     <Name>タブカラープラス</Name>
     <Description>ワイルドカードや正規表現でタブに色を付けます。 ※タブプラスが必要</Description>
   </ja>
+  <zh>
+    <Name>頁籤色彩規則</Name>
+  </zh>
 </TablacusExplorer>

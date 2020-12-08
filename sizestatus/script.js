@@ -1,47 +1,45 @@
-Addon_Id = "sizestatus";
-Default = "BottomBar3Right";
-
+const Addon_Id = "sizestatus";
+const Default = "BottomBar3Right";
+const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	SetAddon(Addon_Id, Default, '<span id="size_statusbar">&nbsp;</span>');
 
-	Addons.SizeStatus =
-	{
+	Addons.SizeStatus = {
 		SessionId: 0,
-		Folder: GetAddonOption(Addon_Id, "Folder"),
-		FileSize: GetAddonOption(Addon_Id, "FileSize"),
+		Folder: item.getAttribute("Folder"),
+		FileSize: item.getAttribute("FileSize"),
 
-		Exec: function (Ctrl)
-		{
-			var s = "";
-			var bYet = false;
-			var nSize = 0;
-			var FV = GetFolderView(Ctrl);
+		Exec: async function (Ctrl) {
+			let s = "";
+			let bYet = false;
+			let nSize = 0;
+			const FV = await GetFolderView(Ctrl);
 			if (!FV) {
 				return;
 			}
-			var pid = FV.FolderItem;
+			const pid = await FV.FolderItem;
 			if (!pid) {
 				return;
 			}
-			var nCount = FV.ItemCount(SVGIO_SELECTION);
-			var SessionId = api.CRC32(nCount ? ExtractMacro(te, '%Selected%') : fso.BuildPath(pid.Path, FV.FilterView));
+			const nCount = await FV.ItemCount(SVGIO_SELECTION);
+			const SessionId = await api.HashData(nCount ? await ExtractMacro(te, '%Selected%') : BuildPath(await pid.Path, await FV.FilterView), 8);
 			if (SessionId == Addons.SizeStatus.SessionId) {
 				return;
 			}
 			if (nCount || Addons.SizeStatus.FileSize) {
-				var Selected = nCount ? FV.SelectedItems() : FV.Items();
-				for (var i = Selected.Count; i-- > 0;) {
-					var Item = Selected.Item(i);
-					if (IsFolderEx(Item)) {
+				const Selected = nCount ? await FV.SelectedItems() : await FV.Items();
+				for (let i = await Selected.Count; i-- > 0;) {
+					const Item = await Selected.Item(i);
+					if (await IsFolderEx(Item)) {
 						if (Addons.SizeStatus.Folder) {
-							var n = FV.TotalFileSize[api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_ORIGINAL)];
-							if (n === undefined) {
+							const n = await FV.TotalFileSize[await api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_ORIGINAL)];
+							if (n == null) {
 								FV.Notify(0, Item, null, 1);
 								bYet = true;
 							} else if (n === "") {
 								bYet = true;
 							} else {
-								nSize = api.UQuadAdd(nSize, n);
+								nSize += n;
 							}
 						} else {
 							bYet = true;
@@ -49,7 +47,7 @@ if (window.Addon == 1) {
 						}
 						continue;
 					}
-					nSize = api.UQuadAdd(nSize, Item.ExtendedProperty("Size"));
+					nSize += await Item.ExtendedProperty("Size");
 				}
 				if (!bYet) {
 					Addons.SizeStatus.SessionId = SessionId;
@@ -58,26 +56,21 @@ if (window.Addon == 1) {
 				bYet = true;
 				Addons.SizeStatus.SessionId = SessionId;
 			}
-			if (bYet && (Addons.SizeStatus.Folder || !api.UQuadCmp(nSize, 0))) {
+			if (bYet && (Addons.SizeStatus.Folder || nSize)) {
 				s = " ";
-				if (!FV.FolderItem.Unavailable) {
-					var oDrive = api.GetDiskFreeSpaceEx(pid.Path);
+				if (!await FV.FolderItem.Unavailable) {
+					const oDrive = await api.GetDiskFreeSpaceEx(pid.Path);
 					if (oDrive) {
-						s = api.PSGetDisplayName("{9B174B35-40FF-11D2-A27E-00C04FC30871} 2") + " " + api.StrFormatByteSize(oDrive.FreeBytesOfAvailable);
+						s = await api.PSGetDisplayName("{9B174B35-40FF-11D2-A27E-00C04FC30871} 2") + " " + await api.StrFormatByteSize(await oDrive.FreeBytesOfAvailable);
 					}
 				}
 			}
-			document.getElementById("size_statusbar").innerHTML = "&nbsp;" + (s || api.StrFormatByteSize(nSize));
+			document.getElementById("size_statusbar").innerHTML = "&nbsp;" + (s || await api.StrFormatByteSize(nSize));
 		}
 	}
 
 	AddEvent("StatusText", Addons.SizeStatus.Exec);
 	AddEvent("Load", Addons.SizeStatus.Exec);
 } else {
-	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
-	if (ado) {
-		SetTabContents(0, "General", ado.ReadText(adReadAll));
-		ado.Close();
-	}
+	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }
-

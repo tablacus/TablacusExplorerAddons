@@ -1,13 +1,12 @@
 if (window.Addon == 1) {
-	AddEvent("BrowserCreated", function (doc)
-	{
-		var item = GetAddonElement("tabdesign");
-		var css = doc.styleSheets.item(0);
-		var ar = ["activetab", "tab", "tab2", "tab3", "tab0", "default"];
-		for (var i = 0; i < ar.length; i++) {
-			var n = ar[i];
-			var n2 = n == "default" ? "tab0 li" : n;
-			var s = item.getAttribute(n);
+	AddEvent("BrowserCreatedEx", async function () {
+		const item = await GetAddonElement("tabdesign");
+		const css = document.styleSheets.item(0);
+		const ar = ["activetab", "tab", "tab2", "tab3", "tab0", "default"];
+		for (let i = 0; i < ar.length; i++) {
+			const n = ar[i];
+			const n2 = n == "default" ? "tab0 li" : n;
+			let s = item.getAttribute(n);
 			if (s) {
 				if (css.insertRule) {
 					css.insertRule([".", n2, " { ", s, " }"].join(""), css.cssRules.length);
@@ -28,7 +27,7 @@ if (window.Addon == 1) {
 				}
 			}
 		}
-	});
+	}.toString().replace(/^[^{]+{|}$/g, ""));
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }

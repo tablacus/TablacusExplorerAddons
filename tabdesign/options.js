@@ -10,7 +10,7 @@ if (ado) {
 
 SetCss = function (a, b, c, d)
 {
-	if (confirmOk("Are you sure?")) {
+	if (confirmOk()) {
 		for (var i = 0; i < arCss.length; i++) {
 			ImportCss1({}, arExt[i], arCss[i]);
 			ImportCss1({}, arExt[i] + ':before', arCss[i] + '_before');
