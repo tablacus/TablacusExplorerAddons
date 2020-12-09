@@ -8,6 +8,7 @@ if (window.Addon == 1) {
 		SessionId: 0,
 		Folder: item.getAttribute("Folder"),
 		FileSize: item.getAttribute("FileSize"),
+		strFreeSpace: await api.PSGetDisplayName("{9B174B35-40FF-11D2-A27E-00C04FC30871} 2") + " ",
 
 		Exec: async function (Ctrl) {
 			let s = "";
@@ -59,9 +60,9 @@ if (window.Addon == 1) {
 			if (bYet && (Addons.SizeStatus.Folder || nSize)) {
 				s = " ";
 				if (!await FV.FolderItem.Unavailable) {
-					const oDrive = await api.GetDiskFreeSpaceEx(pid.Path);
+					const oDrive = await api.GetDiskFreeSpaceEx(await pid.Path);
 					if (oDrive) {
-						s = await api.PSGetDisplayName("{9B174B35-40FF-11D2-A27E-00C04FC30871} 2") + " " + await api.StrFormatByteSize(await oDrive.FreeBytesOfAvailable);
+						s = Addons.SizeStatus.strFreeSpace + await api.StrFormatByteSize(await oDrive.FreeBytesOfAvailable);
 					}
 				}
 			}

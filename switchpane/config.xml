@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2017.9.4</MinVersion>
-    <pubDate>Sun, 23 Feb 2020 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2020.12.8</MinVersion>
+    <pubDate>Wed, 09 Dec 2020 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
-    <License>MIT License</License>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
   </General>
   <en>
     <Name>Switch to next pane</Name>

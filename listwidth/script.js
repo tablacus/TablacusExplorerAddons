@@ -1,23 +1,21 @@
-var Addon_Id = "listwidth";
+const Addon_Id = "listwidth";
 
 if (window.Addon == 1) {
 	Addons.ListWidth = {
-		Width: GetAddonOptionEx("listwidth", "Width"),
+		Width: await GetAddonOptionEx("listwidth", "Width"),
 
-		Exec: function (Ctrl)
-		{
+		Exec: async function (Ctrl) {
 			if (Addons.ListWidth.Width > 29 || Addons.ListWidth.Width < 0) {
-				var hList = Ctrl.hwndList;
-				if (hList && api.SendMessage(hList, LVM_GETVIEW, 0, 0) == 3) {
+				const hList = await Ctrl.hwndList;
+				if (hList && await api.SendMessage(hList, LVM_GETVIEW, 0, 0) == 3) {
 					api.SendMessage(hList, LVM_SETCOLUMNWIDTH, 0, Addons.ListWidth.Width);
 				}
 			}
 		},
 
-		Set: function (Ctrl, n)
-		{
+		Set: async function (Ctrl, n) {
 			Addons.ListWidth.Width = n;
-			Addons.ListWidth.Exec(GetFolderView(Ctrl));
+			Addons.ListWidth.Exec(await GetFolderView(Ctrl));
 		}
 	}
 
@@ -25,10 +23,13 @@ if (window.Addon == 1) {
 	AddEvent("NavigateComplete", Addons.ListWidth.Exec);
 	AddEvent("ViewModeChanged", Addons.ListWidth.Exec);
 
-	var cFV = te.Ctrls(CTRL_FV);
-	for (var i in cFV) {
+	let cFV = await te.Ctrls(CTRL_FV);
+	if (window.chrome) {
+		cFV = await api.CreateObject("SafeArray", cFV);
+	}
+	for (let i = cFV.length; --i >= 0;) {
 		Addons.ListWidth.Exec(cFV[i]);
 	}
 } else {
-	SetTabContents(0, "", '<label>Width</label><br /><input type="text" id="Width" style="width: 100%" />');
+	SetTabContents(0, "", '<label>Width</label><br><input type="text" id="Width" style="width: 100%">');
 }
