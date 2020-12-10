@@ -1,22 +1,24 @@
-var Addon_Id = "fullpathbar";
-var Default = "BottomBar3Left";
+const Addon_Id = "fullpathbar";
+const Default = "BottomBar3Left";
 
 if (window.Addon == 1) {
-	Addons.FullPathBar =
-	{
-		Title: GetAddonOptionEx(Addon_Id, "Title"),
+	Addons.FullPathBar = {
+		Title: await GetAddonOptionEx(Addon_Id, "Title"),
 
-		Show: function (Ctrl) {
+		Show: async function (Ctrl) {
 			if (Ctrl) {
-				var s = Ctrl.Path;
-				if (!s && Ctrl.Type <= CTRL_EB) {
-					var Items = Ctrl.SelectedItems();
-					s = api.GetDisplayNameOf(Items.Item(0) || Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
-				} if (s) {
+				let s;
+				const nType = await Ctrl.Type;
+				if (nType == CTRL_SB || nType == CTRL_EB) {
+					s = await api.GetDisplayNameOf(await Ctrl.SelectedItems().Item(0) || Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+				} else {
+					s = await Ctrl.Path;
+				}
+				if (s && "string" === typeof s) {
 					try {
 						document.getElementById("fullpathbar").innerHTML = "&nbsp;" + s;
 						if (Addons.FullPathBar.Title) {
-							api.SetWindowText(te.hwnd, s + " - " + TITLE);
+							api.SetWindowText(ui_.hwnd, s + " - " + TITLE);
 						}
 					} catch (e) { }
 				}
@@ -26,8 +28,8 @@ if (window.Addon == 1) {
 	SetAddon(Addon_Id, Default, '<span id="fullpathbar">&nbsp;</span>');
 
 	AddEvent("StatusText", Addons.FullPathBar.Show);
-	AddEvent("Load", function () {
-		Addons.FullPathBar.Show(te.Ctrl(CTRL_FV));
+	AddEvent("Load", async function () {
+		Addons.FullPathBar.Show(await te.Ctrl(CTRL_FV));
 	});
 } else {
 	SetTabContents(0, "View", '<label><input type="checkbox" id="Title">Title Bar</label>');

@@ -9,5 +9,6 @@ if (window.Addon == 1) {
 	}
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
+	arIndex = ["Filter", "Small", "Large"];
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }

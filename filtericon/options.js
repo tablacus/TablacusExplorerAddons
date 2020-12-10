@@ -1,7 +1,6 @@
 SetTabContents(4, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
 ConfigFile = BuildPath(await te.Data.DataFolder, "config", Addon_Id + ".tsv");
-arIndex = ["Type", "Small", "Large"],
 
 GetIconImage = async function (fn, Large) {
 	fn = await ExtractPath(te, fn);
@@ -31,7 +30,6 @@ EditIC = function (mode) {
 	for (let i = 2; i--;) {
 		ShowIconX(["Small", "Large"][i], i);
 	}
-	document.E.Type.value = document.E.Type.value;
 }
 
 ReplaceIC = function (mode) {
