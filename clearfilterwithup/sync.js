@@ -5,7 +5,9 @@ AddEvent("Exec", function (Ctrl, s, type, hwnd, pt, dataObj, grfKeyState, pdwEff
 			if (FV.FilterView || FV.OnIncludeObject) {
 				FV.FilterView = null;
 				FV.OnIncludeObject = null;
-				setTimeout(FV.Refresh, 99);
+				setTimeout(function () {
+					FV.Refresh();
+				}, 99);
 				return S_OK;
 			}
 		}

@@ -57,7 +57,7 @@ if (window.Addon == 1) {
 				bYet = true;
 				Addons.SizeStatus.SessionId = SessionId;
 			}
-			if (bYet && (Addons.SizeStatus.Folder || nSize)) {
+			if (bYet && (Addons.SizeStatus.Folder || !nSize)) {
 				s = " ";
 				if (!await FV.FolderItem.Unavailable) {
 					const oDrive = await api.GetDiskFreeSpaceEx(await pid.Path);

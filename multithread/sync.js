@@ -1,14 +1,14 @@
-var Addon_Id = "multithread";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "multithread";
+const item = GetAddonElement(Addon_Id);
 
 Sync.MultiThread = {
-	Copy: api.LowPart(item.getAttribute("Copy")),
-	Move: api.LowPart(item.getAttribute("Move")),
-	Delete: api.LowPart(item.getAttribute("Delete")),
+	Copy: GetNum(item.getAttribute("Copy")),
+	Move: GetNum(item.getAttribute("Move")),
+	Delete: GetNum(item.getAttribute("Delete")),
 	NoTemp: item.getAttribute("NoTemp"),
 
 	FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver, bDelete) {
-		var path;
+		let path;
 		if (!(grfKeyState & MK_LBUTTON) || Items.Count == 0) {
 			return false;
 		}
@@ -18,17 +18,17 @@ Sync.MultiThread = {
 			path = Dest.Path || Dest;
 		}
 		if (bDelete || (path && fso.FolderExists(path))) {
-			var arFrom = [];
-			var pidTemp = api.ILCreateFromPath(fso.GetSpecialFolder(2).Path);
+			const arFrom = [];
+			const pidTemp = api.ILCreateFromPath(fso.GetSpecialFolder(2).Path);
 			pidTemp.IsFolder;
-			var strTemp = pidTemp.Path + "\\";
-			var strTemp2;
-			var wfd = api.Memory("WIN32_FIND_DATA");
-			for (var i = Items.Count; i-- > 0;) {
-				var path1 = Items.Item(i).Path;
-				var hFind = api.FindFirstFile(path1, wfd);
-				api.FindClose(hFind);
+			const strTemp = pidTemp.Path + "\\";
+			let strTemp2;
+			const wfd = api.Memory("WIN32_FIND_DATA");
+			for (let i = Items.Count; i-- > 0;) {
+				let path1 = Items.Item(i).Path;
+				const hFind = api.FindFirstFile(path1, wfd);
 				if (hFind != INVALID_HANDLE_VALUE) {
+					api.FindClose(hFind);
 					if (!bDelete && !api.StrCmpNI(path1, strTemp, strTemp.length)) {
 						if (!strTemp2) {
 							if (Sync.MultiThread.NoTemp) {
@@ -53,7 +53,7 @@ Sync.MultiThread = {
 				}
 			}
 			if (pdwEffect[0]) {
-				var wFunc = 0;
+				let wFunc = 0;
 				if (bDelete) {
 					if (!Sync.MultiThread.Delete) {
 						return false;
@@ -61,23 +61,22 @@ Sync.MultiThread = {
 					wFunc = FO_DELETE;
 				} else {
 					if (bOver) {
-						var DropTarget = api.DropTarget(path);
-						DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
+						api.DropTarget(path).DragOver(Items, grfKeyState, pt, pdwEffect);
 					}
 					if (pdwEffect[0] & DROPEFFECT_COPY) {
-						if (!Sync.MultiThread.Copy) {
+						if (!Sync.MultiThread.Copy && !strTemp2) {
 							return false;
 						}
 						wFunc = FO_COPY;
 					} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
-						if (!Sync.MultiThread.Move) {
+						if (!Sync.MultiThread.Move && !strTemp2) {
 							return false;
 						}
 						wFunc = FO_MOVE;
 					}
 				}
 				if (wFunc) {
-					var fFlags = FOF_ALLOWUNDO;
+					let fFlags = FOF_ALLOWUNDO;
 					if (bDelete) {
 						if (api.GetKeyState(VK_SHIFT) < 0) {
 							fFlags = 0;
@@ -88,7 +87,7 @@ Sync.MultiThread = {
 						}
 						fFlags |= FOF_RENAMEONCOLLISION;
 					}
-					api.SHFileOperation(wFunc, arFrom.join("\0"), path, fFlags, true);
+					api.SHFileOperation(wFunc, arFrom, path, fFlags, true);
 					return true;
 				}
 			}
@@ -102,7 +101,7 @@ AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		case CTRL_SB:
 		case CTRL_EB:
 		case CTRL_TV:
-			var Dest = Ctrl.HitTest(pt);
+			let Dest = Ctrl.HitTest(pt);
 			if (Dest) {
 				if (!fso.FolderExists(Dest.Path)) {
 					if (api.DropTarget(Dest)) {
@@ -129,13 +128,13 @@ AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 	if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
 		switch ((wParam & 0xfff) + 1) {
 			case CommandID_PASTE:
-				var Items = api.OleGetClipboard()
+				let Items = api.OleGetClipboard()
 				if (Sync.MultiThread.FO(null, Items, Ctrl.FolderItem, MK_LBUTTON, null, Items.pdwEffect, false)) {
 					return S_OK;
 				}
 				break;
 			case CommandID_DELETE:
-				var Items = Ctrl.SelectedItems();
+				Items = Ctrl.SelectedItems();
 				if (Sync.MultiThread.FO(null, Items, "", MK_LBUTTON, null, Items.pdwEffect, false, true)) {
 					return S_OK;
 				}
@@ -147,16 +146,16 @@ AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 	switch (Verb + 1) {
 		case CommandID_PASTE:
-			var Target = ContextMenu.Items();
+			const Target = ContextMenu.Items();
 			if (Target.Count) {
-				var Items = api.OleGetClipboard()
+				const Items = api.OleGetClipboard()
 				if (Sync.MultiThread.FO(null, Items, Target.Item(0), MK_LBUTTON, null, Items.pdwEffect, false)) {
 					return S_OK;
 				}
 			}
 			break;
 		case CommandID_DELETE:
-			var Items = ContextMenu.Items();
+			const Items = ContextMenu.Items();
 			if (Sync.MultiThread.FO(null, Items, "", MK_LBUTTON, null, Items.pdwEffect, false, true)) {
 				return S_OK;
 			}
