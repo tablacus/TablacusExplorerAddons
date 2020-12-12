@@ -1,28 +1,31 @@
-var Addon_Id = "statusbar";
-var Default = "BottomBar3Left";
+const Addon_Id = "statusbar";
+const Default = "BottomBar3Left";
 
 if (window.Addon == 1) {
 	Addons.StatusBar = {
+		arg: await api.CreateObject("Object"),
+
 		Set: await GetAddonOptionEx(Addon_Id, "Title") ? function (s) {
 			document.title = s + " - " + TITLE;
 		} : function (s) {
 			document.getElementById("statusbar").innerHTML = "&nbsp;" + EncodeSC(s);
 		}
 	};
+	Addons.StatusBar.arg.api = api;
+	Addons.StatusBar.arg.Set = Addons.StatusBar.Set;
 
 	AddEvent("StatusText", async function (Ctrl, Text, iPart) {
-		if (await Ctrl.Type <= CTRL_EB && /^\d/.test(Text) && await Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
-			var o = await api.CreateObject("Object");
-			o.api = api;
-			o.Item = await Ctrl.SelectedItems().Item(0);
-			o.Set = Addons.StatusBar.Set;
-			o.Text = await api.CreateObject("Object");
-			o.Text.Text = Text;
-			api.ExecScript('api.Invoke(Set, Item.ExtendedProperty("infotip") || Text.Text);', "JScript", o, true);
-		} else {
-			Addons.StatusBar.Set(Text);
+		if (/^1 /.test(Text)) {
+			const nType = await Ctrl.Type;
+			if (nType == CTRL_SB || nType == CTRL_EB) {
+				if (await Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
+					Addons.StatusBar.arg.FV = Ctrl;
+					api.ExecScript('var Selected = FV.SelectedItems(); api.Invoke(Set, Selected && Selected.Count == 1 && Selected.Item(0).ExtendedProperty("infotip") || "' + Text.replace(/"/g, "") + '");', "JScript", Addons.StatusBar.arg, true);
+					return;
+				}
+			}
 		}
-		return S_OK;
+		Addons.StatusBar.Set(Text);
 	});
 
 	SetAddon(Addon_Id, Default, '<span id="statusbar">&nbsp;</span>');

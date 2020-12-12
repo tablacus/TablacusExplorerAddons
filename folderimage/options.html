@@ -4,11 +4,12 @@
 <label>Filter</label><br>
 <input type="text" name="Filter" placeholder="*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.ico" style="width: 100%">
 <label>Disable</label><br>
-<input type="text" name="Invalid" style="width: 100%">
+<input type="text" name="Invalid" placeholder="-" style="width: 100%">
 <br>
 <!--panel-->
 <label><input type="checkbox" name="Cache">Enable</label><br>
 <br>
+<!--panel-->
 <label>Path</label> (sqlite3.dll) <label>32-bit</label><br>
 <input type="text" name="SQLite32" placeholder="winsqlite3.dll" style="width: 100%" onchange="Addons.FolderImage.Info()"><br>
 <input type="button" value="Browse..." onclick="RefX('SQLite32', false, this, true, '*.dll')">

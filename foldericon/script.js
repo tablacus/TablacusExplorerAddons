@@ -1,16 +1,17 @@
 if (window.Addon == 1) {
-	AddEvent("ChangeView", function (Ctrl)
-	{
-		if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id && Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
-			var icon = GetIconImage(Ctrl, api.GetSysColor(COLOR_WINDOW), true);
-			var hIcon = MakeImgIcon(icon, 0, 16);
-			if (!hIcon) {
-				var image = api.CreateObject("WICBitmap").FromFile(icon);
-				if (image) {
-					hIcon = image.GetHICON();
-				}
+	Addons.FolderIcon = {
+		clWindow: await GetSysColor(COLOR_WINDOW)
+	}
+
+	AddEvent("ChangeView1", async function (Ctrl) {
+		const icon = await GetIconImage(Ctrl, Addons.FolderIcon.clWindow, true);
+		let hIcon = await MakeImgIcon(icon, 0, 16);
+		if (!hIcon) {
+			const image = await api.CreateObject("WICBitmap").FromFile(icon);
+			if (image) {
+				hIcon = await image.GetHICON();
 			}
-			api.SendMessage(te.hwnd, WM_SETICON, ICON_SMALL, hIcon);
 		}
+		api.SendMessage(ui_.hwnd, WM_SETICON, ICON_SMALL, hIcon);
 	});
 }
