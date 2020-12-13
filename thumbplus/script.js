@@ -3,7 +3,7 @@ if (window.Addon == 1) {
 	if (WINVER >= 0x600 && await api.IsAppThemed()) {
 		AddEvent("Load", function () {
 			if (!Addon.ClassicStyle) {
-				api.ObjPutI(Sync.ThumbPlus, "fStyle", LVIS_CUT);
+				Sync.ThumbPlus.SetStyle();
 			}
 		});
 	}

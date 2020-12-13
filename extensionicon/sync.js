@@ -3,8 +3,12 @@ Sync.ExtensionIcon = {
 	fStyle: LVIS_CUT | LVIS_SELECTED,
 
 	GetIconImage: function (fn, Large) {
-		fn = api.PathUnquoteSpaces(ExtractMacro(te, fn));
+		fn = ExtractPath(te, fn);
 		return api.CreateObject("WICBitmap").FromFile(fn) || MakeImgData(fn, 0, Large ? 48 : 16);
+	},
+
+	SetStyle: function () {
+		Sync.ExtensionIcon.fStyle = LVIS_CUT;
 	}
 };
 

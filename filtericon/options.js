@@ -1,4 +1,4 @@
-SetTabContents(4, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
+SetTabContents(4, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
 ConfigFile = BuildPath(await te.Data.DataFolder, "config", Addon_Id + ".tsv");
 

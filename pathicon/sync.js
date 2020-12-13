@@ -62,6 +62,10 @@ Sync.PathIcon = {
 			const db = Sync.PathIcon.Icon[path];
 			fncb(path, db[0], db[1]);
 		}
+	},
+
+	SetStyle: function () {
+		Sync.PathIcon.fStyle = LVIS_CUT;
 	}
 };
 

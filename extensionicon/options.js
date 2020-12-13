@@ -1,22 +1,19 @@
-SetTabContents(4, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
+SetTabContents(4, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
-Addons.ExtensionIcon = {
-	arIndex: ["Type", "Small", "Large"],
-	Config: BuildPath(await te.Data.DataFolder, "config\\extensionicon.tsv"),
+ConfigFile = BuildPath(await te.Data.DataFolder, "config", Addon_Id + ".tsv");
 
-	GetIconImage: async function (fn, Large) {
-		fn = await ExtractPath(te, fn);
-		return await api.CreateObject("WICBitmap").FromFile(fn) || (await MakeImgData(fn, 0, Large ? 48 : 16));
-	}
+GetIconImage = async function (fn, Large) {
+	fn = await ExtractPath(te, fn);
+	return await api.CreateObject("WICBitmap").FromFile(fn) || (await MakeImgData(fn, 0, Large ? 48 : 16));
 }
 
-async function SaveIC(mode) {
+SaveIC = async function (mode) {
 	if (g_Chg[mode]) {
 		let data = "";
 		for (let i = 0; i < g_x.List.length; i++) {
 			data += g_x.List[i].value.replace(new RegExp(g_sep, "g"), "\t") + "\r\n";
 		}
-		await WriteTextFile(Addons.ExtensionIcon.Config, data);
+		await WriteTextFile(ConfigFile, data);
 		g_Chg[mode] = false;
 	}
 }
@@ -27,13 +24,12 @@ EditIC = function (mode) {
 	}
 	ClearX("List");
 	const a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
-	for (let i = Addons.ExtensionIcon.arIndex.length; i--;) {
-		document.E.elements[Addons.ExtensionIcon.arIndex[i]].value = a[i] || "";
+	for (let i = arIndex.length; i--;) {
+		document.E.elements[arIndex[i]].value = a[i] || "";
 	}
 	for (let i = 2; i--;) {
 		ShowIconX(["Small", "Large"][i], i);
 	}
-	document.E.Type.value = document.E.Type.value;
 }
 
 ReplaceIC = function (mode) {
@@ -42,21 +38,21 @@ ReplaceIC = function (mode) {
 		g_x[mode].selectedIndex = ++g_x[mode].length - 1;
 	}
 	const a = [];
-	for (let i = Addons.ExtensionIcon.arIndex.length; i--;) {
-		a.unshift(document.E.elements[Addons.ExtensionIcon.arIndex[i]].value);
+	for (let i = arIndex.length; i--;) {
+		a.unshift(document.E.elements[arIndex[i]].value);
 	}
 	SetData(g_x.List[g_x.List.selectedIndex], a);
 	g_Chg[mode] = true;
 }
 
 ShowIconX = async function (s, i) {
-	const image = await Addons.ExtensionIcon.GetIconImage(document.E.elements[s].value, i);
+	const image = await GetIconImage(document.E.elements[s].value, i);
 	document.getElementById('icon_' + i).src = image ? await GetThumbnail(image, [16, 192][i] * screen.deviceYDPI / 96, true).DataURI("image/png") : "";
 }
 
 g_x.List = document.E.List;
 
-const ar = (await ReadTextFile(Addons.ExtensionIcon.Config)).split(/\r?\n/);
+const ar = (await ReadTextFile(ConfigFile)).split(/\r?\n/);
 g_x.List.length = ar.length;
 for (let i = 0; ar.length;) {
 	const line = ar.shift();

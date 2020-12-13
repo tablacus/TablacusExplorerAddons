@@ -23,6 +23,10 @@ Sync.ThumbPlus = {
 				Sync.ThumbPlus.Clear(Ctrl);
 			}
 		}
+	},
+
+	SetStyle: function () {
+		Sync.ThumbPlus.fStyle = LVIS_CUT;
 	}
 };
 

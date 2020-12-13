@@ -3,7 +3,7 @@ if (window.Addon == 1) {
 	if (WINVER >= 0x600 && await api.IsAppThemed()) {
 		AddEvent("Load", function () {
 			if (!Addons.ClassicStyle) {
-				api.ObjPutI(Sync.FilterIcon, "fStyle", LVIS_CUT);
+				Sync.FilterIcon.SetStyle();
 			}
 		});
 	}
