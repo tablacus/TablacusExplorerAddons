@@ -20,7 +20,7 @@ if (window.Addon == 1) {
 			if (nType == CTRL_SB || nType == CTRL_EB) {
 				if (await Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
 					Addons.StatusBar.arg.FV = Ctrl;
-					api.ExecScript('var Selected = FV.SelectedItems(); api.Invoke(Set, Selected && Selected.Count == 1 && Selected.Item(0).ExtendedProperty("infotip") || "' + Text.replace(/"/g, "") + '");', "JScript", Addons.StatusBar.arg, true);
+					api.ExecScript('var Selected = FV.SelectedItems(); api.Invoke(Set, Selected && Selected.Count == 1 && Selected.Item(0).ExtendedProperty("infotip") || "' + Text.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '");', "JScript", Addons.StatusBar.arg, true);
 					return;
 				}
 			}
