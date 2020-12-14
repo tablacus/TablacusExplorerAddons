@@ -1,28 +1,23 @@
-var info = GetAddonInfo(Addon_Id);
-var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
-if (ado) {
-	SetTabContents(0, "", ado.ReadText(adReadAll));
-	ado.Close();
-}
+SetTabContents(0, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
-ChooseFont = function (o) {
-	var lf = api.Memory("LOGFONT");
-	lf.lfFaceName = document.F.Name.value || MainWindow.DefaultFont.lfFaceName;
-	var h = document.F.Size.value;
-	lf.lfHeight = h >= 6 && h <= 18 ? - (h * screen.logicalYDPI / 72) : MainWindow.DefaultFont.lfHeight;
-	lf.lfWeight = document.F.Weight.value || MainWindow.DefaultFont.lfWeight;
+ChooseFont = async function (o) {
+	const lf = await api.Memory("LOGFONT");
+	lf.lfFaceName = document.F.Name.value || await MainWindow.DefaultFont.lfFaceName;
+	const h = document.F.Size.value;
+	lf.lfHeight = h >= 6 && h <= 18 ? - (h * screen.deviceYDPI / 72) : await MainWindow.DefaultFont.lfHeight;
+	lf.lfWeight = document.F.Weight.value || await MainWindow.DefaultFont.lfWeight;
 	lf.lfCharSet = 1;
-	var cf = api.Memory("CHOOSEFONT");
-	cf.lStructSize = cf.Size;
-	cf.hwndOwner = api.GetWindow(document);
+	const cf = await api.Memory("CHOOSEFONT");
+	cf.lStructSize = await cf.Size;
+	cf.hwndOwner = await GetTopWindow();
 	cf.lpLogFont = lf;
 	cf.Flags = 0x2041;
 	cf.nSizeMin = 6;
 	cf.nSizeMax = 18;
-	if (api.ChooseFont(cf) && lf.CharSet != 2) {
-		document.F.Name.value = lf.lfFaceName;
-		document.F.Size.value = Math.abs(Math.round(lf.lfHeight * 72 / screen.logicalYDPI));
-		document.F.Weight.value = lf.lfWeight;
+	if (await api.ChooseFont(cf) && await lf.CharSet != 2) {
+		document.F.Name.value = await lf.lfFaceName;
+		document.F.Size.value = Math.abs(Math.round(await lf.lfHeight * 72 / screen.deviceYDPI));
+		document.F.Weight.value = await lf.lfWeight;
 	}
 	g_bChanged = true;
 }
