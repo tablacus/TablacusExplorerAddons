@@ -17,14 +17,14 @@ Sync.MultiThread = {
 		} catch (e) {
 			path = Dest.Path || Dest;
 		}
+		const wfd = api.Memory("WIN32_FIND_DATA");
 		if (bDelete || (path && fso.FolderExists(path))) {
 			const arFrom = [];
 			const pidTemp = api.ILCreateFromPath(fso.GetSpecialFolder(2).Path);
 			pidTemp.IsFolder;
 			const strTemp = pidTemp.Path + "\\";
 			let strTemp2;
-			const wfd = api.Memory("WIN32_FIND_DATA");
-			for (let i = Items.Count; i-- > 0;) {
+			for (let i = 0; i < Items.Count; ++i) {
 				let path1 = Items.Item(i).Path;
 				const hFind = api.FindFirstFile(path1, wfd);
 				if (hFind != INVALID_HANDLE_VALUE) {
@@ -39,14 +39,9 @@ Sync.MultiThread = {
 							} while (IsExists(strTemp2));
 							CreateFolder(strTemp2);
 						}
-						if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-							fso.MoveFolder(path1, strTemp2);
-						} else {
-							fso.MoveFile(path1, strTemp2);
-						}
 						path1 = strTemp2 + fso.GetFileName(path1);
 					}
-					arFrom.unshift(path1);
+					arFrom.push(path1);
 				} else {
 					pdwEffect[0] = DROPEFFECT_NONE;
 					break;
@@ -64,12 +59,12 @@ Sync.MultiThread = {
 						api.DropTarget(path).DragOver(Items, grfKeyState, pt, pdwEffect);
 					}
 					if (pdwEffect[0] & DROPEFFECT_COPY) {
-						if (!Sync.MultiThread.Copy && !strTemp2) {
+						if (!Sync.MultiThread.Copy) {
 							return false;
 						}
 						wFunc = FO_COPY;
 					} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
-						if (!Sync.MultiThread.Move && !strTemp2) {
+						if (!Sync.MultiThread.Move) {
 							return false;
 						}
 						wFunc = FO_MOVE;
@@ -86,6 +81,22 @@ Sync.MultiThread = {
 							return false;
 						}
 						fFlags |= FOF_RENAMEONCOLLISION;
+					}
+					if (strTemp2) {
+						for (let i = 0; i < Items.Count; ++i) {
+							const path1 = Items.Item(i).Path;
+							const hFind = api.FindFirstFile(path1, wfd);
+							if (hFind != INVALID_HANDLE_VALUE) {
+								api.FindClose(hFind);
+								if (!api.StrCmpNI(path1, strTemp, strTemp.length)) {
+									if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+										fso.MoveFolder(path1, strTemp2);
+									} else {
+										fso.MoveFile(path1, strTemp2);
+									}
+								}
+							}
+						}
 					}
 					api.SHFileOperation(wFunc, arFrom, path, fFlags, true);
 					return true;

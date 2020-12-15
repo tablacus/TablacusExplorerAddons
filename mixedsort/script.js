@@ -1,145 +1,42 @@
-var Addon_Id = "mixedsort";
-var Default = "ToolBar2Left";
+const Addon_Id = "mixedsort";
+const Default = "ToolBar2Left";
 
-var item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
-	Addons.MixedSort =
-	{
-		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-		nPos: api.LowPart(item.getAttribute("MenuPos")),
+	const item = await GetAddonElement(Addon_Id);
+
+	Addons.MixedSort = {
 		tid: {},
 
-		CreateMenu: function (hMenu, nIndex) {
-			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, api.PSGetDisplayName("Name"));
-			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb) {
-				var FV = GetFolderView(Ctrl, pt);
-				FV.SortColumn = 'Tablacus.Name';
-			};
-			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, '-' + api.PSGetDisplayName("Name"));
-			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb) {
-				var FV = GetFolderView(Ctrl, pt);
-				FV.SortColumn = '-Tablacus.Name';
-			};
-			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, api.PSGetDisplayName("Write"));
-			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb) {
-				var FV = GetFolderView(Ctrl, pt);
-				FV.SortColumn = 'Tablacus.Write';
-			};
-			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nIndex, '-' + api.PSGetDisplayName("Write"));
-			ExtraMenuCommand[nIndex] = function (Ctrl, pt, Name, nVerb) {
-				var FV = GetFolderView(Ctrl, pt);
-				FV.SortColumn = '-Tablacus.Write';
-			};
-			return nIndex;
+		Exec: async function (el) {
+			const FV = await GetFolderViewEx(el);
+			const pt = await GetPosEx(el, 9);
+			Sync.MixedSort.Exec(FV, pt);
 		},
 
-		Exec: function (Ctrl, pt) {
-			var FV = GetFolderView(Ctrl, pt);
-			FV.Focus();
-			var hMenu = api.CreatePopupMenu();
-			Addons.MixedSort.CreateMenu(hMenu, 1);
-			var pt = api.Memory("POINT");
-			api.GetCursorPos(pt);
-			var nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
-			if (nVerb) {
-				ExtraMenuCommand[nVerb](Ctrl, pt);
-			}
-		},
-
-		Sort: function (Ctrl, Name) {
-			if (Addons.MixedSort.tid[Ctrl.Id]) {
-				clearTimeout(Addons.MixedSort.tid[Ctrl.Id]);
-				delete Addons.MixedSort.tid[Ctrl.Id];
-			}
-			if (/^\-?Tablacus\.Name$|^\-?Tablacus\.Write$/i.test(Name)) {
-				var strProp = Name.replace(/Tablacus\./i, "");
-				var res = /^\-(.*)/.exec(strProp);
-				if (res) {
-					strProp = res[1];
-				}
-				var fnAdd, fnComp;
-				if (/Name/i.test(strProp)) {
-					fnAdd = function (pid, FV) {
-						return pid.ExtendedProperty("Name");
-					};
-					fnComp = function (a, b) {
-						return api.StrCmpLogical(b[1], a[1]);
-					};
-				} else {
-					fnAdd = function (pid, FV) {
-						return pid.ExtendedProperty("Write");
-					};
-					fnComp = function (a, b) {
-						return (b[1] - a[1]);
-					};
-				}
-				CustomSort(Ctrl, strProp, res, fnAdd, fnComp);
-				return true;
+		ClearTimer: function (Id) {
+			if (Addons.MixedSort.tid[Id]) {
+				clearTimeout(Addons.MixedSort.tid[Id]);
+				delete Addons.MixedSort.tid[Id];
 			}
 		}
 	};
 
-	AddEvent("ColumnClick", function (Ctrl, iItem) {
-		if (api.GetKeyState(VK_SHIFT) < 0) {
-			var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
-			var s = cColumns[iItem * 2];
-			if (s == "System.ItemNameDisplay") {
-				Ctrl.SortColumn = (Ctrl.SortColumn != 'Tablacus.Name') ? 'Tablacus.Name' : '-Tablacus.Name';
-				return S_OK;
-			}
-			if (s == "System.DateModified") {
-				Ctrl.SortColumn = (Ctrl.SortColumn != '-Tablacus.Write') ? '-Tablacus.Write' : 'Tablacus.Write';
-				return S_OK;
-			}
+	AddEvent("Sort", async function (Ctrl) {
+		const Id = await Ctrl.Id;
+		Addons.MixedSort.ClearTimer(Id);
+		const col = await Ctrl.GetSortColumn(1);
+		if (/^\-?Tablacus\.Name$|^\-?Tablacus\.Write$/i.test(col)) {
+			Addons.MixedSort.tid[Id] = setTimeout(function (Ctrl, col) {
+				Sync.MixedSort.Sort(Ctrl, col);
+			}, 99, Ctrl, col);
 		}
 	});
 
-	AddEvent("Sort", function (Ctrl) {
-		if (Addons.MixedSort.tid[Ctrl.Id]) {
-			clearTimeout(Addons.MixedSort.tid[Ctrl.Id]);
-			delete Addons.MixedSort.tid[Ctrl.Id];
-		}
-		if (/^\-?Tablacus\.Name$|^\-?Tablacus\.Write$/i.test(Ctrl.SortColumn(1))) {
-			Addons.MixedSort.tid[Ctrl.Id] = setTimeout(function () {
-				Addons.MixedSort.Sort(Ctrl, Ctrl.SortColumn(1));
-			}, 99);
-		}
-	});
+	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,24" : "bitmap:ieframe.dll,214,24,24");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="return Addons.MixedSort.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: src }, h), '</span>']);
 
-	AddEvent("Sorting", Addons.MixedSort.Sort);
-
-	//Menu
-	if (item.getAttribute("MenuExec")) {
-		Addons.MixedSort.nPos = api.LowPart(item.getAttribute("MenuPos"));
-		var s = item.getAttribute("MenuName");
-		if (s && s != "") {
-			Addons.MixedSort.strName = s;
-		}
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-			var mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
-			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
-			mii.hSubMenu = api.CreatePopupMenu();
-			mii.dwTypeData = GetText(Addons.MixedSort.strName);
-			nPos = Addons.MixedSort.CreateMenu(mii.hSubMenu, nPos);
-			api.InsertMenuItem(hMenu, Addons.MixedSort.nPos, true, mii);
-			return nPos;
-		});
-	}
-	//Key
-	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.MixedSort.Exec, "Func");
-	}
-	//Mouse
-	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.MixedSort.Exec, "Func");
-	}
-	//Type
-	AddTypeEx("Add-ons", "Mixed sort", Addons.MixedSort.Exec);
-
-	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,24" : "bitmap:ieframe.dll,214,24,24");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="return Addons.MixedSort.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.MixedSort.strName, src: src }, h), '</span>']);
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();
 }
