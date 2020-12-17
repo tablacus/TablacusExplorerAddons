@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2017.8.19</MinVersion>
-    <pubDate>Sat, 19 Aug 2017 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2020.12.16</MinVersion>
+    <pubDate>Thu, 17 Dec 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -15,6 +16,8 @@
   </en>
   <ja>
     <Name>タスクトレイ</Name>
-    <Description>タスクトレイ</Description>
   </ja>
+  <zh>
+    <Name>通知區域</Name>
+  </zh>
 </TablacusExplorer>

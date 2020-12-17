@@ -58,7 +58,7 @@ AddEvent("ItemPostPaint", function (Ctrl, pid, nmcd, vcd) {
 						fStyle = (state & LVIS_CUT) || api.GetAttributesOf(pid, SFGAO_HIDDEN) ? ILD_SELECTED : ILD_NORMAL;
 					}
 					image = GetThumbnail(image, Ctrl.IconSize * screen.deviceYDPI / 96, Ctrl.IconSize >= 32);
-					if (Ctrl.CurrentViewMode == FVM_SMALLICON) {
+					if (api.SendMessage(hList, LVM_GETVIEW, 0, 0) == 2) {
 						rc.left = rc.right - image.GetWidth();
 					}
 					image.DrawEx(nmcd.hdc, rc.left + (rc.right - rc.left - image.GetWidth()) / 2, rc.top + (rc.bottom - rc.top - image.GetHeight()) / 2, 0, 0, cl, cl, fStyle);

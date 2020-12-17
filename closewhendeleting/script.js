@@ -1,6 +1,4 @@
 if (window.Addon == 1) {
-	AddEvent("Error", function (FV) {
-		FV.Close();
-		return S_OK;
-	});
+	const Addon_Id = "closewhendeleting";
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 }
