@@ -1,11 +1,6 @@
-var Addon_Id = "dlldirectory";
-
+const Addon_Id = "dlldirectory";
 if (window.Addon == 1) {
-	api.SetDllDirectory(ExtractMacro(te, GetAddonOption("dlldirectory", "x" + (api.sizeof("HANDLE") * 8))));
+	api.SetDllDirectory(await ExtractPath(te, await GetAddonOption(Addon_Id, "x" + ui_.bit)));
 } else {
-	var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
-	if (ado) {
-		SetTabContents(0, "", ado.ReadText(adReadAll));
-		ado.Close();
-	}
+	SetTabContents(0, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }

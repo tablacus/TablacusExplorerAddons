@@ -1,8 +1,7 @@
-
-await SetTabContents(4, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
-
 g_win = MainWindow.g_.OptionsWindow;
 g_doc = parent.document;
+
+await SetTabContents(4, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
 SetText = function (o) {
 	g_doc.F[o.name].value = o.value;
@@ -11,17 +10,17 @@ SetText = function (o) {
 }
 
 SetRadio = function (o) {
-	var ar = o.id.split("=");
-	var el = g_doc.F[ar[0]];
+	const ar = o.id.split("=");
+	const el = g_doc.F[ar[0]];
 	el.value = ar[1];
 	FireEvent(el, "change");
 }
 
 SetCheckbox = async function (o) {
-	var ar = o.id.split(":");
-	var el = g_doc.F[ar[0]];
-	var res = /0x([\da-f]+)/i.exec(ar[1]);
-	var a = res ? parseInt(res[1], 16) : ar[1];
+	const ar = o.id.split(":");
+	const el = g_doc.F[ar[0]];
+	const res = /0x([\da-f]+)/i.exec(ar[1]);
+	const a = res ? parseInt(res[1], 16) : ar[1];
 	if (o.checked) {
 		el.value |= a;
 	} else {
@@ -34,9 +33,9 @@ SetCheckbox2 = function (o) {
 	g_doc.F[o.id].checked = o.checked;
 }
 
-for (var i = 0; i < document.E.length; i++) {
-	var o = document.E[i];
-	var ar = o.id.split(":");
+for (let i = 0; i < document.E.length; i++) {
+	const o = document.E[i];
+	const ar = o.id.split(":");
 	if (ar.length > 1) {
 		var res = /0x([\da-f]+)/i.exec(ar[1]);
 		var a = res ? parseInt(res[1], 16) : ar[1];

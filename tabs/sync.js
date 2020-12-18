@@ -5,12 +5,12 @@ Sync.Tabs = {
 	},
 
 	Over: function () {
-		var pt = api.Memory("POINT");
+		const pt = api.Memory("POINT");
 		api.GetCursorPos(pt);
 		if (!IsDrag(pt, g_ptDrag)) {
-			var Ctrl = te.CtrlFromPoint(pt);
+			const Ctrl = te.CtrlFromPoint(pt);
 			if (Ctrl && Ctrl.Type == CTRL_TC) {
-				var nIndex = Ctrl.HitTest(pt, TCHT_ONITEM);
+				const nIndex = Ctrl.HitTest(pt, TCHT_ONITEM);
 				if (nIndex >= 0) {
 					Ctrl.SelectedIndex = nIndex;
 				}
@@ -21,7 +21,7 @@ Sync.Tabs = {
 
 AddEvent("ToolTip", function (Ctrl, Index) {
 	if (Ctrl.Type == CTRL_TC) {
-		var FV = Ctrl.Item(Index);
+		const FV = Ctrl.Item(Index);
 		if (FV) {
 			return api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		}
@@ -36,9 +36,9 @@ AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode,
 					g_.mouse.str = "";
 					SetGestureText(Ctrl, "");
 					te.Data.pt = null;
-					var i = Ctrl.HitTest(pt, TCHT_ONITEM);
+					const i = Ctrl.HitTest(pt, TCHT_ONITEM);
 					if (i >= 0) {
-						var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
+						const pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 						Sync.Tabs.DragTab = Ctrl;
 						Sync.Tabs.DragIndex = i;
 						api.SHDoDragDrop(null, Ctrl[i].FolderItem, te, pdwEffect[0], pdwEffect);
@@ -61,24 +61,23 @@ AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 
 AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 	if (Ctrl.Type == CTRL_TC) {
-		var nIndex = Ctrl.HitTest(pt, TCHT_ONITEM);
+		const nIndex = Ctrl.HitTest(pt, TCHT_ONITEM);
 		if (nIndex >= 0) {
 			if (IsDrag(pt, g_ptDrag)) {
-				clearTimeout(Sync.Tabs.tid);
 				g_ptDrag = pt.Clone();
-				Sync.Tabs.tid = setTimeout(Sync.Tabs.Over, 300);
+				InvokeUI("Addons.Tabs.setTimeout", Sync.Tabs.Over, 300);
 			}
 		}
-		var nDragTab = Sync.Tabs.DragIndex;
+		const nDragTab = Sync.Tabs.DragIndex;
 		if (Sync.Tabs.DragTab && nDragTab >= 0) {
 			pdwEffect[0] = DROPEFFECT_MOVE;
 			return S_OK;
 		}
 		if (nIndex >= 0) {
 			if (dataObj.Count) {
-				var Target = Ctrl.Item(nIndex).FolderItem;
+				const Target = Ctrl.Item(nIndex).FolderItem;
 				if (!api.ILIsEqual(dataObj.Item(-1), Target)) {
-					var DropTarget = api.DropTarget(Target);
+					const DropTarget = api.DropTarget(Target);
 					if (DropTarget) {
 						hr = DropTarget.DragOver(dataObj, grfKeyState, pt, pdwEffect);
 						return hr;
@@ -97,7 +96,7 @@ AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 
 AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 	if (Ctrl.Type == CTRL_TC) {
-		var nIndex = Ctrl.HitTest(pt, TCHT_ONITEM);
+		let nIndex = Ctrl.HitTest(pt, TCHT_ONITEM);
 		if (Sync.Tabs.DragTab) {
 			pdwEffect[0] = DROPEFFECT_LINK;
 			if (nIndex < 0) {
@@ -106,16 +105,16 @@ AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 			Sync.Tabs.DragTab.Move(Sync.Tabs.DragIndex, nIndex, Ctrl);
 			Ctrl.SelectedIndex = nIndex;
 		} else if (nIndex >= 0) {
-			var hr = S_FALSE;
-			var DropTarget = Ctrl.Item(nIndex).DropTarget;
+			let hr = S_FALSE;
+			const DropTarget = Ctrl.Item(nIndex).DropTarget;
 			if (DropTarget) {
-				clearTimeout(Sync.Tabs.tid);
+				InvokeUI("Addons.Tabs.clearTimeout");
 				hr = DropTarget.Drop(dataObj, grfKeyState, pt, pdwEffect);
 			}
 			return hr;
 		} else if (dataObj.Count) {
-			for (var i = 0; i < dataObj.Count; i++) {
-				var FV = Ctrl.Selected.Navigate(dataObj.Item(i), SBSP_NEWBROWSER);
+			for (let i = 0; i < dataObj.Count; i++) {
+				const FV = Ctrl.Selected.Navigate(dataObj.Item(i), SBSP_NEWBROWSER);
 				Ctrl.Move(FV.Index, Ctrl.Count - 1);
 			}
 		}
@@ -123,8 +122,10 @@ AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 });
 
 AddEvent("DragLeave", function (Ctrl) {
-	clearTimeout(Sync.Tabs.tid);
-	Sync.Tabs.tid = null;
+	if (Sync.Tabs.tid) {
+		clearTimeout(Sync.Tabs.tid);
+		delete Sync.Tabs.tid;
+	}
 	return S_OK;
 });
 
@@ -133,7 +134,7 @@ AddEvent("TabViewCreated", function (Ctrl) {
 });
 
 AddEvent("Lock", function (Ctrl, i, bLock) {
-	var tcItem = api.Memory("TCITEM");
+	const tcItem = api.Memory("TCITEM");
 	tcItem.mask = TCIF_IMAGE;
 	tcItem.iImage = bLock ? 2 : -1;
 	api.SendMessage(Ctrl.hwnd, TCM_SETITEM, i, tcItem);
@@ -152,15 +153,14 @@ AddEvent("Finalize", function () {
 });
 
 AddEvent("Load", function () {
-	var hModule = api.GetModuleHandle(BuildPath(system32, "ieframe.dll"), 0, LOAD_LIBRARY_AS_DATAFILE) || api.GetModuleHandle(BuildPath(system32, "browseui.dll"), 0, LOAD_LIBRARY_AS_DATAFILE);
+	const hModule = api.GetModuleHandle(BuildPath(system32, "ieframe.dll"), 0, LOAD_LIBRARY_AS_DATAFILE) || api.GetModuleHandle(BuildPath(system32, "browseui.dll"), 0, LOAD_LIBRARY_AS_DATAFILE);
 	if (hModule) {
 		Sync.Tabs.himl = api.ImageList_LoadImage(hModule, 545, 13, 0, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION);
 	}
 	Sync.Tabs.hFont = CreateFont(DefaultFont);
 
-	var cTC = te.Ctrls(CTRL_TC);
-	for (var i = cTC.length; i-- > 0;) {
+	const cTC = te.Ctrls(CTRL_TC);
+	for (let i in cTC) {
 		Sync.Tabs.Init(cTC[i]);
 	}
 });
-

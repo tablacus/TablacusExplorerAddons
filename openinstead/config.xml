@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2020.11.6</MinVersion>
-    <pubDate>Sat, 21 Mar 2020 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2020.12.16</MinVersion>
+    <pubDate>Fri, 18 Dec 2020 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -18,4 +18,7 @@
     <Name>エクスプローラの代わりに開く</Name>
     <Description>エクスプローラの代わりにTablacus Explorerで開きます。</Description>
   </ja>
+  <zh>
+    <Name>接替檔案總管</Name>
+  </zh>
 </TablacusExplorer>
