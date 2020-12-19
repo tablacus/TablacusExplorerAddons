@@ -1,51 +1,45 @@
 if (window.Addon == 1) {
-	Addons.FullRowSelectEx =
-	{
+	Addons.FullRowSelectEx = {
 		hwnd: -1,
 		tid: null,
 
-		Exec: function (Ctrl)
-		{
-			var hView = Ctrl && Ctrl.hwndView;
+		Exec: async function (Ctrl) {
+			const hView = Ctrl && await Ctrl.hwndView;
 			if (hView != this.hwnd) {
-				var hList = api.FindWindowEx(this.hwnd, 0, WC_LISTVIEW, null);
+				let hList = await api.FindWindowEx(this.hwnd, 0, WC_LISTVIEW, null);
 				if (hList) {
-					api.PostMessage(hList, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, api.SendMessage(hList, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0) | LVS_EX_FULLROWSELECT);
+					api.PostMessage(hList, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, await api.SendMessage(hList, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0) | LVS_EX_FULLROWSELECT);
 					Addons.FullRowSelectEx.hwnd = -1;
 					clearTimeout(this.tid);
 					this.tid = null;
 				}
 				if (hView) {
-					var hList = api.FindWindowEx(hView, 0, WC_LISTVIEW, null);
+					hList = await api.FindWindowEx(hView, 0, WC_LISTVIEW, null);
 					if (hList) {
-						api.PostMessage(hList, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, api.SendMessage(hList, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0) & (~LVS_EX_FULLROWSELECT));
+						api.PostMessage(hList, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, await api.SendMessage(hList, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0) & (~LVS_EX_FULLROWSELECT));
 						this.hwnd = hView;
-						this.tid = setTimeout(this.Timeout, 1000);
+						this.tid = setTimeout(this.Timeout, 999);
 					}
 				}
 			}
 		},
 
-		Timeout: function ()
-		{
-			var pt = api.Memory("POINT");
-			api.GetCursorPos(pt);
-			var Ctrl = te.CtrlFromPoint(pt);
-			if ((Ctrl && Ctrl.hwndView) != Addons.FullRowSelectEx.hwnd) {
+		Timeout: async function () {
+			const pt = await api.Memory("POINT");
+			await api.GetCursorPos(pt);
+			const Ctrl = await te.CtrlFromPoint(pt);
+			if ((Ctrl && await Ctrl.hwndView) != Addons.FullRowSelectEx.hwnd) {
 				Addons.FullRowSelectEx.Exec(Ctrl);
-			}
-			else {
-				Addons.FullRowSelectEx.tid = setTimeout(Addons.FullRowSelectEx.Timeout, 1000);
+			} else {
+				Addons.FullRowSelectEx.tid = setTimeout(Addons.FullRowSelectEx.Timeout, 999);
 			}
 		}
 	}
-	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo)
-	{
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo) {
 		Addons.FullRowSelectEx.Exec(Ctrl);
 	});
 
-	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
+	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		Addons.FullRowSelectEx.Exec(Ctrl);
 	});
 }

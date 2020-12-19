@@ -1,19 +1,22 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
-	<General>
-		<Version>1.00</Version>
-		<MinVersion>2013.7.7</MinVersion>
-		<pubDate>Sun, 7 Jul 2013 00:00:00 UTC</pubDate>
-		<Creator>Gaku</Creator>
-		<URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
-		<License>MIT License</License>
-	</General>
-	<en>
-		<Name>Favorites Open in a New Tab</Name>
-		<Description>Favorites Open in a New Tab</Description>
-	</en>
-	<ja>
-		<Name>新しいタブでお気に入りを開く</Name>
-		<Description>新しいタブでお気に入りを開きます。</Description>
-	</ja>
+  <General>
+    <Version>1.01</Version>
+    <MinVersion>2020.12.16</MinVersion>
+    <pubDate>Sat, 19 Dec 2020 00:00:00 GMT</pubDate>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Favorites Open in a New Tab</Name>
+    <Description>Favorites Open in a New Tab</Description>
+  </en>
+  <ja>
+    <Name>新しいタブでお気に入りを開く</Name>
+  </ja>
+  <zh>
+    <Name>在新分頁中開啟我的最愛項目</Name>
+  </zh>
 </TablacusExplorer>

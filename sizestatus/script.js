@@ -71,7 +71,9 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("StatusText", Addons.SizeStatus.Exec);
-	AddEvent("Load", Addons.SizeStatus.Exec);
+	AddEvent("Load", function () {
+		setTimeout(Addons.SizeStatus.Exec, 500);
+	});
 } else {
 	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }

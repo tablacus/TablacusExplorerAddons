@@ -1,12 +1,13 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2018.1.31</MinVersion>
-    <pubDate>Wed, 31 Jan 2018 00:00:00 GMT</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2020.12.16</MinVersion>
+    <pubDate>Sat, 19 Dec 2020 00:00:00 GMT</pubDate>
     <Options>Common:5:5</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -15,6 +16,8 @@
   </en>
   <ja>
     <Name>存在しない項目のオーバーレイアイコン</Name>
-    <Description>存在しない項目にオーバーレイアイコンを表示する</Description>
   </ja>
+  <zh>
+    <Name>以交叉標示不存在的項目</Name>
+  </zh>
 </TablacusExplorer>
