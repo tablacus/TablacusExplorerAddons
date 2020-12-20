@@ -1,18 +1,21 @@
-﻿if (window.Addon == 1) {
-	Addons.NoInfotip =
-	{
-		SetList: function (Ctrl)
-		{
-			api.SendMessage(Ctrl.hwndList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_INFOTIP, 0);
+if (window.Addon == 1) {
+	Addons.NoInfotip = {
+		SetList: async function (Ctrl) {
+			const hList = await Ctrl.hwndList;
+			if (hList) {
+				api.SendMessage(hList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_INFOTIP, 0);
+			}
 		},
-		
-		SetAll: function(dw)
-		{
-			var cFV = te.Ctrls(CTRL_FV);
-			for (var i in cFV) {
-				var FV = cFV[i];
-				if (FV.hwndList) {
-					api.SendMessage(FV.hwndList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_INFOTIP, dw);
+
+		SetAll: async function (dw) {
+			let cFV = await te.Ctrls(CTRL_FV);
+			if (window.chrome) {
+				cFV = await api.CreateObject("SafeArray", cFV);
+			}
+			for (let i = 0; i < cFV.length; ++i) {
+				const hList = await cFV[i].hwndList;
+				if (hList) {
+					api.SendMessage(hList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_INFOTIP, dw);
 				}
 			}
 		}
@@ -20,8 +23,7 @@
 
 	AddEvent("ViewCreated", Addons.NoInfotip.SetList);
 
-	AddEventId("AddonDisabledEx", "noinfotip", function ()
-	{
+	AddEventId("AddonDisabledEx", "noinfotip", function () {
 		Addons.NoInfotip.SetAll(LVM_SETEXTENDEDLISTVIEWSTYLE);
 	});
 

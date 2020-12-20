@@ -1,45 +1,34 @@
-var Addon_Id = "selectnonexistent";
-
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "selectnonexistent";
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Edit");
 	item.setAttribute("MenuPos", -1);
 }
 if (window.Addon == 1) {
-	Addons.SelectNonexistent =
-	{
-		Exec: function (Ctrl, pt)
-		{
-			var FV = GetFolderView(Ctrl, pt);
-			if (FV && FV.Items) {
+	Addons.SelectNonexistent = {
+		Exec: async function (Ctrl, pt) {
+			const FV = await GetFolderView(Ctrl, pt);
+			if (FV && await FV.Items) {
 				FV.Focus();
-				FV.SelectItem(null, SVSI_DESELECTOTHERS);
-				for (var i = FV.Items.Count; i-- > 0;) {
-					var pid = FV.Items.Item(i);
-					if (pid.ExtendedProperty("Access") == undefined && pid.ExtendedProperty("Write") == undefined && pid.ExtendedProperty("Size") == 0) {
+				await FV.SelectItem(null, SVSI_DESELECTOTHERS);
+				for (let i = await FV.Items.Count; i-- > 0;) {
+					const pid = await FV.Items.Item(i);
+					if (await pid.Size < 0 && await pid.ExtendedProperty("Access") == null && await pid.ExtendedProperty("Write") == null) {
+						Addons.Debug.alert(await pid.Size);
 						FV.SelectItem(pid, SVSI_SELECT);
 					}
 				}
 			}
 		}
-	}
-
-	var s = item.getAttribute("MenuName");
-	if (!s) {
-		var info = GetAddonInfo(Addon_Id);
-		s = info.Name;
-	}
-	Addons.SelectNonexistent.strName = GetText(s);
+	};
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.SelectNonexistent.nPos = api.LowPart(item.getAttribute("MenuPos"));
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-		{
-			api.InsertMenu(hMenu, Addons.SelectNonexistent.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.SelectNonexistent.strName);
-				ExtraMenuCommand[nPos] = Addons.SelectNonexistent.Exec;
-			return nPos;
-		});
+		Common.SelectNonexistent = await api.CreateObject("Object");
+		Common.SelectNonexistent.strMenu = item.getAttribute("Menu");
+		Common.SelectNonexistent.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
+		Common.SelectNonexistent.nPos = GetNum(item.getAttribute("MenuPos"));
+		$.importScript("addons\\" + Addon_Id + "\\sync.js");
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -49,6 +38,5 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SelectNonexistent.Exec, "Func");
 	}
-
 	AddTypeEx("Add-ons", "Select nonexistent items", Addons.SelectNonexistent.Exec);
 }

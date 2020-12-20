@@ -7,7 +7,7 @@ if (window.Addon == 1) {
 	AddEvent("ItemPostPaint2", function (Ctrl, pid, nmcd, vcd) {
 		const hList = Ctrl.hwndList;
 		if (hList) {
-			if (pid.ExtendedProperty("Access") == null && pid.ExtendedProperty("Write") == null && GetNum(pid.ExtendedProperty("Size")) == 0) {
+			if (pid.Size < 0 && pid.ExtendedProperty("Access") == null && pid.ExtendedProperty("Write") == null) {
 				const rc = api.Memory("RECT");
 				rc.left = LVIR_ICON;
 				api.SendMessage(hList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
