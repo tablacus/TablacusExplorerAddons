@@ -1,20 +1,23 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2015.2.16</MinVersion>
-    <pubDate>Mon, 16 Feb 2015 00:00:00 UTC</pubDate>
-    <Options>Width: 256; Height: 80</Options>
+    <Version>1.01</Version>
+    <MinVersion>2020.12.20</MinVersion>
+    <pubDate>Mon, 21 Dec 2020 00:00:00 GMT</pubDate>
+    <Options>Common:8:8</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Hot Key</Name>
-    <Description>Hot Key</Description>
+    <Name>Hot key</Name>
+    <Description>Hot key</Description>
   </en>
   <ja>
-    <Name>ホット キー</Name>
-    <Description>ホット キー</Description>
+    <Name>ホットキー</Name>
   </ja>
+  <zh>
+    <Name>快速鍵</Name>
+  </zh>
 </TablacusExplorer>

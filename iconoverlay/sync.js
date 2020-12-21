@@ -83,7 +83,7 @@ if (Sync.IconOverlay.DLL) {
 				image = icon[0];
 				rc.Write(0, VT_I8, nmcd.dwItemSpec);
 				api.SendMessage(hwnd, TVM_GETITEMRECT, true, rc);
-				x = rc.Left - 19 * screen.logicalYDPI / 96;
+				x = rc.Left - 19 * screen.deviceYDPI / 96;
 				y = rc.Top + 2 * screen.deviceYDPI / 96;
 			}
 			if (image) {
