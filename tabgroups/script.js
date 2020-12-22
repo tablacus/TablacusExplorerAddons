@@ -29,10 +29,10 @@ if (window.Addon == 1) {
 
 		Arrange: async function (bForce) {
 			await Addons.Tabgroups.Fix();
-			let s = [];
-			let o = document.getElementById("tabgroups");
-			let tabs = o.getElementsByTagName("li");
-			let nLen = await GetLength(await te.Data.Tabgroups.Data);
+			const s = [];
+			const o = document.getElementById("tabgroups");
+			const tabs = o.getElementsByTagName("li");
+			const nLen = await GetLength(await te.Data.Tabgroups.Data);
 			if (bForce || tabs.length != nLen + 1) {
 				for (let i = 0; i < nLen; ++i) {
 					Addons.Tabgroups.Tab(s, i + 1);
@@ -59,18 +59,19 @@ if (window.Addon == 1) {
 		},
 
 		Style: async function (tabs, i) {
-			let o = tabs[i - 1];
+			const o = tabs[i - 1];
 			if (!o) {
 				return;
 			}
-			let data = await te.Data.Tabgroups.Data[i - 1];
-			let s = [await data.Name];
-			if (await data.Lock) {
+			const data = await te.Data.Tabgroups.Data[i - 1];
+			const r = await Promise.all([data.Name, data.Lock, data.Color, te.Data.Tabgroups.Index]);
+			let s = [r[0]];
+			if (r[1]) {
 				s.unshift(Addons.Tabgroups.ImgLock);
 			}
 			o.innerHTML = s.join("");
-			let style = o.style;
-			let cl = await data.Color;
+			const style = o.style;
+			let cl = r[2];
 			if (cl) {
 				if (ui_.IEVer >= 10) {
 					style.background = "none";
@@ -90,12 +91,12 @@ if (window.Addon == 1) {
 				style.color = "";
 				style.backgroundColor = "";
 			}
-			if (i == await te.Data.Tabgroups.Index) {
+			if (i == r[3]) {
 				o.className = Addons.Tabgroups.bTab ? 'activetab' : 'activemenu';
 				style.zIndex = tabs.length;
 			} else {
 				if (Addons.Tabgroups.bTab) {
-					o.className = i < await te.Data.Tabgroups.Index ? 'tab' : 'tab2';
+					o.className = i < r[3] ? 'tab' : 'tab2';
 				} else {
 					o.className = 'menu';
 				}
@@ -104,7 +105,7 @@ if (window.Addon == 1) {
 			Common.Tabgroups.rcItem[i - 1] = await GetRect(o);
 		},
 
-		Change: async function (n) {
+		Change: async function (n, data, cb) {
 			let oShow = {};
 			if (n > 0) {
 				te.Data.Tabgroups.Click = n;
@@ -116,12 +117,12 @@ if (window.Addon == 1) {
 				this.Arrange();
 				te.LockUpdate();
 				let bDisp = false;
-				let freeTC = [];
-				let preTC = [];
-				let cTC = await te.Ctrls(CTRL_TC);
-				let nLen = await cTC.Count;
+				const freeTC = [];
+				const preTC = [];
+				const cTC = await te.Ctrls(CTRL_TC);
+				const nLen = await cTC.Count;
 				for (let i = 0; i < nLen; i++) {
-					let TC = await cTC[i];
+					const TC = await cTC[i];
 					if (await TC.Visible) {
 						preTC.push(TC);
 					} else if (!await TC.Data.Group) {
@@ -129,7 +130,7 @@ if (window.Addon == 1) {
 					}
 					let b = await TC.Data.Group == await te.Data.Tabgroups.Index;
 					if (b) {
-						let s = [await TC.Left, await TC.Top, await TC.Width, await TC.Height].join(",");
+						const s = (await Promise.all([TC.Left, TC.Top, TC.Width, TC.Height])).join(",");
 						if (oShow[s]) {
 							b = false;
 							api.ObjDelete(TC.Data, "Group");
@@ -146,26 +147,34 @@ if (window.Addon == 1) {
 				if (!bDisp) {
 					if (preTC.length) {
 						for (let i = 0; i < preTC.length; i++) {
-							let PT = preTC[i];
-							let TC = await this.CreateTC(freeTC, await PT.Left, await PT.Top, await PT.Width, await PT.Height, await PT.Style, await PT.Align, await PT.TabWidth, await PT.TabHeight);
+							const PT = preTC[i];
+							let r = await Promise.all([PT.Left, PT.Top, PT.Width, PT.Height, PT.Style, PT.Align, PT.TabWidth, PT.TabHeight]);
+							const TC = await this.CreateTC(freeTC, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7]);
 							if (await TC.Count == 0) {
-								let FV = await PT.Selected;
+								const FV = await PT.Selected;
 								if (FV) {
-									let TV = await FV.TreeView;
-									TC.Selected.Navigate2(await FV.FolderItem, SBSP_NEWBROWSER, await FV.Type, await FV.CurrentViewMode, await FV.FolderFlags, await FV.Options, await FV.ViewFlags, await FV.IconSize, await TV.Align, await TV.Width, await TV.Style, await TV.EnumFlags, await TV.RootStyle, await TV.Root);
+									const TV = await FV.TreeView;
+									r = await Promise.all([FV.FolderItem, FV.Type, FV.CurrentViewMode, FV.FolderFlags, FV.Options, FV.ViewFlags, FV.IconSize, TV.Align, TV.Width, TV.Style, TV.EnumFlags, TV.RootStyle, TV.Root]);
 								} else {
-									TC.Selected.Navigate2(HOME_PATH, SBSP_NEWBROWSER, await te.Data.View_Type, await te.Data.View_ViewMode, await te.Data.View_fFlags, await te.Data.View_Options, await te.Data.View_ViewFlags, await te.Data.View_IconSize, await te.Data.Tree_Align, await te.Data.Tree_Width, await te.Data.Tree_Style, await te.Data.Tree_EnumFlags, await te.Data.Tree_RootStyle, await te.Data.Tree_Root);
+									r = await Promise.all([$.HOME_PATH, te.Data.View_Type, te.Data.View_ViewMode, te.Data.View_fFlags, te.Data.View_Options, te.Data.View_ViewFlags, te.Data.View_IconSize, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root]);
+
 								}
+								TC.Selected.Navigate2(r[0], SBSP_NEWBROWSER, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12]);
 								TC.Visible = true;
 							}
 						}
 					} else {
-						let TC = await this.CreateTC(freeTC, 0, 0, "100%", "100%", await te.Data.Tab_Style, await te.Data.Tab_Align, await te.Data.Tab_TabWidth, await te.Data.Tab_TabHeight);
-						TC.Data.Group = await te.Data.Tabgroups.Index;
-						TC.Selected.Navigate2(await $.HOME_PATH, SBSP_NEWBROWSER, await te.Data.View_Type, await te.Data.View_ViewMode, await te.Data.View_fFlags, await te.Data.View_Options, await te.Data.View_ViewFlags, await te.Data.View_IconSize, await te.Data.Tree_Align, await te.Data.Tree_Width, await te.Data.Tree_Style, await te.Data.Tree_EnumFlags, await te.Data.Tree_RootStyle, await te.Data.Tree_Root);
+						let r = await Promise.all([te.Data.Tab_Style, te.Data.Tab_Align, te.Data.Tab_TabWidth, te.Data.Tab_TabHeight, te.Data.Tabgroups.Index]);
+						const TC = await this.CreateTC(freeTC, 0, 0, "100%", "100%", r[0], r[1], r[2], r[3]);
+						TC.Data.Group = r[4];
+						r = await Promise.all([$.HOME_PATH, te.Data.View_Type, te.Data.View_ViewMode, te.Data.View_fFlags, te.Data.View_Options, te.Data.View_ViewFlags, te.Data.View_IconSize, te.Data.Tree_Align, te.Data.Tree_Width, te.Data.Tree_Style, te.Data.Tree_EnumFlags, te.Data.Tree_RootStyle, te.Data.Tree_Root]);
+						TC.Selected.Navigate2(r[0], SBSP_NEWBROWSER, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12]);
 					}
 				}
 				te.UnlockUpdate();
+			}
+			if (cb) {
+				await cb(n, data);
 			}
 			Resize();
 		},
@@ -198,7 +207,7 @@ if (window.Addon == 1) {
 			let i = await cTC.Count;
 			if (i > 1) {
 				while (--i >= 0) {
-					let TC = await cTC[i];
+					const TC = await cTC[i];
 					if (await TC.Data.Group == nPos) {
 						TC.Close();
 					} else if (await TC.Data.Group > nPos) {
@@ -207,14 +216,14 @@ if (window.Addon == 1) {
 				}
 			}
 			await te.Data.Tabgroups.Data.splice(nPos - 1, 1);
-			let nLen = await GetLength(await te.Data.Tabgroups.Data);
+			const nLen = await GetLength(await te.Data.Tabgroups.Data);
 			if (await te.Data.Tabgroups.Index >= nLen + 1 && await te.Data.Tabgroups.Index > 1) {
 				te.Data.Tabgroups.Index = await te.Data.Tabgroups.Index - 1;
 			}
 			if (!bNotUpdate) {
-				let cTC = await te.Ctrls(CTRL_TC);
+				cTC = await te.Ctrls(CTRL_TC);
 				for (let i = await cTC.Count; --i >= 0;) {
-					let TC = await cTC[i];
+					const TC = await cTC[i];
 					if (await TC.Data.Group == await te.Data.Tabgroups.Index) {
 						TC.Visible = true;
 					}
@@ -225,8 +234,7 @@ if (window.Addon == 1) {
 
 		CloseOther: async function (nPos) {
 			if (await confirmOk()) {
-				let nLen = await GetLength(te.Data.Tabgroups.Data);
-				for (let i = nLen; i--;) {
+				for (let i = await GetLength(await te.Data.Tabgroups.Data); i--;) {
 					if (i != nPos - 1) {
 						await this.Close(i + 1, true);
 					}
@@ -241,7 +249,7 @@ if (window.Addon == 1) {
 			if ((ev.buttons != null ? ev.buttons : ev.button) == 1) {
 				Common.Tabgroups.pt.x = ev.screenX * ui_.Zoom;
 				Common.Tabgroups.pt.y = ev.screenY * ui_.Zoom;
-				let n = o.id.replace(/\D/g, '') - 0;
+				const n = o.id.replace(/\D/g, '') - 0;
 				this.Change(n);
 			}
 			return true;
@@ -256,9 +264,9 @@ if (window.Addon == 1) {
 
 		Drop: async function (nDrag, nDrop) {
 			if (nDrag != nDrop) {
-				let nLen = await GetLength(await te.Data.Tabgroups.Data);
-				let ar = [];
-				let Data = [];
+				const nLen = await GetLength(await te.Data.Tabgroups.Data);
+				const ar = [];
+				const Data = [];
 				for (let i = 0; i < nLen; ++i) {
 					Data.push(await te.Data.Tabgroups.Data[i]);
 				}
@@ -272,10 +280,10 @@ if (window.Addon == 1) {
 				for (let i = 0; i < nLen; ++i) {
 					te.Data.Tabgroups.Data[ar[i]] = Data[i];
 				}
-				let cTC = await te.Ctrls(CTRL_TC);
-				let nCount = await cTC.Count;
+				const cTC = await te.Ctrls(CTRL_TC);
+				const nCount = await cTC.Count;
 				for (let i = 0; i < nCount; ++i) {
-					let TC = await cTC[i];
+					const TC = await cTC[i];
 					if (await TC.Data.Group > ar.length) {
 						TC.Close();
 					} else {
@@ -293,7 +301,7 @@ if (window.Addon == 1) {
 			let hMenu = await api.CreatePopupMenu();
 			let sMenu = [1, "Rename", 5, "Color", 0, "", 2, "&Close Tab", 3, "Cl&amp;ose Other Tabs", 0, "", 4, "&New Tab", 6, "&Lock", 0, "", 7, "Load", 8, "Save"];
 			for (let i = sMenu.length / 2; i--;) {
-				let uId = sMenu[i * 2];
+				const uId = sMenu[i * 2];
 				let uFlags = uId ? MF_STRING : MF_SEPARATOR;
 				if (await te.Data.Tabgroups.Data[await te.Data.Tabgroups.Click - 1].Lock) {
 					if (uId == 2) {
@@ -305,8 +313,8 @@ if (window.Addon == 1) {
 				}
 				await api.InsertMenu(hMenu, 0, MF_BYPOSITION | uFlags, uId, await GetText(sMenu[i * 2 + 1]));
 			}
-			let x = ev.screenX * ui_.Zoom;
-			let y = ev.screenY * ui_.Zoom;
+			const x = ev.screenX * ui_.Zoom;
+			const y = ev.screenY * ui_.Zoom;
 			pt.x = x;
 			pt.y = y;
 			let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, await te.hwnd, null, null);
@@ -331,21 +339,23 @@ if (window.Addon == 1) {
 					this.Lock();
 					break;
 				case 7:
-					this.Load();
+					Sync.Tabgroups.Load();
 					break;
 				case 8:
-					this.Save();
+					Sync.Tabgroups.Save();
 					break;
 			}
 		},
 
 		Edit: async function (o) {
-			let s = await InputDialog(await GetText("Name"), await te.Data.Tabgroups.Data[await te.Data.Tabgroups.Click - 1].Name);
-			if (s) {
-				o.value = s;
-				te.Data.Tabgroups.Data[await te.Data.Tabgroups.Click - 1].Name = s;
-				this.Arrange();
-			}
+			const nIndex = await te.Data.Tabgroups.Click - 1;
+			InputDialog(await GetText("Name"), await te.Data.Tabgroups.Data[nIndex].Name, async function (s) {
+				if (s) {
+					o.value = s;
+					te.Data.Tabgroups.Data[nIndex].Name = s;
+					Addons.Tabgroups.Arrange();
+				}
+			});
 		},
 
 		SetColor: async function () {
@@ -354,21 +364,21 @@ if (window.Addon == 1) {
 		},
 
 		Lock: async function () {
-			let i = await te.Data.Tabgroups.Click - 1;
+			const i = await te.Data.Tabgroups.Click - 1;
 			te.Data.Tabgroups.Data[i].Lock = await te.Data.Tabgroups.Data[i].Lock ? 0 : 1;
 			this.Arrange();
 		},
 
 		Fix: async function () {
-			let cTC = await te.Ctrls(CTRL_TC, true);
-			let nCount = await cTC.Count;
+			const cTC = await te.Ctrls(CTRL_TC, true);
+			const nCount = await cTC.Count;
 			for (let i = 0; i < nCount; ++i) {
-				let TC = await cTC[i];
+				const TC = await cTC[i];
 				if (!await TC.Data.Group) {
 					TC.Data.Group = await te.Data.Tabgroups.Index;
 				}
 			}
-			let TC = await te.Ctrl(CTRL_TC);
+			const TC = await te.Ctrl(CTRL_TC);
 			if (TC) {
 				Addons.Tabgroups.Focused[await te.Data.Tabgroups.Index] = await TC.Id;
 			}
@@ -378,7 +388,7 @@ if (window.Addon == 1) {
 			Addons.Tabgroups.ClearTid();
 			Addons.Tabgroups.tid = setTimeout(async function () {
 				delete Addons.Tabgroups.tid;
-				let pt = await api.Memory("POINT");
+				const pt = await api.Memory("POINT");
 				await api.GetCursorPos(pt);
 				if (!await Common.Tabgroups.Drag5 && !await IsDrag(pt, await Common.Tabgroups.pt)) {
 					Addons.Tabgroups.Change(nIndex);
@@ -389,18 +399,18 @@ if (window.Addon == 1) {
 		ClearTid: function () {
 			if (Addons.Tabgroups.tid) {
 				clearTimeout(Addons.Tabgroups.tid);
-				Addons.Tabgroups.tid = void 0;
+				delete Addons.Tabgroups.tid;
 			}
 		},
 
 		Move: async function (ev, o) {
 			if (await api.GetKeyState(VK_LBUTTON) < 0) {
-				let pt = await api.Memory("POINT");
+				const pt = await api.Memory("POINT");
 				pt.x = ev.screenX * ui_.Zoom;
 				pt.y = ev.screenY * ui_.Zoom;
 				if (await IsDrag(pt, Common.Tabgroups.pt)) {
-					let pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
-					let dataObj = await api.CreateObject("FolderItems");
+					const pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
+					const dataObj = await api.CreateObject("FolderItems");
 					dataObj.SetData("");
 					Common.Tabgroups.Drag5 = o.id;
 					api.SHDoDragDrop(null, dataObj, te, pdwEffect[0], pdwEffect);
@@ -421,7 +431,7 @@ if (window.Addon == 1) {
 
 		Wheel: async function (ev) {
 			let n = await te.Data.Tabgroups.Click + (isFinite(ev) ? ev : - ev.wheelDelta / 120);
-			let nLen = await GetLength(await te.Data.Tabgroups.Data);
+			const nLen = await GetLength(await te.Data.Tabgroups.Data);
 			if (n < 1) {
 				n = nLen;
 			}
@@ -441,7 +451,7 @@ if (window.Addon == 1) {
 	Addons.Tabgroups.Init();
 
 	AddEvent("Load", function () {
-		Addons.Tabgroups.ImgLock = Addons.TabPlus ? Addons.TabPlus.ImgLock2 : '<img src="' + MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13) + '" style="width: 13px; padding-right: 2px">';
+		Addons.Tabgroups.ImgLock = Addons.TabPlus ? Addons.TabPlus.ImgLock2 : '<img src="' + MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13) + '" style="width: ' + (13 * 96 / screen.deviceYDPI) + 'px; padding-right: 2px">';
 
 		setTimeout(Addons.Tabgroups.Arrange, 500);
 	});

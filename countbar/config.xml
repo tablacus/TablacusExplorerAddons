@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2020.11.6</MinVersion>
-    <pubDate>Sun, 08 Nov 2020 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2020.12.21</MinVersion>
+    <pubDate>Tue, 22 Dec 2020 00:00:00 GMT</pubDate>
     <Options>Common:0,6:6</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -15,7 +15,7 @@
     <Description>Show selected item count in the status bar.</Description>
   </en>
   <ja>
-    <Name>カウント バー</Name>
+    <Name>カウントバー</Name>
     <Description>項目数を表示します。</Description>
   </ja>
   <zh>

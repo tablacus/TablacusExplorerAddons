@@ -1,34 +1,33 @@
-var Addon_Id = "countbar";
-var Default = "BottomBar3Left";
+const Addon_Id = "countbar";
+const Default = "BottomBar3Left";
 
 if (window.Addon == 1) {
-	Addons.CountBar =
-	{
+	Addons.CountBar = {
 		Title: await GetAddonOption(Addon_Id, "Title"),
 
 		Exec: async function (Ctrl, Text, iPart) {
-			var FV = await GetFolderView(Ctrl);
+			const FV = await GetFolderView(Ctrl);
 			if (FV && Addons.CountBar.Item) {
-				var nType = await FV.Type;
+				const nType = await FV.Type;
 				if (nType != CTRL_SB && nType != CTRL_EB) {
 					return;
 				}
-				var s;
+				let s;
 				if (Text || !Ctrl) {
 					s = [];
-					var nCount = await FV.ItemCount(SVGIO_SELECTION);
+					let nCount = await FV.ItemCount(SVGIO_SELECTION);
 					if (nCount) {
-						var s1 = nCount > 1 ? Addons.CountBar.Item[2] : Addons.CountBar.Item[3];
+						const s1 = nCount > 1 ? Addons.CountBar.Item[2] : Addons.CountBar.Item[3];
 						if (nCount > 999 && g_.IEVer > 8) {
 							nCount = nCount.toLocaleString();
 						}
 						s.push(await api.sprintf(s1.length + 9, s1, nCount));
 					}
-					var nCount = await FV.ItemCount();
+					nCount = await FV.ItemCount();
 					if (!nCount && !/^0/.test(Text)) {
 						return;
 					}
-					var s1 = nCount > 1 ? Addons.CountBar.Item[0] : Addons.CountBar.Item[1];
+					const s1 = nCount > 1 ? Addons.CountBar.Item[0] : Addons.CountBar.Item[1];
 					if (nCount > 999 && g_.IEVer > 8) {
 						nCount = nCount.toLocaleString();
 					}
@@ -45,13 +44,12 @@ if (window.Addon == 1) {
 	SetAddon(Addon_Id, Default, '<span id="countbar">&nbsp;</span>');
 
 	AddEvent("StatusText", Addons.CountBar.Exec);
-	AddEvent("Load", Addons.CountBar.Exec);
 
 	Promise.all([api.LoadString(hShell32, 38192), api.LoadString(hShell32, 6466), api.LoadString(hShell32, 38193), api.LoadString(hShell32, 6466), api.LoadString(hShell32, 38194), api.LoadString(hShell32, 6477), api.LoadString(hShell32, 38195), api.LoadString(hShell32, 6477)]).then(function (r) {
 		Addons.CountBar.Item = [r[0] || r[1], r[2] || r[3], r[4] || r[5], r[6] || r[7]];
-		var ar = ["%s items selected", "%s item selected", "%s items", "%s item"];
-		for (var i in Addons.CountBar.Item) {
-			var s = Addons.CountBar.Item[i];
+		const ar = ["%s items selected", "%s item selected", "%s items", "%s item"];
+		for (let i in Addons.CountBar.Item) {
+			const s = Addons.CountBar.Item[i];
 			if (!/%s/.test(s)) {
 				Addons.CountBar.Item[i] = /%1[^ ]*/.test(s) ? s.replace(/%1[^ ]*/, "%s") : ar[i];
 			}

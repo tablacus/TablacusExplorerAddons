@@ -1,11 +1,12 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2017.10.11</MinVersion>
-    <pubDate>Thu, 12 Oct 2017 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2020.12.21</MinVersion>
+    <pubDate>Tue, 22 Dec 2020 00:00:00 GMT</pubDate>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -16,4 +17,7 @@
     <Name>ロックされたタブを先頭に</Name>
     <Description>ロックされたタブを先頭に集めます。</Description>
   </ja>
+  <zh>
+    <Name>自動排列已鎖分頁到左邊</Name>
+  </zh>
 </TablacusExplorer>

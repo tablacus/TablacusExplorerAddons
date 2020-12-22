@@ -1,11 +1,12 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2016.3.12</MinVersion>
-    <pubDate>Tue, 15 Mar 2016 00:00:00 UTC</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2020.12.21</MinVersion>
+    <pubDate>Tue, 22 Dec 2020 00:00:00 GMT</pubDate>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://www.eonet.ne.jp/~gakana/tablacus/addons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -16,4 +17,7 @@
     <Name>ドラッグで最前面</Name>
     <Description>ドラッグで最前面にする。</Description>
   </ja>
+  <zh>
+    <Name>迎接拖放</Name>
+  </zh>
 </TablacusExplorer>

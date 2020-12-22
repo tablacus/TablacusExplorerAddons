@@ -1,11 +1,13 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2017.11.20</MinVersion>
-    <pubDate>Mon, 20 Nov 2017 00:00:00 GMT</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2020.12.21</MinVersion>
+    <pubDate>Tue, 22 Dec 2020 00:00:00 GMT</pubDate>
+    <Options>Common:6:6</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -13,7 +15,7 @@
     <Description>Display Git Branch</Description>
   </en>
   <ja>
-    <Name>ブランチ バー</Name>
+    <Name>ブランチバー</Name>
     <Description>Gitのブランチを表示</Description>
   </ja>
 </TablacusExplorer>

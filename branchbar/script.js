@@ -1,15 +1,13 @@
-﻿var Addon_Id = "branchbar";
-var Default = "ToolBar2Right";
+const Addon_Id = "branchbar";
+const Default = "ToolBar2Right";
 
 if (window.Addon == 1) {
-	Addons.BranchBar =
-	{
-		Get: function (Ctrl)
-		{
-			var s = api.CreateProcess("git branch --contains", Ctrl.FolderItem.Path);
-			var o = document.getElementById("branchbar");
-			if (o) {
-				o.innerHTML = s && s[0] == "*" ? s.substr(1) : "";
+	Addons.BranchBar = {
+		Get: async function (Ctrl) {
+			const el = document.getElementById("branchbar");
+			if (el) {
+				const s = await api.CreateProcess("git branch --contains", await Ctrl.FolderItem.Path);
+				el.innerHTML = s && s[0] == "*" ? s.substr(1) : "";
 			}
 		}
 	};
