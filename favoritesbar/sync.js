@@ -2,7 +2,7 @@ Common.FavoritesBar.rcItem = api.CreateObject("Array");
 
 Sync.FavoritesBar = {
 	FromPt: function (ptc) {
-		for (var i = Common.FavoritesBar.rcItem.length; i-- > 0;) {
+		for (let i = Common.FavoritesBar.rcItem.length; i-- > 0;) {
 			if (PtInRect(Common.FavoritesBar.rcItem[i], ptc)) {
 				return i;
 			}

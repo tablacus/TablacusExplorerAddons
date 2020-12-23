@@ -27,8 +27,8 @@ if (window.Addon == 1) {
 		},
 
 		Open: function (ev, i, bNew) {
-			let items = ui_.MenuFavorites;
-			let item = items[i];
+			const items = ui_.MenuFavorites;
+			const item = items[i];
 			let type = item.Type;
 			if (/^Open$/i.test(type)) {
 				if (bNew || ev.ctrlKey || Addons.FavoritesBar.NewTab) {
@@ -57,11 +57,11 @@ if (window.Addon == 1) {
 		},
 
 		Popup: async function (ev, i) {
-			let items = ui_.MenuFavorites;
+			const items = ui_.MenuFavorites;
 			if (i >= 0) {
-				let hMenu = await api.CreatePopupMenu();
-				let path = await this.GetPath(items, i);
-				let ContextMenu = await api.ContextMenu(path);
+				const hMenu = await api.CreatePopupMenu();
+				const path = await this.GetPath(items, i);
+				const ContextMenu = await api.ContextMenu(path);
 				if (ContextMenu) {
 					await ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_DEFAULTONLY);
 					await RemoveCommand(hMenu, ContextMenu, "delete;rename");
@@ -70,11 +70,11 @@ if (window.Addon == 1) {
 				}
 				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, await GetText("&Edit"));
 				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, await GetText("Add"));
-				let x = ev.screenX * ui_.Zoom;
-				let y = ev.screenY * ui_.Zoom;
-				let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, ContextMenu);
+				const x = ev.screenX * ui_.Zoom;
+				const y = ev.screenY * ui_.Zoom;
+				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, ContextMenu);
 				if (nVerb >= 0x1001) {
-					let s = await ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
+					const s = await ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
 					if (SameText(s, "delete")) {
 						this.ShowOptions();
 					} else {
@@ -95,7 +95,7 @@ if (window.Addon == 1) {
 		},
 
 		Arrange: async function () {
-			let s = [];
+			const s = [];
 			let nLevel = 0;
 			const items = await Addons.FavoritesBar.GetFovorites();
 			for (let i = 0; i < items.length; ++i) {
@@ -103,7 +103,7 @@ if (window.Addon == 1) {
 				if (!items[i].Org) {
 					strName = await GetText(strName);
 				}
-				let strType = items[i].Type;
+				const strType = items[i].Type;
 				let img = await api.PathUnquoteSpaces(items[i].Icon);
 				let path = items[i].text;
 				let nOpen = 0;
@@ -139,7 +139,7 @@ if (window.Addon == 1) {
 				} else {
 					img = await GetImgTag({ src: "icon:shell32.dll,0", class: "favicon" });
 				}
-				s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(event,', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(event,' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(items[i].text), '" draggable="true" ondragstart="Addons.FavoritesBar.Start5(event,this)" ondragend="Addons.FavoritesBar.End5(this)" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", EncodeSC(strName.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")), '</div> ');
+				s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(event,', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(event,' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(event,', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(items[i].text), '" draggable="true" ondragstart="Addons.FavoritesBar.Start5(event,this)" ondragend="Addons.FavoritesBar.End5(this)" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", EncodeSC(strName.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")), '</div> ');
 				if (nOpen) {
 					s.push('<div id="fav', i, '_"', Addons.FavoritesBar.arExpand[1], '>');
 					++nLevel;
@@ -166,15 +166,15 @@ if (window.Addon == 1) {
 		},
 
 		GetPath: async function (items, i) {
-			let line = items[i].text.split("\n");
+			const line = items[i].text.split("\n");
 			return await api.PathUnquoteSpaces(await ExtractMacro(te, line[0]));
 		},
 
 		FromPt: async function (pt) {
-			let ptc = await pt.Clone();
+			const ptc = await pt.Clone();
 			await api.ScreenToClient(await WebBrowser.hwnd, ptc);
 			for (let el = document.elementFromPoint(await ptc.x, await ptc.y); el; el = el.parentElement) {
-				let res = /^fav(\d+)$/.exec(el.id);
+				const res = /^fav(\d+)$/.exec(el.id);
 				if (res) {
 					return res[1];
 				}
@@ -205,8 +205,8 @@ if (window.Addon == 1) {
 				ev.dataTransfer.effectAllowed = 'move';
 				Common.FavoritesBar.drag5 = o.id;
 				let nCount = 0, nLevel = 0;
-				let items = ui_.MenuFavorites;
-				let src = o.id.replace(/\D/g, "");
+				const items = ui_.MenuFavorites;
+				const src = o.id.replace(/\D/g, "");
 				for (let i = src; i < items.length; ++i) {
 					let strType = items[i].Type;
 					let path = items[i].text;
