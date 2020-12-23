@@ -1,7 +1,6 @@
-var Addon_Id = "restart";
-var Default = "None";
-
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "restart";
+const Default = "None";
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "File");
@@ -9,39 +8,32 @@ if (!item.getAttribute("Set")) {
 }
 
 if (window.Addon == 1) {
-	Addons.Restart =
-	{
-		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-		nPos: api.LowPart(item.getAttribute("MenuPos")),
-
-		Exec: function ()
-		{
-			SaveConfig();
+	Addons.Restart = {
+		Exec: async function () {
+			await SaveConfig();
 			te.Reload(true);
-			return S_OK;
 		}
 	};
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
-			api.InsertMenu(hMenu, Addons.Restart.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.Restart.strName);
-			ExtraMenuCommand[nPos] = Addons.Restart.Exec;
-			return nPos;
-		});
+		Common.Restart = await api.CreateObject("Object");
+		Common.Restart.strMenu = item.getAttribute("Menu");
+		Common.Restart.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
+		Common.Restart.nPos = GetNum(item.getAttribute("MenuPos"));
+		$.importScript("addons\\" + Addon_Id + "\\sync.js");
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Restart.Exec, "Func");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Restart.Exec, "Async");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Restart.Exec, "Func");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Restart.Exec, "Async");
 	}
 	AddTypeEx("Add-ons", "Restart", Addons.Restart.Exec);
 
-	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Restart.Exec()" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Restart.strName, src: item.getAttribute("Icon") }, h), '</span>']);
+	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Restart.Exec()" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: item.getAttribute("Icon") }, h), '</span>']);
 } else {
 	EnableInner();
 }

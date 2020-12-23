@@ -1,11 +1,12 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2018.5.4</MinVersion>
-    <pubDate>Fri, 04 May 2018 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2020.12.22</MinVersion>
+    <pubDate>Wed, 23 Dec 2020 00:00:00 GMT</pubDate>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -16,4 +17,7 @@
     <Name>名前の変更時の選択を修正</Name>
     <Description>名前の変更時の選択を名前部分にする。（結果フォルダやWindows XP）</Description>
   </ja>
+  <zh>
+    <Name>修正重新命名</Name>
+  </zh>
 </TablacusExplorer>

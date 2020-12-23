@@ -1,7 +1,7 @@
-﻿var Addon_Id = "minimizebutton";
-var Default = "ToolBar1Right";
+const Addon_Id = "minimizebutton";
+const Default = "ToolBar1Right";
 
-var item = await GetAddonElement(Addon_Id);
+const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.MinimizeButton = {
 		Exec: function () {
@@ -10,19 +10,19 @@ if (window.Addon == 1) {
 		},
 
 		Popup: function (ev) {
-			var x = ev.screenX * ui_.Zoom;
-			var y = ev.screenY * ui_.Zoom;
+			const x = ev.screenX * ui_.Zoom;
+			const y = ev.screenY * ui_.Zoom;
 			api.PostMessage(te.hwnd, 0x313, 0, x + (y << 16));
 			return false;
 		}
 	};
 
-	var h = GetIconSize(item.getAttribute("IconSize"));
-	var src = item.getAttribute("Icon");
+	const h = GetIconSize(item.getAttribute("IconSize"));
+	let src = item.getAttribute("Icon");
 	if (src) {
-		src = GetImgTag({ title: await api.LoadString(hShell32, 9840), src: src }, h);
+		src = await GetImgTag({ title: await api.LoadString(hShell32, 9840), src: src }, h);
 	} else {
-		var fh = "";
+		let fh = "";
 		if (item.getAttribute("IconSize")) {
 			fh = '; font-size:' + (Number(h) ? h + "px" : h);
 		}

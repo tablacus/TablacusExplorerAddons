@@ -1,7 +1,7 @@
-﻿Option Explicit
+Option Explicit
 
 function vbInputBox(text, defaultText)
-	vbInputBox = InputBox(GetText(text), TITLE, defaultText)
+	vbInputBox = InputBox(GetTextR(text), TITLE, defaultText)
 end function
 
-Set InputDialog = GetRef("vbInputBox")
+AddEvent "InputDialog", GetRef("vbInputBox")
