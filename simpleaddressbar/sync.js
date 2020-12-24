@@ -1,21 +1,8 @@
-﻿var Addon_Id = "simpleaddressbar";
-var item = GetAddonElement(Addon_Id);
-
-Sync.SimpleAddressBar = {
-	nPos: 0,
-	strName: "Simple address bar" || item.getAttribute("MenuName"),
-
-	Focus: function () {
-		api.Invoke(UI.Addons.SimpleAddressBar);
+AddEvent(Common.SimpleAddressBar.strMenu, function (Ctrl, hMenu, nPos) {
+	api.InsertMenu(hMenu, Common.SimpleAddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Common.SimpleAddressBar.strName);
+	ExtraMenuCommand[nPos] = function () {
+		InvokeUI("Addons.SimpleAddressBar.Exec", Array.apply(null, arguments));
+		return S_OK;
 	}
-}
-
-if (item.getAttribute("MenuExec")) {
-	Sync.SimpleAddressBar.nPos = GetNum(item.getAttribute("MenuPos"));
-
-	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-		api.InsertMenu(hMenu, Sync.SimpleAddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.SimpleAddressBar.strName));
-		ExtraMenuCommand[nPos] = Sync.SimpleAddressBar.Focus;
-		return nPos;
-	});
-}
+	return nPos;
+});
