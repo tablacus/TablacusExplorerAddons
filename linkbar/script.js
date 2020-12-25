@@ -81,7 +81,7 @@ if (window.Addon == 1) {
 			} else if (SameText(strType, "Open in background")) {
 				wFlags = SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS;
 			}
-			$.FolderMenu.Invoke(await $.FolderMenu.Open(items[i].text.split("\n")[0], pt.x, pt.y, "*", 1), wFlags);
+			FolderMenu.Invoke(await FolderMenu.Open(items[i].text.split("\n")[0], pt.x, pt.y, "*", 1), wFlags);
 			return false;
 		},
 
@@ -138,7 +138,7 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			s.push('<label id="Link', items.length, '" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
+			s.push('<label id="_linkbar+" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
 			s.push('&nbsp;</label>');
 
 			document.getElementById('_linkbar').innerHTML = s.join("");
@@ -151,107 +151,34 @@ if (window.Addon == 1) {
 		},
 
 		ShowOptions: function (nEdit) {
-			AddonOptions("linkbar", function () {
-				Addons.LinkBar.Arrange();
-				ApplyLang(document);
-			}, { nEdit: nEdit });
+			const opt = api.CreateObject("Object");
+			opt.nEdit = nEdit;
+			AddonOptions("linkbar", Addons.LinkBar.Changed, opt);
 		},
 
-		FromPt: function (n, pt) {
-			while (--n >= 0) {
-				if (HitTest(document.getElementById("_linkbar" + n), pt)) {
-					return n;
-				}
-			}
-			return -1;
+		Changed: function () {
+			Addons.LinkBar.Arrange();
+			ApplyLang(document.getElementById("_linkbar"));
 		},
 
-		Append: function (dataObj) {
-			var xml = te.Data.xmlLinkBar;
-			var root = xml.documentElement;
-			if (!root) {
-				xml.appendChild(xml.createProcessingInstruction("xml", 'version="1.0" encoding="UTF-8"'));
-				root = xml.createElement("TablacusExplorer");
-				xml.appendChild(root);
-			}
-			if (root) {
-				for (i = 0; i < dataObj.Count; i++) {
-					var FolderItem = dataObj.Item(i);
-					var item = xml.createElement("Item");
-					item.setAttribute("Name", api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER));
-					item.text = api.GetDisplayNameOf(FolderItem, SHGDN_FORPARSINGEX | SHGDN_FORPARSING);
-					if (fso.FileExists(item.text)) {
-						item.text = api.PathQuoteSpaces(item.text);
-						item.setAttribute("Type", "Exec");
-					} else {
-						item.setAttribute("Type", "Open");
-					}
-					root.appendChild(item);
+		SetRects: async function () {
+			const items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
+			Common.LinkBar.Count = items.length;
+			for (let i = 0; i < items.length; ++i) {
+				const el = document.getElementById("_linkbar" + i);
+				if (el) {
+					Common.LinkBar.Items[i] = await GetRect(el);
 				}
-				SaveXmlEx("linkbar.xml", xml);
-				Addons.LinkBar.Arrange();
-				ApplyLang(document);
 			}
+			Common.LinkBar.Append = await GetRect(document.getElementById('_linkbar'));
 		}
 
 	};
 	te.Data.xmlLinkBar = await OpenXml("linkbar.xml", false, true);
-	Addons.LinkBar.Parent = document.getElementById(SetAddon(Addon_Id, Default, '<span id="_linkbar"></span>'));
+	SetAddon(Addon_Id, Default, '<span id="_linkbar"></span>');
 
 	AddEvent("Load", Addons.LinkBar.Arrange);
-
-	if (!window.chrome) {
-		AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
-			if (Ctrl.Type == CTRL_WB) {
-				return S_OK;
-			}
-		});
-
-		AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
-			if (Ctrl.Type == CTRL_WB) {
-				var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
-				var i = Addons.LinkBar.FromPt(items.length + 1, pt);
-				if (i >= 0) {
-					if (i == items.length) {
-						pdwEffect[0] = DROPEFFECT_LINK;
-						MouseOver(document.getElementById("_linkbar" + i));
-						return S_OK;
-					}
-					var hr = Exec(external, items[i].text, items[i].getAttribute("Type"), ui_.hwnd, pt, dataObj, grfKeyState, pdwEffect);
-					if (hr == S_OK && pdwEffect[0]) {
-						MouseOver(document.getElementById("_linkbar" + i));
-					}
-					return S_OK;
-				} else if (HitTest(Addons.LinkBar.Parent, pt) && dataObj.Count) {
-					pdwEffect[0] = DROPEFFECT_LINK;
-					return S_OK;
-				}
-			}
-			MouseOut("_linkbar");
-		});
-
-		AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
-			MouseOut();
-			if (Ctrl.Type == CTRL_WB) {
-				var items = te.Data.xmlLinkBar.getElementsByTagName("Item");
-				var i = Addons.LinkBar.FromPt(items.length + 1, pt);
-				if (i >= 0) {
-					if (i == items.length) {
-						Addons.LinkBar.Append(dataObj);
-						return S_OK;
-					}
-					return Exec(te, items[i].text, items[i].getAttribute("Type"), ui_.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
-				} else if (HitTest(Addons.LinkBar.Parent, pt) && dataObj.Count) {
-					Addons.LinkBar.Append(dataObj);
-				}
-			}
-		});
-
-		AddEvent("DragLeave", function (Ctrl) {
-			MouseOut();
-			return S_OK;
-		});
-	}
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	AddonName = "LinkBar";
 	importScript("addons\\" + Addon_Id + "\\options.js");
