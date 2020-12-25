@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.21</Version>
-    <MinVersion>2020.12.16</MinVersion>
-    <pubDate>Thu, 17 Dec 2020 00:00:00 GMT</pubDate>
+    <Version>1.22</Version>
+    <MinVersion>2020.12.24</MinVersion>
+    <pubDate>Fri, 25 Dec 2020 00:00:00 GMT</pubDate>
     <Options>Common:4:4</Options>
     <DllVersion>1.2.0.0</DllVersion>
     <Level>2</Level>
@@ -16,7 +16,7 @@
     <Description>Susie Plug-in</Description>
   </en>
   <ja>
-    <Name>Susie プラグイン</Name>
+    <Name>Susieプラグイン</Name>
   </ja>
   <zh>
     <Name>Susie 外掛程式</Name>

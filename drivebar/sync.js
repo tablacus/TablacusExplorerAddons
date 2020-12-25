@@ -49,3 +49,4 @@ AddEvent("ChangeNotify", async function (Ctrl, pidls, wParam, lParam) {
 		Sync.DriveBar.Update();
 	}
 });
+Sync.DriveBar.Update();

@@ -25,15 +25,14 @@ if (window.Addon == 1) {
 		},
 
 		Update: function (s) {
-			document.getElementById("drivebar").innerHTML = s;
+			const el = document.getElementById("drivebar");
+			if (el) {
+				el.innerHTML = s;
+			} else {
+				setTimeout(Addons.DriveBar.Update, 999, s);
+			}
 		}
 	};
-
-	AddEvent("Load", function () {
-		setTimeout(function () {
-			api.Invoke(Sync.DriveBar.Update);
-		}, 99);
-	});
 
 	SetAddon(Addon_Id, Default, '<span id="drivebar"></span>');
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
