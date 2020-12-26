@@ -1,22 +1,22 @@
-﻿if (window.Addon == 1) {
-	Addons.InnerNewFolder =
-	{
-		Exec: function (Id)
-		{
-			var FV = GetInnerFV(Id);
+if (window.Addon == 1) {
+	const Addon_Id = "innerrefresh";
+	const item = await GetAddonElement(Addon_Id);
+	const h = GetIconSize(item.getAttribute("IconSize"), 16);
+	const s = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,31" : "icon:shell32.dll,205,32");
+
+	Addons.InnerNewFolder = {
+		src: await GetImgTag({ title: "New folder", src: s }, h),
+
+		Exec: async function (Id) {
+			const FV = await GetInnerFV(Id);
 			if (FV) {
 				FV.Focus();
 				CreateNewFolder(FV);
 			}
-			return S_OK;
 		}
 	};
 
-	AddEvent("PanelCreated", function (Ctrl)
-	{
-		var h = GetIconSize(GetAddonOption("innernewfolder", "IconSize"), 16);
-		var s = GetAddonOption("innernewfolder", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,31" : "icon:shell32.dll,205,32");
-		s = ['<span class="button" onclick="return Addons.InnerNewFolder.Exec($)" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: "New Folder", src: s }, h), '</span>'];
-		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
+	AddEvent("PanelCreated", function (Ctrl, Id) {
+		SetAddon(null, "Inner1Left_" + Id, ['<span class="button" onclick="Addons.InnerNewFolder.Exec(', Id, ')" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', Addons.InnerNewFolder.src, '</span>']);
 	});
 }

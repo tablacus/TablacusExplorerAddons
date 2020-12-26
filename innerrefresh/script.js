@@ -1,22 +1,22 @@
 if (window.Addon == 1) {
-	Addons.InnerRefresh =
-	{
-		Exec: function (Id)
-		{
-			var FV = GetInnerFV(Id);
+	const Addon_Id = "innerrefresh";
+	const item = await GetAddonElement(Addon_Id);
+	const h = GetIconSize(item.getAttribute("IconSize"), 16);
+	const s = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,3" : "bitmap:ieframe.dll,204,24,3");
+
+	Addons.InnerRefresh = {
+		src: await GetImgTag({ title: "Refresh", src: s }, h),
+
+		Exec: async function (Id) {
+			const FV = await GetInnerFV(Id);
 			if (FV) {
 				FV.Focus();
 				FV.Refresh();
 			}
-			return false;
 		}
 	};
 
-	AddEvent("PanelCreated", function (Ctrl)
-	{
-		var h = GetIconSize(GetAddonOption("innerrefresh", "IconSize"), 16);
-		var s = GetAddonOption("innerrefresh", "Icon") || (h <= 16 ? "bitmap:ieframe.dll,206,16,3" : "bitmap:ieframe.dll,204,24,3");
-		s = ['<span class="button" onclick="return Addons.InnerRefresh.Exec($)" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: "Refresh", src: s }, h) , '</span>'];
-		SetAddon(null, "Inner1Left_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
+	AddEvent("PanelCreated", function (Ctrl, Id) {
+		SetAddon(null, "Inner1Left_" + Id, ['<span class="button" onclick="return Addons.InnerRefresh.Exec(', Id, ')" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', Addons.InnerRefresh.src, '</span>']);
 	});
 }

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
-    <MinVersion>2018.12.28</MinVersion>
-    <pubDate>Fri, 28 Dec 2018 00:00:00 GMT</pubDate>
+    <Version>1.02</Version>
+    <MinVersion>2020.12.24</MinVersion>
+    <pubDate>Sat, 26 Dec 2020 00:00:00 GMT</pubDate>
     <Options>Common:5:5</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -15,6 +16,9 @@
   </en>
   <ja>
     <Name>Inner 新規フォルダ</Name>
-    <Description>ペイン毎の 新規フォルダ ボタン</Description>
+    <Description>ペイン毎の新規フォルダボタン</Description>
   </ja>
+  <zh>
+    <Name>窗格內新增資料夾</Name>
+  </zh>
 </TablacusExplorer>

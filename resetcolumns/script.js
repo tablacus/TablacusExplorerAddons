@@ -1,49 +1,41 @@
-var Addon_Id = "resetcolumns";
-var Default = "None";
-
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "resetcolumns";
+const Default = "None";
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "File");
 	item.setAttribute("MenuPos", -1);
 }
 if (window.Addon == 1) {
-	Addons.ResetColumns =
-	{
-		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-		nPos: api.LowPart(item.getAttribute("MenuPos")),
-
-		Exec: function (Ctrl, pt)
-		{
-			var FV = GetFolderView(Ctrl, pt);
+	Addons.ResetColumns = {
+		Exec: async function (Ctrl, pt) {
+			const FV = await GetFolderView(Ctrl, pt);
 			FV.Columns = "";
 			FV.Focus();
-			return S_OK;
 		}
 	};
 	//Menu
+	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
-			api.InsertMenu(hMenu, Addons.ResetColumns.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.ResetColumns.strName));
-			ExtraMenuCommand[nPos] = Addons.ResetColumns.Exec;
-			return nPos;
-		});
+		Common.ResetColumns = await api.CreateObject("Object");
+		Common.ResetColumns.strMenu = item.getAttribute("Menu");
+		Common.ResetColumns.strName = strName;
+		Common.ResetColumns.nPos = GetNum(item.getAttribute("MenuPos"));
+		$.importScript("addons\\" + Addon_Id + "\\sync.js");
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.ResetColumns.Exec, "Func");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.ResetColumns.Exec, "Async");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.ResetColumns.Exec, "Func");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.ResetColumns.Exec, "Async");
 	}
 	AddTypeEx("Add-ons", "Reset Columns", Addons.ResetColumns.Exec);
 
-	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var s = item.getAttribute("Icon");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.ResetColumns.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.ResetColumns.strName, src: s }, h), '</span>']);
+	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	const s = item.getAttribute("Icon");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.ResetColumns.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: s }, h), '</span>']);
 } else {
 	EnableInner();
 }
-
