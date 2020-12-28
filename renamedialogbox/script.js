@@ -1,6 +1,5 @@
-﻿var Addon_Id = "renamedialogbox";
-
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "renamedialogbox";
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("KeyExec", true);
 	item.setAttribute("KeyOn", "List");
@@ -9,35 +8,28 @@ if (!item.getAttribute("Set")) {
 }
 
 if (window.Addon == 1) {
-	Addons.RenameDialogBox =
-	{
-		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-		nPos: api.LowPart(item.getAttribute("MenuPos")),
-
-		Exec: function (Ctrl, pt)
-		{
-			var FV = GetFolderView(Ctrl, pt);
+	Addons.RenameDialogBox = {
+		Exec: async function (Ctrl, pt) {
+			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
-				var Focused = FV.FocusedItem;
+				const Focused = await FV.FocusedItem;
 				if (Focused) {
-					if (api.GetAttributesOf(Focused, SFGAO_CANRENAME)) {
-						var s = api.GetDisplayNameOf(Focused, SHGDN_FOREDITING | SHGDN_INFOLDER);
-						var r = s;
-						for (;;) {
-							var r = InputDialog(s, r);
+					if (await api.GetAttributesOf(Focused, SFGAO_CANRENAME)) {
+						const s = await api.GetDisplayNameOf(Focused, SHGDN_FOREDITING | SHGDN_INFOLDER);
+						InputDialog(s, s, async function (r) {
 							if (/[\\\/:,;\*\?"<>\|]/.test(r)) {
-								MessageBox(api.LoadString(hShell32, 4109), null, MB_ICONSTOP | MB_OK);
-							} else {
-								break;
+								MessageBox(await api.LoadString(hShell32, 4109), null, MB_ICONSTOP | MB_OK);
+								setTimeout(Addons.RenameDialogBox.Exec, 9, Ctrl, pt);
+								return;
 							}
-						};
-						if (r && s != r) {
-							try {
-								Focused.Name = r;
-							} catch (e) {
-								MessageBox(api.LoadString(hShell32, 6020).replace("%1!ls!", api.sprintf(99, "0x%x", e.number)).replace("%2!ls!", s), null, MB_ICONSTOP | MB_OK);
+							if (s != r) {
+								try {
+									Focused.Name = r;
+								} catch (e) {
+									MessageBox((await api.LoadString(hShell32, 6020)).replace("%1!ls!", (await api.sprintf(99, "0x%x", e.number)).replace("%2!ls!", s), null, MB_ICONSTOP | MB_OK));
+								}
 							}
-						}
+						});
 					}
 					return S_OK;
 				}
@@ -45,23 +37,21 @@ if (window.Addon == 1) {
 		}
 	};
 	//Menu
+	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-		{
-			if (item && item.IsFileSystem && api.GetAttributesOf(item, SFGAO_CANRENAME)) {
-				api.InsertMenu(hMenu, Addons.RenameDialogBox.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.RenameDialogBox.strName);
-				ExtraMenuCommand[nPos] = Addons.RenameDialogBox.Exec;
-			}
-			return nPos;
-		});
+		Common.RenameDialogBox = await api.CreateObject("Object");
+		Common.RenameDialogBox.strMenu = item.getAttribute("Menu");
+		Common.RenameDialogBox.strName = strName;
+		Common.RenameDialogBox.nPos = GetNum(item.getAttribute("MenuPos"));
+		$.importScript("addons\\" + Addon_Id + "\\sync.js");
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.RenameDialogBox.Exec, "Func");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.RenameDialogBox.Exec, "Async");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.RenameDialogBox.Exec, "Func");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.RenameDialogBox.Exec, "Async");
 	}
 	AddTypeEx("Add-ons", "Rename Dialog Box...", Addons.RenameDialogBox.Exec);
 }

@@ -1,7 +1,6 @@
 const Addon_Id = "iconoverlay";
-
 Sync.IconOverlay = {
-	DLL: api.DllGetClassObject(fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\iconoverlay\\ticonoverlay", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{ADB2CB70-5C00-4fa2-B121-CB60B556FFA7}"),
+	DLL: api.DllGetClassObject(BuildPath(te.Data.Installed, ["addons\\iconoverlay\\ticonoverlay", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{ADB2CB70-5C00-4fa2-B121-CB60B556FFA7}"),
 	Icon: [],
 	db: {},
 
@@ -10,13 +9,7 @@ Sync.IconOverlay = {
 		if (Id && Sync.IconOverlay.db[0] != null && Sync.IconOverlay.db[0][path] !== Sync.IconOverlay.db[Id][path]) {
 			Sync.IconOverlay.db[0][path] = key;
 		}
-		if (Sync.IconOverlay.tid) {
-			clearTimeout(Sync.IconOverlay.tid);
-		}
-		Sync.IconOverlay.tid = setTimeout(function () {
-			delete Sync.IconOverlay.tid;
-			api.RedrawWindow(te.hwnd, null, 0, RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN);
-		}, 500);
+		InvokeUI("Addons.IconOverlay.Redraw");
 	},
 
 	Finalize: function () {
@@ -28,13 +21,13 @@ Sync.IconOverlay = {
 };
 
 AddEvent("AddonDisabled", function (Id) {
-	if (Id.toLowerCase() == "iconoverlay") {
+	if (SameText(Id, "iconoverlay")) {
 		Sync.IconOverlay.Finalize();
 	}
 });
 
 if (Sync.IconOverlay.DLL) {
-	Sync.IconOverlay.DLL.init(GetAddonOption(Addon_Id, "Base") || 11, Sync.IconOverlay.Callback);
+	Sync.IconOverlay.DLL.Init(GetAddonOption(Addon_Id, "Base") || 11, Sync.IconOverlay.Callback);
 	const o = {};
 	for (let i = 0; ; i++) {
 		const hr = Sync.IconOverlay.DLL.GetOverlayInfo(i, o);
@@ -46,7 +39,7 @@ if (Sync.IconOverlay.DLL) {
 	}
 	if (Sync.IconOverlay.Icon.length) {
 		AddEvent("ItemPostPaint2", function (Ctrl, pid, nmcd, vcd) {
-			if (!pid) {
+			if (!pid || !Sync.IconOverlay.DLL) {
 				return;
 			}
 			let hwnd = Ctrl.hwndList;
@@ -114,3 +107,4 @@ if (Sync.IconOverlay.DLL) {
 		});
 	}
 }
+
