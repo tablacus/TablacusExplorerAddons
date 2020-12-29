@@ -1,4 +1,4 @@
-﻿<form name="E">
+<form name="E">
   <table style="width: 100%; height: calc(100% - 2em)">
     <tr>
       <td style="width: 10em; vertical-align: top; height: 100%">
@@ -8,35 +8,38 @@
       <td style="vertical-align: top">
         <div id="pane" style="height: 100%; overflow: auto">
           <label>Name</label>
-          <br />
-          <input type="text" name="Name" style="width: 100%" />
+          <br>
+          <input type="text" name="Name" style="width: 100%">
           <table style="width: 100%">
             <tr>
               <td style="vertical-align: bottom"><label>Path</label></td>
               <td align="right">
-                <input type="button" value="Portable" onclick="PortableX('Path')" />
-                <input type="button" value="Browse..." onclick="RefX('Path',0,0,1)" />
+                <input type="button" value="Portable" onclick="PortableX('Path')">
+                <input type="button" value="Browse..." onclick="RefX('Path',0,0,1)">
               </td>
             </tr>
           </table>
-          <input type="text" name="Path" style="width: 100%" onchange="SetProp();" />
+          <input type="text" name="Path" style="width: 100%" onchange="SetProp();">
           <label>Filter</label>
-          <br />
-          <input type="text" name="Filter" style="width: 100%" />
-          <br />
+          <br>
+          <input type="text" name="Filter" style="width: 100%">
+          <br>
           <label>Extract</label>
-          <br />
-          <input type="text" name="Extract" style="width: 100%" />
-          <br />
+          <br>
+          <input type="text" name="Extract" style="width: 100%">
+          <br>
           <label>Add</label>
-          <br />
-          <input type="text" name="Add" style="width: 100%" />
-          <br />
+          <br>
+          <input type="text" name="Add" style="width: 100%">
+          <br>
           <label>Delete</label>
-          <br />
-          <input type="text" name="Delete" style="width: 100%" />
-          <br />
-          <input type="button" value="Options..." onclick="ConfigDialog()" /><br />
+          <br>
+          <input type="text" name="Delete" style="width: 100%">
+          <br>
+          <input type="checkbox" name="IsContent"><label>Content</label><br>
+          <input type="text" name="Content" style="width: 100%">
+          <input type="text" name="ContentFilter" placeholder="*" style="width: 100%">
+          <input type="button" value="Options..." onclick="ConfigDialog()"><br>
           <label>Information</label>&emsp;<span id="ver"></span>
           <table style="width: 100%"><tr><td id="prop0" style="width: 50%"></td><td id="prop1" style="width: 50%"></table>
         </div>
@@ -46,16 +49,16 @@
   <table id="tools" width="100%">
     <tr>
       <td style="white-space: nowrap">
-        <input type="button" value="Remove" onclick="RemoveX('List')" />
-        <input type="button" value="Up" onclick="MoveX('List', -1)" />
-        <input type="button" value="Down" onclick="MoveX('List', 1)" />
-        <input type="checkbox" id="_EDIT" checked /><label for="_EDIT">Edit</label>
+        <input type="button" value="Remove" onclick="RemoveX('List')">
+        <input type="button" value="Up" onclick="MoveX('List', -1)">
+        <input type="button" value="Down" onclick="MoveX('List', 1)">
+        <input type="checkbox" id="_EDIT" checked><label for="_EDIT">Edit</label>
       </td>
       <td align="left" style="white-space: nowrap">
         <select id="_Archiver">
-          <option value='7-zip*.dll/*.7z;*.zip/x %archive% -o"%path%" %items%/a %archive% "%path%\" %items%/d %archive% %items%'>SevenZip (7-zip)</option>
-          <option value='7-zip*.dll/*.7z;*.zip;*.rar;*.ar;*.z;*.lzh;*.cab;*.xz;*.ppmd;*.arj;*.xar;*.rpm;*.gzip;*.wim;*.bz2;*.bzip2;*.tbz2;*.tbz;*.apm;*.gz;*.tgz;*.tpz/x %archive% -o"%path%" %items%//'>SevenZip (7z.dll)</option>
-          <option value='"C:\Program Files\7-Zip\7zG.exe"/*.7z;*.zip;*.xz;*.bzip2;*.gzip;*.tar;*.wim/x %archive% -o"%path%" %items%/a %archive% %items%/d %archive% %items%'>7zG (7zG.exe)</option>
+          <option value='7-zip*.dll/*.7z/x %archive% -o"%path%" %items%/a %archive% "%path%\" %items%/d %archive% %items%/e %archive% %items% -hide -y'>SevenZip (7-zip)</option>
+          <option value='7-zip*.dll/*.7z;*.rar;*.ar;*.z;*.lzh;*.cab;*.xz;*.ppmd;*.arj;*.xar;*.rpm;*.gzip;*.wim;*.bz2;*.bzip2;*.tbz2;*.tbz;*.apm;*.gz;*.tgz;*.tpz/x %archive% -o"%path%" %items%///e %archive% %items% -hide -y'>SevenZip (7z.dll)</option>
+          <option value='"C:\Program Files\7-Zip\7zG.exe"/*.7z;*.zip;*.xz;*.bzip2;*.gzip;*.tar;*.wim/x %archive% -o"%path%" %items%/a %archive% "%path%\" %items%/d %archive% %items%'>7zG (7zG.exe)</option>
           <option value='lmzip*.dll/*.zip/-j %archive% -d "%path%" %items%//'>Unzip (LMZIP)</option>
           <option value='lmzip*.dll/*.zip//-r %archive% "%path%\" %items%/-d %archive% %items%'>Zip (LMZIP)</option>
           <option value='unlha*.dll/*.lzh/x %archive% "%path%\" %items%/a -r2 %archive% "%path%\" %items%/d %archive% %items%'>Unlha (lzh)</option>
@@ -64,14 +67,14 @@
           <option value='unrar64j.dll/*.rar/-x %archive% "%path%\" %items%//'>Unrar 64 (rar)</option>
           <option value='unrar32.dll/*.rar/-x %archive% "%path%\" %items%//'>Unrar 32 (rar)</option>
           <option value='tar*.dll/*.tar;*.tar.gz;*.tar.bz2;*.tar.xz;*.tar.lzma;*.tgz;*.tbz2/-x %archive% "%path%\" %items%//'>Tar</option>
-          <option value='7zca*.dll/*.7z;*.zip;*.rar;*.ar;*.z;*.lzh;*.cab;*.xz;*.ppmd;*.arj;*.xar;*.rpm;*.gzip;*.wim;*.bz2;*.bzip2;*.tbz2;*.tbz;*.apm;*.gz;*.tgz;*.tpz/x %archive% "%path%" %items%//'>Szipca (7-zip)</option>
+          <option value='7zca*.dll/*.7z;*.rar;*.ar;*.z;*.lzh;*.cab;*.xz;*.ppmd;*.arj;*.xar;*.rpm;*.gzip;*.wim;*.bz2;*.bzip2;*.tbz2;*.tbz;*.apm;*.gz;*.tgz;*.tpz/x %archive% "%path%" %items%//'>Szipca (7-zip)</option>
           <option value='unzzip*.dll/*.zip/-x %archive% "%path%" %items%//'>UnZzip (zip)</option>
         </select>
-        <input type="button" value="Add" onclick="AddArchiver()" />
+        <input type="button" value="Add" onclick="AddArchiver()">
       </td>
       <td align="right">
-        <input type="button" value="Add" onclick="AddX('List', ReplaceFS)" />
-        <input type="button" value="Replace" onclick="ReplaceFS()" />
+        <input type="button" value="Add" onclick="AddX('List', ReplaceFS)">
+        <input type="button" value="Replace" onclick="ReplaceFS()">
       </td>
     </tr>
   </table>

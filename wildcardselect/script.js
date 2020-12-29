@@ -1,6 +1,5 @@
-var Addon_Id = "wildcardselect";
-
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "wildcardselect";
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Edit");
@@ -11,24 +10,24 @@ if (!item.getAttribute("Set")) {
 	item.setAttribute("MouseOn", "List");
 }
 if (window.Addon == 1) {
-	Addons.WildcardSelect =
-	{
-		strName: item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name),
+	Addons.WildcardSelect = {
+		strName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 
-		Exec: function (Ctrl, pt)
-		{
+		Exec: async function (Ctrl, pt) {
 			try {
-				var FV = GetFolderView(Ctrl, pt);
-				if (FV && FV.Items) {
-					var s = InputDialog(Addons.WildcardSelect.strName, "");
-					if (s) {
-						for (var i = FV.Items.Count; i-- > 0;) {
-							var FolderItem = FV.Items.Item(i);
-							if (PathMatchEx(fso.GetFileName(FolderItem.Path), s)) {
-								FV.SelectItem(FolderItem, SVSI_SELECT);
+				const FV = await GetFolderView(Ctrl, pt);
+				if (FV && await FV.Items) {
+					InputDialog(Addons.WildcardSelect.strName, "", async function (r) {
+						if (r) {
+							const Items = await FV.Items();
+							for (let i = await Items.Count; i-- > 0;) {
+								const FolderItem = await Items.Item(i);
+								if (await PathMatchEx(await fso.GetFileName(await FolderItem.Path), r)) {
+									FV.SelectItem(FolderItem, SVSI_SELECT);
+								}
 							}
 						}
-					}
+					});
 				}
 			} catch (e) {
 				wsh.Popup(e.description, 0, TITLE, MB_ICONEXCLAMATION);
@@ -39,21 +38,19 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Addons.WildcardSelect.nPos = api.LowPart(item.getAttribute("MenuPos"));
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item)
-		{
-			api.InsertMenu(hMenu, Addons.WildcardSelect.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Addons.WildcardSelect.strName);
-				ExtraMenuCommand[nPos] = Addons.WildcardSelect.Exec;
-			return nPos;
-		});
+		Common.WildcardSelect = await api.CreateObject("Object");
+		Common.WildcardSelect.strMenu = item.getAttribute("Menu");
+		Common.WildcardSelect.strName = Addons.WildcardSelect.strName;
+		Common.WildcardSelect.nPos = GetNum(item.getAttribute("MenuPos"));
+		$.importScript("addons\\" + Addon_Id + "\\sync.js");
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.WildcardSelect.Exec, "Func");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.WildcardSelect.Exec, "Async");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.WildcardSelect.Exec, "Func");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.WildcardSelect.Exec, "Async");
 	}
 
 	AddTypeEx("Add-ons", "Wildcard Select...", Addons.WildcardSelect.Exec);

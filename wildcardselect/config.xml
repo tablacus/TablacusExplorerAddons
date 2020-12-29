@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2019.5.1</MinVersion>
-    <pubDate>Thu, 02 May 2019 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2020.12.28</MinVersion>
+    <pubDate>Tue, 29 Dec 2020 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -15,10 +16,8 @@
   </en>
   <ja>
     <Name>ワイルドカードで選択</Name>
-    <Description>ワイルドカードで選択します。</Description>
   </ja>
   <zh>
     <Name>萬用字元選取</Name>
-    <Description>萬用字元選取</Description>
   </zh>
 </TablacusExplorer>
