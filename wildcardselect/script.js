@@ -38,10 +38,11 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Common.WildcardSelect = await api.CreateObject("Object");
-		Common.WildcardSelect.strMenu = item.getAttribute("Menu");
-		Common.WildcardSelect.strName = Addons.WildcardSelect.strName;
-		Common.WildcardSelect.nPos = GetNum(item.getAttribute("MenuPos"));
+		const o = api.CreateObject("Object");
+		o.strMenu = item.getAttribute("Menu");
+		o.strName = Addons.WildcardSelect.strName;
+		o.nPos = GetNum(item.getAttribute("MenuPos"));
+		Common.WildcardSelect = await o;
 		$.importScript("addons\\" + Addon_Id + "\\sync.js");
 	}
 	//Key

@@ -162,14 +162,16 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ToolTip", async function (Ctrl, Index) {
-		if (await Ctrl.Type == CTRL_SB && Index >= 0) {
-			const Item = await Ctrl.Item(Index);
-			if (Item) {
-				Addons.Preview.Arrange(Item, Ctrl);
+	if (!item.getAttribute("NoMouse")) {
+		AddEvent("ToolTip", async function (Ctrl, Index) {
+			if (await Ctrl.Type == CTRL_SB && Index >= 0) {
+				const Item = await Ctrl.Item(Index);
+				if (Item) {
+					Addons.Preview.Arrange(Item, Ctrl);
+				}
 			}
-		}
-	}, true);
+		}, true);
+	}
 
 	AddEvent("Resize", async function () {
 		const o = document.getElementById('PreviewBar');

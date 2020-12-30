@@ -1,5 +1,5 @@
-var Addon_Id = "bgpreview";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "bgpreview";
+const item = GetAddonElement(Addon_Id);
 
 Sync.BGPreview = {
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
@@ -25,10 +25,10 @@ Sync.BGPreview = {
 		if (!Item && FV.ItemCount(SVGIO_SELECTION) == 1) {
 			Item = FV.SelectedItems().Item(0);
 		}
-		var hwnd = FV.hwndList;
+		const hwnd = FV.hwndList;
 		if (Sync.BGPreview.Visible && hwnd) {
 			if (!api.ILIsEqual(Item, Sync.BGPreview.Items[hwnd])) {
-				var bClear = Sync.BGPreview.Items[hwnd] === null;
+				const bClear = Sync.BGPreview.Items[hwnd] === null;
 				Sync.BGPreview.Items[hwnd] = Item;
 				Threads.GetImage({
 					FV: FV,
@@ -42,7 +42,7 @@ Sync.BGPreview = {
 					onload: function (o) {
 						if (o.path === Sync.BGPreview.Items[o.hwnd]) {
 							Sync.BGPreview.Items[o.hwnd] = null;
-							var lvbk = api.Memory("LVBKIMAGE");
+							const lvbk = api.Memory("LVBKIMAGE");
 							lvbk.hbm = o.out.GetHBITMAP(-2);
 							lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
 							if (!api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
@@ -53,12 +53,12 @@ Sync.BGPreview = {
 					onerror: function (o) {
 						if (Sync.BGPreview.Items[o.hwnd]) {
 							if (o.bClear) {
-								var lvbk = api.Memory("LVBKIMAGE");
+								const lvbk = api.Memory("LVBKIMAGE");
 								lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
 								api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk);
 							}
 							if (!IsFolderEx(o.path) && api.PathMatchSpec(o.path.Path, o.Extract)) {
-								var Items = api.CreateObject("FolderItems");
+								const Items = api.CreateObject("FolderItems");
 								Items.AddItem(o.path);
 								te.OnBeforeGetData(o.FV, Items, 11);
 								if (IsExists(o.path.Path)) {
@@ -74,9 +74,9 @@ Sync.BGPreview = {
 	},
 
 	Clear: function () {
-		var lvbk = api.Memory("LVBKIMAGE");
+		const lvbk = api.Memory("LVBKIMAGE");
 		lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-		for (var hwnd in Sync.BGPreview.Items) {
+		for (let hwnd in Sync.BGPreview.Items) {
 			if (Sync.BGPreview.Items[hwnd] === null) {
 				api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 			}
@@ -95,14 +95,16 @@ AddEvent("StatusText", function (Ctrl, Text, iPart) {
 	}
 });
 
-AddEvent("ToolTip", function (Ctrl, Index) {
-	if (Ctrl.Type == CTRL_SB && Index >= 0) {
-		var Item = Ctrl.Item(Index);
-		if (Item) {
-			Sync.BGPreview.Arrange(Ctrl, Item);
+if (!item.getAttribute("NoMouse")) {
+	AddEvent("ToolTip", function (Ctrl, Index) {
+		if (Ctrl.Type == CTRL_SB && Index >= 0) {
+			const Item = Ctrl.Item(Index);
+			if (Item) {
+				Sync.BGPreview.Arrange(Ctrl, Item);
+			}
 		}
-	}
-}, true);
+	}, true);
+}
 
 AddEventId("AddonDisabledEx", "bgpreview", Sync.BGPreview.Clear);
 
