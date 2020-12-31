@@ -1,13 +1,17 @@
 #include "resource.h"
 #include <windows.h>
 #include <dispex.h>
+#include <vector>
+#include <unordered_map>
 #include <shlwapi.h>
 #pragma comment (lib, "shlwapi.lib")
 #include "listplug.h"
 
-#define MAX_OBJ 64
+#define TE_METHOD		0x60010000
+#define TE_METHOD_MAX	0x6001ffff
+#define TE_METHOD_MASK	0x0000ffff
+#define TE_PROPERTY		0x40010000
 #define BUFF_SIZE 8192
-
 
 struct TEmethod
 {
@@ -99,4 +103,27 @@ public:
 	
 	STDMETHODIMP CreateInstance(IUnknown *pUnkOuter, REFIID riid, void **ppvObject);
 	STDMETHODIMP LockServer(BOOL fLock);
+};
+
+class CteDispatch : public IDispatch
+{
+public:
+	STDMETHODIMP QueryInterface(REFIID riid, void **ppvObject);
+	STDMETHODIMP_(ULONG) AddRef();
+	STDMETHODIMP_(ULONG) Release();
+	//IDispatch
+	STDMETHODIMP GetTypeInfoCount(UINT *pctinfo);
+	STDMETHODIMP GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo);
+	STDMETHODIMP GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId);
+	STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr);
+
+	CteDispatch(IDispatch *pDispatch, int nMode, DISPID dispId);
+	~CteDispatch();
+
+	VOID Clear();
+public:
+	DISPID		m_dispIdMember;
+private:
+	IDispatch	*m_pDispatch;
+	LONG		m_cRef;
 };

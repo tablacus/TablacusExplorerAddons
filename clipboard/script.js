@@ -1,131 +1,96 @@
-var Addon_Id = "clipboard";
-var Default = "ToolBar2Left";
-
+const Addon_Id = "clipboard";
+const Default = "ToolBar2Left";
 if (window.Addon == 1) {
-	var item = GetAddonElement(Addon_Id);
+	const item = await GetAddonElement(Addon_Id);
 
-	Addons.ClipBoard =
-	{
-		Exec: function (o) 
-		{
-			var Items = api.OleGetClipboard();
-			var hMenu = te.MainMenu(FCIDM_MENU_EDIT);
-			var Selected = null;
-			var FV = te.Ctrl(CTRL_FV);
+	Addons.Clipboard = {
+		Exec: async function (o) {
+			const Items = await api.OleGetClipboard();
+			const hMenu = await te.MainMenu(FCIDM_MENU_EDIT);
+			const FV = await GetFolderView();
 			if (FV) {
-				Selected = FV.SelectedItems();
-				var i = api.GetMenuItemCount(hMenu);
-				while (--i >= 0) {
-					var wID = api.GetMenuItemID(hMenu, i) & 0xfff;
+				const Selected = await FV.SelectedItems();
+				for (let i = await api.GetMenuItemCount(hMenu); --i >= 0;) {
+					const wID = await api.GetMenuItemID(hMenu, i) & 0xfff;
 					if (wID == CommandID_CUT - 1 || wID == CommandID_COPY - 1) {
-						if (!Selected || Selected.Count == 0) {
+						if (!Selected || await Selected.Count == 0) {
 							api.EnableMenuItem(hMenu, i, MF_BYPOSITION | MF_GRAYED);
 						}
-					}
-					else if (wID == CommandID_PASTE - 1) {
-						if (!Items || Items.Count == 0) {
+					} else if (wID == CommandID_PASTE - 1) {
+						if (!Items || await Items.Count == 0) {
 							api.EnableMenuItem(hMenu, i, MF_BYPOSITION | MF_GRAYED);
 						}
-					}
-					else {
+					} else {
 						api.DeleteMenu(hMenu, i, MF_BYPOSITION);
 					}
 				}
 			}
-			if (Items && Items.Count) {
-				var s = "";
-				if (Items.dwEffect & DROPEFFECT_COPY) {
-					s += GetText("Copy") + " ";
-				}
-				if (Items.dwEffect & DROPEFFECT_MOVE) {
-					s += GetText("Cut") + " ";
-				}
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 0, s);
-				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-				var mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
-				mii.fMask  = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
-				for (var i = 0; i < Items.Count; i++) {
-					var FolderItem = Items.Item(i);
-					AddMenuIconFolderItem(mii, FolderItem);
-					mii.dwTypeData = api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER | SHGDN_ORIGINAL);
-					mii.wID = 0;
-					api.InsertMenuItem(hMenu, MAXINT, false, mii);
+			if (Items) {
+				const nCount = await Items.Count;
+				if (nCount) {
+					let s = "";
+					const dwEffect = await Items.dwEffect;
+					if (dwEffect & DROPEFFECT_COPY) {
+						s += await api.LoadString(hShell32, 33561) + " ";
+					}
+					if (dwEffect & DROPEFFECT_MOVE) {
+						s += await api.LoadString(hShell32, 33560) + " ";
+					}
+					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 0, s);
+					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+					const mii = await api.Memory("MENUITEMINFO");
+					mii.cbSize = await mii.Size;
+					mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
+					for (let i = 0; i < nCount; ++i) {
+						const FolderItem = await Items.Item(i);
+						mii.wID = 0;
+						mii.dwTypeData = await api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER | SHGDN_ORIGINAL);
+						await AddMenuIconFolderItem(mii, FolderItem);
+						await api.InsertMenuItem(hMenu, MAXINT, false, mii);
+					}
 				}
 			}
-			var pt = GetPos(o, true);
-			pt.y = pt.y + o.offsetHeight;
-			var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
+			const pt = GetPos(o, 9);
+			const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, ui_.hwnd, null, null);
 			api.DestroyMenu(hMenu);
-			if (FV && nVerb) {
-				api.SendMessage(FV.hwndView, WM_COMMAND, nVerb, 0);
+			if (await FV && nVerb) {
+				api.SendMessage(await FV.hwndView, WM_COMMAND, nVerb, 0);
 			}
 		},
 
-		Popup: function (o)
-		{
-			var Items = api.OleGetClipboard();
-			if (Items && Items.Count) {
-				var hMenu = api.CreatePopupMenu();
-				var ContextMenu = api.ContextMenu(Items);
+		Popup: async function (ev) {
+			const Items = await api.OleGetClipboard();
+			if (Items && await Items.Count) {
+				const hMenu = await api.CreatePopupMenu();
+				const ContextMenu = await api.ContextMenu(Items);
 				if (ContextMenu) {
-					ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_NORMAL);
+					await ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_NORMAL);
 				}
-				var pt = api.Memory("POINT");
-				api.GetCursorPos(pt);
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, ContextMenu);
+				const x = ev.screenX * ui_.Zoom;
+				const y = ev.screenY * ui_.Zoom;
+				var nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, ContextMenu);
 				if (nVerb >= 0x1001) {
-					ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
+					ContextMenu.InvokeCommand(0, ui_.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
 				}
 			}
-			return false;
 		},
 
-		Drag: function (o)
-		{
-			var Items = api.OleGetClipboard();
-			if (Items && Items.Count) {
-				api.SHDoDragDrop(null, Items, te, DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK, Items.pdwEffect);
+		Drag: async function () {
+			const Items = await api.OleGetClipboard();
+			if (Items && await Items.Count) {
+				api.SHDoDragDrop(null, Items, te, DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK, await Items.pdwEffect);
 			}
 			MouseOut();
-			return false;
-		}
+		},
 
+		SetRect: async function () {
+			Common.Clipboard.rc = await GetRect(document.getElementById('Clipboard'));
+		}
 	};
 
-	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
-		if (Ctrl.Type == CTRL_WB) {
-			return S_OK;
-		}
-	});
-
-	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
-		var o = document.getElementById("Clipboard");
-		if (HitTest(o, pt)) {
-			Addons.ClipBoard.grfKeyState = grfKeyState;
-			pdwEffect[0] = (grfKeyState & MK_SHIFT) ? DROPEFFECT_MOVE : DROPEFFECT_COPY;
-			MouseOver(o);
-			return S_OK;
-		}
-		MouseOut("Clipboard");
-	});
-
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect)
-	{
-		MouseOut();
-		if (HitTest(document.getElementById("Clipboard"), pt)) {
-			dataObj.dwEffect = (Addons.ClipBoard.grfKeyState & MK_SHIFT) ? DROPEFFECT_MOVE : DROPEFFECT_COPY | DROPEFFECT_LINK;
-			api.OleSetClipboard(dataObj);
-			return S_OK;
-		}
-	});
-
-	AddEvent("DragLeave", MouseOut);
-
-	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var src = item.getAttribute("Icon") || "../addons/clipboard/" + (h == 16 ? 16 : 24) + ".png";
-	SetAddon(Addon_Id, Default, ['<span id="Clipboard" class="button" onclick="Addons.ClipBoard.Exec(this)" oncontextmenu="return Addons.ClipBoard.Popup(this)" ondrag="return Addons.ClipBoard.Drag(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()" draggable="true">', GetImgTag({ title: "Clipboard", src: src }, h),'</span>']);
+	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	const src = item.getAttribute("Icon") || "../addons/clipboard/" + (h == 16 ? 16 : 24) + ".png";
+	SetAddon(Addon_Id, Default, ['<span id="Clipboard" class="button" onclick="Addons.Clipboard.Exec(this)" oncontextmenu="Addons.Clipboard.Popup(event); return false;" ondrag="Addons.Clipboard.Drag(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()" draggable="true">', await GetImgTag({ title: "Clipboard", src: src }, h), '</span>']);
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 }

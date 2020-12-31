@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.10</Version>
-    <MinVersion>2019.4.15</MinVersion>
-    <pubDate>Mon, 15 Apr 2019 00:00:00 GMT</pubDate>
+    <Version>1.11</Version>
+    <MinVersion>2020.12.30</MinVersion>
+    <pubDate>Thu, 31 Dec 2020 00:00:00 GMT</pubDate>
     <Options>Common:4,5,6,7,8,9:4</Options>
-    <DllVersion>1.0.1.0</DllVersion>
+    <DllVersion>1.1.0.0</DllVersion>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -16,6 +17,8 @@
   </en>
   <ja>
     <Name>Total Commander リスタープラグイン</Name>
-    <Description>Total Commander リスタープラグイン</Description>
   </ja>
+  <zh>
+    <Name>Total Commander 檢視器外掛程式</Name>
+  </zh>
 </TablacusExplorer>
