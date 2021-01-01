@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.10</Version>
-    <MinVersion>2020.11.10</MinVersion>
-    <pubDate>Wed, 11 Nov 2020 00:00:00 GMT</pubDate>
+    <Version>1.11</Version>
+    <MinVersion>2020.12.31</MinVersion>
+    <pubDate>Fri, 01 Jan 2021 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -16,7 +16,6 @@
   </en>
   <ja>
     <Name>更新日時の変更</Name>
-    <Description>ファイルの更新日時を変更する。</Description>
   </ja>
   <zh>
     <Name>變更修改日期</Name>

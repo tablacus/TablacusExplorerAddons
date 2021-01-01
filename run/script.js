@@ -1,7 +1,6 @@
-var Addon_Id = "run";
-var Default = "ToolBar2Left";
-
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "run";
+const Default = "ToolBar2Left";
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Menu", "Tool");
 	item.setAttribute("MenuPos", -1);
@@ -13,46 +12,27 @@ if (!item.getAttribute("Set")) {
 	item.setAttribute("Mouse", "");
 }
 if (window.Addon == 1) {
-	Addons.Run =
-	{
-		strName: item.getAttribute("MenuName") || api.LoadString(hShell32, 12710),
-		nPos: api.LowPart(item.getAttribute("MenuPos")),
-
-		Exec: function (Ctrl, pt)
-		{
-			var path = "";
-			var FV = GetFolderView(Ctrl, pt);
-			if (FV) {
-				FV.Focus();
-				if (FV.FolderItem) {
-					path = api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORPARSING);
-				}
-			}
-			api.ShRunDialog(te.hwnd, 0, path, null, null, 0);
-			return S_OK;
+	Addons.Run = {
+		Exec: async function (Ctrl, pt) {
+			Exec(await GetFolderView(Ctrl, pt), "Run dialog", "Tools", 0, pt);
 		}
 	}
-
 	//Menu
-	if (api.LowPart(item.getAttribute("MenuExec"))) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
-			api.InsertMenu(hMenu, Addons.Run.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.Run.strName));
-			ExtraMenuCommand[nPos] = Addons.Run.Exec;
-			return nPos;
-		});
+	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
+	if (item.getAttribute("MenuExec")) {
+		SetMenuExec("Run", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
-	if (api.LowPart(item.getAttribute("KeyExec"))) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Run.Exec, "Func");
+	if (item.getAttribute("KeyExec")) {
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Run.Exec, "Async");
 	}
 	//Mouse
-	if (api.LowPart(item.getAttribute("MouseExec"))) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Run.Exec, "Func");
+	if (item.getAttribute("MouseExec")) {
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Run.Exec, "Async");
 	}
 	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	var src = item.getAttribute("Icon") || "icon:shell32.dll,24";
-	SetAddon(Addon_Id, Default, ['<span class="button" id="Run" onclick="Addons.Run.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Addons.Run.strName, src: src }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" id="Run" onclick="Addons.Run.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }
