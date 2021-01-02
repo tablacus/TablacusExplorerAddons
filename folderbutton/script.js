@@ -1,75 +1,66 @@
-var Addon_Id = "folderbutton";
-var Default = "ToolBar2Left";
+const Addon_Id = "folderbutton";
+const Default = "ToolBar2Left";
 
-var item = GetAddonElement(Addon_Id);
+const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
-	Addons.FolderButton =
-	{
+	Addons.FolderButton = {
 		bDrag: false,
-		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-		nPos: api.LowPart(item.getAttribute("MenuPos")),
+		clBtnFace: await api.GetSysColor(COLOR_BTNFACE),
 
-		Exec: function (Ctrl, pt)
-		{
-			var FV = GetFolderView(Ctrl, pt);
+		Exec: async function (Ctrl, pt) {
+			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
-				var s = InputDialog("Path", api.GetDisplayNameOf(FV.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-				if (s) {
-					FV.Navigate(s, GetNavigateFlags(FV));
-				}
+				InputDialog("Path", await api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), async function (r) {
+					if (r) {
+						FV.Navigate(r, await GetNavigateFlags(FV));
+					}
+				});
 			}
-			return S_OK;
 		},
 
-		Popup: function (o)
-		{
-			var FV = GetFolderView(o);
+		Popup: async function (o) {
+			const FV = await GetFolderView(o);
 			if (FV) {
 				FV.Focus();
-				pt = GetPos(o, true);
-				var FolderItem = FolderMenu.Open(FV.FolderItem, pt.x, pt.y + o.offsetHeight * screen.deviceYDPI / screen.logicalYDPI);
+				const pt = GetPos(o, 9);
+				const FolderItem = await FolderMenu.Open(FV.FolderItem, pt.x, pt.y);
 				FolderMenu.Invoke(FolderItem);
 			}
-			return false;
 		},
 
-		Button: function (b)
-		{
+		Button: function (b) {
 			this.bDrag = b;
 		},
 
-		Drag: function (o)
-		{
-			var FV = GetFolderView(o);
+		Drag: async function (o) {
+			const FV = await GetFolderView(o);
 			if (this.bDrag) {
 				FV.Focus();
 				this.bDrag = false;
-				var TC = te.Ctrl(CTRL_TC);
-				if (TC && TC.SelectedIndex >= 0) {
-					var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
-					te.Data.DragTab = TC;
-					te.Data.DragIndex = TC.SelectedIndex;
-					api.SHDoDragDrop(null, TC.Item(TC.SelectedIndex).FolderItem, te, pdwEffect[0], pdwEffect);
-					te.Data.DragTab = null;
+				const TC = await te.Ctrl(CTRL_TC);
+				if (TC) {
+					const nSelectedIndex = await TC.SelectedIndex;
+					if (nSelectedIndex >= 0) {
+						var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
+						te.Data.DragTab = TC;
+						te.Data.DragIndex = nSelectedIndex;
+						api.SHDoDragDrop(null, await TC.Item(nSelectedIndex).FolderItem, te, await pdwEffect[0], pdwEffect);
+						te.Data.DragTab = null;
+					}
 				}
 			}
 		},
 
-		ChangeIcon: function (Ctrl, o)
-		{
-			o.src = GetIconImage(Ctrl, api.GetSysColor(COLOR_BTNFACE));
+		ChangeIcon: async function (Ctrl, o) {
+			o.src = await GetIconImage(Ctrl, Addons.FolderButton.clBtnFace);
 		}
 	};
 
 	//Menu
+	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-		{
-			api.InsertMenu(hMenu, Addons.FolderButton.nPos, MF_BYPOSITION | MF_STRING | Addons.FolderButton.Enabled ? MF_CHECKED : 0, ++nPos, GetText(Addons.FolderButton.strName));
-			ExtraMenuCommand[nPos] = Addons.FolderButton.Exec;
-			return nPos;
-		});
+		SetMenuExec("ResetSortColumn", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -82,25 +73,23 @@ if (window.Addon == 1) {
 	//Type
 	AddTypeEx("Add-ons", "Folder button", Addons.FolderButton.Exec);
 
-	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var s = item.getAttribute("Icon");
+	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	let s = item.getAttribute("Icon");
 	if (!s) {
 		s = "icon:shell32.dll,4,16";
-		AddEvent("ChangeView", function (Ctrl)
-		{
-			if (Ctrl.FolderItem && Ctrl.Id == Ctrl.Parent.Selected.Id) {
-				var o = document.getElementById("FolderButton_$");
-				if (o) {
-					if (Ctrl.Parent.Id == te.Ctrl(CTRL_TC).Id) {
-						Addons.FolderButton.ChangeIcon(Ctrl, o);
-					}
-				} else if (o = document.getElementById("FolderButton_" + Ctrl.Parent.Id)) {
+		AddEvent("ChangeView2", async function (Ctrl) {
+			const Id = await Ctrl.Parent.Id;
+			let o = document.getElementById("FolderButton_$");
+			if (o) {
+				if (Id == await te.Ctrl(CTRL_TC).Id) {
 					Addons.FolderButton.ChangeIcon(Ctrl, o);
 				}
+			} else if (o = document.getElementById("FolderButton_" + Id)) {
+				Addons.FolderButton.ChangeIcon(Ctrl, o);
 			}
 		});
 	}
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FolderButton.Exec(this)" oncontextmenu="return Addons.FolderButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut(); Addons.FolderButton.Drag(this)" onmousedown="Addons.FolderButton.Button(true)" onmouseup="Addons.FolderButton.Button(false)">', GetImgTag({ id: "FolderButton_$", title:  Addons.FolderButton.strName, src: s }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FolderButton.Exec(this)" oncontextmenu="return Addons.FolderButton.Popup(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut(); Addons.FolderButton.Drag(this)" onmousedown="Addons.FolderButton.Button(true)" onmouseup="Addons.FolderButton.Button(false)">', await GetImgTag({ id: "FolderButton_$", title: strName, src: s }, h), '</span>']);
 } else {
 	EnableInner();
 }
