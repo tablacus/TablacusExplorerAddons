@@ -30,29 +30,25 @@ Sync.SpeedDial = {
 	}
 
 }
-try {
-	const f = fso.OpenTextFile(Sync.SpeedDial.CONFIG, 1, false, -1);
-	let s;
-	while (s = f.ReadLine()) {
-		Sync.SpeedDial.db.push(s.replace(/\t.*$/, ""));
+
+const ar = ReadTextFile(Sync.SpeedDial.CONFIG, true).split(/\r?\n/);
+while (ar.length) {
+	const path = ar.shift().replace(/\t.*$/, "");
+	if (path) {
+		Sync.SpeedDial.db.push(path);
 	}
-	f.Close();
-} catch (e) {
-	f && f.Close();
 }
 
 AddEvent("SaveConfig", function () {
 	if (Sync.SpeedDial.bSave) {
-		try {
-			const f = fso.OpenTextFile(Sync.SpeedDial.CONFIG, 2, true, -1);
-			for (let i in Sync.SpeedDial.db) {
-				const path = Sync.SpeedDial.db[i];
-				if (Sync.SpeedDial.IsDisp(path)) {
-					f.WriteLine(path);
-				}
+		let s = "";
+		for (let i in Sync.SpeedDial.db) {
+			const path = Sync.SpeedDial.db[i];
+			if (Sync.SpeedDial.IsDisp(path)) {
+				s += path + "\r\n";
 			}
-			f.Close();
-		} catch (e) { }
+		}
+		WriteTextFile(Sync.SpeedDial.CONFIG, s);
 	}
 });
 
