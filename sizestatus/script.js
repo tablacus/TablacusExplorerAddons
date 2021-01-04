@@ -29,26 +29,29 @@ if (window.Addon == 1) {
 			}
 			if (nCount || Addons.SizeStatus.FileSize) {
 				const Selected = nCount ? await FV.SelectedItems() : await FV.Items();
-				for (let i = await Selected.Count; i-- > 0;) {
-					const Item = await Selected.Item(i);
-					if (await IsFolderEx(Item)) {
-						if (Addons.SizeStatus.Folder) {
-							const n = await FV.TotalFileSize[await api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_ORIGINAL)];
-							if (n == null) {
-								FV.Notify(0, Item, null, 1);
-								bYet = true;
-							} else if (n === "") {
-								bYet = true;
+				const TFS = await FV.TotalFileSize;
+				if (TFS) {
+					for (let i = await Selected.Count; i-- > 0;) {
+						const Item = await Selected.Item(i);
+						if (await IsFolderEx(Item)) {
+							if (Addons.SizeStatus.Folder) {
+								const n = await TFS[await api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_ORIGINAL)];
+								if (n == null) {
+									FV.Notify(0, Item, null, 1);
+									bYet = true;
+								} else if (n === "") {
+									bYet = true;
+								} else {
+									nSize += n;
+								}
 							} else {
-								nSize += n;
+								bYet = true;
+								Addons.SizeStatus.SessionId = SessionId;
 							}
-						} else {
-							bYet = true;
-							Addons.SizeStatus.SessionId = SessionId;
+							continue;
 						}
-						continue;
+						nSize += await Item.ExtendedProperty("Size");
 					}
-					nSize += await Item.ExtendedProperty("Size");
 				}
 				if (!bYet) {
 					Addons.SizeStatus.SessionId = SessionId;
@@ -71,9 +74,6 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("StatusText", Addons.SizeStatus.Exec);
-	AddEvent("Load", function () {
-		setTimeout(Addons.SizeStatus.Exec, 500);
-	});
 } else {
 	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }

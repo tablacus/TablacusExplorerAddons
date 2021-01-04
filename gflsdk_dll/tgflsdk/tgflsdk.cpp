@@ -1,7 +1,8 @@
 // Tablacus GFL SDK Wrapper (C)2018 Gaku
 // MIT Lisence
 // Visual Studio Express 2017 for Windows Desktop
-// Windows SDK v7.1
+// 32-bit Visual Studio 2015 - Windows XP (v140_xp)
+// 64-bit Visual Studio 2017 (v141)
 // https://tablacus.github.io/
 
 #include "tgflsdk.h"
@@ -14,24 +15,24 @@ LONG		g_lLocks = 0;
 CteBase		*g_pBase = NULL;
 CteWO		*g_pObject = NULL;
 
-TEmethod methodBASE[] = {
-	{ 0x60010000, L"Open" },
-	{ 0x6001000C, L"Close" },
+std::unordered_map<std::wstring, DISPID> g_umBASE = {
+	{ L"Open", 0x60010000 },
+	{ L"Close", 0x6001000C },
 };
 
-TEmethod methodWO[] = {
-	{ 0x6001005C, L"gflGetErrorString" },
-	{ 0x6001006C, L"gflGetVersion" },
-	{ 0x60010074, L"gflLibraryExit" },
-	{ 0x60010075, L"gflLibraryInit" },
+std::unordered_map<std::wstring, DISPID> g_umWO = {
+	{ L"gflGetErrorString", 0x6001005C },
+	{ L"gflGetVersion", 0x6001006C },
+	{ L"gflLibraryExit", 0x60010074 },
+	{ L"gflLibraryInit", 0x60010075 },
 
-	{ 0x60010077, L"gflLoadBitmap" },//W
-	{ 0x6001107A, L"gflLoadBitmapFromHandle" },
-	{ 0x60010082, L"gflLoadThumbnail" },//W
-	{ 0x60011083, L"gflLoadThumbnailFromHandle" },
+	{ L"gflLoadBitmap", 0x60010077 },//W
+	{ L"gflLoadBitmapFromHandle", 0x6001107A },
+	{ L"gflLoadThumbnail", 0x60010082 },//W
+	{ L"gflLoadThumbnailFromHandle", 0x60011083 },
 
-	{ 0x6001F000, L"IsUnicode" },
-	{ 0x6001F001, L"GetImage" },
+	{ L"IsUnicode", 0x4001F000 },
+	{ L"GetImage", 0x4001F001 },
 };
 
 // Unit
@@ -97,48 +98,6 @@ LSTATUS CreateRegistryKey(HKEY hKeyRoot, LPTSTR lpszKey, LPTSTR lpszValue, LPTST
 	return lr;
 }
 
-/*
-int teBSearch(TEmethod *method, int nSize, int* pMap, LPOLESTR bs)
-{
-	int nMin = 0;
-	int nMax = nSize - 1;
-	int nIndex, nCC;
-
-	while (nMin <= nMax) {
-		nIndex = (nMin + nMax) / 2;
-		nCC = lstrcmpi(bs, method[pMap[nIndex]].name);
-		if (nCC < 0) {
-			nMax = nIndex - 1;
-			continue;
-		}
-		if (nCC > 0) {
-			nMin = nIndex + 1;
-			continue;
-		}
-		return pMap[nIndex];
-	}
-	return -1;
-}
-*/
-HRESULT teGetDispId(TEmethod *method, int nCount, int* pMap, LPOLESTR bs, DISPID *rgDispId)
-{
-/*	if (pMap) {
-		int nIndex = teBSearch(method, nCount, pMap, bs);
-		if (nIndex >= 0) {
-			*rgDispId = method[nIndex].id;
-			return S_OK;
-		}
-	} else {*/
-		for (int i = 0; method[i].name; i++) {
-			if (lstrcmpi(bs, method[i].name) == 0) {
-				*rgDispId = method[i].id;
-				return S_OK;
-			}
-		}
-//	}
-	return DISP_E_UNKNOWNNAME;
-}
-
 BSTR GetLPWSTRFromVariant(VARIANT *pv)
 {
 	switch (pv->vt) {
@@ -190,6 +149,20 @@ int GetIntFromVariantClear(VARIANT *pv)
 }
 
 #ifdef _WIN64
+BOOL teStartsText(LPWSTR pszSub, LPCWSTR pszFile)
+{
+	BOOL bResult = pszFile ? TRUE : FALSE;
+	WCHAR wc;
+	while (bResult && (wc = *pszSub++)) {
+		bResult = towlower(wc) == towlower(*pszFile++);
+	}
+	return bResult;
+}
+
+BOOL teVarIsNumber(VARIANT *pv) {
+	return pv->vt == VT_I4 || pv->vt == VT_R8 || pv->vt == (VT_ARRAY | VT_I4) || (pv->vt == VT_BSTR && ::SysStringLen(pv->bstrVal) == 18 && teStartsText(L"0x", pv->bstrVal));
+}
+
 LONGLONG GetLLFromVariant(VARIANT *pv)
 {
 	if (pv) {
@@ -208,6 +181,12 @@ LONGLONG GetLLFromVariant(VARIANT *pv)
 			if (::SafeArrayAccessData(pv->parray, &pvData) == S_OK) {
 				::CopyMemory(&ll, pvData, sizeof(LONGLONG));
 				::SafeArrayUnaccessData(pv->parray);
+				return ll;
+			}
+		}
+		if (teVarIsNumber(pv)) {
+			LONGLONG ll = 0;
+			if (swscanf_s(pv->bstrVal, L"0x%016llx", &ll) > 0) {
 				return ll;
 			}
 		}
@@ -258,17 +237,9 @@ VOID teSetLL(VARIANT *pv, LONGLONG ll)
 			pv->vt = VT_R8;
 			return;
 		}
-		SAFEARRAY *psa;
-		psa = SafeArrayCreateVector(VT_I4, 0, sizeof(LONGLONG) / sizeof(int));
-		if (psa) {
-			PVOID pvData;
-			if (::SafeArrayAccessData(psa, &pvData) == S_OK) {
-				::CopyMemory(pvData, &ll, sizeof(LONGLONG));
-				::SafeArrayUnaccessData(psa);
-				pv->vt = VT_ARRAY | VT_I4;
-				pv->parray = psa;
-			}
-		}
+		pv->bstrVal = ::SysAllocStringLen(NULL, 18);
+		swprintf_s(pv->bstrVal, 19, L"0x%016llx", ll);
+		pv->vt = VT_BSTR;
 	}
 }
 
@@ -880,7 +851,17 @@ STDMETHODIMP CteWO::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 
 STDMETHODIMP CteWO::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
-	return teGetDispId(methodWO, _countof(methodWO), NULL, *rgszNames, rgDispId);
+	auto itr = g_umWO.find(*rgszNames);
+	if (itr != g_umWO.end()) {
+		*rgDispId = itr->second;
+		return S_OK;
+	}
+#ifdef _DEBUG
+	OutputDebugStringA("GetIDsOfNames:");
+	OutputDebugString(rgszNames[0]);
+	OutputDebugStringA("\n");
+#endif
+	return DISP_E_UNKNOWNNAME;
 }
 
 STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
@@ -894,7 +875,9 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 				if (nArg >= 0 && m_gflGetErrorString) {
 					teSetSZA(pVarResult, m_gflGetErrorString(GetIntFromVariant(&pDispParams->rgvarg[nArg])), CP_ACP);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, m_gflGetErrorString != NULL);
+					if (m_gflGetErrorString) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//gflGetVersion
@@ -902,7 +885,9 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 				if (wFlags & DISPATCH_METHOD && m_gflGetVersion) {
 					teSetSZA(pVarResult, m_gflGetVersion(), CP_ACP);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, m_gflGetVersion != NULL);
+					if (m_gflGetVersion) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//gflLibraryExit
@@ -910,7 +895,9 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 				if (wFlags & DISPATCH_METHOD && m_gflLibraryExit) {
 					m_gflLibraryExit();
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, m_gflLibraryExit != NULL);
+					if (m_gflLibraryExit) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//gflLibraryInit
@@ -918,7 +905,9 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 				if (wFlags & DISPATCH_METHOD && m_gflLibraryInit) {
 					teSetLong(pVarResult, m_gflLibraryInit());
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, m_gflLibraryInit != NULL);
+					if (m_gflLibraryInit) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//gflLoadBitmap
@@ -944,7 +933,9 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 						teSetLong(pVarResult, iResult);
 					}
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, (m_gflLoadBitmapW || m_gflLoadBitmap) && m_gflGetDefaultLoadParams && m_gflFreeBitmap);
+					if ((m_gflLoadBitmapW || m_gflLoadBitmap) && m_gflGetDefaultLoadParams && m_gflFreeBitmap) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//gflLoadThumbnail
@@ -970,7 +961,9 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 						teSetLong(pVarResult, iResult);
 					}
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, (m_gflLoadThumbnailW || m_gflLoadThumbnail) && m_gflGetDefaultThumbnailParams && m_gflFreeBitmap);
+					if ((m_gflLoadThumbnailW || m_gflLoadThumbnail) && m_gflGetDefaultThumbnailParams && m_gflFreeBitmap) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//gflLoadBitmapFromHandle
@@ -996,7 +989,9 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 						}				
 					}				
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, m_gflLoadBitmapFromHandle && m_gflGetDefaultLoadParams);
+					if (m_gflLoadBitmapFromHandle && m_gflGetDefaultLoadParams) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//gflLoadThumbnailFromHandle
@@ -1023,15 +1018,17 @@ STDMETHODIMP CteWO::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 						}				
 					}				
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, m_gflLoadBitmapFromHandle && m_gflGetDefaultLoadParams);
+					if (m_gflLoadBitmapFromHandle && m_gflGetDefaultLoadParams) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//IsUnicode
-			case 0x6001F000:
+			case 0x4001F000:
 				teSetBool(pVarResult, m_gflLoadBitmapW != NULL);
 				return S_OK;
 			//GetImage
-			case 0x6001F001:
+			case 0x4001F001:
 				if (m_gflLoadThumbnailFromHandle) {
 					teSetPtr(pVarResult, &GetImage);
 				}
@@ -1097,13 +1094,27 @@ STDMETHODIMP CteBase::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 
 STDMETHODIMP CteBase::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
-	return teGetDispId(methodBASE, _countof(methodBASE), NULL, *rgszNames, rgDispId);
+	auto itr = g_umBASE.find(*rgszNames);
+	if (itr != g_umBASE.end()) {
+		*rgDispId = itr->second;
+		return S_OK;
+	}
+#ifdef _DEBUG
+	OutputDebugStringA("GetIDsOfNames:");
+	OutputDebugString(rgszNames[0]);
+	OutputDebugStringA("\n");
+#endif
+	return DISP_E_UNKNOWNNAME;
 }
 
 STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
 {
 	int nArg = pDispParams ? pDispParams->cArgs - 1 : -1;
 	HRESULT hr = S_OK;
+	if (wFlags == DISPATCH_PROPERTYGET && dispIdMember >= TE_METHOD) {
+		teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+		return S_OK;
+	}
 
 	switch (dispIdMember) {
 		//Open
@@ -1172,4 +1183,79 @@ STDMETHODIMP CteClassFactory::LockServer(BOOL fLock)
 {
 	LockModule(fLock);
 	return S_OK;
+}
+
+//CteDispatch
+
+CteDispatch::CteDispatch(IDispatch *pDispatch, int nMode, DISPID dispId)
+{
+	m_cRef = 1;
+	pDispatch->QueryInterface(IID_PPV_ARGS(&m_pDispatch));
+	m_dispIdMember = dispId;
+}
+
+CteDispatch::~CteDispatch()
+{
+	Clear();
+}
+
+VOID CteDispatch::Clear()
+{
+	SafeRelease(&m_pDispatch);
+}
+
+STDMETHODIMP CteDispatch::QueryInterface(REFIID riid, void **ppvObject)
+{
+	static const QITAB qit[] =
+	{
+		QITABENT(CteDispatch, IDispatch),
+	{ 0 },
+	};
+	return QISearch(this, qit, riid, ppvObject);
+}
+
+STDMETHODIMP_(ULONG) CteDispatch::AddRef()
+{
+	return ::InterlockedIncrement(&m_cRef);
+}
+
+STDMETHODIMP_(ULONG) CteDispatch::Release()
+{
+	if (::InterlockedDecrement(&m_cRef) == 0) {
+		delete this;
+		return 0;
+	}
+
+	return m_cRef;
+}
+
+STDMETHODIMP CteDispatch::GetTypeInfoCount(UINT *pctinfo)
+{
+	*pctinfo = 0;
+	return S_OK;
+}
+
+STDMETHODIMP CteDispatch::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
+{
+	return E_NOTIMPL;
+}
+
+STDMETHODIMP CteDispatch::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
+{
+	return DISP_E_UNKNOWNNAME;
+}
+
+STDMETHODIMP CteDispatch::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
+{
+	try {
+		if (pVarResult) {
+			VariantInit(pVarResult);
+		}
+		if (wFlags & DISPATCH_METHOD) {
+			return m_pDispatch->Invoke(m_dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr);
+		}
+		teSetObject(pVarResult, this);
+		return S_OK;
+	} catch (...) {}
+	return DISP_E_MEMBERNOTFOUND;
 }
