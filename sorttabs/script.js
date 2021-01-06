@@ -1,6 +1,5 @@
-var Addon_Id = "sorttabs";
-
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "sorttabs";
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Tabs");
@@ -8,29 +7,41 @@ if (!item.getAttribute("Set")) {
 }
 if (window.Addon == 1) {
 	Addons.SortTabs = {
-		strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-		nPos: api.LowPart(item.getAttribute("MenuPos")),
 		tid: {},
 
-		Exec: function (Ctrl, pt) {
-			var FV = GetFolderView(Ctrl, pt);
+		Exec: async function (Ctrl, pt) {
+			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
-				var TC = FV.Parent;
-				if (Addons.SortTabs.tid[TC.id]) {
-					clearTimeout(Addons.SortTabs.tid[TC.id]);
-					delete Addons.SortTabs.tid[TC.id];
+				const TC = await FV.Parent;
+				const Id = await TC.Id;
+				if (Addons.SortTabs.tid[Id]) {
+					clearTimeout(Addons.SortTabs.tid[Id]);
+					delete Addons.SortTabs.tid[Id];
 				}
-				var ids = [];
-				for (var i = 0; i < TC.Count; i++) {
-					ids.push(TC[i].Id);
+				let ids = [];
+				const nCount = await TC.Count;
+				for (let i = 0; i < nCount; ++i) {
+					ids.push(TC[i].Id, TC[i].FolderItem);
 				}
-				ids.sort(function (a, b) {
-					return api.CompareIDs(0, te.Ctrl(CTRL_FV, a).FolderItem, te.Ctrl(CTRL_FV, b).FolderItem);
-				});
-				for (var i = 0; i < TC.Count; i++) {
-					var j = te.Ctrl(CTRL_FV, ids[i]).Index;
+				if (window.chrome) {
+					ids = await Promise.all(ids);
+				}
+				for (let i = 0; i < nCount; ++i) {
+					for (let j = nCount - 1; j > i; --j) {
+						if (await api.CompareIDs(0, ids[j * 2 + 1], ids[j * 2 - 1]) < 0) {
+							const Id = ids[j * 2];
+							ids[j * 2] = ids[j * 2 - 2];
+							ids[j * 2- 2] = Id;
+							const pid = ids[j * 2 + 1];
+							ids[j * 2 + 1] = ids[j * 2 - 1];
+							ids[j * 2 - 1] = pid;
+						}
+					}
+				}
+				for (let i = 0; i < nCount; ++i) {
+					const j = await te.Ctrl(CTRL_FV, ids[i * 2]).Index;
 					if (i != j) {
-						TC.Move(j, i);
+						await TC.Move(j, i);
 					}
 				}
 			}
@@ -38,32 +49,29 @@ if (window.Addon == 1) {
 	};
 
 	if (item.getAttribute("Auto")) {
-		AddEvent("ChangeView", function (Ctrl) {
-			var TC = Ctrl.Parent;
-			if (Addons.SortTabs.tid[TC.id]) {
-				clearTimeout(Addons.SortTabs.tid[TC.id]);
+		AddEvent("ChangeView", async function (Ctrl) {
+			const TC = await Ctrl.Parent;
+			const Id = TC.Id;
+			if (Addons.SortTabs.tid[Id]) {
+				clearTimeout(Addons.SortTabs.tid[Id]);
 			}
-			Addons.SortTabs.tid[TC.id] = setTimeout(function () {
+			Addons.SortTabs.tid[Id] = setTimeout(function (TC) {
 				Addons.SortTabs.Exec(TC);
-			}, 99);
+			}, 99, TC);
 		});
 	}
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-			api.InsertMenu(hMenu, Addons.SortTabs.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.SortTabs.strName));
-			ExtraMenuCommand[nPos] = Addons.SortTabs.Exec;
-			return nPos;
-		});
+		SetMenuExec("SortTabs", item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.SortTabs.Exec, "Func");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.SortTabs.Exec, "Async");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SortTabs.Exec, "Func");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SortTabs.Exec, "Async");
 	}
 	AddTypeEx("Add-ons", "Sort tabs", Addons.SortTabs.Exec);
 } else {

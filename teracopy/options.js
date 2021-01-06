@@ -8,7 +8,7 @@ RefId = async function (o, s) {
 	const dll = await ExtractPath(te, document.F["Path" + ui_.bit].value);
 	const cls = document.F["Class" + ui_.bit].value;
 	const item = await api.GetModuleFileName(null);
-	const ContextMenu = await api.ContextMenu(dll, cls, GetParentFolderName(item), item, HKEY_CLASSES_ROOT, "Folder", null);
+	const ContextMenu = await api.ContextMenu(dll, cls || ui_.bit < 64 ? "{A7005AF0-D6E8-48AF-8DFA-023B1CF660A7}" : "{A7645AF0-D6E8-48AF-8DFA-023B1CF660A7}", GetParentFolderName(item), item, HKEY_CLASSES_ROOT, "Folder", null);
 	if (ContextMenu) {
 		const hMenu = api.CreatePopupMenu();
 		ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_NORMAL);

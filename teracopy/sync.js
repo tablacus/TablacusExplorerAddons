@@ -6,8 +6,8 @@ Sync.TeraCopy = {
 	NoTemp: item.getAttribute("NoTemp"),
 	Copy: GetNum(item.getAttribute("Copy")),
 	Move: GetNum(item.getAttribute("Move")),
-	Path: ExtractPath(item.getAttribute("Path" + (api.sizeof("HANDLE") * 8)) + ""),
-	Class: item.getAttribute("Class" + (api.sizeof("HANDLE") * 8)),
+	Path: ExtractPath(item.getAttribute("Path" + g_.bit) + ""),
+	Class: item.getAttribute("Class" + g_.bit) || g_.bit < 64 ? "{A7005AF0-D6E8-48AF-8DFA-023B1CF660A7}" : "{A7645AF0-D6E8-48AF-8DFA-023B1CF660A7}",
 
 	FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver) {
 		if (Items.Count == 0 || !(grfKeyState & MK_LBUTTON)) {
