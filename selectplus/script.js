@@ -1,26 +1,25 @@
-﻿if (window.Addon == 1) {
-	Addons.SelectPlus =
-	{
+if (window.Addon == 1) {
+	Addons.SelectPlus = {
 		db: {},
 
-		FO: function (FV, Items, Dest) {
-			var path;
-			if (Items.Count == 0) {
+		FO: async function (FV, Items, Dest) {
+			let path;
+			const nCount = await Items.Count;
+			if (nCount == 0) {
 				return;
 			}
 			try {
-				path = Dest.ExtendedProperty("linktarget") || Dest.Path || Dest;
+				path = await Dest.ExtendedProperty("linktarget") || await Dest.Path || Dest;
 			} catch (e) {
-				path = Dest.Path || Dest;
+				path = await Dest.Path || await Dest;
 			}
-			var db = {
+			const db = {
 				Flag: SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_DESELECTOTHERS,
 				paths: {},
 				dt: new Date().getTime()
 			};
-			var bAdd = false;
-			for (var i = 0; i < Items.Count; ++i) {
-				var path1 = fso.BuildPath(path, fso.GetFileName(Items.Item(i).Path));
+			for (let i = 0; i < nCount; ++i) {
+				const path1 = BuildPath(path, await fso.GetFileName(await Items.Item(i).Path));
 				db.paths[path1] = 1;
 			}
 			Addons.SelectPlus.db[FV.Id] = db;
@@ -41,14 +40,14 @@
 			if (!Addons.SelectPlus.db[FV.Id]) {
 				return;
 			}
-			db.tid = setTimeout(function () {
+			db.tid = setTimeout(async function () {
 				delete db.tid;
 				if (!Addons.SelectPlus.db[FV.Id]) {
 					return;
 				}
 				var bDone = true;
 				for (var path in db.paths) {
-					if (IsExists(path)) {
+					if (await IsExists(path)) {
 						FV.SelectItem(path, db.Flag | SVSI_SELECT | SVSI_NOTAKEFOCUS);
 						db.Flag = 0;
 						delete db.paths[path];
@@ -59,24 +58,25 @@
 				if (bDone || new Date().getTime() - db.dt > 60000) {
 					delete Addons.SelectPlus.db[FV.Id];
 				} else {
-					Addons.SelectPlus.Selects(FV, db, 5000);
+					Addons.SelectPlus.Selects(FV, db, 999);
 				}
 			}, tm);
 		}
 	};
 
-	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
-		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
-			var Dest = Ctrl.HitTest(pt);
+	AddEvent("Drop", async function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
+		const nType = await Ctrl.Type;
+		if (nType == CTRL_SB || nType == CTRL_EB) {
+			let Dest = await Ctrl.HitTest(pt);
 			if (Dest) {
-				if (!fso.FolderExists(Dest.Path)) {
-					if (api.DropTarget(Dest)) {
+				if (!await fso.FolderExists(await Dest.Path)) {
+					if (await api.DropTarget(Dest)) {
 						return;
 					}
-					Dest = Ctrl.FolderItem;
+					Dest = await Ctrl.FolderItem;
 				}
 			} else {
-				Dest = Ctrl.FolderItem;
+				Dest = await Ctrl.FolderItem;
 			}
 			if (Dest) {
 				Addons.SelectPlus.FO(Ctrl, dataObj, Dest);
@@ -84,40 +84,43 @@
 		}
 	}, true);
 
-	AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
-		if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
+	AddEvent("Command", async function (Ctrl, hwnd, msg, wParam, lParam) {
+		const nType = await Ctrl.Type;
+		if (nType == CTRL_SB || nType == CTRL_EB) {
 			if ((wParam & 0xfff) + 1 == CommandID_PASTE) {
-				Addons.SelectPlus.FO(Ctrl, api.OleGetClipboard(), Ctrl.FolderItem);
+				Addons.SelectPlus.FO(Ctrl, await api.OleGetClipboard(), await Ctrl.FolderItem);
 			}
 		}
 	}, true);
 
-	AddEvent("ChangeNotify", function (Ctrl, pidls, wParam, lParam) {
-		var path;
-		if (pidls.lEvent & (SHCNE_CREATE | SHCNE_MKDIR | SHCNE_UPDATEITEM | SHCNE_UPDATEITEM | SHCNE_UPDATEDIR)) {
-			path = pidls[0].Path;
-		} else if (pidls.lEvent & (SHCNE_RENAMEITEM | SHCNE_RENAMEFOLDER)) {
-			path = pidls[1].Path;
+	AddEvent("ChangeNotify", async function (Ctrl, pidls, wParam, lParam) {
+		let path;
+		const lEvent = await pidls.lEvent;
+		if (lEvent & (SHCNE_CREATE | SHCNE_MKDIR | SHCNE_UPDATEITEM | SHCNE_UPDATEITEM | SHCNE_UPDATEDIR)) {
+			path = await pidls[0].Path;
+		} else if (lEvent & (SHCNE_RENAMEITEM | SHCNE_RENAMEFOLDER)) {
+			path = await pidls[1].Path;
 		}
 		if (path) {
-			for (var Id in Addons.SelectPlus.db) {
-				var FV = te.Ctrl(CTRL_FV, Id);
+			for (let Id in Addons.SelectPlus.db) {
+				const FV = await te.Ctrl(CTRL_FV, Id);
 				if (FV) {
-					var db = Addons.SelectPlus.db[FV.Id];
+					const Id = await FV.Id;
+					const db = Addons.SelectPlus.db[Id];
 					if (db) {
 						if (new Date().getTime() - db.dt < 60000) {
 							if (db.paths[path]) {
 								delete db.paths[path];
 								Addons.SelectPlus.Select(FV, db, path);
 							}
-							if (pidls.lEvent & (SHCNE_UPDATEITEM | SHCNE_UPDATEDIR)) {
-								if (FV.FolderItem && path === FV.FolderItem.Path) {
-									delete Addons.SelectPlus.db[FV.Id];
+							if (lEvent & (SHCNE_UPDATEITEM | SHCNE_UPDATEDIR)) {
+								if (await FV.FolderItem && path === await FV.FolderItem.Path) {
+									delete Addons.SelectPlus.db[Id];
 									Addons.SelectPlus.Selects(FV, db, 99);
 								}
 							}
 						} else {
-							delete Addons.SelectPlus.db[FV.Id];
+							delete Addons.SelectPlus.db[Id];
 						}
 					}
 				}
@@ -125,7 +128,7 @@
 		}
 	});
 
-	AddEvent("ListViewCreated", function (Ctrl) {
-		delete Addons.SelectPlus.db[Ctrl.Id];
+	AddEvent("ListViewCreated", async function (Ctrl) {
+		delete Addons.SelectPlus.db[await Ctrl.Id];
 	});
 }

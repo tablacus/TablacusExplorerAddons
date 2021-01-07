@@ -1,34 +1,30 @@
-var ado = OpenAdodbFromTextFile("addons\\" + Addon_Id + "\\options.html");
-if (ado) {
-	SetTabContents(4, "", ado.ReadText(adReadAll));
-	ado.Close();
-}
+SetTabContents(4, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
-var arIndex = ["Filter", "Path"];
-var fnConfig = fso.BuildPath(te.Data.DataFolder, "config\\bgimage.tsv");
+const arIndex = ["Filter", "Path"];
+const fnConfig = BuildPath(ui_.DataFolder, "config\\bgimage.tsv");
 
-function SaveIC(mode) {
+async function SaveIC(mode) {
 	if (g_Chg[mode]) {
-		var ado = api.CreateObject("ads");
-		ado.CharSet = "utf-8";
-		ado.Open();
-		for (var i = 0; i < g_x.List.length; ++i) {
-			ado.WriteText(g_x.List[i].value.replace(new RegExp(g_sep, "g"), "\t") + "\r\n");
+		let data = "";
+		for (let i = 0; i < g_x.List.length; ++i) {
+			const line = g_x.List[i].value.replace(new RegExp(g_sep, "g"), "\t");
+			if (line != "\t") {
+				data += line + "\r\n";
+			}
 		}
-		ado.SaveToFile(fnConfig, adSaveCreateOverWrite);
-		ado.Close();
+		await WriteTextFile(fnConfig, data);
 	}
 }
 
-EditIC = function (mode) {
+EditIC = function () {
 	if (g_x.List.selectedIndex < 0) {
 		return;
 	}
 	ClearX("List");
-	var a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
-	for (var i = arIndex.length; i--;) {
-		var el = document.E.elements[arIndex[i]];
-		if (String(el.type).toLowerCase() == 'checkbox') {
+	const a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
+	for (let i = arIndex.length; i--;) {
+		const el = document.E.elements[arIndex[i]];
+		if (SameText(el.type, 'checkbox')) {
 			el.checked = a[i];
 		} else {
 			el.value = a[i] || "";
@@ -46,7 +42,7 @@ ReplaceIC = function (mode) {
 	var a = [];
 	for (var i = arIndex.length; i--;) {
 		var el = document.E.elements[arIndex[i]];
-		if (String(el.type).toLowerCase() == 'checkbox') {
+		if (SameText(el.type, 'checkbox')) {
 			a.unshift(el.checked ? 1 : 0);
 		} else {
 			a.unshift(el.value);
@@ -56,36 +52,31 @@ ReplaceIC = function (mode) {
 	g_Chg[mode] = true;
 }
 
-ShowIconX = function () {
-	document.getElementById('Image1').src = api.PathUnquoteSpaces(ExtractMacro(te, document.E.Path.value));
+ShowIconX = async function () {
+	document.getElementById('Image1').src = await ExtractPath(te, document.E.Path.value);
 }
 
-GetCurrentPath = function () {
-	if (confirmOk()) {
-		document.E.Filter.value = te.Ctrl(CTRL_FV).FolderItem.Path;
+GetCurrentPath = async function () {
+	if (await confirmOk()) {
+		document.E.Filter.value = await te.Ctrl(CTRL_FV).FolderItem.Path;
 	}
 }
 
 g_x.List = document.E.List;
 
-var ar = [];
-try {
-	var ado = OpenAdodbFromTextFile(fnConfig);
-	while (!ado.EOS) {
-		ar.push(ado.ReadText(adReadLine));
+const ar = (await ReadTextFile(fnConfig)).split(/\t?\n/);
+for (let i = 0; i < ar.length; ++i) {
+	if (/\t/.test(ar[i])) {
+		++g_x.List.length;
+		SetData(g_x.List[i], ar[i].split("\t"));
 	}
-	ado.Close();
-} catch (e) { }
-
-g_x.List.length = ar.length;
-for (var i = 0; i < ar.length; ++i) {
-	SetData(g_x.List[i], ar[i].split("\t"));
 }
+
 EnableSelectTag(g_x.List);
 
-SaveLocation = function () {
+SaveLocation = async function () {
 	if (g_Chg.Data) {
 		ReplaceIC("List");
 	}
-	SaveIC("List");
+	await SaveIC("List");
 };
