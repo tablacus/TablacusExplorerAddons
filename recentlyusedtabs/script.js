@@ -1,41 +1,39 @@
-var Addon_Id = "recentlyusedtabs";
+const Addon_Id = "recentlyusedtabs";
 
 if (window.Addon == 1) {
-	var item = GetAddonElement(Addon_Id);
+	const item = await GetAddonElement(Addon_Id);
 
-	Addons.RecentlyUsedTabs =
-	{
+	Addons.RecentlyUsedTabs = {
 		Exec: function (Ctrl, pt) {
-			setTimeout(function () {
-				var hMenu = api.CreatePopupMenu();
-				var ar = [];
-				var TC = te.Ctrl(CTRL_TC);
-				for (var i = TC.length; i--;) {
-					ar.push(TC[i]);
+			setTimeout(async function () {
+				const hMenu = await api.CreatePopupMenu();
+				const ar = [];
+				const TC = await te.Ctrl(CTRL_TC);
+				const nCount = await TC.Count;
+				for (let i = nCount; i--;) {
+					ar.push({ FV: TC[i], nRecent: await TC[i].Data.nRecent });
 				}
 				ar.sort(function (a, b) {
-					return b.Data.nRecent - a.Data.nRecent;
+					return b.nRecent - a.nRecent;
 				});
-				for (var i = ar.length - 1; i--;) {
-					var FV = ar[i];
-					var mii = api.Memory("MENUITEMINFO");
-					mii.cbSize = mii.Size;
+				for (let i = ar.length - 1; i--;) {
+					const FV = ar[i].FV;
+					const mii = await api.Memory("MENUITEMINFO");
+					mii.cbSize = await mii.Size;
 					mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP | MIIM_FTYPE;
 					mii.wId = i + 1;
-					mii.dwTypeData = FV.FolderItem.Path;
-					AddMenuIconFolderItem(mii, FV.FolderItem);
-					api.InsertMenuItem(hMenu, MAXINT, false, mii);
+					mii.dwTypeData = await FV.FolderItem.Path;
+					AddMenuIconFolderItem(mii, await FV.FolderItem);
+					await api.InsertMenuItem(hMenu, MAXINT, false, mii);
 				}
-				var o = document.getElementById("Panel_" + GetFolderView(Ctrl, pt).Parent.Id);
-				if (o) {
-					pt = GetPos(o, true);
-				}
-				wsh.SendKeys("{DOWN}");
-				var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd,
+				const FV = await GetFolderView(Ctrl, pt);
+				const o = document.getElementById("Panel_" + await FV.Parent.Id);
+				pt = o ? GetPos(o, true) : { x: await pt.x, y: await pt.y };
+				AddEvent("EnterMenuLoop", await CreateJScript('wsh.SendKeys("{DOWN}");'));
+				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, ui_.hwnd,
 					null, null);
 				if (nVerb) {
-					var FV = ar[nVerb - 1];
-					TC.SelectedIndex = FV.Index;
+					TC.SelectedIndex = await ar[nVerb - 1].FV.Index;
 				}
 			}, 99);
 			return S_OK;
@@ -43,17 +41,17 @@ if (window.Addon == 1) {
 
 	};
 
-	AddEvent("SelectionChanged", function (Ctrl, uChange) {
-		var FV;
-		if (Ctrl.Type == CTRL_TC) {
-			for (var i = Ctrl.Count; i-- > 0;) {
-				FV = Ctrl[i];
-				if (FV && FV.Data) {
-					FV.Data.nRecent = (FV.Data.nRecent || 0) + 1;
+	AddEvent("SelectionChanged", async function (Ctrl, uChange) {
+		if (await Ctrl.Type == CTRL_TC) {
+			let FV;
+			for (let i = await Ctrl.Count; i-- > 0;) {
+				FV = await Ctrl[i];
+				if (FV && await FV.Data) {
+					FV.Data.nRecent = (await FV.Data.nRecent || 0) + 1;
 				}
 			}
-			var FV = Ctrl.Selected;
-			if (FV && FV.Data) {
+			FV = await Ctrl.Selected;
+			if (FV && await FV.Data) {
 				FV.Data.nRecent = 0;
 			}
 		}
@@ -61,11 +59,11 @@ if (window.Addon == 1) {
 
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.RecentlyUsedTabs.Exec, "Func");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.RecentlyUsedTabs.Exec, "Async");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.RecentlyUsedTabs.Exec, "Func");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.RecentlyUsedTabs.Exec, "Async");
 	}
 	//Type
 	AddTypeEx("Add-ons", "Recently used tabs", Addons.RecentlyUsedTabs.Exec);

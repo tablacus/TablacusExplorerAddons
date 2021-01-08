@@ -1,7 +1,5 @@
-var Addon_Id = "everything";
-var Default = "ToolBar2Right";
-
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "everything";
+const item = GetAddonElement(Addon_Id);
 
 Sync.Everything = {
 	PATH: "es:",
@@ -17,7 +15,7 @@ Sync.Everything = {
 	},
 
 	GetSearchString: function (Ctrl) {
-		var Path = "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+		const Path = "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 		if (Sync.Everything.IsHandle(Path)) {
 			return Path.replace(new RegExp("^" + Sync.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
 		}
@@ -25,9 +23,9 @@ Sync.Everything = {
 	},
 
 	Delete: function (pidl) {
-		var cFV = te.Ctrls(CTRL_FV);
-		for (var i in cFV) {
-			var FV = cFV[i];
+		const cFV = te.Ctrls(CTRL_FV);
+		for (let i in cFV) {
+			const FV = cFV[i];
 			if (FV.hwnd && this.IsHandle(FV)) {
 				FV.RemoveItem(pidl);
 			}
@@ -35,13 +33,11 @@ Sync.Everything = {
 	},
 
 	Rename: function (pidl, pidl2) {
-		var fn = api.GetDisplayNameOf(pidl2, SHGDN_INFOLDER);
-		var cFV = te.Ctrls(CTRL_FV);
-		for (var i in cFV) {
-			var FV = cFV[i];
+		const cFV = te.Ctrls(CTRL_FV);
+		for (let i in cFV) {
+			const FV = cFV[i];
 			if (FV.hwnd && this.IsHandle(FV)) {
-				var Path = Sync.Everything.GetSearchString(FV);
-				if (Path) {
+				if (Sync.Everything.IsHandle(FV)) {
 					if (FV.RemoveItem(pidl) == S_OK) {
 						FV.AddItem(api.GetDisplayNameOf(pidl2, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 					}
@@ -52,14 +48,14 @@ Sync.Everything = {
 
 	Enum: function (pid, Ctrl, fncb, SessionId) {
 		if (fncb) {
-			var Path = Sync.Everything.GetSearchString(pid);
+			let Path = Sync.Everything.GetSearchString(pid);
 			if (Sync.Everything.RE) {
-				for (var ar = [], ar2 = Path.split(" "); ar2.length;) {
-					var s = ar2.shift();
+				for (let ar = [], ar2 = Path.split(" "); ar2.length;) {
+					let s = ar2.shift();
 					if (/^\\\\|:/.test(s)) {
 						if (/"/.test(s)) {
 							while (ar2.length) {
-								var s2 = ar2.shift();
+								const s2 = ar2.shift();
 								s += " " + s2;
 								if (/"/.test(s2)) {
 									break;
@@ -74,7 +70,7 @@ Sync.Everything = {
 				Path = ar.join(" ");
 			}
 			if (Path) {
-				var hwndView = Ctrl.hwndView;
+				const hwndView = Ctrl.hwndView;
 				Sync.Everything.fncb[Ctrl.Id] = fncb;
 				if (!Sync.Everything.Open(Path, hwndView) && Sync.Everything.ExePath) {
 					if (Sync.Everything.nDog++ < 9) {
@@ -93,9 +89,9 @@ Sync.Everything = {
 	},
 
 	Open: function (Path, hwndView) {
-		var hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
+		const hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
 		if (hwnd) {
-			var query = new ApiStruct({
+			const query = new ApiStruct({
 				reply_hwnd: [VT_I4, 4],
 				reply_copydata_message: [VT_I4, 4],
 				search_flags: [VT_I4, api.sizeof("DWORD")],
@@ -108,7 +104,7 @@ Sync.Everything = {
 			query.Write("max_results", Sync.Everything.Max);
 			query.Write("search_string", Path);
 
-			var cds = api.Memory("COPYDATASTRUCT");
+			const cds = api.Memory("COPYDATASTRUCT");
 			cds.cbData = query.Size;
 			cds.dwData = 2;//EVERYTHING_IPC_COPYDATAQUERY;
 			cds.lpData = query.Memory;
@@ -128,9 +124,8 @@ AddEvent("TranslatePath", function (Ctrl, Path) {
 
 AddEvent("CopyData", function (Ctrl, cd, wParam) {
 	if (cd.dwData == 2 && cd.cbData) {
-		var data = api.Memory("BYTE", cd.cbData, cd.lpData);
-		var EVERYTHING_IPC_LIST =
-		{
+		const data = api.Memory("BYTE", cd.cbData, cd.lpData);
+		const EVERYTHING_IPC_LIST = {
 			totfolders: [VT_I4, api.sizeof("DWORD")],
 			totfiles: [VT_I4, api.sizeof("DWORD")],
 			totitems: [VT_I4, api.sizeof("DWORD")],
@@ -139,22 +134,18 @@ AddEvent("CopyData", function (Ctrl, cd, wParam) {
 			numitems: [VT_I4, api.sizeof("DWORD")],
 			offset: [VT_I4, api.sizeof("DWORD")]
 		};
-		var list = new ApiStruct(EVERYTHING_IPC_LIST, 4, data);
-		var nItems = list.Read("totitems");
-		if (Sync.Everything.Max && nItems > Sync.Everything.Max) {
-			nItems = Sync.Everything.Max;
-		}
-		var EVERYTHING_IPC_ITEM =
-		{
+		const list = new ApiStruct(EVERYTHING_IPC_LIST, 4, data);
+		const nItems = Math.min(list.Read("totitems"), Sync.Everything.Max || 2 ^ 53 - 1);
+		const EVERYTHING_IPC_ITEM = {
 			flags: [VT_I4, api.sizeof("DWORD")],
 			filename_offset: [VT_I4, api.sizeof("DWORD")],
 			path_offset: [VT_I4, api.sizeof("DWORD")]
 		};
-		var arItems = [];
-		var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4);
-		var itemSize = item.Size;
-		for (var i = 0; i < nItems && api.GetAsyncKeyState(VK_ESCAPE) >= 0; i++) {
-			var item = new ApiStruct(EVERYTHING_IPC_ITEM, 4, api.Memory("BYTE", itemSize, cd.lpData + list.Size + list.Read("offset") + itemSize * i));
+		const arItems = [];
+		let item = new ApiStruct(EVERYTHING_IPC_ITEM, 4);
+		const itemSize = item.Size;
+		for (let i = 0; i < nItems && api.GetAsyncKeyState(VK_ESCAPE) >= 0; i++) {
+			item = new ApiStruct(EVERYTHING_IPC_ITEM, 4, api.Memory("BYTE", itemSize, cd.lpData + list.Size + list.Read("offset") + itemSize * i));
 			arItems.push(data.Read(item.Read("path_offset"), VT_LPWSTR) + "\\" + data.Read(item.Read("filename_offset"), VT_LPWSTR));
 		}
 		Sync.Everything.fncb[Ctrl.Id](Ctrl, arItems);
@@ -166,7 +157,7 @@ AddEvent("CopyData", function (Ctrl, cd, wParam) {
 
 AddEvent("GetFolderItemName", function (pid) {
 	if (Sync.Everything.IsHandle(pid)) {
-		var res = /(.*?) *path:"?.+?"?/.exec(pid.Path);
+		const res = /(.*?) *path:"?.+?"?/.exec(pid.Path);
 		return res ? res[1] : pid.Path;
 	}
 }, true);
@@ -188,9 +179,9 @@ AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 	if (!Verb || Verb == CommandID_STORE - 1) {
 		if (ContextMenu.Items.Count >= 1) {
-			var path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 			if (Sync.Everything.IsHandle(path)) {
-				var FV = te.Ctrl(CTRL_FV);
+				const FV = te.Ctrl(CTRL_FV);
 				FV.Navigate(path, SBSP_SAMEBROWSER);
 				return S_OK;
 			}
@@ -209,14 +200,14 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 
 AddEvent("ILGetParent", function (FolderItem) {
 	if (Sync.Everything.IsHandle(FolderItem)) {
-		var res = /path:"?(.+?)"?/.exec(Sync.Everything.GetSearchString(FolderItem));
+		const res = /path:"?(.+?)"?/.exec(Sync.Everything.GetSearchString(FolderItem));
 		return res ? res[1] : ssfDESKTOP;
 	}
 });
 
 Sync.Everything.ExePath = ExtractMacro(te, item.getAttribute("Exec"));
 if (!Sync.Everything.ExePath) {
-	var path = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
+	let path = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
 	if (!fso.FileExists(path)) {
 		path = path.replace(/ \(x86\)\\/, "\\");
 	}
@@ -224,10 +215,10 @@ if (!Sync.Everything.ExePath) {
 		Sync.Everything.ExePath = api.PathQuoteSpaces(path) + " -startup";
 	}
 }
-var icon = ExtractMacro(te, api.PathUnquoteSpaces(item.getAttribute("Icon")));
+let icon = ExtractPath(te, item.getAttribute("Icon"));
 if (!icon) {
 	if (Sync.Everything.ExePath) {
-		var path = ExtractMacro(te, api.PathUnquoteSpaces(Sync.Everything.ExePath.replace(/\s*\-startup$/, "")));
+		const path = ExtractPath(te, Sync.Everything.ExePath.replace(/\s*\-startup$/, ""));
 		if (fso.FileExists(path)) {
 			icon = 'icon:' + path + ',0';
 		}
@@ -247,4 +238,3 @@ if (item.getAttribute("MenuExec")) {
 	});
 }
 AddTypeEx("Add-ons", "Everything", Sync.Everything.Exec);
-

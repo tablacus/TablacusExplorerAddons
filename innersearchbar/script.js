@@ -1,46 +1,42 @@
-var Addon_Id = "innersearchbar";
-
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "innersearchbar";
+const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
-	Addons.InnerSearchBar =
-	{
+	Addons.InnerSearchBar = {
 		tid: [],
 		search: [],
 		iCaret: [],
-		Icon: "bitmap:ieframe.dll,216,16,17",
+		Icon: await ExtractPath(te, item.getAttribute("Icon")) || "bitmap:ieframe.dll,216,16,17",
 		Width: '176px',
 
 		Change: function (o, Id) {
-			setTimeout(function () {
+			setTimeout(async function () {
 				if (o.value.length == 0) {
-					var FV = GetInnerFV(Id);
-					if (IsSearchPath(FV)) {
+					const FV = await GetInnerFV(Id);
+					if (await IsSearchPath(FV)) {
 						CancelFilterView(FV);
 					}
 				}
 			}, 99);
 		},
 
-		KeyDown: function (o, Id) {
+		KeyDown: function (ev, o, Id) {
 			setTimeout(function () {
 				Addons.InnerSearchBar.ShowButton(Id)
 			}, 99);
-			if (event.keyCode == VK_RETURN) {
+			if (ev.keyCode == VK_RETURN || window.chrome && /^Enter/i.test(ev.key)) {
 				Addons.InnerSearchBar.Search(Id);
-				(function (o) {
-					setTimeout(function () {
-						o.focus();
-					}, 999);
-				})(o);
+				setTimeout(function (o) {
+					o.focus();
+				}, 999, o);
 				return false;
 			}
 		},
 
-		Search: function (Id) {
-			var FV = GetInnerFV(Id);
-			var s = document.F.elements["search_" + Id].value;
+		Search: async function (Id) {
+			const FV = await GetInnerFV(Id);
+			const s = document.F.elements["search_" + Id].value;
 			if (s.length) {
-				FV.FilterView(s);
+				FV.Search(s);
 			} else {
 				CancelFilterView(FV);
 			}
@@ -51,84 +47,70 @@ if (window.Addon == 1) {
 			Activate(o, Id);
 			o.select();
 			if (this.iCaret[Id] >= 0) {
-				var range = o.createTextRange();
+				const range = o.createTextRange();
 				range.move("character", this.iCaret[Id]);
 				range.select();
 				this.iCaret[Id] = -1;
 			}
 		},
 
-		Clear: function (flag, Id) {
+		Clear: function (Id) {
 			document.F.elements["search_" + Id].value = "";
 			this.ShowButton(Id);
 		},
 
 		ShowButton: function (Id) {
-			if (WINVER < 0x602) {
-				var o = document.F.elements["search_" + Id];
+			if (WINVER < 0x602 || window.chrome) {
+				const o = document.F.elements["search_" + Id];
 				if (o) {
 					document.getElementById("ButtonSearchClear_" + Id).style.display = o.value.length ? "inline" : "none";
 				}
 			}
 		},
 
-		Exec: function (Ctrl, pt) {
-			var FV = GetFolderView(Ctrl, pt);
-			var o = document.F.elements["search_" + FV.Parent.Id];
+		Exec: async function (Ctrl, pt) {
+			const FV = await GetFolderView(Ctrl, pt);
+			const o = document.F.elements["search_" + FV.Parent.Id];
 			if (o) {
 				o.focus();
 			}
-			return S_OK;
 		}
 	};
 
-	AddEvent("PanelCreated", function (Ctrl) {
-		var s = ['<input type="text" name="search_$" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(this,$)" onmouseup="Addons.InnerSearchBar.Change(this,$)" onfocus="Addons.InnerSearchBar.Focus(this, $)" style="width: ', EncodeSC(Addons.InnerSearchBar.Width), '; padding-right: 12pt; vertical-align: middle"><span style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerSearchBar.Icon), '" hidefocus="true" style="position: absolute; left: -13.5pt; top: 1pt; width: 12pt; height: 12pt" oncontextmenu="return false" onclick="Addons.InnerSearchBar.Search($)"><span id="ButtonSearchClear_$" style="font-family: marlett; font-size: 7pt; display: none; position: absolute; left: -21pt; top: 3pt" class="button" onclick="Addons.InnerSearchBar.Clear(true, $)">r</span></span>'];
-		var o = SetAddon(null, "Inner1Right_" + Ctrl.Id, s.join("").replace(/\$/g, Ctrl.Id));
+	AddEvent("PanelCreated", function (Ctrl, Id) {
+		const z = screen.deviceYDPI / 96;
+		SetAddon(null, "Inner1Right_" + Id, ['<input type="text" name="search_', Id, '" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(event,this,', Id, ')" onmouseup="Addons.InnerSearchBar.Change(this,', Id, ')" onfocus="Addons.InnerSearchBar.Focus(this, ', Id, ')" style="width: ', EncodeSC(Addons.InnerSearchBar.Width), '; padding-right:', 16 * z, 'px; vertical-align: middle"><span style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerSearchBar.Icon), '" hidefocus="true" style="position: absolute; left:', -18 * z, 'px; top:', z, 'px; width:', 16 * z, 'px; height:', 16 * z, 'px" oncontextmenu="return false" onclick="Addons.InnerSearchBar.Search(', Id, ')"><span id="ButtonSearchClear_', Id, '" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left:', -28 * z, 'px; top:', 4 * z, 'px" class="button" onclick="Addons.InnerSearchBar.Clear(', Id, ')">r</span></span>'].join(""));
 	});
 
-	AddEvent("ChangeView", function (Ctrl) {
-		if (Ctrl.Type <= CTRL_EB) {
-			var Id = Ctrl.Parent.Id;
-			var o = document.F.elements["search_" + Id];
+	AddEvent("ChangeView", async function (Ctrl) {
+		if (await Ctrl.Type <= CTRL_EB) {
+			const Id = await Ctrl.Parent.Id;
+			const o = document.F.elements["search_" + Id];
 			if (o) {
-				o.value = IsSearchPath(Ctrl) ? api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER | SHGDN_ORIGINAL) : "";
+				o.value = await IsSearchPath(Ctrl) ? await api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER | SHGDN_ORIGINAL) : "";
 				Addons.InnerSearchBar.ShowButton(Id);
 			}
 		}
 	});
 
 	if (item) {
-		var s = item.getAttribute("Width");
+		const s = item.getAttribute("Width");
 		if (s) {
-			Addons.InnerSearchBar.Width = (api.QuadPart(s) == s) ? (s + "px") : s;
-		}
-		var s = item.getAttribute("Icon");
-		if (s) {
-			Addons.InnerSearchBar.Icon = ExtractMacro(te, api.PathUnquoteSpaces(s));
+			Addons.InnerSearchBar.Width = (GetNum(s) == s) ? (s + "px") : s;
 		}
 		Addons.InnerSearchBar.RE = item.getAttribute("RE");
 
 		//Menu
 		if (item.getAttribute("MenuExec")) {
-			Addons.InnerSearchBar.nPos = api.LowPart(item.getAttribute("MenuPos"));
-			var s = item.getAttribute("MenuName");
-			if (s && s != "") {
-				Addons.InnerSearchBar.strName = s;
-			}
-			AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-				api.InsertMenu(hMenu, Addons.InnerSearchBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Addons.InnerSearchBar.strName));
-				ExtraMenuCommand[nPos] = Addons.InnerSearchBar.Exec;
-				return nPos;
-			});
+			SetMenuExec("InnerSearchBar", item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 		}
 		//Key
 		if (item.getAttribute("KeyExec")) {
-			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.InnerSearchBar.Exec, "Func");
+			SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.InnerSearchBar.Exec, "Async");
 		}
 		//Mouse
 		if (item.getAttribute("MouseExec")) {
-			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerSearchBar.Exec, "Func");
+			SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerSearchBar.Exec, "Async");
 		}
 		AddTypeEx("Add-ons", "Inner Search Bar", Addons.InnerSearchBar.Exec);
 	}

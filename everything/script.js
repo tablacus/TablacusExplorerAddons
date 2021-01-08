@@ -1,10 +1,8 @@
-var Addon_Id = "everything";
-var Default = "ToolBar2Right";
-
-var item = await GetAddonElement(Addon_Id);
+const Addon_Id = "everything";
+const Default = "ToolBar2Right";
+const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
-	Addons.Everything =
-	{
+	Addons.Everything = {
 		PATH: "es:",
 		iCaret: -1,
 		strName: item.getAttribute("MenuName") || "Everything",
@@ -25,13 +23,13 @@ if (window.Addon == 1) {
 		},
 
 		Search: async function (s) {
-			var FV = await te.Ctrl(CTRL_FV);
-			var s = s || document.F.everythingsearch.value;
+			const FV = await te.Ctrl(CTRL_FV);
+			s = s || document.F.everythingsearch.value;
 			if (s.length) {
 				if (!/path:.+/.test(s) && ((await api.GetAsyncKeyState(VK_SHIFT) < 0 ? 1 : 0) ^ Addons.Everything.Subfolders)) {
-					var path = await FV.FolderItem.Path;
+					const path = await FV.FolderItem.Path;
 					if (/^[A-Z]:\\|^\\\\/i.test(path)) {
-						s += " path:" + (await api.PathQuoteSpaces((path + "\\")).replace(/\\\\$/, "\\"));
+						s += " path:" + (await api.PathQuoteSpaces(path + "\\")).replace(/\\\\$/, "\\");
 					}
 				}
 				FV.Navigate(Addons.Everything.PATH + s, Addons.Everything.NewTab ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
@@ -41,7 +39,7 @@ if (window.Addon == 1) {
 		Focus: function (o) {
 			o.select();
 			if (this.iCaret >= 0) {
-				var range = o.createTextRange();
+				const range = o.createTextRange();
 				range.move("character", this.iCaret);
 				range.select();
 				this.iCaret = -1;
@@ -71,8 +69,8 @@ if (window.Addon == 1) {
 		Addons.Everything.ShowButton();
 	});
 
-	var width = "176px";
-	var s = item.getAttribute("Width");
+	let width = "176px";
+	const s = item.getAttribute("Width");
 	if (s) {
 		width = (GetNum(s) == s) ? s + "px" : s;
 	}
@@ -88,7 +86,7 @@ if (window.Addon == 1) {
 
 	await $.importScript("addons\\" + Addon_Id + "\\sync.js");
 
-	var z = screen.deviceYDPI / 96;
+	const z = screen.deviceYDPI / 96;
 	SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(event)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', (WINVER < 0x602 || window.chrome ? 32 : 16) * z, 'px; vertical-align: middle"><span style="position: relative"><span id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" class="button" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left: ', -28 * z, 'px; top:', 4 * z, 'px">r</span><input type="image" src="', EncodeSC(await MakeImgDataEx(await Sync.Everything.Icon)), '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left:', -18 * z, 'px; top:', z, 'px; width:', 16 * z, 'px; height:', 16 * z, 'px"></span>'], "middle");
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
