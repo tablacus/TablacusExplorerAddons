@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.35</Version>
-    <MinVersion>2020.9.3</MinVersion>
-    <pubDate>Mon, 07 Sep 2020 00:00:00 GMT</pubDate>
+    <Version>1.36</Version>
+    <MinVersion>2021.1.5</MinVersion>
+    <pubDate>Sat, 09 Jan 2021 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
@@ -14,8 +15,8 @@
     <Description>Breadcrumbs address bar for each pane</Description>
   </en>
   <ja>
-    <Name>Inner パンくずリスト アドレスバー</Name>
-    <Description>ペイン毎の パンくずリスト アドレスバー</Description>
+    <Name>Inner パンくずリストアドレスバー</Name>
+    <Description>ペイン毎のパンくずリストアドレスバー</Description>
   </ja>
   <zh>
     <Name>窗格內位址列</Name>
