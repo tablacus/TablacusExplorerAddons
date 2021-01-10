@@ -1,7 +1,4 @@
+const Addon_Id = "noeditlabels";
 if (window.Addon == 1) {
-	AddEvent("BeginLabelEdit", function (Ctrl, Name) {
-		if (Ctrl.Type <= CTRL_EB) {
-			return 1;
-		}
-	}, true);
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 }

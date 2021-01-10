@@ -1,6 +1,3 @@
-const Addon_Id = "innerbreadcrumbsaddressbar";
-const item = GetAddonElement(Addon_Id);
-
 Sync.InnerBreadcrumbsAddressBar = {
 	GetPath: function (n, Id) {
 		let FolderItem = 0;
@@ -11,25 +8,25 @@ Sync.InnerBreadcrumbsAddressBar = {
 			}
 		}
 		return FolderItem;
-	}
-}
+	},
 
-//Menu
-if (item.getAttribute("MenuExec")) {
-	Sync.InnerBreadcrumbsAddressBar.nPos = GetNum(item.getAttribute("MenuPos"));
-	var s = item.getAttribute("MenuName");
-	if (s && s != "") {
-		Sync.InnerBreadcrumbsAddressBar.strName = s;
+	SplitPath: function (FolderItem) {
+		const Items = [];
+		let n = 0;
+		do {
+			Items.push({
+				next: n || api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER),
+				name: GetFolderItemName(FolderItem)
+			});
+			FolderItem = api.ILGetParent(FolderItem);
+			n++;
+		} while (!api.ILIsEmpty(FolderItem) && n < 99);
+		return JSON.stringify(Items);
 	}
-	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-		api.InsertMenu(hMenu, Sync.InnerBreadcrumbsAddressBar.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.InnerBreadcrumbsAddressBar.strName));
-		ExtraMenuCommand[nPos] = Sync.InnerBreadcrumbsAddressBar.Exec;
-		return nPos;
-	});
 }
 
 AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo) {
-	if (msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_TE && Common.InnerBreadcrumbsAddressBar.nLoopId) {
+	if (msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_TE && Common.InnerBreadcrumbsAddressBar.nLoopId && Common.InnerBreadcrumbsAddressBar.rcItem) {
 		const ptc = pt.Clone();
 		api.ScreenToClient(WebBrowser.hwnd, ptc);
 		if (!PtInRect(Common.InnerBreadcrumbsAddressBar.Item, ptc)) {
@@ -63,6 +60,7 @@ AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 					if (!api.ILIsEqual(dataObj.Item(-1), Target)) {
 						const DropTarget = api.DropTarget(Target);
 						if (DropTarget) {
+							MouseOver("breadcrumbsaddressbar_" + Id + "_" + i + "_");
 							return DropTarget.DragOver(dataObj, grfKeyState, pt, pdwEffect);
 						}
 					}
@@ -98,5 +96,6 @@ AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 });
 
 AddEvent("DragLeave", function (Ctrl) {
+	MouseOut("breadcrumbsaddressbar_");
 	return S_OK;
 });

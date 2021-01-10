@@ -1,8 +1,9 @@
 // Tablacus Total Commander Packer Plugin (C)2016 Gaku
 // MIT Lisence
-// Visual C++ 2008 Express Edition SP1
-// Windows SDK v7.0
-// http://www.eonet.ne.jp/~gakana/tablacus/
+// Visual C++ 2017 Express Edition
+// 32-bit Visual Studio 2015 - Windows XP (v140_xp)
+// 64-bit Visual Studio 2017 (v141)
+// https://tablacus.github.io/
 
 #include "twcx.h"
 
@@ -12,30 +13,29 @@ const TCHAR g_szClsid[] = TEXT("{56297D71-E778-4dfd-8678-6F4079A2BC50}");
 HINSTANCE	g_hinstDll = NULL;
 LONG		g_lLocks = 0;
 CteBase		*g_pBase = NULL;
-CteWCX		*g_ppObject[MAX_OBJ];
+std::vector <CteWCX	*> g_ppObject;
 IDispatch	*g_pdispChangeVolProc = NULL;
 IDispatch	*g_pdispProcessDataProc = NULL;
 
-TEmethod methodBASE[] = {
-	{ 0x60010000, L"Open" },
-	{ 0x6001000C, L"Close" },
+std::unordered_map<std::wstring, DISPID> g_umBASE = {
+	{ L"Open", 0x60010000 },
+	{ L"Close", 0x6001000C },
 };
 
-TEmethod methodTWCX[] = {
-	{ 0x60010001, L"OpenArchive" },
-	{ 0x60010002, L"ReadHeaderEx" },
-	{ 0x60010003, L"ProcessFile" },
-	{ 0x60010004, L"CloseArchive" },
-	{ 0x60010005, L"PackFiles" },
-	{ 0x60010006, L"DeleteFiles" },
-	{ 0x60010007, L"CanYouHandleThisFile" },
-	{ 0x60010008, L"ConfigurePacker" },
-	{ 0x60010009, L"SetChangeVolProc" },
-	{ 0x6001000A, L"SetProcessDataProc" },
-	{ 0x6001000B, L"PackSetDefaultParams" },
-	{ 0x6001000C, L"Close" },
-	{ 0x6001FFFF, L"IsUnicode" },
-	{ 0, NULL }
+std::unordered_map<std::wstring, DISPID> g_umWCX = {
+	{ L"OpenArchive", 0x60010001 },
+	{ L"ReadHeaderEx", 0x60010002 },
+	{ L"ProcessFile", 0x60010003 },
+	{ L"CloseArchive", 0x60010004 },
+	{ L"PackFiles", 0x60010005 },
+	{ L"DeleteFiles", 0x60010006 },
+	{ L"CanYouHandleThisFile", 0x60010007 },
+	{ L"ConfigurePacker", 0x60010008 },
+	{ L"SetChangeVolProc", 0x60010009 },
+	{ L"SetProcessDataProc", 0x6001000A },
+	{ L"PackSetDefaultParams", 0x6001000B },
+	{ L"Close", 0x6001000C },
+	{ L"IsUnicode", 0x4001FFFF },
 };
 
 // Unit
@@ -98,48 +98,6 @@ LSTATUS CreateRegistryKey(HKEY hKeyRoot, LPTSTR lpszKey, LPTSTR lpszValue, LPTST
 		RegCloseKey(hKey);
 	}
 	return lr;
-}
-
-/*
-int teBSearch(TEmethod *method, int nSize, int* pMap, LPOLESTR bs)
-{
-	int nMin = 0;
-	int nMax = nSize - 1;
-	int nIndex, nCC;
-
-	while (nMin <= nMax) {
-		nIndex = (nMin + nMax) / 2;
-		nCC = lstrcmpi(bs, method[pMap[nIndex]].name);
-		if (nCC < 0) {
-			nMax = nIndex - 1;
-			continue;
-		}
-		if (nCC > 0) {
-			nMin = nIndex + 1;
-			continue;
-		}
-		return pMap[nIndex];
-	}
-	return -1;
-}
-*/
-HRESULT teGetDispId(TEmethod *method, int nCount, int* pMap, LPOLESTR bs, DISPID *rgDispId)
-{
-/*	if (pMap) {
-		int nIndex = teBSearch(method, nCount, pMap, bs);
-		if (nIndex >= 0) {
-			*rgDispId = method[nIndex].id;
-			return S_OK;
-		}
-	} else {*/
-		for (int i = 0; method[i].name; i++) {
-			if (lstrcmpi(bs, method[i].name) == 0) {
-				*rgDispId = method[i].id;
-				return S_OK;
-			}
-		}
-//	}
-	return DISP_E_UNKNOWNNAME;
 }
 
 BSTR GetLPWSTRFromVariant(VARIANT *pv)
@@ -540,19 +498,15 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
-			for (int i = MAX_OBJ; i--;) {
-				g_ppObject[i] = NULL;
-			}
 			g_pBase = new CteBase();
 			g_hinstDll = hinstDll;
 			break;
 		case DLL_PROCESS_DETACH:
-			for (int i = MAX_OBJ; i--;) {
-				if (g_ppObject[i]) {
-					g_ppObject[i]->Close();
-					SafeRelease(&g_ppObject[i]);
-				}
+			for (size_t i = g_ppObject.size(); i--;) {
+				g_ppObject[i]->Close();
+				SafeRelease(&g_ppObject[i]);
 			}
+			g_ppObject.clear();
 			SafeRelease(&g_pBase);
 			SafeRelease(&g_pdispChangeVolProc);
 			SafeRelease(&g_pdispProcessDataProc);
@@ -659,9 +613,9 @@ CteWCX::CteWCX(HMODULE hDll, LPWSTR lpLib)
 CteWCX::~CteWCX()
 {
 	Close();
-	for (int i = MAX_OBJ; i--;) {
+	for (size_t i = g_ppObject.size(); i--;) {
 		if (this == g_ppObject[i]) {
-			g_ppObject[i] = NULL;
+			g_ppObject.erase(g_ppObject.begin() + i);
 			break;
 		}
 	}
@@ -746,7 +700,17 @@ STDMETHODIMP CteWCX::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 
 STDMETHODIMP CteWCX::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
-	return teGetDispId(methodTWCX, _countof(methodTWCX), NULL, *rgszNames, rgDispId);
+	auto itr = g_umWCX.find(*rgszNames);
+	if (itr != g_umWCX.end()) {
+		*rgDispId = itr->second;
+		return S_OK;
+	}
+#ifdef _DEBUG
+	OutputDebugStringA("GetIDsOfNames:");
+	OutputDebugString(rgszNames[0]);
+	OutputDebugStringA("\n");
+#endif
+	return DISP_E_UNKNOWNNAME;
 }
 
 STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
@@ -788,7 +752,9 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 						SafeRelease(&pdisp);
 					}
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_OpenArchiveW || WCX_OpenArchive);
+					if (WCX_OpenArchiveW || WCX_OpenArchive) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;		
 			//ReadHeaderEx
@@ -878,7 +844,9 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, nResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_ReadHeaderExW || WCX_ReadHeaderEx || WCX_ReadHeader);
+					if (WCX_ReadHeaderExW || WCX_ReadHeaderEx || WCX_ReadHeader) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//ProcessFile
@@ -906,7 +874,9 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, nResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_ProcessFileW || WCX_ProcessFile);
+					if (WCX_ProcessFileW || WCX_ProcessFile) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//CloseArchive
@@ -914,7 +884,9 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 				if (WCX_CloseArchive && nArg >= 0) {
 					teSetLong(pVarResult, WCX_CloseArchive((HANDLE)GetPtrFromVariant(&pDispParams->rgvarg[nArg])));
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_CloseArchive != NULL);
+					if (WCX_CloseArchive) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;		
 			//PackFiles
@@ -952,7 +924,9 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, nResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_PackFilesW || WCX_PackFiles);
+					if (WCX_PackFilesW || WCX_PackFiles) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//DeleteFiles
@@ -980,7 +954,9 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					teSetLong(pVarResult, nResult);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_DeleteFilesW || WCX_DeleteFiles);
+					if (WCX_DeleteFilesW || WCX_DeleteFiles) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//CanYouHandleThisFile
@@ -1014,7 +990,9 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 						}
 					}
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_CanYouHandleThisFileW || WCX_CanYouHandleThisFile);
+					if (WCX_CanYouHandleThisFileW || WCX_CanYouHandleThisFile) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//ConfigurePacker
@@ -1024,7 +1002,9 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 						WCX_ConfigurePacker((HWND)GetPtrFromVariant(&pDispParams->rgvarg[nArg]), g_hinstDll);
 					}
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_ConfigurePacker != NULL);
+					if (WCX_ConfigurePacker) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//SetChangeVolProc
@@ -1034,7 +1014,9 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					SafeRelease(&g_pdispChangeVolProc);
 					GetDispatch(&pDispParams->rgvarg[nArg - 1], &g_pdispChangeVolProc);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_SetChangeVolProcW || WCX_SetChangeVolProc);
+					if (WCX_SetChangeVolProcW || WCX_SetChangeVolProc) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//SetProcessDataProc
@@ -1044,7 +1026,9 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					SafeRelease(&g_pdispProcessDataProc);
 					GetDispatch(&pDispParams->rgvarg[nArg - 1], &g_pdispProcessDataProc);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_SetProcessDataProcW || WCX_SetProcessDataProc);
+					if (WCX_SetProcessDataProcW || WCX_SetProcessDataProc) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//PackSetDefaultParams
@@ -1057,14 +1041,19 @@ STDMETHODIMP CteWCX::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wF
 					}
 					WCX_PackSetDefaultParams(&dps);
 				} else if (wFlags == DISPATCH_PROPERTYGET) {
-					teSetBool(pVarResult, WCX_PackSetDefaultParams != NULL);
+					if (WCX_PackSetDefaultParams) {
+						teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+					}
 				}
 				return S_OK;
 			//Close
 			case 0x6001000C:
-				return S_OK;
+				if (wFlags == DISPATCH_PROPERTYGET) {
+					teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+				}
+			return S_OK;
 			//IsUnicode
-			case 0x6001FFFF:
+			case 0x4001FFFF:
 				teSetBool(pVarResult, WCX_OpenArchiveW != NULL);
 				return S_OK;
 			//this
@@ -1128,13 +1117,27 @@ STDMETHODIMP CteBase::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 
 STDMETHODIMP CteBase::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
-	return teGetDispId(methodBASE, _countof(methodBASE), NULL, *rgszNames, rgDispId);
+	auto itr = g_umBASE.find(*rgszNames);
+	if (itr != g_umBASE.end()) {
+		*rgDispId = itr->second;
+		return S_OK;
+	}
+#ifdef _DEBUG
+	OutputDebugStringA("GetIDsOfNames:");
+	OutputDebugString(rgszNames[0]);
+	OutputDebugStringA("\n");
+#endif
+	return DISP_E_UNKNOWNNAME;
 }
 
 STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
 {
 	int nArg = pDispParams ? pDispParams->cArgs - 1 : -1;
 	HRESULT hr = S_OK;
+	if (wFlags == DISPATCH_PROPERTYGET && dispIdMember >= TE_METHOD) {
+		teSetObjectRelease(pVarResult, new CteDispatch(this, 0, dispIdMember));
+		return S_OK;
+	}
 
 	switch (dispIdMember) {
 		//Open
@@ -1142,26 +1145,21 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 
-				int nEmpty = -1;
 				CteWCX *pItem;
-				for (int i = MAX_OBJ; i--;) {
+				for (size_t i = g_ppObject.size(); i--;) {
 					pItem = g_ppObject[i];
 					if (pItem) {
 						if (lstrcmpi(lpLib, pItem->m_bsLib) == 0) {
 							teSetObject(pVarResult, pItem);
 							return S_OK;
 						}
-					} else if (nEmpty < 0) {
-						nEmpty = i;
 					}
 				}
-				if (nEmpty >= 0) {
-					HMODULE hDll = LoadLibrary(lpLib);
-					if (hDll) {
-						pItem = new CteWCX(hDll, lpLib);
-						g_ppObject[nEmpty] = pItem;
-						teSetObjectRelease(pVarResult, pItem);
-					}
+				HMODULE hDll = LoadLibrary(lpLib);
+				if (hDll) {
+					pItem = new CteWCX(hDll, lpLib);
+					g_ppObject.push_back(pItem);
+					teSetObjectRelease(pVarResult, pItem);
 				}
 			}
 			return S_OK;
@@ -1170,7 +1168,7 @@ STDMETHODIMP CteBase::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD w
 			if (nArg >= 0) {
 				LPWSTR lpLib = GetLPWSTRFromVariant(&pDispParams->rgvarg[nArg]);
 
-				for (int i = MAX_OBJ; i--;) {
+				for (size_t i = g_ppObject.size(); i--;) {
 					if (g_ppObject[i]) {
 						if (lstrcmpi(lpLib, g_ppObject[i]->m_bsLib) == 0) {
 							g_ppObject[i]->Close();
@@ -1229,4 +1227,79 @@ STDMETHODIMP CteClassFactory::LockServer(BOOL fLock)
 {
 	LockModule(fLock);
 	return S_OK;
+}
+
+//CteDispatch
+
+CteDispatch::CteDispatch(IDispatch *pDispatch, int nMode, DISPID dispId)
+{
+	m_cRef = 1;
+	pDispatch->QueryInterface(IID_PPV_ARGS(&m_pDispatch));
+	m_dispIdMember = dispId;
+}
+
+CteDispatch::~CteDispatch()
+{
+	Clear();
+}
+
+VOID CteDispatch::Clear()
+{
+	SafeRelease(&m_pDispatch);
+}
+
+STDMETHODIMP CteDispatch::QueryInterface(REFIID riid, void **ppvObject)
+{
+	static const QITAB qit[] =
+	{
+		QITABENT(CteDispatch, IDispatch),
+	{ 0 },
+	};
+	return QISearch(this, qit, riid, ppvObject);
+}
+
+STDMETHODIMP_(ULONG) CteDispatch::AddRef()
+{
+	return ::InterlockedIncrement(&m_cRef);
+}
+
+STDMETHODIMP_(ULONG) CteDispatch::Release()
+{
+	if (::InterlockedDecrement(&m_cRef) == 0) {
+		delete this;
+		return 0;
+	}
+
+	return m_cRef;
+}
+
+STDMETHODIMP CteDispatch::GetTypeInfoCount(UINT *pctinfo)
+{
+	*pctinfo = 0;
+	return S_OK;
+}
+
+STDMETHODIMP CteDispatch::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
+{
+	return E_NOTIMPL;
+}
+
+STDMETHODIMP CteDispatch::GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
+{
+	return DISP_E_UNKNOWNNAME;
+}
+
+STDMETHODIMP CteDispatch::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
+{
+	try {
+		if (pVarResult) {
+			VariantInit(pVarResult);
+		}
+		if (wFlags & DISPATCH_METHOD) {
+			return m_pDispatch->Invoke(m_dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr);
+		}
+		teSetObject(pVarResult, this);
+		return S_OK;
+	} catch (...) {}
+	return DISP_E_MEMBERNOTFOUND;
 }

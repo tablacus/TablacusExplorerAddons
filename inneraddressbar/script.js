@@ -18,8 +18,6 @@ if (window.Addon == 1) {
 		tid2: false,
 		path2: [],
 		bClose: false,
-		nPos: 0,
-		strName: "Inner address bar",
 		nSize: await api.GetSystemMetrics(SM_CYSMICON),
 
 		KeyDown: function (ev, o, Id) {
@@ -90,7 +88,7 @@ if (window.Addon == 1) {
 				Addons.InnerAddressBar.Item = o;
 				const pt = GetPos(o, 9);
 				MouseOver(o);
-				$.FolderMenu.Invoke($.FolderMenu.Open(await this.GetPath(n, Id), pt.x, pt.y));
+				FolderMenu.Invoke(FolderMenu.Open(await this.GetPath(n, Id), pt.x, pt.y));
 			}
 		},
 
@@ -98,11 +96,11 @@ if (window.Addon == 1) {
 			const FV = await GetInnerFV(Id);
 			if (FV) {
 				let FolderItem = await FV.FolderItem;
-				await $.FolderMenu.Clear();
+				await FolderMenu.Clear();
 				const hMenu = await api.CreatePopupMenu();
 				while (!await api.ILIsEmpty(FolderItem)) {
 					FolderItem = await api.ILRemoveLastID(FolderItem);
-					await $.FolderMenu.AddMenuItem(hMenu, FolderItem);
+					await FolderMenu.AddMenuItem(hMenu, FolderItem);
 				}
 				Addons.InnerAddressBar.Item = o;
 				Addons.InnerAddressBar.nLoopId = Id;
@@ -111,10 +109,10 @@ if (window.Addon == 1) {
 				};
 				MouseOver(o);
 				const pt = GetPos(o, 9);
-				const nVerb = await $.FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y);
-				FolderItem = nVerb ? $.FolderMenu.Items[nVerb - 1] : null;
-				$.FolderMenu.Clear();
-				$.FolderMenu.Invoke(FolderItem, SBSP_SAMEBROWSER, FV);
+				const nVerb = await FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y);
+				FolderItem = nVerb ? FolderMenu.Items[nVerb - 1] : null;
+				FolderMenu.Clear();
+				FolderMenu.Invoke(FolderItem, SBSP_SAMEBROWSER, FV);
 			}
 		},
 
@@ -123,7 +121,7 @@ if (window.Addon == 1) {
 				const FV = await GetInnerFV(Id);
 				if (FV) {
 					const pt = GetPos(o, 9);
-					$.FolderMenu.LocationEx(pt.x + o.offsetWidth, pt.y);
+					FolderMenu.LocationEx(pt.x + o.offsetWidth, pt.y);
 				}
 			}
 		},
@@ -209,19 +207,15 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Common.InnerAddressBar = await api.CreateObject("Object");
-		Common.InnerAddressBar.strMenu = item.getAttribute("Menu");
-		Common.InnerAddressBar.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
-		Common.InnerAddressBar.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("InnerAddressBar", item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.InnerAddressBar.Exec, "Func");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.InnerAddressBar.Exec, "Async");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerAddressBar.Exec, "Func");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerAddressBar.Exec, "Async");
 	}
 	AddTypeEx("Add-ons", "Inner Address Bar", Addons.InnerAddressBar.Exec);
 } else {

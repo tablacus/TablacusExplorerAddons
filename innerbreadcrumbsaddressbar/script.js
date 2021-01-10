@@ -17,6 +17,7 @@ if (window.Addon == 1) {
 		tid2: false,
 		path2: [],
 		bClose: false,
+		nLevel: {},
 
 		KeyDown: function (ev, o, Id) {
 			if (ev.keyCode == VK_RETURN || /^Enter/i.test(ev.key)) {
@@ -47,7 +48,6 @@ if (window.Addon == 1) {
 				}
 			}
 			if (FolderItem) {
-				const bRoot = await api.ILIsEmpty(FolderItem);
 				const arHTML = [];
 				const o = document.getElementById("breadcrumbsbuttons_" + Id);
 				const oAddr = document.getElementById("breadcrumbsaddressbar_" + Id);
@@ -56,21 +56,11 @@ if (window.Addon == 1) {
 				}
 				const oPopup = document.getElementById("breadcrumbsselect_" + Id);
 				const oImg = document.getElementById("breadcrumbsaddr_img_" + Id);
-				const width = oAddr.offsetWidth - 24 * screen.deviceYDPI / 96;
+				const width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetWidth - 2;
 				const height = oAddr.offsetHeight - 6;
 				o.style.width = "auto";
-				let n = 0;
-				const Items = [];
-				do {
-					Items.push({
-						next: n || await api.GetAttributesOf(FolderItem, SFGAO_HASSUBFOLDER),
-						name: await GetFolderItemName(FolderItem)
-					});
-					FolderItem = await api.ILGetParent(FolderItem);
-					n++;
-				} while (!await api.ILIsEmpty(FolderItem) && n < 99);
-
-				let bEmpty = true;
+				const Items = JSON.parse(await Sync.InnerBreadcrumbsAddressBar.SplitPath(FolderItem));
+				let bEmpty = true, n;
 				o.innerHTML = "";
 				for (n = 0; n < Items.length; ++n) {
 					if (Items[n].next) {
@@ -78,10 +68,9 @@ if (window.Addon == 1) {
 						o.insertAdjacentHTML("afterbegin", arHTML[0]);
 					}
 					arHTML.unshift('<span id="breadcrumbsaddressbar_' + Id + "_" + n + '_" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(' + n + ', ' + Id + ')" onmousedown="return Addons.InnerBreadcrumbsAddressBar.GoEx(event, this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + EncodeSC(Items[n].name) + '</span>');
+					const nBefore = o.offsetWidth;
 					o.insertAdjacentHTML("afterbegin", arHTML[0]);
-					if (o.offsetWidth && o.offsetWidth > width && n > 0) {
-						api.OutputDebugString([o.offsetWidth, width].join(",")+"\n");
-						o.innerHTML = arHTML.join("");
+					if (o.offsetWidth != nBefore && o.offsetWidth > width && n > 0) {
 						arHTML.splice(0, 2);
 						o.innerHTML = arHTML.join("");
 						bEmpty = false;
@@ -90,13 +79,13 @@ if (window.Addon == 1) {
 				}
 				o.style.width = (oAddr.offsetWidth - 2) + "px";
 				if (bEmpty) {
-					if (!bRoot) {
+					if (!await api.ILIsEmpty(FolderItem)) {
 						o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.next + '</span>');
 					}
 				} else {
 					o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup2(this, ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.parent + '</span>');
 				}
-				Addons.InnerBreadcrumbsAddressBar.nLevel = n;
+				Addons.InnerBreadcrumbsAddressBar.nLevel[Id] = n;
 				oPopup.style.left = (oAddr.offsetWidth - oPopup.offsetWidth - 1) + "px";
 				oPopup.style.lineHeight = Math.abs(oAddr.offsetHeight - 6) + "px";
 				oImg.style.top = Math.abs(oAddr.offsetHeight - oImg.offsetHeight) / 2 + "px";
@@ -170,19 +159,6 @@ if (window.Addon == 1) {
 		},
 
 		Popup: async function (o, n, Id) {
-/*			const TC = await te.Ctrl(CTRL_TC);
-			if (TC && await TC.Id != Id) {
-				if (!Addons.InnerBreadcrumbsAddressBar.tidPopup) {
-					Activate(o, Id);
-					Addons.InnerBreadcrumbsAddressBar.tidPopup = setTimeout(function () {
-						const o2 = document.getElementById('breadcrumbsaddressbar_' + Id + "_" + n);
-						if (o2) {
-							FireEvent(o2, "click");
-						}
-					}, 200);
-				}
-				return;
-			}*/
 			delete Addons.InnerBreadcrumbsAddressBar.tidPopup;
 			if (Addons.InnerBreadcrumbsAddressBar.CanPopup(o, Id)) {
 				Common.InnerBreadcrumbsAddressBar.Item = await GetRect(o);
@@ -271,7 +247,7 @@ if (window.Addon == 1) {
 		SavePos: async function (Id) {
 			const rc = await api.CreateObject("Array");
 			Common.InnerBreadcrumbsAddressBar.rcItem = rc;
-			for (let i = Addons.InnerBreadcrumbsAddressBar.nLevel; i >= 0; --i) {
+			for (let i = Addons.InnerBreadcrumbsAddressBar.nLevel[Id]; i >= 0; --i) {
 				const el = document.getElementById("breadcrumbsaddressbar_" + Id + "_" + i);
 				if (el) {
 					rc[i] = await GetRect(el);
@@ -291,12 +267,13 @@ if (window.Addon == 1) {
 
 		SetRects: async function () {
 			const rcItems = await api.CreateObject("Object");
-			var cTC = await te.Ctrls(CTRL_TC);
+			Common.InnerBreadcrumbsAddressBar.rcItems = rcItems;
+			const cTC = await te.Ctrls(CTRL_TC);
 			for (let j = await cTC.Count; --j >= 0;) {
 				const TC = await cTC[j];
 				const Id = await TC.Id;
 				const rc = await api.CreateObject("Array");
-				for (let i = await TC.Count; i >= 0; --i) {
+				for (let i = Addons.InnerBreadcrumbsAddressBar.nLevel[Id]; --i >= 0;) {
 					const el = document.getElementById("breadcrumbsaddressbar_" + Id + "_" + i + "_");
 					if (el) {
 						rc[i] = await GetRect(el);
@@ -304,7 +281,6 @@ if (window.Addon == 1) {
 				}
 				rcItems[Id] = rc;
 			}
-			Common.InnerBreadcrumbsAddressBar.rcItems = rcItems;
 		}
 	};
 
@@ -344,6 +320,11 @@ if (window.Addon == 1) {
 		}
 	});
 
+	//Menu
+	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
+	if (item.getAttribute("MenuExec")) {
+		SetMenuExec("InnerBreadcrumbsAddressBar", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
 		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.InnerBreadcrumbsAddressBar.Exec, "Func");

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
-    <MinVersion>2020.9.3</MinVersion>
-    <pubDate>Sun, 27 Sep 2020 00:00:00 GMT</pubDate>
+    <Version>1.02</Version>
+    <MinVersion>2021.1.5</MinVersion>
+    <pubDate>Sun, 10 Jan 2021 00:00:00 GMT</pubDate>
+    <Level>2</Level>
     <Creator>Gaku</Creator>
-    <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
   </General>
   <en>
     <Name>No edit labels</Name>
@@ -13,6 +14,8 @@
   </en>
   <ja>
     <Name>名前の編集禁止</Name>
-    <Description>名前の編集禁止</Description>
   </ja>
+  <zh>
+    <Name>停用重新命名</Name>
+  </zh>
 </TablacusExplorer>
