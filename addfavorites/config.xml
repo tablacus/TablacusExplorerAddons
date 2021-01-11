@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2020.11.27</MinVersion>
-    <pubDate>Sat, 28 Nov 2020 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2021.1.10</MinVersion>
+    <pubDate>Mon, 11 Jan 2021 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -17,4 +17,7 @@
   <ja>
     <Name>お気に入りに追加</Name>
   </ja>
+  <zh>
+    <Name>加入我的最愛</Name>
+  </zh>
 </TablacusExplorer>

@@ -22,7 +22,7 @@ if (window.Addon == 1) {
 								setTimeout(Addons.RenameDialogBox.Exec, 9, Ctrl, pt);
 								return;
 							}
-							if (s != r) {
+							if ("string" === typeof r && s != r) {
 								try {
 									Focused.Name = r;
 								} catch (e) {
@@ -37,13 +37,8 @@ if (window.Addon == 1) {
 		}
 	};
 	//Menu
-	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		Common.RenameDialogBox = await api.CreateObject("Object");
-		Common.RenameDialogBox.strMenu = item.getAttribute("Menu");
-		Common.RenameDialogBox.strName = strName;
-		Common.RenameDialogBox.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("RenameDialogBox", item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
