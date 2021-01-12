@@ -1,6 +1,5 @@
-﻿const Addon_Id = "favorites";
+const Addon_Id = "favorites";
 const Default = "ToolBar2Left";
-
 const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Favorites = {
@@ -22,12 +21,9 @@ if (window.Addon == 1) {
 	};
 
 	//Menu
+	const strName = item.getAttribute("MenuName") || await GetText("Favorites");
 	if (item.getAttribute("MenuExec")) {
-		Common.Favorites = await api.CreateObject("Object");
-		Common.Favorites.strMenu = item.getAttribute("Menu");
-		Common.Favorites.strName = item.getAttribute("MenuName") || await GetText("Favorites");
-		Common.Favorites.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("Favorites", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -39,7 +35,7 @@ if (window.Addon == 1) {
 	}
 	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,2" : "bitmap:ieframe.dll,214,24,2");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Favorites.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetText("Favorites"), src: src }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Favorites.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

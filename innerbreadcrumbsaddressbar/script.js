@@ -20,7 +20,7 @@ if (window.Addon == 1) {
 		nLevel: {},
 
 		KeyDown: function (ev, o, Id) {
-			if (ev.keyCode == VK_RETURN || /^Enter/i.test(ev.key)) {
+			if (ev.keyCode ? ev.keyCode == VK_RETURN : /^Enter/i.test(ev.key)) {
 				setTimeout(async function (o, Id, str) {
 					if (str == o.value) {
 						const pt = await GetPosEx(o, 9);
@@ -59,6 +59,7 @@ if (window.Addon == 1) {
 				const width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetWidth - 2;
 				const height = oAddr.offsetHeight - 6;
 				o.style.width = "auto";
+				const bRoot = api.ILIsEmpty(FolderItem);
 				const Items = JSON.parse(await Sync.InnerBreadcrumbsAddressBar.SplitPath(FolderItem));
 				let bEmpty = true, n;
 				o.innerHTML = "";
@@ -79,7 +80,7 @@ if (window.Addon == 1) {
 				}
 				o.style.width = (oAddr.offsetWidth - 2) + "px";
 				if (bEmpty) {
-					if (!await api.ILIsEmpty(FolderItem)) {
+					if (!await bRoot) {
 						o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.next + '</span>');
 					}
 				} else {

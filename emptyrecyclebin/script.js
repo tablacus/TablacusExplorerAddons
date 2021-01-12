@@ -17,8 +17,7 @@ if (window.Addon == 1) {
 			const ContextMenu = await api.ContextMenu(ssfBITBUCKET);
 			if (ContextMenu) {
 				await ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_EXTENDEDVERBS);
-				const x = ev.screenX * ui_.Zoom;
-				const y = ev.screenY * ui_.Zoom;
+				const x = ev.screenX * ui_.Zoom, y = ev.screenY * ui_.Zoom;
 				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, ContextMenu);
 				if (nVerb) {
 					ContextMenu.InvokeCommand(0, ui_.hwnd, nVerb - 1, null, null, SW_SHOWNORMAL, 0, 0);
@@ -28,12 +27,9 @@ if (window.Addon == 1) {
 		}
 	};
 	//Menu
+	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		Common.EmptyRecycleBin = await api.CreateObject("Object");
-		Common.EmptyRecycleBin.strMenu = item.getAttribute("Menu");
-		Common.EmptyRecycleBin.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
-		Common.EmptyRecycleBin.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("EmptyRecycleBin", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -48,5 +44,5 @@ if (window.Addon == 1) {
 
 	const h = GetIconSize(item.getAttribute("IconSize"));
 	const s = item.getAttribute("Icon") || "icon:shell32.dll,31";
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyRecycleBin.Exec();" oncontextmenu="return Addons.EmptyRecycleBin.Popup(event);return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: s }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyRecycleBin.Exec();" oncontextmenu="return Addons.EmptyRecycleBin.Popup(event);return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: s }, h), '</span>']);
 }

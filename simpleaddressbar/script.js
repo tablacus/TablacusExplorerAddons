@@ -1,6 +1,5 @@
 const Addon_Id = "simpleaddressbar";
 const Default = "ToolBar2Center";
-
 const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Menu", "Edit");
@@ -14,10 +13,10 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	Addons.SimpleAddressBar = {
 		KeyDown: function (ev, el) {
-			if (ev.keyCode == VK_RETURN || /^Enter/i.test(ev.key)) {
+			if (ev.keyCode ? ev.keyCode == VK_RETURN : /^Enter/i.test(ev.key)) {
 				setTimeout(async function (el, str) {
 					if (str == el.value) {
-						const pt = GetPos(el, 9);
+						const pt = await GetPosEx(el, 9);
 						$.Input = str;
 						if (await ExecMenu(await te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
 							NavigateFV(await te.Ctrl(CTRL_FV), str, await GetNavigateFlags(), true);
@@ -54,11 +53,7 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Common.SimpleAddressBar = await api.CreateObject("Object");
-		Common.SimpleAddressBar.strMenu = item.getAttribute("Menu");
-		Common.SimpleAddressBar.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
-		Common.SimpleAddressBar.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("SimpleAddressBar", item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (await item.getAttribute("KeyExec")) {

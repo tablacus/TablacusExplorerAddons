@@ -56,11 +56,7 @@ if (window.Addon == 1) {
 	//Menu
 	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		Common.Delete = await api.CreateObject("Object");
-		Common.Delete.strMenu = item.getAttribute("Menu");
-		Common.Delete.strName = strName;
-		Common.Delete.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("Delete", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {

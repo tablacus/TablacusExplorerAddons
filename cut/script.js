@@ -1,18 +1,16 @@
-var Addon_Id = "cut";
-var Default = "ToolBar2Left";
-
+const Addon_Id = "cut";
+const Default = "ToolBar2Left";
 if (window.Addon == 1) {
-	var item = await GetAddonElement(Addon_Id);
+	const item = await GetAddonElement(Addon_Id);
 	Addons.Cut = {
-		strName: item.getAttribute("MenuName") || await api.LoadString(hShell32, 33560),
 		Exec: async function (Ctrl, pt) {
-			var FV = await GetFolderViewEx(Ctrl, pt);
+			const FV = await GetFolderViewEx(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
-				var Items = await FV.SelectedItems();
+				const Items = await FV.SelectedItems();
 				if (await Items.Count) {
-					var hMenu = await api.CreatePopupMenu();
-					var ContextMenu = await api.ContextMenu(Items, FV);
+					const hMenu = await api.CreatePopupMenu();
+					const ContextMenu = await api.ContextMenu(Items, FV);
 					if (ContextMenu) {
 						await ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_DEFAULTONLY);
 						await ContextMenu.InvokeCommand(0, ui_.hwnd, CommandID_CUT - 1, null, null, SW_SHOWNORMAL, 0, 0);
@@ -20,7 +18,6 @@ if (window.Addon == 1) {
 					api.DestroyMenu(hMenu);
 				}
 			}
-			return S_OK;
 		},
 
 		State: async function (Ctrl) {
@@ -46,12 +43,9 @@ if (window.Addon == 1) {
 	AddEvent("SelectionChanged", Addons.Cut.State);
 
 	//Menu
+	const strName = item.getAttribute("MenuName") || await api.LoadString(hShell32, 33560);
 	if (item.getAttribute("MenuExec")) {
-		Common.Cut = await api.CreateObject("Object");
-		Common.Cut.strMenu = item.getAttribute("Menu");
-		Common.Cut.strName = Addons.Cut.strName;
-		Common.Cut.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("Cut", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -61,9 +55,9 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Cut.Exec, "Func");
 	}
-	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,5" : "bitmap:ieframe.dll,214,24,5");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Cut.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: Addons.Cut.strName, id: "ImgCut_$", src: src }, h), '</span>']);
+	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,5" : "bitmap:ieframe.dll,214,24,5");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Cut.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, id: "ImgCut_$", src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

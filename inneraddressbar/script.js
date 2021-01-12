@@ -21,18 +21,16 @@ if (window.Addon == 1) {
 		nSize: await api.GetSystemMetrics(SM_CYSMICON),
 
 		KeyDown: function (ev, o, Id) {
-			if (ev.keyCode == VK_RETURN || window.chrome && /^Enter/i.test(ev.key)) {
-				(function (o, Id, str) {
-					setTimeout(async function () {
-						if (str == o.value) {
-							var pt = await GetPosEx(o, 9);
-							$.Input = o.value;
-							if (await ExecMenu(await te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
-								NavigateFV(await GetInnerFV(Id), o.value, null, true);
-							}
+			if (ev.keyCode ? ev.keyCode == VK_RETURN : /^Enter/i.test(ev.key)) {
+				setTimeout(async function (o, Id, str) {
+					if (str == o.value) {
+						const pt = await GetPosEx(o, 9);
+						$.Input = o.value;
+						if (await ExecMenu(await te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
+							NavigateFV(await GetInnerFV(Id), o.value, null, true);
 						}
-					}, 99);
-				})(o, Id, o.value);
+					}
+				}, 99, o, Id, o.value);
 			}
 			return true;
 		},
