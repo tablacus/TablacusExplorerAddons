@@ -1,6 +1,5 @@
 const Addon_Id = "filterbutton";
 const Default = "ToolBar2Left";
-
 const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.FilterButton = {
@@ -26,23 +25,24 @@ if (window.Addon == 1) {
 					}
 					s = ar.join(";");
 				}
-				s = await InputDialog("Filter", s);
-				if ("string" === typeof s) {
-					if (Addons.FilterButton.RE && !/^\*|\//.test(s)) {
-						s = "/" + s + "/i";
-					} else if (!/^\//.test(s)) {
-						const ar = s.split(/;/);
-						for (let i in ar) {
-							const res = /^([^\*\?]+)$/.exec(ar[i]);
-							if (res) {
-								ar[i] = "*" + res[1] + "*";
+				InputDialog("Filter", s, function (s) {
+					if ("string" === typeof s) {
+						if (Addons.FilterButton.RE && !/^\*|\//.test(s)) {
+							s = "/" + s + "/i";
+						} else if (!/^\//.test(s)) {
+							const ar = s.split(/;/);
+							for (let i in ar) {
+								const res = /^([^\*\?]+)$/.exec(ar[i]);
+								if (res) {
+									ar[i] = "*" + res[1] + "*";
+								}
 							}
+							s = ar.join(";");
 						}
-						s = ar.join(";");
+						FV.FilterView = s || null;
+						FV.Refresh();
 					}
-					FV.FilterView = s || null;
-					FV.Refresh();
-				}
+				});
 			}
 		},
 
@@ -56,12 +56,9 @@ if (window.Addon == 1) {
 	};
 
 	//Menu
+	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		Common.FilterButton = await api.CreateObject("Object");
-		Common.FilterButton.strMenu = item.getAttribute("Menu");
-		Common.FilterButton.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
-		Common.FilterButton.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("FilterButton", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -76,7 +73,7 @@ if (window.Addon == 1) {
 
 	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	const s = item.getAttribute("Icon") || "bitmap:comctl32.dll,140,13,0";
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FilterButton.Exec(this)" oncontextmenu="return Addons.FilterButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut();">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: s }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FilterButton.Exec(this)" oncontextmenu="return Addons.FilterButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut();">', await GetImgTag({ title: strName, src: s }, h), '</span>']);
 } else {
 	EnableInner();
 	SetTabContents(0, "General", '<input type="checkbox" id="RE" name="RE"><label for="RE">Regular expression</label>/<label for="RE">Migemo</label>');

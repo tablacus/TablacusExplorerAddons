@@ -15,7 +15,6 @@ if (window.Addon == 1) {
 				for (let i = await FV.Items.Count; i-- > 0;) {
 					const pid = await FV.Items.Item(i);
 					if (await pid.Size < 0 && await pid.ExtendedProperty("Access") == null && await pid.ExtendedProperty("Write") == null) {
-						Addons.Debug.alert(await pid.Size);
 						FV.SelectItem(pid, SVSI_SELECT);
 					}
 				}
@@ -24,11 +23,7 @@ if (window.Addon == 1) {
 	};
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		Common.SelectNonexistent = await api.CreateObject("Object");
-		Common.SelectNonexistent.strMenu = item.getAttribute("Menu");
-		Common.SelectNonexistent.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
-		Common.SelectNonexistent.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("SelectNonexistent", item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {

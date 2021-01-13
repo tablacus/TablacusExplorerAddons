@@ -6,6 +6,7 @@ if (window.Addon == 1) {
 
 		Exec: async function (Ctrl, pt) {
 			const arg = await api.CreateObject("Object");
+			arg.tm = new Date().getTime() + 99999;
 			arg.pcRef = await api.CreateObject("Array");
 			arg.pcRef[0] = 0;
 			arg.Updated = await api.CreateObject("FolderItems");
@@ -41,14 +42,15 @@ if (window.Addon == 1) {
 						}
 					}
 				}
-				if (GetNum(await arg.bReload)) {
-					Addons.AddonsUpdater.Reload(arg);
-				}
+				setTimeout(async function () {
+					if (GetNum(await arg.bReload)) {
+						Addons.AddonsUpdater.Reload(arg);
+					}
+				}, 500);
 			}
 		},
 
 		Save: async function (xhr, url, arg) {
-			debugger;
 			const res = /([^\/]+)\/([^\/]+)$/.exec(url);
 			if (res) {
 				const Id = res[1];
@@ -63,8 +65,8 @@ if (window.Addon == 1) {
 					return;
 				}
 				const configxml = dest + "\\config.xml";
-				for (let nDog = 300; !await $.fso.FileExists(configxml);) {
-					if ($.wsh.Popup(await GetText("Please wait."), 1, TITLE, MB_ICONINFORMATION | MB_OKCANCEL) == IDCANCEL || nDog-- == 0) {
+				for (let nDog = 300; !await fso.FileExists(configxml);) {
+					if (wsh.Popup(await GetText("Please wait."), 1, TITLE, MB_ICONINFORMATION | MB_OKCANCEL) == IDCANCEL || nDog-- == 0) {
 						return;
 					}
 				}
@@ -73,8 +75,8 @@ if (window.Addon == 1) {
 		},
 
 		Reload: async function (arg) {
-			if (await arg.pcRef && await arg.pcRef[0]) {
-				setTimeout(Addons.AddonsUpdater.Reload, 500, arg);
+			if (await arg.pcRef && await arg.pcRef[0] && new Date().getTime() < await arg.tm) {
+				setTimeout(Addons.AddonsUpdater.Reload, 999, arg);
 				return;
 			}
 			if (await arg.Updated.Count) {
@@ -88,6 +90,7 @@ if (window.Addon == 1) {
 
 	AddEvent("CreateUpdater", async function (arg) {
 		arg.all = true;
+		arg.tm = new Date().getTime() + 99999;
 		arg.pcRef = await api.CreateObject("Array");
 		arg.pcRef[0] = 0;
 		arg.Updated = await api.CreateObject("FolderItems");

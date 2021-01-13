@@ -15,12 +15,9 @@ if (window.Addon == 1) {
 		}
 	};
 	//Menu
+	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		Common.Restart = await api.CreateObject("Object");
-		Common.Restart.strMenu = item.getAttribute("Menu");
-		Common.Restart.strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
-		Common.Restart.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("Restart", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {

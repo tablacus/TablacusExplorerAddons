@@ -1,6 +1,5 @@
 const Addon_Id = "properties";
 const Default = "ToolBar2Left";
-
 if (window.Addon == 1) {
 	const item = await GetAddonElement(Addon_Id);
 
@@ -25,13 +24,9 @@ if (window.Addon == 1) {
 
 	};
 	//Menu
-	const strName = item.getAttribute("MenuName") || await api.LoadString(hShell32, 33555);
+	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		Common.Properties = await api.CreateObject("Object");
-		Common.Properties.strMenu = item.getAttribute("Menu");
-		Common.Properties.strName = strName;
-		Common.Properties.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("Properties", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {

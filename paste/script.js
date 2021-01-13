@@ -1,20 +1,16 @@
-var Addon_Id = "paste";
-var Default = "ToolBar2Left";
-
+const Addon_Id = "paste";
+const Default = "ToolBar2Left";
 if (window.Addon == 1) {
-	var item = await GetAddonElement(Addon_Id);
-
+	const item = await GetAddonElement(Addon_Id);
 	Addons.Paste = {
-		strName: item.getAttribute("MenuName") || await api.LoadString(hShell32, 33562),
-
 		Exec: async function (Ctrl, pt) {
-			var FV = await GetFolderViewEx(Ctrl, pt);
+			const FV = await GetFolderViewEx(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
-				var Items = await FV.FolderItem;
-				var ContextMenu = await api.ContextMenu(Items, FV);
+				const Items = await FV.FolderItem;
+				const ContextMenu = await api.ContextMenu(Items, FV);
 				if (ContextMenu) {
-					var hMenu = await api.CreatePopupMenu();
+					const hMenu = await api.CreatePopupMenu();
 					await ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_DEFAULTONLY);
 					await ContextMenu.InvokeCommand(0, ui_.hwnd, CommandID_PASTE - 1, null, null, SW_SHOWNORMAL, 0, 0);
 					api.DestroyMenu(hMenu);
@@ -24,14 +20,14 @@ if (window.Addon == 1) {
 		},
 
 		State: async function () {
-			var Items = await api.OleGetClipboard();
-			var b = !(Items && await Items.Count);
-			var o = document.getElementById("ImgPaste_$");
+			const Items = await api.OleGetClipboard();
+			const b = !(Items && await Items.Count);
+			let o = document.getElementById("ImgPaste_$");
 			if (o) {
 				DisableImage(o, b);
 			} else {
-				var cTC = await te.Ctrls(CTRL_TC);
-				for (var i = await cTC.Count; i-- > 0;) {
+				const cTC = await te.Ctrls(CTRL_TC);
+				for (let i = await cTC.Count; i-- > 0;) {
 					o = document.getElementById("ImgPaste_" + await cTC[i].Id);
 					if (o) {
 						DisableImage(o, b);
@@ -50,12 +46,9 @@ if (window.Addon == 1) {
 	AddEvent("Resize", Addons.Paste.State);
 
 	//Menu
+	const strName = item.getAttribute("MenuName") || await api.LoadString(hShell32, 33562);
 	if (item.getAttribute("MenuExec")) {
-		Common.Paste = await api.CreateObject("Object");
-		Common.Paste.strMenu = item.getAttribute("Menu");
-		Common.Paste.strName = Addons.Paste.strName;
-		Common.Paste.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("Paste", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -65,9 +58,9 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Paste.Exec, "Async");
 	}
-	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,7" : "bitmap:ieframe.dll,214,24,7");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Paste.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: Addons.Paste.strName, id: "ImgPaste_$", src: src }, h), '</span>']);
+	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,7" : "bitmap:ieframe.dll,214,24,7");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Paste.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, id: "ImgPaste_$", src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

@@ -17,11 +17,7 @@ if (window.Addon == 1) {
 	//Menu
 	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		Common.ResetColumns = await api.CreateObject("Object");
-		Common.ResetColumns.strMenu = item.getAttribute("Menu");
-		Common.ResetColumns.strName = strName;
-		Common.ResetColumns.nPos = GetNum(item.getAttribute("MenuPos"));
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
+		SetMenuExec("ResetColumns", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
