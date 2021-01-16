@@ -1,5 +1,5 @@
-var Addon_Id = "flat";
-var item = await GetAddonElement(Addon_Id);
+const Addon_Id = "flat";
+const item = await GetAddonElement(Addon_Id);
 
 Sync.Flat = {
 	PATH: "flat:",
@@ -10,7 +10,7 @@ Sync.Flat = {
 
 	GetSearchString: function (Ctrl) {
 		if (Ctrl) {
-			var res = new RegExp("^" + Sync.Flat.PATH + "\\s*(.*)", "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			const res = new RegExp("^" + Sync.Flat.PATH + "\\s*(.*)", "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 			if (res) {
 				return res[1];
 			}
@@ -19,11 +19,11 @@ Sync.Flat = {
 	},
 
 	Exec: function (Ctrl, pt) {
-		var FV = GetFolderView(Ctrl, pt);
+		const FV = GetFolderView(Ctrl, pt);
 		if (api.ILGetCount(FV.FolderItem) > 1) {
 			FV.Focus();
-			var path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
-			var pidl = api.ILCreateFromPath(path);
+			const path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+			const pidl = api.ILCreateFromPath(path);
 			if (pidl && pidl.IsFolder) {
 				FV.Navigate(Sync.Flat.PATH + path);
 			};
@@ -32,9 +32,9 @@ Sync.Flat = {
 	},
 
 	Enum: function (pid, Ctrl, fncb, SessionId) {
-		var path = Sync.Flat.GetSearchString(Ctrl);
+		const path = Sync.Flat.GetSearchString(Ctrl);
 		if (path) {
-			var v = {
+			const v = {
 				ex: {
 					FV: Ctrl,
 					Path: path,
@@ -46,19 +46,18 @@ Sync.Flat = {
 				}, api: api
 			}
 
-			var ado = OpenAdodbFromTextFile("addons\\flat\\worker.js");
-			if (ado) {
-				api.ExecScript(ado.ReadText(), "JScript", v, true);
-				ado.Close();
+			const src = ReadTextFile("addons\\flat\\worker.js");
+			if (src) {
+				api.ExecScript(FixScript(src), "JScript", v, true);
 			}
 		}
 	},
 
 	AddItem: function (pid) {
-		var cFV = te.Ctrls(CTRL_FV);
-		for (var i in cFV) {
-			var FV = cFV[i];
-			var path = Sync.Flat.GetSearchString(FV);
+		const cFV = te.Ctrls(CTRL_FV);
+		for (let i in cFV) {
+			const FV = cFV[i];
+			const path = Sync.Flat.GetSearchString(FV);
 			if (path) {
 				if (api.ILIsParent(path, pid, false)) {
 					FV.AddItem(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX));
@@ -68,10 +67,10 @@ Sync.Flat = {
 	},
 
 	RemoveItem: function (pidl) {
-		var cFV = te.Ctrls(CTRL_FV);
-		for (var i in cFV) {
-			var FV = cFV[i];
-			var path = Sync.Flat.GetSearchString(FV);
+		const cFV = te.Ctrls(CTRL_FV);
+		for (let i in cFV) {
+			const FV = cFV[i];
+			const path = Sync.Flat.GetSearchString(FV);
 			if (path) {
 				if (api.ILIsParent(path, pidl, false)) {
 					FV.RemoveItem(pidl);
@@ -101,7 +100,7 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 });
 
 AddEvent("ILGetParent", function (FolderItem) {
-	var path = Sync.Flat.GetSearchString(FolderItem);
+	const path = Sync.Flat.GetSearchString(FolderItem);
 	if (path) {
 		return path;
 	}
@@ -116,7 +115,7 @@ AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 });
 
 AddEvent("GetFolderItemName", function (pid) {
-	var path = Sync.Flat.GetSearchString(pid);
+	const path = Sync.Flat.GetSearchString(pid);
 	if (path) {
 		return Sync.Flat.PATH + fso.GetFileName(path);
 	}
@@ -140,7 +139,7 @@ AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 	if (!Verb || Verb == CommandID_STORE - 1) {
 		if (ContextMenu.Items.Count >= 1) {
-			var path = Sync.Flat.GetSearchString(ContextMenu.Items.Item(0));
+			const path = Sync.Flat.GetSearchString(ContextMenu.Items.Item(0));
 			if (path) {
 				Navigate(Sync.Flat.PATH + path, SBSP_SAMEBROWSER);
 				return S_OK;
@@ -149,23 +148,21 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 	}
 }, true);
 
-if (item) {
-	//Menu
-	if (item.getAttribute("MenuExec")) {
-		AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-			api.InsertMenu(hMenu, Sync.Flat.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.Flat.strName));
-			ExtraMenuCommand[nPos] = Sync.Flat.Exec;
-			return nPos;
-		});
-	}
-	//Key
-	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Sync.Flat.Exec, "Func");
-	}
-	//Mouse
-	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Sync.Flat.Exec, "Func");
-	}
-	//Type
-	AddTypeEx("Add-ons", "Flat", Sync.Flat.Exec);
+//Menu
+if (item.getAttribute("MenuExec")) {
+	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
+		api.InsertMenu(hMenu, Sync.Flat.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.Flat.strName));
+		ExtraMenuCommand[nPos] = Sync.Flat.Exec;
+		return nPos;
+	});
 }
+//Key
+if (item.getAttribute("KeyExec")) {
+	SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Sync.Flat.Exec, "Func");
+}
+//Mouse
+if (item.getAttribute("MouseExec")) {
+	SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Sync.Flat.Exec, "Func");
+}
+//Type
+AddTypeEx("Add-ons", "Flat", Sync.Flat.Exec);

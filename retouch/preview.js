@@ -7,9 +7,9 @@ Addons.Retouch =
 
 	Load: async function () {
 		ApplyLang(document);
-		var FV = await te.Ctrl(CTRL_FV);
+		const FV = await te.Ctrl(CTRL_FV);
 		if (FV) {
-			var Selected = await FV.SelectedItems();
+			const Selected = await FV.SelectedItems();
 			if (await Selected.Count) {
 				Addons.Retouch.File = await Selected.Item(0).Path;
 				document.title = Addons.Retouch.File;
@@ -51,14 +51,14 @@ Addons.Retouch =
 				document.F.height.value = Math.round(Addons.Retouch.Height * document.F.percent.value / 100);
 				break;
 		}
-		var img1 = document.getElementById("img1");
+		const img1 = document.getElementById("img1");
 		if (ui_.IEVer < 10) {
 			img1.src = Addons.Retouch.File;
 			img1.style.width = document.F.width.value + "px";
 			img1.style.height = document.F.height.value + "px";
 			img1.style.filter = "progid:DXImageTransform.Microsoft.BasicImage(rotation=" + document.F.rotation.value + ");";
 		} else {
-			var thum = await Addons.Retouch.Image.GetThumbnailImage(document.F.width.value, document.F.height.value);
+			const thum = await Addons.Retouch.Image.GetThumbnailImage(document.F.width.value, document.F.height.value);
 			if (thum) {
 				if (document.F.rotation.value != 0) {
 					await thum.RotateFlip(document.F.rotation.value);
@@ -83,23 +83,23 @@ Addons.Retouch =
 
 	Save: function () {
 		setTimeout(async function () {
-			var commdlg = await api.CreateObject("CommonDialog");
+			const commdlg = await api.CreateObject("CommonDialog");
 			commdlg.InitDir = GetParentFolderName(Addons.Retouch.File);
 			commdlg.Filter = (await api.LoadString(hShell32, 9007) + ((await api.LoadString(hShell32, 9014)).replace(/[^#]*#[^#]*#/, ""))).replace(/#/g, "|");
 			commdlg.Flags = OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
 			if (await commdlg.ShowSave()) {
-				var path = await commdlg.FileName;
+				let path = await commdlg.FileName;
 				if (await fso.GetExtensionName(path) == "") {
 					path = BuildPath(GetParentFolderName(path), await fso.GetBaseName(path) + "." + await fso.GetExtensionName(Addons.Retouch.File));
 				}
-				var thum = await Addons.Retouch.Image;
+				let thum = await Addons.Retouch.Image;
 				if (document.F.width.value != await thum.GetWidth() || document.F.height.value != await thum.GetHeight()) {
 					thum = await thum.GetThumbnailImage(document.F.width.value, document.F.height.value);
 				}
 				if (document.F.rotation.value != 0) {
 					await thum.RotateFlip(document.F.rotation.value);
 				}
-				var hr = await thum.Save(path, document.F.quality.value);
+				const hr = await thum.Save(path, document.F.quality.value);
 				if (hr == 0) {
 					MessageBox(await GetText("Completed.") + "\n" + path, null, MB_ICONINFORMATION);
 				} else {

@@ -1,17 +1,17 @@
-var Addon_Id = "retouch";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "retouch";
+const item = GetAddonElement(Addon_Id);
 
 Sync.Retouch = {
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-	nPos: api.LowPart(item.getAttribute("MenuPos")),
+	nPos: GetNum(item.getAttribute("MenuPos")),
 
 	Exec: function (Ctrl, pt) {
-		var FV = GetFolderView(Ctrl, pt);
+		const FV = GetFolderView(Ctrl, pt);
 		if (FV) {
-			var Selected = FV.SelectedItems();
+			const Selected = FV.SelectedItems();
 			if (Selected.Count) {
 				FV.Focus();
-				var opt = api.CreateObject("Object");
+				const opt = api.CreateObject("Object");
 				opt.MainWindow = window;
 				opt.width = 800;
 				opt.height = 600;

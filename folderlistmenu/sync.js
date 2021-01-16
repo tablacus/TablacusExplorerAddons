@@ -1,29 +1,29 @@
 AddType("Folder list menu", {
 	Exec: function (Ctrl, s, type, hwnd, pt) {
-		var FV = GetFolderView(Ctrl, pt);
+		const FV = GetFolderView(Ctrl, pt);
 		if (FV) {
 			FV.Focus();
 		}
-		var oMenu = api.CreateObject("Object");
+		const oMenu = api.CreateObject("Object");
 		oMenu['\\'] = api.CreatePopupMenu();
-		var items = api.CreateObject("Array");;
-		s = api.PathUnquoteSpaces(ExtractMacro(te, s));
-		var ado = OpenAdodbFromTextFile(s);
+		const items = api.CreateObject("Array");;
+		s = ExtractPath(te, s);
+		const ado = OpenAdodbFromTextFile(s);
 		if (!ado) {
 			MessageBox(api.FormatMessage(api.LoadString(hShell32, 8720) || "Not found %1!ls!", s));
 			return;
 		}
-		var res, Name = "", Img = "";
-		var mii = api.Memory("MENUITEMINFO");
+		let res, Name = "", Img = "";
+		const mii = api.Memory("MENUITEMINFO");
 		mii.cbSize = mii.Size;
 		mii.fMask = MIIM_ID | MIIM_BITMAP | MIIM_SUBMENU | MIIM_DATA | MIIM_STRING | MIIM_FTYPE;
 		MenusIcon(mii, "folder:closed");
-		var hbmFolder = mii.hbmpItem;
-		var lines = ado.ReadText(adReadAll).split(/[\r?\n]/);
+		const hbmFolder = mii.hbmpItem;
+		const lines = ado.ReadText(adReadAll).split(/[\r?\n]/);
 		ado.Close();
-		var nextType = 0;
-		for (var i in lines) {
-			var path = ExtractMacro(te, lines[i]).replace(/^\s*|\s$/, "");
+		let nextType = 0;
+		for (let i in lines) {
+			let path = ExtractMacro(te, lines[i]).replace(/^\s*|\s$/, "");
 			if (!path) {
 				continue;
 			}
@@ -49,16 +49,16 @@ AddType("Folder list menu", {
 			}
 			path = path.replace(/^\s*|\s*$/g, "");
 			items.push(path);
-			var hbm = hbmFolder;
+			let hbm = hbmFolder;
 			if (Img) {
 				if (Img == "...") {
 					Img = path;
 				}
-				var ar = Img.split(/,/);
-				var fn = api.PathUnquoteSpaces(ExtractMacro(te, ar[0]));
-				var image = api.CreateObject("WICBitmap");
+				const ar = Img.split(/,/);
+				const fn = api.PathUnquoteSpaces(ExtractMacro(te, ar[0]));
+				let image = api.CreateObject("WICBitmap");
 				if (/\.ico$/i.test(fn) || !image.FromFile(fn)) {
-					var sfi = api.Memory("SHFILEINFO");
+					const sfi = api.Memory("SHFILEINFO");
 					api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 					image.FromHICON(sfi.hIcon);
 					api.DestroyIcon(sfi.hIcon);
@@ -69,11 +69,11 @@ AddType("Folder list menu", {
 				AddMenuImage(mii, image, fn);
 				hbm = mii.hbmpItem;
 			}
-			var arName = (Name || fso.GetFileName(api.PathUnquoteSpaces(path.replace(/`/g, ""))) || path.replace(/\\/g, "")).split(/\\|\/|\|/);
-			var strPath = '';
-			var hMenu = oMenu['\\'];
+			const arName = (Name || fso.GetFileName(api.PathUnquoteSpaces(path.replace(/`/g, ""))) || path.replace(/\\/g, "")).split(/\\|\/|\|/);
+			let strPath = '';
+			let hMenu = oMenu['\\'];
 			while (arName.length > 1) {
-				var s = arName.shift();
+				const s = arName.shift();
 				if (s) {
 					strPath += '\\' + s;
 					if (oMenu[strPath]) {
@@ -107,7 +107,7 @@ AddType("Folder list menu", {
 			Name = "";
 			Img = "";
 		}
-		api.Invoke(UI.Addons.FolderListMenu, oMenu, items, pt);
+		InvokeUI("Addons.FolderListMenu.Exec", [oMenu, items, pt]);
 		return S_OK;
 	},
 

@@ -18,12 +18,17 @@ if (window.Addon == 1) {
 				paths: {},
 				dt: new Date().getTime()
 			};
+			let r = [];
 			for (let i = 0; i < nCount; ++i) {
-				const path1 = BuildPath(path, await fso.GetFileName(await Items.Item(i).Path));
-				db.paths[path1] = 1;
+				r.push(Items.Item(i).Path);
 			}
-			Addons.SelectPlus.db[FV.Id] = db;
-			Addons.SelectPlus.Selects(FV, db, 5000);
+			r = await Promise.all(r);
+			for (let i = 0; i < nCount; ++i) {
+				db.paths[BuildPath(path, GetFileName(r[i]))] = 1;
+			}
+			const Id = await FV.Id;
+			Addons.SelectPlus.db[Id] = db;
+			Addons.SelectPlus.Selects(Id, db, 0);
 		},
 
 		Select: function(FV, db, path) {
@@ -33,34 +38,47 @@ if (window.Addon == 1) {
 			}, 99);
 		},
 
-		Selects: function (FV, db, tm) {
+		Selects: function (Id, db, tm) {
 			if (db.tid) {
 				clearTimeout(db.tid);
 			}
-			if (!Addons.SelectPlus.db[FV.Id]) {
+			if (!Addons.SelectPlus.db[Id]) {
 				return;
 			}
-			db.tid = setTimeout(async function () {
-				delete db.tid;
-				if (!Addons.SelectPlus.db[FV.Id]) {
-					return;
-				}
-				var bDone = true;
-				for (var path in db.paths) {
-					if (await IsExists(path)) {
-						FV.SelectItem(path, db.Flag | SVSI_SELECT | SVSI_NOTAKEFOCUS);
-						db.Flag = 0;
-						delete db.paths[path];
-					} else {
-						bDone = false;
-					}
-				}
-				if (bDone || new Date().getTime() - db.dt > 60000) {
-					delete Addons.SelectPlus.db[FV.Id];
+			if (tm) {
+				db.tid = setTimeout(Addons.SelectPlus.SelectsEx, tm, Id, db);
+			} else {
+				Addons.SelectPlus.SelectsEx(Id, db);
+			}
+		},
+
+		SelectsEx: async function (Id, db) {
+			delete db.tid;
+			if (!Addons.SelectPlus.db[Id]) {
+				return;
+			}
+			let bDone = true;
+			const p = [];
+			let r = [];
+			for (let path in db.paths) {
+				p.push(path);
+				r.push(IsExists(path));
+			}
+			r = await Promise.all(r);
+			for (let i = 0; i < r.length; ++i) {
+				if (r[i]) {
+					te.Ctrl(CTRL_FV, Id).SelectItem(p[i], db.Flag | SVSI_SELECT | SVSI_NOTAKEFOCUS);
+					db.Flag = 0;
+					delete db.paths[r[i]];
 				} else {
-					Addons.SelectPlus.Selects(FV, db, 999);
+					bDone = false;
 				}
-			}, tm);
+			}
+			if (bDone || new Date().getTime() - db.dt > 60000) {
+				delete Addons.SelectPlus.db[Id];
+			} else {
+				Addons.SelectPlus.Selects(Id, db, 999);
+			}
 		}
 	};
 
@@ -116,7 +134,7 @@ if (window.Addon == 1) {
 							if (lEvent & (SHCNE_UPDATEITEM | SHCNE_UPDATEDIR)) {
 								if (await FV.FolderItem && path === await FV.FolderItem.Path) {
 									delete Addons.SelectPlus.db[Id];
-									Addons.SelectPlus.Selects(FV, db, 99);
+									Addons.SelectPlus.Selects(Id, db, 0);
 								}
 							}
 						} else {
