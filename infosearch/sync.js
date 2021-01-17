@@ -1,12 +1,11 @@
-var Addon_Id = "infosearch";
-
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "infosearch";
+const item = GetAddonElement(Addon_Id);
 
 Sync.InfoSearch = {
 	PATH: "infosearch:",
 	iCaret: -1,
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-	nPos: api.LowPart(item.getAttribute("MenuPos")),
+	nPos: GetNum(item.getAttribute("MenuPos")),
 
 	GetSearchString: function (Ctrl) {
 		if (Ctrl) {
@@ -20,7 +19,7 @@ Sync.InfoSearch = {
 
 	Exec: function (Ctrl, pt) {
 		GetFolderView(Ctrl, pt).Focus();
-		var opt = api.CreateObject("Object");
+		const opt = api.CreateObject("Object");
 		opt.MainWindow = window;
 		opt.width = 400;
 		opt.height = 240;
@@ -29,19 +28,19 @@ Sync.InfoSearch = {
 	},
 
 	Start: function (Ctrl, pt) {
-		var FV = GetFolderView(Ctrl, pt);
+		const FV = GetFolderView(Ctrl, pt);
 		if (FV) {
-			var ar = [];
-			var Selected = FV.SelectedItems();
+			const ar = [];
+			const Selected = FV.SelectedItems();
 			if (Selected && Selected.Count) {
-				for (var i = Selected.Count; i--;) {
-					var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				for (let i = Selected.Count; i--;) {
+					const path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL);
 					if (/^[A-Z]:\\|^\\/i.test(path)) {
 						ar.unshift(path);
 					}
 				}
 			} else {
-				var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				const path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				if (/^[A-Z]:\\|^\\/i.test(path)) {
 					ar.push(path);
 				}
@@ -52,11 +51,11 @@ Sync.InfoSearch = {
 	},
 
 	Notify: function (pid, pid2) {
-		var cTC = te.Ctrls(CTRL_TC);
-		for (var i in cTC) {
-			var TC = cTC[i];
-			for (var j in TC) {
-				var FV = TC[j];
+		const cTC = te.Ctrls(CTRL_TC);
+		for (let i in cTC) {
+			const TC = cTC[i];
+			for (let j in TC) {
+				const FV = TC[j];
 				if (this.GetSearchString(FV)) {
 					if (FV.RemoveItem(pid) == S_OK && pid2) {
 						FV.AddItem(api.GetDisplayNameOf(pid2, SHGDN_FORPARSING | SHGDN_ORIGINAL));
@@ -74,7 +73,7 @@ AddEvent("TranslatePath", function (Ctrl, Path) {
 }, true);
 
 AddEvent("BeginNavigate", function (Ctrl) {
-	var Path = Sync.InfoSearch.GetSearchString(Ctrl);
+	const Path = Sync.InfoSearch.GetSearchString(Ctrl);
 	if (Path) {
 		OpenNewProcess("addons\\infosearch\\worker.js", {
 			FV: Ctrl,
@@ -90,7 +89,7 @@ AddEvent("BeginNavigate", function (Ctrl) {
 });
 
 AddEvent("ILGetParent", function (FolderItem) {
-	var ar = Sync.InfoSearch.GetSearchString(FolderItem).split("|");
+	const ar = Sync.InfoSearch.GetSearchString(FolderItem).split("|");
 	if (ar[0]) {
 		return ar[0];
 	}
@@ -122,7 +121,7 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 	if (!Verb || Verb == CommandID_STORE - 1) {
 		if (ContextMenu.Items.Count >= 1) {
-			var path = Sync.InfoSearch.GetSearchString(ContextMenu.Items.Item(0));
+			const path = Sync.InfoSearch.GetSearchString(ContextMenu.Items.Item(0));
 			if (path) {
 				Navigate(Sync.InfoSearch.PATH + path, SBSP_SAMEBROWSER);
 				return S_OK;

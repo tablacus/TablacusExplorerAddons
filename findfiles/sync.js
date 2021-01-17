@@ -1,5 +1,5 @@
-var Addon_Id = "findfiles";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "findfiles";
+const item = GetAddonElement(Addon_Id);
 
 Sync.FindFiles = {
     PATH: "findfiles:",
@@ -9,7 +9,7 @@ Sync.FindFiles = {
 
     GetSearchString: function (Ctrl) {
         if (Ctrl) {
-            var res = new RegExp("^" + Sync.FindFiles.PATH + "\\s*(.*)", "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+            const res = new RegExp("^" + Sync.FindFiles.PATH + "\\s*(.*)", "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
             if (res) {
                 return res[1];
             }
@@ -19,7 +19,7 @@ Sync.FindFiles = {
 
     Exec: function (Ctrl, pt) {
         GetFolderView(Ctrl, pt).Focus();
-        var opt = api.CreateObject("Object");
+        const opt = api.CreateObject("Object");
         opt.MainWindow = window;
         opt.width = 400;
         opt.height = 220;
@@ -28,19 +28,19 @@ Sync.FindFiles = {
     },
 
     Start: function (Ctrl, pt) {
-        var FV = GetFolderView(Ctrl, pt);
+        const FV = GetFolderView(Ctrl, pt);
         if (FV) {
-            var ar = [];
-            var Selected = FV.SelectedItems();
+            const ar = [];
+            const Selected = FV.SelectedItems();
             if (Selected && Selected.Count) {
-                for (var i = Selected.Count; i--;) {
-                    var path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL);
+                for (let i = Selected.Count; i--;) {
+                    const path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL);
                     if (/^[A-Z]:\\|^\\/i.test(path)) {
                         ar.unshift(path);
                     }
                 }
             } else {
-                var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_ORIGINAL);
+                const path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_ORIGINAL);
                 if (/^[A-Z]:\\|^\\/i.test(path)) {
                     ar.push(path);
                 }
@@ -51,11 +51,11 @@ Sync.FindFiles = {
     },
 
     Notify: function (pid, pid2) {
-        var cTC = te.Ctrls(CTRL_TC);
-        for (var i in cTC) {
-            var TC = cTC[i];
-            for (var j in TC) {
-                var FV = TC[j];
+        const cTC = te.Ctrls(CTRL_TC);
+        for (let i in cTC) {
+            const TC = cTC[i];
+            for (let j in TC) {
+                const FV = TC[j];
                 if (this.GetSearchString(FV)) {
                     if (FV.RemoveItem(pid) == S_OK && pid2) {
                         FV.AddItem(api.GetDisplayNameOf(pid2, SHGDN_FORPARSING | SHGDN_ORIGINAL));
@@ -73,7 +73,7 @@ AddEvent("TranslatePath", function (Ctrl, Path) {
 }, true);
 
 AddEvent("BeginNavigate", function (Ctrl) {
-    var Path = Sync.FindFiles.GetSearchString(Ctrl);
+    const Path = Sync.FindFiles.GetSearchString(Ctrl);
     if (Path) {
         OpenNewProcess("addons\\findfiles\\worker.js", {
             FV: Ctrl,
@@ -89,7 +89,7 @@ AddEvent("BeginNavigate", function (Ctrl) {
 });
 
 AddEvent("ILGetParent", function (FolderItem) {
-    var ar = Sync.FindFiles.GetSearchString(FolderItem).split("|");
+    const ar = Sync.FindFiles.GetSearchString(FolderItem).split("|");
     if (ar[0]) {
         return ar[0];
     }
@@ -121,7 +121,7 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
     if (!Verb || Verb == CommandID_STORE - 1) {
         if (ContextMenu.Items.Count >= 1) {
-            var path = Sync.FindFiles.GetSearchString(ContextMenu.Items.Item(0));
+            const path = Sync.FindFiles.GetSearchString(ContextMenu.Items.Item(0));
             if (path) {
                 Navigate(Sync.FindFiles.PATH + path, SBSP_SAMEBROWSER);
                 return S_OK;

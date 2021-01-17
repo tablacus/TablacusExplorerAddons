@@ -3,22 +3,22 @@ RunEventUI("BrowserCreatedEx");
 InitDialog = async function () {
 	ApplyLang(document);
 	FV = await te.Ctrl(CTRL_FV);
-	var folder = await api.ILCreateFromPath("C:\\").GetFolder;
-	for (var i = 0; i < 999; i++) {
-		var s = await folder.GetDetailsOf(null, i);
+	const folder = await api.ILCreateFromPath("C:\\").GetFolder;
+	for (let i = 0; i < 999; i++) {
+		const s = await folder.GetDetailsOf(null, i);
 		if (s) {
-			var option = document.createElement("option");
+			const option = document.createElement("option");
 			option.text = s;
 			option.value = await api.PSGetDisplayName(s, 1);
 			document.F.info.appendChild(option);
 		}
 	}
-	var ar = (await MainWindow.Sync.InfoSearch.GetSearchString(FV)).split("|");
+	const ar = (await MainWindow.Sync.InfoSearch.GetSearchString(FV)).split("|");
 	if (ar.length > 1) {
 		document.F.location.value = ar.shift();
 		document.F.name.value = ar.shift();
-		var info = ar.shift();
-		for (var i = document.F.info.length; i--;) {
+		const info = ar.shift();
+		for (let i = document.F.info.length; i--;) {
 			if (document.F.info[i].value == info) {
 				document.F.info.selectedIndex = i;
 				break;
@@ -30,21 +30,19 @@ InitDialog = async function () {
 		document.F.newtab.checked = true;
 	}
 	document.title = await MainWindow.Sync.InfoSearch.strName;
-	WebBrowser.Focus();
-	document.F.name.focus();
 	document.body.style.display = "";
+	setTimeout(function () {
+		WebBrowser.Focus();
+		document.F.name.focus();
+	}, 99);
 };
 
-AddEventEx(document.body, "keydown", function (e) {
-	if (e.keyCode == VK_RETURN || window.chrome && /^Enter/i.test(e.key)) {
+AddEventEx(document.body, "keydown", function (ev) {
+	return KeyDownEvent(ev, function () {
 		if (document.F.location.value && (document.F.name.value || document.F.content.value)) {
 			FindFiles();
 		}
-	}
-	if (e.keyCode == VK_ESCAPE || window.chrome && /^Esc/i.test(e.key)) {
-		CloseWindow();
-	}
-	return true;
+	}, CloseWindow);
 });
 
 FindFiles = async function () {

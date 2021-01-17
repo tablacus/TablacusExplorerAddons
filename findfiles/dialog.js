@@ -2,7 +2,7 @@ RunEventUI("BrowserCreatedEx");
 
 InitDialog = async function () {
     FV = await te.Ctrl(CTRL_FV);
-    var ar = (await MainWindow.Sync.FindFiles.GetSearchString(FV)).split("|");
+    const ar = (await MainWindow.Sync.FindFiles.GetSearchString(FV)).split("|");
     if (ar.length > 1) {
         document.F.location.value = ar.shift();
         document.F.name.value = ar.shift();
@@ -13,21 +13,19 @@ InitDialog = async function () {
     }
     document.title = await MainWindow.Sync.FindFiles.strName;
     await ApplyLang(document);
-    WebBrowser.Focus();
-    document.F.name.focus();
-    document.body.style.display = "";
+	document.body.style.display = "";
+	setTimeout(function () {
+		WebBrowser.Focus();
+		document.F.name.focus();
+	}, 99);
 };
 
 AddEventEx(document.body, "keydown", function (ev) {
-    if (ev.keyCode == VK_RETURN || window.chrome && /^Enter/i.test(e.key)) {
-        if (document.F.location.value && (document.F.name.value || document.F.content.value)) {
-            FindFiles();
-        }
-    }
-	if (ev.keyCode == VK_ESCAPE || window.chrome && /^Esc/i.test(e.key)) {
-        CloseWindow();
-    }
-    return true;
+	return KeyDownEvent(ev, function () {
+		if (document.F.location.value && (document.F.name.value || document.F.content.value)) {
+			FindFiles();
+		}
+	}, CloseWindow);
 });
 
 FindFiles = async function () {
