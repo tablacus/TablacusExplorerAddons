@@ -1,21 +1,16 @@
-var item = GetAddonElement("clipfolder");
-if (!item.getAttribute("Set")) {
-	item.setAttribute("Filter", "*.cfu");
-	item.setAttribute("MenuExec", 1);
-	item.setAttribute("Menu", "Background");
-	item.setAttribute("MenuPos", -1);
-
-	item.setAttribute("KeyOn", "List");
-
-	item.setAttribute("MouseOn", "List");
-}
+const item = GetAddonElement("clipfolder");
 
 Sync.ClipFolder = {
+	nPos: GetNum(item.getAttribute("MenuPos")),
+	Spec: item.getAttribute("Filter") || "*.cfu",
+	strName: item.getAttribute("MenuName") || GetText("Create clip folder..."),
+	strName2: item.getAttribute("MenuName2") || GetText("Save clip folder"),
+
 	FindItemIndex: function (FV, Item) {
-		var Items = FV.Items();
-		var path = Item.Path;
-		for (var i = Items.Count; i-- > 0;) {
-			if (path.toLowerCase() == Items.Item(i).Path.toLowerCase()) {
+		const Items = FV.Items();
+		const path = Item.Path;
+		for (let i = Items.Count; i-- > 0;) {
+			if (SameText(path, Items.Item(i).Path)) {
 				return i;
 			}
 		}
@@ -23,18 +18,18 @@ Sync.ClipFolder = {
 	},
 
 	IsHandle: function (Ctrl) {
-		var path = Sync.ClipFolder.GetPath(Ctrl);
+		const path = Sync.ClipFolder.GetPath(Ctrl);
 		return /^[A-Z]:\\|^\\\\/i.test(path) && api.PathMatchSpec(path, Sync.ClipFolder.Spec) && fso.FileExists(path);
 	},
 
 	GetPath: function (Ctrl) {
-		return /string/i.test(typeof Ctrl) ? api.PathUnquoteSpaces(ExtractMacro(te, Ctrl)) : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+		return /string/i.test(typeof Ctrl) ? ExtractPath(te, Ctrl) : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 	},
 
 	IsWritable: function (Ctrl) {
-		var path = Sync.ClipFolder.GetPath(Ctrl);
+		const path = Sync.ClipFolder.GetPath(Ctrl);
 		if (path) {
-			var h = api.CreateFile(path, 0xc0000000, 7, null, 3, 0x02000000, null);
+			const h = api.CreateFile(path, 0xc0000000, 7, null, 3, 0x02000000, null);
 			if (h != INVALID_HANDLE_VALUE) {
 				api.CloseHandle(h);
 				return true;
@@ -44,16 +39,16 @@ Sync.ClipFolder = {
 	},
 
 	Enum: function (pid, Ctrl, fncb, SessionId) {
-		var Items = te.FolderItems();
+		const Items = te.FolderItems();
 		Sync.ClipFolder.Open(pid, Items);
 		return Items;
 	},
 
 	Add: function (Ctrl, Items) {
 		if (/string/i.test(typeof Items)) {
-			var arg = api.CommandLineToArgv(api.PathUnquoteSpaces(ExtractMacro(te, Items)));
+			const arg = api.CommandLineToArgv(ExtractPath(te, Items));
 			Items = te.FolderItems();
-			for (var i in arg) {
+			for (let i in arg) {
 				if (arg[i]) {
 					Items.AddItem(arg[i]);
 				}
@@ -65,13 +60,13 @@ Sync.ClipFolder = {
 		if (!Sync.ClipFolder.IsWritable(Ctrl)) {
 			return S_OK;
 		}
-		var db = {};
+		const db = {};
 		Sync.ClipFolder.Open(Ctrl, null, db);
 
-		var AddItems = te.FolderItems();
-		for (var j = 0; j < Items.Count; j++) {
-			var Item = Items.Item(j);
-			var path = Item.Path;
+		const AddItems = te.FolderItems();
+		for (let j = 0; j < Items.Count; j++) {
+			const Item = Items.Item(j);
+			const path = Item.Path;
 			if (!db[path]) {
 				db[path] = 1;
 				AddItems.AddItem(Item);
@@ -79,14 +74,14 @@ Sync.ClipFolder = {
 		}
 		if (AddItems.Count) {
 			Sync.ClipFolder.Save(Ctrl, db);
-			var arFV = Sync.ClipFolder.SyncFV(Ctrl);
-			for (var i in arFV) {
+			const arFV = Sync.ClipFolder.SyncFV(Ctrl);
+			for (let i in arFV) {
 				arFV[i].AddItems(AddItems, true, function (FV, Items, ProgressDialog) {
 					FV.SelectItem(null, SVSI_DESELECTOTHERS);
-					var FVItems = FV.Items;
+					const FVItems = FV.Items;
 					if (Items.Count < 9) {
-						for (var k = 0; k < Items.Count; k++) {
-							var l = Sync.ClipFolder.FindItemIndex(FV, Items.Item(k));
+						for (let k = 0; k < Items.Count; k++) {
+							const l = Sync.ClipFolder.FindItemIndex(FV, Items.Item(k));
 							if (l >= 0) {
 								FV.SelectItem(FVItems.Item(l), SVSI_SELECT | SVSI_FOCUSED | SVSI_ENSUREVISIBLE);
 							}
@@ -101,22 +96,22 @@ Sync.ClipFolder = {
 		if (!Sync.ClipFolder.IsHandle(Ctrl)) {
 			return;
 		}
-		if (!Sync.ClipFolder.IsWritable(Ctrl) || !confirmOk("Are you sure?")) {
+		if (!Sync.ClipFolder.IsWritable(Ctrl) || !confirmOk()) {
 			return S_OK;
 		}
-		var ar = GetSelectedArray(Ctrl, pt, true);
-		var Selected = ar[0];
-		FV = ar[2];
-		var db = {};
-		var bSave = false;
+		const ar = GetSelectedArray(Ctrl, pt, true);
+		const Selected = ar[0];
+		const FV = ar[2];
+		const db = {};
+		let bSave = false;
 		Sync.ClipFolder.Open(FV, null, db);
-		var arFV = Sync.ClipFolder.SyncFV(FV);
-		for (var i in arFV) {
+		const arFV = Sync.ClipFolder.SyncFV(FV);
+		for (let i in arFV) {
 			arFV[i].Parent.LockUpdate();
 			try {
-				for (var j = Selected.Count; j--;) {
+				for (let j = Selected.Count; j--;) {
 					arFV[i].RemoveItem(Selected.Item(j));
-					var path = Selected.Item(j).Path;
+					const path = Selected.Item(j).Path;
 					if (db[path]) {
 						delete db[path];
 						bSave = true;
@@ -132,27 +127,27 @@ Sync.ClipFolder = {
 	},
 
 	Paste: function (Ctrl, pt) {
-		var FV = GetFolderView(Ctrl, pt);
+		const FV = GetFolderView(Ctrl, pt);
 		Sync.ClipFolder.Add(FV, api.OleGetClipboard());
 		return S_OK;
 	},
 
 	PasteEx: function (Ctrl, pt) {
-		var FV = GetFolderView(Ctrl, pt);
-		var Selected = FV.SelectedItems();
+		const FV = GetFolderView(Ctrl, pt);
+		const Selected = FV.SelectedItems();
 		if (!Selected.Count || !Selected.Item(0).IsFolder) {
 			return Sync.ClipFolder.Paste(FV);
 		}
 	},
 
 	SyncFV: function (Ctrl) {
-		var arFV = Ctrl.Id ? [Ctrl] : [];
-		var path = Sync.ClipFolder.GetPath(Ctrl);
+		const arFV = Ctrl.Id ? [Ctrl] : [];
+		const path = Sync.ClipFolder.GetPath(Ctrl);
 		if (path) {
-			var cFV = te.Ctrls(CTRL_FV);
-			for (var i in cFV) {
+			const cFV = te.Ctrls(CTRL_FV);
+			for (let i in cFV) {
 				if (Ctrl.Id != cFV[i].Id) {
-					if (path.toLowerCase() == (cFV[i].FolderItem.Path || "").toLowerCase()) {
+					if (SameText(path, cFV[i].FolderItem.Path)) {
 						arFV.push(cFV[i]);
 					}
 				}
@@ -165,13 +160,13 @@ Sync.ClipFolder = {
 		if (!Sync.ClipFolder.IsHandle(Ctrl)) {
 			return;
 		}
-		var path = Sync.ClipFolder.GetPath(Ctrl);
-		var ado = api.CreateObject("ads");
+		const path = Sync.ClipFolder.GetPath(Ctrl);
+		const ado = api.CreateObject("ads");
 		ado.CharSet = "utf-8";
 		ado.Open();
 		ado.LoadFromFile(path);
 		while (!ado.EOS) {
-			var s = ado.ReadText(adReadLine);
+			const s = ado.ReadText(adReadLine);
 			if (s && !/^\s*#/.test(s)) {
 				if (Items) {
 					Items.AddItem(s);
@@ -188,11 +183,11 @@ Sync.ClipFolder = {
 		if (!Sync.ClipFolder.IsHandle(Ctrl)) {
 			return;
 		}
-		var path = Sync.ClipFolder.GetPath(Ctrl);
-		var ado = api.CreateObject("ads");
+		const path = Sync.ClipFolder.GetPath(Ctrl);
+		const ado = api.CreateObject("ads");
 		ado.CharSet = "utf-8";
 		ado.Open();
-		for (var i in db) {
+		for (let i in db) {
 			ado.WriteText(i, adWriteLine);
 		}
 		try {
@@ -204,24 +199,25 @@ Sync.ClipFolder = {
 	},
 
 	Exec: function (Ctrl, pt) {
-		var FV = GetFolderView(Ctrl, pt);
-		var path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+		const FV = GetFolderView(Ctrl, pt);
+		const path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 		if (/^[A-Z]:\\|^\\/i.test(path)) {
 			if (Sync.ClipFolder.IsHandle(path)) {
-				var db = {};
-				var Items = FV.Items();
-				for (var i = 0; i < Items.Count; i++) {
+				const db = {};
+				const Items = FV.Items();
+				for (let i = 0; i < Items.Count; i++) {
 					db[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL)] = 1;
 				}
 				Sync.ClipFolder.Save(FV, db);
 			} else {
-				var path2 = InputDialog(GetText("Create clip folder"), "");
-				if (path2) {
-					if (!/^[A-Z]:\\|^\\/i.test(path2)) {
-						path2 = BuildPath(path, path2.replace(/^\s+/, ""));
+				InputDialog(GetText("Create clip folder"), "", function (path2) {
+					if (path2) {
+						if (!/^[A-Z]:\\|^\\/i.test(path2)) {
+							path2 = BuildPath(path, path2.replace(/^\s+/, ""));
+						}
+						CreateFile(path2 + (fso.GetExtensionName(path2) || Sync.ClipFolder.Spec.replace(/[\*\?]|;.*$/g, "")));
 					}
-					CreateFile(path2 + (fso.GetExtensionName(path2) || Sync.ClipFolder.Spec.replace(/[\*\?]|;.*$/g, "")));
-				}
+				});
 			}
 		}
 		return S_OK;
@@ -276,7 +272,7 @@ AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 
 AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 	if (Sync.ClipFolder.IsHandle(Ctrl)) {
-		var nIndex = -1;
+		let nIndex = -1;
 		if (Ctrl.Type <= CTRL_EB) {
 			nIndex = Ctrl.HitTest(pt, LVHT_ONITEM);
 		} else if (Ctrl.Type != CTRL_DT) {
@@ -303,7 +299,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 
 AddEvent("DefaultCommand", function (Ctrl, Selected) {
 	if (Selected.Count == 1) {
-		var path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+		const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 		if (Sync.ClipFolder.IsHandle(path)) {
 			Ctrl.Navigate(path);
 			return S_OK;
@@ -312,7 +308,7 @@ AddEvent("DefaultCommand", function (Ctrl, Selected) {
 }, true);
 
 AddEvent("ILGetParent", function (FolderItem) {
-	var path = FolderItem.Path;
+	const path = FolderItem.Path;
 	if (Sync.ClipFolder.IsHandle(path)) {
 		return GetParentFolderName(path);
 	}
@@ -347,9 +343,9 @@ AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 
 AddEvent("Edit", function (Ctrl, hMenu, nPos, Selected, item) {
 	if (Sync.ClipFolder.IsHandle(Ctrl)) {
-		var Items = api.OleGetClipboard();
+		const Items = api.OleGetClipboard();
 		if (Items && Items.Count) {
-			for (var i = api.GetMenuItemCount(hMenu); i-- > 0;) {
+			for (let i = api.GetMenuItemCount(hMenu); i-- > 0;) {
 				if (/Ctrl\+V/i.test(api.GetMenuString(hMenu, i, MF_BYPOSITION))) {
 					api.EnableMenuItem(hMenu, i, MF_BYPOSITION | MF_ENABLED);
 				}
@@ -361,18 +357,18 @@ AddEvent("Edit", function (Ctrl, hMenu, nPos, Selected, item) {
 
 AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt) {
 	if (/Background|Edit/i.test(Name)) {
-		var FV = GetFolderView(Ctrl, pt);
+		const FV = GetFolderView(Ctrl, pt);
 		if (Sync.ClipFolder.IsHandle(FV) && Sync.ClipFolder.IsWritable(FV)) {
-			var Items = api.OleGetClipboard();
+			const Items = api.OleGetClipboard();
 			if (Items && Items.Count) {
-				var mii = api.Memory("MENUITEMINFO");
+				const mii = api.Memory("MENUITEMINFO");
 				mii.cbSize = mii.Size;
 				mii.fMask = MIIM_ID | MIIM_STATE;
-				var paste = api.LoadString(hShell32, 33562) || "&Paste";
-				for (var i = api.GetMenuItemCount(hMenu); i-- > 0;) {
+				const paste = api.LoadString(hShell32, 33562) || "&Paste";
+				for (let i = api.GetMenuItemCount(hMenu); i-- > 0;) {
 					api.GetMenuItemInfo(hMenu, i, true, mii);
 					if (mii.fState & MFS_DISABLED) {
-						var s = api.GetMenuString(hMenu, i, MF_BYPOSITION);
+						const s = api.GetMenuString(hMenu, i, MF_BYPOSITION);
 						if (s && s.indexOf(paste) == 0) {
 							api.EnableMenuItem(hMenu, i, MF_ENABLED | MF_BYPOSITION);
 							ExtraMenuCommand[mii.wID] = Sync.ClipFolder.Paste;
@@ -385,14 +381,10 @@ AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, N
 	return nPos;
 });
 
-Sync.ClipFolder.Spec = item.getAttribute("Filter") || "*.cfu";
-Sync.ClipFolder.strName = item.getAttribute("MenuName") || GetText("Create clip folder...");
-Sync.ClipFolder.strName2 = item.getAttribute("MenuName2") || GetText("Save clip folder");
 //Menu
 if (item.getAttribute("MenuExec")) {
-	Sync.ClipFolder.nPos = api.LowPart(item.getAttribute("MenuPos"));
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
-		var path = api.GetDisplayNameOf(item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+		const path = api.GetDisplayNameOf(item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 		if (/^[A-Z]:\\|^\\/i.test(path)) {
 			if (Sync.ClipFolder.IsWritable(Ctrl)) {
 				api.InsertMenu(hMenu, Sync.ClipFolder.nPos, MF_BYPOSITION | MF_STRING, ++nPos, api.PathMatchSpec(path, Sync.ClipFolder.Spec) ? Sync.ClipFolder.strName2 : Sync.ClipFolder.strName);
