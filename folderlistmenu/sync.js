@@ -81,7 +81,7 @@ AddType("Folder list menu", {
 					} else {
 						mii.dwTypeData = s;
 						mii.hSubMenu = api.CreateMenu();
-						mii.fType = 0;
+						mii.fType = nextType;
 						mii.hbmpItem = arName.length > 1 || arName[0] ? hbmFolder : hbm;
 						oMenu[strPath] = mii.hSubMenu;
 						api.InsertMenuItem(hMenu, MAXINT, false, mii);

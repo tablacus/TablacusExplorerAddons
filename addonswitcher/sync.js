@@ -31,8 +31,7 @@ AddType("Addon switcher", {
 		}
 		if (bChanged) {
 			RunEvent1("ConfigChanged", "Addons");
-			SaveConfig();
-			te.Reload();
+			ReloadCustomize();
 		}
 		return S_OK;
 	},

@@ -9,10 +9,10 @@ if (window.Addon == 1) {
 		Size: item.getAttribute("Size"),
 
 		Click: function (i, bNew) {
-			let items = ui_.MenuFavorites;
-			let item = items[i];
+			const items = ui_.MenuFavorites;
+			const item = items[i];
 			if (item) {
-				Exec(te, item.text, ((bNew && /^Open$|^Open in background$/i.test(s)) || (SameText(item.Type, "Open") && Addons.FavBar.NewTab)) ? "Open in new tab" : item.Type, ui_.hwnd, null);
+				Exec(te, item.text, ((bNew && /^Open$|^Open in background$/i.test(item.Type)) || (SameText(item.Type, "Open") && Addons.FavBar.NewTab)) ? "Open in new tab" : item.Type, ui_.hwnd, null);
 			}
 		},
 
@@ -27,17 +27,17 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 			if ((ev.buttons != null ? ev.buttons : ev.button) == 1) {
-				let menus = await te.Data.xmlMenus.getElementsByTagName('Favorites');
+				const menus = await te.Data.xmlMenus.getElementsByTagName('Favorites');
 				if (menus && await GetLength(menus)) {
-					let items = await menus[0].getElementsByTagName("Item");
+					const items = await menus[0].getElementsByTagName("Item");
 					let item = items[i];
-					let hMenu = await api.CreatePopupMenu();
-					let arMenu = await api.CreateObject("Array");
+					const hMenu = await api.CreatePopupMenu();
+					const arMenu = await api.CreateObject("Array");
 					for (let j = await GetLength(items); --j > i;) {
 						await arMenu.unshift(j);
 					}
-					let o = document.getElementById("_favbar" + i);
-					let pt = await GetPosEx(o, 9);
+					const o = document.getElementById("_favbar" + i);
+					const pt = await GetPosEx(o, 9);
 					await MakeMenus(hMenu, null, arMenu, items, te, pt);
 					await AdjustMenuBreak(hMenu);
 					AddEvent("ExitMenuLoop", function () {
@@ -47,7 +47,7 @@ if (window.Addon == 1) {
 						}, 99);
 					});
 					window.g_menu_click = 2;
-					let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null);
+					const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null);
 					api.DestroyMenu(hMenu);
 					if (nVerb > 0) {
 						item = await items[nVerb - 1];
@@ -67,12 +67,12 @@ if (window.Addon == 1) {
 		},
 
 		Popup: async function (ev, i) {
-			let items = ui_.MenuFavorites;
+			const items = ui_.MenuFavorites;
 			if (i >= 0) {
-				let hMenu = await api.CreatePopupMenu();
+				const hMenu = await api.CreatePopupMenu();
 				let ContextMenu = null;
 				if (i < items.length) {
-					let path = this.GetPath(items, i);
+					const path = this.GetPath(items, i);
 					if (path != "") {
 						ContextMenu = await api.ContextMenu(path);
 					}
@@ -84,11 +84,10 @@ if (window.Addon == 1) {
 				}
 				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, await GetText("&Edit"));
 				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, await GetText("Add"));
-				let x = ev.screenX * ui_.Zoom;
-				let y = ev.screenY * ui_.Zoom;
-				let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, ContextMenu);
+				const x = ev.screenX * ui_.Zoom, y = ev.screenY * ui_.Zoom;
+				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, ContextMenu);
 				if (nVerb >= 0x1001) {
-					let s = await ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
+					const s = await ContextMenu.GetCommandString(nVerb - 0x1001, GCS_VERB);
 					if (SameText(s, "delete")) {
 						this.ShowOptions();
 					} else {
@@ -106,18 +105,18 @@ if (window.Addon == 1) {
 		},
 
 		DropDown: async function (i) {
-			let o = document.getElementById("_favbar" + i);
+			const o = document.getElementById("_favbar" + i);
 			MouseOver(o);
-			let pt = GetPos(o, true);
-			let items = ui_.MenuFavorites;
-			let strType = items[i].Type;
+			const pt = GetPos(o, 9);
+			const items = ui_.MenuFavorites;
+			const strType = items[i].Type;
 			let wFlags = SBSP_SAMEBROWSER;
 			if (SameText(strType, "Open in new tab")) {
 				wFlags = SBSP_NEWBROWSER;
 			} else if (SameText(strType, "Open in background")) {
 				wFlags = SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS;
 			}
-			$.FolderMenu.Invoke(await $.FolderMenu.Open(items[i].text.split("\n")[0], pt.x, pt.y + o.offsetHeight, "*", 1), wFlags);
+			FolderMenu.Invoke(await FolderMenu.Open(items[i].text.split("\n")[0], pt.x, pt.y, "*", 1), wFlags);
 		},
 
 		Arrange: async function () {
@@ -125,14 +124,13 @@ if (window.Addon == 1) {
 			const items = await Addons.FavBar.GetFovorites();
 			let menus = 0;
 			for (let i = 0; i < items.length; i++) {
-				let item = items[i];
-				let strFlag = SameText(item.Type, "menus") ? item.text.toLowerCase() : "";
-				let strName = EncodeSC(await ExtractMacro(te, item.Name.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")));
+				const item = items[i];
+				const strFlag = SameText(item.Type, "menus") ? item.text.toLowerCase() : "";
+				const strName = EncodeSC(await ExtractMacro(te, item.Name.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")));
 				if (strFlag == "close" && menus) {
 					menus--;
 					continue;
 				}
-				let menus1 = menus;
 				if (strFlag == "open") {
 					if (menus++) {
 						continue;
@@ -150,16 +148,16 @@ if (window.Addon == 1) {
 					continue;
 				}
 				let img = '';
-				let icon = item.Icon;
+				const icon = item.Icon;
 				if (icon != "-") {
-					let h = GetIconSize(item.Height || Addons.FavBar.Size, 16);
+					const h = GetIconSize(item.Height || Addons.FavBar.Size, 16);
 					if (icon) {
 						img = await GetImgTag({ src: await ExtractMacro(te, icon) }, h);
 					} else if (/^Open$|^Open in new tab$|^Open in background$|^Exec$/i.test(item.Type)) {
-						let path = await Addons.FavBar.GetPath(items, i);
+						const path = await Addons.FavBar.GetPath(items, i);
 						let pidl = await api.ILCreateFromPath(path);
 						if (await api.ILIsEmpty(pidl) || await pidl.Unavailable) {
-							let res = /"([^"]*)"/.exec(path) || /([^\s]*)/.exec(path);
+							const res = /"([^"]*)"/.exec(path) || /([^\s]*)/.exec(path);
 							if (res) {
 								pidl = await api.ILCreateFromPath(res[1]);
 							}
@@ -179,7 +177,7 @@ if (window.Addon == 1) {
 			}
 			s.push('&nbsp;</label>');
 
-			let o = document.getElementById('_favbar');
+			const o = document.getElementById('_favbar');
 			o.innerHTML = s.join("");
 			ApplyLang(o);
 			Resize();
@@ -187,7 +185,7 @@ if (window.Addon == 1) {
 
 		GetFovorites: async function () {
 			if(!ui_.MenuFavorites) {
-				let menus = await te.Data.xmlMenus.getElementsByTagName('Favorites');
+				const menus = await te.Data.xmlMenus.getElementsByTagName('Favorites');
 				if (menus && await GetLength(menus)) {
 					ui_.MenuFavorites = await GetXmlItems(await menus[0].getElementsByTagName("Item"));
 				}
@@ -200,7 +198,7 @@ if (window.Addon == 1) {
 		},
 
 		GetPath: async function (items, i) {
-			let line = items[i].text.split("\n");
+			const line = items[i].text.split("\n");
 			return await api.PathUnquoteSpaces(await ExtractMacro(null, line[0]));
 		},
 
@@ -211,8 +209,7 @@ if (window.Addon == 1) {
 				}
 			}
 			return -1;
-		},
-
+		}
 	};
 	Addons.FavBar.Parent = document.getElementById(SetAddon(Addon_Id, Default, '<span id="_favbar"></span>'));
 	AddEvent("FavoriteChanged", Addons.FavBar.Arrange);

@@ -81,7 +81,7 @@ if (window.Addon == 1) {
 			}
 			if (await arg.Updated.Count) {
 				await sha.NameSpace(BuildPath(ui_.Installed, "addons")).MoveHere(await arg.Updated, FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR);
-				te.Reload();
+				ReloadCustomize();
 			}
 		}
 	};
