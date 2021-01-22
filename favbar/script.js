@@ -1,6 +1,5 @@
 const Addon_Id = "favbar";
 const Default = "ToolBar4Center";
-
 const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.FavBar = {
@@ -135,6 +134,8 @@ if (window.Addon == 1) {
 					if (menus++) {
 						continue;
 					}
+				} else if (menus) {
+					continue;
 				} else if (strName == "/" || strFlag == "break") {
 					s.push('<br class="break">');
 					continue;
@@ -143,8 +144,6 @@ if (window.Addon == 1) {
 					continue;
 				} else if (strName == "-" || strFlag == "separator") {
 					s.push('<span class="separator">|</span>');
-					continue;
-				}  else if (menus) {
 					continue;
 				}
 				let img = '';
@@ -202,21 +201,21 @@ if (window.Addon == 1) {
 			return await api.PathUnquoteSpaces(await ExtractMacro(null, line[0]));
 		},
 
-		FromPt: function (n, pt) {
-			while (--n >= 0) {
-				if (HitTest(document.getElementById("_favbar" + n), pt)) {
-					return n;
+		SetRects: async function () {
+			const items = await Addons.FavBar.GetFovorites();
+			for (let i = 0; i < items.length; ++i) {
+				const el = document.getElementById("_favbar" + i);
+				if (el) {
+					Common.FavBar.Items[i] = await GetRect(el);
 				}
 			}
-			return -1;
+			Common.FavBar.Append = await GetRect(Addons.FavBar.Parent);
 		}
 	};
 	Addons.FavBar.Parent = document.getElementById(SetAddon(Addon_Id, Default, '<span id="_favbar"></span>'));
 	AddEvent("FavoriteChanged", Addons.FavBar.Arrange);
 	AddEvent("Load", Addons.FavBar.Arrange);
-	if (!window.chrome) {
-		$.importScript("addons\\" + Addon_Id + "\\sync.js");
-	}
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }
