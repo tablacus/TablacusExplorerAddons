@@ -43,11 +43,11 @@ AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 	MouseOut();
 	if (Ctrl.Type == CTRL_WB) {
+		const ptc = pt.Clone();
+		api.ScreenToClient(WebBrowser.hwnd, ptc);
 		const menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
 		if (menus && menus.length) {
 			const items = menus[0].getElementsByTagName("Item");
-			const ptc = pt.Clone();
-			api.ScreenToClient(WebBrowser.hwnd, ptc);
 			const i = Sync.FavBar.FromPt(items.length, ptc);
 			if (i >= 0) {
 				return Exec(te, items[i].text, items[i].getAttribute("Type"), te.hwnd, pt, dataObj, grfKeyState, pdwEffect, true);
