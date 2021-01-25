@@ -1,5 +1,5 @@
 if (window.Addon == 1) {
-	const Addon_Id = "innerrefresh";
+	const Addon_Id = "innernewfolder";
 	const item = await GetAddonElement(Addon_Id);
 	const h = GetIconSize(item.getAttribute("IconSize"), 16);
 	const s = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,31" : "icon:shell32.dll,205,32");
