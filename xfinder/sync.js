@@ -2,7 +2,7 @@ Sync.XFinder = {
 	SW: SW_SHOWNORMAL,
 	Command: {
 		newtab: function (Ctrl, hwnd, pt, line) {
-			var p = ExtractMacro(Ctrl, line);
+			const p = ExtractMacro(Ctrl, line);
 			if (p) {
 				Navigate(line, SBSP_NEWBROWSER);
 				return S_OK;
@@ -11,7 +11,7 @@ Sync.XFinder = {
 		},
 
 		close: function (Ctrl, hwnd, pt, line) {
-			var p = ExtractMacro(Ctrl, line);
+			const p = ExtractMacro(Ctrl, line);
 			if (SameText(p, "Window")) {
 				return Exec(Ctrl, "Close Application", "Tools", hwnd, pt);
 			}
@@ -26,10 +26,10 @@ Sync.XFinder = {
 				return S_OK;
 			}
 			if (/[\\\/\\*\\?]/.test(p)) {
-				var FV = GetFolderView(Ctrl, pt);
+				const FV = GetFolderView(Ctrl, pt);
 				if (FV) {
-					var TC = FV.Parent;
-					for (var i = TC.length; i--;) {
+					const TC = FV.Parent;
+					for (let i = TC.length; i--;) {
 						if (PathMatchEx(api.GetDisplayNameOf(TC[i], SHGDN_FORADDRESSBAR | SHGDN_FORPARSINGEX | SHGDN_FORPARSING) + "", p)) {
 							TC[i].Close();
 						}
@@ -43,12 +43,12 @@ Sync.XFinder = {
 				case 1:
 					return Exec(Ctrl, "Close Other Tabs", "Tabs", hwnd, pt);
 				case 2:
-					var FV = GetFolderView(Ctrl, pt);
+					let FV = GetFolderView(Ctrl, pt);
 					if (FV) {
-						var TC = FV.Parent;
-						for (var i = TC.length; i--;) {
+						const TC = FV.Parent;
+						for (let i = TC.length; i--;) {
 							FV = TC[i];
-							for (var j = TC.length; j--;) {
+							for (let j = TC.length; j--;) {
 								if (i != j && api.ILIsEqual(FV, TC[j])) {
 									TC[i].Close();
 									break;
@@ -58,10 +58,10 @@ Sync.XFinder = {
 					}
 					return S_OK;
 				case 4:
-					var FV = GetFolderView(Ctrl, pt);
+					FV = GetFolderView(Ctrl, pt);
 					if (FV) {
-						var TC = FV.Parent;
-						for (var i = TC.length; i--;) {
+						const TC = FV.Parent;
+						for (let i = TC.length; i--;) {
 							TC[i].Close();
 						}
 					}
@@ -75,25 +75,25 @@ Sync.XFinder = {
 
 		closed: function (Ctrl, hwnd, pt, line) {
 			if (Common.UndoCloseTab) {
-				var FV = GetFolderView(Ctrl, pt);
+				const FV = GetFolderView(Ctrl, pt);
 				if (FV) {
-					var hMenu = api.CreatePopupMenu();
-					var nCount = Common.UndoCloseTab.db.length;
+					const hMenu = api.CreatePopupMenu();
+					let nCount = Common.UndoCloseTab.db.length;
 					if (nCount > 16) {
 						nCount = 16;
 					}
-					for (var i = 0; i < nCount; i++) {
-						var mii = api.Memory("MENUITEMINFO");
+					for (let i = 0; i < nCount; i++) {
+						const mii = api.Memory("MENUITEMINFO");
 						mii.cbSize = mii.Size;
 						mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
 						mii.wId = i + 1;
-						var s = Common.UndoCloseTab.db[i];
+						let s = Common.UndoCloseTab.db[i];
 						if (typeof (s) == "string") {
 							s = s.split("\n");
 							s = s[s[s.length - 1]];
 							if (api.PathIsNetworkPath(s)) {
 								MenusIcon(mii, 'icon:dsuiext.dll,25,16');
-								s = fso.GetFileName(s) || s;
+								s = GetFileName(s) || s;
 							} else {
 								s = api.ILCreateFromPath(s);
 								AddMenuIconFolderItem(mii, s);
@@ -111,11 +111,11 @@ Sync.XFinder = {
 						pt = api.Memory("POINT");
 						api.GetCursorPos(pt);
 					}
-					s = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
+					let s = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null);
 					if (s) {
-						var s = Common.UndoCloseTab.db[s - 1];
-						if (typeof (s) == "string") {
-							var a = s.split(/\n/);
+						s = Common.UndoCloseTab.db[s - 1];
+						if ("string" === typeof s) {
+							const a = s.split(/\n/);
 							if (a.length > 1) {
 								s = te.FolderItems(a.length - 1);
 								s.Index = a.pop();
@@ -136,7 +136,7 @@ Sync.XFinder = {
 		},
 
 		rename: function (Ctrl, hwnd, pt, line) {
-			var FV = GetFolderView(Ctrl, pt);
+			const FV = GetFolderView(Ctrl, pt);
 			setTimeout(function () {
 				if (FV) {
 					FV.SelectItem(FV.FocusedItem, SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_EDIT);
@@ -148,7 +148,7 @@ Sync.XFinder = {
 		},
 
 		go: function (Ctrl, hwnd, pt, line) {
-			var p = api.QuadPart(ExtractMacro(Ctrl, line));
+			const p = GetNum(ExtractMacro(Ctrl, line));
 			if (p == -1) {
 				return Exec(Ctrl, "Back", "Tabs", hwnd, pt);
 			}
@@ -159,12 +159,12 @@ Sync.XFinder = {
 		},
 
 		newfolder: function (Ctrl, hwnd, pt, line) {
-			var p = ExtractMacro(Ctrl, line);
+			let p = ExtractMacro(Ctrl, line);
 			p = /\//.test(p) ? p.replace(/\\\//g, "") : InputDialog(GetText("New Folder"), p);
 			if (p) {
 				if (!/^[A-Z]:\\|^\\/i.test(p)) {
-					var FV = GetFolderView(Ctrl, pt);
-					p = fso.BuildPath(FV.FolderItem.Path, p);
+					const FV = GetFolderView(Ctrl, pt);
+					p = BuildPath(FV.FolderItem.Path, p);
 				}
 				CreateFolder(p);
 			}
@@ -172,19 +172,19 @@ Sync.XFinder = {
 		},
 
 		folder: function (Ctrl, hwnd, pt, line) {
-			var p = ExtractMacro(Ctrl, line);
+			const p = ExtractMacro(Ctrl, line);
 			if (p.length) {
 				if (SameText(p, "Find")) {
 					sha.FindFiles()
 					return S_OK;
 				}
-				var FV = GetFolderView(Ctrl, pt);
+				const FV = GetFolderView(Ctrl, pt);
 				if (FV) {
 					Sync.XFinder.Run(FV, FV, p);
 				}
 				return S_OK;
 			}
-			var TV = te.Ctrl(CTRL_TV);
+			const TV = te.Ctrl(CTRL_TV);
 			if (TV) {
 				TV.Align = TV.Align ^ 2;
 				if (TV.Width == 0 && TV.Align & 2) {
@@ -195,12 +195,12 @@ Sync.XFinder = {
 		},
 
 		newfile: function (Ctrl, hwnd, pt, line) {
-			var p = ExtractMacro(Ctrl, line);
+			let p = ExtractMacro(Ctrl, line);
 			p = /\//.test(p) ? p.replace(/\\\//g, "") : InputDialog(GetText("New File"), p);
 			if (p) {
 				if (!/^[A-Z]:\\|^\\/i.test(p)) {
-					var FV = GetFolderView(Ctrl, pt);
-					p = fso.BuildPath(FV.FolderItem.Path, p);
+					const FV = GetFolderView(Ctrl, pt);
+					p = BuildPath(FV.FolderItem.Path, p);
 				}
 				CreateFile(p);
 			}
@@ -209,13 +209,13 @@ Sync.XFinder = {
 
 		exec: function (Ctrl, hwnd, pt, line) {
 			if (line.length) {
-				var FV = GetFolderView(Ctrl, pt);
+				const FV = GetFolderView(Ctrl, pt);
 				if (FV) {
 					if (SameText(line, "Undo")) {
 						api.SendMessage(FV.hwndView, WM_COMMAND, 28700 - 1, 0);
 						return S_OK;
 					}
-					var Selected = FV.SelectedItems();
+					const Selected = FV.SelectedItems();
 					Sync.XFinder.Run(Selected ? Selected : FV, FV, line);
 				}
 			}
@@ -227,10 +227,10 @@ Sync.XFinder = {
 		},
 
 		clippath: function (Ctrl, hwnd, pt, line) {
-			var FV = GetFolderView(Ctrl, pt);
+			const FV = GetFolderView(Ctrl, pt);
 			if (FV) {
-				var p = api.sscanf(line, "%x");
-				var Items;
+				const p = api.sscanf(line, "%x");
+				let Items;
 				if (p >= 0x10) {
 					Items = FV.SelectedItems();
 				} else {
@@ -238,17 +238,17 @@ Sync.XFinder = {
 					Items.AddItem(FV.FocusedItem);
 				}
 			}
-			var a = [];
-			for (var i = 0; i < Items.Count; i++) {
-				var s = Items.Item(i).Path;
+			const a = [];
+			for (let i = 0; i < Items.Count; i++) {
+				let s = Items.Item(i).Path;
 				if (p & 1) {
 					s = s.replace(/\.[^\\]+$/, "");
 				}
 				if (p & 2) {
-					s = fso.GetFileName(s);
+					s = GetFileName(s);
 				}
 				if (!(p & 8)) {
-					s = api.PathQuoteSpaces(s);
+					s = PathQuoteSpaces(s);
 				}
 				a.push(s);
 			}
@@ -261,13 +261,13 @@ Sync.XFinder = {
 		},
 
 		viewstyle: function (Ctrl, hwnd, pt, line) {
-			var FV = GetFolderView(Ctrl, pt);
+			const FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				if (SameText(line, "Menu")) {
 					Sync.XFinder.Popup(FV, /&V/i);
 					return S_OK;
 				}
-				var p = api.sscanf(line, "%d");
+				let p = api.sscanf(line, "%d");
 				if (p < FVM_ICON || p > FVM_THUMBNAIL) {
 					p = FV.CurrentViewMode;
 					if (p == FVM_ICON && FV.IconSize >= 96) {
@@ -292,9 +292,9 @@ Sync.XFinder = {
 		},
 
 		sort: function (Ctrl, hwnd, pt, line) {
-			var FV = GetFolderView(Ctrl, pt);
+			const FV = GetFolderView(Ctrl, pt);
 			if (FV) {
-				var s = ExtractMacro(Ctrl, line);
+				const s = ExtractMacro(Ctrl, line);
 				if (s) {
 					FV.SortColumn = s;
 					return S_OK;
@@ -305,12 +305,12 @@ Sync.XFinder = {
 		},
 
 		confirm: function (Ctrl, hwnd, pt, line) {
-			var ar = WScript.Col(ExtractMacro(Ctrl, line));
+			const ar = WScript.Col(ExtractMacro(Ctrl, line));
 			return wsh.Popup(ar[1], 0, ar[0], MB_OKCANCEL | MB_ICONQUESTION | MB_SYSTEMMODAL) != IDCANCEL ? S_OK : E_ABORT;
 		},
 
 		columns: function (Ctrl, hwnd, pt, line) {
-			var FV = GetFolderView(Ctrl, pt);
+			const FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Columns = ExtractMacro(FV, line.replace(/^\s+|\s+$/, "")).replace(/,/g, " ");
 			}
@@ -324,10 +324,10 @@ Sync.XFinder = {
 		},
 
 		set: function (Ctrl, hwnd, pt, line) {
-			var ar = line.split("=");
-			var a = ar.shift().toLowerCase();
-			var d = ExtractMacro(Ctrl, ar.join("="));
-			var fn = Sync.XFinder.Env[a];
+			const ar = line.split("=");
+			const a = ar.shift().toLowerCase();
+			const d = ExtractMacro(Ctrl, ar.join("="));
+			const fn = Sync.XFinder.Env[a];
 			if (fn) {
 				return fn(Ctrl, hwnd, pt, d)
 			}
@@ -336,17 +336,17 @@ Sync.XFinder = {
 		},
 
 		swap: function (Ctrl, hwnd, pt, line) {
-			var ar = line.toLowerCase().split(",");
-			var a = ExtractMacro(Ctrl, "%" + ar[0] + "%");
+			const ar = line.toLowerCase().split(",");
+			const a = ExtractMacro(Ctrl, "%" + ar[0] + "%");
 			Sync.XFinder.Command.set(Ctrl, hwnd, pt, ar[0] + "=%" + ar[1] + "%");
 			Sync.XFinder.Command.set(Ctrl, hwnd, pt, ar[1] + "=" + a);
 			return S_OK;
 		},
 
 		input: function (Ctrl, hwnd, pt, line) {
-			var ar = WScript.Col(ExtractMacro(Ctrl, line));
-			var r = InputDialog([ar[1], ar[2]].join("\n"), ar[3] || "");
-			if (typeof (r) == "string") {
+			const ar = WScript.Col(ExtractMacro(Ctrl, line));
+			const r = InputDialog([ar[1], ar[2]].join("\n"), ar[3] || "");
+			if ("string" === typeof r) {
 				AddEnv("inputdata", r);
 				return S_OK;
 			}
@@ -355,10 +355,12 @@ Sync.XFinder = {
 		},
 
 		choosefolder: function (Ctrl, hwnd, pt, line) {
-			var pt = api.Memory("POINT");
-			api.GetCursorPos(pt);
-			var ar = WScript.Col(ExtractMacro(Ctrl, line));
-			var FolderItem = FolderMenu.Open(ar[0], pt.x, pt.y, ar[1]);
+			if (!pt) {
+				pt = api.Memory("POINT");
+				api.GetCursorPos(pt);
+			}
+			const ar = WScript.Col(ExtractMacro(Ctrl, line));
+			const FolderItem = FolderMenu.Open(ar[0], pt.x, pt.y, ar[1]);
 			if (FolderItem) {
 				AddEnv("inputdata", api.GetDisplayNameOf(FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX));
 				return S_OK;
@@ -367,11 +369,11 @@ Sync.XFinder = {
 		},
 
 		lock: function (Ctrl, hwnd, pt, line) {
-			var p = ExtractMacro(Ctrl, line);
-			var TC = te.Ctrl(CTRL_TC);
+			const p = ExtractMacro(Ctrl, line);
+			const TC = te.Ctrl(CTRL_TC);
 			if (TC) {
 				if (p.length) {
-					var FV = TC[TC.SelectedIndex];
+					const FV = TC[TC.SelectedIndex];
 					if (FV) {
 						FV.Data.Lock = !api.QuadPart(p);
 					}
@@ -382,11 +384,11 @@ Sync.XFinder = {
 		},
 
 		foreach: function (Ctrl, hwnd, pt, line) {
-			var FV = GetFolderView(Ctrl, pt);
+			const FV = GetFolderView(Ctrl, pt);
 			if (FV) {
-				var Selected = FV.SelectedItems();
+				const Selected = FV.SelectedItems();
 				if (Selected) {
-					for (var i = 0; i < Selected.Count; i++) {
+					for (let i = 0; i < Selected.Count; i++) {
 						if (Sync.XFinder.Exec(Ctrl, hwnd, pt, line.replace(/%Variable%/ig, api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) != S_OK) {
 							break;
 						}
@@ -396,18 +398,18 @@ Sync.XFinder = {
 		},
 
 		numbering: function (Ctrl, hwnd, pt, line) {
-			var FileList, FileIndex, i, strPath, nMode;
-			var nStart, nInc, wsSrc, wsDist;
-			var DoRename = function (n) {
+			let FileList, FileIndex, i, strPath, nMode;
+			let nStart, nInc, wsSrc, wsDist;
+			const DoRename = function (n) {
 				try {
-					var wsPath, nSame;
-					var strPath = FileList[n];
-					var wsFile = fso.GetBaseName(strPath);
-					var wsExt = fso.GetExtensionName(strPath);
+					let wsPath, nSame;
+					strPath = FileList[n];
+					const wsFile = fso.GetBaseName(strPath);
+					let wsExt = fso.GetExtensionName(strPath);
 					wsExt = wsExt ? "." + wsExt : wsExt;
-					var wsParam = ar[0];
-					var nD = nStart + FileIndex[n] * nInc;
-					var z = wsParam.length + MAX_PATH;
+					const wsParam = ar[0];
+					const nD = nStart + FileIndex[n] * nInc;
+					const z = wsParam.length + MAX_PATH;
 					switch (nMode) {
 						case 1:
 							wsPath = api.sprintf(z, wsParam, wsFile, wsExt);		// %s%s
@@ -422,7 +424,7 @@ Sync.XFinder = {
 							wsPath = api.sprintf(z, wsParam, nD) + wsExt; 			// %d
 							break;
 					}
-					wsPath = fso.BuildPath(fso.GetParentFolderName(strPath), wsPath.replace(wsSrc, wsDist));
+					wsPath = BuildPath(GetParentFolderName(strPath), wsPath.replace(wsSrc, wsDist));
 					if (!SameText(wsPath, FileList[n])) {
 						nSame = FileList.indexOf(wsPath);
 						if (nSame >= 0) {
@@ -439,18 +441,18 @@ Sync.XFinder = {
 				FileIndex.splice(n, 1);
 			}
 
-			var FV = GetFolderView(Ctrl, pt);
+			const FV = GetFolderView(Ctrl, pt);
 			if (FV) {
-				var Selected = FV.Items(SVGIO_SELECTION | SVGIO_FLAG_VIEWORDER);
-				var ar = WScript.Col(ExtractMacro(Ctrl, line));
+				const Selected = FV.Items(SVGIO_SELECTION | SVGIO_FLAG_VIEWORDER);
+				const ar = WScript.Col(ExtractMacro(Ctrl, line));
 				if (ar.length) {
 					if (!/\/|\\/.test(ar[0])) {
 						FileList = [];
 						FileIndex = [];
 						if (!FileList.indexOf) {
 							FileList.indexOf = function (s) {
-								var n = FileList.length;
-								for (var i = 0; i < n; i++) {
+								const n = FileList.length;
+								for (let i = 0; i < n; i++) {
 									if (s === FileList[i]) {
 										return i;
 									}
@@ -517,8 +519,8 @@ Sync.XFinder = {
 		},
 
 		unlock: function (Ctrl, hwnd, pt, line) {
-			var ar = WScript.Col(ExtractMacro(Ctrl, line));
-			for (var i in ar) {
+			const ar = WScript.Col(ExtractMacro(Ctrl, line));
+			for (let i in ar) {
 				UnlockFV(api.ILCreateFromPath(ar[i]));
 			}
 			try {
@@ -527,18 +529,18 @@ Sync.XFinder = {
 		},
 
 		thumbnail: function (Ctrl, hwnd, pt, line) {
-			var hFind;
-			var ar = api.CommandLineToArgv(ExtractMacro(Ctrl, line));
-			var Size = (WScript.Env("ImageSize") || "96").split(/,/);
+			let hFind;
+			const ar = api.CommandLineToArgv(ExtractMacro(Ctrl, line));
+			let Size = (WScript.Env("ImageSize") || "96").split(/,/);
 			if (Size[1] > Size[0]) {
 				Size[0] = Size[1];
 			}
-			var wfd = api.Memory("WIN32_FIND_DATA");
+			const wfd = api.Memory("WIN32_FIND_DATA");
 			if (ar[0].toLowerCase() == "create") {
-				for (var i = ar.length; i-- > 1;) {
+				for (let i = ar.length; i-- > 1;) {
 					hFind = api.FindFirstFile(ar[i], wfd);
 					if (hFind != INVALID_HANDLE_VALUE) {
-						var image = te.WICBitmap().FromFile(ar[i]);
+						let image = te.WICBitmap().FromFile(ar[i]);
 						if (image) {
 							image = GetThumbnail(image, Size[0], true);
 							image.Save(ar[i] + ":thumbnail.jpg");
@@ -548,7 +550,7 @@ Sync.XFinder = {
 					}
 				}
 			} else if (ar[0].toLowerCase() == "delete") {
-				for (var i = ar.length; i-- > 1;) {
+				for (let i = ar.length; i-- > 1;) {
 					hFind = api.FindFirstFile(ar[i], wfd);
 					if (hFind != INVALID_HANDLE_VALUE) {
 						if (api.DeleteFile(ar[i] + ":thumbnail.jpg")) {
@@ -558,14 +560,14 @@ Sync.XFinder = {
 					}
 				}
 			} else {
-				var image = te.WICBitmap().FromFile(ar[0]);
+				let image = te.WICBitmap().FromFile(ar[0]);
 				if (image) {
 					Size = (ar[2] || Size[0]).split(/,/);
 					if (Size[1] > Size[0]) {
 						Size[0] = Size[1];
 					}
 					image = GetThumbnail(image, Size[0], true);
-					var res = /^(.+):[^\\]+$/.exec(ar[1]);
+					const res = /^(.+):[^\\]+$/.exec(ar[1]);
 					if (res) {
 						hFind = api.FindFirstFile(res[1], wfd);
 					}
@@ -576,26 +578,21 @@ Sync.XFinder = {
 					}
 				}
 			}
-			var FV = GetFolderView(Ctrl, pt);
+			const FV = GetFolderView(Ctrl, pt);
 			te.OnCommand(FV, FV.hwnd, WM_NULL, 0, 0);
 		}
-		/*
-					: function (Ctrl, hwnd, pt, line)
-					{
-					}
-		*/
 	},
 
 	FileOperation: function (Ctrl, hwnd, wFunc, line) {
-		var fFlags = 0;
-		var bTo = false;
-		var bBG = false;
-		var bSame = false;
-		var pFrom = [];
-		var pTo = [];
-		var ar = api.CommandLineToArgv(ExtractMacro(Ctrl, line));
-		for (var i = 0; i < ar.length; i++) {
-			var s = ar[i].toLowerCase();
+		let fFlags = 0;
+		let bTo = false;
+		let bBG = false;
+		let bSame = false;
+		const pFrom = [];
+		const pTo = [];
+		const ar = api.CommandLineToArgv(ExtractMacro(Ctrl, line));
+		for (let i = 0; i < ar.length; i++) {
+			const s = ar[i].toLowerCase();
 			if (api.PathMatchSpec(s, '/*')) {
 				if (s == '/b') {
 					bBG = true;
@@ -625,18 +622,18 @@ Sync.XFinder = {
 					fFlags |= FOF_ALLOWUNDO;
 				}
 			} else {
-				(bTo ? pTo : pFrom).push(api.PathQuoteSpaces(ar[i]));
+				(bTo ? pTo : pFrom).push(PathQuoteSpaces(ar[i]));
 			}
 		}
 		if (pFrom.length && (wFunc == FO_DELETE || pTo.length)) {
 			if (bSame && pTo.length == 1) {
-				if (api.ILIsEqual(fso.GetParentFolderName(pFrom[0]), slTo[0])) {
+				if (api.ILIsEqual(GetParentFolderName(pFrom[0]), slTo[0])) {
 					fFlags |= FOF_RENAMEONCOLLISION;
 				}
 			}
 			if (wFunc == FO_DELETE) {
 				if (SameText(pFrom[0], 'shell:RecycleBinFolder')) {
-					var dwFlags = 0;
+					let dwFlags = 0;
 					if (fFlags & FOF_SILENT) {
 						dwFlags |= SHERB_NOPROGRESSUI;
 					}
@@ -646,7 +643,7 @@ Sync.XFinder = {
 					api.SHEmptyRecycleBin(te.hwnd, pTo.join("\0"), dwFlags);
 					return;
 				}
-				for (var i in pFrom) {
+				for (let i in pFrom) {
 					ChangeNotifyFV(SHCNE_RMDIR, pFrom[i]);
 				}
 			}
@@ -654,8 +651,7 @@ Sync.XFinder = {
 		}
 	},
 
-	Env:
-	{
+	Env: {
 		address: function (Ctrl, hwnd, pt, s) {
 			SetAddress(s);
 			return S_OK;
@@ -667,28 +663,28 @@ Sync.XFinder = {
 		},
 
 		windowposition: function (Ctrl, hwnd, pt, s) {
-			var pt = s.split(/,/);
+			const p = s.split(/,/);
 			if (pt.length < 4) {
-				var rc = api.Memory("RECT");
+				const rc = api.Memory("RECT");
 				api.GetWindowRect(te.hwnd, rc);
-				api.MoveWindow(te.hwnd, pt[0], pt[1], rc.right - rc.left, rc.bottom - rc.top, 1);
+				api.MoveWindow(te.hwnd, p[0], p[1], rc.right - rc.left, rc.bottom - rc.top, 1);
 			} else {
-				api.MoveWindow(te.hwnd, pt[0], pt[1], pt[2], pt[3], 1);
+				api.MoveWindow(te.hwnd, p[0], p[1], p[2], p[3], 1);
 			}
 			return S_OK;
 		},
 
 		windowsize: function (Ctrl, hwnd, pt, s) {
-			var rc = api.Memory("RECT");
+			const rc = api.Memory("RECT");
 			api.GetWindowRect(te.hwnd, rc);
-			var size = s.split(/,/);
+			const size = s.split(/,/);
 			api.MoveWindow(te.hwnd, rc.left, rc.top, size[0], size[1], 1);
 			return S_OK;
 		},
 
 		timestamp: function (Ctrl, hwnd, pt, s) {
-			var ar = WScript.Col(s);
-			for (var i = 1; i < ar.length; i++) {
+			const ar = WScript.Col(s);
+			for (let i = 1; i < ar.length; i++) {
 				api.SetFileTime(ar[i], null, null, ar[0]);
 			}
 			return S_OK;
@@ -696,7 +692,7 @@ Sync.XFinder = {
 
 		tabname: function (Ctrl, hwnd, pt, s) {
 			if (Sync.TabName) {
-				var FV = GetFolderView(Ctrl, pt);
+				const FV = GetFolderView(Ctrl, pt);
 				if (FV) {
 					Sync.TabName.Set(FV, s)
 				}
@@ -705,9 +701,9 @@ Sync.XFinder = {
 
 		tabcolor: function (Ctrl, hwnd, pt, s) {
 			if (Sync.TabColor) {
-				var FV = GetFolderView(Ctrl, pt);
+				const FV = GetFolderView(Ctrl, pt);
 				if (FV) {
-					var ar = WScript.Col(s);
+					const ar = WScript.Col(s);
 					Sync.TabColor.Set(FV, ar[0])
 				}
 			}
@@ -730,7 +726,7 @@ Sync.XFinder = {
 		if (/^\/\//.test(line)) {
 			return S_OK;
 		}
-		var res = /^SW:(\d):(.*)/i.exec(line);
+		let res = /^SW:(\d):(.*)/i.exec(line);
 		if (res) {
 			this.SW = api.QuadPart(res[1]);
 			line = res[2];
@@ -742,7 +738,7 @@ Sync.XFinder = {
 		}
 		res = /^(.+?):\s*(.*)\s*/.exec(line);
 		if (res) {
-			var fn = this.Command[res[1].toLowerCase()];
+			const fn = this.Command[res[1].toLowerCase()];
 			if (fn) {
 				return fn(Ctrl, hwnd, pt, res[2]);
 			}
@@ -769,17 +765,17 @@ Sync.XFinder = {
 	},
 
 	Popup: function (FV, re) {
-		var hMenu = api.CreatePopupMenu();
-		var ContextMenu = FV.ViewMenu();
+		const hMenu = api.CreatePopupMenu();
+		const ContextMenu = FV.ViewMenu();
 		if (ContextMenu) {
 			ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_DEFAULTONLY);
 		}
-		for (var i = api.GetMenuItemCount(hMenu); i--;) {
-			var s = api.GetMenuString(hMenu, i, MF_BYPOSITION);
+		for (let i = api.GetMenuItemCount(hMenu); i--;) {
+			const s = api.GetMenuString(hMenu, i, MF_BYPOSITION);
 			if (re.test(s)) {
-				var pt = api.Memory("POINT");
+				const pt = api.Memory("POINT");
 				api.GetCursorPos(pt);
-				var nVerb = api.TrackPopupMenuEx(api.GetSubMenu(hMenu, i), TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
+				const nVerb = api.TrackPopupMenuEx(api.GetSubMenu(hMenu, i), TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, null);
 				if (nVerb) {
 					ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 1, null, null, SW_SHOWNORMAL, 0, 0);
 				}
@@ -790,8 +786,8 @@ Sync.XFinder = {
 	},
 
 	Run: function (Item, FV, s) {
-		var hMenu = api.CreatePopupMenu();
-		var ContextMenu = api.ContextMenu(Item);
+		const hMenu = api.CreatePopupMenu();
+		const ContextMenu = api.ContextMenu(Item);
 		if (ContextMenu) {
 			ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_DEFAULTONLY);
 			s = ExtractMacro(FV, s);
@@ -814,16 +810,16 @@ Sync.XFinder = {
 			pt = api.Memory("POINT");
 			api.GetCursorPos(pt);
 		}
-		var hr = S_OK;
-		var lines = s.split(/\n/);
+		let hr = S_OK;
+		const lines = s.split(/\n/);
 		Sync.XFinder.nMode = nMode || 0;
-		var res = /Script:(.+)/i.exec(s);
+		const res = /Script:(.+)/i.exec(s);
 		if (res) {
-			var type = res[1].replace(/^\s+|\s+$/, "");
+			const type = res[1].replace(/^\s+|\s+$/, "");
 			lines.shift();
 			return ExecScriptEx(Ctrl, lines.join("\n"), type, hwnd, pt, undefined, undefined, undefined, undefined, GetFolderView(Ctrl, pt));
 		}
-		for (var i in lines) {
+		for (let i in lines) {
 			hr = Sync.XFinder.Exec(Ctrl, hwnd, pt, lines[i]);
 			if (hr != S_OK) {
 				break;
@@ -833,16 +829,16 @@ Sync.XFinder = {
 	},
 
 	FormatDateTime: function (fmt, dt) {
-		var ar =
+		const ar =
 			[
 				["dddddd", LOCALE_SLONGDATE],
 				["ddddd", LOCALE_SSHORTDATE],
 				["tt", LOCALE_STIMEFORMAT]
 			];
-		var s = fmt.split("'");
-		for (var j = 0; j < s.length; j += 2) {
-			for (var i in ar) {
-				var re = new RegExp(ar[i][0], "");
+		const s = fmt.split("'");
+		for (let j = 0; j < s.length; j += 2) {
+			for (let i in ar) {
+				const re = new RegExp(ar[i][0], "");
 				if (re.test(s[j])) {
 					s[j] = s[j].replace(re, api.GetLocaleInfo(LOCALE_USER_DEFAULT, ar[i][1]));
 				}
@@ -853,13 +849,13 @@ Sync.XFinder = {
 };
 
 AddEnv("X-Finder", function (Ctrl) {
-	return (fso.GetParentFolderName(api.GetModuleFileName(null)) + "\\").replace(/\\\\$/, "\\");
+	return (te.Data.Installed + "\\").replace(/\\\\$/, "\\");
 });
 
 AddEnv("Focused", function (Ctrl) {
-	var FV = GetFolderView(Ctrl);
+	const FV = GetFolderView(Ctrl);
 	if (FV) {
-		var Focused = FV.FocusedItem;
+		const Focused = FV.FocusedItem;
 		if (Focused) {
 			return api.GetDisplayNameOf(Focused, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		}
@@ -867,9 +863,9 @@ AddEnv("Focused", function (Ctrl) {
 });
 
 AddEnv("FocusedName", function (Ctrl) {
-	var FV = GetFolderView(Ctrl);
+	const FV = GetFolderView(Ctrl);
 	if (FV) {
-		var Focused = FV.FocusedItem;
+		const Focused = FV.FocusedItem;
 		if (Focused) {
 			return fso.GetBaseName(api.GetDisplayNameOf(Focused, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 		}
@@ -885,12 +881,12 @@ AddEnv("sysdir", function (Ctrl) {
 });
 
 AddEnv("CurrentSelected", function (Ctrl) {
-	var ar = [];
-	var FV = GetFolderView(Ctrl);
+	const ar = [];
+	const FV = GetFolderView(Ctrl);
 	if (FV) {
-		var Selected = FV.Items(SVGIO_SELECTION | SVGIO_FLAG_VIEWORDER);
+		const Selected = FV.Items(SVGIO_SELECTION | SVGIO_FLAG_VIEWORDER);
 		if (Selected) {
-			for (var i = Selected.Count; i > 0; ar.unshift(api.PathQuoteSpaces(api.GetDisplayNameOf(Selected.Item(--i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)))) {
+			for (let i = Selected.Count; i > 0; ar.unshift(PathQuoteSpaces(api.GetDisplayNameOf(Selected.Item(--i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)))) {
 			}
 		}
 	}
@@ -898,19 +894,19 @@ AddEnv("CurrentSelected", function (Ctrl) {
 });
 
 AddEnv("Other", function (Ctrl) {
-	var TC = te.Ctrl(CTRL_TC);
-	var cTC = te.Ctrls(CTRL_TC);
-	var nId = TC.Id;
-	var nLen = cTC.length;
-	for (var i = nLen; i--;) {
+	const TC = te.Ctrl(CTRL_TC);
+	const cTC = te.Ctrls(CTRL_TC);
+	let nId = TC.Id;
+	const nLen = cTC.length;
+	for (let i = nLen; i--;) {
 		if (cTC[i].Id == nId) {
 			nId = i;
 			break;
 		}
 	}
-	for (var i = (nId + 1) % nLen; i != nId; i = (i + 1) % nLen) {
+	for (let i = (nId + 1) % nLen; i != nId; i = (i + 1) % nLen) {
 		if (cTC[i].Visible) {
-			return api.PathQuoteSpaces(api.GetDisplayNameOf(cTC[i].Selected, SHGDN_FORPARSING));
+			return PathQuoteSpaces(api.GetDisplayNameOf(cTC[i].Selected, SHGDN_FORPARSING));
 		}
 	}
 });
@@ -920,29 +916,23 @@ AddEnv("SendTo", function (Ctrl) {
 });
 
 AddEnv("FileContents", function (Ctrl) {
-	var s = "";
-	var FV = GetFolderView(Ctrl);
+	let s = "";
+	const FV = GetFolderView(Ctrl);
 	if (FV) {
-		var Focused = FV.FocusedItem;
+		const Focused = FV.FocusedItem;
 		if (Focused) {
-			try {
-				var ado = OpenAdodbFromTextFile(Focused.Path);
-				s = ado.ReadText();
-				ado.Close();
-			} catch (e) {
-				wsh.Echo(Focused.Path);
-			}
+			s = ReadTextFile(Focused.Path, true);
 		}
 	}
 	return s;
 });
 
 AddEnv("Clipboard", function (Ctrl) {
-	var s = clipboardData.getData("text");
+	let s = clipboardData.getData("text");
 	if (!s) {
 		s = "";
-		var Items = api.OleGetClipboard();
-		for (var i = 0; i < Items.Count; i++) {
+		const Items = api.OleGetClipboard();
+		for (let i = 0; i < Items.Count; i++) {
 			s += api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING) + "\n";
 		}
 	}
@@ -950,12 +940,12 @@ AddEnv("Clipboard", function (Ctrl) {
 });
 
 AddEnv("Clipboard1", function (Ctrl) {
-	var s = clipboardData.getData("text");
+	let s = clipboardData.getData("text");
 	if (!s) {
 		s = [];
-		var Items = api.OleGetClipboard();
-		for (var i = 0; i < Items.Count; i++) {
-			s.push(api.PathQuoteSpaces(api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)));
+		const Items = api.OleGetClipboard();
+		for (let i = 0; i < Items.Count; i++) {
+			s.push(PathQuoteSpaces(api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)));
 		}
 		return s.join(" ");
 	}
@@ -963,13 +953,13 @@ AddEnv("Clipboard1", function (Ctrl) {
 });
 
 AddEnv("Attrib", function (Ctrl) {
-	var s = [];
-	var FV = GetFolderView(Ctrl);
+	const s = [];
+	const FV = GetFolderView(Ctrl);
 	if (FV) {
-		var FindData = api.Memory("WIN32_FIND_DATA");
+		const FindData = api.Memory("WIN32_FIND_DATA");
 		api.SHGetDataFromIDList(FV.FocusedItem, SHGDFIL_FINDDATA, FindData, FindData.Size);
-		var a = { R: FILE_ATTRIBUTE_READONLY, A: FILE_ATTRIBUTE_ARCHIVE, S: FILE_ATTRIBUTE_SYSTEM, H: FILE_ATTRIBUTE_HIDDEN };
-		for (var i in a) {
+		const a = { R: FILE_ATTRIBUTE_READONLY, A: FILE_ATTRIBUTE_ARCHIVE, S: FILE_ATTRIBUTE_SYSTEM, H: FILE_ATTRIBUTE_HIDDEN };
+		for (let i in a) {
 			s.push((FindData.dwFileAttributes & a[i] ? "+" : "-") + i);
 		}
 	}
@@ -977,14 +967,14 @@ AddEnv("Attrib", function (Ctrl) {
 });
 
 AddEnv("TabName", function (Ctrl) {
-	var FV = GetFolderView(Ctrl);
+	const FV = GetFolderView(Ctrl);
 	if (FV) {
 		return GetTabName(FV);
 	}
 });
 
 AddEnv("TabColor", function (Ctrl) {
-	var FV = GetFolderView(Ctrl);
+	const FV = GetFolderView(Ctrl);
 	if (FV) {
 		return RunEvent4("GetTabColor", FV);
 	}
@@ -1003,7 +993,7 @@ AddEvent("ReplaceMacroEx", [/%DateTime:([^%]*)%/ig, function (strMatch, ref1) {
 }]);
 
 AddEvent("ReplaceMacro", [/%TimeStamp:([^%]*)%/ig, function (Ctrl, re, res) {
-	var FV = GetFolderView(Ctrl, pt);
+	const FV = GetFolderView(Ctrl, pt);
 	if (FV) {
 		return Sync.XFinder.FormatDateTime(res[1], FV.FocusedItem.ModifyDate);
 	}
@@ -1016,8 +1006,8 @@ AddType("X-Finder",
 		},
 
 		Ref: function (s, pt) {
-			var ar = [];
-			for (var i in Sync.XFinder.Command) {
+			const ar = [];
+			for (let i in Sync.XFinder.Command) {
 				ar.push(i.replace(/^[a-z]/g, function (s) { return s.toUpperCase(); }) + ":");
 			}
 			ar.sort();
@@ -1065,7 +1055,7 @@ WScript.Env = function (s, strNew) {
 }
 
 WScript.Col = function (s) {
-	var ar = [];
+	const ar = [];
 	s = s.replace(/ *"([^"]*)"([, ]?)| *([^, ]*)([, ]?)/g, function (strMatch, r1, r2, r3, r4) {
 		if (r1 || r2 || r3 || r4) {
 			ar.push(r1 || r3);
@@ -1076,7 +1066,7 @@ WScript.Col = function (s) {
 }
 
 WScript.DoDragDrop = function (Items) {
-	var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
+	const pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 	return api.SHDoDragDrop(null, Items, te, pdwEffect[0], pdwEffect);
 }
 

@@ -1,5 +1,5 @@
-const Addon_Id = "openinsted";
-const item = GetAddonElement("openinstead");
+const Addon_Id = "openinstead";
+const item = GetAddonElement(Addon_Id);
 
 Sync.OpenInstead = {
 	RealFolders: item.getAttribute("RealFolders"),
