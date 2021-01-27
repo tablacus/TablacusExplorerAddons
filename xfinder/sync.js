@@ -227,10 +227,10 @@ Sync.XFinder = {
 		},
 
 		clippath: function (Ctrl, hwnd, pt, line) {
+			let Items;
 			const FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				const p = api.sscanf(line, "%x");
-				let Items;
 				if (p >= 0x10) {
 					Items = FV.SelectedItems();
 				} else {
@@ -239,18 +239,20 @@ Sync.XFinder = {
 				}
 			}
 			const a = [];
-			for (let i = 0; i < Items.Count; i++) {
-				let s = Items.Item(i).Path;
-				if (p & 1) {
-					s = s.replace(/\.[^\\]+$/, "");
+			if (Items) {
+				for (let i = 0; i < Items.Count; i++) {
+					let s = Items.Item(i).Path;
+					if (p & 1) {
+						s = s.replace(/\.[^\\]+$/, "");
+					}
+					if (p & 2) {
+						s = GetFileName(s);
+					}
+					if (!(p & 8)) {
+						s = PathQuoteSpaces(s);
+					}
+					a.push(s);
 				}
-				if (p & 2) {
-					s = GetFileName(s);
-				}
-				if (!(p & 8)) {
-					s = PathQuoteSpaces(s);
-				}
-				a.push(s);
 			}
 			clipboardData.setData("text", a.join("\n"));
 			return S_OK;
@@ -524,7 +526,7 @@ Sync.XFinder = {
 				UnlockFV(api.ILCreateFromPath(ar[i]));
 			}
 			try {
-				wsh.CurrentDirectory = fso.GetSpecialFolder(2).Path;
+				wsh.CurrentDirectory = te.Data.TempFolder;
 			} catch (e) { }
 		},
 

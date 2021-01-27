@@ -2,7 +2,7 @@ const Addon_Id = "t7zip";
 const item = GetAddonElement(Addon_Id);
 
 Sync.T7Zip = {
-	DLL: api.DllGetClassObject(BuildPath(GetParentFolderName(api.GetModuleFileName(null)), ["addons\\t7zip\\t7z", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{BFD084CA-C9AA-4bd3-9984-D5ED699A0711}"),
+	DLL: api.DllGetClassObject(BuildPath(GetParentFolderName(api.GetModuleFileName(null)), ["addons\\t7zip\\t7z", g_.bit, ".dll"].join("")), "{BFD084CA-C9AA-4bd3-9984-D5ED699A0711}"),
 
 	Cmd: {},
 	Mode: { Extract: 1, Add: 2, Delete: 3 },
@@ -15,7 +15,7 @@ Sync.T7Zip = {
 		if (!Sync.T7Zip.DLL || Sync.T7Zip.Cmd[need] === "-") {
 			return;
 		}
-		let lib = {
+		const lib = {
 			file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL),
 			path: ""
 		}
@@ -29,12 +29,12 @@ Sync.T7Zip = {
 	},
 
 	Exec: function (Ctrl, lib, strCmd, strPath, arList, bRefresh) {
-		strCmd = strCmd.replace(/%archive%/i, api.PathQuoteSpaces(lib.file));
+		strCmd = strCmd.replace(/%archive%/i, PathQuoteSpaces(lib.file));
 		strCmd = strCmd.replace(/%items%/i, arList.join(" "));
 		if (!/^[A-Z]:\\|^\\\\[A-Z]/i.test(strPath)) {
 			strPath = null;
 		}
-		let r = api.CreateProcess(Sync.T7Zip.Exe + ' ' + strCmd, strPath, 0, 0, 0, true);
+		const r = api.CreateProcess(Sync.T7Zip.Exe + ' ' + strCmd, strPath, 0, 0, 0, true);
 		Sync.T7Zip.Debug([Sync.T7Zip.Exe, strCmd, "(CD:" + (strPath || "").replace(fso.GetSpecialFolder(2).Path, "%TEMP%"), ')'].join(" "));
 		if ("number" === typeof r) {
 			setTimeout(function () {
@@ -78,7 +78,7 @@ Sync.T7Zip = {
 					break;
 				case CommandID_COPY:
 				case CommandID_CUT:
-					let lib = Sync.T7Zip.GetObject(Ctrl, "Extract");
+					const lib = Sync.T7Zip.GetObject(Ctrl, "Extract");
 					if (lib) {
 						api.OleSetClipboard(Ctrl.SelectedItems());
 						Sync.T7Zip.ClipId = api.sprintf(9, "%x", Ctrl.SessionId);
@@ -94,27 +94,27 @@ Sync.T7Zip = {
 		if (!Items.Count) {
 			return;
 		}
-		let lib = Sync.T7Zip.GetObject(Ctrl, "Add");
+		const lib = Sync.T7Zip.GetObject(Ctrl, "Add");
 		if (lib) {
 			let ar = [], root;
 			if (lib.path) {
-				let root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
-				let path = BuildPath(root, lib.path);
+				root = BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16));
+				const path = BuildPath(root, lib.path);
 				DeleteItem(path);
 				Sync.T7Zip.CreateFolder(path);
-				let oDest = sha.NameSpace(path);
+				const oDest = sha.NameSpace(path);
 				if (oDest) {
 					oDest.CopyHere(Items, FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR);
 					ar.push(lib.path);
 				}
 			} else {
-				let root = Items.Item(-1).Path;
+				root = Items.Item(-1).Path;
 				if (!/^[A-Z]:\\|^\\\\[A-Z]/i.test(root)) {
 					root = GetParentFolderName(Items.Item(0).Path);
 				}
 				for (let i = Items.Count; i-- > 0;) {
-					let Item = Items.Item(i);
-					ar.unshift(api.PathQuoteSpaces(Item.Path.replace(root, "").replace(/^\\/, "")));
+					const Item = Items.Item(i);
+					ar.unshift(PathQuoteSpaces(Item.Path.replace(root, "").replace(/^\\/, "")));
 				}
 			}
 			Sync.T7Zip.Exec(Ctrl, lib, Sync.T7Zip.Cmd.Add, root, ar, true);
@@ -123,19 +123,19 @@ Sync.T7Zip = {
 	},
 
 	Delete: function (Ctrl) {
-		let Items = Ctrl.SelectedItems();
+		const Items = Ctrl.SelectedItems();
 		if (!Items.Count) {
 			return;
 		}
-		let lib = Sync.T7Zip.GetObject(Ctrl, "Delete");
+		const lib = Sync.T7Zip.GetObject(Ctrl, "Delete");
 		if (lib) {
 			if (!confirmOk()) {
 				return;
 			}
-			let root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
-			let ar = [];
+			const root = BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16));
+			const ar = [];
 			for (let i = Items.Count; i-- > 0;) {
-				ar.unshift(api.PathQuoteSpaces(Items.Item(i).Path.replace(root, "").replace(/^\\/, "")));
+				ar.unshift(PathQuoteSpaces(Items.Item(i).Path.replace(root, "").replace(/^\\/, "")));
 			}
 			Sync.T7Zip.Exec(Ctrl, lib, Sync.T7Zip.Cmd.Delete, fso.GetSpecialFolder(2).Path, ar, true);
 			return true;
@@ -143,15 +143,15 @@ Sync.T7Zip = {
 	},
 
 	Enum: function (pid, Ctrl, fncb, SessionId) {
-		let lib = Sync.T7Zip.GetObject(pid.Path);
+		const lib = Sync.T7Zip.GetObject(pid.Path);
 		if (lib) {
-			let q = {
+			const q = {
 				Items: api.CreateObject("FolderItems"),
 				Path: lib.file,
 				Folder: {},
 				Folder2: {},
 				lib: lib,
-				root: BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", SessionId)),
+				root: BuildPath(te.Data.TempFolder, SessionId.toString(16)),
 				GetProperty: Sync.T7Zip.GetProperty,
 				GetPassword: Sync.T7Zip.GetPassword
 			}
@@ -192,7 +192,7 @@ Sync.T7Zip = {
 	},
 
 	CreateFolder: function (path) {
-		let s = GetParentFolderName(path);
+		const s = GetParentFolderName(path);
 		if (s.length > 3 && !fso.FolderExists(s)) {
 			this.CreateFolder(s);
 		}
@@ -204,7 +204,7 @@ Sync.T7Zip = {
 	GetDropEffect: function (Ctrl, dataObj, pdwEffect) {
 		pdwEffect[0] = DROPEFFECT_NONE;
 		if (dataObj.Count) {
-			if (!api.PathMatchSpec(dataObj.Item(0).Path, BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x\\*", Ctrl.SessionId)))) {
+			if (!api.PathMatchSpec(dataObj.Item(0).Path, BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16), "*"))) {
 				pdwEffect[0] = DROPEFFECT_COPY;
 				return true;
 			}
@@ -214,8 +214,7 @@ Sync.T7Zip = {
 	Init: function ()
 	{
 		if (Sync.T7Zip.DLL) {
-			let bit = api.sizeof("HANDLE") * 8;
-			let strDll = api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Dll" + bit)));
+			const strDll = ExtractPath(te, item.getAttribute("Dll" + g_.bit));
 			if (!strDll || !Sync.T7Zip.DLL.Init(strDll)) {
 				if (!Sync.T7Zip.DLL.Init("C:\\Program Files\\7-Zip\\7z.dll")) {
 					if (!Sync.T7Zip.DLL.Init("C:\\Program Files (x86)\\7-Zip\\7z.dll")) {
@@ -223,17 +222,17 @@ Sync.T7Zip = {
 					}
 				}
 			}
-			let strExe = api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Exe" + bit)));
+			let strExe = ExtractPath(te, item.getAttribute("Exe" + g_.bit));
 			if (!strExe || !fso.FileExists(strExe)) {
 				strExe = Sync.T7Zip.DLL.Path.replace(/7z\.dll$/i, "7zG.exe");
 				if (!fso.FileExists(strExe)) {
 					strExe = 'C:\\Program Files\\7-Zip\\7zG.exe';
 				}
 			}
-			Sync.T7Zip.Exe = api.PathQuoteSpaces(strExe);
-			let q = { List: {}, Update: {} };
+			Sync.T7Zip.Exe = PathQuoteSpaces(strExe);
+			const q = { List: {}, Update: {} };
 			Sync.T7Zip.DLL.GetHandlerProperty2(q, function (q, Name, ClassID, Extension, AddExtension, Update, KeepName, Signature, MultiSignature, SignatureOffset, AltStreams, NtSecure, Flags) {
-				let ext = Extension.split(/\s/);
+				const ext = Extension.split(/\s/);
 				for (let s in ext) {
 					q.List[ext[s]] = 1;
 					if (Update) {
@@ -241,7 +240,7 @@ Sync.T7Zip = {
 					}
 				}
 			});
-			let ar = [];
+			const ar = [];
 			for (let s in q.List) {
 				ar.push("*." + s);
 			}
@@ -274,12 +273,12 @@ Sync.T7Zip = {
 				AddEvent("ColumnClick", function (Ctrl, iItem) {
 					if (Ctrl.Type <= CTRL_EB) {
 						if (Sync.T7Zip.IsHandle(Ctrl)) {
-							let cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
-							let s = cColumns[iItem * 2];
+							const cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
+							const s = cColumns[iItem * 2];
 							if (api.PathMatchSpec(s, "System.ItemNameDisplay;System.DateModified")) {
-								let s1 = Ctrl.SortColumns;
-								let s2 = 'prop:' + s + ';System.ItemTypeText;';
-								let s3 = s2.replace(":", ":-");
+								const s1 = Ctrl.SortColumns;
+								const s2 = 'prop:' + s + ';System.ItemTypeText;';
+								const s3 = s2.replace(":", ":-");
 								if (s1 != s2 && s1 != s3) {
 									Ctrl.SortColumns = (s1 == s2) ? s3 : s2;
 									return S_OK;
@@ -292,7 +291,7 @@ Sync.T7Zip = {
 				AddEvent("Sort", function (Ctrl) {
 					if (Ctrl.Type <= CTRL_EB) {
 						if (Sync.T7Zip.IsHandle(Ctrl)) {
-							let s1 = Ctrl.SortColumns;
+							const s1 = Ctrl.SortColumns;
 							if (/^prop:\-?System\.ItemNameDisplay;$|^prop:\-?System\.DateModified;$/.test(s1)) {
 								setTimeout(function () {
 									Ctrl.SortColumns = s1 + 'System.ItemTypeText;';
@@ -310,17 +309,13 @@ Sync.T7Zip = {
 	},
 
 	IsFolder: function (Item) {
-		let wfd = api.Memory("WIN32_FIND_DATA");
+		const wfd = api.Memory("WIN32_FIND_DATA");
 		api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size);
 		return wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
 	},
 
 	Debug: function (s) {
-		if (Sync.Debug) {
-			Sync.Debug.alert(s);
-		} else {
-			api.OutputDebugString(s + "\n");
-		}
+		api.OutputDebugString(s + "\n");
 	},
 
 	Finalize: function () {
@@ -342,7 +337,7 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 
 	AddEvent("BeginDrag", function (Ctrl) {
 		if (Sync.T7Zip.IsHandle(Ctrl, "Extract")) {
-			let pdwEffect = { 0: DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK };
+			const pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 			api.SHDoDragDrop(Ctrl.hwndView, Ctrl.SelectedItems(), Ctrl, pdwEffect[0], pdwEffect, true);
 			return false;
 		}
@@ -352,10 +347,10 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 		if (!Items.Count) {
 			return;
 		}
-		let root = BuildPath(fso.GetSpecialFolder(2).Path, "tablacus");
-		let ar = [];
+		const root = te.Data.TempFolder;
+		const ar = [];
 		for (let i = Items.Count; i--;) {
-			let path = Items.Item(i).Path;
+			const path = Items.Item(i).Path;
 			if (api.PathMatchSpec(path, root + "\\*")) {
 				if (!fso.FileExists(path)) {
 					ar.unshift(path);
@@ -367,12 +362,12 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 		if (!ar.length) {
 			return;
 		}
-		let strSessionId = ar[0].substr(root.length + 1, 8);
-		let lib = Sync.T7Zip.GetObject(strSessionId == Sync.T7Zip.ClipId ? Sync.T7Zip.ClipPath : Ctrl, "Extract");
+		const strSessionId = ar[0].substr(root.length + 1, 8);
+		const lib = Sync.T7Zip.GetObject(strSessionId == Sync.T7Zip.ClipId ? Sync.T7Zip.ClipPath : Ctrl, "Extract");
 		if (lib) {
-			let dest = BuildPath(root, strSessionId);
+			const dest = BuildPath(root, strSessionId);
 			for (let i = ar.length; i--;) {
-				ar[i] = api.PathQuoteSpaces(ar[i].substr(dest.length + 1));
+				ar[i] = PathQuoteSpaces(ar[i].substr(dest.length + 1));
 			}
 			Sync.T7Zip.CreateFolder(dest);
 			Sync.T7Zip.Exec(Ctrl, lib, Sync.T7Zip.Cmd.Extract, dest, ar);
@@ -390,16 +385,16 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 
 	AddEvent("DefaultCommand", function (Ctrl, Selected) {
 		if (Selected.Count == 1) {
-			let Item = Selected.Item(0);
+			const Item = Selected.Item(0);
 			let path = Item.Path;
 			if (Sync.T7Zip.IsHandle(path)) {
 				Ctrl.Navigate(path);
 				return S_OK;
 			}
 			if (Sync.T7Zip.IsFolder(Item)) {
-				let lib = Sync.T7Zip.GetObject(Ctrl);
+				const lib = Sync.T7Zip.GetObject(Ctrl);
 				if (lib) {
-					let root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+					const root = BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16));
 					path = path.replace(root, lib.file);
 					Ctrl.Navigate(path);
 					return S_OK;
@@ -423,7 +418,7 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 
 	AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
-			let lib = Sync.T7Zip.GetObject(Ctrl, "Add");
+			const lib = Sync.T7Zip.GetObject(Ctrl, "Add");
 			if (lib) {
 				Sync.T7Zip.GetDropEffect(Ctrl, dataObj, pdwEffect);
 				return S_OK;
@@ -433,7 +428,7 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 
 	AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Ctrl.Type <= CTRL_EB || Ctrl.Type == CTRL_DT) {
-			let lib = Sync.T7Zip.GetObject(Ctrl, "Add");
+			const lib = Sync.T7Zip.GetObject(Ctrl, "Add");
 			if (lib) {
 				Sync.T7Zip.GetDropEffect(Ctrl, dataObj, pdwEffect);
 				return S_OK;
@@ -442,7 +437,7 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 	});
 
 	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
-		let lib = Sync.T7Zip.GetObject(Ctrl, "Add");
+		const lib = Sync.T7Zip.GetObject(Ctrl, "Add");
 		if (lib) {
 			if (Sync.T7Zip.GetDropEffect(Ctrl, dataObj, pdwEffect)) {
 				Sync.T7Zip.Append(Ctrl, dataObj);
@@ -463,7 +458,7 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 		if (Ctrl.Type <= CTRL_EB && Sync.T7Zip.IsHandle(Prev)) {
-			let root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+			const root = BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16));
 			DeleteItem(root);
 		}
 	});
@@ -479,9 +474,9 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 	AddEvent("ToolTip", function (Ctrl, Index) {
 		if (Ctrl.Type <= CTRL_EB) {
 			if (Sync.T7Zip.IsHandle(Ctrl)) {
-				let Item = Ctrl.Items.Item(Index);
+				const Item = Ctrl.Items.Item(Index);
 				if (Sync.T7Zip.IsFolder(Item)) {
-					let s = FormatDateTime(Item.ModifyDate);
+					const s = FormatDateTime(Item.ModifyDate);
 					return s ? api.PSGetDisplayName("Write") + " : " + s : "";
 				}
 			}
@@ -490,7 +485,7 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 }
 
 AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
-	let lib = Sync.T7Zip.GetObject(Ctrl);
+	const lib = Sync.T7Zip.GetObject(Ctrl);
 	if (lib && lib.path) {
 		return MakeImgDataEx("icon:shell32.dll,3", bSimple, 16);
 	}
