@@ -1,10 +1,10 @@
-var Addon_Id = "wfx";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "wfx";
+const item = GetAddonElement(Addon_Id);
 
 Sync.WFX = {
 	tidNotify: {}, Use: [], Cnt: [], pdb: [],
 	xml: OpenXml("wfx.xml", false, true),
-	dbfile: fso.BuildPath(te.Data.DataFolder, "config\\wfx_" + (wnw.ComputerName.toLowerCase()) + ".bin"),
+	dbfile: BuildPath(te.Data.DataFolder, "config\\wfx_" + (api.CreateObject("WScript.Network").ComputerName.toLowerCase()) + ".bin"),
 
 	IsHandle: function (Ctrl) {
 		return Sync.WFX.GetObject(Ctrl) != null;
@@ -14,8 +14,8 @@ Sync.WFX = {
 		if (!Sync.WFX.DLL) {
 			return;
 		}
-		var lib = { file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL) };
-		var re = /^(\\{3})([^\\]*)(.*)/.exec(lib.file);
+		const lib = { file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL) };
+		const re = /^(\\{3})([^\\]*)(.*)/.exec(lib.file);
 		if (!re) {
 			return;
 		}
@@ -23,13 +23,13 @@ Sync.WFX = {
 			Sync.WFX.Init();
 		}
 
-		var Obj = Sync.WFX.Obj[re[2]];
+		const Obj = Sync.WFX.Obj[re[2]];
 		if (Obj) {
 			if (!Obj.X) {
 				Obj.X = Sync.WFX.DLL.open(Obj.dllPath);
 				if (Obj.X.FsInit) {
 					if (Obj.X.FsInit(Obj.PluginNr, this.ArrayProc, this.ProgressProc, this.LogProc, this.RequestProc) == 0) {
-						Obj.X.FsSetDefaultParams(fso.BuildPath(te.Data.DataFolder, "config\\fsplugin.ini"));
+						Obj.X.FsSetDefaultParams(BuildPath(te.Data.DataFolder, "config\\fsplugin.ini"));
 						Obj.X.FsSetCryptCallback(this.CryptProc, Obj.PluginNr, 1);
 					}
 				}
@@ -54,7 +54,7 @@ Sync.WFX = {
 
 				FsFindFirst: function (path, wfd) {
 					if (Sync.WFX.Root.length) {
-						var hFind = this.hFind++;
+						const hFind = this.hFind++;
 						this.hFind = this.hFind % MAXINT;
 						this.hash[hFind] = 0;
 						if (this.FsFindNext(hFind, wfd)) {
@@ -81,7 +81,7 @@ Sync.WFX = {
 
 				FsExecuteFile: function (MainWin, RemoteName, Verb) {
 					if (Verb.toLowerCase() == "properties") {
-						var lib = Sync.WFX.GetObject('\\\\' + RemoteName[0]);
+						const lib = Sync.WFX.GetObject('\\\\' + RemoteName[0]);
 						if (lib && lib.X) {
 							lib.X.FsExecuteFile(MainWin, ["\\"], Verb);
 						}
@@ -91,15 +91,14 @@ Sync.WFX = {
 		}
 
 		Sync.WFX.Root = [];
-		var items = Sync.WFX.xml.getElementsByTagName("Item");
-		for (var i = 0; i < items.length; ++i) {
-			var dllPath = (ExtractMacro(te, api.PathUnquoteSpaces(items[i].getAttribute("Path"))) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
-			var WFX = Sync.WFX.DLL.open(dllPath);
+		let items = Sync.WFX.xml.getElementsByTagName("Item");
+		for (let i = 0; i < items.length; ++i) {
+			const dllPath = (ExtractPath(te, items[i].getAttribute("Path")) + (g_.bit > 32 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
+			const WFX = Sync.WFX.DLL.open(dllPath);
 			if (WFX && WFX.FsInit) {
-				var s = items[i].getAttribute("Name");
+				const s = items[i].getAttribute("Name");
 				Sync.WFX.Root.push(s);
-				Sync.WFX.Obj[s] =
-				{
+				Sync.WFX.Obj[s] = {
 					dllPath: dllPath,
 					PluginNr: Sync.WFX.Root.length
 				}
@@ -116,23 +115,23 @@ Sync.WFX = {
 		if (items.length) {
 			Sync.WFX.NoExSort = items[0].getAttribute("NoExSort");
 		}
-
+		let s = "";
 		try {
-			var ado = api.CreateObject("ads");
+			const ado = api.CreateObject("ads");
 			ado.Type = adTypeBinary;
 			ado.Open();
 			ado.LoadFromFile(Sync.WFX.dbfile);
-			var s = api.CryptUnprotectData(ado.Read(adReadAll), Sync.WFX.MP, true);
+			s = api.CryptUnprotectData(ado.Read(adReadAll), Sync.WFX.MP, true);
 			ado.Close();
 		} catch (e) {
 			s = "";
 		}
 		if (s) {
-			var line = s.split(/\n/);
-			for (var i in line) {
+			const line = s.split(/\n/);
+			for (let i in line) {
 				if (line[i]) {
-					var col = line[i].split(/\t/);
-					var db = Sync.WFX.pdb[col[0]];
+					const col = line[i].split(/\t/);
+					let db = Sync.WFX.pdb[col[0]];
 					if (!db) {
 						Sync.WFX.pdb[col[0]] = db = {}
 					}
@@ -143,15 +142,15 @@ Sync.WFX = {
 	},
 
 	GetObjectEx: function (Path) {
-		var dwSessionId = api.sscanf(Path, fso.BuildPath(fso.GetSpecialFolder(2).Path, "tablacus\\%llx"));
+		const dwSessionId = api.sscanf(Path, BuildPath(te.Data.TempFolder, "%llx"));
 		if (dwSessionId) {
-			var cFV = te.Ctrls(CTRL_FV);
-			for (var i in cFV) {
-				var FV = cFV[i];
+			const cFV = te.Ctrls(CTRL_FV);
+			for (let i in cFV) {
+				const FV = cFV[i];
 				if (FV.SessionId == dwSessionId) {
-					var lib = Sync.WFX.GetObject(FV);
+					const lib = Sync.WFX.GetObject(FV);
 					if (lib) {
-						lib.file = unescape(fso.GetFileName(Path));
+						lib.file = unescape(GetFileName(Path));
 						return lib;
 					}
 				}
@@ -173,7 +172,7 @@ Sync.WFX = {
 
 	Command: function (Ctrl, Verb, ContextMenu) {
 		if (Ctrl && Ctrl.Type <= CTRL_EB) {
-			var lib = Sync.WFX.GetObject(Ctrl);
+			const lib = Sync.WFX.GetObject(Ctrl);
 			if (lib) {
 				switch ("string" === typeof Verb ? Sync.WFX.StringToVerb[Verb.toLowerCase()] : Verb + 1) {
 					case CommandID_PASTE:
@@ -189,10 +188,10 @@ Sync.WFX = {
 						Sync.WFX.ClipPath = lib.file;
 						return S_OK;
 					case CommandID_PROPERTIES:
-						var Selected = Ctrl.SelectedItems();
+						const Selected = Ctrl.SelectedItems();
 						if (Selected.Count) {
 							if (lib.X.FsExecuteFile) {
-								lib.X.FsExecuteFile(te.hwnd, [fso.BuildPath(lib.path, unescape(fso.GetFileName(Selected.Item(0).Path)))], "properties")
+								lib.X.FsExecuteFile(te.hwnd, [BuildPath(lib.path, unescape(GetFileName(Selected.Item(0).Path)))], "properties")
 								return S_OK;
 							}
 						}
@@ -206,23 +205,22 @@ Sync.WFX = {
 		if (!Items.Count) {
 			return;
 		}
-		var lib = Sync.WFX.GetObject(Ctrl);
+		const lib = Sync.WFX.GetObject(Ctrl);
 		if (lib && lib.X.FsPutFile) {
-			var lpath = Items.Item(-1).Path;
 			Sync.WFX.Connect(lib);
 			FsResult = 0;
-			var bRefresh = false;
+			let bRefresh = false;
 			Sync.WFX.Progress = te.ProgressDialog;
 			Sync.WFX.Progress.StartProgressDialog(te.hwnd, null, 0);
-			var fl = [];
+			const fl = [];
 			try {
 				Sync.WFX.Progress.SetLine(1, api.LoadString(hShell32, 33260) || api.LoadString(hShell32, 6478), true);
 				Sync.WFX.Cnt = [0, 0, 0, 0, 0];
 				if (Sync.WFX.LocalList(lib, Items, "", fl) == 0) {
 					Sync.WFX.ShowLine(5954, 32946);
 					for (; fl.length && !Sync.WFX.Progress.HasUserCancelled(); ++Sync.WFX.Cnt[0]) {
-						var item = fl.shift();
-						var rfn = fso.BuildPath(lib.path, item[0]);
+						const item = fl.shift();
+						const rfn = BuildPath(lib.path, item[0]);
 						Sync.WFX.Cnt[4] = item[3];
 						Sync.WFX.Progress.SetLine(2, item[0], true);
 						if (item[1]) {
@@ -257,16 +255,16 @@ Sync.WFX = {
 	},
 
 	RemoteList: function (lib, fl, items) {
-		var Result = Sync.WFX.Progress.HasUserCancelled();
+		let Result = Sync.WFX.Progress.HasUserCancelled();
 		Sync.WFX.Cnt[1] += items.length;
 		while (items.length && !Result) {
-			var wfd = api.Memory("WIN32_FIND_DATA");
+			let wfd = api.Memory("WIN32_FIND_DATA");
 			api.SHGetDataFromIDList(items.shift(), SHGDFIL_FINDDATA, wfd, wfd.Size);
-			var nDog = 99999;
-			var arDir = [{ path: "", wfd: wfd }];
+			let nDog = 99999;
+			const arDir = [{ path: "", wfd: wfd }];
 			while (arDir.length && !Result) {
-				var o = arDir.pop();
-				var path = fso.BuildPath(o.path, unescape(o.wfd.cFileName));
+				const o = arDir.pop();
+				const path = BuildPath(o.path, unescape(o.wfd.cFileName));
 				fl.push({
 					path: path,
 					SizeLow: o.wfd.nFileSizeLow,
@@ -276,7 +274,7 @@ Sync.WFX = {
 				});
 				if (o.wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 					wfd = {};
-					var hFind = lib.X.FsFindFirst(fso.BuildPath(lib.path, path), wfd);
+					const hFind = lib.X.FsFindFirst(BuildPath(lib.path, path), wfd);
 					if (hFind != -1) {
 						do {
 							if (!api.PathMatchSpec(wfd.cFileName, ".;..")) {
@@ -286,7 +284,7 @@ Sync.WFX = {
 									arDir.push({ path: path, wfd: wfd });
 								} else {
 									fl.push({
-										path: fso.BuildPath(path, wfd.cFileName),
+										path: BuildPath(path, wfd.cFileName),
 										SizeLow: wfd.nFileSizeLow,
 										SizeHigh: wfd.nFileSizeHigh,
 										LastWriteTime: wfd.ftLastWriteTime,
@@ -312,14 +310,14 @@ Sync.WFX = {
 
 	LocalList: function (lib, Items, path, fl) {
 		Sync.WFX.Cnt[1] += Items.Count;
-		for (var i = 0; i < Items.Count; ++i) {
+		for (let i = 0; i < Items.Count; ++i) {
 			if (Sync.WFX.Progress && Sync.WFX.Progress.HasUserCancelled()) {
 				return 1;
 			}
-			var Item = Items.Item(i);
-			var wfd = api.Memory("WIN32_FIND_DATA");
+			const Item = Items.Item(i);
+			const wfd = api.Memory("WIN32_FIND_DATA");
 			api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size);
-			var fn = fso.BuildPath(path, wfd.cFileName);
+			const fn = BuildPath(path, wfd.cFileName);
 			if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				if (lib.X.FsMkDir) {
 					fl.push([fn, 1, "", 0]);
@@ -329,7 +327,7 @@ Sync.WFX = {
 				}
 				continue;
 			}
-			var fs = api.QuadPart(wfd.nFileSizeLow, wfd.nFileSizeHigh);
+			const fs = api.QuadPart(wfd.nFileSizeLow, wfd.nFileSizeHigh);
 			fl.push([fn, 0, Item.Path, fs]);
 			Sync.WFX.Cnt[3] += fs;
 		}
@@ -337,30 +335,30 @@ Sync.WFX = {
 	},
 
 	Delete: function (Ctrl) {
-		var Items = Ctrl.SelectedItems();
-		if (!Items.Count || !confirmOk("Are you sure?")) {
+		const Items = Ctrl.SelectedItems();
+		if (!Items.Count || !confirmOk()) {
 			return;
 		}
-		var lib = Sync.WFX.GetObject(Ctrl.FolderItem.Path);
+		const lib = Sync.WFX.GetObject(Ctrl.FolderItem.Path);
 		if (lib) {
-			var FsResult = 0;
-			var bRefresh = false;
+			let FsResult = 0;
+			let bRefresh = false;
 			Sync.WFX.Connect(lib);
 			Sync.WFX.Progress = te.ProgressDialog;
 			Sync.WFX.Progress.StartProgressDialog(te.hwnd, null, 0);
 			try {
 				Sync.WFX.Progress.SetLine(1, api.LoadString(hShell32, 33269) || api.LoadString(hShell32, 6478), true);
 				Sync.WFX.Cnt = [0, 0, 0, 0, 0];
-				var items = [], fl = [];
-				for (var i = Items.Count; i--;) {
+				const items = [], fl = [];
+				for (let i = Items.Count; i--;) {
 					items.unshift(Items.Item(i));
 				}
 				if (Sync.WFX.RemoteList(lib, fl, items) == 0) {
 					Sync.WFX.ShowLine(5955, 32947);
 					Sync.WFX.Cnt[3] = 0;
 					for (; fl.length && !Sync.WFX.Progress.HasUserCancelled(); ++Sync.WFX.Cnt[0]) {
-						var item = fl.pop();
-						var path = fso.BuildPath(lib.path, item.path);
+						const item = fl.pop();
+						const path = BuildPath(lib.path, item.path);
 						Sync.WFX.Progress.SetLine(2, item.path, true);
 						if (item.Attr & FILE_ATTRIBUTE_DIRECTORY) {
 							if (lib.X.FsRemoveDir) {
@@ -398,21 +396,21 @@ Sync.WFX = {
 	},
 
 	Enum: function (pid, Ctrl, fncb) {
-		var lib = Sync.WFX.GetObject(pid.Path);
+		const lib = Sync.WFX.GetObject(pid.Path);
 		if (Ctrl && lib) {
-			var Items = api.CreateObject("FolderItems");
+			const Items = api.CreateObject("FolderItems");
 			Sync.WFX.Connect(lib);
-			var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(999, "tablacus\\%x", Ctrl.SessionId));
-			var wfd = {};
-			var hFind = lib.X.FsFindFirst(lib.path, wfd);
+			const root = BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16));
+			const wfd = {};
+			const hFind = lib.X.FsFindFirst(lib.path, wfd);
 			if (hFind != -1) {
 				do {
-					var fn = wfd.cFileName.replace(/([%\\/:\*\?"<>|]+)/g, function (all, re1) {
+					const fn = wfd.cFileName.replace(/([%\\/:\*\?"<>|]+)/g, function (all, re1) {
 						return escape(re1);
 					});
 					if (!/^\.\.?$|^$/.test(fn)) {
 						Sync.WFX.Unix2Win(wfd);
-						Items.AddItem(api.SHSimpleIDListFromPath(fso.BuildPath(root, fn), wfd.dwFileAttributes, wfd.ftLastWriteTime, api.QuadPart(wfd.nFileSizeLow, wfd.nFileSizeHigh)));
+						Items.AddItem(api.SHSimpleIDListFromPath(BuildPath(root, fn), wfd.dwFileAttributes, wfd.ftLastWriteTime, api.QuadPart(wfd.nFileSizeLow, wfd.nFileSizeHigh)));
 					}
 				} while (lib.X.FsFindNext(hFind, wfd));
 				lib.X.FsFindClose(hFind);
@@ -428,7 +426,7 @@ Sync.WFX = {
 	},
 
 	CreateFolder: function (path) {
-		var s = fso.GetParentFolderName(path);
+		const s = GetParentFolderName(path);
 		if (s.length > 3 && !fso.FolderExists(s)) {
 			this.CreateFolder(s);
 		}
@@ -438,10 +436,10 @@ Sync.WFX = {
 	},
 
 	ChangeNotify: function (path) {
-		var strMatch = path + ";" + path + "\\*";
-		var cFV = te.Ctrls(CTRL_FV);
-		for (var i in cFV) {
-			var FV = cFV[i];
+		const strMatch = path + ";" + path + "\\*";
+		const cFV = te.Ctrls(CTRL_FV);
+		for (let i in cFV) {
+			const FV = cFV[i];
 			if (FV.hwndView) {
 				if (api.PathMatchSpec(api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), strMatch)) {
 					if (Sync.WFX.tidNotify[FV.Id]) {
@@ -460,16 +458,16 @@ Sync.WFX = {
 
 	Connect: function (lib) {
 		if (lib.X.FsDisconnect) {
-			var re = /^\\([^\\]+)/.exec(lib.path);
+			const re = /^\\([^\\]+)/.exec(lib.path);
 			if (re) {
-				Sync.WFX.Use[fso.BuildPath(lib.root, re[1])] = 1;
+				Sync.WFX.Use[BuildPath(lib.root, re[1])] = 1;
 			}
 		}
 	},
 
 	CheckDisconnect: function (Ctrl) {
-		var bOk = true;
-		for (var i in Sync.WFX.Use) {
+		let bOk = true;
+		for (let i in Sync.WFX.Use) {
 			bOk = false;
 			break;
 		}
@@ -480,20 +478,20 @@ Sync.WFX = {
 			clearTimeout(Sync.WFX.tidClose);
 		}
 		Sync.WFX.tidClose = setTimeout(function () {
-			var Use = {};
-			var cFV = te.Ctrls(CTRL_FV);
-			for (var i in cFV) {
-				var FV = cFV[i];
+			const Use = {};
+			const cFV = te.Ctrls(CTRL_FV);
+			for (let i in cFV) {
+				const FV = cFV[i];
 				if (FV.hwndView && FV.FolderItem) {
-					var re = /^(\\{3}[^\\]+\\[^\\]+)/.exec(FV.FolderItem.Path);
+					const re = /^(\\{3}[^\\]+\\[^\\]+)/.exec(FV.FolderItem.Path);
 					if (re) {
 						Use[re[1]] = 1;
 					}
 				}
 			}
-			for (var i in Sync.WFX.Use) {
+			for (let i in Sync.WFX.Use) {
 				if (!Use[i]) {
-					var re = /^\\{3}([^\\]+)(.+)/.exec(i);
+					const re = /^\\{3}([^\\]+)(.+)/.exec(i);
 					if (re) {
 						Sync.WFX.Obj[re[1]].X.FsDisconnect(re[2]);
 					}
@@ -505,31 +503,31 @@ Sync.WFX = {
 
 	DefaultCommand: function (Ctrl, Selected) {
 		if (Selected.Count) {
-			var Item = Selected.Item(0);
-			var path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+			const Item = Selected.Item(0);
+			let path = api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 			if (Sync.WFX.IsHandle(path)) {
 				Ctrl.Navigate(path);
 				return S_OK;
 			}
-			var lib = Sync.WFX.GetObject(Ctrl);
+			const lib = Sync.WFX.GetObject(Ctrl);
 			if (lib) {
-				var path = fso.BuildPath(lib.path, unescape(Item.Name));
+				path = BuildPath(lib.path, unescape(Item.Name));
 				if (IsFolderEx(Item)) {
-					Ctrl.Navigate(fso.BuildPath(lib.root, path));
+					Ctrl.Navigate(BuildPath(lib.root, path));
 				} else {
-					var pRemote = [path];
-					var iRes = lib.X.FsExecuteFile && lib.X.FsExecuteFile(te.hwnd, pRemote, "open");
+					const pRemote = [path];
+					const iRes = lib.X.FsExecuteFile && lib.X.FsExecuteFile(te.hwnd, pRemote, "open");
 					if (iRes == 0) {
 						return S_OK;
 					}
-					var wfd = {};
-					var hFind = lib.X.FsFindFirst(pRemote[0], wfd);
+					const wfd = {};
+					const hFind = lib.X.FsFindFirst(pRemote[0], wfd);
 					if (hFind != -1 && wfd.dwFileAttributes < 0) {
 						while (api.PathMatchSpec(wfd.cFileName, ".;..") && lib.X.FsFindNext(hFind, wfd)) {
 						}
 						lib.X.FsFindClose(hFind);
 						if (!api.PathMatchSpec(wfd.cFileName, ".;..")) {
-							Ctrl.Navigate(fso.BuildPath(lib.root, pRemote[0]).replace(/\\$/, ""));
+							Ctrl.Navigate(BuildPath(lib.root, pRemote[0]).replace(/\\$/, ""));
 							return S_OK;
 						}
 					}
@@ -543,14 +541,13 @@ Sync.WFX = {
 	},
 
 	SetName: function (pid, Name) {
-		var lib = Sync.WFX.GetObjectEx(pid.Path);
+		const lib = Sync.WFX.GetObjectEx(pid.Path);
 		if (lib && lib.X.FsRenMovFile) {
 			Sync.WFX.Connect(lib);
-			var wfd = api.Memory("WIN32_FIND_DATA");
+			const wfd = api.Memory("WIN32_FIND_DATA");
 			api.SHGetDataFromIDList(pid, SHGDFIL_FINDDATA, wfd, wfd.Size);
-			var fn = fso.BuildPath(lib.path, lib.file);
-			var ri =
-			{
+			const fn = BuildPath(lib.path, lib.file);
+			const ri = {
 				SizeLow: wfd.nFileSizeLow,
 				SizeHigh: wfd.nFileSizeHigh,
 				LastWriteTime: wfd.ftLastWriteTime,
@@ -560,9 +557,9 @@ Sync.WFX = {
 				ri.SizeLow = 0;
 				ri.SizeHigh = 0xFFFFFFFF;
 			}
-			var r = lib.X.FsRenMovFile(fn, fso.BuildPath(lib.path, Name), true, false, ri);
+			const r = lib.X.FsRenMovFile(fn, BuildPath(lib.path, Name), true, false, ri);
 			if (r == 0) {
-				Sync.WFX.ChangeNotify(fso.BuildPath(lib.root, lib.path));
+				Sync.WFX.ChangeNotify(BuildPath(lib.root, lib.path));
 			} else {
 				setTimeout(function () {
 					Sync.WFX.ShowError(r, fn);
@@ -578,7 +575,7 @@ Sync.WFX = {
 		}
 		setTimeout(function () {
 			if (isFinite(r)) {
-				var o = [0, 6327, 6146, 6175, 6173, 28743, 16771];
+				const o = [0, 6327, 6146, 6175, 6173, 28743, 16771];
 				MessageBox(api.LoadString(hShell32, o[r]) || api.sprintf(999, api.LoadString(hShell32, 4228), r), TITLE, MB_OK);
 				return;
 			}
@@ -587,8 +584,8 @@ Sync.WFX = {
 	},
 
 	ShowLine: function (s1, s2) {
-		var i = Sync.WFX.Cnt[1];
-		var s3 = 6466;
+		let i = Sync.WFX.Cnt[1];
+		let s3 = 6466;
 		if (g_.IEVer > 8) {
 			s3 = i > 1 ? 38192 : 38193;
 			if (i > 999) {
@@ -600,11 +597,11 @@ Sync.WFX = {
 
 	ProgressProc: function (PluginNr, SourceName, TargetName, PercentDone) {
 		if (Sync.WFX.Progress) {
-			var i = Sync.WFX.Cnt[1] - Sync.WFX.Cnt[0];
+			let i = Sync.WFX.Cnt[1] - Sync.WFX.Cnt[0];
 			if (i > 999 && document.documentMode > 8) {
 				i = i.toLocaleString();
 			}
-			var ar = [api.LoadString(hShell32, 13581) || "Items remaining:", " ", i];
+			const ar = [api.LoadString(hShell32, 13581) || "Items remaining:", " ", i];
 			if (Sync.WFX.Cnt[3]) {
 				i = Sync.WFX.Cnt[2] + Math.floor(Sync.WFX.Cnt[4] * PercentDone / 100);
 				ar.push(" (", api.StrFormatByteSize(Sync.WFX.Cnt[3] - i), ")");
@@ -647,7 +644,7 @@ Sync.WFX = {
 	},
 
 	CryptProc: function (PluginNr, CryptoNumber, mode, ConnectionName, pPassword) {
-		var db = Sync.WFX.pdb[Sync.WFX.Root[PluginNr - 1]];
+		let db = Sync.WFX.pdb[Sync.WFX.Root[PluginNr - 1]];
 		if (!db) {
 			Sync.WFX.pdb[Sync.WFX.Root[PluginNr - 1]] = db = {};
 		}
@@ -687,8 +684,8 @@ Sync.WFX = {
 	},
 
 	ED: function (s) {
-		var ar = s.split("").reverse();
-		for (var i in ar) {
+		const ar = s.split("").reverse();
+		for (let i in ar) {
 			ar[i] = String.fromCharCode(ar[i].charCodeAt(0) ^ 13);
 		}
 		return ar.join("");
@@ -706,7 +703,7 @@ Sync.WFX = {
 	},
 
 	Properties: function (Ctrl) {
-		var lib = Sync.WFX.GetObject(Ctrl);
+		const lib = Sync.WFX.GetObject(Ctrl);
 		if (lib && lib.X) {
 			lib.X.FsExecuteFile(te.hwnd, ["\\"], "properties");
 		}
@@ -717,8 +714,8 @@ Sync.WFX = {
 	},
 
 	Finalize: function () {
-		for (var i in Sync.WFX.Use) {
-			var re = /^\\{3}([^\\]+)(.+)/.exec(i);
+		for (let i in Sync.WFX.Use) {
+			const re = /^\\{3}([^\\]+)(.+)/.exec(i);
 			if (re) {
 				Sync.WFX.Obj[re[1]].X.FsDisconnect(re[2]);
 			}
@@ -730,7 +727,7 @@ Sync.WFX = {
 	}
 }
 
-var twfxPath = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), ["addons\\wfx\\twfx", api.sizeof("HANDLE") * 8, ".dll"].join(""));
+const twfxPath = BuildPath(te.Data.Installed, ["addons\\wfx\\twfx", g_.bit, ".dll"].join(""));
 
 Sync.WFX.DLL = api.DllGetClassObject(twfxPath, "{5396F915-5592-451c-8811-87314FC0EF11}");
 
@@ -744,15 +741,15 @@ AddEvent("TranslatePath", function (Ctrl, Path) {
 }, true);
 
 AddEvent("ReplacePath", function (FolderItem, Path) {
-	var lib = Sync.WFX.GetObjectEx(Path);
+	const lib = Sync.WFX.GetObjectEx(Path);
 	if (lib) {
-		return fso.BuildPath(lib.root, fso.BuildPath(lib.path, lib.file));
+		return BuildPath(lib.root, BuildPath(lib.path, lib.file));
 	}
 });
 
 AddEvent("BeginDrag", function (Ctrl) {
 	if (Sync.WFX.IsHandle(Ctrl)) {
-		var pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
+		const pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 		api.SHDoDragDrop(null, Ctrl.SelectedItems(), Ctrl, pdwEffect[0], pdwEffect, true);
 		return false;
 	}
@@ -762,23 +759,22 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 	if (!Items.Count) {
 		return;
 	}
-	var hr = S_OK;
-	var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, "tablacus");
-	var ar = [], fl = [];
-	for (var i = Items.Count; i--;) {
-		var path = Items.Item(i).Path;
-		if (api.PathMatchSpec(path, root + "*") && !fso.FileExists(path)) {
+	let hr = S_OK;
+	const ar = [], fl = [];
+	for (let i = Items.Count; i--;) {
+		const path = Items.Item(i).Path;
+		if (api.PathMatchSpec(path, te.Data.TempFolder + "*") && !fso.FileExists(path)) {
 			ar.unshift(Items.Item(i));
 		}
 	}
 	if (!ar.length) {
 		return;
 	}
-	var strSessionId = fso.GetParentFolderName(ar[0].Path).replace(root + "\\", "").replace(/\\.*/, "");
-	var lib = Sync.WFX.GetObject(strSessionId == Sync.WFX.ClipId ? Sync.WFX.ClipPath : Ctrl);
+	const strSessionId = GetParentFolderName(ar[0].Path).replace(te.Data.TempFolder + "\\", "").replace(/\\.*/, "");
+	const lib = Sync.WFX.GetObject(strSessionId == Sync.WFX.ClipId ? Sync.WFX.ClipPath : Ctrl);
 	if (lib && lib.X.FsGetFile) {
-		var FsResult = 0;
-		var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, "tablacus\\" + strSessionId);
+		let FsResult = 0;
+		const root = BuildPath(te.Data.TempFolder, strSessionId);
 		Sync.WFX.CreateFolder(root);
 		wsh.CurrentDirectory = root;
 		Sync.WFX.Progress = te.ProgressDialog;
@@ -789,9 +785,9 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 			if (Sync.WFX.RemoteList(lib, fl, ar) == 0) {
 				Sync.WFX.ShowLine(5954, 32946);
 				for (; fl.length && !Sync.WFX.Progress.HasUserCancelled(); ++Sync.WFX.Cnt[0]) {
-					var item = fl.shift();
-					var path = fso.BuildPath(lib.path, item.path);
-					var lfn = fso.BuildPath(root, item.path);
+					const item = fl.shift();
+					const path = BuildPath(lib.path, item.path);
+					const lfn = BuildPath(root, item.path);
 					Sync.WFX.Cnt[4] = api.QuadPart(item.SizeLow, item.SizeHigh);
 					Sync.WFX.Progress.SetLine(2, item.path, true);
 					if (item.Attr & FILE_ATTRIBUTE_DIRECTORY) {
@@ -816,7 +812,7 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 			hr = E_ABORT;
 		}
 		delete Sync.WFX.Progress;
-		wsh.CurrentDirectory = fso.GetSpecialFolder(2).Path;
+		wsh.CurrentDirectory = te.Data.TempFolder;
 		if (FsResult) {
 			Sync.WFX.ShowError(FsResult);
 		}
@@ -825,9 +821,9 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 });
 
 AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-	var lib = Sync.WFX.GetObject(Ctrl);
+	const lib = Sync.WFX.GetObject(Ctrl);
 	if (lib) {
-		var ar = [];
+		const ar = [];
 		if (!lib.X.FsDeleteFile) {
 			ar.push("delete");
 		}
@@ -842,7 +838,7 @@ AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 });
 
 AddEvent("Background", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-	var lib = Sync.WFX.GetObject(Ctrl);
+	const lib = Sync.WFX.GetObject(Ctrl);
 	if (lib) {
 		api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 33555));
 		ExtraMenuCommand[nPos] = Sync.WFX.Properties;
@@ -851,14 +847,14 @@ AddEvent("Background", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
 });
 
 AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
-	var hr = Sync.WFX.Command(Ctrl, wParam & 0xfff);
+	const hr = Sync.WFX.Command(Ctrl, wParam & 0xfff);
 	if (isFinite(hr)) {
 		return hr;
 	}
 }, true);
 
 AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
-	var hr = Sync.WFX.Command(ContextMenu.FolderView, Verb, ContextMenu);
+	const hr = Sync.WFX.Command(ContextMenu.FolderView, Verb, ContextMenu);
 	if (isFinite(hr)) {
 		return hr;
 	}
@@ -867,15 +863,15 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 AddEvent("DefaultCommand", Sync.WFX.DefaultCommand, true);
 
 AddEvent("ILGetParent", function (FolderItem) {
-	var path = FolderItem.Path;
-	var re = /^(\\{3})([^\\]*)(.*)/.exec(path);
+	const path = FolderItem.Path;
+	const re = /^(\\{3})([^\\]*)(.*)/.exec(path);
 	if (re) {
 		if (!re[2]) {
 			return ssfDESKTOP;
 		}
-		var lib = Sync.WFX.GetObject(path);
+		const lib = Sync.WFX.GetObject(path);
 		if (lib) {
-			return re[3] ? fso.BuildPath(lib.root, fso.GetParentFolderName(lib.path)) : re[1];
+			return re[3] ? BuildPath(lib.root, GetParentFolderName(lib.path)) : re[1];
 		}
 	}
 });
@@ -916,8 +912,7 @@ AddEvent("AddonDisabled", function (Id) {
 
 AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 	if (Ctrl.Type <= CTRL_EB && Sync.WFX.IsHandle(Prev)) {
-		var root = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(999, "tablacus\\%x", Ctrl.SessionId));
-		DeleteItem(root);
+		DeleteItem(BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16)));
 	}
 });
 
@@ -929,7 +924,7 @@ AddEvent("ViewCreated", function (Ctrl) {
 
 AddEvent("BeginLabelEdit", function (Ctrl) {
 	if (Ctrl.Type <= CTRL_EB) {
-		var lib = Sync.WFX.GetObject(Ctrl, lib);
+		const lib = Sync.WFX.GetObject(Ctrl);
 		if (lib && !lib.X.FsRenMovFile) {
 			return 1;
 		}
@@ -938,9 +933,9 @@ AddEvent("BeginLabelEdit", function (Ctrl) {
 
 AddEvent("EndLabelEdit", function (Ctrl, Name) {
 	if (Ctrl.Type <= CTRL_EB && Name) {
-		var lib = Sync.WFX.GetObject(Ctrl, lib);
+		const lib = Sync.WFX.GetObject(Ctrl);
 		if (lib && lib.X.FsRenMovFile) {
-			var Item = Ctrl.FocusedItem;
+			const Item = Ctrl.FocusedItem;
 			if (Item) {
 				Sync.WFX.SetName(Item, Name);
 			}
@@ -952,10 +947,10 @@ AddEvent("EndLabelEdit", function (Ctrl, Name) {
 AddEvent("SetName", Sync.WFX.SetName);
 
 AddEvent("CreateFolder", function (path) {
-	var lib = Sync.WFX.GetObject(path);
+	const lib = Sync.WFX.GetObject(path);
 	if (lib) {
 		if (lib.X.FsMkDir && lib.X.FsMkDir(lib.path)) {
-			Sync.WFX.ChangeNotify(fso.BuildPath(lib.root, fso.GetParentFolderName(lib.path)));
+			Sync.WFX.ChangeNotify(BuildPath(lib.root, GetParentFolderName(lib.path)));
 			return true;
 		}
 		MessageBox(api.LoadString(hShell32, 6461), TITLE, MB_ICONSTOP | MB_OK);
@@ -964,14 +959,14 @@ AddEvent("CreateFolder", function (path) {
 }, true);
 
 AddEvent("CreateFile", function (path) {
-	var lib = Sync.WFX.GetObject(path);
+	const lib = Sync.WFX.GetObject(path);
 	if (lib) {
 		if (lib.X.FsPutFile) {
-			var sLocal = fso.BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(999, "tablacus\\n%x", Math.random() * MAXINT));
+			const sLocal = BuildPath(te.Data.TempFolder, fso.GetTempName());
 			fso.CreateTextFile(sLocal).Close();
 			if (lib.X.FsPutFile(sLocal, lib.path, 0) == 0) {
 				DeleteItem(sLocal);
-				Sync.WFX.ChangeNotify(fso.BuildPath(lib.root, fso.GetParentFolderName(lib.path)));
+				Sync.WFX.ChangeNotify(BuildPath(lib.root, GetParentFolderName(lib.path)));
 				return true;
 			}
 			DeleteItem(sLocal);
@@ -982,11 +977,11 @@ AddEvent("CreateFile", function (path) {
 }, true);
 
 AddEvent("SetFileTime", function (path, ctime, atime, mtime) {
-	var lib = Sync.WFX.GetObjectEx(path);
+	const lib = Sync.WFX.GetObjectEx(path);
 	if (lib && lib.X.FsSetTime) {
 		Sync.WFX.Connect(lib);
-		if (lib.X.FsSetTime(fso.BuildPath(lib.path, lib.file), ctime, atime, mtime)) {
-			Sync.WFX.ChangeNotify(fso.BuildPath(lib.root, lib.path));
+		if (lib.X.FsSetTime(BuildPath(lib.path, lib.file), ctime, atime, mtime)) {
+			Sync.WFX.ChangeNotify(BuildPath(lib.root, lib.path));
 			return true;
 		}
 		return false;
@@ -994,11 +989,11 @@ AddEvent("SetFileTime", function (path, ctime, atime, mtime) {
 }, true);
 
 AddEvent("SetFileAttributes", function (path, attr) {
-	var lib = Sync.WFX.GetObjectEx(path);
+	const lib = Sync.WFX.GetObjectEx(path);
 	if (lib && lib.X.FsSetAttr) {
 		Sync.WFX.Connect(lib);
-		if (lib.X.FsSetAttr(fso.BuildPath(lib.path, lib.file), attr)) {
-			Sync.WFX.ChangeNotify(fso.BuildPath(lib.root, lib.path));
+		if (lib.X.FsSetAttr(BuildPath(lib.path, lib.file), attr)) {
+			Sync.WFX.ChangeNotify(BuildPath(lib.root, lib.path));
 			return true;
 		}
 		return false;
@@ -1008,9 +1003,9 @@ AddEvent("SetFileAttributes", function (path, attr) {
 AddEvent("ToolTip", function (Ctrl, Index) {
 	if (Ctrl.Type <= CTRL_EB) {
 		if (Sync.WFX.IsHandle(Ctrl)) {
-			var Item = Ctrl.Items.Item(Index);
+			const Item = Ctrl.Items.Item(Index);
 			if (Item.IsFolder) {
-				var s = FormatDateTime(Item.ModifyDate);
+				const s = FormatDateTime(Item.ModifyDate);
 				return s ? api.PSGetDisplayName("Write") + " : " + s : "";
 			}
 		}
@@ -1019,13 +1014,13 @@ AddEvent("ToolTip", function (Ctrl, Index) {
 
 AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
 	if (g_.IEVer >= 8) {
-		var lib = Sync.WFX.GetObject(Ctrl);
+		const lib = Sync.WFX.GetObject(Ctrl);
 		if (lib) {
 			if (lib.X.FsExtractCustomIcon) {
-				var phIcon = [0];
-				var r = lib.X.FsExtractCustomIcon(lib.path + "\\", 1, phIcon);
+				const phIcon = [0];
+				const r = lib.X.FsExtractCustomIcon(lib.path + "\\", 1, phIcon);
 				if (r == 1 || r == 2) {
-					var image = te.WICBitmap().FromHICON(phIcon[0], BGColor);
+					const image = te.WICBitmap().FromHICON(phIcon[0], BGColor);
 					if (r == 2) {
 						api.DestroyIcon(phIcon[0]);
 					}
@@ -1045,9 +1040,9 @@ AddEvent("AddItems", function (Items, pid) {
 
 AddEvent("SaveConfig", function () {
 	if (Sync.WFX.bSave) {
-		var ar = [];
-		for (var i in Sync.WFX.pdb) {
-			var db = Sync.WFX.pdb[i];
+		const ar = [];
+		for (let i in Sync.WFX.pdb) {
+			const db = Sync.WFX.pdb[i];
 			for (j in db) {
 				if (i && j && db[j]) {
 					ar.push([i, j, db[j]].join("\t"));
@@ -1055,7 +1050,7 @@ AddEvent("SaveConfig", function () {
 			}
 		}
 		try {
-			var ado = api.CreateObject("ads");
+			const ado = api.CreateObject("ads");
 			ado.Type = adTypeBinary;
 			ado.Open();
 			ado.Write(api.CryptProtectData(ar.join("\n"), Sync.WFX.MP));
@@ -1072,12 +1067,12 @@ AddEvent("ChangeView", Sync.WFX.CheckDisconnect);
 AddEvent("ColumnClick", function (Ctrl, iItem) {
 	if (Ctrl.Type <= CTRL_EB && !Sync.WFX.NoExSort) {
 		if (Sync.WFX.IsHandle(Ctrl)) {
-			var cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
-			var s = cColumns[iItem * 2];
+			const cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
+			const s = cColumns[iItem * 2];
 			if (api.PathMatchSpec(s, "System.ItemNameDisplay;System.DateModified")) {
-				var s1 = Ctrl.SortColumns;
-				var s2 = 'prop:' + s + ';System.ItemTypeText;';
-				var s3 = s2.replace(":", ":-");
+				const s1 = Ctrl.SortColumns;
+				const s2 = 'prop:' + s + ';System.ItemTypeText;';
+				const s3 = s2.replace(":", ":-");
 				if (s1 != s2 && s1 != s3) {
 					Ctrl.SortColumns = (s1 == s2) ? s3 : s2;
 					return S_OK;
@@ -1090,7 +1085,7 @@ AddEvent("ColumnClick", function (Ctrl, iItem) {
 AddEvent("Sort", function (Ctrl) {
 	if (Ctrl.Type <= CTRL_EB && !Sync.WFX.NoExSort) {
 		if (Sync.WFX.IsHandle(Ctrl)) {
-			var s1 = Ctrl.SortColumns;
+			const s1 = Ctrl.SortColumns;
 			if (/^prop:\-?System\.ItemNameDisplay;$|^prop:\-?System\.DateModified;$/.test(s1)) {
 				setTimeout(function () {
 					Ctrl.SortColumns = s1 + 'System.ItemTypeText;';
@@ -1100,8 +1095,8 @@ AddEvent("Sort", function (Ctrl) {
 	}
 });
 
-var cFV = te.Ctrls(CTRL_FV);
-for (var i in cFV) {
+const cFV = te.Ctrls(CTRL_FV);
+for (let i in cFV) {
 	if (Sync.WFX.IsHandle(cFV[i])) {
 		ColumnsReplace(cFV[i], "Name", HDF_LEFT, Sync.WFX.ReplaceColumns);
 	}

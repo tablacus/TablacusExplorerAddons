@@ -228,9 +228,9 @@ Sync.XFinder = {
 
 		clippath: function (Ctrl, hwnd, pt, line) {
 			let Items;
+			const p = api.sscanf(line, "%x");
 			const FV = GetFolderView(Ctrl, pt);
 			if (FV) {
-				const p = api.sscanf(line, "%x");
 				if (p >= 0x10) {
 					Items = FV.SelectedItems();
 				} else {
@@ -377,7 +377,7 @@ Sync.XFinder = {
 				if (p.length) {
 					const FV = TC[TC.SelectedIndex];
 					if (FV) {
-						FV.Data.Lock = !api.QuadPart(p);
+						FV.Data.Lock = !GetNum(p);
 					}
 				}
 				Lock(TC, TC.SelectedIndex, true);
@@ -400,8 +400,14 @@ Sync.XFinder = {
 		},
 
 		numbering: function (Ctrl, hwnd, pt, line) {
-			let FileList, FileIndex, i, strPath, nMode;
+			let strPath, nMode;
 			let nStart, nInc, wsSrc, wsDist;
+			const FileList = [];
+			const FileIndex = [];
+			const arFrom = [];
+			const arTo = [];
+			const ar = WScript.Col(ExtractMacro(Ctrl, line));
+
 			const DoRename = function (n) {
 				try {
 					let wsPath, nSame;
@@ -446,11 +452,8 @@ Sync.XFinder = {
 			const FV = GetFolderView(Ctrl, pt);
 			if (FV) {
 				const Selected = FV.Items(SVGIO_SELECTION | SVGIO_FLAG_VIEWORDER);
-				const ar = WScript.Col(ExtractMacro(Ctrl, line));
 				if (ar.length) {
 					if (!/\/|\\/.test(ar[0])) {
-						FileList = [];
-						FileIndex = [];
 						if (!FileList.indexOf) {
 							FileList.indexOf = function (s) {
 								const n = FileList.length;
@@ -462,7 +465,7 @@ Sync.XFinder = {
 								return -1;
 							}
 						}
-						for (i = 0; i < Selected.length; i++) {
+						for (let i = 0; i < Selected.length; i++) {
 							strPath = Selected.Item(i).Path;
 							if (strPath) {
 								FileList.unshift(strPath);
@@ -471,7 +474,7 @@ Sync.XFinder = {
 						}
 
 						nMode = 0;
-						for (i = 0; i < ar[0].length; i++) {
+						for (let i = 0; i < ar[0].length; i++) {
 							if (ar[0].charAt(i) == '%') {
 								while (i < ar[0].length && ar[0].charAt(i) < 'A') {
 									i++;
@@ -489,13 +492,11 @@ Sync.XFinder = {
 								}
 							}
 						}
-						nStart = api.QuadPart(ar[1]);
-						nInc = api.QuadPart(ar[2]) || 1;
+						nStart = GetNum(ar[1]);
+						nInc = GetNum(ar[2]) || 1;
 						wsSrc = ar[3] || '';
 						wsDist = ar[4] || '';
 						if (nInc) {
-							arFrom = [];
-							arTo = [];
 							while (FileList.length) {
 								DoRename(0);
 							}
@@ -730,12 +731,12 @@ Sync.XFinder = {
 		}
 		let res = /^SW:(\d):(.*)/i.exec(line);
 		if (res) {
-			this.SW = api.QuadPart(res[1]);
+			this.SW = GetNum(res[1]);
 			line = res[2];
 		}
 		res = /^(\d):(.*)/.exec(line);
 		if (res) {
-			this.nMode = api.QuadPart(res[1]);
+			this.nMode = GetNum(res[1]);
 			line = res[2];
 		}
 		res = /^(.+?):\s*(.*)\s*/.exec(line);
