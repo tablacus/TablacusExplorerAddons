@@ -1,4 +1,4 @@
-﻿const Addon_Id = "virtualname";
+const Addon_Id = "virtualname";
 const item = GetAddonElement(Addon_Id);
 
 Sync.VirtualName = {
@@ -14,10 +14,11 @@ Sync.VirtualName = {
 		if (Selected && Selected.Count) {
 			const path = Selected.Item(0).Path;
 			const n = Sync.VirtualName.DB.Get(path);
-			const s = InputDialog(path + "\n" + n, n);
-			if ("string" === typeof s) {
-				Sync.VirtualName.DB.Set(path, s);;
-			}
+			InputDialog(path + "\n" + n, n, function (s) {
+				if ("string" === typeof s) {
+					Sync.VirtualName.DB.Set(path, s);;
+				}
+			});
 		}
 		return S_OK;
 	},
