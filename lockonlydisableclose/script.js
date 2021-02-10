@@ -1,5 +1,4 @@
 if (window.Addon == 1) {
-	GetLock = function () {
-		return false;
-	}
+	const Addon_Id = "lockonlydisableclose";
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 }

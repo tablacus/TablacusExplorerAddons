@@ -1,0 +1,3 @@
+GetLock = function () {
+	return false;
+}
