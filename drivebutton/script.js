@@ -22,9 +22,6 @@ if (window.Addon == 1) {
 			}
 			let hMenu = await api.CreatePopupMenu();
 			let Items = await sha.NameSpace(ssfDRIVES).Items();
-			let mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = await mii.Size;
-			mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
 			await FolderMenu.Clear();
 			let nCount = await Items.Count;
 			for (let i = 0; i < nCount; i++) {
