@@ -1,6 +1,5 @@
 const Addon_Id = "toolbar";
 const Default = "ToolBar2Left";
-
 if (window.Addon == 1) {
 	Addons.ToolBar = {
 		Click: async function (i, bNew) {
@@ -132,8 +131,6 @@ if (window.Addon == 1) {
 			Resize();
 		},
 
-
-
 		Changed: function () {
 			Addons.ToolBar.Arrange();
 			ApplyLang(document.getElementById("_toolbar"));
@@ -153,10 +150,9 @@ if (window.Addon == 1) {
 	}
 	te.Data.xmlToolBar = await OpenXml("toolbar.xml", false, true);
 	SetAddon(Addon_Id, Default, '<span id="_' + Addon_Id + '"></span>');
-	Addons.ToolBar.Arrange();
+	AddEvent("Load", Addons.ToolBar.Arrange);
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	AddonName = "ToolBar";
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }
-
