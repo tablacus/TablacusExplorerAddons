@@ -1,6 +1,5 @@
 const Addon_Id = "linkbar";
 const Default = "ToolBar4Center";
-
 if (window.Addon == 1) {
 	Addons.LinkBar = {
 		DD: !await GetAddonOptionEx(Addon_Id, "NoDD"),
@@ -10,7 +9,7 @@ if (window.Addon == 1) {
 			let items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
 			let item = items[i];
 			if (item) {
-				Exec(te, item.text, (bNew && /^Open$|^Open in background$/i.test(type)) ? "Open in new tab" : item.Type, ui_.hwnd, null);
+				Exec(te, item.text, (bNew && /^Open$|^Open in background$/i.test(item.type)) ? "Open in new tab" : item.Type, ui_.hwnd, null);
 			}
 			return false;
 		},
