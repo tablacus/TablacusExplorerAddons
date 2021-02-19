@@ -1,14 +1,12 @@
 const Addon_Id = "simpletoolbar";
 const Default = "ToolBar2Left";
-
 if (window.Addon == 1) {
-	Addons.SimpleAddressBar = {
+	Addons.SimpleToolBar = {
 		Exec: async function (ev, n) {
 			const pt = await api.Memory("POINT");
 			pt.x = ev.screenX * ui_.Zoom;
 			pt.y = ev.screenY * ui_.Zoom;
-			const FV = await GetFolderView();
-			Exec(FV, n, "Tabs", ui_.hwnd, pt);
+			Exec(await GetFolderView(), n, "Tabs", ui_.hwnd, pt);
 		}
 	};
 	const a = {
@@ -21,7 +19,7 @@ if (window.Addon == 1) {
 	const s = [];
 	const h = GetIconSize(await GetAddonOption(Addon_Id, "IconSize"));
 	for (let n in a) {
-		s.push('<span class="button" onmouseover="MouseOver(this)" onmouseout="MouseOut()" onclick="Addons.SimpleAddressBar.Exec(event, \'' + n + '\')" oncontextmenu="return false;">', await GetImgTag({ title: n, src: a[n][h == 16 ? 0 : 1] }, h), '</span>');
+		s.push('<span class="button" onmouseover="MouseOver(this)" onmouseout="MouseOut()" onclick="Addons.SimpleToolBar.Exec(event, \'' + n + '\')" oncontextmenu="return false;">', await GetImgTag({ title: n, src: a[n][h == 16 ? 0 : 1] }, h), '</span>');
 	}
 	SetAddon(Addon_Id, Default, s);
 }
