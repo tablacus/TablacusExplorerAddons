@@ -8,11 +8,11 @@ Sync.RegExpIncSearch = {
 	Search: function () {
 		if (Sync.RegExpIncSearch.str && Sync.RegExpIncSearch.str != '^') {
 			if (!Sync.RegExpIncSearch.SearchEx(0, 1)) {
-				let re;
+				let re, nIndex;
 				const FV = te.Ctrl(CTRL_FV);
 				const hwnd = FV.hwndList;
 				if (hwnd) {
-					let nIndex = -1;
+					nIndex = -1;
 					const c0 = Sync.RegExpIncSearch.str.charAt(0);
 					const lvfi = api.Memory("LVFINDINFO");
 					lvfi.flags = LVFI_STRING;
