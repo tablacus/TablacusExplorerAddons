@@ -50,6 +50,7 @@ Sync.RegExpIncSearch = {
 				if (re) {
 					FV.SelectItem(nIndex, SVSI_SELECT | SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_DESELECTOTHERS);
 				} else {
+					FV.SelectItem(-1, SVSI_DESELECTOTHERS);
 					ShowStatusText(te.Ctrl(CTRL_FV), api.sprintf(999, Sync.RegExpIncSearch.ErrMsg, Sync.RegExpIncSearch.str));
 					Sync.RegExpIncSearch.Clear(true);
 				}

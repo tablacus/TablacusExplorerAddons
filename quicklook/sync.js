@@ -1,6 +1,5 @@
-var Addon_Id = "quicklook";
-var item = GetAddonElement(Addon_Id);
-
+const Addon_Id = "quicklook";
+const item = GetAddonElement(Addon_Id);
 Sync.QuickLook = {
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 	nPos: api.LowPart(item.getAttribute("MenuPos")),
@@ -21,7 +20,7 @@ Sync.QuickLook = {
 			if (!FV) {
 				FV = te.Ctrl(CTRL_FV);
 			}
-			var Items = FV.SelectedItems();
+			let Items = FV.SelectedItems();
 			if (!Items || !Items.Count) {
 				Items = FV.Items();
 			}
@@ -35,10 +34,10 @@ Sync.QuickLook = {
 			return;
 		}
 		Sync.QuickLook.Path = Path;
-		var wfd = api.Memory("WIN32_FIND_DATA");
-		var hFind = api.FindFirstFile("\\\\.\\pipe\\*", wfd);
-		var strPipe;
-		for (var bFind = hFind != INVALID_HANDLE_VALUE; bFind; bFind = api.FindNextFile(hFind, wfd)) {
+		const wfd = api.Memory("WIN32_FIND_DATA");
+		const hFind = api.FindFirstFile("\\\\.\\pipe\\*", wfd);
+		let strPipe;
+		for (let bFind = hFind != INVALID_HANDLE_VALUE; bFind; bFind = api.FindNextFile(hFind, wfd)) {
 			if (/QuickLook\.App\.Pipe\./i.test(wfd.cFileName)) {
 				strPipe = wfd.cFileName;
 				break;
@@ -46,7 +45,7 @@ Sync.QuickLook = {
 		}
 		api.FindClose(hFind);
 		if (strPipe) {
-			var hFile = api.CreateFile(["\\\\.\\pipe\\", strPipe].join(""), 0x40000000, 0, null, 3, FILE_ATTRIBUTE_NORMAL, null);
+			const hFile = api.CreateFile(["\\\\.\\pipe\\", strPipe].join(""), 0x40000000, 0, null, 3, FILE_ATTRIBUTE_NORMAL, null);
 			if (hFile == INVALID_HANDLE_VALUE) {
 				return;
 			}
@@ -59,7 +58,7 @@ Sync.QuickLook = {
 
 AddEvent("StatusText", function (Ctrl, Text, iPart) {
 	if (Ctrl.Path || Ctrl.Type <= CTRL_EB && Text) {
-		var hwnd = api.GetTopWindow(null);
+		let hwnd = api.GetTopWindow(null);
 		do {
 			if (api.PathMatchSpec(api.GetClassName(hwnd), "*QuickLook*")) {
 				if (api.IsWindowVisible(hwnd)) {
@@ -73,9 +72,9 @@ AddEvent("StatusText", function (Ctrl, Text, iPart) {
 
 AddEvent("ToolTip", function (Ctrl, Index) {
 	if (Ctrl.Type == CTRL_SB && Index >= 0) {
-		var Item = Ctrl.Item(Index);
+		const Item = Ctrl.Item(Index);
 		if (Item) {
-			var hwnd = api.GetTopWindow(null);
+			let hwnd = api.GetTopWindow(null);
 			do {
 				if (api.PathMatchSpec(api.GetClassName(hwnd), "*QuickLook*")) {
 					if (api.IsWindowVisible(hwnd)) {
