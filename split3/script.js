@@ -1,6 +1,5 @@
 const Addon_Id = "split3";
 const Default = "ToolBar1Right";
-
 const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Split3 = {
@@ -51,7 +50,10 @@ if (window.Addon == 1) {
 
 	SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
 
-	AddEvent("load", function () {
+	AddEvent("Load", function () {
+		if (!Addons.Split) {
+			return;
+		}
 		Addons.Split.SetButtons(Addon_Id, Default, item, 3, [
 			{ id: "3x1", exec: "3, 1" },
 			{ id: "1x3", exec: "3, 2" }
