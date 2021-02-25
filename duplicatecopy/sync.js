@@ -167,7 +167,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-		api.InsertMenu(hMenu, Sync.DuplicateCopy.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.DuplicateCopy.strName);
+		api.InsertMenu(hMenu, Sync.DuplicateCopy.nPos, MF_BYPOSITION, ++nPos, Sync.DuplicateCopy.strName);
 		ExtraMenuCommand[nPos] = Sync.DuplicateCopy.Exec;
 		return nPos;
 	});
