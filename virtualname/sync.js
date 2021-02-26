@@ -16,7 +16,8 @@ Sync.VirtualName = {
 			const n = Sync.VirtualName.DB.Get(path);
 			InputDialog(path + "\n" + n, n, function (s) {
 				if ("string" === typeof s) {
-					Sync.VirtualName.DB.Set(path, s);;
+					Sync.VirtualName.DB.Set(path, s);
+					Sync.VirtualName.DB.Save();
 				}
 			});
 		}
@@ -50,7 +51,6 @@ Sync.VirtualName = {
 AddEvent("Load", function () {
 	Sync.VirtualName.DB = new SimpleDB("virtualname");
 	Sync.VirtualName.DB.Load();
-	AddEvent("SaveConfig", Sync.VirtualName.DB.Save);
 	AddEvent("Finalize", Sync.VirtualName.DB.Close);
 
 	const Installed0 = (Sync.VirtualName.DB.Get('%Installed%') || "").toUpperCase();
