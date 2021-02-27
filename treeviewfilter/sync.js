@@ -8,11 +8,10 @@ Sync.TreeViewFilter = {
 		const cTV = te.Ctrls(CTRL_TV);
 		for (let i = cTV.length; i--;) {
 			const TV = cTV[i];
-			const FV = TV.FolderView;
 			TV.Refresh();
-			if (FV) {
-				TV.Expand(FV);
-			}
+			try {
+				TV.Expand(TV.FolderView);
+			} catch (e) { }
 		}
 	},
 
