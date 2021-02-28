@@ -30,7 +30,13 @@ if (window.Addon == 1) {
 	});
 
 	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || "../addons/synchronize/synchronize.png";
+	let src = item.getAttribute("Icon");
+	if (!src) {
+		src = BuildPath(te.Data.DataFolder, "icons\\misc\\" + Addon_Id + ".png");
+		if (!await fso.FileExists(src)) {
+			src = "../addons/" + Addon_Id + "/" + Addon_Id + ".png";
+		}
+	}
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.Synchronize.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, id: "ImgSynchronize_$", src: src }, h), '</span>']);
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {

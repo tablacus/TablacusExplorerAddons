@@ -194,39 +194,36 @@ if (window.Addon == 1) {
 
 		SetRects: async function () {
 			Common.FavoritesBar.rc = await GetRect(document.getElementById('favoritesbar'));
-			api.ObjPutI(Common.FavoritesBar.rcItem, "length", ui_.MenuFavorites.length);
+			Common.FavoritesBar.rcItem = await api.CreateObject("Array");
 			for (let i = ui_.MenuFavorites.length; i-- > 0;) {
 				Common.FavoritesBar.rcItem[i] = await GetRect(document.getElementById("fav" + i));
 			}
 		},
 
 		Start5: function (ev, o) {
-			if (ev.buttons == 1) {
-				ev.dataTransfer.effectAllowed = 'move';
-				Common.FavoritesBar.drag5 = o.id;
-				let nCount = 0, nLevel = 0;
-				const items = ui_.MenuFavorites;
-				const src = o.id.replace(/\D/g, "");
-				for (let i = src; i < items.length; ++i) {
-					let strType = items[i].Type;
-					let path = items[i].text;
-					if (nLevel || i == src) {
-						if (SameText(strType, "Menus")) {
-							if (SameText(path, "Open")) {
-								++nLevel;
-							} else if (SameText(path, "Close") && nLevel) {
-								--nLevel;
-							}
+			ev.dataTransfer.effectAllowed = 'move';
+			Common.FavoritesBar.drag5 = o.id;
+			let nCount = 0, nLevel = 0;
+			const items = ui_.MenuFavorites;
+			const src = o.id.replace(/\D/g, "");
+			for (let i = src; i < items.length; ++i) {
+				let strType = items[i].Type;
+				let path = items[i].text;
+				if (nLevel || i == src) {
+					if (SameText(strType, "Menus")) {
+						if (SameText(path, "Open")) {
+							++nLevel;
+						} else if (SameText(path, "Close") && nLevel) {
+							--nLevel;
 						}
-						++nCount;
-						continue;
 					}
-					break;
+					++nCount;
+					continue;
 				}
-				Common.FavoritesBar.count5 = nCount;
-				return true;
+				break;
 			}
-			return false;
+			Common.FavoritesBar.count5 = nCount;
+			return true;
 		},
 
 		End5: function () {
