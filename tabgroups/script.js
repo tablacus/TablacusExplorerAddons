@@ -299,7 +299,7 @@ if (window.Addon == 1) {
 		Popup: async function (ev, o) {
 			te.Data.Tabgroups.Click = o.id.replace(/\D/g, '') - 0;
 			let hMenu = await api.CreatePopupMenu();
-			let sMenu = [1, "Rename", 5, "Color", 0, "", 2, "&Close Tab", 3, "Cl&amp;ose Other Tabs", 0, "", 4, "&New Tab", 6, "&Lock", 0, "", 7, "Load", 8, "Save"];
+			let sMenu = [1, "Rename", 5, "Color", 0, "", 2, "&Close Tab", 3, "Cl&amp;ose Other Tabs", 0, "", 4, "&New Tab", 6, "&Lock", 0, "", 7, "Load", 8, "Save", 9, "Copy"];
 			for (let i = sMenu.length / 2; i--;) {
 				const uId = sMenu[i * 2];
 				let uFlags = uId ? MF_STRING : MF_SEPARATOR;
@@ -343,6 +343,9 @@ if (window.Addon == 1) {
 					break;
 				case 8:
 					Sync.Tabgroups.Save();
+					break;
+				case 9:
+					Sync.Tabgroups.Copy();
 					break;
 			}
 		},

@@ -5,7 +5,7 @@ if (window.Addon == 1) {
 		Exec: async function (Ctrl, pt) {
 			const FV = await GetFolderView(Ctrl, pt);
 			FV.Focus();
-			Exec(Ctrl, "Show frames", "Tabs", 0, pt);
+			Exec(FV, "Show frames", "Tabs", 0, pt);
 		}
 	}
 	const item = await GetAddonElement(Addon_Id);

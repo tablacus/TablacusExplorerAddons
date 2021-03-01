@@ -26,6 +26,10 @@ Sync.Tabgroups = {
 		te.Data.Tabgroups.Data.push(o);
 	},
 
+	Copy: function () {
+		Sync.Tabgroups.Load1(Sync.Tabgroups.Save1());
+	},
+
 	FromPt: function (pt) {
 		const ptc = pt.Clone();
 		api.ScreenToClient(WebBrowser.hwnd, ptc);
@@ -70,23 +74,27 @@ Sync.Tabgroups = {
         if (commdlg.ShowOpen()) {
             const fn = api.PathUnquoteSpaces(commdlg.filename);
             if (fso.FileExists(fn)) {
-                xml = te.CreateObject("Msxml2.DOMDocument");
+                const xml = api.CreateObject("Msxml2.DOMDocument");
                 xml.async = false;
                 xml.load(fn);
-            }
-            let items = xml.getElementsByTagName("Group");
-            if (items.length) {
-                items = items[0].getElementsByTagName("Item");
-                if (items.length == 1) {
-					Sync.Tabgroups.New(items[0].getAttribute("Name"), items[0].getAttribute("Color"), items[0].getAttribute("Lock"));
-					InvokeUI("Addons.Tabgroups.Change", te.Data.Tabgroups.Data.length, xml, function (nGroup, xml) {
-						LoadXml(xml, nGroup);
-						InvokeUI("Addons.Tabgroups.Arrange", [true]);
-					});
-                }
+				this.Load1(xml);
             }
         }
     },
+
+	Load1: function (xml) {
+		let items = xml.getElementsByTagName("Group");
+		if (items.length) {
+			items = items[0].getElementsByTagName("Item");
+			if (items.length == 1) {
+				Sync.Tabgroups.New(items[0].getAttribute("Name"), items[0].getAttribute("Color"), items[0].getAttribute("Lock"));
+				InvokeUI("Addons.Tabgroups.Change", te.Data.Tabgroups.Data.length, xml, function (nGroup, xml) {
+					LoadXml(xml, nGroup);
+					InvokeUI("Addons.Tabgroups.Arrange", [true]);
+				});
+			}
+		}
+	},
 
     Save: function () {
         const commdlg = api.CreateObject("CommonDialog");
@@ -96,18 +104,7 @@ Sync.Tabgroups = {
         commdlg.Flags = OFN_OVERWRITEPROMPT;
         if (commdlg.ShowSave()) {
             const fn = api.PathUnquoteSpaces(commdlg.filename);
-            const xml = CreateXml(true);
-            const nGroup = te.Data.Tabgroups.Click;
-            const cTC = te.Ctrls(CTRL_TC);
-            for (let i in cTC) {
-                if (cTC[i].Data.Group == nGroup) {
-                    SaveXmlTC(cTC[i], xml, 1);
-                }
-            }
-            const item = xml.createElement("Group");
-            item.setAttribute("Index", 1);
-            xml.documentElement.appendChild(item);
-            this.Save3(xml, item, nGroup - 1);
+			const xml = this.Save1();
             try {
                 xml.save(fn);
             } catch (e) {
@@ -117,6 +114,22 @@ Sync.Tabgroups = {
             }
         }
     },
+
+	Save1: function () {
+		const xml = CreateXml(true);
+		const nGroup = te.Data.Tabgroups.Click;
+		const cTC = te.Ctrls(CTRL_TC);
+		for (let i in cTC) {
+			if (cTC[i].Data.Group == nGroup) {
+				SaveXmlTC(cTC[i], xml, 1);
+			}
+		}
+		const item = xml.createElement("Group");
+		item.setAttribute("Index", 1);
+		xml.documentElement.appendChild(item);
+		this.Save3(xml, item, nGroup - 1);
+		return xml;
+	},
 
     Save2: function (xml) {
         const item = xml.createElement("Group");
