@@ -147,7 +147,7 @@ if (window.Addon == 1) {
 							NavigateFV(await GetInnerFV(Id), await Sync.InnerBreadcrumbsAddressBar.GetPath(n, Id), SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS);
 							break;
 						case 5:
-							this.Focus(Id);
+							Addons.InnerBreadcrumbsAddressBar.ExecEx(Id);
 							break;
 					}
 				})();
@@ -242,6 +242,7 @@ if (window.Addon == 1) {
 			if (isFinite(Id)) {
 				document.getElementById("breadcrumbsaddressbar_" + Id).focus();
 			}
+			WebBrowser.Focus();
 			return S_OK;
 		},
 

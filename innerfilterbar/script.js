@@ -153,6 +153,9 @@ if (window.Addon == 1) {
 		const nSize = Addons.InnerFilterBar.IconS;
 		const s = ['<input type="text" name="filter_', Id, '" placeholder="Filter" onkeydown="return Addons.InnerFilterBar.KeyDown(event, this,', Id, ')"  onkeyup="return Addons.InnerFilterBar.KeyUp(event,', Id, ')" onmouseup="Addons.InnerFilterBar.KeyDown(event, this,', Id, ')" onfocus="Addons.InnerFilterBar.Focus(this,', Id, ')" onblur="Addons.InnerFilterBar.ShowButton(this,', Id, ')" ondblclick="return Addons.InnerFilterBar.FilterList(this,', Id, ')" style="width: ', EncodeSC(Addons.InnerFilterBar.Width), '; padding-right: ', nSize * z, 'px; vertical-align: middle"><span style="position: relative"><input type="image" src="', EncodeSC(Addons.InnerFilterBar.Icon), '" id="ButtonFilter_', Id, '" hidefocus="true" style="position: absolute; left:', -18 * z, 'px; top:', (18 - nSize) / 2 * z, 'px; width: ', nSize * z, 'px; height: ', nSize * z, 'px" onclick="return Addons.InnerFilterBar.FilterList(this,', Id, ')" oncontextmenu="return Addons.InnerFilterBar.FilterList(this,', Id, ')"><span id="ButtonFilterClear_', Id, '" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left:', -28 * z, 'px; top: ', 4 * z, 'px" class="button" onclick="Addons.InnerFilterBar.Clear(true,', Id, ')">r</span></span>'];
 		SetAddon(null, "Inner1Right_" + Id, s.join(""));
+		(async function () {
+			Addons.InnerFilterBar.GetFilter(await Ctrl.Selected);
+		})();
 	});
 
 	AddEvent("ChangeView", Addons.InnerFilterBar.GetFilter);
