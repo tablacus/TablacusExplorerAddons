@@ -31,9 +31,9 @@ if (window.Addon == 1) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SwitchHidden.Exec, "Async");
 	}
 	AddTypeEx("Add-ons", "Switch hidden items", Addons.SwitchHidden.Exec);
-
 	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SwitchHidden.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: item.getAttribute("Icon") }, h), '</span>']);
+	const src = item.getAttribute("Icon") || await GetMiscIcon("togglehidden") || (h > 16 ? "bitmap:ieframe.dll,697,24,43" : "bitmap:ieframe.dll,699,16,43");
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SwitchHidden.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

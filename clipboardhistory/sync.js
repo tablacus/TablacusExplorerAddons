@@ -116,7 +116,7 @@ AddEvent("Finalize", function () {
 	}
 });
 for (let i = 2; i--;) {
-	Sync.ClipboardHistory.Bitmap[i] = MakeImgData("bitmap:ieframe.dll,216,16," + (5 + i), 0, false, 16).GetHBITMAP(WINVER >= 0x600 ? null : GetSysColor(COLOR_MENU));
+	Sync.ClipboardHistory.Bitmap[i] = MakeImgData("bitmap:ieframe.dll,216,16," + (5 + i), 0, false, 16).GetHBITMAP(WINVER >= 0x600 ? -2 : GetSysColor(COLOR_MENU));
 }
 
 if (!te.Data.ClipboardHistory) {

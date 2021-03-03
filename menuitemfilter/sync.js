@@ -1,13 +1,13 @@
-Addon_Id = "menuitemfilter";
+const Addon_Id = "menuitemfilter";
 
 Sync.MenuItemFilter = {
 	Menus: {},
 
 	Remove: function (hMenu, Menus, path) {
-		for (var i = api.GetMenuItemCount(hMenu); i-- > 0;) {
-			var s = api.GetMenuString(hMenu, i, MF_BYPOSITION).replace(/\t/g, "|");
-			var hSubMenu = api.GetSubMenu(hMenu, i);
-			for (var j in Menus) {
+		for (let i = api.GetMenuItemCount(hMenu); i-- > 0;) {
+			const s = api.GetMenuString(hMenu, i, MF_BYPOSITION).replace(/\t/g, "|");
+			let hSubMenu = api.GetSubMenu(hMenu, i);
+			for (let j in Menus) {
 				if (PathMatchEx(path, Menus[j][0]) && PathMatchEx(s, Menus[j][1])) {
 					api.DeleteMenu(hMenu, i, MF_BYPOSITION);
 					hSubMenu = 0;
@@ -21,14 +21,14 @@ Sync.MenuItemFilter = {
 	}
 };
 try {
-	var ado = api.CreateObject("ads");
+	const ado = api.CreateObject("ads");
 	ado.CharSet = "utf-8";
 	ado.Open();
-	ado.LoadFromFile(fso.BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
+	ado.LoadFromFile(BuildPath(te.Data.DataFolder, "config\\" + Addon_Id + ".tsv"));
 	while (!ado.EOS) {
-		var ar = ado.ReadText(adReadLine).split("\t");
+		const ar = ado.ReadText(adReadLine).split("\t");
 		ar[1] = ar[1].replace(/\|/g, "\t");
-		var s = ar.shift();
+		const s = ar.shift();
 		if (s) {
 			if (!Sync.MenuItemFilter.Menus[s]) {
 				Sync.MenuItemFilter.Menus[s] = [];

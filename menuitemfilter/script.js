@@ -1,4 +1,4 @@
-Addon_Id = "menuitemfilter";
+const Addon_Id = "menuitemfilter";
 if (window.Addon == 1) {
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
