@@ -9,18 +9,18 @@ if (!GetNum(item.getAttribute("Delete")) && !GetNum(item.getAttribute("Paste")) 
 Addons.MultiProcess = {
 	File: item.getAttribute("File"),
 
-	Player: function (autoplay) {
+	Player: async function (autoplay) {
 		if (Addons.MultiProcess.tid) {
 			clearTimeout(Addons.MultiProcess.tid);
-			Addons.MultiProcess.tid = null;
+			delete Addons.MultiProcess.tid;
 		}
-		var el;
-		var src = ExtractPath(te, (autoplay === true) ? Addons.MultiProcess.File : document.F.File.value);
-		if (autoplay === true && api.PathMatchSpec(src, "*.wav")) {
+		let el;
+		const src = await ExtractPath(te, (autoplay === true) ? Addons.MultiProcess.File : document.F.File.value);
+		if (autoplay === true && await api.PathMatchSpec(src, "*.wav")) {
 			api.PlaySound(src, null, 1);
 			return;
 		}
-		if (ui_.IEVer >= 11 && api.PathMatchSpec(src, "*.mp3;*.m4a;*.webm;*.mp4")) {
+		if (ui_.IEVer >= 11 && await api.PathMatchSpec(src, "*.mp3;*.m4a;*.webm;*.mp4")) {
 			el = document.createElement('audio');
 			if (autoplay === true) {
 				el.setAttribute("autoplay", "true");
@@ -37,7 +37,7 @@ Addons.MultiProcess = {
 		}
 		el.src = src;
 		el.setAttribute("style", "width: 100%; height: 3.5em");
-		var o = document.getElementById('multiprocess_player');
+		const o = document.getElementById('multiprocess_player');
 		while (o.firstChild) {
 			o.removeChild(o.firstChild);
 		}
@@ -52,5 +52,5 @@ if (window.Addon == 1) {
 	document.getElementById('None').insertAdjacentHTML("BeforeEnd", '<div id="multiprocess_player"></div>');
 } else {
 	SetTabContents(0, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
-	Addons.MultiProcess.Player();
+	setTimeout(Addons.MultiProcess.Player, 999);
 }
