@@ -1,47 +1,11 @@
-<div class="panel" style="display: block">
-  <label>Copy</label>
-  <input type="text" id="Copy" style="width: 100%">
-  <input type="button" value="Browse..." onclick="RefId(this, 'Copy')">
-  <input type="button" value="None" title="0" onclick="SetDefault(GetElement('Copy'), this.title)">
-  <input type="button" value="Default" title="1" onclick="SetDefault(GetElement('Copy'), this.title)">
-  <label><input type="checkbox" id="!NoTemp">@shell32.dll,-21815[Temporary Burn Folder]</label>
-</div>
-<div class="panel" style="display: block">
-  <label>Move</label>
-  <input type="text" id="Move" style="width: 100%">
-  <input type="button" value="Browse..." onclick="RefId(this, 'Move')">
-  <input type="button" value="None" title="0" onclick="SetDefault(GetElement('Move'), this.title)">
-  <input type="button" value="Default" title="2" onclick="SetDefault(GetElement('Move'), this.title)">
-  <input type="checkbox" id="DiffDriveOnly">
-  <label for="DiffDriveOnly">Different drive only</label>
-</div>
+<label>Path</label> (exe)
+<input type="text" id="Path" style="width: 100%" placeholder="C:\Program Files\TeraCopy\TeraCopy.exe">
+<input type="button" value="Browse..." onclick="RefX('Path',0,0,1,'*.exe')">
+<input type="button" value="Default" title="" onclick="SetDefault(document.F.Path, '')">
+<input type="button" value="Portable" onclick="PortableX('Path')"><br>
+<br>
+<label><input type="checkbox" id="!NoCopy">Copy</label><br>
+<label><input type="checkbox" id="!NoMove">Move</label>&nbsp;(<label><input type="checkbox" id="DiffDriveOnly">Different drive only</label>)<br>
+<label><input type="checkbox" id="!NoTemp">@shell32.dll,-21815[Temporary Burn Folder]</label><br>
 <br>
 <input type="button" id="GetTeraCopy" value="Get TeraCopy..." title="https://www.codesector.com/teracopy" onclick="wsh.Run(this.title)">
-<!--panel-->
-<div class="panel" style="display: block">
-  <label>Path</label> (dll) <label>32-bit</label>
-  <input type="text" id="Path32" style="width: 100%">
-  <input type="button" value="Browse..." onclick="RefX('Path32',0,0,1,'*.dll')">
-  <input type="button" value="Default" title="" onclick="SetDefault(document.F.Path32, '')">
-  <input type="button" value="Portable" onclick="PortableX('Path32')"><br>
-</div>
-<div class="panel" style="display: block">
-  <label>Class</label> <label>32-bit</label>
-  <input type="text" id="Class32" placeholder="{A7005AF0-D6E8-48AF-8DFA-023B1CF660A7}" style="width: 100%">
-  <input type="button" value="Browse..." onclick="RefClass(this, 'Class32')">
-  <input type="button" value="Default" title="" onclick="SetDefault(document.F.Class32, this.title)">
-</div>
- <!--panel-->
- <div class="panel" style="display: block">
-  <label>Path</label> (dll) <label>64-bit</label>
-  <input type="text" id="Path64" style="width: 100%">
-  <input type="button" value="Browse..." onclick="RefX('Path64',0,0,1,'*.dll')">
-  <input type="button" value="Default" title="" onclick="SetDefault(document.F.Path64, '')">
-  <input type="button" value="Portable" onclick="PortableX('Path64')"><br>
-</div>
-<div class="panel" style="display: block">
-  <label>Class</label> <label>64-bit</label>
-  <input type="text" id="Class64" placeholder="{A7645AF0-D6E8-48AF-8DFA-023B1CF660A7}" style="width: 100%">
-  <input type="button" value="Browse..." onclick="RefClass(this, 'Class64')">
-  <input type="button" value="Default" title="" onclick="SetDefault(document.F.Class64, this.title)">
-</div>

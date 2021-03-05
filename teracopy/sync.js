@@ -4,10 +4,9 @@ const item = GetAddonElement(Addon_Id);
 Sync.TeraCopy = {
 	bDiffDriveOnly: item.getAttribute("DiffDriveOnly"),
 	NoTemp: item.getAttribute("NoTemp"),
-	Copy: GetNum(item.getAttribute("Copy")),
-	Move: GetNum(item.getAttribute("Move")),
-	Path: ExtractPath(item.getAttribute("Path" + g_.bit) + ""),
-	Class: item.getAttribute("Class" + g_.bit) || g_.bit < 64 ? "{A7005AF0-D6E8-48AF-8DFA-023B1CF660A7}" : "{A7645AF0-D6E8-48AF-8DFA-023B1CF660A7}",
+	Copy: !item.getAttribute("NoCopy"),
+	Move: !item.getAttribute("NoMove"),
+	Path: PathQuoteSpaces(ExtractPath(te, item.getAttribute("Path")) || "C:\\Program Files\\TeraCopy\\TeraCopy.exe"),
 
 	FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver) {
 		if (Items.Count == 0 || !(grfKeyState & MK_LBUTTON)) {
@@ -51,19 +50,19 @@ Sync.TeraCopy = {
 					Items2.AddItem(path1);
 				}
 				if (pdwEffect[0]) {
-					nVerb = -1;
+					let strVerb;
 					if (bOver) {
 						const DropTarget = api.DropTarget(path);
 						DropTarget.DragOver(Items, grfKeyState, pt, pdwEffect);
 					}
-					if (pdwEffect[0] & DROPEFFECT_COPY) {
-						nVerb = Sync.TeraCopy.Copy;
-					} else if (pdwEffect[0] & DROPEFFECT_MOVE) {
+					if (Sync.TeraCopy.Copy && (pdwEffect[0] & DROPEFFECT_COPY)) {
+						strVerb = "Copy";
+					} else if (Sync.TeraCopy.Move && (pdwEffect[0] & DROPEFFECT_MOVE)) {
 						if (!(Sync.TeraCopy.bDiffDriveOnly && api.PathIsSameRoot(Items.Item(-1).Path, path))) {
-							nVerb = Sync.TeraCopy.Move;
+							strVerb = "Move";
 						}
 					}
-					if (nVerb > 0) {
+					if (strVerb) {
 						if (strTemp2) {
 							for (let i = 0; i < Items.Count; ++i) {
 								const path1 = Items.Item(i).Path;
@@ -81,14 +80,23 @@ Sync.TeraCopy = {
 							}
 							Items = Items2;
 						}
-						const ContextMenu = api.ContextMenu(Sync.TeraCopy.Path, Sync.TeraCopy.Class, path, Items, HKEY_CLASSES_ROOT, "Folder", null);
-						if (ContextMenu) {
-							const hMenu = api.CreatePopupMenu();
-							ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_NORMAL);
-							ContextMenu.InvokeCommand(0, te.hwnd, nVerb - 1, null, null, SW_SHOWNORMAL, 0, 0);
-							api.DestroyMenu(hMenu);
-							return true;
+						let src;
+						if (Items.Count == 1) {
+							src = PathQuoteSpaces(Items.Item(0).Path);
+						} else {
+							src = strTemp + "tablacus\\" + fso.GetTempName().replace(/\.tmp$/, "") + ".cmd";
+							const ado = api.CreateObject("ads");
+							ado.CharSet = "utf-8";
+							ado.Open();
+							for (let i = 0; i < Items.Count; ++i) {
+								ado.WriteText(Items.Item(i).Path + "\r\n");
+							}
+							ado.SaveToFile(src, 2);
+							ado.Close();
+							src = "*" + PathQuoteSpaces(src);
 						}
+						wsh.Run([Sync.TeraCopy.Path, strVerb, src, path].join(" "));
+						return true;
 					}
 				}
 			}
