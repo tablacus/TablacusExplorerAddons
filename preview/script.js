@@ -112,7 +112,7 @@ if (window.Addon == 1) {
 
 		Loaded: async function (o) {
 			o.style.display = "block";
-			const path = await MainWindow.Addons.Preview.Item.Path;
+			const path = await Addons.Preview.Item.Path;
 			if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
 				o.onclick = Addons.Preview.Play;
 				o.style.cursor = "pointer";
@@ -121,14 +121,14 @@ if (window.Addon == 1) {
 
 		Play: async function () {
 			const div1 = document.getElementById("PreviewBar");
-			const path = await MainWindow.Addons.Preview.Item.Path;
+			const path = await Addons.Preview.Item.Path;
 			if (await api.PathMatchSpec(path, "*.wav")) {
 				api.PlaySound(path, null, 3);
 			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp3;*.m4a")) {
 				document.getElementById("previewplay1").style.display = "none";
-				document.getElementById("previewimg1").innerHTML = '<audio controls autoplay width="100%" height="100%"><source src="' + path + '"></audio>';
+				document.getElementById("previewimg1").innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.webm;*.mp4")) {
-				div1.innerHTML = '<video controls autoplay width="100%" height="100%"><source src="' + path + '"></video>';
+				div1.innerHTML = '<video controls autoplay style="width: 100%"><source src="' + path + '"></video>';
 			} else {
 				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
 			}

@@ -1,10 +1,7 @@
 Addons = {};
 RunEventUI("BrowserCreatedEx");
 
-Addons.Retouch =
-{
-	tid: null,
-
+Addons.Retouch = {
 	Load: async function () {
 		ApplyLang(document);
 		const FV = await te.Ctrl(CTRL_FV);
@@ -47,24 +44,30 @@ Addons.Retouch =
 				if (document.F.percent.value == 0) {
 					return;
 				}
-				document.F.width.value = Math.round(Addons.Retouch.Width * document.F.percent.value / 100);
-				document.F.height.value = Math.round(Addons.Retouch.Height * document.F.percent.value / 100);
+				document.F.width.value = Math.round(Addons.Retouch.Width * document.F.percent.value / 100) || "";
+				document.F.height.value = Math.round(Addons.Retouch.Height * document.F.percent.value / 100) || "";
 				break;
 		}
-		const img1 = document.getElementById("img1");
-		if (ui_.IEVer < 10) {
-			img1.src = Addons.Retouch.File;
-			img1.style.width = document.F.width.value + "px";
-			img1.style.height = document.F.height.value + "px";
-			img1.style.filter = "progid:DXImageTransform.Microsoft.BasicImage(rotation=" + document.F.rotation.value + ");";
-		} else {
-			const thum = await Addons.Retouch.Image.GetThumbnailImage(document.F.width.value, document.F.height.value);
-			if (thum) {
-				if (document.F.rotation.value != 0) {
-					await thum.RotateFlip(document.F.rotation.value);
+		if (await Addons.Retouch.Image) {
+			const img1 = document.getElementById("img1");
+			if (ui_.IEVer < 10) {
+				img1.src = Addons.Retouch.File;
+				img1.style.width = document.F.width.value + "px";
+				img1.style.height = document.F.height.value + "px";
+				img1.style.filter = "progid:DXImageTransform.Microsoft.BasicImage(rotation=" + document.F.rotation.value + ");";
+			} else {
+				const thum = await Addons.Retouch.Image.GetThumbnailImage(document.F.width.value, document.F.height.value);
+				if (thum) {
+					if (document.F.rotation.value != 0) {
+						await thum.RotateFlip(document.F.rotation.value);
+					}
+					img1.src = await thum.DataURI(/\.jpe?g?$/.test(Addons.Retouch.File) ? "image/jpeg" : "image/png");
 				}
-				img1.src = await thum.DataURI(/\.jpe?g?$/.test(Addons.Retouch.File) ? "image/jpeg" : "image/png");
 			}
+			document.F.Save.disabled = false;
+		} else {
+			img1.src = null;
+			document.F.Save.disabled = true;
 		}
 	},
 

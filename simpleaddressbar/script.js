@@ -31,8 +31,16 @@ if (window.Addon == 1) {
 			document.F.simpleaddressbar.focus();
 		},
 
+		Focused: function (o) {
+			setTimeout(async function () {
+				if (o.selectionEnd == o.selectionStart && await api.GetKeyState(VK_LBUTTON) >= 0) {
+					o.select()
+				}
+			}, ui_.DoubleClickTime);
+		},
+
 		ContextMenu: function (o) {
-			if (!window.chrome) {
+			if (!window.chrome && o.selectionEnd == o.selectionStart) {
 				o.select();
 			}
 		}
@@ -65,5 +73,5 @@ if (window.Addon == 1) {
 	}
 
 	AddTypeEx("Add-ons", "Simple Address Bar", Addons.SimpleAddressBar.Focus);
-	SetAddon(Addon_Id, Default, '<input id="simpleaddressbar" type="text" autocomplate="on" list="AddressList" oninput="AdjustAutocomplete(this.value)" onkeydown="return Addons.SimpleAddressBar.KeyDown(event, this)" onfocus="this.select()" oncontextmenu="Addons.SimpleAddressBar.ContextMenu(this)" style="width: 100%; vertical-align: middle">', "middle");
+	SetAddon(Addon_Id, Default, '<input id="simpleaddressbar" type="text" autocomplate="on" list="AddressList" oninput="AdjustAutocomplete(this.value)" onkeydown="return Addons.SimpleAddressBar.KeyDown(event, this)" onfocus="Addons.SimpleAddressBar.Focused(this)" oncontextmenu="Addons.SimpleAddressBar.ContextMenu(this)" style="width: 100%; vertical-align: middle">', "middle");
 }
