@@ -8,7 +8,6 @@ LoadLS = async function () {
 		if (xml) {
 			const items = await xml.getElementsByTagName("Item");
 			let i = await GetLength(items);
-			alert(i);
 			g_x.List.length = i;
 			while (--i >= 0) {
 				const item = await items[i];

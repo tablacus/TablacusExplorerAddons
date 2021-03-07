@@ -129,7 +129,7 @@ Sync.WLX = {
 										}
 									}
 								} catch (e) {
-									alert(js);
+									ShowError(e, ["Error: WLX", js].join("\n"));
 								}
 							}
 						}

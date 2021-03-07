@@ -84,18 +84,25 @@ Sync.TeraCopy = {
 						if (Items.Count == 1) {
 							src = PathQuoteSpaces(Items.Item(0).Path);
 						} else {
-							src = strTemp + "tablacus\\" + fso.GetTempName().replace(/\.tmp$/, "") + ".cmd";
-							const ado = api.CreateObject("ads");
-							ado.CharSet = "utf-8";
-							ado.Open();
-							for (let i = 0; i < Items.Count; ++i) {
-								ado.WriteText(Items.Item(i).Path + "\r\n");
+							CreateFolder(strTemp + "tablacus");
+							do {
+								src = strTemp + "tablacus\\" + fso.GetTempName();
+							} while (IsExists(src));
+							try {
+								const ado = api.CreateObject("ads");
+								ado.CharSet = "utf-8";
+								ado.Open();
+								for (let i = 0; i < Items.Count; ++i) {
+									ado.WriteText(Items.Item(i).Path + "\r\n");
+								}
+								ado.SaveToFile(src);
+								ado.Close();
+							} catch (e) {
+								ShowError(e, [GetText("Save"), src].join(": "));
 							}
-							ado.SaveToFile(src, 2);
-							ado.Close();
 							src = "*" + PathQuoteSpaces(src);
 						}
-						wsh.Run([Sync.TeraCopy.Path, strVerb, src, path].join(" "));
+						wsh.Run([Sync.TeraCopy.Path, strVerb, src, PathQuoteSpaces(path)].join(" "));
 						return true;
 					}
 				}

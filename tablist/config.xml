@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.12</Version>
+    <Version>1.00</Version>
     <MinVersion>2021.3.6</MinVersion>
     <pubDate>Sun, 07 Mar 2021 00:00:00 GMT</pubDate>
-    <Options>Common:4,5,6,7,8,9:4</Options>
-    <DllVersion>1.1.0.0</DllVersion>
+    <Options>Common:5,6,7,8,9:5</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Total Commander Lister Plug-in</Name>
-    <Description>Total Commander Lister Plug-in</Description>
+    <Name>Tab list</Name>
+    <Description>Tab list</Description>
   </en>
   <ja>
-    <Name>Total Commander リスタープラグイン</Name>
+    <Name>タブリスト</Name>
   </ja>
-  <zh>
-    <Name>Total Commander 檢視器外掛程式</Name>
-  </zh>
 </TablacusExplorer>

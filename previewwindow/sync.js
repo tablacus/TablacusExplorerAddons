@@ -41,7 +41,7 @@ Sync.PreviewWindow = {
 				Sync.PreviewWindow.Item = Item;
 				Sync.PreviewWindow.File = Item.Path;
 			}
-			var ppid = api.Memory("DWORD");
+			const ppid = api.Memory("DWORD");
 			api.GetWindowThreadProcessId(api.GetFocus(), ppid);
 			if (Sync.PreviewWindow.ppid[0] == ppid[0]) {
 				api.Invoke(Sync.PreviewWindow.dlg.Document.parentWindow.Common.PreviewWindow, te.hwnd, true);
@@ -58,17 +58,19 @@ AddEvent("StatusText", function (Ctrl, Text, iPart) {
 	}
 });
 
-AddEvent("ToolTip", function (Ctrl, Index) {
-	if (Ctrl.Type == CTRL_SB && Index >= 0) {
-		var Item = Ctrl.Item(Index);
-		if (Item) {
-			Sync.PreviewWindow.Arrange(null, Item);
+if (!item.getAttribute("NoMouse")) {
+	AddEvent("ToolTip", function (Ctrl, Index) {
+		if (Ctrl.Type == CTRL_SB && Index >= 0) {
+			const Item = Ctrl.Item(Index);
+			if (Item) {
+				Sync.PreviewWindow.Arrange(null, Item);
+			}
 		}
-	}
-});
+	});
+}
 
 AddEvent("LoadWindow", function (xml) {
-	var items = xml ? xml.getElementsByTagName("PreviewWindow") : {};
+	const items = xml ? xml.getElementsByTagName("PreviewWindow") : {};
 	if (items.length) {
 		te.Data.AddonsData.PreviewWindow.width = items[0].getAttribute("Width");
 		te.Data.AddonsData.PreviewWindow.height = items[0].getAttribute("Height");
@@ -79,7 +81,7 @@ AddEvent("LoadWindow", function (xml) {
 
 AddEvent("SaveWindow", function (xml, all) {
 	if (te.Data.AddonsData.PreviewWindow.width && te.Data.AddonsData.PreviewWindow.height) {
-		var item = xml.createElement("PreviewWindow");
+		const item = xml.createElement("PreviewWindow");
 		item.setAttribute("Width", te.Data.AddonsData.PreviewWindow.width);
 		item.setAttribute("Height", te.Data.AddonsData.PreviewWindow.height);
 		item.setAttribute("Left", te.Data.AddonsData.PreviewWindow.left);

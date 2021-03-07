@@ -2,10 +2,10 @@ Addons = {};
 RunEventUI("BrowserCreatedEx");
 
 Common.PreviewWindow = async function (hwnd, bFocus) {
-	let desc = document.getElementById("desc1");
-	let img1 = document.getElementById("img1");
+	const desc = document.getElementById("desc1");
+	const img1 = document.getElementById("img1");
 	img1.style.display = "none";
-	let div1 = document.getElementById("div1");
+	const div1 = document.getElementById("div1");
 	div1.innerHTML = "";
 	div1.style.height = "";
 
@@ -13,24 +13,24 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 	Addons.PreviewWindow.w = 0;
 	Addons.PreviewWindow.h = 0;
 	if (MainWindow.Sync.PreviewWindow.File) {
-		let Item = await MainWindow.Sync.PreviewWindow.Item;
-		let ar = [];
-		let col = ["type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13"];
+		const Item = await MainWindow.Sync.PreviewWindow.Item;
+		const ar = [];
+		const col = ["type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13"];
 		if (!await IsFolderEx(Item)) {
 			col.push("size");
 		}
 		for (let i = col.length; i--;) {
-			let s = await api.PSFormatForDisplay(col[i], await Item.ExtendedProperty(col[i]), PDFF_DEFAULT);
+			const s = await api.PSFormatForDisplay(col[i], await Item.ExtendedProperty(col[i]), PDFF_DEFAULT);
 			if (s) {
 				ar.unshift(" " + await api.PSGetDisplayName(col[i]) + ": " + s);
 			}
 		}
 		let Handled = false;
-		let path = await Item.Path;
+		const path = await Item.Path;
 		if (await PathMatchEx(path, await MainWindow.Sync.PreviewWindow.TextFilter)) {
 			let el;
 			if (await Item.ExtendedProperty("size") <= await MainWindow.Sync.PreviewWindow.TextLimit) {
-				let ado = await OpenAdodbFromTextFile(path, await MainWindow.Sync.PreviewWindow.Charset);
+				const ado = await OpenAdodbFromTextFile(path, await MainWindow.Sync.PreviewWindow.Charset);
 				if (ado) {
 					el = document.createElement("textarea");
 					el.innerHTML = await ado.ReadText(await MainWindow.Sync.PreviewWindow.TextSize);
@@ -66,7 +66,7 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 	}
 	Addons.PreviewWindow.GetRect();
 	if (bFocus) {
-		let hwnd = await GetTopWindow();
+		const hwnd = await GetTopWindow();
 		if (hwnd) {
 			if (await api.IsIconic(hwnd)) {
 				api.ShowWindow(hwnd, SW_RESTORE);
@@ -84,13 +84,13 @@ Addons.PreviewWindow = {
 	r: 1,
 
 	FromFile: async function () {
-		let o = await api.CreateObject("Object");
+		const o = await api.CreateObject("Object");
 		o.path = await MainWindow.Sync.PreviewWindow.Item;
 		o.Parent = await MainWindow.Sync.PreviewWindow;
 		o.onload = async function (o) {
-			let org = await o.Parent.Item;
+			const org = await o.Parent.Item;
 			if (org && SameText(await o.path.Path, await org.Path)) {
-				let img = document.getElementById("img1");
+				const img = document.getElementById("img1");
 				img.src = await o.out.DataURI();
 				o.Parent.w = await o.out.GetWidth();
 				o.Parent.h = await o.out.GetHeight();
@@ -98,7 +98,7 @@ Addons.PreviewWindow = {
 		};
 		o.onerror = async function (o) {
 			if (!await IsFolderEx(await o.path) && api.PathMatchSpec(await o.path.Path, await o.Parent.Extract)) {
-				let Items = await api.CreateObject("FolderItems");
+				const Items = await api.CreateObject("FolderItems");
 				Items.AddItem(await o.path);
 				await te.OnBeforeGetData(await te.Ctrl(CTRL_FV), Items, 11);
 				if (await IsExists(await o.path.Path)) {
@@ -108,14 +108,14 @@ Addons.PreviewWindow = {
 			}
 		};
 		MainWindow.Threads.GetImage(o);
-		let img = document.getElementById("img1");
+		const img = document.getElementById("img1");
 		img.onerror = null;
 	},
 
 	Loaded: async function () {
 		document.getElementById("img1").style.display = "";
-		let Item = MainWindow.Sync.PreviewWindow.Item;
-		let wh = "{6444048F-4C8B-11D1-8B70-080036B11A03} 13";
+		const Item = MainWindow.Sync.PreviewWindow.Item;
+		const wh = "{6444048F-4C8B-11D1-8B70-080036B11A03} 13";
 		let s = await api.PSFormatForDisplay(wh, await Item.ExtendedProperty(wh), PDFF_DEFAULT);
 		if (s) {
 			s = ' (' + s + ')';
@@ -127,15 +127,15 @@ Addons.PreviewWindow = {
 
 	Move: async function (nMove, bFocus) {
 		MainWindow.Sync.PreviewWindow.Focus = bFocus;
-		let FV = await te.Ctrl(CTRL_FV);
-		let nCount = await FV.ItemCount(SVGIO_ALLVIEW);
-		let nIndex = (await FV.GetFocusedItem + nMove + nCount) % nCount;
+		const FV = await te.Ctrl(CTRL_FV);
+		const nCount = await FV.ItemCount(SVGIO_ALLVIEW);
+		const nIndex = (await FV.GetFocusedItem + nMove + nCount) % nCount;
 		FV.SelectItem(nIndex, SVSI_SELECT | SVSI_DESELECTOTHERS | SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS);
 	},
 
 	GetRect: async function () {
-		let rc = await api.Memory("RECT");
-		let hwnd = await GetTopWindow();
+		const rc = await api.Memory("RECT");
+		const hwnd = await GetTopWindow();
 		if (!await api.IsZoomed(hwnd)) {
 			await api.GetWindowRect(hwnd, rc);
 			if (await te.Data.AddonsData.PreviewWindow.left != await rc.Left) {
@@ -146,7 +146,7 @@ Addons.PreviewWindow = {
 				te.Data.AddonsData.PreviewWindow.top = await rc.Top;
 				te.Data.bSaveConfig = true;
 			}
-			let o = document.documentElement || document.body;
+			const o = document.documentElement || document.body;
 			if (await te.Data.AddonsData.PreviewWindow.width != o.offsetWidth) {
 				te.Data.AddonsData.PreviewWindow.width = o.offsetWidth;
 				te.Data.bSaveConfig = true;
@@ -160,19 +160,19 @@ Addons.PreviewWindow = {
 
 	Play: async function ()
 	{
-		let div1 = document.getElementById("div1");
-		let path = await MainWindow.Sync.PreviewWindow.Item.Path;
+		const div1 = document.getElementById("div1");
+		const path = await MainWindow.Sync.PreviewWindow.Item.Path;
 		if (await api.PathMatchSpec(path, "*.wav")) {
 			api.PlaySound(path, null, 3);
 		} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp3;*.m4a")) {
 			document.getElementById("play1").style.display = "none";
-			div1.innerHTML = '<audio controls autoplay width="100%" height="100%"><source src="' + path + '"></audio>';
+			div1.innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 		} else {
 			document.getElementById("img1").style.display = "none";
 			document.getElementById("desc1").innerHTML = "";
 			div1.style.height = g_.IEVer >= 8 ? "calc(100% - 5px)" : "99%";
 			if (!window.chrome && ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.webm;*.mp4")) {
-				div1.innerHTML = '<video controls autoplay width="100%" height="100%"><source src="' + path + '"></video>';
+				div1.innerHTML = '<video controls autoplay style="width: 100%; max-height: 100%"><source src="' + path + '"></video>';
 			} else {
 				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
 			}
@@ -221,7 +221,7 @@ AddEventEx(window, "mouseup", function (ev) {
 });
 
 FullscreenChange = async function () {
-	let hwnd = await GetTopWindow();
+	const hwnd = await GetTopWindow();
 	if (document.msFullscreenElement || document.fullscreenElement) {
 		api.SendMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
 	} else {

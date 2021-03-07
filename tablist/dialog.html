@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="MSThemeCompatible" content="Yes">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Attributes</title>
+    <link rel="stylesheet" type="text/css" href="../../script/options.css">
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js"></script>
+  </head>
+  <body>
+    <form name="F" style="width: 100%">
+      <input type="text" name="filter" placeholder="Filter" style="width: 100%" onkeydown="KeyDown1(event)" onchange="TabChanged()">
+      <div id="P" class="panel" style="display: block; width: 100%">
+        <table id="T" style="border: 1px solid gray">
+          <tr><td style="padding-left: 6pt; white-space: nowrap;"><label>Name<label></td><td style="width: 100%; padding-left: 6pt"><label>Path</label></td></tr>
+        </table>
+      </div>
+    </form>
+    <script type="text/javascript">
+      document.body.style.visibility = "hidden";
+      ScriptBase = "../..";
+      LoadScript(["script/ui.js", "script/common.js"], function () {
+        LoadScripts(["script/sync.js"], ["addons/tablist/dialog.js"], function () {
+          InitDialog();
+        });
+      });
+    </script>
+  </body>
+</html>
