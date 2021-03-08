@@ -14,21 +14,35 @@ Addons.MultiProcess = {
 			clearTimeout(Addons.MultiProcess.tid);
 			delete Addons.MultiProcess.tid;
 		}
-		let el;
 		const src = await ExtractPath(te, (autoplay === true) ? Addons.MultiProcess.File : document.F.File.value);
-		if (autoplay === true && await api.PathMatchSpec(src, "*.wav")) {
-			api.PlaySound(src, null, 1);
-			return;
+		if (window.g_nInit) {
+			if (src) {
+				g_nInit = 0;
+			} else {
+				--g_nInit;
+				Addons.MultiProcess.tid = setTimeout(Addons.MultiProcess.Player, 500);
+				return;
+			}
 		}
-		if (ui_.IEVer >= 11 && await api.PathMatchSpec(src, "*.mp3;*.m4a;*.webm;*.mp4")) {
+		let el;
+		if (ui_.IEVer >= 11 && (window.chrome ? /\.mp3$|\.m4a$|\.webm$|\.mp4$|\.wav$|\.ogg$/i : /\.mp3$|\.m4a$|\.mp4$/i).test(src)) {
 			el = document.createElement('audio');
 			if (autoplay === true) {
 				el.setAttribute("autoplay", "true");
 			} else {
 				el.setAttribute("controls", "true");
 			}
+		} else if (/\.wav$/i.test(src)) {
 			if (autoplay === true) {
-				el.setAttribute("autoplay", "true");
+				api.PlaySound(src, null, 1);
+				return;
+			}
+			el = document.createElement('button');
+			el.innerHTML = "&#x25B6;";
+			el.title = await GetText("Play");
+			el.onclick = function () {
+				Addons.MultiProcess.File = src;
+				Addons.MultiProcess.Player(true);
 			}
 		} else {
 			el = document.createElement('embed');
@@ -52,5 +66,6 @@ if (window.Addon == 1) {
 	document.getElementById('None').insertAdjacentHTML("BeforeEnd", '<div id="multiprocess_player"></div>');
 } else {
 	SetTabContents(0, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
-	setTimeout(Addons.MultiProcess.Player, 999);
+	g_nInit = 5;
+	Addons.MultiProcess.tid = setTimeout(Addons.MultiProcess.Player, 9);
 }
