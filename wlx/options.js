@@ -89,12 +89,14 @@ SaveLocation = async function () {
 		const root = xml.createElement("TablacusExplorer");
 		const o = document.E.List;
 		for (let i = 0; i < o.length; i++) {
-			const item = xml.createElement("Item");
 			const a = o[i].value.split(g_sep);
-			await item.setAttribute("Name", a[0]);
-			await item.setAttribute("Path", a[1]);
-			await item.setAttribute("Fit", a[2]);
-			await root.appendChild(item);
+			if (a[1]) {
+				const item = xml.createElement("Item");
+				await item.setAttribute("Name", a[0]);
+				await item.setAttribute("Path", a[1]);
+				await item.setAttribute("Fit", a[2]);
+				await root.appendChild(item);
+			}
 		}
 		await xml.appendChild(root);
 		await SaveXmlEx(Addon_Id + ".xml", xml);

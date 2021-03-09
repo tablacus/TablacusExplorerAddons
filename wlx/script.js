@@ -11,7 +11,7 @@ if (!item.getAttribute("Set")) {
 }
 if (window.Addon == 1) {
 	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const s = item.getAttribute("Icon") || WINVER > 0x603 ? "font:Segoe MDL2 Assets,0xea,55" : "font:Consolas,0x4e,9";
+	const s = item.getAttribute("Icon") || (WINVER > 0x603 ? "font:Segoe MDL2 Assets,0xea,55" : "font:Consolas,0x4e,9");
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.WLX.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: s }, h), '</span>']);
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {

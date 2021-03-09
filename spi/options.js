@@ -1,6 +1,5 @@
 const Addon_Id = "spi";
 const g_Chg = { List: false, Data: "List" };
-let SPI;
 
 SetTabContents(4, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
