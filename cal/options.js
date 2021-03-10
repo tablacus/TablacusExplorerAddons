@@ -1,4 +1,4 @@
-const g_Chg = { List: false };
+g_Chg = { List: false };
 
 SetTabContents(4, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
