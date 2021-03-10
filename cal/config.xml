@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.11</Version>
-    <MinVersion>2021.3.10</MinVersion>
+    <Version>1.12</Version>
+    <MinVersion>2021.3.7</MinVersion>
     <pubDate>Wed, 10 Mar 2021 00:00:00 GMT</pubDate>
     <Options>Common:4:4</Options>
     <DllVersion>1.1.0.0</DllVersion>
