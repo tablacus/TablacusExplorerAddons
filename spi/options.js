@@ -1,5 +1,5 @@
 const Addon_Id = "spi";
-const g_Chg = { List: false, Data: "List" };
+g_Chg = { List: false, Data: "List" };
 
 SetTabContents(4, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
@@ -83,35 +83,38 @@ PathChanged = function () {
 }
 
 SetProp = async function (bName) {
-	SPI = null;
 	const dllPath = await ExtractPath(te, document.E.Path.value);
-	const DLL = await api.DllGetClassObject(BuildPath(ui_.Installed, ["addons\\spi\\tspi", ui_.bit, ".dll"].join("")), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
-	if (DLL) {
-		SPI = await DLL.open(dllPath) || {};
+	g_.DLL = await api.DllGetClassObject(BuildPath(ui_.Installed, ["addons\\spi\\tspi", ui_.bit, ".dll"].join("")), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
+//	g_.DLL = await api.DllGetClassObject(["C:\\cpp\\tspi\\Debug\\tspi", ui_.bit, "d.dll"].join(""), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
+	if (g_.DLL) {
+		g_.SPI = await g_.DLL.open(dllPath);
 	}
-	if (bName && await SPI.GetPluginInfo) {
+	if (!g_.SPI) {
+		g_.SPI = await api.CreateObject("Object")
+	}
+	if (bName && await g_.SPI.GetPluginInfo) {
 		const ar = await api.CreateObject("Array");
-		await SPI.GetPluginInfo(ar);
+		await g_.SPI.GetPluginInfo(ar);
 		document.E.Name.value = await ar[1];
 	}
 	const arProp = ["IsUnicode", "GetPluginInfo", "IsSupported", "GetPictureInfo", "GetPicture", "GetPreview", "GetArchiveInfo", "GetFileInfo", "GetFile", "ConfigurationDlg"];
 	const arHtml = [[], [], [], []];
 	const s = [];
 	let ar = await api.CreateObject("Array");
-	if (SPI) {
+	if (g_.SPI) {
 		for (let i in arProp) {
-			arHtml[i % 3].push('<div style="white-space: nowrap"><input type="checkbox" ', await SPI[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
+			arHtml[i % 3].push('<div style="white-space: nowrap"><input type="checkbox" ', await g_.SPI[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 		}
 		for (let i = 4; i--;) {
 			document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 		}
-		if (await SPI.GetPluginInfo) {
-			await SPI.GetPluginInfo(ar);
+		if (await g_.SPI.GetPluginInfo) {
+			await g_.SPI.GetPluginInfo(ar);
 		} else {
 			await ar.unshift(await fso.GetFileName(dllPath));
 		}
-		if (await SPI.ConfigurationDlg) {
-			await s.push('<input type="button" value="', await GetText("Options..."), '" onclick="SPI.ConfigurationDlg(', await te.hwnd, ', 1)"><br>');
+		if (await g_.SPI.ConfigurationDlg) {
+			await s.push('<input type="button" value="', await GetText("Options..."), '" onclick="g_.SPI.ConfigurationDlg(', await GetTopWindow(), ', 1)"><br>');
 		}
 	}
 	if (window.chrome) {

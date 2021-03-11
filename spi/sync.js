@@ -1,22 +1,21 @@
-Sync.SPI = {
-	DLL: api.DllGetClassObject(BuildPath(te.Data.Installed, ["addons\\spi\\tspi", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}"),
-	AM: [],
+Sync.SPI = api.CreateObject("Object");
+Sync.SPI.DLL = api.DllGetClassObject(BuildPath(te.Data.Installed, ["addons\\spi\\tspi", g_.bit, ".dll"].join("")), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
+Sync.SPI.AM = api.CreateObject("Array");
 
-	Finalize: function () {
-		if (Sync.SPI.DLL) {
-			if (Sync.SPI.GetImage) {
-				te.RemoveEvent("GetImage", Sync.SPI.DLL.GetImage);
-			}
-			if (Sync.SPI.AM.length) {
-				te.RemoveEvent("GetArchive", Sync.SPI.DLL.GetArchive);
-				Sync.SPI.AM.length = 0;
-			}
-			Sync.SPI.DLL.Clear();
-			Sync.SPI.DLL = void 0;
-			CollectGarbage();
+Sync.SPI.Finalize = function () {
+	if (Sync.SPI.DLL) {
+		if (Sync.SPI.GetImage) {
+			te.RemoveEvent("GetImage", Sync.SPI.DLL.GetImage);
 		}
+		if (Sync.SPI.AM.length) {
+			te.RemoveEvent("GetArchive", Sync.SPI.DLL.GetArchive);
+			Sync.SPI.AM.length = 0;
+		}
+		Sync.SPI.DLL.Clear();
+		Sync.SPI.DLL = void 0;
+		CollectGarbage();
 	}
-};
+}
 
 AddEvent("AddonDisabled", function (Id) {
 	if (SameText(Id, "spi")) {
@@ -25,7 +24,7 @@ AddEvent("AddonDisabled", function (Id) {
 });
 if (Sync.SPI.DLL) {
 	Sync.SPI.DLL.Clear();
-	const xml = OpenXml("spi" + (api.sizeof("HANDLE") * 8) + ".xml", false, false);
+	const xml = OpenXml("spi" + g_.bit + ".xml", false, false);
 	if (xml) {
 		const items = xml.getElementsByTagName("Item");
 		for (let i = 0; i < items.length; i++) {
