@@ -1,4 +1,4 @@
-var Addon_Id = "labelsqliteodbc";
+const Addon_Id = "labelsqliteodbc";
 if (window.Addon == 1) {
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {

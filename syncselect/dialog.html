@@ -1,0 +1,139 @@
+<html>
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="MSThemeCompatible" content="Yes">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Attributes</title>
+  <link rel="stylesheet" type="text/css" href="../../script/options.css">
+  <script type="text/javascript" charset="utf-8" src="../../script/consts.js"></script>
+</head>
+
+<body>
+  <form name="F" style="width: 100%">
+    <table id="T" style="border: 1px solid gray; width: 100%">
+      <tr>
+        <td style="width: 50%"><input type="text" name="A" style="width: 100%" readonly></td>
+        <td style="width: 50%"><input type="text" name="B" style="width: 100%" readonly></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em;  font-weight: bold">Select matches<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all items that are also listed in the other
+            pane.<label></td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectMatches(false)"></td>
+        <td style="text-align: center"><input type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectMatches(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em;  font-weight: bold">Select uniques<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all items that are only listed in this pane.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectUniques(false)"></td>
+        <td style="text-align: center"><input type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectUniques(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em;  font-weight: bold">Select newer<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all matches with a more recent modified date.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectNewer(false)"></td>
+        <td style="text-align: center"><input type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectNewer(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em;  font-weight: bold">Select diffrerent<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all matches with a diffrerent size or modified
+            date.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectDifferent(false)"></td>
+        <td style="text-align: center"><input type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectDifferent(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em;  font-weight: bold">Select uniques and newer<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all items that are unique or newer.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectUniquesNewer(false)"></td>
+        <td style="text-align: center"><input type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectUniquesNewer(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em;  font-weight: bold">Select uniques and diffrerent<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all items that are unique or diffrerent.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectUniquesDifferent(false)"></td>
+        <td style="text-align: center"><input type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectUniquesDifferent(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em;  font-weight: bold">Select selected<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all items that are selected in the other pane.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectSelected(false)"></td>
+        <td style="text-align: center"><input type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.SyncSelect.SelectSelected(true)"></td>
+      </tr>
+    </table>
+    <label><input type="checkbox" name="ext" onclick="SwitchExt(this)" onchange="SwitchExt(this)" checked>{E4F10A3C-49E6-405D-8288-A23BD4EEAA6C} 100|Extension</label>
+  </form>
+  <script type="text/javascript">
+    document.body.style.visibility = "hidden";
+    ScriptBase = "../..";
+    LoadScript(["script/ui.js", "script/common.js"], function () {
+      LoadScripts(["script/sync.js"], ["addons/syncselect/dialog.js"], function () {
+        InitDialog();
+      });
+    });
+  </script>
+</body>
+
+</html>

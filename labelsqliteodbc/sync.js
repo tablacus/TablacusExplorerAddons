@@ -3,30 +3,30 @@ Sync.LabelSQLiteOdbc = {
 	DBFILE: BuildPath(te.Data.DataFolder, "config\\label.db"),
 
 	MakeList: function () {
-		var db = Sync.LabelSQLiteOdbc.GetDB();
-		var list = [];
-		var rs = db.Execute('SELECT label FROM labels');
-		var ix = [];
+		const db = Sync.LabelSQLiteOdbc.GetDB();
+		const list = [];
+		const rs = db.Execute('SELECT label FROM labels');
+		let ix = [];
 		while (!rs.EOF) {
-			var s = rs.Fields(0).value.toString() || "";
-			var ar = s.split(/\s*;\s*/);
-			for (var i in ar) {
-				var s = ar[i];
+			let s = rs.Fields(0).value.toString() || "";
+			const ar = s.split(/\s*;\s*/);
+			for (let i in ar) {
+				s = ar[i];
 				if (s) {
 					ix.push(s);
 				}
 			}
 			rs.MoveNext();
 		}
-		var ix = ix.sort(function (a, b) {
+		ix = ix.sort(function (a, b) {
 			return api.StrCmpLogical(b, a)
 		});
-		for (var i = ix.length; i--;) {
+		for (let i = ix.length; i--;) {
 			list[ix[i]] = true;
 		}
 		db.Execute("CREATE TABLE IF NOT EXISTS list (label TEXT);");
 		db.Execute('DELETE FROM list');
-		for (var i in list) {
+		for (let i in list) {
 			db.Execute('INSERT INTO list(label) VALUES ("' + i + '");');
 		}
 	},
@@ -53,9 +53,9 @@ Sync.LabelSQLiteOdbc = {
 		return Sync.LabelSQLiteOdbc.db;
 	},
 
-	Load: function (fn) {
+	Load: function (fn, DB) {
 		try {
-			LoadDBFromTSV(Sync.Label.DB, fn || Sync.Label.CONFIG);
+			LoadDBFromTSV(DB || Sync.Label.DB, fn || Sync.Label.CONFIG);
 			Sync.LabelSQLiteOdbc.MakeList();
 		} catch (e) {
 			ShowError(e, [GetText("Load"), fn].join(": "));
@@ -80,34 +80,17 @@ AddEvent("Load", function (fn) {
 	if (!Sync.Label) {
 		return;
 	}
-	try {
-		var bExists = fso.FileExists(Sync.LabelSQLiteOdbc.DBFILE);
-		if (bExists) {
-			Sync.LabelSQLiteOdbc.Open();
-		} else {
-			fso.CreateTextFile(Sync.LabelSQLiteOdbc.DBFILE).Close();
-			Sync.LabelSQLiteOdbc.Open();
-			Sync.LabelSQLiteOdbc.Load();
-		}
-	} catch (e) {
-		if (!bExists) {
-			fso.DeleteFile(Sync.LabelSQLiteOdbc.DBFILE);
-		}
-		delete Sync.LabelSQLiteOdbc;
-		return;
-	}
-
-	Sync.Label.DB = {
+	const DB = {
 		Get: function (path) {
 			if (Sync.LabelSQLiteOdbc.db) {
-				var rs = Sync.LabelSQLiteOdbc.db.Execute('SELECT label FROM labels WHERE path="' + path + '"');
+				const rs = Sync.LabelSQLiteOdbc.db.Execute('SELECT label FROM labels WHERE path="' + path + '"');
 				return rs.EOF ? "" : rs.Fields(0).value.toString() || "";
 			}
 			return "";
 		},
 
 		ENumCB: function (fncb) {
-			var rs = Sync.LabelSQLiteOdbc.db.Execute('SELECT path,label FROM labels');
+			const rs = Sync.LabelSQLiteOdbc.db.Execute('SELECT path,label FROM labels');
 			while (!rs.EOF) {
 				fncb(rs.Fields(0).value.toString(), rs.Fields(1).value.toString());
 				rs.MoveNext();
@@ -116,7 +99,7 @@ AddEvent("Load", function (fn) {
 
 		Set: function (path, s) {
 			if (path) {
-				var s1 = Sync.Label.DB.Get(path);
+				const s1 = Sync.Label.DB.Get(path);
 				s = s.replace(/[\\?\\*]|"/g, "");
 				if (s != s1) {
 					if (s) {
@@ -128,7 +111,7 @@ AddEvent("Load", function (fn) {
 					} else {
 						Sync.LabelSQLiteOdbc.db.Execute('DELETE FROM labels WHERE path="' + path + '"');
 					}
-					var fn = api.ObjGetI(this, "OnChange");;
+					const fn = api.ObjGetI(this, "OnChange");;
 					fn && fn(path, s, s1);
 				}
 			}
@@ -148,8 +131,25 @@ AddEvent("Load", function (fn) {
 		Save: function () { },
 		Close: function () { }
 	}
-	Sync.Label.DB.DB = Sync.Label.DB.Get;
 
+	try {
+		const bExists = fso.FileExists(Sync.LabelSQLiteOdbc.DBFILE);
+		if (bExists) {
+			Sync.LabelSQLiteOdbc.Open();
+		} else {
+			fso.CreateTextFile(Sync.LabelSQLiteOdbc.DBFILE).Close();
+			Sync.LabelSQLiteOdbc.Open();
+			Sync.LabelSQLiteOdbc.Load(Sync.Label.CONFIG, DB);
+		}
+	} catch (e) {
+		if (!bExists) {
+			fso.DeleteFile(Sync.LabelSQLiteOdbc.DBFILE);
+		}
+		delete Sync.LabelSQLiteOdbc;
+		return;
+	}
+	Sync.Label.DB = DB;
+	Sync.Label.DB.DB = DB.Get;
 	AddEvent("Finalize", Sync.LabelSQLiteOdbc.Finalize);
 	AddEventId("AddonDisabledEx", "LabelSQLiteOdbc", Sync.LabelSQLiteOdbc.Finalize);
 }, true);

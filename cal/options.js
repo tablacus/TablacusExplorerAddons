@@ -90,9 +90,12 @@ LoadDll = async function () {
 		Path: dllPath,
 		Name: document.E.Name.value.replace(/\W.*$/, ""),
 	};
+	if (!DLL.Name) {
+		return {};
+	}
 	let CAL = await DLL.X.Open(DLL.Path, DLL.Name);
 	if (!CAL && ui_.bit == 64 && /UNLHA[36][24].DLL$|UNZIP[36][24].DLL$|ZIP[36][24]J\.DLL$|TAR[36][24]\.DLL$|CAB[36][24]\.DLL$|UNRAR[36][24]\.DLL$|7\-ZIP[36][24]\.DLL$/i.test(DLL.Path)) {
-		CAL = await DLL.X.Open(DLL.Path.replace(/[^\\]*\.dll$/, "UNBYPASS.DLL"), DLL.Name);
+		CAL = await DLL.X.Open(DLL.Path.replace(/[^\\]*\.dll$/i, "UNBYPASS.DLL"), DLL.Name);
 		if (CAL) {
 			DLL.Unbypass = true;
 		}
@@ -105,10 +108,15 @@ SetProp = async function () {
 	const arHtml = [[], []];
 	const DLL = await LoadDll();
 	const CAL = DLL.CAL;
+	document.getElementById("btnConfig").style.visibility= "hidden";
 	if (CAL) {
 		const arProp = ["Exec", "GetVersion", "GetRunning", "CheckArchive", "ConfigDialog", "OpenArchive", "CloseArchive", "FindFirst", "FindNext", "ExtractMem"];
 		for (let i in arProp) {
-			arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', await CAL[arProp[i]] ? "checked" : "", ' onclick="return false;">', DLL.Name, arProp[i].replace(/^Exec$/, ""), '</div>');
+			const b = await CAL[arProp[i]];
+			arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', b ? "checked" : "", ' onclick="return false;">', DLL.Name, arProp[i].replace(/^Exec$/, ""), '</div>');
+			if (b && arProp[i] == "ConfigDialog") {
+				document.getElementById("btnConfig").style.visibility = "visible";
+			}
 		}
 		arHtml[0].push('<input type="checkbox" ', await CAL.IsUnicode ? "checked" : "", ' onclick="return false;">Unicode<br>');
 		if (DLL.Unbypass) {
@@ -119,7 +127,7 @@ SetProp = async function () {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
 	const ar = [await fso.GetFileName(DLL.Path)];
-	if (await CAL.GetVersion) {
+	if (CAL && await CAL.GetVersion) {
 		const v = await CAL.GetVersion();
 		if (v) {
 			ar.push(" Ver. " + v / 100)
@@ -129,13 +137,13 @@ SetProp = async function () {
 }
 
 ConfigDialog = async function () {
-	const DLL = LoadDll();
+	const DLL = await LoadDll();
 	if (!DLL.X) {
 		return;
 	}
 	let CAL = await DLL.X.Open(DLL.Path, DLL.Name);
 	if (!CAL && ui_.bit == 64 && /UNLHA[36][24].DLL$|UNZIP[36][24].DLL$|ZIP[36][24]J\.DLL$|TAR[36][24]\.DLL$|CAB[36][24]\.DLL$|UNRAR[36][24]\.DLL$|7\-ZIP[36][24]\.DLL$/i.test(DLL.Path)) {
-		CAL = Addons.CAL.DLL.Open(DLL.Path.replace(/[^\\]*\.dll$/, "UNBYPASS.DLL"), DLL.Name);
+		CAL = await DLL.X.Open(DLL.Path.replace(/[^\\]*\.dll$/i, "UNBYPASS.DLL"), DLL.Name);
 		if (CAL) {
 			DLL.Unbypass = true;
 		}
@@ -143,9 +151,7 @@ ConfigDialog = async function () {
 	if (!CAL) {
 		return;
 	}
-	const szOption = await api.CreateObject("Array");
-	const hwnd = await api.GetWindowLongPtr(api.GetWindow(document), GWLP_HWNDPARENT);
-	CAL.ConfigDialog(hwnd, szOption, 9999);
+	CAL.ConfigDialog(await GetTopWindow(), await api.CreateObject("Array"), 9999);
 }
 
 AddArchiver = async function () {

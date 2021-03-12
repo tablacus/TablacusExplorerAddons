@@ -8,23 +8,22 @@ SetTabContents(0, "", s);
 Addons.LabelSQLiteOdbc = {
 	Import: async function () {
 		var commdlg = await api.CreateObject("CommonDialog");
-		commdlg.InitDir = BuildPath(await te.Data.DataFolder, "config")
+		commdlg.InitDir = BuildPath(ui_.DataFolder, "config")
 		commdlg.Filter = await MakeCommDlgFilter("*.tsv");
 		commdlg.Flags = OFN_FILEMUSTEXIST;
 		if (await commdlg.ShowOpen()) {
-			LoadDBFromTSV(MainWindow.Sync.LabelSQLiteOdbc.DB, commdlg.FileName);
+			MainWindow.Sync.LabelSQLiteOdbc.Load(await commdlg.FileName);
 		}
 	},
 
 	Export: async function () {
 		var commdlg = await api.CreateObject("CommonDialog");
-		commdlg.InitDir = BuildPath(await te.Data.DataFolder, "config")
+		commdlg.InitDir = BuildPath(ui_.DataFolder, "config")
 		commdlg.Filter = await MakeCommDlgFilter("*.tsv");
 		commdlg.DefExt = "tsv";
 		commdlg.Flags = OFN_OVERWRITEPROMPT;
 		if (await commdlg.ShowSave()) {
-			SaveDBtoTSV(MainWindow.Sync.LabelSQLiteOdbc.DB, commdlg.FileName);
+			MainWindow.Sync.LabelSQLiteOdbc.Save(await commdlg.FileName);
 		}
-		return;
 	}
 }

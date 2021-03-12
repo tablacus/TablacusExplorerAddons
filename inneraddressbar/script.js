@@ -63,11 +63,9 @@ if (window.Addon == 1) {
 
 		Focus: function (o, Id) {
 			Activate(o, Id);
-			setTimeout(async function () {
-				if (o.selectionEnd == o.selectionStart && await api.GetKeyState(VK_LBUTTON) >= 0) {
-					o.select()
-				}
-			}, ui_.DoubleClickTime);
+			if (o.selectionEnd == o.selectionStart) {
+				o.select()
+			}
 		},
 
 		Go: async function (n, Id) {

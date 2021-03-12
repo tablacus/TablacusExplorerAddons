@@ -35,7 +35,9 @@ Sync.VirtualName = {
 	},
 
 	ReplaceColumns: function (FV, pid, s) {
-		return Sync.VirtualName.DB.Get(pid.Path);
+		if (Sync.VirtualName.DB) {
+			return Sync.VirtualName.DB.Get(pid.Path);
+		}
 	},
 
 	SetSync: function (name, s) {

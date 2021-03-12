@@ -1,5 +1,5 @@
-var Addon_Id = "labelsqlite3";
-var item = await GetAddonElement(Addon_Id);
+const Addon_Id = "labelsqlite3";
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuPos", -1);
 }

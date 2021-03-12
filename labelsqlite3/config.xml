@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2020.11.21</MinVersion>
-    <pubDate>Sun, 22 Nov 2020 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2021.3.7</MinVersion>
+    <pubDate>Fri, 12 Mar 2021 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <DllVersion>1.1.1.0</DllVersion>
     <Level>2</Level>
@@ -13,7 +13,7 @@
   </General>
   <en>
     <Name>Label SQLite3</Name>
-    <Description>Label(SQLite3) * Require Label and sqlite3.dll</Description>
+    <Description>Label(SQLite3) *Label and sqlite3.dll is required</Description>
   </en>
   <ja>
     <Name>ラベル SQLite3</Name>

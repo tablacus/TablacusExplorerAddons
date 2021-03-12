@@ -32,11 +32,9 @@ if (window.Addon == 1) {
 		},
 
 		Focused: function (o) {
-			setTimeout(async function () {
-				if (o.selectionEnd == o.selectionStart && await api.GetKeyState(VK_LBUTTON) >= 0) {
-					o.select()
-				}
-			}, ui_.DoubleClickTime);
+			if (o.selectionEnd == o.selectionStart) {
+				o.select()
+			}
 		},
 
 		ContextMenu: function (o) {

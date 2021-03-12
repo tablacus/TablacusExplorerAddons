@@ -99,8 +99,10 @@ if (window.Addon == 1) {
 				o.blur();
 			} else {
 				Activate(o, Id);
-				o.select();
 				document.getElementById("breadcrumbsbuttons_" + Id).style.display = "none";
+				if (o.selectionEnd == o.selectionStart) {
+					o.select()
+				}
 			}
 		},
 
