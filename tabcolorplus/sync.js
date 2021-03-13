@@ -1,4 +1,4 @@
-﻿Sync.TabColorPlus = {
+Sync.TabColorPlus = {
 	cc: [],
 	Color: []
 };
@@ -17,12 +17,9 @@ try {
 		}
 	}
 	ado.Close();
-}
-catch (e) {
-}
+} catch (e) { }
 
-AddEvent("GetTabColor", function (Ctrl)
-{
+AddEvent("GetTabColor", function (Ctrl) {
 	const path = api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSING);
 	const path2 = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 	for (let i in Sync.TabColorPlus.cc) {

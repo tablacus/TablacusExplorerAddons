@@ -15,18 +15,20 @@ Set = function (i, ar) {
 }
 
 Add = function (ar) {
+	if (ar.length < 2) {
+		return;
+	}
 	const table = document.getElementById("T");
 	const nRows = table.rows.length;
 	s = ['<td style="width: 1em"><input type="radio" name="sel" id="i', nRows, '"></td>'];
 	s.push('<td><input type="text" name="p', nRows, '" style="width: 100%" onchange="FilterChanged(this)" placeholder="', hint, '" title="', hint, '"></td>');
-	s.push('<td style="width: 7em"><input type="text" name="c', nRows, '" style="width: 100%" placeholder="', g_strColor, '" title="', g_strColor, '" onchange="FilterChanged()" ></td>');
+	s.push('<td style="width: 7em"><input type="text" name="c', nRows, '" style="width: 100%" placeholder="', g_strColor, '" title="', g_strColor, '" onchange="ChangeColor(this)" ></td>');
 	s.push('<td style="width: 1em"><input type="button" name="b', nRows, '" value=" " class="color" style="width: 100%" onclick="ChooseColor2(this)" title="', g_strColor, '"></td>');
 	const tr = table.insertRow();
 	tr.innerHTML = s.join("");
 	Set(nRows, ar);
 	return tr;
 }
-
 
 GetIndex = function () {
 	const table = document.getElementById("T");
@@ -101,18 +103,20 @@ SaveLocation = async function () {
 		await ado.Open();
 		const table = document.getElementById("T");
 		const nRows = table.rows.length;
+		let data = "";
 		for (let i = 0; i < nRows; i++) {
-			await ado.WriteText([document.E.elements['p' + i].value, document.E.elements['c' + i].value].join("\t") + "\r\n");
+			data += [document.E.elements['p' + i].value, document.E.elements['c' + i].value].join("\t") + "\r\n";
 		}
+		await ado.WriteText(data);
 		await ado.SaveToFile(ConfigTSV, adSaveCreateOverWrite);
 		ado.Close();
 	} catch (e) { }
 }
 
-try {
-	const ado = await OpenAdodbFromTextFile(ConfigTSV);
-	while (!await ado.EOS) {
-		Add((await ado.ReadText(adReadLine)).split("\t"));
-	}
-	ado.Close();
-} catch (e) { }
+for (let data = (await ReadTextFile(ConfigTSV)).split(/\r?\n/); data.length;) {
+	Add(data.shift().split("\t"));
+}
+
+window.OnTabChanged = function (i) {
+	document.getElementById("toolbar").style.visibility = i == 4 ? "" : "hidden";
+}

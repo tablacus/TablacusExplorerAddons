@@ -242,6 +242,7 @@ Sync.Label = {
 	Set: function (path, s) {
 		if (path) {
 			Sync.Label.DB.Set(path, s.replace(/[\\?\\*"]|^ +| +$/g, ""));
+			Sync.Label.bModified = true;
 		}
 	},
 
@@ -285,6 +286,13 @@ Sync.Label = {
 		}
 	},
 
+	Save: function () {
+		if (Sync.Label.bModified) {
+			Sync.Label.DB.Save();
+			Sync.Label.bModified = false;
+		}
+	},
+
 	Notify: function () {
 		const cFV = te.Ctrls(CTRL_FV);
 		for (let i in cFV) {
@@ -310,7 +318,7 @@ Sync.Label = {
 		}
 		Sync.Label.Changed = {};
 		Sync.Label.Redraw = {};
-		Sync.Label.DB.Save();
+		Sync.Label.Save();
 	},
 
 	List: function (list, all) {
@@ -418,19 +426,19 @@ Sync.Label = {
 }
 
 Sync.Label.DB.OnLoad = function () {
-	AddEvent("SaveConfig", function () {
-		Sync.Label.DB.Save();
-	});
+	AddEvent("SaveConfig", Sync.Label.Save);
 	AddEvent("ChangeNotifyItem:" + Sync.Label.CONFIG, function (pid) {
 		if (pid.ModifyDate != te.Data.LabelModifyDate) {
 			te.Data.LabelModifyDate = pid.ModifyDate;
 			Sync.Label.DB.Load();
+			Sync.Label.bModified = false;
 		}
 	});
 }
 
 AddEvent("Load", function () {
 	Sync.Label.DB.Load();
+	Sync.Label.bModified = false;
 	if (Sync.Label.DB.OnLoad) {
 		Sync.Label.DB.OnLoad();
 	}
