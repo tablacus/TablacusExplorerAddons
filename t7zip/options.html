@@ -46,7 +46,7 @@
   <label>Path</label> (7zG.exe) <label>32-bit</label>
   <div style="float: right">
     <input type="button" value="Portable" onclick="PortableX('Exe32')">
-    <input type="button" value="Browse..." onclick="RefX('Exe32',0,0,1,api.LoadString(hShell32, 9014))">
+    <input type="button" value="Browse..." onclick="RefX('Exe32',0,0,1,'@shell32.dll,-9014')">
   </div>
   <input type="text" id="Exe32" placeholder='C:\Program Files\7-Zip\7zG.exe' style="width: 100%">
 </div>
@@ -62,7 +62,7 @@
   <label>Path</label> (7zG.exe) <label>64-bit</label>
   <div style="float: right">
     <input type="button" value="Portable" onclick="PortableX('Exe64')">
-    <input type="button" value="Browse..." onclick="RefX('Exe64',0,0,1,api.LoadString(hShell32, 9014))">
+    <input type="button" value="Browse..." onclick="RefX('Exe64',0,0,1,'@shell32.dll,-9014')">
   </div>
   <input type="text" id="Exe64" placeholder='C:\Program Files\7-Zip\7zG.exe' style="width: 100%">
 </div>

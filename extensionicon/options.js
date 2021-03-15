@@ -1,6 +1,6 @@
 SetTabContents(4, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
-ConfigFile = BuildPath(await te.Data.DataFolder, "config", Addon_Id + ".tsv");
+ConfigFile = BuildPath(ui_.DataFolder, "config", Addon_Id + ".tsv");
 
 GetIconImage = async function (fn, Large) {
 	fn = await ExtractPath(te, fn);
@@ -50,21 +50,23 @@ ShowIconX = async function (s, i) {
 	document.getElementById('icon_' + i).src = image ? await GetThumbnail(image, [16, 192][i] * screen.deviceYDPI / 96, true).DataURI("image/png") : "";
 }
 
-g_x.List = document.E.List;
-
-const ar = (await ReadTextFile(ConfigFile)).split(/\r?\n/);
-g_x.List.length = ar.length;
-for (let i = 0; ar.length;) {
-	const line = ar.shift();
-	if (line) {
-		SetData(g_x.List[i++], line.split("\t"));
-	}
-}
-EnableSelectTag(g_x.List);
-
 SaveLocation = async function () {
 	if (g_Chg.Data) {
 		ReplaceIC("List");
 	}
 	await SaveIC("List");
 };
+
+setTimeout(async function () {
+	g_x.List = document.E.List;
+
+	const ar = (await ReadTextFile(ConfigFile)).split(/\r?\n/);
+	while (ar.length) {
+		const line = ar.shift();
+		if (line) {
+			const i = g_x.List.length++;
+			SetData(g_x.List[i], line.split("\t"));
+		}
+	}
+	EnableSelectTag(g_x.List);
+}, 99);

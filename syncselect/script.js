@@ -11,6 +11,9 @@ if (!item.getAttribute("Set")) {
 }
 
 if (window.Addon == 1) {
+	Common.SyncSelect = await api.CreateObject("Object");
+	Common.SyncSelect.MainWindow = $;
+
 	Addons.SyncSelect = {
 		Exec: async function (Ctrl, pt) {
 			const dlg = Addons.SyncSelect.dlg;
@@ -19,11 +22,7 @@ if (window.Addon == 1) {
 				delete Addons.SyncSelect.dlg;
 				return;
 			}
-			const opt = await api.CreateObject("Object");
-			opt.MainWindow = $;
-			opt.width = 640;
-			opt.height = 500;
-			Addons.SyncSelect.dlg = await ShowDialog("../addons/syncselect/dialog.html", opt);
+			Addons.SyncSelect.dlg = await ShowDialog("../addons/syncselect/dialog.html", await Common.SyncSelect);
 		},
 
 		Update: async function () {
@@ -31,7 +30,7 @@ if (window.Addon == 1) {
 			try {
 				const dlg = Addons.SyncSelect.dlg;
 				if (dlg) {
-					dlg.Document.parentWindow.InvokeUI("SyncSelectChanged");
+					dlg.Document.parentWindow.InvokeUI("Addons.SyncSelect.Changed");
 					return true;
 				}
 			} catch (e) {
@@ -71,4 +70,11 @@ if (window.Addon == 1) {
 	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	const s = item.getAttribute("Icon") || "icon:shell32.dll,46";
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SyncSelect.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: s }, h), '</span>']);
+
+	const db = JSON.parse(await ReadTextFile(BuildPath(ui_.DataFolder, "config\\syncselect.json")) || "{}");
+	Common.SyncSelect.width = db.width || 640;
+	Common.SyncSelect.height = db.height || 500;
+	Common.SyncSelect.left = db.left;
+	Common.SyncSelect.top = db.top;
+	Common.SyncSelect.NoExt = db.NoExt;
 }

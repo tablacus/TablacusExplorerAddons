@@ -164,7 +164,7 @@ AddEvent("GetIconImage", function (Ctrl, BGColor) {
 AddEvent("SaveConfig", function () {
 	if (Sync.PathIcon.bSave) {
 		try {
-			var ado = api.CreateObject("ads");
+			const ado = api.CreateObject("ads");
 			ado.CharSet = "utf-8";
 			ado.Open();
 			Sync.PathIcon.ENumCB(function (path, s, l) {
@@ -177,43 +177,22 @@ AddEvent("SaveConfig", function () {
 	}
 });
 
-Sync.PathIcon.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
-//Menu
-if (item.getAttribute("MenuExec")) {
-	Sync.PathIcon.nPos = api.LowPart(item.getAttribute("MenuPos"));
-	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-		api.InsertMenu(hMenu, Sync.PathIcon.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.PathIcon.strName);
-		ExtraMenuCommand[nPos] = Sync.PathIcon.Exec;
-		return nPos;
-	});
-}
-//Key
-if (item.getAttribute("KeyExec")) {
-	SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Sync.PathIcon.Exec, "Func");
-}
-//Mouse
-if (item.getAttribute("MouseExec")) {
-	SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Sync.PathIcon.Exec, "Func");
-}
-//Type
-AddTypeEx("Add-ons", "Path icon", Sync.PathIcon.Exec);
-
 try {
-	var ado = OpenAdodbFromTextFile(Sync.PathIcon.CONFIG);
+	const ado = OpenAdodbFromTextFile(Sync.PathIcon.CONFIG);
 	if (ado) {
 		while (!ado.EOS) {
-			var ar = ado.ReadText(adReadLine).split("\t");
+			const ar = ado.ReadText(adReadLine).split("\t");
 			if (ar[0]) {
-				var s = api.PathUnquoteSpaces(ExtractMacro(te, ar[0])).toLowerCase();
+				let s = api.PathUnquoteSpaces(ExtractMacro(te, ar[0])).toLowerCase();
 				if (s) {
-					if (/^shell:|^::{/.test(s)) {
+					if (/^shell:|^::{/i.test(s)) {
 						s = api.ILCreateFromPath(s);
 						s.IsFileSystem;
 						s = api.GetDisplayNameOf(s, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL).toLowerCase();
 					}
-					var db = {};
+					const db = {};
 					Sync.PathIcon.Icon[s] = db;
-					for (var j = 2; j--;) {
+					for (let j = 2; j--;) {
 						if (ar[j + 1]) {
 							db[j] = ar[j + 1];
 						}

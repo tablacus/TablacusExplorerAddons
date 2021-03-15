@@ -17,7 +17,7 @@
                 <input type="button" value="Portable" onclick="PortableX('Path')">
               </td>
               <td>
-                <input type="button" value="Browse..." onclick="RefX('Path', false, this, false)">
+                <input type="button" value="Browse..." onclick="RefX('Path', false, this, false, '@shell32.dll,-4131\t|<Folder>')">
               </td>
             </tr>
           </table>
@@ -37,7 +37,7 @@
               </td>
               <td>
                 <input type="button" value="Browse..."
-                  onclick="RefX('Small', false, this, true, api.LoadString(hShell32, 9007))">
+                  onclick="RefX('Small', false, this, true, '@shell32.dll,-9007')">
               </td>
             </tr>
           </table>
@@ -59,7 +59,7 @@
               </td>
               <td>
                 <input type="button" value="Browse..."
-                  onclick="RefX('Large', false, this, true, api.LoadString(hShell32, 9007))">
+                  onclick="RefX('Large', false, this, true, '@shell32.dll,-9007')">
               </td>
             </tr>
           </table>
