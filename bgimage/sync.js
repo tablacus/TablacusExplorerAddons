@@ -10,12 +10,12 @@ Sync.BGImage = {
 		delete Sync.BGImage.tid[Ctrl.Id];
 		const hwnd = Ctrl.hwndList;
 		if (hwnd) {
-			let image = Sync.BGImage.db[hwnd];
-			if ("object" === typeof image) {
+			const r = Sync.BGImage.db[hwnd];
+			if ("object" === typeof r) {
 				Sync.BGImage.ShowImage(hwnd);
 				return;
 			}
-			if (image === 1) {
+			if (r === 1) {
 				return;
 			}
 			Sync.BGImage.db[hwnd] = 1;
@@ -23,7 +23,7 @@ Sync.BGImage = {
 			const list = Sync.BGImage.List;
 			for (let i = list.length; i--;) {
 				if (PathMatchEx(path, list[i][0])) {
-					image = list[i][1];
+					const image = list[i][1];
 					if ("object" === typeof image) {
 						Sync.BGImage.ShowImage(hwnd, image);
 					} else if ("string" === typeof image) {
@@ -40,7 +40,7 @@ Sync.BGImage = {
 							},
 
 							onerror: function (o) {
-								o.listx[1] = undefined;
+								o.listx[1] = void 0;
 							}
 						});
 					}
@@ -106,17 +106,14 @@ AddEventId("AddonDisabledEx", "bgimage", Sync.BGImage.Clear);
 
 AddEvent("Finalize", Sync.BGImage.Clear);
 
-try {
-	const ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\bgimage.tsv"));
-	while (!ado.EOS) {
-		const ar = ExtractMacro(te, ado.ReadText(adReadLine)).split("\t");
-		if (ar[0]) {
-			ar[1] = api.PathUnquoteSpaces(ar[1]);
-			Sync.BGImage.List.push(ar);
-		}
+const ar = (ReadTextFile(BuildPath(te.Data.DataFolder, "config\\bgimage.tsv"))).split("\n");
+for (let i = 0; i < ar.length; ++i) {
+	const db = ar[i].replace(/^\s|\s$/g, "").split(/\t/);
+	if (db.length > 1) {
+		db[1] = PathUnquoteSpaces(db[1]);
+		Sync.BGImage.List.push(db);
 	}
-	ado.Close();
-} catch (e) { }
+}
 
 const cFV = te.Ctrls(CTRL_FV);
 for (let i in cFV) {

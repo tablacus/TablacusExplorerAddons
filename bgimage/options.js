@@ -64,11 +64,11 @@ GetCurrentPath = async function () {
 
 g_x.List = document.E.List;
 
-const ar = (await ReadTextFile(fnConfig)).split(/\t?\n/);
+const ar = (await ReadTextFile(fnConfig)).split("\n");
 for (let i = 0; i < ar.length; ++i) {
 	if (/\t/.test(ar[i])) {
 		++g_x.List.length;
-		SetData(g_x.List[i], ar[i].split("\t"));
+		SetData(g_x.List[i], ar[i].replace(/^\s|\s$/g, "").split("\t"));
 	}
 }
 

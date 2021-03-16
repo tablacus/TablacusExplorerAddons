@@ -80,7 +80,7 @@ if (window.Addon == 1) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.HideTitleBar.Exec, "Func");
 	}
 	//Type
-	AddTypeEx("Add-ons", "Hide Tool bar", Addons.HideTitleBar.Exec);
-	let h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+	AddTypeEx("Add-ons", "Hide Title bar", Addons.HideTitleBar.Exec);
+	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.HideTitleBar.Exec();" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: item.getAttribute("Icon") }, h), '</span>']);
 }

@@ -1,20 +1,18 @@
-<div class="panel" style="display: block;">
-  <div>
-    <label>New Tab</label>
-  </div>
-  <input type="hidden" name="NewTab">
-  <label><input type="radio" name="_NewTab" id="NewTab=1" onclick="SetRadio(this)">Last</label>
-  <label><input type="radio" name="_NewTab" id="NewTab=0" onclick="SetRadio(this)">Right</label><br>
+<div>
+  <label>New Tab</label>
 </div>
-<div class="panel" style="display: block;">
-  <div>
-    <label>Active tab after tab closing</label>
-  </div>
-  <input type="hidden" name="Close">
-  <label><input type="radio" name="_Close" id="Close=5" onclick="SetRadio(this)">First</label>
-  <label><input type="radio" name="_Close" id="Close=4" onclick="SetRadio(this)">Last</label>
-  <label><input type="radio" name="_Close" id="Close=3" onclick="SetRadio(this)">Left</label>
-  <label><input type="radio" name="_Close" id="Close=2" onclick="SetRadio(this)">Right</label><br>
-  <label><input type="radio" name="_Close" id="Close=1" onclick="SetRadio(this)">Parent folder</label>
-  <label><input type="radio" name="_Close" id="Close=0" onclick="SetRadio(this)" checked>In actived order</label>
+<input type="hidden" name="NewTab">
+<label><input type="radio" name="_NewTab" id="NewTab=1" onclick="SetRadio(this)">Last</label><br>
+<label><input type="radio" name="_NewTab" id="NewTab=2" onclick="SetRadio(this)">Left</label><br>
+<label><input type="radio" name="_NewTab" id="NewTab=0" onclick="SetRadio(this)">Right</label><br>
+<br>
+<div>
+  <label>Active tab after tab closing</label>
 </div>
+<input type="hidden" name="Close">
+<label><input type="radio" name="_Close" id="Close=5" onclick="SetRadio(this)">First</label><br>
+<label><input type="radio" name="_Close" id="Close=4" onclick="SetRadio(this)">Last</label><br>
+<label><input type="radio" name="_Close" id="Close=3" onclick="SetRadio(this)">Left</label><br>
+<label><input type="radio" name="_Close" id="Close=2" onclick="SetRadio(this)">Right</label><br>
+<label><input type="radio" name="_Close" id="Close=1" onclick="SetRadio(this)">Parent folder</label><br>
+<label><input type="radio" name="_Close" id="Close=0" onclick="SetRadio(this)" checked>In actived order</label>

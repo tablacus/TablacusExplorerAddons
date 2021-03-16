@@ -63,19 +63,17 @@ AddEvent("Close", function (Ctrl) {
 });
 
 AddEvent("SelectionChanged", function (Ctrl, uChange) {
-	let FV;
+	let FV, nMove = -1;
 	if (Ctrl.Type == CTRL_TC) {
 		for (let i = Ctrl.Count; i-- > 0;) {
 			FV = Ctrl[i];
 			if (FV && FV.Data) {
 				FV.Data.nActive = (FV.Data.nActive || 0) + 1;
 				if (FV.Data.Created) {
-					if (new Date().getTime() - FV.Data.Created < 9999) {
-						if (Sync.TabPositon.nNew && !g_.LockUpdate) {
-							Ctrl.Move(i, Ctrl.Count - 1);
-						}
-					}
 					delete FV.Data.Created;
+					if (Sync.TabPositon.nNew && !g_.LockUpdate) {
+						nMove = i;
+					}
 				}
 			}
 		}
@@ -83,11 +81,14 @@ AddEvent("SelectionChanged", function (Ctrl, uChange) {
 		if (FV && FV.Data) {
 			FV.Data.nActive = 0;
 		}
+		if (nMove >= 0) {
+			Ctrl.Move(nMove, Sync.TabPositon.nNew == 1 ? Ctrl.Count - 1 : Math.max(nMove - 1, 0));
+		}
 	}
 });
 
 AddEvent("Create", function (Ctrl) {
-	if (Ctrl.Type <= CTRL_EB) {
-		Ctrl.Data.Created = new Date().getTime();
+	if (Ctrl.Type <= CTRL_EB && !g_.LockUpdate) {
+		Ctrl.Data.Created = true;
 	}
 });
