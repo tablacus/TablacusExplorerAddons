@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <text s="Select matches">Sélectionner les correspondances</text>
+  <text s="Select all items that are also listed in the other pane.">Sélectionner tous les éléments qui sont également énumérés dans l'autre panneau.</text>
+  <text s="Select uniques">Sélectionner les uniques</text>
+  <text s="Select all items that are only listed in this pane.">Sélectionner tous les éléments qui apparaissent uniquement dans ce panneau.</text>
+  <text s="Select newer">Sélectionner les plus récents</text>
+  <text s="Select all matches with a more recent modified date.">Sélectionner toutes les correspondances avec une date de modification plus récente.</text>
+  <text s="Select different">Sélectionner les différents</text>
+  <text s="Select all matches with a different size or modified date.">Sélectionner toutes les correspondances avec une taille ou date de modification différente.</text>
+  <text s="Select uniques and newer">Sélectionner les uniques et plus récents</text>
+  <text s="Select all items that are unique or newer.">Sélectionner tous les éléments uniques ou plus récent.</text>
+  <text s="Select uniques and different">Sélectionner les uniques et différents</text>
+  <text s="Select all items that are unique or different.">Sélectionner tous les éléments uniques ou différents.</text>
+  <text s="Select selected">Sélectionner les sélectionnés</text>
+  <text s="Select all items that are selected in the other pane.">Sélectionner tous les éléments sélectionnés dans l'autre panneau.</text>
+</resources>

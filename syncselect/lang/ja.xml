@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <text s="Select matches">両方に存在する項目を選択</text>
+  <text s="Select all items that are also listed in the other pane.">両方のペインに存在する項目を選択します。</text>
+  <text s="Select uniques">片方だけに存在する項目を選択</text>
+  <text s="Select all items that are only listed in this pane.">どちらか片方のペインにしか存在しない項目を選択します。</text>
+  <text s="Select newer">新しい項目を選択</text>
+  <text s="Select all matches with a more recent modified date.">他ペインより新しい項目を選択します。</text>
+  <text s="Select different">違う項目を選択</text>
+  <text s="Select all matches with a different size or modified date.">他ペインとサイズか日付時刻が違う項目を選択します。</text>
+  <text s="Select uniques and newer">新しいか片方だけに存在する項目を選択</text>
+  <text s="Select all items that are unique or newer.">他ペインより新しいか片方だけに存在する項目を選択します。</text>
+  <text s="Select uniques and different">違うか片方だけに存在する項目を選択</text>
+  <text s="Select all items that are unique or different.">他ペインとサイズか日付時刻が違うか片方だけに存在する項目を選択します。</text>
+  <text s="Select selected">選択された項目を選択</text>
+  <text s="Select all items that are selected in the other pane.">他ペインで選択された項目を選択します。</text>
+</resources>

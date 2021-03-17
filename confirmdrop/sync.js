@@ -5,7 +5,7 @@ Sync.ConfirmDrop = {
 };
 
 AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect, pgrfKeyState) {
-	if ((grfKeyState & MK_RBUTTON) || Ctrl.Type == CTRL_WB) {
+	if (grfKeyState & MK_RBUTTON) {
 		return;
 	}
 	switch (Ctrl.Type) {
@@ -20,8 +20,7 @@ AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect, pgrfKeySta
 			} else {
 				Dest = Ctrl.FolderItem;
 			}
-			delete Sync.ConfirmDrop.hr;
-			if (!confirmOk(api.LoadString(hShell32, 4098).replace("%s", Dest.Path), Sync.ConfirmDrop.strName + ' - ' + TITLE)) {
+			if (!confirmOk(Dest ? api.LoadString(hShell32, 4098).replace("%s", Dest.Path) : "", Sync.ConfirmDrop.strName + ' - ' + TITLE)) {
 				return S_OK;
 			}
 			break;

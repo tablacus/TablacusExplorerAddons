@@ -75,9 +75,12 @@ SaveLocation = async function () {
 setTimeout(async function () {
 	g_x.List = document.E.List;
 	const ar = (await ReadTextFile(fnConfig)).split(/\r?\n/);
-	g_x.List.length = ar.length;
-	for (let i = 0; i < ar.length; i++) {
-		SetData(g_x.List[i], ar[i].split("\t"));
+	while (ar.length) {
+		const line = ar.shift();
+		if (line) {
+			const i = g_x.List.length++;
+			SetData(g_x.List[i], line.split("\t"));
+		}
 	}
 	EnableSelectTag(g_x.List);
 }, 99);
