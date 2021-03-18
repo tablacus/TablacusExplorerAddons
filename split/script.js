@@ -134,6 +134,13 @@ if (window.Addon == 1) {
 		},
 
 		SetButtons: async function (Addon_Id, Default, item, n, ar) {
+			const el = document.getElementById(Addon_Id);
+			if (!el) {
+				setTimeout(function (Addon_Id, Default, item, n, ar) {
+					Addons.Split.SetButtons(Addon_Id, Default, item, n, ar);
+				}, 999, Addon_Id, Default, item, n, ar);
+				return;
+			}
 			const px = screen.deviceYDPI / 96 * 16;
 			const s = [];
 			for (let i = 0; i < ar.length; i++) {
@@ -141,7 +148,7 @@ if (window.Addon == 1) {
 					s.push('<span class="button" onclick="Addons.Split', n, '.Exec(', ar[i].exec, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', ar[i].id, '" src="../addons/split', n, '/', ar[i].img || ar[i].id, '.png" style="width: ', px, 'px"></span>');
 				}
 			}
-			document.getElementById(Addon_Id).innerHTML = s.join("");
+			el.innerHTML = s.join("");
 		},
 
 		Sort: async function (cTC) {
@@ -274,7 +281,7 @@ if (window.Addon == 1) {
 			}
 		});
 	});
-	importJScript("addons\\" + Addon_Id + "\\sync.js");
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }

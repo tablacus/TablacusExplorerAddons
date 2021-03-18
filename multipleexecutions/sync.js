@@ -10,3 +10,14 @@ AddEvent("CopyData", function (Ctrl, cd, wParam) {
 		}
 	}
 });
+
+AddType("Open in new window", {
+	Exec: function (Ctrl, s, type, hwnd, pt) {
+		wsh.Run(PathQuoteSpaces(api.GetModuleFileName(null)) + ' "Tabs,Close all tabs" ' + ExtractMacro(te, s));
+		return S_OK;
+	},
+
+	Ref: function (path) {
+		return OpenDialog(path);
+	}
+});

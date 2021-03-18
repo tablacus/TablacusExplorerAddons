@@ -1,8 +1,9 @@
 const AddonName = "FolderSettings";
 const Addon_Id = AddonName.toLowerCase();
 const g_Chg = { List: false };
+RunEventUI("BrowserCreatedEx");
 
-GetCurrentSetting = async function (bForce) {
+GetCurrentSettingFS = async function (bForce) {
 	const nFormat = GetNum(document.E.Format.value);
 	const FV = await te.Ctrl(CTRL_FV);
 	const r = await Promise.all([api.GetDisplayNameOf(FV, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING | SHGDN_FORPARSINGEX), FV.CurrentViewMode, FV.IconSize, FV.GetColumns(nFormat), FV.GroupBy, FV.SortColumns, FV.SortColumn, FV.GetSortColumn(nFormat)]);

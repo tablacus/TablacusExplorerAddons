@@ -5,9 +5,18 @@ if (window.Addon == 1) {
 	Addons.BranchBar = {
 		Get: async function (Ctrl) {
 			const el = document.getElementById("branchbar");
-			if (el) {
-				const s = await api.CreateProcess("git branch --contains", await Ctrl.FolderItem.Path);
-				el.innerHTML = s && s[0] == "*" ? s.substr(1) : "";
+			if (el && el.tagName) {
+				const s = await api.CreateProcess("git branch --contains", await Ctrl.FolderItem.Path, 65001);
+				el.innerHTML = "";
+				if ("string" === typeof s) {
+					const ar = s.split(/\r?\n/);
+					for (let i = ar.length; i--;) {
+						if (ar[i][0] === "*") {
+							el.innerHTML = ar[i].substr(1);
+							break;
+						}
+					}
+				}
 			}
 		}
 	};
