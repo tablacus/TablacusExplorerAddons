@@ -142,7 +142,7 @@ Init1 = async function () {
 			}
 		}
 		if (bNew) {
-			GetCurrentSetting(true);
+			GetCurrentSettingFS(true);
 		}
 	}
 }

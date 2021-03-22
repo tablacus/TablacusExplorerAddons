@@ -7,7 +7,7 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
 	const src = item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,42,16" : "icon:shell32.dll,42,32");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.SystemFolders.Exec, this, 9)" oncontextmenu="Addons.SystemFolders.Exec(this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: src }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.SystemFolders.Exec, this, 9)" oncontextmenu="SyncExec(Sync.SystemFolders.Popup, this); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: src }, h), '</span>']);
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();
