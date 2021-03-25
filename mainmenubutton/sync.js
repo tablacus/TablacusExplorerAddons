@@ -1,5 +1,5 @@
-var Addon_Id = "mainmenubutton";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "mainmenubutton";
+const item = GetAddonElement(Addon_Id);
 
 Sync.MainMenuButton = {
 	key: 0,
@@ -22,8 +22,8 @@ Sync.MainMenuButton = {
 			});
 		});
 		g_nPos = 0;
-		var hMenu = api.CreatePopupMenu();
-		for (var i = Sync.MainMenuButton.strMenus.length; i--;) {
+		const hMenu = api.CreatePopupMenu();
+		for (let i = Sync.MainMenuButton.strMenus.length; i--;) {
 			var mii = api.Memory("MENUITEMINFO");
 			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
@@ -33,20 +33,20 @@ Sync.MainMenuButton = {
 			api.InsertMenuItem(hMenu, 0, true, mii);
 		}
 		Ctrl = Ctrl || te;
-		var ar = GetSelectedArray(Ctrl, pt);
-		var Selected = ar.shift();
-		var SelItem = ar.shift();
-		var FV = ar.shift();
+		const ar = GetSelectedArray(Ctrl, pt);
+		const Selected = ar.shift();
+		const SelItem = ar.shift();
+		const FV = ar.shift();
 		ExtraMenuCommand = [];
 		ExtraMenuData = [];
 		eventTE.menucommand = [];
 
 		if (!pt) {
 			pt = api.Memory("POINT");
-			var hwnd = api.FindWindowEx(FV.hwndView, 0, WC_LISTVIEW, null);
+			const hwnd = api.FindWindowEx(FV.hwndView, 0, WC_LISTVIEW, null);
 			if (hwnd) {
-				var rc = api.Memory("RECT");
-				var i = FV.GetFocusedItem;
+				const rc = api.Memory("RECT");
+				const i = FV.GetFocusedItem;
 				if (api.SendMessage(hwnd, LVM_ISITEMVISIBLE, i, 0)) {
 					rc.Left = LVIR_LABEL;
 					api.SendMessage(hwnd, LVM_GETITEMRECT, i, rc);
@@ -67,9 +67,9 @@ Sync.MainMenuButton = {
 		if (api.GetKeyState(VK_SHIFT) < 0) {
 			Sync.MainMenuButton.uCMF |= CMF_EXTENDEDVERBS;
 		}
-		var nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, Sync.MainMenuButton.ContextMenu);
-		var Name = Sync.MainMenuButton.strMenus[0].replace("&", "");
-		for (var i = Sync.MainMenuButton.strMenus.length; i--;) {
+		const nVerb = api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, Sync.MainMenuButton.ContextMenu);
+		let Name = Sync.MainMenuButton.strMenus[0].replace("&", "");
+		for (let i = Sync.MainMenuButton.strMenus.length; i--;) {
 			api.GetMenuItemInfo(hMenu, i, true, mii);
 			mii.fMask = MIIM_SUBMENU;
 			if (api.GetMenuString(mii.hSubMenu, nVerb, MF_BYCOMMAND)) {
@@ -77,17 +77,17 @@ Sync.MainMenuButton = {
 			}
 		}
 		if (nVerb) {
-			var mii = api.Memory("MENUITEMINFO");
+			const mii = api.Memory("MENUITEMINFO");
 			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_SUBMENU;
-			var hr = ExecMenu4(Ctrl, Name, pt, hMenu, Sync.MainMenuButton.ContextMenu, nVerb, Sync.MainMenuButton.FV);
+			const hr = ExecMenu4(Ctrl, Name, pt, hMenu, Sync.MainMenuButton.ContextMenu, nVerb, Sync.MainMenuButton.FV);
 			if (isFinite(hr)) {
 				return hr;
 			}
-			var item = Sync.MainMenuButton.arItem[nVerb - 1];
+			const item = Sync.MainMenuButton.arItem[nVerb - 1];
 			if (item) {
-				var s = item.getAttribute("Type");
-				Exec(Ctrl, item.text, window.g_menu_button == 3 && s == "Open" ? "Open in new tab" : s, Ctrl.hwnd, pt);
+				const s = item.getAttribute("Type");
+				Exec(Ctrl, item.text, window.g_menu_button == 3 && SameText(s, "Open") ? "Open in new tab" : s, Ctrl.hwnd, pt);
 				return S_OK;
 			}
 		} else {
@@ -102,30 +102,30 @@ Sync.MainMenuButton = {
 
 	OpenSubMenu: function (hMenu, wID, hSubMenu) {
 		hMenu = api.sscanf(hSubMenu, "%llx");
-		var Name = Sync.MainMenuButton.strMenus[wID].replace("&", "");
-		var items = null;
-		var menus = teMenuGetElementsByTagName(Name);
+		const Name = Sync.MainMenuButton.strMenus[wID].replace("&", "");
+		let items = null;
+		const menus = teMenuGetElementsByTagName(Name);
 		if (menus && menus.length) {
 			items = menus[0].getElementsByTagName("Item");
-			var nBase = api.QuadPart(menus[0].getAttribute("Base"));
+			const nBase = GetNum(menus[0].getAttribute("Base"));
 			Sync.MainMenuButton.ContextMenu.push(GetBaseMenuEx(hMenu, nBase, Sync.MainMenuButton.FV, Sync.MainMenuButton.Selected, Sync.MainMenuButton.uCMF, 0, Sync.MainMenuButton.SelItem, Sync.MainMenuButton.ContextMenu));
 			if (nBase < 5) {
 				AdjustMenuBreak(hMenu);
 			}
-			var arMenu;
+			let arMenu;
 			if (items) {
 				arMenu = OpenMenu(items, Sync.MainMenuButton.SelItem);
 				g_nPos = MakeMenus(hMenu, menus, arMenu, items, Ctrl, pt, g_nPos, Sync.MainMenuButton.arItem, true);
 
-				var eo = eventTE[Name.toLowerCase()];
-				for (var i in eo) {
+				const eo = eventTE[Name.toLowerCase()];
+				for (let i in eo) {
 					try {
 						g_nPos = eo[i](Sync.MainMenuButton.Ctrl, hMenu, g_nPos, Sync.MainMenuButton.Selected, Sync.MainMenuButton.SelItem, Sync.MainMenuButton.ContextMenu[0], Name, Sync.MainMenuButton.pt);
 					} catch (e) {
 						ShowError(e, Name, i);
 					}
 				}
-				for (var i in eventTE.menus) {
+				for (let i in eventTE.menus) {
 					try {
 						g_nPos = eventTE.menus[i](Sync.MainMenuButton.Ctrl, hMenu, g_nPos, Sync.MainMenuButton.Selected, Sync.MainMenuButton.SelItem, Sync.MainMenuButton.ContextMenu[0], Name, Sync.MainMenuButton.pt);
 					} catch (e) {
@@ -152,7 +152,7 @@ AddEvent("KeyMessage", function (Ctrl, hwnd, msg, key, keydata) {
 	if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN) {
 		Sync.MainMenuButton.key = Sync.MainMenuButton.key != VK_MENU && (keydata & 0x40000000) ? 0 : key;
 	} else if (key == VK_MENU && msg == WM_SYSKEYUP && key == Sync.MainMenuButton.key) {
-		var FV = GetFolderView(Ctrl);
+		const FV = GetFolderView(Ctrl);
 		InvokeUI("Addons.MainMenuButton.Popup", [null, FV.Parent.Id]);
 		return S_OK;
 	}

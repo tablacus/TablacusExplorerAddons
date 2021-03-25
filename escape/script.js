@@ -16,9 +16,11 @@ if (window.Addon == 1) {
 			}, 99, await GetFolderView(el), await GetPosEx(el, 9));
 		}
 	};
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const s = item.getAttribute("Icon") || '../addons/escape/' + (h > 16 ? 24 : 16) +  '.png';
-	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="Addons.EscapeUnicode.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: "Escape Unicode", src: s }, h), '</span>']);
+	AddEvent("Layout", async function () {
+		const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+		const s = item.getAttribute("Icon") || '../addons/escape/' + (h > 16 ? 24 : 16) +  '.png';
+		SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="Addons.EscapeUnicode.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: await GetText("Escape Unicode"), src: s }, h), '</span>']);
+	});
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();

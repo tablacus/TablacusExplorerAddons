@@ -1,7 +1,6 @@
-var Addon_Id = "mainmenubutton";
-var Default = "ToolBar1Left";
-
-var item = await GetAddonElement(Addon_Id);
+const Addon_Id = "mainmenubutton";
+const Default = "ToolBar1Left";
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("KeyOn", "List");
 	item.setAttribute("MouseOn", "List");
@@ -28,14 +27,14 @@ if (window.Addon == 1) {
 		}
 	};
 
-	var h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	var src = item.getAttribute("Icon");
-	if (src) {
-		src = await GetImgTag({ title: "Main menu", src: src }, h);
-	} else {
-		src = '<span title="' + EncodeSC(await GetText("Main menu")) + '" style="font-size: ' + (Number(h) ? h + "px" : h) + '">&#x2630;</span>';
-	}
-	SetAddon(Addon_Id, Default, ['<span id="mainmenubutton_$" class="button" onmousedown="Addons.MainMenuButton.Popup(this)">', src, '</span>']);
+	AddEvent("Layout", async function () {
+		const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+		SetAddon(Addon_Id, Default, ['<span id="mainmenubutton_$" class="button" onmousedown="Addons.MainMenuButton.Popup(this)">', await GetImgTag({
+			title: await GetText("Menus"),
+			src: item.getAttribute("Icon") || "font:Consolas,0x2630"
+		}, h), '</span>']);
+	});
+
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 
 } else {
