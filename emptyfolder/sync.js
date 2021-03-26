@@ -8,10 +8,9 @@ Sync.EmptyFolder = {
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 	nPos: GetNum(item.getAttribute("MenuPos")),
 
-	GetSearchString: function(Ctrl)
-	{
+	GetSearchString: function (Ctrl) {
 		if (Ctrl) {
-			const res = new RegExp("^" + Sync.EmptyFolder.PATH + "\\s*(.*)" , "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			const res = new RegExp("^" + Sync.EmptyFolder.PATH + "\\s*(.*)", "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
 			if (res) {
 				return res[1];
 			}
@@ -19,8 +18,7 @@ Sync.EmptyFolder = {
 		return "";
 	},
 
-	Exec: function (Ctrl, pt)
-	{
+	Exec: function (Ctrl, pt) {
 		const FV = GetFolderView(Ctrl, pt);
 		if (FV) {
 			FV.Focus();
@@ -28,7 +26,7 @@ Sync.EmptyFolder = {
 			const Selected = FV.SelectedItems();
 			if (Selected && Selected.Count) {
 				for (let i = Selected.Count; i--;) {
-					let path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL);
+					const path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL);
 					if (/^[A-Z]:\\|^\\/i.test(path)) {
 						ar.unshift(path);
 					}
@@ -44,8 +42,7 @@ Sync.EmptyFolder = {
 		return S_OK;
 	},
 
-	Notify: function (pid, pid2)
-	{
+	Notify: function (pid, pid2) {
 		const cTC = te.Ctrls(CTRL_TC);
 		for (let i in cTC) {
 			const TC = cTC[i];
@@ -60,8 +57,7 @@ Sync.EmptyFolder = {
 		}
 	},
 
-	rmdir: function (Ctrl, pt)
-	{
+	rmdir: function (Ctrl, pt) {
 		if (!confirmOk()) {
 			return S_OK;
 		}
@@ -92,19 +88,16 @@ Sync.EmptyFolder = {
 	}
 };
 
-AddEvent("TranslatePath", function (Ctrl, Path)
-{
+AddEvent("TranslatePath", function (Ctrl, Path) {
 	if (api.PathMatchSpec(Path, Sync.EmptyFolder.PATH + "*")) {
 		return ssfRESULTSFOLDER;
 	}
 }, true);
 
-AddEvent("BeginNavigate", function (Ctrl)
-{
-	let Path = Sync.EmptyFolder.GetSearchString(Ctrl);
+AddEvent("BeginNavigate", function (Ctrl) {
+	const Path = Sync.EmptyFolder.GetSearchString(Ctrl);
 	if (Path) {
-		OpenNewProcess("addons\\emptyfolder\\worker.js",
-		{
+		OpenNewProcess("addons\\emptyfolder\\worker.js", {
 			FV: Ctrl,
 			Path: Path,
 			SessionId: Ctrl.SessionId,
@@ -117,23 +110,20 @@ AddEvent("BeginNavigate", function (Ctrl)
 	}
 });
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple)
-{
+AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
 	if (Sync.EmptyFolder.GetSearchString(Ctrl)) {
 		return MakeImgDataEx(Sync.EmptyFolder.Icon || "folder:closed", bSimple, 16);
 	}
 });
 
-AddEvent("GetFolderItemName", function (pid)
-{
+AddEvent("GetFolderItemName", function (pid) {
 	let res = new RegExp("^" + Sync.EmptyFolder.PATH + ".*?([^\\\\]+)$", "i").exec(pid.Path)
 	if (res) {
 		return Sync.EmptyFolder.PATH + res[1];
 	}
 }, true);
 
-AddEvent("ChangeNotify", function (Ctrl, pidls)
-{
+AddEvent("ChangeNotify", function (Ctrl, pidls) {
 	if (pidls.lEvent & (SHCNE_DELETE | SHCNE_DRIVEREMOVED | SHCNE_MEDIAREMOVED | SHCNE_NETUNSHARE | SHCNE_RMDIR | SHCNE_SERVERDISCONNECT)) {
 		Sync.EmptyFolder.Notify(pidls[0]);
 	}
@@ -142,16 +132,14 @@ AddEvent("ChangeNotify", function (Ctrl, pidls)
 	}
 });
 
-AddEvent("ILGetParent", function (FolderItem)
-{
+AddEvent("ILGetParent", function (FolderItem) {
 	let Path = Sync.EmptyFolder.GetSearchString(FolderItem);
 	if (Path) {
 		return Path;
 	}
 });
 
-AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
-{
+AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 	if (Sync.EmptyFolder.GetSearchString(Ctrl)) {
 		api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
 		ExtraMenuCommand[nPos] = OpenContains;
@@ -161,8 +149,7 @@ AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu)
 	return nPos;
 });
 
-AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon)
-{
+AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 	if (!Verb || Verb == CommandID_STORE - 1) {
 		if (ContextMenu.Items.Count >= 1) {
 			let path = Sync.EmptyFolder.GetSearchString(ContextMenu.Items.Item(0));
@@ -176,8 +163,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 
 //Menu
 if (item.getAttribute("MenuExec")) {
-	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos)
-	{
+	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 		api.InsertMenu(hMenu, Sync.EmptyFolder.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.EmptyFolder.strName));
 		ExtraMenuCommand[nPos] = Sync.EmptyFolder.Exec;
 		return nPos;

@@ -14,18 +14,6 @@ if (window.Addon == 1) {
 		Height: item.getAttribute("Height") || '100%',
 		NewTab: item.getAttribute("NewTab"),
 
-		Init: async function () {
-			if (!await te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"]) {
-				te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"] = 178;
-			}
-			Addons.FavoritesBar.Width = await te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"];
-			let h = Addons.FavoritesBar.Height;
-			if (isFinite(h)) {
-				h += "px";
-			}
-			SetAddon(Addon_Id, Addons.FavoritesBar.Align + "Bar2", ['<div id="favoritesbar" class="pane" style="width: 100%; height:', EncodeSC(h), '; overflow: auto;">']);
-		},
-
 		Open: function (ev, i, bNew) {
 			const items = ui_.MenuFavorites;
 			const item = items[i];
@@ -124,9 +112,9 @@ if (window.Addon == 1) {
 				}
 				path = await Addons.FavoritesBar.GetPath(items, i);
 				if (nOpen) {
-					img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a>' + await GetImgTag({ src: img || "folder:closed", class: "favicon" });
+					img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a>' + await GetImgTag({ src: img || "folder:closed", "class": "favicon" });
 				} else if (img) {
-					img = await GetImgTag({ src: img, class: "favicon" });
+					img = await GetImgTag({ src: img, "class": "favicon" });
 				} else if (await api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
 					let pidl = await api.ILCreateFromPath(path);
 					if (await api.ILIsEmpty(pidl) || await pidl.Unavailable) {
@@ -135,9 +123,9 @@ if (window.Addon == 1) {
 							pidl = await api.ILCreateFromPath(res[1]);
 						}
 					}
-					img = await GetImgTag({ src: await GetIconImage(pidl, await GetSysColor(COLOR_WINDOW)), class: "favicon" });
+					img = await GetImgTag({ src: await GetIconImage(pidl, await GetSysColor(COLOR_WINDOW)), "class": "favicon" });
 				} else {
-					img = await GetImgTag({ src: "icon:shell32.dll,0", class: "favicon" });
+					img = await GetImgTag({ src: "icon:shell32.dll,0", "class": "favicon" });
 				}
 				s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(event,', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(event,' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(event,', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(items[i].text), '" draggable="true" ondragstart="Addons.FavoritesBar.Start5(event,this)" ondragend="Addons.FavoritesBar.End5(this)" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", EncodeSC(strName.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")), '</div> ');
 				if (nOpen) {
@@ -231,6 +219,18 @@ if (window.Addon == 1) {
 		}
 	};
 
+	AddEvent("Layout", async function () {
+		if (!await te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"]) {
+			te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"] = 178;
+		}
+		Addons.FavoritesBar.Width = await te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"];
+		let h = Addons.FavoritesBar.Height;
+		if (isFinite(h)) {
+			h += "px";
+		}
+		SetAddon(Addon_Id, Addons.FavoritesBar.Align + "Bar2", ['<div id="favoritesbar" class="pane" style="width: 100%; height:', EncodeSC(h), '; overflow: auto;">']);
+	});
+
 	AddEvent("Resize", async function () {
 		const w = await te.Data["Conf_" + Addons.FavoritesBar.Align + "BarWidth"];
 		Addons.FavoritesBar.Width = w;
@@ -242,8 +242,6 @@ if (window.Addon == 1) {
 	AddEvent("FavoriteChanged", Addons.FavoritesBar.Changed);
 
 	AddEvent("Load", Addons.FavoritesBar.Arrange);
-
-	Addons.FavoritesBar.Init();
 
 	Common.FavoritesBar = await api.CreateObject("Object");
 

@@ -1,6 +1,5 @@
 const Addon_Id = "fullpathbar";
 const Default = "BottomBar3Left";
-
 if (window.Addon == 1) {
 	Addons.FullPathBar = {
 		Title: await GetAddonOptionEx(Addon_Id, "Title"),
@@ -25,9 +24,12 @@ if (window.Addon == 1) {
 			}
 		}
 	}
-	SetAddon(Addon_Id, Default, '<span id="fullpathbar">&nbsp;</span>');
+	AddEvent("Layout", function () {
+		SetAddon(Addon_Id, Default, '<span id="fullpathbar">&nbsp;</span>');
+	});
 
 	AddEvent("StatusText", Addons.FullPathBar.Show);
+
 	AddEvent("Load", async function () {
 		Addons.FullPathBar.Show(await te.Ctrl(CTRL_FV));
 	});

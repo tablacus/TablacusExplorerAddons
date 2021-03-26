@@ -1,7 +1,5 @@
-﻿const Addon_Id = "grabbutton";
+const Addon_Id = "grabbutton";
 const Default = "ToolBar1Left";
-
-const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Common.GrabButton = await api.CreateObject("Object");
 	Common.GrabButton.pt = await api.Memory("POINT");
@@ -36,7 +34,12 @@ if (window.Addon == 1) {
 		}
 	};
 
-	var src = item.getAttribute("Icon") || "icon:" + ui_.TEPath + ",0";
-	SetAddon(Addon_Id, Default, ['<span id="grabbutton" class="button" onmousedown="Addons.GrabButton.Grab(event)" onclick="Addons.GrabButton.Click()" oncontextmenu="Addons.GrabButton.Popup(event); return false;">', await GetImgTag({ title: "Tablacus Explorer", src: src }, GetIconSize(item.getAttribute("IconSize"), 16)), '</span>']);
+	AddEvent("Layout", async function () {
+		const item = await GetAddonElement(Addon_Id);
+		SetAddon(Addon_Id, Default, ['<span id="grabbutton" class="button" onmousedown="Addons.GrabButton.Grab(event)" onclick="Addons.GrabButton.Click()" oncontextmenu="Addons.GrabButton.Popup(event); return false;">', await GetImgTag({
+			title: "Tablacus Explorer",
+			src: item.getAttribute("Icon") || "icon:" + ui_.TEPath + ",0"
+		}, GetIconSize(item.getAttribute("IconSize"), 16)), '</span>']);
+	});
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 }
