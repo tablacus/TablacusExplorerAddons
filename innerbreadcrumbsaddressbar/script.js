@@ -68,7 +68,7 @@ if (window.Addon == 1) {
 						arHTML.unshift('<span id="breadcrumbsaddressbar_' + Id + "_" + n + '" class="button" style="line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + BUTTONS.next + '</span>');
 						o.insertAdjacentHTML("afterbegin", arHTML[0]);
 					}
-					arHTML.unshift('<span id="breadcrumbsaddressbar_' + Id + "_" + n + '_" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Go(' + n + ', ' + Id + ')" onmousedown="return Addons.InnerBreadcrumbsAddressBar.GoEx(event, this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + EncodeSC(Items[n].name) + '</span>');
+					arHTML.unshift('<span id="breadcrumbsaddressbar_' + Id + "_" + n + '_" class="button" style="line-height: ' + height + 'px"  onmousedown="return Addons.InnerBreadcrumbsAddressBar.Go(event, this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + EncodeSC(Items[n].name) + '</span>');
 					const nBefore = o.offsetWidth;
 					o.insertAdjacentHTML("afterbegin", arHTML[0]);
 					if (o.offsetWidth != nBefore && o.offsetWidth > width && n > 0) {
@@ -114,10 +114,12 @@ if (window.Addon == 1) {
 			}
 		},
 
-		GoEx: function (ev, o, n, Id) {
+		Go: function (ev, o, n, Id) {
 			const buttons = (ev.buttons != null ? ev.buttons : ev.button);
-			if (buttons == 1) {
-				this.Go(n, Id);
+			if (buttons & 5) {
+				Promise.all([GetInnerFV(Id), Sync.InnerBreadcrumbsAddressBar.GetPath(n, Id), GetNavigateFlags()]).then(function (r) {
+					NavigateFV(r[0], r[1], r[2]);
+				});
 				return false;
 			} else if (buttons == 2) {
 				(async function () {
@@ -155,10 +157,6 @@ if (window.Addon == 1) {
 				})();
 				return false;
 			}
-		},
-
-		Go: async function (n, Id) {
-			NavigateFV(await GetInnerFV(Id), await Sync.InnerBreadcrumbsAddressBar.GetPath(n, Id), await GetNavigateFlags());
 		},
 
 		Popup: async function (o, n, Id) {

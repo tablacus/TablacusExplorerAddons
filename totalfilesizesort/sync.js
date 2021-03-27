@@ -105,7 +105,7 @@ AddEvent("Sorting", Sync.TotalFileSizeSort.Sort);
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-		api.InsertMenu(hMenu, Sync.TotalFileSizeSort.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.TotalFileSizeSort.strName));
+		api.InsertMenu(hMenu, Sync.TotalFileSizeSort.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.TotalFileSizeSort.strName);
 		ExtraMenuCommand[nPos] = Sync.TotalFileSizeSort.Exec;
 		return nPos;
 	});
@@ -120,7 +120,3 @@ if (item.getAttribute("MouseExec")) {
 }
 //Type
 AddTypeEx("Add-ons", "Total file size sort", Sync.TotalFileSizeSort.Exec);
-
-const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,25" : "bitmap:ieframe.dll,214,24,25");
-Sync.TotalFileSizeSort.str = ['<span class="button" onclick="return Addons.TotalFileSizeSort.Exec(this);" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', GetImgTag({ title: Sync.TotalFileSizeSort.strName, src: src }, h), '</span>'].join("");

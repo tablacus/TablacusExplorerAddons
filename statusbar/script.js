@@ -1,6 +1,5 @@
 const Addon_Id = "statusbar";
 const Default = "BottomBar3Left";
-
 if (window.Addon == 1) {
 	Addons.StatusBar = {
 		arg: await api.CreateObject("Object"),
@@ -13,6 +12,10 @@ if (window.Addon == 1) {
 	};
 	Addons.StatusBar.arg.api = api;
 	Addons.StatusBar.arg.Set = Addons.StatusBar.Set;
+
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, '<span id="statusbar">&nbsp;</span>');
+	});
 
 	AddEvent("StatusText", async function (Ctrl, Text, iPart) {
 		if (/^1 /.test(Text)) {
@@ -27,8 +30,6 @@ if (window.Addon == 1) {
 		}
 		Addons.StatusBar.Set(Text);
 	});
-
-	SetAddon(Addon_Id, Default, '<span id="statusbar">&nbsp;</span>');
 } else {
 	SetTabContents(0, "View", '<label><input type="checkbox" id="Title">Title bar</label>');
 }

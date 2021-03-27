@@ -1,14 +1,15 @@
 const Addon_Id = "totalfilesizesort";
 const Default = "ToolBar2Left";
 if (window.Addon == 1) {
-	Addons.TotalFileSizeSort = {
-		Exec: async function(Ctrl, pt) {
-			Sync.TotalFileSizeSort.Exec(await GetFolderView(Ctrl, pt));
-		}
-	};
-	await $.importScript("addons\\" + Addon_Id + "\\sync.js");
-	SetAddon(Addon_Id, Default, await Sync.TotalFileSizeSort.str);
-	api.ObjPutI(Sync.TotalFileSizeSort, "str", null);
+	AddEvent("Layout", async function () {
+		const item = await GetAddonElement(Addon_Id);
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.TotalFileSizeSort.Exec, this, 9);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+			src: item.getAttribute("Icon") || "icon:general,25",
+		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>'].join(""));
+	});
+
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();
 }
