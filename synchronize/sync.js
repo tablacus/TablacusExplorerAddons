@@ -36,7 +36,7 @@ AddEvent("Load", function () {
 				return;
 			}
 		}
-		if (api.ILIsParent(Prev, Ctrl, true)) {
+		if (api.ILIsParent(Prev, Ctrl, true) || (/\.cfu$/i.test((Prev || {}).Path) || /\.cfu$/i.test((Ctrl.FolderItem || {}).Path))) {
 			Sync.Synchronize.Run(Ctrl, Prev, function (Ctrl, FV, parent) {
 				const path = BuildPath(FV.FolderItem.Path, GetFileName(Ctrl.FolderItem.Path));
 				if (IsExists(path)) {

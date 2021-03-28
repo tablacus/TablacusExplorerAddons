@@ -1,6 +1,6 @@
 const Addon_Id = "synchronize";
 const Default = "ToolBar2Left";
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Menu", "Edit");
 	item.setAttribute("MenuPos", -1);
@@ -25,13 +25,19 @@ if (window.Addon == 1) {
 		}
 	}
 
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.Synchronize.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+			id: "ImgSynchronize_$",
+			src: item.getAttribute("Icon") || await GetMiscIcon(Addon_Id) || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe895" : "font:Webdings,0x71")
+		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		delete item;
+	});
+
 	AddEvent("PanelCreated", async function (Ctrl, Id) {
 		Addons.Synchronize.State(await Sync.Synchronize.Disabled);
 	});
 
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || await GetMiscIcon(Addon_Id) || "../addons/" + Addon_Id + "/" + Addon_Id + ".png";
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.Synchronize.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, id: "ImgSynchronize_$", src: src }, h), '</span>']);
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();

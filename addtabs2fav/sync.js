@@ -2,7 +2,7 @@ const Addon_Id = "addtabs2fav";
 const item = GetAddonElement(Addon_Id);
 
 Sync.AddTabs2Fav = {
-	strName: item.getAttribute("MenuName") || GetText("Add all tabs to favories..."),
+	strName: item.getAttribute("MenuName") || GetText("Add all tabs to favorites..."),
 	nPos: GetNum(item.getAttribute("MenuPos")),
 
 	Exec: function (Ctrl, pt) {
@@ -35,7 +35,7 @@ Sync.AddTabs2Fav = {
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-		api.InsertMenu(hMenu, Sync.AddTabs2Fav.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.AddTabs2Fav.strName));
+		api.InsertMenu(hMenu, Sync.AddTabs2Fav.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.AddTabs2Fav.strName);
 		ExtraMenuCommand[nPos] = Sync.AddTabs2Fav.Exec;
 		return nPos;
 	});
@@ -49,4 +49,4 @@ if (item.getAttribute("MouseExec")) {
 	SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Sync.AddTabs2Fav.Exec, "Func");
 }
 
-AddTypeEx("Add-ons", "Add all tabs to favorite...", Sync.AddTabs2Fav.Exec);
+AddTypeEx("Add-ons", "Add all tabs to favorites...", Sync.AddTabs2Fav.Exec);

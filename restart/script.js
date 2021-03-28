@@ -1,23 +1,23 @@
 const Addon_Id = "restart";
 const Default = "None";
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "File");
 	item.setAttribute("MenuPos", -1);
 }
-
 if (window.Addon == 1) {
 	Addons.Restart = {
+		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+
 		Exec: async function () {
-			await SaveConfig();
+			await FinalizeUI();
 			te.Reload(true);
 		}
 	};
 	//Menu
-	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Restart", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("Restart", Addons.Restart.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -27,10 +27,16 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Restart.Exec, "Async");
 	}
-	AddTypeEx("Add-ons", "Restart", Addons.Restart.Exec);
 
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Restart.Exec()" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: item.getAttribute("Icon") }, h), '</span>']);
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Restart.Exec()" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+			src: item.getAttribute("Icon") || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe777" : "font:Segoe UI Emoji,0x27f2")
+		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		delete item;
+	});
+
+	AddTypeEx("Add-ons", "Restart", Addons.Restart.Exec);
 } else {
 	EnableInner();
 }
