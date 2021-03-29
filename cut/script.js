@@ -1,10 +1,12 @@
 const Addon_Id = "cut";
 const Default = "ToolBar2Left";
 if (window.Addon == 1) {
-	const item = await GetAddonElement(Addon_Id);
+	let item = await GetAddonElement(Addon_Id);
 	Addons.Cut = {
+		sName: item.getAttribute("MenuName") || await api.LoadString(hShell32, 33560),
+
 		Exec: async function (Ctrl, pt) {
-			const FV = await GetFolderViewEx(Ctrl, pt);
+			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
 				const Items = await FV.SelectedItems();
@@ -40,12 +42,9 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("SelectionChanged", Addons.Cut.State);
-
 	//Menu
-	const strName = item.getAttribute("MenuName") || await api.LoadString(hShell32, 33560);
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Cut", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("Cut", Addons.Cut.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -55,9 +54,17 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Cut.Exec, "Func");
 	}
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,5" : "bitmap:ieframe.dll,214,24,5");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Cut.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, id: "ImgCut_$", src: src }, h), '</span>']);
+
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Cut.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: Addons.Cut.sName,
+			id: "ImgCut_$",
+			src: item.getAttribute("Icon") || "icon:general,5"
+		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		delete item;
+	});
+
+	AddEvent("SelectionChanged", Addons.Cut.State);
 } else {
 	EnableInner();
 }

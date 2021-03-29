@@ -1,9 +1,12 @@
+
 const Addon_Id = "copy";
 const Default = "ToolBar2Left";
 if (window.Addon == 1) {
 	const item = await GetAddonElement(Addon_Id);
 
 	Addons.Copy = {
+		sName: item.getAttribute("MenuName") || await api.LoadString(hShell32, 33561),
+
 		Exec: async function (Ctrl, pt) {
 			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
@@ -41,11 +44,9 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("SelectionChanged", Addons.Copy.State);
 	//Menu
-	const strName = item.getAttribute("MenuName") || await api.LoadString(hShell32, 33561);
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Copy", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("Copy", Addons.Copy.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -55,9 +56,16 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Copy.Exec, "Async");
 	}
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,6" : "bitmap:ieframe.dll,214,24,6");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Copy.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, id: "ImgCopy_$", src: src }, h), '</span>']);
+
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Copy.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: Addons.Copy.sName,
+			id: "ImgCopy_$",
+			src: item.getAttribute("Icon") || "icon:general,6"
+		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+	});
+
+	AddEvent("SelectionChanged", Addons.Copy.State);
 } else {
 	EnableInner();
 }

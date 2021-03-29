@@ -252,7 +252,9 @@ if (window.Addon == 1) {
 		}
 	};
 
-	SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
+	AddEvent("Layout", function () {
+		SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
+	});
 
 	const o = document.getElementById("client");
 	AddEventEx(o, "mouseover", Addons.Split.Over);

@@ -1,10 +1,12 @@
 const Addon_Id = "paste";
 const Default = "ToolBar2Left";
 if (window.Addon == 1) {
-	const item = await GetAddonElement(Addon_Id);
+	let item = await GetAddonElement(Addon_Id);
 	Addons.Paste = {
+		sNam: item.getAttribute("MenuName") || await api.LoadString(hShell32, 33562),
+
 		Exec: async function (Ctrl, pt) {
-			const FV = await GetFolderViewEx(Ctrl, pt);
+			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
 				const Items = await FV.FolderItem;
@@ -43,12 +45,9 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("Resize", Addons.Paste.State);
-
 	//Menu
-	const strName = item.getAttribute("MenuName") || await api.LoadString(hShell32, 33562);
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Paste", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("Paste", Addons.Paste.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -58,9 +57,16 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Paste.Exec, "Async");
 	}
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,7" : "bitmap:ieframe.dll,214,24,7");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Paste.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, id: "ImgPaste_$", src: src }, h), '</span>']);
+
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Paste.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: Addons.Paste.sName,
+			id: "ImgPaste_$",
+			src: item.getAttribute("Icon") || "icon:general,7"
+		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+	});
+
+	AddEvent("Resize", Addons.Paste.State);
 } else {
 	EnableInner();
 }

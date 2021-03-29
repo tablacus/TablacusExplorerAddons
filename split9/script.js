@@ -59,7 +59,9 @@ if (window.Addon == 1) {
 		}
 	};
 
-	SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
+	AddEvent("Layout", function () {
+		SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
+	});
 
 	AddEvent("Load", function () {
 		if (!Addons.Split) {

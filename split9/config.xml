@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
-    <MinVersion>2021.2.21</MinVersion>
-    <pubDate>Wed, 24 Feb 2021 00:00:00 GMT</pubDate>
+    <Version>1.02</Version>
+    <MinVersion>2021.3.27</MinVersion>
+    <pubDate>Mon, 29 Mar 2021 00:00:00 GMT</pubDate>
     <Options>Common:6:6</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -12,7 +12,7 @@
   </General>
   <en>
     <Name>Split9</Name>
-    <Description>Split a window into 9 frames. *Require "Split"</Description>
+    <Description>Split a window into 9 frames. **"Split" is required.</Description>
   </en>
   <ja>
     <Name>9分割</Name>
