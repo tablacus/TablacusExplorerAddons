@@ -1,11 +1,11 @@
 const Addon_Id = "everything";
 const Default = "ToolBar2Right";
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Everything = {
 		PATH: "es:",
 		iCaret: -1,
-		strName: item.getAttribute("MenuName") || "Everything",
+		sName: item.getAttribute("MenuName") || "Everything",
 		Max: 1000,
 		RE: false,
 		fncb: {},
@@ -64,16 +64,6 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("ChangeView", async function (Ctrl) {
-		document.F.everythingsearch.value = await Sync.Everything.GetSearchString(Ctrl);
-		Addons.Everything.ShowButton();
-	});
-
-	let width = "176px";
-	const s = item.getAttribute("Width");
-	if (s) {
-		width = (GetNum(s) == s) ? s + "px" : s;
-	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
 		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.Everything.Exec, "Async");
@@ -82,12 +72,28 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Everything.Exec, "Async");
 	}
-	AddTypeEx("Add-ons", "Everything", Addons.Everything.Exec);
 
 	await $.importScript("addons\\" + Addon_Id + "\\sync.js");
 
-	const z = screen.deviceYDPI / 96;
-	SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(event)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', (WINVER < 0x602 || window.chrome ? 32 : 16) * z, 'px; vertical-align: middle"><span style="position: relative"><span id="ButtonEverythingClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.Everything.Clear()" class="button" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left: ', -28 * z, 'px; top:', 4 * z, 'px">r</span><input type="image" src="', EncodeSC(await MakeImgDataEx(await Sync.Everything.Icon)), '" onclick="Addons.Everything.Search()" hidefocus="true" style="position: absolute; left:', -18 * z, 'px; top:', z, 'px; width:', 16 * z, 'px; height:', 16 * z, 'px"></span>'], "middle");
+	AddEvent("Layout", async function () {
+		const z = screen.deviceYDPI / 96;
+		const s = item.getAttribute("Width") || 176;
+		const width = GetNum(s) == s ? ((s * z) + "px") : s;
+		SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(event)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', (WINVER < 0x602 || window.chrome ? 32 : 16) * z, 'px; vertical-align: middle"><span style="position: relative"><span id="ButtonEverythingClear" onclick="Addons.Everything.Clear()" class="button" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left: ', -28 * z, 'px; top:', 4 * z, 'px">r</span>', await GetImgTag({
+			onclick: "Addons.Everything.Search()",
+			hidefocus: "true",
+			style: ['position: absolute; left:', -18 * z, 'px; top:', z, 'px; width:', 16 * z, 'px; height:', 16 * z, 'px'].join(""),
+			src: await Sync.Everything.Icon
+		}, 16 * z), '</span>'], "middle");
+		delete item;
+	});
+
+	AddEvent("ChangeView", async function (Ctrl) {
+		document.F.everythingsearch.value = await Sync.Everything.GetSearchString(Ctrl);
+		Addons.Everything.ShowButton();
+	});
+
+	AddTypeEx("Add-ons", "Everything", Addons.Everything.Exec);
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
 }

@@ -2,8 +2,6 @@ const Addon_Id = "sizestatus";
 const Default = "BottomBar3Right";
 const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
-	SetAddon(Addon_Id, Default, '<span id="size_statusbar">&nbsp;</span>');
-
 	Addons.SizeStatus = {
 		SessionId: 0,
 		Folder: item.getAttribute("Folder"),
@@ -72,6 +70,10 @@ if (window.Addon == 1) {
 			document.getElementById("size_statusbar").innerHTML = "&nbsp;" + (s || await api.StrFormatByteSize(nSize));
 		}
 	}
+
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, '<span id="size_statusbar">&nbsp;</span>');
+	});
 
 	AddEvent("StatusText", Addons.SizeStatus.Exec);
 } else {

@@ -5,7 +5,7 @@ if (MainWindow.Exchange) {
 	var ex = MainWindow.Exchange[arg[3]];
 	if (ex) {
 		var ar = ex.Path.split("|");
-		var list = [api.ILCreateFromPath(ar.shift())];
+		var list = [MainWindow.api.ILCreateFromPath(ar.shift())];
 		var mask1 = ar.shift();
 		var filter1 = ar.join("|").replace(/%2F/g, "/").replace(/%25/g, "%");
 		var length1 = filter1.length * 2;
@@ -21,7 +21,7 @@ if (MainWindow.Exchange) {
 }
 
 function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, Progress) {
-	var bAdd, FolderItem;
+	var bAdd, FolderItem, Items;
 	var nItems = 0;
 	var sItem = String(api.LoadString(hShell32, 38192) || api.LoadString(hShell32, 6466)).replace(/%1!ls!/, "%s");
 	var wfd = api.Memory("WIN32_FIND_DATA");
@@ -30,12 +30,17 @@ function SearchFolders(folderlist, FV, SessionId, loc999, mask1, length1, re1, P
 		if (Progress.HasUserCancelled()) {
 			return;
 		}
-		var Folder = FolderItem.GetFolder;
-		if (!Folder) {
-			continue;
+		try {
+			var Folder = FolderItem.GetFolder;
+			if (Folder) {
+				Items = Folder.Items();
+			}
+		} catch (e) { }
+		if (!Items) {
+			Items = MainWindow.GetEnum(FolderItem, MainWindow.te.Data.Conf_MenuHidden) || {};
 		}
 		Progress.SetLine(1, FolderItem.Path, true);
-		for (var Items = Folder.Items(), i = 0; i < Items.Count && !Progress.HasUserCancelled(); i++) {
+		for (var i = 0; i < Items.Count && !Progress.HasUserCancelled(); i++) {
 			var Item = Items.Item(i);
 			api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfd.Size);
 			var s = ++nItems;

@@ -1,6 +1,6 @@
 const Addon_Id = "searchbar";
 const Default = "ToolBar2Right";
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuPos", -1);
 }
@@ -69,17 +69,6 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("ChangeView", async function (Ctrl) {
-		document.F.search.value = await IsSearchPath(Ctrl) ? await api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER | SHGDN_ORIGINAL) : "";
-		Addons.SearchBar.ShowButton();
-	});
-
-	let width = "176px";
-	const s = item.getAttribute("Width");
-	if (s) {
-		width = (GetNum(s) == s) ? (s + "px") : s;
-	}
-	const icon = await ExtractPath(te, item.getAttribute("Icon")) || "bitmap:ieframe.dll,216,16,17";
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		SetMenuExec("SearchBar", item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
@@ -92,10 +81,28 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SearchBar.Exec, "Async");
 	}
-	AddTypeEx("Add-ons", "Search Bar", Addons.SearchBar.Exec);
 
-	const z = screen.deviceYDPI / 96;
-	SetAddon(Addon_Id, Default, ['<input type="text" name="search" placeholder="Search" onkeydown="return Addons.SearchBar.KeyDown(event, this)" onmouseup="Addons.SearchBar.Change()" onfocus="Addons.SearchBar.Focus(this)" style="width:', EncodeSC(width), '; padding-right:', (WINVER < 0x602 || window.chrome ?  32 : 16) * z, 'px; vertical-align: middle"><span style="position: relative"><span id="ButtonSearchClear" src="bitmap:ieframe.dll,545,13,1" onclick="Addons.SearchBar.Clear()" class="button" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left:', -28 * z, 'px; top:', 4 * z, 'px" >r</span><input type="image" src="', EncodeSC(icon), '" onclick="Addons.SearchBar.Search()" hidefocus="true" style="position: absolute; left:', -18 * z, 'px; top:', z, 'px; width:', 16 * z, 'px; height:', 16 * z, 'px"></span>'], "middle");
+	AddEvent("Layout", async function () {
+		const z = screen.deviceYDPI / 96;
+		const s = item.getAttribute("Width") || 176;
+		const width = GetNum(s) == s ? ((s * z) + "px") : s;
+		SetAddon(Addon_Id, Default, ['<input type="text" name="search" placeholder="Search" onkeydown="return Addons.SearchBar.KeyDown(event, this)" onmouseup="Addons.SearchBar.Change()" onfocus="Addons.SearchBar.Focus(this)" style="width:', EncodeSC(width), '; padding-right:', (WINVER < 0x602 || window.chrome ? 32 : 16) * z, 'px; vertical-align: middle"><span style="position: relative"><span id="ButtonSearchClear" onclick="Addons.SearchBar.Clear()" class="button" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left:', -28 * z, 'px; top:', 4 * z, 'px" >r</span>', await GetImgTag({
+			onclick: "Addons.SearchBar.Search()",
+			hidefocus: "true",
+			style: ['position: absolute; left:', -18 * z, 'px; top:', z, 'px'].join(""),
+			src: item.getAttribute("Icon") || "icon:general,17"
+		}, 16 * z), '</span>'], "middle");
+		delete item;
+	});
+
+//'<input type="image" src="', EncodeSC(icon), '" onclick="Addons.SearchBar.Search()" hidefocus="true" style="position: absolute; left:', -18 * z, 'px; top:', z, 'px; width:', 16 * z, 'px; height:', 16 * z, 'px">'
+
+	AddEvent("ChangeView", async function (Ctrl) {
+		document.F.search.value = await IsSearchPath(Ctrl) ? await api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER | SHGDN_ORIGINAL) : "";
+		Addons.SearchBar.ShowButton();
+	});
+
+	AddTypeEx("Add-ons", "Search Bar", Addons.SearchBar.Exec);
 } else {
 	SetTabContents(0, "View", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10"></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'"></td></tr></table>');
 	ChangeForm([["__IconSize", "style/display", "none"]]);

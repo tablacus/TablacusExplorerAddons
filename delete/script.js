@@ -1,8 +1,10 @@
 const Addon_Id = "delete";
 const Default = "ToolBar2Left";
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Delete = {
+		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+
 		Exec: async function (Ctrl, pt) {
 			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
@@ -45,18 +47,9 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("SelectionChanged", Addons.Delete.State);
-	AddEvent("Resize", Addons.Delete.State);
-	AddEvent("ChangeNotify", async function (Ctrl, pidls) {
-		if (await pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR | SHCNE_UPDATEDIR)) {
-			setTimeout(Addons.Delete.State, 99);
-		}
-	});
-
 	//Menu
-	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Delete", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("Delete", Addons.Delete.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -66,9 +59,25 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Delete.Exec, "Func");
 	}
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,10" : "bitmap:ieframe.dll,214,24,10");
-	await SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Delete.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, id: "ImgDelete_$", src: src }, h), '</span>']);
+
+	AddEvent("Layout", async function () {
+		await SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Delete.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: Addons.Delete.sName,
+			id: "ImgDelete_$",
+			src: item.getAttribute("Icon") || "icon:general,10"
+		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		delete item;
+	});
+
+	AddEvent("SelectionChanged", Addons.Delete.State);
+
+	AddEvent("Resize", Addons.Delete.State);
+
+	AddEvent("ChangeNotify", async function (Ctrl, pidls) {
+		if (await pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR | SHCNE_UPDATEDIR)) {
+			setTimeout(Addons.Delete.State, 99);
+		}
+	});
 } else {
 	EnableInner();
 }
