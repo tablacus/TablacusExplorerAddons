@@ -1,5 +1,5 @@
 const Addon_Id = "innerfilterbar";
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.InnerFilterBar = {
 		tid: [],
@@ -157,18 +157,6 @@ if (window.Addon == 1) {
 		},
 	};
 
-	AddEvent("PanelCreated", function (Ctrl, Id) {
-		const z = screen.deviceYDPI / 96;
-		const s = ['<input type="text" name="filter_', Id, '" placeholder="Filter" onkeydown="return Addons.InnerFilterBar.KeyDown(event, this,', Id, ')"  onkeyup="return Addons.InnerFilterBar.KeyUp(event,', Id, ')" onmouseup="Addons.InnerFilterBar.KeyDown(event, this,', Id, ')" onfocus="Addons.InnerFilterBar.Focus(this,', Id, ')" onblur="Addons.InnerFilterBar.ShowButton(this,', Id, ')" ondblclick="return Addons.InnerFilterBar.FilterList(this,', Id, ', 1)" style="width: ', EncodeSC(Addons.InnerFilterBar.Width), '; padding-right: ', Addons.InnerFilterBar.IconS * z, 'px; vertical-align: middle"><span style="position: relative">', Addons.InnerFilterBar.Icon.replace(/\$/g, Id), '<span id="ButtonFilterClear_', Id, '" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left:', -28 * z, 'px; top: ', 4 * z, 'px" class="button" onclick="Addons.InnerFilterBar.Clear(true,', Id, ')">r</span></span>'];
-		SetAddon(null, "Inner1Right_" + Id, s.join(""));
-		(async function () {
-			Addons.InnerFilterBar.GetFilter(await Ctrl.Selected);
-		})();
-	});
-
-	AddEvent("ChangeView", Addons.InnerFilterBar.GetFilter);
-	AddEvent("Command", Addons.InnerFilterBar.GetFilter);
-
 	//Menu
 	if (item.getAttribute("MenuExec")) {
 		SetMenuExec("InnerFilterBar", item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
@@ -181,19 +169,32 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerFilterBar.Exec, "Async");
 	}
-	AddTypeEx("Add-ons", "Inner Filter Bar", Addons.InnerFilterBar.Exec);
 
-	const z = screen.deviceYDPI / 96;
-	const h = Addons.InnerFilterBar.IconS;
-	const src = item.getAttribute("Icon") ? await ExtractPath(te, item.getAttribute("Icon")) : (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe71c" : "bitmap:comctl32.dll,140,13,0");
-	Addons.InnerFilterBar.Icon = await GetImgTag({
-		id: "ButtonFilter_$",
-		style: ['position: absolute; left:', -18 * z, 'px; top:', (18 - h) / 2 * z, 'px; cursor: default; color:', GetWebColor(await GetSysColor(COLOR_WINDOWTEXT))].join(""),
-		onmousedown: "Addons.InnerFilterBar.MouseDown(event); return false",
-		onmouseup: "Addons.InnerFilterBar.MouseUp(event, this, $)",
-		oncontextmenu: "return false;",
-		src: src
-	}, h * z);
+	AddEvent("Layout", async function () {
+		const z = screen.deviceYDPI / 96;
+		const h = Addons.InnerFilterBar.IconS;
+		Addons.InnerFilterBar.Icon = await GetImgTag({
+			id: "ButtonFilter_$",
+			style: ['position: absolute; left:', -18 * z, 'px; top:', (18 - h) / 2 * z, 'px'].join(""),
+			onmousedown: "Addons.InnerFilterBar.MouseDown(event); return false",
+			onmouseup: "Addons.InnerFilterBar.MouseUp(event, this, $)",
+			oncontextmenu: "return false",
+			src: item.getAttribute("Icon") || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe71c" : "bitmap:comctl32.dll,140,13,0")
+		}, h * z);
+		delete item;
+	});
+
+	AddEvent("PanelCreated", function (Ctrl, Id) {
+		const z = screen.deviceYDPI / 96;
+		const s = ['<input type="text" name="filter_', Id, '" placeholder="Filter" onkeydown="return Addons.InnerFilterBar.KeyDown(event, this,', Id, ')"  onkeyup="return Addons.InnerFilterBar.KeyUp(event,', Id, ')" onmouseup="Addons.InnerFilterBar.KeyDown(event, this,', Id, ')" onfocus="Addons.InnerFilterBar.Focus(this,', Id, ')" onblur="Addons.InnerFilterBar.ShowButton(this,', Id, ')" ondblclick="return Addons.InnerFilterBar.FilterList(this,', Id, ', 1)" style="width: ', EncodeSC(Addons.InnerFilterBar.Width), '; padding-right: ', Addons.InnerFilterBar.IconS * z, 'px; vertical-align: middle"><span style="position: relative">', Addons.InnerFilterBar.Icon.replace(/\$/g, Id), '<span id="ButtonFilterClear_', Id, '" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left:', -28 * z, 'px; top: ', 4 * z, 'px" class="button" onclick="Addons.InnerFilterBar.Clear(true,', Id, ')">r</span></span>'];
+		SetAddon(null, "Inner1Right_" + Id, s.join(""));
+	});
+
+	AddEvent("ChangeView2", Addons.InnerFilterBar.GetFilter);
+
+	AddEvent("Command", Addons.InnerFilterBar.GetFilter);
+
+	AddTypeEx("Add-ons", "Inner Filter Bar", Addons.InnerFilterBar.Exec);
 } else {
 	SetTabContents(0, "General", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10"></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'"></td></tr><tr><td><label>Filter</label></td></tr><tr><td><input type="checkbox" id="RE" name="RE"><label for="RE">Regular Expression</label>/<label for="RE">Migemo</label></td></tr></table>');
 	ChangeForm([["__IconSize", "style/display", "none"]]);

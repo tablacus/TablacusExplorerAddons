@@ -1,8 +1,6 @@
 const Addon_Id = "clipboard";
 const Default = "ToolBar2Left";
 if (window.Addon == 1) {
-	const item = await GetAddonElement(Addon_Id);
-
 	Addons.Clipboard = {
 		Exec: async function (o) {
 			const Items = await api.OleGetClipboard();
@@ -37,7 +35,7 @@ if (window.Addon == 1) {
 						s += await api.LoadString(hShell32, 33560) + " ";
 					}
 					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 0, s);
+					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING | MF_DISABLED, 0, s);
 					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 					const mii = await api.Memory("MENUITEMINFO");
 					mii.cbSize = await mii.Size;
@@ -45,7 +43,7 @@ if (window.Addon == 1) {
 					for (let i = 0; i < nCount; ++i) {
 						const FolderItem = await Items.Item(i);
 						mii.wID = 0;
-						mii.dwTypeData = await api.GetDisplayNameOf(FolderItem, SHGDN_INFOLDER | SHGDN_ORIGINAL);
+						mii.dwTypeData = await FolderItem.Path;
 						await AddMenuIconFolderItem(mii, FolderItem);
 						await api.InsertMenuItem(hMenu, MAXINT, false, mii);
 					}
@@ -89,8 +87,14 @@ if (window.Addon == 1) {
 		}
 	};
 
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || "../addons/clipboard/" + (h == 16 ? 16 : 24) + ".png";
-	SetAddon(Addon_Id, Default, ['<span id="Clipboard" class="button" onclick="Addons.Clipboard.Exec(this)" oncontextmenu="Addons.Clipboard.Popup(event); return false;" ondrag="Addons.Clipboard.Drag(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()" draggable="true">', await GetImgTag({ title: "Clipboard", src: src }, h), '</span>']);
+	AddEvent("Layout", async function () {
+		const item = await GetAddonElement(Addon_Id);
+		const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+		SetAddon(Addon_Id, Default, ['<span id="Clipboard" class="button" onclick="Addons.Clipboard.Exec(this)" oncontextmenu="Addons.Clipboard.Popup(event); return false;" ondrag="Addons.Clipboard.Drag(); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()" draggable="true">', await GetImgTag({
+			title: await GetText("Clipboard"),
+			src: item.getAttribute("Icon") || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xf0e3" : "bitmap:ieframe.dll,697,24,15")
+		}, h), '</span>']);
+	});
+
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 }

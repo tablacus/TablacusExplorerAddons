@@ -1,7 +1,6 @@
 const Addon_Id = "recentlyclosedtabs";
 const Default = "ToolBar2Left";
-
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Tabs");
@@ -21,10 +20,6 @@ if (window.Addon == 1) {
 			await Sync.RecentlyClosedTabs.MenuCommand(Ctrl, pt, "", await api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null, null), hMenu);
 			api.DestroyMenu(hMenu);
 			return S_OK;
-		},
-
-		ExecEx: async function (el) {
-			Addons.RecentlyClosedTabs.Exec(await GetFolderViewEx(el));
 		}
 	};
 	Common.RecentlyClosedTabs = await api.CreateObject("Object");
@@ -43,9 +38,17 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.RecentlyClosedTabs.Exec, "Async");
 	}
+
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Addons.RecentlyClosedTabs.Exec, this, 9)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+			src: item.getAttribute("Icon") || "icon:dsuiext.dll,0"
+		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		delete item;
+	});
+
 	AddTypeEx("Add-ons", "Recently closed tabs", Addons.RecentlyClosedTabs.Exec);
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.RecentlyClosedTabs.ExecEx(this);" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: item.getAttribute("Icon") || "icon:dsuiext.dll,0" }, h), '</span>']);
+
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();

@@ -22,11 +22,7 @@ Sync.Flat = {
 		const FV = GetFolderView(Ctrl, pt);
 		if (api.ILGetCount(FV.FolderItem) > 1) {
 			FV.Focus();
-			const path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
-			const pidl = api.ILCreateFromPath(path);
-			if (pidl && pidl.IsFolder) {
-				FV.Navigate(Sync.Flat.PATH + path);
-			};
+			FV.Navigate(Sync.Flat.PATH + FV.FolderItem.Path);
 		}
 		return S_OK;
 	},
@@ -42,6 +38,9 @@ Sync.Flat = {
 					SessionId: SessionId,
 					hShell32: hShell32,
 					List: api.CreateObject("FolderItems"),
+					GetEnum: GetEnum,
+					Conf_MenuHidden: te.Data.Conf_MenuHidden,
+					ILCreateFromPath: api.ILCreateFromPath,
 					fncb: fncb
 				}, api: api
 			}

@@ -12,7 +12,7 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 			let o;
-			const FV = await GetFolderViewEx(Ctrl, pt);
+			const FV = await GetFolderView(Ctrl, pt);
 			if (!FV) {
 				return S_OK;
 			}
@@ -66,8 +66,8 @@ if (window.Addon == 1) {
 		}
 	};
 	const data = (await ReadTextFile(BuildPath(await te.Data.DataFolder, "config", Addon_Id + ".tsv"))).replace(/\r?\n$/, "").split(/\r?\n/);
-	while (data.length) {
-		Addons.FilterList.Menus.push(data.shift());
+	for (let s; s = data.shift();) {
+		Addons.FilterList.Menus.push(s);
 	}
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");

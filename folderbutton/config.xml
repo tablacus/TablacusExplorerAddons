@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.08</Version>
-    <MinVersion>2020.12.31</MinVersion>
-    <pubDate>Tue, 05 Jan 2021 00:00:00 GMT</pubDate>
+    <Version>1.09</Version>
+    <MinVersion>2021.3.30</MinVersion>
+    <pubDate>Wed, 31 Mar 2021 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -15,7 +15,7 @@
     <Description>Folder button</Description>
   </en>
   <ja>
-    <Name>フォルダ ボタン</Name>
+    <Name>フォルダボタン</Name>
   </ja>
   <zh>
     <Name>資料夾按鈕</Name>
