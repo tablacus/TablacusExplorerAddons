@@ -46,10 +46,8 @@ Sync.MultiProcess = {
 			}
 		}
 		if (Dest !== null) {
-			const pidTemp = api.ILCreateFromPath(fso.GetSpecialFolder(2).Path);
-			pidTemp.IsFolder;
 			const wfd = api.Memory("WIN32_FIND_DATA");
-			const strTemp = pidTemp.Path + "\\";
+			const strTemp = GetTempPath(4);
 			let strTemp2;
 			const Items2 = api.CreateObject("FolderItems");
 			for (let i = 0; i < Items.Count; ++i) {
@@ -62,9 +60,7 @@ Sync.MultiProcess = {
 							if (Sync.MultiProcess.NoTemp) {
 								return false;
 							}
-							do {
-								strTemp2 = strTemp + "tablacus\\" + fso.GetTempName() + "\\";
-							} while (IsExists(strTemp2));
+							strTemp2 = GetTempPath(7);
 							CreateFolder(strTemp2);
 						}
 						if (!api.StrCmpNI(path1, strTemp, strTemp.length)) {

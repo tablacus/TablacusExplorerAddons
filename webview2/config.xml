@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.11</Version>
+    <Version>1.00</Version>
     <MinVersion>2021.3.30</MinVersion>
     <pubDate>Thu, 01 Apr 2021 00:00:00 GMT</pubDate>
-    <Options>Common:0,6:6</Options>
+    <Options>Common:4:4</Options>
+    <Config>1</Config>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Count bar</Name>
-    <Description>Show selected item count in the status bar.</Description>
+    <Name>WebView2 (Edge Blink engine)</Name>
+    <Description>WebView2 (Edge Blink browser engine) *Microsoft Edge WebView2 Runtime and Windows 10 is required.</Description>
   </en>
-  <ja>
-    <Name>カウントバー</Name>
-    <Description>項目数を表示します。</Description>
-  </ja>
-  <zh>
-    <Name>數量列</Name>
-  </zh>
 </TablacusExplorer>

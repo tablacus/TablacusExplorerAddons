@@ -35,15 +35,12 @@ if (window.Addon == 1) {
 					s = s.join(" / ") + " ";
 					document.getElementById("countbar").innerHTML = "&nbsp;" + s;
 					if (Addons.CountBar.Title) {
-						api.SetWindowText(await te.hwnd, s + " - " + TITLE);
+						api.SetWindowText(ui_.hwnd, s + " - " + TITLE);
 					}
 				}
 			}
 		}
 	}
-	SetAddon(Addon_Id, Default, '<span id="countbar">&nbsp;</span>');
-
-	AddEvent("StatusText", Addons.CountBar.Exec);
 
 	Promise.all([api.LoadString(hShell32, 38192), api.LoadString(hShell32, 6466), api.LoadString(hShell32, 38193), api.LoadString(hShell32, 6466), api.LoadString(hShell32, 38194), api.LoadString(hShell32, 6477), api.LoadString(hShell32, 38195), api.LoadString(hShell32, 6477)]).then(function (r) {
 		Addons.CountBar.Item = [r[0] || r[1], r[2] || r[3], r[4] || r[5], r[6] || r[7]];
@@ -55,6 +52,12 @@ if (window.Addon == 1) {
 			}
 		}
 	});
+
+	AddEvent("Layout", function () {
+		SetAddon(Addon_Id, Default, '<span id="countbar">&nbsp;</span>');
+	});
+
+	AddEvent("StatusText", Addons.CountBar.Exec);
 } else {
 	SetTabContents(0, "View", '<label><input type="checkbox" id="Title">Title bar</label>');
 }

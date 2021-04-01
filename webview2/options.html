@@ -1,0 +1,18 @@
+<label>Browser</label>
+<div id="browser"></div>
+<br>
+<label>32-bit</label>
+<div id="ver32"></div>
+<br>
+<label>64-bit</label>
+<div id="ver64"></div>
+<br>
+<form name="E">
+  <input type="button" value="Check for updates" onclick="Addons.WebView2.CheckUpdate()"><br>
+  <br>
+  <input type="button" value="Delete" name="delete" onclick="Addons.WebView2.Delete()"><br>
+  <br>
+  <input type="button" name="Web" value="Visit website" title="https://tablacus.github.io/tewv2.html" onclick="wsh.Run(this.title)"><br>
+  <br>
+  <input type="button" name="Get" onclick="wsh.Run(this.title)">
+</form>
