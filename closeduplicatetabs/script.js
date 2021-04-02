@@ -1,6 +1,6 @@
 const Addon_Id = "closeduplicatetabs";
 const Default = "None";
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Tabs");
@@ -8,6 +8,8 @@ if (!item.getAttribute("Set")) {
 }
 if (window.Addon == 1) {
 	Addons.CloseDuplicateTabs = {
+		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+
 		Exec: async function (Ctrl, pt) {
 			const db = {};
 			const FV = await GetFolderView(Ctrl, pt);
@@ -43,9 +45,8 @@ if (window.Addon == 1) {
 		}
 	};
 	//Menu
-	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("CloseDuplicateTabs", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("CloseDuplicateTabs", Addons.CloseDuplicateTabs.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -55,10 +56,16 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.CloseDuplicateTabs.Exec, "Async");
 	}
-	AddTypeEx("Add-ons", "Close duplicate tabs", Addons.CloseDuplicateTabs.Exec);
 
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.CloseDuplicateTabs.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: item.getAttribute("Icon") }, h), '</span>']);
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.CloseDuplicateTabs.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: Addons.CloseDuplicateTabs.sName,
+			src: item.getAttribute("Icon") || "icon:browser,2"
+		}, GetIconSizeEx(item)), '</span>']);
+		delete item;
+	});
+
+	AddTypeEx("Add-ons", "Close duplicate tabs", Addons.CloseDuplicateTabs.Exec);
 } else {
 	EnableInner();
 }

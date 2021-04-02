@@ -4,9 +4,10 @@ const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.FilterButton = {
 		RE: item.getAttribute("RE"),
+		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 
 		Exec: async function (Ctrl, pt) {
-			const FV = await GetFolderViewEx(Ctrl, pt);
+			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
 				let s = await FV.FilterView
@@ -56,9 +57,8 @@ if (window.Addon == 1) {
 	};
 
 	//Menu
-	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("FilterButton", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("FilterButton", Addons.FilterButton.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -68,12 +68,15 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.FilterButton.Exec, "Async");
 	}
-	//Type
-	AddTypeEx("Add-ons", "Filter button", Addons.FilterButton.Exec);
 
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const s = item.getAttribute("Icon") || "bitmap:comctl32.dll,140,13,0";
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FilterButton.Exec(this)" oncontextmenu="return Addons.FilterButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut();">', await GetImgTag({ title: strName, src: s }, h), '</span>']);
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FilterButton.Exec(this)" oncontextmenu="return Addons.FilterButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut();">', await GetImgTag({
+			title: Addons.FilterButton.sName,
+			src: item.getAttribute("Icon") || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe71c" : "bitmap:comctl32.dll,140,13,0")
+		}, GetIconSizeEx(item)), '</span>']);
+	});
+
+	AddTypeEx("Add-ons", "Filter button", Addons.FilterButton.Exec);
 } else {
 	EnableInner();
 	SetTabContents(0, "General", '<input type="checkbox" id="RE" name="RE"><label for="RE">Regular expression</label>/<label for="RE">Migemo</label>');

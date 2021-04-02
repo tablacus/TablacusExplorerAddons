@@ -3,8 +3,10 @@ const Default = "ToolBar2Left";
 const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Favorites = {
+		sName: item.getAttribute("MenuName") || await GetText("Favorites"),
+
 		Exec: async function (Ctrl, pt) {
-			const FV = await GetFolderViewEx(Ctrl, pt);
+			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
 				if (!pt) {
 					if (await Ctrl.offsetHeight) {
@@ -21,9 +23,8 @@ if (window.Addon == 1) {
 	};
 
 	//Menu
-	const strName = item.getAttribute("MenuName") || await GetText("Favorites");
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Favorites", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("Favorites", Addons.Favorites.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -33,9 +34,13 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Favorites.Exec, "Async");
 	}
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,2" : "bitmap:ieframe.dll,214,24,2");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Favorites.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: src }, h), '</span>']);
+
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Favorites.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: Addons.Favorites.sName,
+			src: item.getAttribute("Icon") || "icon:general,2"
+		}, GetIconSizeEx(item)), '</span>']);
+	});
 } else {
 	EnableInner();
 }

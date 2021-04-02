@@ -16,9 +16,7 @@ Sync.FastCopy = {
 			}
 		}
 		if (bDelete || (Dest != "" && fso.FolderExists(Dest))) {
-			const pidTemp = api.ILCreateFromPath(fso.GetSpecialFolder(2).Path);
-			pidTemp.IsFolder;
-			const strTemp = pidTemp.Path + "\\";
+			const strTemp = GetTempPath(4);
 			let strTemp2;
 			const wfd = api.Memory("WIN32_FIND_DATA");
 			const Items2 = api.CreateObject("FolderItems");
@@ -32,9 +30,7 @@ Sync.FastCopy = {
 							if (Sync.FastCopy.opt.NoTemp) {
 								return false;
 							}
-							do {
-								strTemp2 = strTemp + "tablacus\\" + fso.GetTempName() + "\\";
-							} while (IsExists(strTemp2));
+							strTemp2 = GetTempPath(7);
 							CreateFolder(strTemp2);
 						}
 						path1 = strTemp2 + fso.GetFileName(path1);

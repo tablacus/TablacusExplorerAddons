@@ -16,7 +16,9 @@ if (window.Addon == 1) {
 		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 
 		Exec: async function (Ctrl, pt) {
-			Exec(await GetFolderView(Ctrl, pt), "Run dialog", "Tools", 0, pt);
+			const FV = await GetFolderView(Ctrl, pt);
+			FV.Focus();
+			Exec(FV, "Run dialog", "Tools", 0, pt);
 		}
 	}
 
@@ -24,7 +26,7 @@ if (window.Addon == 1) {
 		SetAddon(Addon_Id, Default, ['<span class="button" id="Run" onclick="Addons.Run.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: Addons.Run.sName,
 			src: item.getAttribute("Icon") || "icon:shell32.dll,24"
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		}, GetIconSizeEx(item)), '</span>']);
 	});
 
 	//Menu

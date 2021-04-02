@@ -298,7 +298,7 @@ if (window.Addon == 1) {
 		Addons.InnerBreadcrumbsAddressBar.Arrange(pid, Id);
 		o = document.getElementById("breadcrumbsaddr_img_" + Id);
 		if (o) {
-			o.src = await GetIconImage(Ctrl, await api.GetSysColor(COLOR_WINDOW));
+			o.src = await GetIconImage(Ctrl, CLR_DEFAULT | COLOR_WINDOW);
 		}
 		setTimeout("Addons.InnerBreadcrumbsAddressBar.Blur(" + Id + ")", 99);
 	});
@@ -336,5 +336,6 @@ if (window.Addon == 1) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.InnerBreadcrumbsAddressBar.Exec, "Func");
 	}
 	AddTypeEx("Add-ons", "Inner Breadcrumbs Address Bar", Addons.InnerBreadcrumbsAddressBar.Exec);
+
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 }
