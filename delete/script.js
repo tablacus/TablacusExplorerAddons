@@ -33,10 +33,7 @@ if (window.Addon == 1) {
 					}
 				}
 			} else {
-				let cTC = await te.Ctrls(CTRL_TC);
-				if (window.chrome) {
-					cTC = await api.CreateObject("SafeArray", cTC);
-				}
+				const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
 				for (let i = cTC.length; --i >= 0;) {
 					o = document.getElementById("ImgDelete_" + await cTC[i].Id);
 					if (o) {
@@ -60,24 +57,28 @@ if (window.Addon == 1) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.Delete.Exec, "Func");
 	}
 
-	AddEvent("Layout", async function () {
-		await SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Delete.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
-			title: Addons.Delete.sName,
-			id: "ImgDelete_$",
-			src: item.getAttribute("Icon") || "icon:general,10"
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
-		delete item;
-	});
+	if (item.getAttribute("Location") != "None") {
+		AddEvent("Layout", async function () {
+			await SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Delete.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+				title: Addons.Delete.sName,
+				id: "ImgDelete_$",
+				src: item.getAttribute("Icon") || "icon:general,10"
+			}, GetIconSizeEx(item)), '</span>']);
+			delete item;
+		});
 
-	AddEvent("SelectionChanged", Addons.Delete.State);
+		AddEvent("SelectionChanged", Addons.Delete.State);
 
-	AddEvent("Resize", Addons.Delete.State);
+		AddEvent("StatusText", Addons.Delete.State);
 
-	AddEvent("ChangeNotify", async function (Ctrl, pidls) {
-		if (await pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR | SHCNE_UPDATEDIR)) {
-			setTimeout(Addons.Delete.State, 99);
-		}
-	});
+		AddEvent("Resize", Addons.Delete.State);
+
+		AddEvent("ChangeNotify", async function (Ctrl, pidls) {
+			if (await pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR | SHCNE_UPDATEDIR)) {
+				setTimeout(Addons.Delete.State, 99);
+			}
+		});
+	}
 } else {
 	EnableInner();
 }

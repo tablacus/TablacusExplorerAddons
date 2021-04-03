@@ -3,11 +3,10 @@ const Default = "ToolBar4Center";
 if (window.Addon == 1) {
 	Addons.LinkBar = {
 		DD: !await GetAddonOptionEx(Addon_Id, "NoDD"),
-		clWindow: await GetSysColor(COLOR_WINDOW),
 
 		Click: async function (i, bNew) {
-			let items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
-			let item = items[i];
+			const items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
+			const item = items[i];
 			if (item) {
 				Exec(te, item.text, (bNew && /^Open$|^Open in background$/i.test(item.type)) ? "Open in new tab" : item.Type, ui_.hwnd, null);
 			}
@@ -25,15 +24,15 @@ if (window.Addon == 1) {
 				return S_OK;
 			}
 			if ((ev.buttons != null ? ev.buttons : ev.button) == 1) {
-				let items = await te.Data.xmlLinkBar.getElementsByTagName("Item");
+				const items = await te.Data.xmlLinkBar.getElementsByTagName("Item");
 				let item = await items[i];
-				let hMenu = await api.CreatePopupMenu();
-				let arMenu = await api.CreateObject("Array");
+				const hMenu = await api.CreatePopupMenu();
+				const arMenu = await api.CreateObject("Array");
 				for (let j = await GetLength(items); --j > i;) {
 					await arMenu.unshift(j);
 				}
-				let o = document.getElementById("_linkbar" + i);
-				let pt = await GetPosEx(o, 9);
+				const o = document.getElementById("_linkbar" + i);
+				const pt = await GetPosEx(o, 9);
 				await MakeMenus(hMenu, null, arMenu, items, te, pt);
 				await AdjustMenuBreak(hMenu);
 				AddEvent("ExitMenuLoop", function () {
@@ -42,7 +41,7 @@ if (window.Addon == 1) {
 						Addons.LinkBar.bClose = false;
 					}, 99);
 				});
-				let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null);
+				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null);
 				api.DestroyMenu(hMenu);
 				if (nVerb > 0) {
 					item = await items[nVerb - 1];
@@ -54,10 +53,10 @@ if (window.Addon == 1) {
 
 		Popup: async function (ev, i) {
 			if (i >= 0) {
-				let hMenu = await api.CreatePopupMenu();
+				const hMenu = await api.CreatePopupMenu();
 				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, await GetText("&Edit"));
 				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, await GetText("Add"));
-				let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, ev.screenX * ui_.Zoom, ev.screenY * ui_.Zoom, ui_.hwnd, null, null);
+				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, ev.screenX * ui_.Zoom, ev.screenY * ui_.Zoom, ui_.hwnd, null, null);
 				if (nVerb == 1) {
 					this.ShowOptions(i + 1);
 				}
@@ -85,13 +84,13 @@ if (window.Addon == 1) {
 		},
 
 		Arrange: async function () {
-			let s = [];
-			let items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
+			const s = [];
+			const items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
 			let menus = 0;
 			for (let i = 0; i < items.length; i++) {
-				let item = items[i];
-				let strType = item.Type;
-				let strFlag = (SameText(strType, "Menus") ? item.text : "").toLowerCase();
+				const item = items[i];
+				const strType = item.Type;
+				const strFlag = (SameText(strType, "Menus") ? item.text : "").toLowerCase();
 				if (strFlag == "close" && menus) {
 					menus--;
 					continue;
@@ -125,7 +124,7 @@ if (window.Addon == 1) {
 							}
 						}
 						if (pidl) {
-							img = await GetImgTag({ src: await GetIconImage(pidl, Addons.LinkBar.clWindow) }, h);
+							img = await GetImgTag({ src: await GetIconImage(pidl, CLR_DEFAULT | COLOR_WINDOW) }, h);
 						}
 					}
 					s.push('<span id="_linkbar', i, '" ', !SameText(item.Type, "Menus") || !SameText(item.text, "Open") ? 'onclick="Addons.LinkBar.Click(' + i + ')" onmousedown="Addons.LinkBar.Down(event,' : 'onmousedown="Addons.LinkBar.Open(event,');
@@ -173,10 +172,14 @@ if (window.Addon == 1) {
 		}
 
 	};
-	te.Data.xmlLinkBar = await OpenXml("linkbar.xml", false, true);
-	SetAddon(Addon_Id, Default, '<span id="_linkbar"></span>');
+
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, '<span id="_linkbar"></span>');
+	});
 
 	AddEvent("Load", Addons.LinkBar.Arrange);
+
+	te.Data.xmlLinkBar = await OpenXml("linkbar.xml", false, true);
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	AddonName = "LinkBar";

@@ -18,7 +18,6 @@ Sync.TaskTray = {
 		}
 		Sync.TaskTray.bTray = true;
 		const NotifyData = api.Memory("NOTIFYICONDATA");
-		NotifyData.cbSize = NotifyData.Size;
 		NotifyData.hWnd = te.hwnd;
 		NotifyData.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
 		NotifyData.uCallbackMessage = Sync.TaskTray.WM;
@@ -34,7 +33,6 @@ Sync.TaskTray = {
 			Sync.TaskTray.bTray = false;
 
 			const NotifyData = api.Memory("NOTIFYICONDATA");
-			NotifyData.cbSize = NotifyData.Size;
 			NotifyData.hWnd = te.hwnd;
 			for (let nDog = 5; !api.Shell_NotifyIcon(NIM_DELETE, NotifyData) && nDog--;) {
 				api.Sleep(100);
@@ -85,7 +83,7 @@ AddEvent("AppMessage", function (Ctrl, hwnd, msg, wParam, lParam) {
 					api.GetCursorPos(pt);
 					api.SetForegroundWindow(te.hwnd);
 					api.PostMessage(te.hwnd, WM_NULL, 0, 0);
-					ExecMenu(external, "TaskTray", pt, 0);
+					ExecMenu(te, "TaskTray", pt, 0);
 					break;
 				case WM_QUERYENDSESSION:
 					return 1;

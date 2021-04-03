@@ -1,7 +1,6 @@
 const Addon_Id = "infosearch";
 const Default = "None";
-
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Menu", "File");
 	item.setAttribute("MenuPos", -1);
@@ -12,11 +11,14 @@ if (!item.getAttribute("Set")) {
 }
 
 if (window.Addon == 1) {
-	$.importScript("addons\\" + Addon_Id + "\\sync.js");
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.InfoSearch.Exec, this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+			src: item.getAttribute("Icon") || "icon:general,17"
+		}, GetIconSizeEx(item)), '</span>']);
+	});
 
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,17" : "bitmap:ieframe.dll,214,24,17");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.InfoSearch.Exec, this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: src }, h), '</span>']);
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();
 }

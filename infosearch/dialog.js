@@ -30,7 +30,7 @@ InitDialog = async function () {
 		document.F.newtab.checked = true;
 	}
 	document.title = await MainWindow.Sync.InfoSearch.strName;
-	document.body.style.display = "";
+	document.F.style.visibility = "";
 	setTimeout(function () {
 		WebBrowser.Focus();
 		document.F.name.focus();

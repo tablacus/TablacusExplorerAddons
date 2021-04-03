@@ -58,7 +58,7 @@ Sync.DuplicateCopy = {
 						const fn = Sync.DuplicateCopy.GetTempName(arFrom[0]);
 						InputDialog(GetFileName(arFrom[0]), GetFileName(fn), function (s) {
 							if (s) {
-								s = BuildPath(fso.GetParentFolderName(fn), s);
+								s = BuildPath(GetParentFolderName(fn), s);
 								if (IsExists(s)) {
 									MessageBox(api.LoadString(hShell32, 6327));
 									return false;

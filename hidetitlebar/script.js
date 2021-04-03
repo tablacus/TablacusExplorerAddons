@@ -4,6 +4,7 @@ const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.HideTitleBar = {
 		Enabled: true,
+		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 
 		Set: async function () {
 			if (Addons.HideTitleBar.tid) {
@@ -42,17 +43,12 @@ if (window.Addon == 1) {
 			if (Addons.HideTitleBar.Enabled && await api.IsZoomed(ui_.hwnd) && !(document.msFullscreenElement || document.fullscreenElement)) {
 				const rc = await api.Memory("RECT");
 				await api.GetWindowRect(ui_.hwnd, rc);
-				const r = await Promise.all([rc.left, rc.right, rc.top, rc.bottom, api.Memory("POINT")]);
-				const pt = r[4];
-				pt.x = (r[0] + r[1]) / 2;
-				pt.y = (r[2] + r[3]);
-				if (!await api.MonitorFromPoint(pt, MONITOR_DEFAULTTONULL)) {
-					const hMonitor = await api.MonitorFromPoint(pt, MONITOR_DEFAULTTOPRIMARY);
+				if (!await api.MonitorFromRect(rc, MONITOR_DEFAULTTONULL)) {
+					const hMonitor = await api.MonitorFromRect(rc, MONITOR_DEFAULTTOPRIMARY);
 					const mi = await api.Memory("MONITORINFOEX");
-					mi.cbSize = await mi.Size;
 					await api.GetMonitorInfo(hMonitor, mi);
-					const h = await mi.rcWork.top + await mi.rcWork.bottom - r[2] * 2;
-					api.MoveWindow(ui_.hwnd, r[0], r[2], r[1] - r[0], h, true);
+					const r = await Promise.all([rc.left, rc.right, rc.top, rc.bottom, mi.rcWork.top, mi.rcWork.bottom]);
+					api.MoveWindow(ui_.hwnd, r[0], r[2], r[1] - r[0], r[4] + r[5] - r[2] * 2, true);
 				}
 			}
 		}
@@ -67,9 +63,8 @@ if (window.Addon == 1) {
 	});
 
 	//Menu
-	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("HideTitleBar", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("HideTitleBar", Addons.HideTitleBar.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -79,8 +74,13 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.HideTitleBar.Exec, "Func");
 	}
-	//Type
+
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.HideTitleBar.Exec();" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: Addons.HideTitleBar.sName,
+			src: item.getAttribute("Icon") || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe8ab" : "font:Segoe UI Emoji,0x21c4")
+		}, GetIconSizeEx(item)), '</span>']);
+	});
+
 	AddTypeEx("Add-ons", "Hide Title bar", Addons.HideTitleBar.Exec);
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.HideTitleBar.Exec();" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: item.getAttribute("Icon") }, h), '</span>']);
 }

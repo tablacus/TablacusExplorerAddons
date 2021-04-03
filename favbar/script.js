@@ -161,7 +161,7 @@ if (window.Addon == 1) {
 								pidl = await api.ILCreateFromPath(res[1]);
 							}
 						}
-						img = await GetImgTag({ src: await GetIconImage(pidl, await GetSysColor(COLOR_WINDOW)) }, h);
+						img = await GetImgTag({ src: await GetIconImage(pidl, CLR_DEFAULT | COLOR_WINDOW) }, h);
 					} else if (strFlag == "open") {
 						img = await GetImgTag({ src: "folder:closed" }, h);
 					}
@@ -198,7 +198,7 @@ if (window.Addon == 1) {
 
 		GetPath: async function (items, i) {
 			const line = items[i].text.split("\n");
-			return await api.PathUnquoteSpaces(await ExtractMacro(null, line[0]));
+			return await ExtractPath(null, line[0]);
 		},
 
 		SetRects: async function () {
@@ -212,9 +212,15 @@ if (window.Addon == 1) {
 			Common.FavBar.Append = await GetRect(Addons.FavBar.Parent);
 		}
 	};
-	Addons.FavBar.Parent = document.getElementById(SetAddon(Addon_Id, Default, '<span id="_favbar"></span>'));
+
+	AddEvent("Layout", async function () {
+		Addons.FavBar.Parent = document.getElementById(SetAddon(Addon_Id, Default, '<span id="_favbar"></span>'));
+	});
+
 	AddEvent("FavoriteChanged", Addons.FavBar.Arrange);
+
 	AddEvent("Load", Addons.FavBar.Arrange);
+
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));

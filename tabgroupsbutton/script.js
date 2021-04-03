@@ -1,15 +1,16 @@
 const Addon_Id = "tabgroupsbutton";
 const Default = "ToolBar2Left";
-
 if (window.Addon == 1) {
 	let item = await GetAddonElement(Addon_Id);
 
 	Addons.TabgroupsButton = {
+		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+
 		Down: function (ev, el) {
 			Addons.TabgroupsButton.buttons = ev.buttons != null ? ev.buttons : ev.button;
 			setTimeout(async function () {
 				MouseOver(el);
-				Addons.TabgroupsButton.Exec(await GetFolderViewEx(el), await GetPosEx(el, 9));
+				Addons.TabgroupsButton.Exec(await GetFolderView(el), await GetPosEx(el, 9));
 			}, 99);
 			return true;
 		},
@@ -18,9 +19,8 @@ if (window.Addon == 1) {
 			if (!Addons.Tabgroups) {
 				return;
 			}
-			let hMenu = await api.CreatePopupMenu();
-			let mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = await mii.Size;
+			const hMenu = await api.CreatePopupMenu();
+			const mii = api.Memory("MENUITEMINFO");
 			mii.fMask = MIIM_ID | MIIM_STRING | MIIM_STATE | MIIM_CHECKMARKS;
 			const nLen = await GetLength(await te.Data.Tabgroups.Data);
 			const nIndex = await te.Data.Tabgroups.Index - 1;
@@ -33,8 +33,8 @@ if (window.Addon == 1) {
 				if (await data.Lock) {
 					fState |= MFS_CHECKED;
 					if (!image) {
-						image = await MakeImgData("bitmap:ieframe.dll,545,13,2", 0, false, 13);
-						mii.hbmpChecked = await image.GetHBITMAP(WINVER >= 0x600 ? -2 : await GetSysColor(COLOR_MENU));
+						image = await MakeImgData(WINVER >= 0x600 ? "font:Segoe UI Emoji,0x1f4cc": "bitmap:ieframe.dll,545,13,2", 0, 13, CLR_DEFAULT | COLOR_MENU);
+						mii.hbmpChecked = await image.GetHBITMAP(-4);
 					}
 				}
 				mii.fState = fState;
@@ -59,9 +59,8 @@ if (window.Addon == 1) {
 	};
 
 	//Menu
-	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("TabgroupsButton", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("TabgroupsButton", Addons.TabgroupsButton.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -72,11 +71,15 @@ if (window.Addon == 1) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.TabgroupsButton.Exec, "Async");
 	}
 
-	AddTypeEx("Add-ons", "Tab groups button", Addons.TabgroupsButton.Exec);
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="return Addons.TabgroupsButton.Down(event, this)" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: Addons.TabgroupsButton.sName,
+			src: item.getAttribute("Icon") || "icon:shell32.dll,54"
+		}, GetIconSizeEx(item)), '</span>']);
+		delete item;
+	});
 
-	let h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	let src = item.getAttribute("Icon") || "icon:shell32.dll,54";
-	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="return Addons.TabgroupsButton.Down(event, this)" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: src }, h), '</span>']);
+	AddTypeEx("Add-ons", "Tab groups button", Addons.TabgroupsButton.Exec);
 } else {
 	EnableInner();
 }

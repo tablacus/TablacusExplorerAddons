@@ -1,31 +1,22 @@
 const Addon_Id = "drivebutton";
 const Default = "ToolBar2Left";
-
 if (window.Addon == 1) {
 	let item = await GetAddonElement(Addon_Id);
 
 	Addons.DriveButton = {
-		Down: function (ev, el) {
-			if ((ev.buttons != null ? ev.buttons : ev.button) == 2) {
-				return true;
-			}
-			setTimeout(async function () {
-				MouseOver(el);
-				Addons.DriveButton.Exec(await GetFolderViewEx(el), await GetPosEx(el, 9));
-			}, 99);
-		},
+		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 
 		Exec: async function (Ctrl, pt) {
-			let FV = await GetFolderView(Ctrl, pt);
+			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
 			}
-			let hMenu = await api.CreatePopupMenu();
-			let Items = await sha.NameSpace(ssfDRIVES).Items();
+			const hMenu = await api.CreatePopupMenu();
+			const Items = await sha.NameSpace(ssfDRIVES).Items();
 			await FolderMenu.Clear();
-			let nCount = await Items.Count;
+			const nCount = await Items.Count;
 			for (let i = 0; i < nCount; i++) {
-				let Item = await Items.Item(i);
+				const Item = await Items.Item(i);
 				if (await api.PathIsRoot(await api.GetDisplayNameOf(Item, SHGDN_FORPARSING)) || await api.GetKeyState(VK_SHIFT) < 0) {
 					await FolderMenu.AddMenuItem(hMenu, Item);
 				}
@@ -34,19 +25,22 @@ if (window.Addon == 1) {
 				pt = await api.Memory("POINT");
 				await api.GetCursorPos(pt);
 			}
-			let nVerb = await FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y);
+			const nVerb = await FolderMenu.TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y);
 			if (nVerb) {
 				FolderMenu.Invoke(await FolderMenu.Items[nVerb - 1]);
 			}
 			FolderMenu.Clear();
 			return S_OK;
+		},
+
+		Popup: async function(Ctrl, pt) {
+			PopupContextMenu(ssfDRIVES, null, pt);
 		}
 	};
 
 	//Menu
-	const strName = item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name;
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("DriveButton", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("DriveButton", Addons.DriveButton.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -57,11 +51,15 @@ if (window.Addon == 1) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.DriveButton.Exec, "Async");
 	}
 
-	AddTypeEx("Add-ons", "Drive button", Addons.DriveButton.Exec);
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Addons.DriveButton.Exec, this, 9)" oncontextmenu="SyncExec(Addons.DriveButton.Popup, this, 9); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: Addons.DriveButton.sName,
+			src: item.getAttribute("Icon") || "icon:shell32.dll,8"
+		}, GetIconSizeEx(item)), '</span>']);
+		delete item;
+	});
 
-	let h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	let src = item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,8,16" : "icon:shell32.dll,8,32");
-	SetAddon(Addon_Id, Default, ['<span class="button" onmousedown="return Addons.DriveButton.Down(event, this)" oncontextmenu="PopupContextMenu(ssfDRIVES); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: src }, h), '</span>']);
+	AddTypeEx("Add-ons", "Drive button", Addons.DriveButton.Exec);
 } else {
 	EnableInner();
 }
