@@ -1,6 +1,6 @@
 const Addon_Id = "switchhidden";
 const Default = "None";
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "View");
@@ -8,6 +8,8 @@ if (!item.getAttribute("Set")) {
 }
 if (window.Addon == 1) {
 	Addons.SwitchHidden = {
+		sName: item.getAttribute("MenuName") || await api.LoadString(hShell32, 12856),
+
 		Exec: async function (Ctrl, pt) {
 			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
@@ -18,9 +20,8 @@ if (window.Addon == 1) {
 		}
 	};
 	//Menu
-	const strName = item.getAttribute("MenuName") || await api.LoadString(hShell32, 12856);
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("SwitchHidden", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("SwitchHidden", Addons.SwitchHidden.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
@@ -30,10 +31,16 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SwitchHidden.Exec, "Async");
 	}
+
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SwitchHidden.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: Addons.SwitchHidden.sName,
+			src: item.getAttribute("Icon") || await GetMiscIcon("togglehidden") || "bitmap:ieframe.dll,697,24,43"
+		}, GetIconSizeEx(item)), '</span>']);
+		delete item;
+	});
+
 	AddTypeEx("Add-ons", "Switch hidden items", Addons.SwitchHidden.Exec);
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || await GetMiscIcon("togglehidden") || (h > 16 ? "bitmap:ieframe.dll,697,24,43" : "bitmap:ieframe.dll,699,16,43");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SwitchHidden.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: src }, h), '</span>']);
 } else {
 	EnableInner();
 }

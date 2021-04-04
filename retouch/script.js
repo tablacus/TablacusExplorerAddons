@@ -11,9 +11,10 @@ if (!item.getAttribute("Set")) {
 	item.setAttribute("MouseOn", "List");
 }
 if (window.Addon == 1) {
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const s = item.getAttribute("Icon") || (h <= 16 ? "icon:shell32.dll,141,16" : "icon:shell32.dll,141,32");
-	SetAddon(Addon_Id, Default, ['<span class="button" id="RetouchButton" onclick="SyncExec(Sync.Retouch.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name, src: s }, h), '</span>']);
+	SetAddon(Addon_Id, Default, ['<span class="button" id="RetouchButton" onclick="SyncExec(Sync.Retouch.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+		title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+		src: item.getAttribute("Icon") || "icon:shell32.dll,141"
+	}, GetIconSizeEx(item)), '</span>']);
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();

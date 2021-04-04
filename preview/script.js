@@ -1,6 +1,5 @@
 const Addon_Id = "preview";
 const item = await GetAddonElement(Addon_Id);
-
 if (window.Addon == 1) {
 	Addons.Preview = {
 		Align: SameText(item.getAttribute("Align"), "Right") ? "Right" : "Left",
@@ -132,20 +131,18 @@ if (window.Addon == 1) {
 			} else {
 				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
 			}
-		},
-
-		Init: async function () {
-			Addons.Preview.Width = await te.Data["Conf_" + Addons.Preview.Align + "BarWidth"];
-			if (!Addons.Preview.Width) {
-				Addons.Preview.Width = 178;
-				te.Data["Conf_" + Addons.Preview.Align + "BarWidth"] = Addons.Preview.Width;
-			}
-			SetAddon(Addon_Id, Addons.Preview.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"></div>');
-			setTimeout(Addons.Preview.Arrange, 99);
 		}
 	}
 
-	Addons.Preview.Init();
+	AddEvent("Layout", async function () {
+		Addons.Preview.Width = await te.Data["Conf_" + Addons.Preview.Align + "BarWidth"];
+		if (!Addons.Preview.Width) {
+			Addons.Preview.Width = 178;
+			te.Data["Conf_" + Addons.Preview.Align + "BarWidth"] = Addons.Preview.Width;
+		}
+		SetAddon(Addon_Id, Addons.Preview.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"></div>');
+		setTimeout(Addons.Preview.Arrange, 99);
+	});
 
 	AddEvent("StatusText", async function (Ctrl, Text, iPart) {
 		if (Addons.Preview.Width && !/^none$/i.test(document.getElementById('PreviewBar').style.display)) {

@@ -3,10 +3,10 @@ const item = GetAddonElement(Addon_Id);
 
 Sync.BGPreview = {
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-	nPos: api.LowPart(item.getAttribute("MenuPos")),
-	Extract: api.LowPart(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
-	Size: api.LowPart(item.getAttribute("Size")) || 256,
-	Visible: !api.LowPart(item.getAttribute("Hidden")),
+	nPos: GetNum(item.getAttribute("MenuPos")),
+	Extract: GetNum(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
+	Size: GetNum(item.getAttribute("Size")) || 256,
+	Visible: !GetNum(item.getAttribute("Hidden")),
 	Items: {},
 
 	Exec: function (Ctrl, pt) {

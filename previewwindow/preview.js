@@ -158,8 +158,7 @@ Addons.PreviewWindow = {
 		}
 	},
 
-	Play: async function ()
-	{
+	Play: async function () {
 		const div1 = document.getElementById("div1");
 		const path = await MainWindow.Sync.PreviewWindow.Item.Path;
 		if (await api.PathMatchSpec(path, "*.wav")) {

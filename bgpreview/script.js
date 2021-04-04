@@ -12,9 +12,13 @@ if (!item.getAttribute("Set")) {
 }
 
 if (window.Addon == 1) {
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const s = item.getAttribute("Icon") || (h > 16 ? "bitmap:ieframe.dll,214,24,14" : "bitmap:ieframe.dll,216,16,14");
-	SetAddon(Addon_Id, Default, ['<span class="button" id="BGPreviewButton" onclick="SyncExec(Sync.BGPreview.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: s }, h), '</span>']);
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" id="BGPreviewButton" onclick="SyncExec(Sync.BGPreview.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+			src: item.getAttribute("Icon") || "icon:general,14"
+		}, GetIconSizeEx(item)), '</span>']);
+	});
+
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();
