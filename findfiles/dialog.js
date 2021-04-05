@@ -13,7 +13,7 @@ InitDialog = async function () {
     }
     document.title = await MainWindow.Sync.FindFiles.strName;
     await ApplyLang(document);
-	document.body.style.display = "";
+	document.F.style.visibility = "";
 	setTimeout(function () {
 		WebBrowser.Focus();
 		document.F.name.focus();

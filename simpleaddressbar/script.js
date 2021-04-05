@@ -43,10 +43,8 @@ if (window.Addon == 1) {
 			}
 		}
 	};
-	AddEvent("ChangeView", async function (Ctrl) {
-		if (await Ctrl.FolderItem && await Ctrl.Id == await Ctrl.Parent.Selected.Id && await Ctrl.Parent.Id == await te.Ctrl(CTRL_TC).Id) {
-			document.F.simpleaddressbar.value = await api.GetDisplayNameOf(await Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-		}
+	AddEvent("ChangeView1", async function (Ctrl) {
+		document.F.simpleaddressbar.value = await api.GetDisplayNameOf(await Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 	});
 
 	AddEvent("SetAddress", function (s) {
@@ -70,6 +68,9 @@ if (window.Addon == 1) {
 		SetGestureExec(await item.getAttribute("MouseOn"), await item.getAttribute("Mouse"), Addons.SimpleAddressBar.Focus, "Async");
 	}
 
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, '<input id="simpleaddressbar" type="text" autocomplate="on" list="AddressList" oninput="AdjustAutocomplete(this.value)" onkeydown="return Addons.SimpleAddressBar.KeyDown(event, this)" onfocus="Addons.SimpleAddressBar.Focused(this)" oncontextmenu="Addons.SimpleAddressBar.ContextMenu(this)" style="width: 100%; vertical-align: middle">', "middle");
+	});
+
 	AddTypeEx("Add-ons", "Simple Address Bar", Addons.SimpleAddressBar.Focus);
-	SetAddon(Addon_Id, Default, '<input id="simpleaddressbar" type="text" autocomplate="on" list="AddressList" oninput="AdjustAutocomplete(this.value)" onkeydown="return Addons.SimpleAddressBar.KeyDown(event, this)" onfocus="Addons.SimpleAddressBar.Focused(this)" oncontextmenu="Addons.SimpleAddressBar.ContextMenu(this)" style="width: 100%; vertical-align: middle">', "middle");
 }

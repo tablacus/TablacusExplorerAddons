@@ -15,7 +15,10 @@ if (window.Addon == 1) {
 		}
 	};
 
-	const h = GetIconSize(item.getAttribute("IconSize"), 13);
-	const src = item.getAttribute("Icon") || "font:marlett,0x72";
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.CloseButton.Exec()" oncontextmenu="Addons.CloseButton.Popup(event); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: await api.LoadString(hShell32, 12851), src: src }, h), '</span>']);
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.CloseButton.Exec()" oncontextmenu="Addons.CloseButton.Popup(event); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: await api.LoadString(hShell32, 12851),
+			src: item.getAttribute("Icon") || "font:marlett,0x72"
+		}, GetIconSize(item.getAttribute("IconSize"), 13)), '</span>']);
+	});
 }

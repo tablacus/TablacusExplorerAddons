@@ -50,5 +50,5 @@ AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 }, true);
 
 if (!HOME_PATH) {
-	HOME_PATH = ssfRECENT;
+	HOME_PATH = "about:blank";
 }

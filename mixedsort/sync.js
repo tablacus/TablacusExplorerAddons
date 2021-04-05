@@ -101,7 +101,6 @@ if (item.getAttribute("MenuExec")) {
 	}
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 		const mii = api.Memory("MENUITEMINFO");
-		mii.cbSize = mii.Size;
 		mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 		mii.hSubMenu = api.CreatePopupMenu();
 		mii.dwTypeData = GetText(Sync.MixedSort.strName);

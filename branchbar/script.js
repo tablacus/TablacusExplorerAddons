@@ -1,6 +1,5 @@
 const Addon_Id = "branchbar";
 const Default = "ToolBar2Right";
-
 if (window.Addon == 1) {
 	Addons.BranchBar = {
 		Get: async function (Ctrl) {
@@ -21,6 +20,9 @@ if (window.Addon == 1) {
 		}
 	};
 
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, '<span id="branchbar" style="white-space: nowrap"></span>', "middle");
+	});
+
 	AddEvent("ChangeView", Addons.BranchBar.Get);
-	SetAddon(Addon_Id, Default, '<span id="branchbar" style="white-space: nowrap"></span>', "middle");
 }

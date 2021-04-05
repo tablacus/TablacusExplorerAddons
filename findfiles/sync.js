@@ -103,9 +103,9 @@ AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
     return nPos;
 });
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
     if (Sync.FindFiles.GetSearchString(Ctrl)) {
-        return MakeImgDataEx("bitmap:ieframe.dll,216,16,17", bSimple, 16);
+        return MakeImgDataEx("icon:general,17", bSimple, 16, clBk);
     }
 });
 

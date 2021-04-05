@@ -1,7 +1,7 @@
 Sync.SwitchPane = {
-	NextFV: function (Ctrl) {
+	NextFV: function (Ctrl, pt) {
 		const cTC = te.Ctrls(CTRL_TC, true);
-		const TC = te.Ctrl(CTRL_TC);
+		const TC = GetFolderView(Ctrl, pt).Parent;
 		let nId = TC.Id;
 		const nLen = cTC.length;
 		let ix = [];
@@ -30,7 +30,7 @@ Sync.SwitchPane = {
 AddEnv("Other", function (Ctrl) {
 	const FV = Sync.SwitchPane.NextFV(Ctrl);
 	if (FV) {
-		return api.PathQuoteSpaces(api.GetDisplayNameOf(FV, SHGDN_FORPARSING));
+		return PathQuoteSpaces(api.GetDisplayNameOf(FV, SHGDN_FORPARSING));
 	}
 });
 

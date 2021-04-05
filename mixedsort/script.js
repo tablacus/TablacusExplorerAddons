@@ -1,17 +1,8 @@
 const Addon_Id = "mixedsort";
 const Default = "ToolBar2Left";
-
 if (window.Addon == 1) {
-	const item = await GetAddonElement(Addon_Id);
-
 	Addons.MixedSort = {
 		tid: {},
-
-		Exec: async function (el) {
-			const FV = await GetFolderViewEx(el);
-			const pt = await GetPosEx(el, 9);
-			Sync.MixedSort.Exec(FV, pt);
-		},
 
 		ClearTimer: function (Id) {
 			if (Addons.MixedSort.tid[Id]) {
@@ -20,6 +11,14 @@ if (window.Addon == 1) {
 			}
 		}
 	};
+
+	AddEvent("Layout", async function () {
+		const item = await GetAddonElement(Addon_Id);
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.MixedSort.Exec, this, 9);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
+			src: item.getAttribute("Icon") || "icon:general,24"
+		}, GetIconSizeEx(item)), '</span>']);
+	});
 
 	AddEvent("Sort", async function (Ctrl) {
 		const Id = await Ctrl.Id;
@@ -31,10 +30,6 @@ if (window.Addon == 1) {
 			}, 99, Ctrl, col);
 		}
 	});
-
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const src = item.getAttribute("Icon") || (h <= 16 ? "bitmap:ieframe.dll,216,16,24" : "bitmap:ieframe.dll,214,24,24");
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="return Addons.MixedSort.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name, src: src }, h), '</span>']);
 
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {

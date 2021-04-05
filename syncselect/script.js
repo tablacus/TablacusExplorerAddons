@@ -1,6 +1,6 @@
 const Addon_Id = "syncselect";
 const Default = "ToolBar2Left";
-const item = await GetAddonElement(Addon_Id);
+let item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Edit");
@@ -65,11 +65,16 @@ if (window.Addon == 1) {
 	if (item.getAttribute("MouseExec")) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SyncSelect.Exec, "Async");
 	}
-	AddTypeEx("Add-ons", "Sync select", Addons.SyncSelect.Exec);
 
-	const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-	const s = item.getAttribute("Icon") || "icon:shell32.dll,46";
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SyncSelect.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: strName, src: s }, h), '</span>']);
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SyncSelect.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			title: strName,
+			src: item.getAttribute("Icon") || "icon:shell32.dll,46"
+		}, GetIconSizeEx(item)), '</span>']);
+		delete item;
+	});
+
+	AddTypeEx("Add-ons", "Sync select", Addons.SyncSelect.Exec);
 
 	const db = JSON.parse(await ReadTextFile(BuildPath(ui_.DataFolder, "config\\syncselect.json")) || "{}");
 	Common.SyncSelect.width = db.width || 640;

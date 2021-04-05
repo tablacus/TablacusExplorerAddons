@@ -2,7 +2,7 @@ const Addon_Id = "wlx";
 const item = GetAddonElement(Addon_Id);
 
 Sync.WLX = {
-	DLL: api.DllGetClassObject(BuildPath(te.Data.Installed, ["addons\\wlx\\twlx", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{E160213A-4E9E-44f3-BD39-8297499608B6}"),
+	DLL: api.DllGetClassObject(BuildPath(te.Data.Installed, ["addons\\wlx\\twlx", g_.bit, ".dll"].join("")), "{E160213A-4E9E-44f3-BD39-8297499608B6}"),
 	strName: item.getAttribute("MenuName") || api.LoadString(hShell32, 23887) || GetText("Content"),
 
 	X: [],

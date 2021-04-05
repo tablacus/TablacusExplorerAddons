@@ -15,8 +15,13 @@ if (window.Addon == 1) {
 		}
 	};
 
-	const h = GetIconSize(item.getAttribute("IconSize"), 13);
-	const src = item.getAttribute("Icon") || "font:marlett,0x31";
+	AddEvent("Layout", async function () {
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.MaximizeButton.Exec()" oncontextmenu="return Addons.MaximizeButton.Popup(event); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			id: "maximizebutton",
+			title: await api.LoadString(hShell32, 9841),
+			src: item.getAttribute("Icon") || "font:marlett,0x31"
+		}, GetIconSize(item.getAttribute("IconSize"), 13)), '</span>']);
+	});
 
 	AddEvent("Resize", async function () {
 		const o = document.getElementById("maximizebutton");
@@ -37,5 +42,4 @@ if (window.Addon == 1) {
 			}
 		}
 	});
-	SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.MaximizeButton.Exec()" oncontextmenu="return Addons.MaximizeButton.Popup(event); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ id: "maximizebutton", title: await api.LoadString(hShell32, 9841), src: src }, h), '</span>']);
 }

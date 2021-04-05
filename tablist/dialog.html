@@ -9,11 +9,8 @@
   </head>
   <body>
     <form name="F" style="width: 100%">
-      <input type="text" name="filter" placeholder="Filter" style="width: 100%" onkeydown="KeyDown1(event)" onchange="TabChanged()">
+      <input type="text" name="filter" placeholder="Filter" style="width: 100%" onkeydown="Addons.TabList.KeyDown(event)" onchange="Addons.TabList.Changed()">
       <div id="P" class="panel" style="display: block; width: 100%">
-        <table id="T" style="border: 1px solid gray">
-          <tr><td style="padding-left: 6pt; white-space: nowrap;"><label>Name<label></td><td style="width: 100%; padding-left: 6pt"><label>Path</label></td></tr>
-        </table>
       </div>
     </form>
     <script type="text/javascript">

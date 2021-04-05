@@ -33,7 +33,7 @@ if (window.Addon == 1) {
 				if (await data.Lock) {
 					fState |= MFS_CHECKED;
 					if (!image) {
-						image = await MakeImgData(WINVER >= 0x600 ? "font:Segoe UI Emoji,0x1f4cc": "bitmap:ieframe.dll,545,13,2", 0, 13, CLR_DEFAULT | COLOR_MENU);
+						image = await MakeImgData(WINVER >= 0xa00 ? "font:Segoe UI Emoji,0x1f4cc": "bitmap:ieframe.dll,545,13,2", 0, 13, CLR_DEFAULT | COLOR_MENU);
 						mii.hbmpChecked = await image.GetHBITMAP(-4);
 					}
 				}

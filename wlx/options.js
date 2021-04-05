@@ -70,7 +70,7 @@ SetProp = async function (bName) {
 	for (let i = arHtml.length; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
-	const ar = [await fso.GetFileName(dllPath)];
+	const ar = [GetFileName(dllPath)];
 	try {
 		const s = await fso.GetFileVersion(dllPath);
 		if (s) {
