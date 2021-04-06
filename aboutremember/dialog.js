@@ -12,15 +12,15 @@ AddEventEx(document.body, "keydown", function (e) {
 
 InitDialog = async function () {
 	ApplyLang(document);
-	var path = await dialogArguments.path;
+	let path = await dialogArguments.path;
 	g_path = path;
 	if (/^([1-9]+\d*)$/.test(path)) {
-		var Item = /^([1-9]+\d*)$/.test(path) ? await api.ILCreateFromPath(path) : await api.SHSimpleIDListFromPath(path, FILE_ATTRIBUTE_DIRECTORY, new Date(ar[0] - 0).getTime(), 0);
+		const Item = /^([1-9]+\d*)$/.test(path) ? await api.ILCreateFromPath(path) : await api.SHSimpleIDListFromPath(path, FILE_ATTRIBUTE_DIRECTORY, new Date(ar[0] - 0).getTime(), 0);
 		Item.IsFolder;
 		path = await api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
 	}
 	document.title = path + " - Tablacus Explorer";
-	var ar = await MainWindow.Common.Remember.db[g_path];
+	let ar = await MainWindow.Common.Remember.db[g_path];
 	if (window.chrome) {
 		ar = await api.CreateObject("SafeArray", ar);
 	}
@@ -34,12 +34,12 @@ InitDialog = async function () {
 };
 
 GetCurrentSetting = async function () {
-	var nFormat = await MainWindow.Sync.Remember.nFormat;
-	var FV = await te.Ctrl(CTRL_FV);
+	const nFormat = await MainWindow.Sync.Remember.nFormat;
+	const FV = await te.Ctrl(CTRL_FV);
 	if (FV) {
 		document.F.Columns.value = await FV.GetColumns(nFormat);
 		document.F.Sort.value = await FV.GetSortColumn(nFormat);
-		var s = await FV.SortColumns;
+		const s = await FV.SortColumns;
 		document.F.Sort2.value = /;/.test(s) ? s : "";
 		document.F.Group.value = await FV.GroupBy;
 		document.F.View.value = await FV.CurrentViewMode;
@@ -48,18 +48,17 @@ GetCurrentSetting = async function () {
 }
 
 SetSetting = async function () {
-	var ar = await api.CreateObject("Array");
+	let ar = await api.CreateObject("Array");
 	ar.push(new Date().getTime(), document.F.View.value, document.F.Icon.value, document.F.Columns.value, document.F.Sort.value, document.F.Group.value, document.F.Sort2.value);
 	MainWindow.Common.Remember.db[g_path] = ar;
 	if (window.chrome) {
 		ar = await api.CreateObject("SafeArray", ar);
 	}
 
-	var cFV = await te.Ctrls(CTRL_FV);
-	var nLen = await GetLength(cFV);
-	for (var i = 0; i < nLen; ++i) {
-		var FV = await cFV[i];
-		var path = await MainWindow.Sync.Remember.GetPath(FV);
+	const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
+	for (let i = 0; i < cFV.length; ++i) {
+		const FV = await cFV[i];
+		const path = await MainWindow.Sync.Remember.GetPath(FV);
 		if (path === g_path) {
 			if (await FV.hwndView) {
 				FV.SetViewMode(ar[1], ar[2]);

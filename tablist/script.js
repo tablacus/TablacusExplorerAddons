@@ -11,6 +11,14 @@ if (!item.getAttribute("Set")) {
 }
 
 if (window.Addon == 1) {
+	Common.TabList = await api.CreateObject("Object");
+	const db = JSON.parse(await ReadTextFile(BuildPath(ui_.DataFolder, "config\\tablist.json")) || "{}");
+	Common.TabList.MainWindow = $;
+	Common.TabList.width = db.width || 640;
+	Common.TabList.height = db.height || 500;
+	Common.TabList.left = db.left;
+	Common.TabList.top = db.top;
+
 	Addons.TabList = {
 		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 
@@ -75,12 +83,4 @@ if (window.Addon == 1) {
 	AddEvent("ChangeView1", Addons.TabList.ChangeView);
 
 	AddTypeEx("Add-ons", "Tab list", Addons.TabList.Exec);
-
-	Common.TabList = await api.CreateObject("Object");
-	const db = JSON.parse(await ReadTextFile(BuildPath(ui_.DataFolder, "config\\tablist.json")) || "{}");
-	Common.TabList.MainWindow = $;
-	Common.TabList.width = db.width || 640;
-	Common.TabList.height = db.height || 500;
-	Common.TabList.left = db.left;
-	Common.TabList.top = db.top;
 }

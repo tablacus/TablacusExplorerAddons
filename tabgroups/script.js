@@ -1,6 +1,5 @@
 const Addon_Id = "tabgroups";
 const Default = "ToolBar5Center";
-
 const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Tabgroups = {
@@ -110,19 +109,19 @@ if (window.Addon == 1) {
 			if (n > 0) {
 				te.Data.Tabgroups.Click = n;
 			}
-			let nFocusedId = await Addons.Tabgroups.Focused[await te.Data.Tabgroups.Click];
+			const r = await Promise.all([te.Data.Tabgroups.Click, te.Data.Tabgroups.Index, GetLength(await te.Data.Tabgroups.Data)]);
+			let nFocusedId = await Addons.Tabgroups.Focused[r[0]];
 			await this.Fix();
-			if (await te.Data.Tabgroups.Click != await te.Data.Tabgroups.Index && await te.Data.Tabgroups.Click < await GetLength(await te.Data.Tabgroups.Data) + 1) {
-				te.Data.Tabgroups.Index = await te.Data.Tabgroups.Click;
+			if (await r[0] != r[1] && r[0] < r[2] + 1) {
+				te.Data.Tabgroups.Index = r[0];
 				this.Arrange();
 				te.LockUpdate();
 				let bDisp = false;
 				const freeTC = [];
 				const preTC = [];
-				const cTC = await te.Ctrls(CTRL_TC);
-				const nLen = await cTC.Count;
-				for (let i = 0; i < nLen; i++) {
-					const TC = await cTC[i];
+				const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
+				for (let i = 0; i < cTC.length; i++) {
+					const TC = cTC[i];
 					if (await TC.Visible) {
 						preTC.push(TC);
 					} else if (!await TC.Data.Group) {
@@ -203,11 +202,11 @@ if (window.Addon == 1) {
 			if (await te.Data.Tabgroups.Data[nPos - 1].Lock || (!bNotUpdate && !await confirmOk())) {
 				return;
 			}
-			let cTC = await te.Ctrls(CTRL_TC);
-			let i = await cTC.Count;
+			let cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
+			let i = cTC.length;
 			if (i > 1) {
 				while (--i >= 0) {
-					const TC = await cTC[i];
+					const TC =cTC[i];
 					if (await TC.Data.Group == nPos) {
 						TC.Close();
 					} else if (await TC.Data.Group > nPos) {
@@ -221,9 +220,9 @@ if (window.Addon == 1) {
 				te.Data.Tabgroups.Index = await te.Data.Tabgroups.Index - 1;
 			}
 			if (!bNotUpdate) {
-				cTC = await te.Ctrls(CTRL_TC);
-				for (let i = await cTC.Count; --i >= 0;) {
-					const TC = await cTC[i];
+				cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
+				for (let i = cTC.length; --i >= 0;) {
+					const TC = cTC[i];
 					if (await TC.Data.Group == await te.Data.Tabgroups.Index) {
 						TC.Visible = true;
 					}
@@ -280,10 +279,9 @@ if (window.Addon == 1) {
 				for (let i = 0; i < nLen; ++i) {
 					te.Data.Tabgroups.Data[ar[i]] = Data[i];
 				}
-				const cTC = await te.Ctrls(CTRL_TC);
-				const nCount = await cTC.Count;
-				for (let i = 0; i < nCount; ++i) {
-					const TC = await cTC[i];
+				const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
+				for (let i = 0; i < cTC.length; ++i) {
+					const TC = cTC[i];
 					if (await TC.Data.Group > ar.length) {
 						TC.Close();
 					} else {
@@ -317,7 +315,7 @@ if (window.Addon == 1) {
 			const y = ev.screenY * ui_.Zoom;
 			pt.x = x;
 			pt.y = y;
-			let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, await te.hwnd, null, null);
+			let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, null);
 			api.DestroyMenu(hMenu);
 			switch (nVerb) {
 				case 1:
@@ -373,17 +371,17 @@ if (window.Addon == 1) {
 		},
 
 		Fix: async function () {
-			const cTC = await te.Ctrls(CTRL_TC, true);
-			const nCount = await cTC.Count;
-			for (let i = 0; i < nCount; ++i) {
-				const TC = await cTC[i];
+			const nIndex = await te.Data.Tabgroups.Index;
+			const cTC = await te.Ctrls(CTRL_TC, true, window.chrome);
+			for (let i = 0; i < cTC.length; ++i) {
+				const TC = cTC[i];
 				if (!await TC.Data.Group) {
-					TC.Data.Group = await te.Data.Tabgroups.Index;
+					TC.Data.Group = Index;
 				}
 			}
 			const TC = await te.Ctrl(CTRL_TC);
 			if (TC) {
-				Addons.Tabgroups.Focused[await te.Data.Tabgroups.Index] = await TC.Id;
+				Addons.Tabgroups.Focused[nIndex] = await TC.Id;
 			}
 		},
 
@@ -449,15 +447,15 @@ if (window.Addon == 1) {
 	Common.Tabgroups.pt = await api.Memory("POINT");
 	Common.Tabgroups.DragOpen = !GetNum(item.getAttribute("NoDragOpen"));
 
-	$.importScript("addons\\" + Addon_Id + "\\sync.js");
-
-	Addons.Tabgroups.Init();
+	AddEvent("Layout", Addons.Tabgroups.Init);
 
 	AddEvent("Load", function () {
 		Addons.Tabgroups.ImgLock = Addons.TabPlus ? Addons.TabPlus.ImgLock2 : '<img src="' + MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13) + '" style="width: ' + (13 * 96 / screen.deviceYDPI) + 'px; padding-right: 2px">';
 
 		setTimeout(Addons.Tabgroups.Arrange, 500);
 	});
+
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }

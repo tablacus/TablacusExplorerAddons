@@ -38,9 +38,14 @@ AddEvent("Load", function () {
 		}
 		if (api.ILIsParent(Prev, Ctrl, true) || (/\.cfu$/i.test((Prev || {}).Path) || /\.cfu$/i.test((Ctrl.FolderItem || {}).Path))) {
 			Sync.Synchronize.Run(Ctrl, Prev, function (Ctrl, FV, parent) {
-				const path = BuildPath(FV.FolderItem.Path, GetFileName(Ctrl.FolderItem.Path));
-				if (IsExists(path)) {
-					FV.Navigate(path, SBSP_SAMEBROWSER);
+				if (FV.FolderItem.IsFolder) {
+					const f = FV.FolderItem.GetFolder;
+					if (f) {
+						const pid = f.ParseName(GetFileName(Ctrl.FolderItem.Path));
+						if (pid) {
+							FV.Navigate(pid, SBSP_SAMEBROWSER);
+						}
+					}
 				}
 			});
 		} else if (api.ILIsParent(Ctrl, Prev, true)) {

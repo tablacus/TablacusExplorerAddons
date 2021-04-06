@@ -5,26 +5,28 @@ Addons.TabList = {
 	},
 
 	Changed: async function () {
+		clearTimeout(Addons.TabList.tid);
 		Addons.TabList.Exists = {};
 		document.getElementById("P").innerHTML = "";
 		const cTC = await te.Ctrls(CTRL_TC, true, window.chrome);
 		let TC = await te.Ctrl(CTRL_TC);
-		await Addons.TabList.ShowTabList(TC);
+		const table = document.createElement("table");
+		table.style.width = "100%";
+		await Addons.TabList.ShowTabList(TC, table);
 		for (let i = 0; i < cTC.length; i++) {
-			document.getElementById("P").appendChild(document.createElement('hr'));
 			TC = await Addons.TabList.NextPane(TC) || cTC[i];
-			await Addons.TabList.ShowTabList(TC);
+			await Addons.TabList.ShowTabList(TC, table);
 		}
+		document.getElementById("P").appendChild(table);
 	},
 
-	ShowTabList: async function (TC) {
+	ShowTabList: async function (TC, table) {
 		if (TC) {
 			const Id = await TC.Id;
 			if (Addons.TabList.Exists[Id]) {
 				return;
 			}
 			Addons.TabList.Exists[Id] = true;
-			const table = document.createElement("table");
 			const nCount = await TC.Count;
 			let nItem = 0;
 			let s = document.F.filter.value;
@@ -48,7 +50,7 @@ Addons.TabList = {
 			for (let i = 0; i < nCount; i++) {
 				const FV = await TC[i];
 				const p = await Promise.all([MainWindow.GetTabName(FV), FV.FolderItem.Path, MainWindow.RunEvent4("GetTabColor", FV)]);
-				if (!await MainWindow.PathMatchEx(p[1], s)) {
+				if (!await MainWindow.PathMatchEx(GetFileName(p[1]), s)) {
 					continue;
 				}
 				if (!nItem++) {
@@ -93,7 +95,6 @@ Addons.TabList = {
 				tr.cells[1].innerText = p[1];
 				tr.cells[1].id = "p" + i + "_" + Id;
 			}
-			document.getElementById("P").appendChild(table);
 		}
 	},
 
@@ -151,6 +152,8 @@ InitDialog = async function () {
 	await Addons.TabList.Changed();
 	Addons.TabList.Resize();
 	document.body.style.visibility = "";
+	WebBrowser.Focus();
+	document.F.filter.focus();
 	WebBrowser.OnClose = async function (WB) {
 		const hwnd = await GetTopWindow();
 		if (!await api.IsZoomed(hwnd) && !await api.IsIconic(hwnd)) {

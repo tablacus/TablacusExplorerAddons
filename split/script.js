@@ -62,13 +62,13 @@ if (window.Addon == 1) {
 
 		Exec2: async function (nMax, TC) {
 			const TC0 = await te.Ctrl(CTRL_TC);
-			const cTC = await te.Ctrls(CTRL_TC);
+			const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
 			const ix = await Addons.Split.Sort(cTC);
 			const Group = TC0 && await TC0.Count ? await TC0.Data.Group : 0;
 			const freeTC = [];
 			let nTC = 0;
-			for (let i = await GetLength(cTC); i-- > 0;) {
-				const TC1 = await cTC[ix[i].i];
+			for (let i = cTC.length; i-- > 0;) {
+				const TC1 = cTC[ix[i].i];
 				const Group1 = await TC1.Data.Group;
 				if (Group1 == 0 || Group1 == Group) {
 					if (await TC1.Count && nTC < nMax) {
@@ -82,29 +82,39 @@ if (window.Addon == 1) {
 					}
 				}
 			}
+			let r = [CTRL_SB, FVM_DETAILS, FWF_SHOWSELALWAYS | FWF_NOWEBVIEW, EBO_SHOWFRAMES | EBO_ALWAYSNAVIGATE, 8, 0];
+			r[6] = te.Data.Tab_Style;
+			r[7] = te.Data.Tab_Align;
+			r[8] = te.Data.Tab_TabWidth;
+			r[9] = te.Data.Tab_TabHeight;
+			r[10] = te.Data.Tree_Align;
+			r[11] = te.Data.Tree_Width;
+			r[12] = te.Data.Tree_Style;
+			r[13] = te.Data.Tree_EnumFlags;
+			r[14] = te.Data.Tree_RootStyle;
+			r[15] = te.Data.Tree_Root;
+			if (TC[0]) {
+				const FV = await TC[0].Selected;
+				if (FV) {
+					r[0] = FV.Type;
+					r[1] = FV.CurrentViewMode;
+					r[2] = FV.FolderFlags;
+					r[3] = FV.Options;
+					r[4] = FV.ViewFlags;
+					r[5] = FV.IconSize;
+				}
+			}
+			if (window.chrome) {
+				r = await Promise.all(r);
+			}
 			for (; nTC < nMax; nTC++) {
-				let type = CTRL_SB;
-				let viewmode = FVM_DETAILS;
-				let flags = FWF_SHOWSELALWAYS | FWF_NOWEBVIEW;
-				let icon = 0;
-				let options = EBO_SHOWFRAMES | EBO_ALWAYSNAVIGATE;
-				let viewflags = 8;
-				if (TC[0]) {
-					const FV = await TC[0].Selected;
-					if (FV) {
-						type = await FV.Type;
-						viewmode = await FV.CurrentViewMode;
-						flags = await FV.FolderFlags;
-						icon = await FV.IconSize;
-						options = await FV.Options;
-						viewflags = await FV.ViewFlags;
+				TC[nTC] = await Addons.Split.CreateTC(freeTC, 0, 0, 0, 0, r[6], r[7], r[8], r[9], Group);
+				(async function (TC) {
+					if (await TC.Count == 0) {
+						TC.Selected.Navigate2("about:blank", SBSP_NEWBROWSER, r[0], r[1], r[2], r[3], r[4], r[5], r[10], r[11], r[12], r[13], r[14], r[15]);
+						TC.Visible = true;
 					}
-				}
-				TC[nTC] = await Addons.Split.CreateTC(freeTC, 0, 0, 0, 0, await te.Data.Tab_Style, await te.Data.Tab_Align, await te.Data.Tab_TabWidth, await te.Data.Tab_TabHeight, Group);
-				if (await TC[nTC].Count == 0) {
-					await TC[nTC].Selected.Navigate2("about:blank", SBSP_NEWBROWSER, type, viewmode, flags, options, viewflags, icon, await te.Data.Tree_Align, await te.Data.Tree_Width, await te.Data.Tree_Style, await te.Data.Tree_EnumFlags, await te.Data.Tree_RootStyle, await te.Data.Tree_Root);
-					TC[nTC].Visible = true;
-				}
+				})(await TC[nTC]);
 			}
 			while (TC1 = freeTC.shift()) {
 				if (Addons.Split.Close || await api.GetDisplayNameOf(TC1[0], SHGDN_FORPARSING) == "about:blank") {
@@ -196,11 +206,10 @@ if (window.Addon == 1) {
 			}
 			const r = await api.CreateObject("Array");
 			let nCursor = 0, c = 6, d = 8;
-			const cTC = await te.Ctrls(CTRL_TC, true);
-			const nCount = await cTC.Count;
-			const ar = [nCount];
-			for (let i = nCount; i-- > 0;) {
-				const TC = await cTC[i];
+			const cTC = await te.Ctrls(CTRL_TC, true, window.chrome);
+			const ar = [cTC.length];
+			for (let i = cTC.length; i-- > 0;) {
+				const TC = cTC[i];
 				const id = await TC.Id;
 				const o = document.getElementById("Panel_" + id);
 				if (!o) {

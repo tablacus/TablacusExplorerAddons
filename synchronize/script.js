@@ -14,8 +14,8 @@ if (window.Addon == 1) {
 			if (el) {
 				DisableImage(el, bDisabled);
 			} else {
-				const cTC = await te.Ctrls(CTRL_TC);
-				for (let i = await cTC.Count; i-- > 0;) {
+				const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
+				for (let i = cTC.length; i-- > 0;) {
 					el = document.getElementById("ImgSynchronize_" + await cTC[i].Id);
 					if (el) {
 						DisableImage(el, bDisabled);
@@ -30,7 +30,7 @@ if (window.Addon == 1) {
 			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 			id: "ImgSynchronize_$",
 			src: item.getAttribute("Icon") || await GetMiscIcon(Addon_Id) || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe895" : "font:Webdings,0x71")
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		}, GetIconSizeEx(item)), '</span>']);
 		delete item;
 	});
 
