@@ -1,4 +1,4 @@
-﻿const Addon_Id = "inactivepane";
+const Addon_Id = "inactivepane";
 const item = await GetAddonElement(Addon_Id);
 
 Addons.InactivePane = {
@@ -59,7 +59,7 @@ if (window.Addon == 1) {
 	AddEvent("Arrange", Addons.InactivePane.Arrange);
 
 	AddEvent("VisibleChanged", function (Ctrl) {
-		if (Ctrl.Visible) {
+		if (Ctrl.Type == CTRL_TC && Ctrl.Visible) {
 			Addons.InactivePane.Arrange(Ctrl);
 		}
 	});

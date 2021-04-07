@@ -4,8 +4,8 @@ if (window.Addon == 1) {
 	});
 
 	AddEventId("AddonDisabledEx", "gridlines", async function () {
-		const cFV = await te.Ctrls(CTRL_FV);
-		for (let i = await cFV.Count; i-- > 0;) {
+		const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
+		for (let i = cFV.length; i-- > 0;) {
 			const hList = await cFV[i].hwndList;
 			if (hList) {
 				api.SendMessage(hList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_GRIDLINES, 0);
@@ -13,8 +13,8 @@ if (window.Addon == 1) {
 		}
 	});
 
-	const cFV = await te.Ctrls(CTRL_FV);
-	for (let i = await cFV.Count; i-- > 0;) {
+	const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
+	for (let i = cFV.length; i-- > 0;) {
 		const hList = await cFV[i].hwndList;
 		if (hList) {
 			api.SendMessage(hList, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_GRIDLINES, LVS_EX_GRIDLINES);

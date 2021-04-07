@@ -20,13 +20,12 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("ListViewCreated", Addons.ListWidth.Exec);
+
 	AddEvent("NavigateComplete", Addons.ListWidth.Exec);
+
 	AddEvent("ViewModeChanged", Addons.ListWidth.Exec);
 
-	let cFV = await te.Ctrls(CTRL_FV);
-	if (window.chrome) {
-		cFV = await api.CreateObject("SafeArray", cFV);
-	}
+	const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
 	for (let i = cFV.length; --i >= 0;) {
 		Addons.ListWidth.Exec(cFV[i]);
 	}

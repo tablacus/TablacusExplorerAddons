@@ -40,27 +40,17 @@ if (window.Addon == 1) {
 		},
 
 		Resize: async function () {
-			if (Addons.HideTitleBar.Enabled && await api.IsZoomed(ui_.hwnd) && !(document.msFullscreenElement || document.fullscreenElement)) {
+			if (Addons.HideTitleBar.Enabled && await api.IsZoomed(ui_.hwnd)) {
 				const rc = await api.Memory("RECT");
 				await api.GetWindowRect(ui_.hwnd, rc);
-				if (!await api.MonitorFromRect(rc, MONITOR_DEFAULTTONULL)) {
-					const hMonitor = await api.MonitorFromRect(rc, MONITOR_DEFAULTTOPRIMARY);
-					const mi = await api.Memory("MONITORINFOEX");
-					await api.GetMonitorInfo(hMonitor, mi);
-					const r = await Promise.all([rc.left, rc.right, rc.top, rc.bottom, mi.rcWork.top, mi.rcWork.bottom]);
-					api.MoveWindow(ui_.hwnd, r[0], r[2], r[1] - r[0], r[4] + r[5] - r[2] * 2, true);
-				}
+				const hMonitor = await api.MonitorFromRect(rc, MONITOR_DEFAULTTOPRIMARY);
+				const mi = await api.Memory("MONITORINFOEX");
+				await api.GetMonitorInfo(hMonitor, mi);
+				const r = await Promise.all([rc.left, rc.right, rc.top, rc.bottom, mi.rcWork.top, mi.rcWork.bottom]);
+				api.MoveWindow(ui_.hwnd, r[0], r[2], r[1] - r[0], r[4] + r[5] - r[2] * 2, true);
 			}
 		}
 	};
-
-	AddEvent("Resize", Addons.HideTitleBar.Resize);
-	AddEvent("Load", Addons.HideTitleBar.Set);
-
-	AddEventId("AddonDisabledEx", Addon_Id, function () {
-		Addons.HideTitleBar.Enabled = false;
-		Addons.HideTitleBar.Set();
-	});
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
@@ -80,6 +70,15 @@ if (window.Addon == 1) {
 			title: Addons.HideTitleBar.sName,
 			src: item.getAttribute("Icon") || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe8ab" : "font:Segoe UI Emoji,0x21c4")
 		}, GetIconSizeEx(item)), '</span>']);
+	});
+
+	AddEvent("Resize", Addons.HideTitleBar.Resize);
+
+	AddEvent("Load", Addons.HideTitleBar.Set);
+
+	AddEventId("AddonDisabledEx", Addon_Id, function () {
+		Addons.HideTitleBar.Enabled = false;
+		Addons.HideTitleBar.Set();
 	});
 
 	AddTypeEx("Add-ons", "Hide Title bar", Addons.HideTitleBar.Exec);

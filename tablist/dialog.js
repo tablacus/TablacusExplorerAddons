@@ -103,6 +103,7 @@ Addons.TabList = {
 		const ar = el.id.split(/\D+/);
 		const TC = await te.Ctrl(CTRL_TC, ar[2]);
 		TC.SelectedIndex = ar[1];
+		(await TC.Selected).Focus();
 	},
 
 	Popup: async function (ev, Id) {

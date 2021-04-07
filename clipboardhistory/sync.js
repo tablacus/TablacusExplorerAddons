@@ -43,7 +43,6 @@ Sync.ClipboardHistory = {
 			}
 
 			const mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STRING | MIIM_ID | MIIM_BITMAP;
 			mii.dwTypeData = s.join(" ");
 			mii.wId = i + this.nCommand;
@@ -82,7 +81,6 @@ if (item.getAttribute("MenuExec")) {
 		if (te.Data.ClipboardHistory.length) {
 			Sync.ClipboardHistory.nCommand = nPos + 1;
 			const mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 			mii.dwTypeData = Sync.ClipboardHistory.strName;
 			mii.hSubMenu = Sync.ClipboardHistory.CreateMenu();
@@ -116,7 +114,7 @@ AddEvent("Finalize", function () {
 	}
 });
 for (let i = 2; i--;) {
-	Sync.ClipboardHistory.Bitmap[i] = MakeImgData("bitmap:ieframe.dll,216,16," + (5 + i), 0, false, 16).GetHBITMAP(WINVER >= 0x600 ? -2 : GetSysColor(COLOR_MENU));
+	Sync.ClipboardHistory.Bitmap[i] = MakeImgData("icon:general," + (5 + i), 0, 16, CLR_DEFAULT | COLOR_MENU).GetHBITMAP(-4);
 }
 
 if (!te.Data.ClipboardHistory) {
