@@ -41,10 +41,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeNotify", async function (Ctrl, pidls) {
 		if (await pidls.lEvent & Addons.ForceRefresh.Notify) {
-			let cFV = await te.Ctrls(CTRL_FV);
-			if (window.chrome) {
-				cFV = await api.CreateObject("SafeArray", cFV);
-			}
+			const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
 			for (var i = cFV.length; --i >= 0;) {
 				Addons.ForceRefresh.ChangeNotify(cFV[i], pidls);
 			}

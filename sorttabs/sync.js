@@ -1,4 +1,6 @@
-Sync.LockedTabsTop = {
+const item = await GetAddonElement(Addon_Id);
+
+Sync.SortTabs = {
 	fn: [],
 
 	Exec: function (Ctrl) {
@@ -11,7 +13,7 @@ Sync.LockedTabsTop = {
 					ar[i] = i;
 				}
 				ar.sort(function (a, b) {
-					const fn = Sync.LockedTabsTop.fn;
+					const fn = Sync.SortTabs.fn;
 					for (let i = 0; i < fn.length; ++i) {
 						const d = fn[i][0](fn[i][1](TC[a]), fn[i][1](TC[b]));
 						if (d) {
@@ -25,25 +27,21 @@ Sync.LockedTabsTop = {
 	},
 
 	Cmp: function (a, b) {
-		return b - a;
+		return api.CompareIDs(0, a, b);
 	},
 
 	Get: function (FV) {
-		return GetLock(FV) ? 1 : 0;
+		return FV;
 	}
 }
 
-Sync.LockedTabsTop.fn.push([Sync.LockedTabsTop.Cmp, Sync.LockedTabsTop.Get]);
-Sync.LockedTabsTop.Exec();
-
-AddEvent("NavigateComplete", Sync.LockedTabsTop.Exec);
-
-AddEvent("Lock", Sync.LockedTabsTop.Exec);
-
-AddEvent("Create", Sync.LockedTabsTop.Exec);
+Sync.SortTabs.fn.push([Sync.SortTabs.Cmp, Sync.SortTabs.Get]);
 
 AddEvent("Load", function () {
-	if (Sync.SortTabs && Sync.SortTabs.fn) {
-		Sync.SortTabs.fn.unshift([Sync.LockedTabsTop.Cmp, Sync.LockedTabsTop.Get]);
+	if (Sync.LockedTabsTop && Sync.LockedTabsTop.fn) {
+		Sync.LockedTabsTop.fn.push([Sync.SortTabs.Cmp, Sync.SortTabs.Get]);
 	}
 });
+
+AddTypeEx("Add-ons", "Sort tabs", Sync.SortTabs.Exec);
+

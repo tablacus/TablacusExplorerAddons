@@ -8,7 +8,7 @@ Addons.InactivePane = {
 	Arrange: async function (Ctrl) {
 		const FV = await GetFolderView(Ctrl);
 		if (FV) {
-			var hwnd = await FV.hwndList;
+			const hwnd = await FV.hwndList;
 			if (hwnd) {
 				if (await Addons.InactivePane.IsActive(FV)) {
 					return Addons.InactivePane.Active(FV, hwnd);
@@ -24,8 +24,7 @@ Addons.InactivePane = {
 		api.SendMessage(hwnd, LVM_SETBKCOLOR, 0, color);
 		api.SendMessage(hwnd, LVM_SETTEXTBKCOLOR, 0, color);
 		api.SendMessage(hwnd, LVM_SETSELECTEDCOLUMN, -1, 0);
-		const TV = await FV.TreeView;
-		hwnd = await TV.hwndTree;
+		hwnd = await FV.TreeView.hwndTree;
 		if (hwnd) {
 			api.SendMessage(hwnd, TVM_SETTEXTCOLOR, 0, text);
 			api.SendMessage(hwnd, TVM_SETBKCOLOR, 0, color);
@@ -51,7 +50,7 @@ Addons.InactivePane = {
 	},
 
 	IsDark: async function () {
-		var cl = await MainWindow.GetSysColor(COLOR_WINDOW);
+		const cl = await MainWindow.GetSysColor(COLOR_WINDOW);
 		return (cl & 0xff) * 299 + (cl & 0xff00) * 2.29296875 + (cl & 0xff0000) * 0.001739501953125 < 127500;
 	}
 }
@@ -65,8 +64,9 @@ if (window.Addon == 1) {
 	});
 
 	AddEventId("AddonDisabledEx", "inactivepane", async function () {
-		for (let i = await cTC.Count; i-- > 0;) {
-			const TC = await cTC[i];
+		const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
+		for (let i = cTC.length; i-- > 0;) {
+			const TC = cTC[i];
 			if (TC) {
 				Addons.InactivePane.Active(await TC.Selected, await TC.Selected.hwndList);
 			}
@@ -79,9 +79,9 @@ if (window.Addon == 1) {
 		Addons.InactivePane.TextColor = cl ? await GetWinColor(cl) : bDark ? 0xaaaaaa : 0x444444;
 		cl = Addons.InactivePane.Color;
 		Addons.InactivePane.Color = cl ? await GetWinColor(cl) : bDark ? 0x444444 : 0xaaaaaa;
-		const cTC = te.Ctrls(CTRL_TC, true);
-		for (let i = await cTC.Count; i-- > 0;) {
-			const TC = await cTC[i];
+		const cTC = await te.Ctrls(CTRL_TC, true, window.chrome);
+		for (let i = cTC.length; i-- > 0;) {
+			const TC = cTC[i];
 			if (TC) {
 				Addons.InactivePane.Arrange(await TC.Selected);
 			}

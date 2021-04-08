@@ -8,9 +8,9 @@ if (window.Addon == 1) {
 		},
 
 		SetThemeAll: async function (s) {
-			const cFV = await te.Ctrls(CTRL_FV);
-			for (let i = await cFV.Count; --i >= 0;) {
-				Addons.ClassicStyle.SetTheme(await cFV[i], s);
+			const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
+			for (let i = cFV.length; --i >= 0;) {
+				Addons.ClassicStyle.SetTheme(cFV[i], s);
 			}
 		}
 	};

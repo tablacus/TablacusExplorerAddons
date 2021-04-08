@@ -3,18 +3,10 @@ if (window.Addon == 1) {
 		tid: {},
 
 		Exec: async function (FV, Selected) {
-			Addons.FixSelection.tid[FV.Id] = void 0;
+			Addons.FixSelection.tid[await FV.Id] = void 0;
 			const nCount = Selected && await Selected.Count;
 			if (nCount != await FV.ItemCount(SVGIO_SELECTION)) {
-				let wFlags = SVSI_DESELECTOTHERS;
-				if (nCount) {
-					for (let i = 0; i < nCount; ++i) {
-						FV.SelectItem(await Selected.Item(i), SVSI_SELECT | SVSI_NOTAKEFOCUS | wFlags);
-						wFlags = 0;
-					}
-				} else {
-					FV.SelectItem(null, wFlags);
-				}
+				FV.SelectItem(Selected, SVSI_SELECT | SVSI_NOTAKEFOCUS | SVSI_DESELECTOTHERS | SVSI_SELECTIONMARK);
 				FV.Data.Selected = void 0;
 			}
 		},
@@ -34,7 +26,7 @@ if (window.Addon == 1) {
 			}
 		}
 	}
-	
+
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 		Ctrl.Data.Selected = void 0;
 	});
@@ -65,9 +57,9 @@ if (window.Addon == 1) {
 	});
 
 	AddEvent("ChangeNotify", async function (Ctrl, pidls, wParam, lParam) {
-		const cFV = await te.Ctrls(CTRL_FV);
-		for (let i = await cFV.Count; i-- > 0;) {
-			Addons.FixSelection.ChangeNotify(await cFV[i]);
+		const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
+		for (let i = cFV.length; i-- > 0;) {
+			Addons.FixSelection.ChangeNotify(cFV[i]);
 		}
 	});
 }

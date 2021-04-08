@@ -8,10 +8,7 @@ if (window.Addon == 1) {
 		},
 
 		SetAll: async function (dw) {
-			let cFV = await te.Ctrls(CTRL_FV);
-			if (window.chrome) {
-				cFV = await api.CreateObject("SafeArray", cFV);
-			}
+			const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
 			for (let i = 0; i < cFV.length; ++i) {
 				const hList = await cFV[i].hwndList;
 				if (hList) {
