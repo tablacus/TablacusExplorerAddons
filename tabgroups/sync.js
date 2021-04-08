@@ -72,7 +72,7 @@ Sync.Tabgroups = {
         commdlg.Filter = MakeCommDlgFilter("*.xml");
         commdlg.Flags = OFN_FILEMUSTEXIST;
         if (commdlg.ShowOpen()) {
-            const fn = PathUnquoteSpaces(commdlg.filename);
+            const fn = api.PathUnquoteSpaces(commdlg.filename);
             if (fso.FileExists(fn)) {
                 const xml = api.CreateObject("Msxml2.DOMDocument");
                 xml.async = false;
@@ -103,7 +103,7 @@ Sync.Tabgroups = {
         commdlg.DefExt = "xml";
         commdlg.Flags = OFN_OVERWRITEPROMPT;
         if (commdlg.ShowSave()) {
-            const fn = PathUnquoteSpaces(commdlg.filename);
+            const fn = api.PathUnquoteSpaces(commdlg.filename);
 			const xml = this.Save1();
             try {
                 xml.save(fn);
