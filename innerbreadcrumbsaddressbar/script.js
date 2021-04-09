@@ -59,6 +59,7 @@ if (window.Addon == 1) {
 				const width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetWidth - 2;
 				const height = oAddr.offsetHeight - 6;
 				o.style.width = "auto";
+				o.style.height = (oAddr.offsetHeight - 2) + "px";
 				const bRoot = api.ILIsEmpty(FolderItem);
 				const Items = JSON.parse(await Sync.InnerBreadcrumbsAddressBar.SplitPath(FolderItem));
 				let bEmpty = true, n;
@@ -270,9 +271,9 @@ if (window.Addon == 1) {
 		SetRects: async function () {
 			const rcItems = await api.CreateObject("Object");
 			Common.InnerBreadcrumbsAddressBar.rcItems = rcItems;
-			const cTC = await te.Ctrls(CTRL_TC);
-			for (let j = await cTC.Count; --j >= 0;) {
-				const TC = await cTC[j];
+			const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
+			for (let j = cTC.length; --j >= 0;) {
+				const TC = cTC[j];
 				const Id = await TC.Id;
 				const rc = await api.CreateObject("Array");
 				for (let i = Addons.InnerBreadcrumbsAddressBar.nLevel[Id]; --i >= 0;) {
@@ -287,20 +288,18 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("ChangeView2", async function (Ctrl) {
-		const Id = await Ctrl.Parent.Id;
-		const pid = await Ctrl.FolderItem;
-		const path = await api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-		Addons.InnerBreadcrumbsAddressBar.path2[Id] = path
-		let o = document.getElementById("breadcrumbsaddressbar_" + Id);
+		const r = await Promise.all([Ctrl.Parent.Id, Ctrl.FolderItem, api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)]);
+		Addons.InnerBreadcrumbsAddressBar.path2[r[0]] = r[2]
+		let o = document.getElementById("breadcrumbsaddressbar_" + r[0]);
 		if (o) {
-			o.value = path;
+			o.value = r[2];
 		}
-		Addons.InnerBreadcrumbsAddressBar.Arrange(pid, Id);
-		o = document.getElementById("breadcrumbsaddr_img_" + Id);
+		Addons.InnerBreadcrumbsAddressBar.Arrange(r[1], r[0]);
+		o = document.getElementById("breadcrumbsaddr_img_" + r[0]);
 		if (o) {
-			o.src = await GetIconImage(Ctrl, CLR_DEFAULT | COLOR_WINDOW);
+			o.src = await GetIconImage(r[1], CLR_DEFAULT | COLOR_WINDOW);
 		}
-		setTimeout("Addons.InnerBreadcrumbsAddressBar.Blur(" + Id + ")", 99);
+		setTimeout("Addons.InnerBreadcrumbsAddressBar.Blur(" + r[0] + ")", 99);
 	});
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {

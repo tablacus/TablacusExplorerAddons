@@ -21,3 +21,7 @@ AddType("Open in new window", {
 		return OpenDialog(path);
 	}
 });
+
+OpenInNewWindow = function (pid) {
+	return Exec(te, api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), "Open in new window");
+}

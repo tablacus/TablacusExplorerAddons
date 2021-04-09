@@ -42,6 +42,12 @@ AddEvent("Lock", Sync.LockedTabsTop.Exec);
 
 AddEvent("Create", Sync.LockedTabsTop.Exec);
 
+AddEvent("SelectionChanged", function (Ctrl, uChange) {
+	if (Ctrl.Type == CTRL_TC) {
+		Sync.LockedTabsTop.Exec();
+	}
+});
+
 AddEvent("Load", function () {
 	if (Sync.SortTabs && Sync.SortTabs.fn) {
 		Sync.SortTabs.fn.unshift([Sync.LockedTabsTop.Cmp, Sync.LockedTabsTop.Get]);
