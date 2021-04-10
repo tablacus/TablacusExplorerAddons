@@ -34,7 +34,10 @@ Sync.LockedTabsTop = {
 }
 
 Sync.LockedTabsTop.fn.push([Sync.LockedTabsTop.Cmp, Sync.LockedTabsTop.Get]);
-Sync.LockedTabsTop.Exec();
+const cTC = te.Ctrls(CTRL_TC, true);
+for (let i = cTC.length; --i>= 0;) {
+	Sync.LockedTabsTop.Exec(cTC[i]);
+}
 
 AddEvent("NavigateComplete", Sync.LockedTabsTop.Exec);
 
@@ -44,7 +47,7 @@ AddEvent("Create", Sync.LockedTabsTop.Exec);
 
 AddEvent("SelectionChanged", function (Ctrl, uChange) {
 	if (Ctrl.Type == CTRL_TC) {
-		Sync.LockedTabsTop.Exec();
+		setTimeout(Sync.LockedTabsTop.Exec, 99, Ctrl);
 	}
 });
 

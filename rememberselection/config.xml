@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.77</Version>
+    <Version>1.00</Version>
     <MinVersion>2021.4.9</MinVersion>
     <pubDate>Sat, 10 Apr 2021 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
@@ -11,13 +11,10 @@
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Tab plus</Name>
-    <Description>Tab plus</Description>
+    <Name>Remember selection</Name>
+    <Description>Remember selected items (Not perfect)</Description>
   </en>
   <ja>
-    <Name>タブプラス</Name>
+    <Name>選択項目を覚える</Name>
   </ja>
-  <zh>
-    <Name>進階頁籤</Name>
-  </zh>
 </TablacusExplorer>

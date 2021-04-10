@@ -12,6 +12,9 @@ Sync.Synchronize = {
 	},
 
 	Run: function (Ctrl, Prev, fn) {
+		if (!Prev) {
+			return;
+		}
 		const parent = GetFileName(Prev.Path);
 		const TC = Ctrl.Parent;
 		const Id = TC.Id;
