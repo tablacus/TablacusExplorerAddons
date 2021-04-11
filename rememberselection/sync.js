@@ -6,9 +6,9 @@ Sync.RememberSelection = {
 	db: {},
 	nSave: item.getAttribute("Save") || 1000,
 
-	Store: function (FV, pid, s) {
+	Store: function (FV) {
 		if (FV && FV.FolderItem && !FV.FolderItem.Unavailable) {
-			const path = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+			const path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			const Selected = FV.SelectedItems();
 			if (Selected.Count) {
 				Selected.Data = new Date().getTime();
@@ -83,35 +83,41 @@ Sync.RememberSelection = {
 	}
 };
 
-AddEvent("Load", function () {
-	LoadDBFromTSV(Sync.RememberSelection, Sync.RememberSelection.path);
-});
-
-AddEvent("SaveConfig", function () {
-	if (Sync.RememberSelection.bSave) {
-		Sync.RememberSelection.bSave = false;
-		const ar = [];
-		Sync.RememberSelection.ENumCB(function (n, s) {
-			ar.push([n, s].join("\t") + "\r\n");
-		});
-		ar.sort(function (a, b) {
-			return b.split("\t")[1] - a.split("\t")[1];
-		});
-		ar.splice(Sync.RememberSelection.nSave, ar.length);
-		WriteTextFile(Sync.RememberSelection.path, ar.join(""));
-	}
-});
-
 AddEvent("NavigateComplete", Sync.RememberSelection.Restore);
 
 AddEvent("CloseView", function (Ctrl) {
-	Sync.RememberSelection.Store(Ctrl, Ctrl)
+	Sync.RememberSelection.Store(Ctrl)
 });
 
 AddEvent("SelectionChanged", function (Ctrl, uChange) {
 	if (Ctrl.ItemCount && Ctrl.ItemCount(SVGIO_ALLVIEW)) {
-		Sync.RememberSelection.Store(Ctrl, Ctrl, "SelectionChanged:FV");
+		if (Ctrl.ItemCount(SVGIO_SELECTION)) {
+			Sync.RememberSelection.Store(Ctrl);
+		} else {
+			setTimeout(Sync.RememberSelection.Store, ui_.DoubleClickTime, Ctrl);
+		}
 	}
 });
+
+if (Sync.RememberSelection.nSave) {
+	AddEvent("Load", function () {
+		LoadDBFromTSV(Sync.RememberSelection, Sync.RememberSelection.path);
+	});
+
+	AddEvent("SaveConfig", function () {
+		if (Sync.RememberSelection.bSave) {
+			Sync.RememberSelection.bSave = false;
+			const ar = [];
+			Sync.RememberSelection.ENumCB(function (n, s) {
+				ar.push([n, s].join("\t") + "\r\n");
+			});
+			ar.sort(function (a, b) {
+				return b.split("\t")[1] - a.split("\t")[1];
+			});
+			ar.splice(Sync.RememberSelection.nSave, ar.length);
+			WriteTextFile(Sync.RememberSelection.path, ar.join(""));
+		}
+	});
+}
 
 delete item;
