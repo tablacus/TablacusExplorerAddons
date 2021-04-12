@@ -50,7 +50,6 @@ Sync.LabelButton = {
 						return api.StrCmpLogical(a, b);
 					});
 					const mii = api.Memory("MENUITEMINFO");
-					mii.cbSize = mii.Size;
 					mii.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_STATE;
 					mii.hSubMenu = api.CreatePopupMenu();
 					mii.dwTypeData = GetText("Filter");
@@ -80,14 +79,12 @@ Sync.LabelButton = {
 				api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, GetText("&Edit"));
 
 				const mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
 				mii.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_STATE;
 				mii.fState = MFS_DISABLED;
 				mii.hSubMenu = api.CreatePopupMenu();
 				mii.dwTypeData = GetText("Add");
 
 				const mii2 = api.Memory("MENUITEMINFO");
-				mii2.cbSize = mii.Size;
 				mii2.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_STATE;
 				mii2.fState = MFS_DISABLED;
 				mii2.hSubMenu = api.CreatePopupMenu();
@@ -164,7 +161,6 @@ Sync.LabelButton = {
 		const db = Common.Label.Groups;
 		if (db) {
 			const mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 			db.ENumCB(function (s, v) {
 				mii.hSubMenu = api.CreatePopupMenu();

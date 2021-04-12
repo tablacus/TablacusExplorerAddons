@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.13</Version>
-    <MinVersion>2021.3.26</MinVersion>
-    <pubDate>Sat, 27 Mar 2021 00:00:00 GMT</pubDate>
+    <Version>1.14</Version>
+    <MinVersion>2021.4.11</MinVersion>
+    <pubDate>Mon, 12 Apr 2021 00:00:00 GMT</pubDate>
     <Options>Common:5,6:5</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -12,7 +12,7 @@
   </General>
   <en>
     <Name>Label button</Name>
-    <Description>Label button *Require "Label"</Description>
+    <Description>Label button *"Label" is required</Description>
   </en>
   <ja>
     <Name>ラベルボタン</Name>

@@ -4,7 +4,7 @@ if (window.Addon == 1) {
 } else {
 	SetTabContents(0, "", '<label>Number of items</label><br><input type="text" id="Save" class="full" placeholder="1000"><br><input type="button" value="Delete" onclick="Addons.RememberSelection.Delete()">');
 	Addons.RememberSelection = {
-		Delete: function () {
+		Delete: async function () {
 			DeleteItem(await OrganizePath(Addon_Id, BuildPath(ui_.DataFolder, "config")) + ".tsv", FOF_ALLOWUNDO);
 		}
 	}

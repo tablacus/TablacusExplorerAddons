@@ -94,7 +94,7 @@ AddEvent("SelectionChanged", function (Ctrl, uChange) {
 		if (Ctrl.ItemCount(SVGIO_SELECTION)) {
 			Sync.RememberSelection.Store(Ctrl);
 		} else {
-			setTimeout(Sync.RememberSelection.Store, ui_.DoubleClickTime, Ctrl);
+			setTimeout(Sync.RememberSelection.Store, g_.DoubleClickTime, Ctrl);
 		}
 	}
 });

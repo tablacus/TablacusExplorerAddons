@@ -24,5 +24,5 @@ if (window.Addon == 1) {
 		SetAddon(Addon_Id, Default, '<span id="branchbar" style="white-space: nowrap"></span>', "middle");
 	});
 
-	AddEvent("ChangeView", Addons.BranchBar.Get);
+	AddEvent("ChangeView1", Addons.BranchBar.Get);
 }
