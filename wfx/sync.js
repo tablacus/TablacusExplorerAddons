@@ -45,10 +45,8 @@ Sync.WFX = {
 	Init: function () {
 		Sync.WFX.Obj = {};
 		Sync.WFX.Root = [];
-		Sync.WFX.Obj[""] =
-		{
-			X:
-			{
+		Sync.WFX.Obj[""] = {
+			X: {
 				hFind: 0,
 				hash: {},
 
@@ -210,7 +208,7 @@ Sync.WFX = {
 			Sync.WFX.Connect(lib);
 			FsResult = 0;
 			let bRefresh = false;
-			Sync.WFX.Progress = te.ProgressDialog;
+			Sync.WFX.Progress = api.CreateObject("ProgressDialog");
 			Sync.WFX.Progress.StartProgressDialog(te.hwnd, null, 0);
 			const fl = [];
 			try {
@@ -245,11 +243,11 @@ Sync.WFX = {
 			}
 			Sync.WFX.Progress.StopProgressDialog();
 			delete Sync.WFX.Progress;
-			if (bRefresh) {
-				Sync.WFX.Refresh(Ctrl);
-			}
-			if (FsResult) {
-				Sync.WFX.ShowError(FsResult);
+			if (FsResult || bRefresh) {
+				Ctrl.Refresh();
+				if (FsResult) {
+					Sync.WFX.ShowError(FsResult);
+				}
 			}
 		}
 	},
@@ -344,7 +342,7 @@ Sync.WFX = {
 			let FsResult = 0;
 			let bRefresh = false;
 			Sync.WFX.Connect(lib);
-			Sync.WFX.Progress = te.ProgressDialog;
+			Sync.WFX.Progress = api.CreateObject("ProgressDialog");
 			Sync.WFX.Progress.StartProgressDialog(te.hwnd, null, 0);
 			try {
 				Sync.WFX.Progress.SetLine(1, api.LoadString(hShell32, 33269) || api.LoadString(hShell32, 6478), true);
@@ -382,15 +380,15 @@ Sync.WFX = {
 					FsResult = 5;
 				}
 			} catch (e) {
-				FsRerult = e;
+				FsResult = e;
 			}
 			Sync.WFX.Progress.StopProgressDialog();
 			delete Sync.WFX.Progress;
-			if (bRefresh) {
+			if (FsResult || bRefresh) {
 				Ctrl.Refresh();
-			}
-			if (FsResult) {
-				Sync.WFX.ShowError(FsResult);
+				if (FsResult) {
+					Sync.WFX.ShowError(FsResult);
+				}
 			}
 		}
 	},
@@ -561,9 +559,7 @@ Sync.WFX = {
 			if (r == 0) {
 				Sync.WFX.ChangeNotify(BuildPath(lib.root, lib.path));
 			} else {
-				setTimeout(function () {
-					Sync.WFX.ShowError(r, fn);
-				}, 99);
+				Sync.WFX.ShowError(r, fn);
 			}
 			return r;
 		}
@@ -609,10 +605,8 @@ Sync.WFX = {
 			} else {
 				i = (Sync.WFX.Cnt[0] * 100 + PercentDone) / Sync.WFX.Cnt[1];
 			}
-			Sync.WFX.Progress.SetTitle(i.toFixed(0) + "%");
-			Sync.WFX.Progress.SetProgress(i, 100);
 			Sync.WFX.Progress.SetLine(3, ar.join(""), true);
-			return Sync.WFX.Progress.HasUserCancelled() ? 1 : 0;
+			return Sync.WFX.Progress.HasUserCancelled(i, 100, 2) ? 1 : 0;
 		}
 		return 0;
 	},
@@ -777,7 +771,7 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 		const root = BuildPath(te.Data.TempFolder, strSessionId);
 		Sync.WFX.CreateFolder(root);
 		wsh.CurrentDirectory = root;
-		Sync.WFX.Progress = te.ProgressDialog;
+		Sync.WFX.Progress = api.CreateObject("ProgressDialog");
 		Sync.WFX.Progress.StartProgressDialog(te.hwnd, null, 0);
 		try {
 			Sync.WFX.Progress.SetLine(1, api.LoadString(hShell32, 33260) || api.LoadString(hShell32, 6478), true);
@@ -805,7 +799,7 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 				FsResult = 5;
 			}
 		} catch (e) {
-			FsRerult = e;
+			FsResult = e;
 		}
 		Sync.WFX.Progress.StopProgressDialog();
 		if (Sync.WFX.Progress.HasUserCancelled()) {
@@ -814,6 +808,7 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 		delete Sync.WFX.Progress;
 		wsh.CurrentDirectory = te.Data.TempFolder;
 		if (FsResult) {
+			Ctrl.Refresh();
 			Sync.WFX.ShowError(FsResult);
 		}
 	}
@@ -1012,7 +1007,7 @@ AddEvent("ToolTip", function (Ctrl, Index) {
 	}
 }, true);
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, ckBk, bSimple) {
 	if (g_.IEVer >= 8) {
 		const lib = Sync.WFX.GetObject(Ctrl);
 		if (lib) {
@@ -1027,7 +1022,7 @@ AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
 					return image.DataURI("image/png");
 				}
 			}
-			return MakeImgDataEx("folder:closed", bSimple, 16);
+			return MakeImgDataEx("folder:closed", bSimple, 16, ckBk);
 		}
 	}
 });
@@ -1097,7 +1092,11 @@ AddEvent("Sort", function (Ctrl) {
 
 const cFV = te.Ctrls(CTRL_FV);
 for (let i in cFV) {
-	if (Sync.WFX.IsHandle(cFV[i])) {
-		ColumnsReplace(cFV[i], "Name", HDF_LEFT, Sync.WFX.ReplaceColumns);
+	const FV = cFV[i];
+	if (Sync.WFX.IsHandle(FV)) {
+		ColumnsReplace(FV, "Name", HDF_LEFT, Sync.WFX.ReplaceColumns);
+		if (FV.Enum) {
+			FV.Enum = Sync.WFX.Enum;
+		}
 	}
 }

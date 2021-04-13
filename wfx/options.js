@@ -42,7 +42,7 @@ LoadFS = async function () {
 }
 
 SaveFS = async function () {
-	if (g_Chg.List) {
+	if (g_bChanged || g_Chg.List) {
 		const xml = await CreateXml();
 		const root = await xml.createElement("TablacusExplorer");
 		const o = document.E.List;
@@ -125,7 +125,7 @@ PathChanged = function () {
 
 SetProp = async function (bName) {
 	let WFX = {};
-	const dllPath = (await ExtractMacro(te, await api.PathUnquoteSpaces(document.E.Path.value)) + (await ui_.bit > 32 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
+	const dllPath = (await ExtractPath(te, document.E.Path.value) + (await ui_.bit > 32 ? "64" : "")).replace(/\.u(wfx64)$/, ".$1");
 	const twfxPath = BuildPath(ui_.Installed, ["addons\\wfx\\twfx", ui_.bit, ".dll"].join(""));
 	const DLL = await api.DllGetClassObject(twfxPath, "{5396F915-5592-451c-8811-87314FC0EF11}");
 	if (DLL) {
@@ -139,11 +139,11 @@ SetProp = async function (bName) {
 	for (let i in arProp) {
 		arHtml[i % 2].push('<div style="white-space: nowrap"><input type="checkbox" ', await WFX[arProp[i]] ? "checked" : "", ' onclick="return false;">', arProp[i].replace(/^Is/, ""), '</div>');
 	}
-	arHtml[2].push(await GetTextR('64-bit'), '<br><input type="text" value="', (await ExtractMacro(te, await api.PathUnquoteSpaces(document.E.Path.value)) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly><br>');
+	arHtml[2].push(await GetTextR('64-bit'), '<br><input type="text" value="', (await ExtractPath(te, document.E.Path.value) + "64").replace(/\.u(wfx64)$/, ".$1").replace(/"/g, "&quot;"), '" style="width: 100%" readonly><br>');
 	for (let i = arHtml.length; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
-	const ar = [await fso.GetFileName(dllPath)];
+	const ar = [GetFileName(dllPath)];
 	try {
 		const s = await fso.GetFileVersion(dllPath);
 		if (s) {
@@ -170,12 +170,10 @@ ED = function (s) {
 }
 
 SaveLocation = function () {
-	if (g_bChanged) {
+	if (g_bChanged && document.E.Name.value) {
 		ReplaceFS();
 	}
-	if (g_Chg.List) {
-		SaveFS();
-	}
+	SaveFS();
 };
 
 setTimeout(function() {

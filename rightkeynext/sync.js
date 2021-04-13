@@ -1,12 +1,11 @@
 Sync.RightKeyNext = {
 	Move: function (Ctrl, nMove, dwFlags) {
-		if (Ctrl.hwndList) {
-			const nViewMode = Ctrl.CurrentViewMode;
-			if (nViewMode <= FVM_SMALLICON || (nViewMode >= FVM_THUMBNAIL && nViewMode <= FVM_THUMBSTRIP)) {
+		const hList = Ctrl.hwndList;
+		if (hList) {
+			if (!(api.SendMessage(hList, LVM_GETVIEW, 0, 0) & 1)) {
 				const nIndex = Ctrl.GetFocusedItem + nMove;
-				const Items = Ctrl.Items;
-				if (nIndex >= 0 && nIndex < Items.Count) {
-					if ((dwFlags & SVSI_SELECT) == 0 && api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nIndex, LVIS_SELECTED)) {
+				if (nIndex >= 0 && nIndex < Ctrl.ItemCount(SVGIO_ALLVIEW)) {
+					if ((dwFlags & SVSI_SELECT) == 0 && api.SendMessage(hList, LVM_GETITEMSTATE, nIndex, LVIS_SELECTED)) {
 						dwFlags |= SVSI_SELECT;
 					}
 					Ctrl.SelectItem(nIndex, dwFlags);

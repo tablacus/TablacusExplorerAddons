@@ -13,10 +13,14 @@ if (window.Addon == 1) {
 					return S_OK;
 				}
 				Addons.GrabButton.dt = dt;
-				Common.GrabButton.pt.x = ev.screenX * ui_.Zoom;
-				Common.GrabButton.pt.y = ev.screenY * ui_.Zoom;
-				api.SetCapture(ui_.hwnd);
-				Common.GrabButton.Capture = true;
+				if (window.chrome || api.IsZoomed(ui_.hwnd)) {
+					Common.GrabButton.pt.x = ev.screenX * ui_.Zoom;
+					Common.GrabButton.pt.y = ev.screenY * ui_.Zoom;
+					api.SetCapture(ui_.hwnd);
+					Common.GrabButton.Capture = true;
+					return S_OK;
+				}
+				api.SendMessage(ui_.hwnd, 0xA1, 2, 0);
 			}
 		},
 

@@ -69,7 +69,7 @@ if (window.Addon == 1) {
 						arHTML.unshift('<span id="breadcrumbsaddressbar_' + Id + "_" + n + '" class="button" style="line-height: ' + height + 'px; vertical-align: middle" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this,' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + BUTTONS.next + '</span>');
 						o.insertAdjacentHTML("afterbegin", arHTML[0]);
 					}
-					arHTML.unshift('<span id="breadcrumbsaddressbar_' + Id + "_" + n + '_" class="button" style="line-height: ' + height + 'px"  onmousedown="return Addons.InnerBreadcrumbsAddressBar.Go(event, this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + EncodeSC(Items[n].name) + '</span>');
+					arHTML.unshift('<span id="breadcrumbsaddressbar_' + Id + "_" + n + '_" class="button" style="line-height: ' + height + 'px" onmouseover="MouseOver(this)" onmouseout="MouseOut()" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Exec(' + Id + '); return false;">' + EncodeSC(Items[n].name) + '</span>');
 					const nBefore = o.offsetWidth;
 					o.insertAdjacentHTML("afterbegin", arHTML[0]);
 					if (o.offsetWidth != nBefore && o.offsetWidth > width && n > 0) {
@@ -95,6 +95,10 @@ if (window.Addon == 1) {
 		},
 
 		Focus: function (Id) {
+			if (Addons.InnerBreadcrumbsAddressBar.tm && new Date().getTime() - Addons.InnerBreadcrumbsAddressBar.tm < 999) {
+				delete Addons.InnerBreadcrumbsAddressBar.tm;
+				return;
+			}
 			const o = document.getElementById("breadcrumbsaddressbar_" + Id);
 			if (Addons.InnerBreadcrumbsAddressBar.bClose) {
 				o.blur();
@@ -115,48 +119,103 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Go: function (ev, o, n, Id) {
-			const buttons = (ev.buttons != null ? ev.buttons : ev.button);
-			if (buttons & 5) {
-				Promise.all([GetInnerFV(Id), Sync.InnerBreadcrumbsAddressBar.GetPath(n, Id), GetNavigateFlags()]).then(function (r) {
-					NavigateFV(r[0], r[1], r[2]);
+		Click1: function (ev, Id) {
+			const el = document.elementFromPoint(ev.clientX, ev.clientY);
+			const res = el && /^breadcrumbsaddressbar_(\d+)_(\d+)_$/.exec(el.id);
+			if (res) {
+				const ev1 = Addons.InnerBreadcrumbsAddressBar.ev || {};
+				const buttons = ev1.buttons != null ? ev1.buttons : ev1.button;
+				Promise.all([GetInnerFV(res[1]), Sync.InnerBreadcrumbsAddressBar.GetPath(res[2], res[1]), GetNavigateFlags()]).then(function (r) {
+					NavigateFV(r[0], r[1], r[2] | ((buttons & 4) ? SBSP_NEWBROWSER : 0));
 				});
-				return false;
-			} else if (buttons == 2) {
-				(async function () {
-					const pt = GetPos(o, 9);
-					MouseOver(o);
-					const hMenu = await api.CreatePopupMenu();
-					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, await api.LoadString(hShell32, 33561));
-					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, await GetText("Copy full path"));
-					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 3, await GetText("Open in new &tab"));
-					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 4, await GetText("Open in background"));
-					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 5, await GetText("&Edit"));
-					const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, ui_.hwnd, null, null);
-					api.DestroyMenu(hMenu);
-					switch (nVerb) {
-						case 1:
-							const Items = await api.CreateObject("FolderItems");
-							await Items.AddItem(await Sync.InnerBreadcrumbsAddressBar.GetPath(n, Id));
-							api.OleSetClipboard(Items);
-							break;
-						case 2:
-							clipboardData.setData("text", await (await Sync.InnerBreadcrumbsAddressBar.GetPath(n, Id)).Path);
-							break;
-						case 3:
-							NavigateFV(await GetInnerFV(Id), await Sync.InnerBreadcrumbsAddressBar.GetPath(n, Id), SBSP_NEWBROWSER);
-							break;
-						case 4:
-							NavigateFV(await GetInnerFV(Id), await Sync.InnerBreadcrumbsAddressBar.GetPath(n, Id), SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS);
-							break;
-						case 5:
-							Addons.InnerBreadcrumbsAddressBar.ExecEx(Id);
-							break;
+				return;
+			}
+			delete Addons.InnerBreadcrumbsAddressBar.tm;
+			Addons.InnerBreadcrumbsAddressBar.ExecEx(Id);
+		},
+
+		Popup1: async function (ev) {
+			const el = document.elementFromPoint(ev.clientX, ev.clientY);
+			const res = el && /^breadcrumbsaddressbar_(\d+)_(\d+)_$/.exec(el.id);
+			if (res) {
+				Addons.InnerBreadcrumbsAddressBar.tm = new Date().getTime();
+				const pt = GetPos(el, 9);
+				MouseOver(el);
+				const hMenu = await api.CreatePopupMenu();
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, await api.LoadString(hShell32, 33561));
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, await GetText("Copy full path"));
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 3, await GetText("Open in new &tab"));
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 4, await GetText("Open in background"));
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 5, await GetText("&Edit"));
+				Addons.InnerBreadcrumbsAddressBar.tm = new Date().getTime();
+				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, ui_.hwnd, null, null);
+				api.DestroyMenu(hMenu);
+				switch (nVerb) {
+					case 1:
+						const Items = await api.CreateObject("FolderItems");
+						await Items.AddItem(await Sync.InnerBreadcrumbsAddressBar.GetPath(res[2], res[1]));
+						api.OleSetClipboard(Items);
+						break;
+					case 2:
+						clipboardData.setData("text", await (await Sync.InnerBreadcrumbsAddressBar.GetPath(res[2], res[1])).Path);
+						break;
+					case 3:
+						NavigateFV(await GetInnerFV(res[1]), await Sync.InnerBreadcrumbsAddressBar.GetPath(res[2], res[1]), SBSP_NEWBROWSER);
+						break;
+					case 4:
+						NavigateFV(await GetInnerFV(res[1]), await Sync.InnerBreadcrumbsAddressBar.GetPath(res[2], res[1]), SBSP_NEWBROWSER | SBSP_ACTIVATE_NOFOCUS);
+						break;
+					case 5:
+						Addons.InnerBreadcrumbsAddressBar.ExecEx(res[1]);
+						break;
+				}
+			}
+		},
+
+		Over1: function (ev) {
+			delete Addons.InnerBreadcrumbsAddressBar.ev;
+		},
+
+		Out1: async function (ev) {
+			const ev1 = Addons.InnerBreadcrumbsAddressBar.ev;
+			if (ev1) {
+				delete Addons.InnerBreadcrumbsAddressBar.ev;
+				const buttons = ev.buttons != null ? ev.buttons : ev.button;
+				if (buttons == 1) {
+					const el = document.elementFromPoint(ev1.clientX, ev1.clientY);
+					const res = el && /^breadcrumbsaddressbar_(\d+)_(\d+)_$/.exec(el.id);
+					if (res) {
+						const pdwEffect = [DROPEFFECT_LINK];
+						api.SHDoDragDrop(null, await Sync.InnerBreadcrumbsAddressBar.GetPath(res[2], res[1]), te, pdwEffect[0], pdwEffect);
 					}
-				})();
+				}
+			}
+		},
+
+		Down1: function (ev, Id) {
+			const el = document.elementFromPoint(ev.clientX, ev.clientY);
+			if (el && /^breadcrumbsaddressbar_(\d+)_(\d+)_$/.test(el.id)) {
+				Addons.InnerBreadcrumbsAddressBar.tm = new Date().getTime();
+				Addons.InnerBreadcrumbsAddressBar.ev = ev;
 				return false;
+			}
+			const buttons = ev.buttons != null ? ev.buttons : ev.button;
+			if (buttons == 2) {
+				Addons.InnerBreadcrumbsAddressBar.ExecEx(Id);
+			}
+		},
+
+		Up1: function () {
+			setTimeout(function () {
+				delete Addons.InnerBreadcrumbsAddressBar.ev;
+			}, 99);
+		},
+
+		ContextMenu: function (o) {
+			if (!window.chrome && o.selectionEnd == o.selectionStart) {
+				o.select();
 			}
 		},
 
@@ -305,7 +364,7 @@ if (window.Addon == 1) {
 	AddEvent("PanelCreated", function (Ctrl, Id) {
 		const z = screen.deviceYDPI / 96;
 		let s = (Addons.InnerBreadcrumbsAddressBar.path2[Id] || "").replace(/"/, "");
-		s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbsbuttons_', Id, '"  class="breadcrumb" style="position: absolute; top: 1px; left: 1px; padding-left: ', 16 * z + 4, 'px" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(', Id, ')" onclick="Addons.InnerBreadcrumbsAddressBar.ExecEx(', Id, ')"></div><input id="breadcrumbsaddressbar_', Id, '" type="text" value="', s, '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(event, this,', Id, ')" oninput="AdjustAutocomplete(this.value)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(', Id, ')" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(', Id, ')" onresize="Addons.InnerBreadcrumbsAddressBar.Resize(', Id, ')" style="width: 100%; vertical-align: middle; padding-left: ', 16 * z + 4, 'px; padding-right: 16px;"><div class="breadcrumb"><div id="breadcrumbsselect_', Id, '" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, ', Id, ')">', BUTTONS.dropdown, '</div></div>'];
+		s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbsbuttons_', Id, '"  class="breadcrumb" style="position: absolute; top: 1px; left: 1px; padding-left: ', 16 * z + 4, 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Click1(event,', Id, ')" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Popup1(event); return false" onmousedown="return Addons.InnerBreadcrumbsAddressBar.Down1(event,', Id, ')" onmouseup="Addons.InnerBreadcrumbsAddressBar.Up1(); return false" onmouseover="Addons.InnerBreadcrumbsAddressBar.Over1(event)" onmouseout="Addons.InnerBreadcrumbsAddressBar.Out1(event)"></div><input id="breadcrumbsaddressbar_', Id, '" type="text" value="', s, '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(event, this,', Id, ')" oninput="AdjustAutocomplete(this.value)" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ContextMenu(this)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(', Id, ')" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(', Id, ')" onresize="Addons.InnerBreadcrumbsAddressBar.Resize(', Id, ')" style="width: 100%; vertical-align: middle; padding-left: ', 16 * z + 4, 'px; padding-right: 16px;"><div class="breadcrumb"><div id="breadcrumbsselect_', Id, '" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, ', Id, ')">', BUTTONS.dropdown, '</div></div>'];
 		s.push('<img id="breadcrumbsaddr_img_', Id, '" src="icon:shell32.dll,3,16"');
 		s.push(' onclick="return Addons.InnerBreadcrumbsAddressBar.ExecEx(', Id, ');"');
 		s.push(' oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ExecEx(', Id, '); return false;"');

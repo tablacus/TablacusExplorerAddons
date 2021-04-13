@@ -40,17 +40,11 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("Layout", function () {
-		SetAddon(Addon_Id, Default, ['<div id="grabbar" class="grabbar" unselectable="on" onclick="Addons.GrabBar.Click()" onmousedown="return Addons.GrabBar.Down(event)" oncontextmenu="Addons.GrabBar.Popup(event); return false;" style="width: 100%; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default"></div>']);
+		SetAddon(Addon_Id, Default, ['<div id="grabbar" class="grabbar" unselectable="on" onclick="Addons.GrabBar.Click()" onmousedown="return Addons.GrabBar.Down(event)" oncontextmenu="Addons.GrabBar.Popup(event); return false;" style="width: 100%; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default">', TITLE, '</div>']);
 	});
 
-	AddEvent("ChangeView1", function (Ctrl) {
-		if (Addons.GrabBar.tid) {
-			clearTimeout(Addons.GrabBar.tid);
-		}
-		Addons.GrabBar.tid = setTimeout(async function () {
-			delete Addons.GrabBar.tid;
-			document.getElementById(Addon_Id).innerText = await Ctrl.Title + ' - ' + TITLE;
-		}, 99);
+	AddEvent("ChangeView1", async function (Ctrl) {
+		document.getElementById(Addon_Id).innerText = await Ctrl.Title + ' - ' + TITLE;
 	});
 
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
