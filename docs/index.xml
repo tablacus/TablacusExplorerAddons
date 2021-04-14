@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<TablacusExplorer><Item Id="rightkeynext"><General><Version>1.04</Version><MinVersion>2021.4.12</MinVersion><pubDate>Tue, 13 Apr 2021 00:00:00 GMT</pubDate><Creator>Gaku</Creator><Details>https://tablacus.github.io/wiki/addons/rightkeynext.html</Details></General><en><Name>Right key next</Name><Description>In Icon View.
+<TablacusExplorer><Item Id="selectedtotop"><General><Version>1.00</Version><MinVersion>2021.4.12</MinVersion><pubDate>Wed, 14 Apr 2021 00:00:00 GMT</pubDate><Creator>Gaku</Creator></General><en><Name>Selected to top</Name><Description>Move selected items to top.</Description></en><ja><Name>選択項目を上に集める</Name></ja></Item>
+<Item Id="rightkeynext"><General><Version>1.04</Version><MinVersion>2021.4.12</MinVersion><pubDate>Tue, 13 Apr 2021 00:00:00 GMT</pubDate><Creator>Gaku</Creator><Details>https://tablacus.github.io/wiki/addons/rightkeynext.html</Details></General><en><Name>Right key next</Name><Description>In Icon View.
 Right-arrow key: Move to the next item.
 Left-arrow key: Move to the previous item.</Description></en><ja><Name>右キーで次に</Name><Description>アイコン表示で、
 右方向キー: 次の項目に移動。
