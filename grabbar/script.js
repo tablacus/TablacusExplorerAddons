@@ -2,9 +2,6 @@
 const Addon_Id = "grabbar";
 const Default = "ToolBar1Center";
 if (window.Addon == 1) {
-	Common.GrabBar = await api.CreateObject("Object");
-	Common.GrabBar.pt = await api.Memory("POINT");
-
 	Addons.GrabBar = {
 		Down: function (ev) {
 			const dt = new Date().getTime();
@@ -14,13 +11,7 @@ if (window.Addon == 1) {
 					return S_OK;
 				}
 				Addons.GrabBar.dt = dt;
-				if (window.chrome || api.IsZoomed(ui_.hwnd)) {
-					Common.GrabBar.pt.x = ev.screenX * ui_.Zoom;
-					Common.GrabBar.pt.y = ev.screenY * ui_.Zoom;
-					api.SetCapture(ui_.hwnd);
-					Common.GrabBar.Capture = true;
-					return S_OK;
-				}
+				api.ReleaseCapture();
 				api.SendMessage(ui_.hwnd, 0xA1, 2, 0);
 			}
 		},
@@ -40,12 +31,10 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("Layout", function () {
-		SetAddon(Addon_Id, Default, ['<div id="grabbar" class="grabbar" unselectable="on" onclick="Addons.GrabBar.Click()" onmousedown="return Addons.GrabBar.Down(event)" oncontextmenu="Addons.GrabBar.Popup(event); return false;" style="width: 100%; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default">', TITLE, '</div>']);
+		return SetAddon(Addon_Id, Default, ['<div id="grabbar" class="grabbar" unselectable="on" onclick="Addons.GrabBar.Click()" onmousedown="return Addons.GrabBar.Down(event)" oncontextmenu="Addons.GrabBar.Popup(event); return false;" style="width: 100%; text-align: center; padding: 2pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default">', TITLE, '</div>']);
 	});
 
 	AddEvent("ChangeView1", async function (Ctrl) {
 		document.getElementById(Addon_Id).innerText = await Ctrl.Title + ' - ' + TITLE;
 	});
-
-	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 }

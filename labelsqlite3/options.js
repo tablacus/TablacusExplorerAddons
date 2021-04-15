@@ -7,7 +7,7 @@ for (let i = 32; i <= 64; i += 32) {
 	s.push('<input type="button" value="Browse..." onclick="RefX(\'Path', i, '\', false, this, true, \'*.dll\')">');
 	s.push('<input type="button" value="Portable" onclick="PortableX(\'Path', i, '\')"><br><br>');
 }
-s.push('<label>Information</label> (<label>', await api.sizeof("HANDLE") * 8, '-bit</label>)<div id="Info"></div><br>');
+s.push('<label>Information</label> (<label>', ui_.bit, '-bit</label>)<div id="Info"></div><br>');
 s.push('<br><input type="button" value="', await api.sprintf(999, await GetText("Get %s..."), "SQLite3.dll"), '" title="http://www.sqlite.org/" onclick="wsh.Run(this.title)">');
 
 SetTabContents(0, "", s.join(""));
@@ -51,4 +51,4 @@ Addons.LabelSQLite3 = {
 	}
 }
 
-Addons.LabelSQLite3.Info();
+setTimeout(Addons.LabelSQLite3.Info, 99);
