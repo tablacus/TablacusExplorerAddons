@@ -4,24 +4,50 @@ if (window.Addon == 1) {
 	Addons.ForceRefresh = {
 		Filter: await ExtractFilter(item.getAttribute("Filter") || "-"),
 		Disable: await ExtractFilter(item.getAttribute("Disable") || "-"),
-		Notify: (GetNum(item.getAttribute("NewFile")) ? SHCNE_CREATE : 0) | (GetNum(item.getAttribute("NewFolder")) ? SHCNE_MKDIR : 0),
+		Notify: 0,
 		Timeout: GetNum(item.getAttribute("Timeout")) || 500,
 		db: {},
 		tid: {},
 
-		ChangeNotify: async function (FV, pidls) {
-			if (await api.ILIsParent(FV, await pidls[0], true)) {
+		ChangeNotify: async function (FV, pidls, lEvent) {
+			if (((lEvent & SHCNE_RENAMEITEM | SHCNE_RENAMEFOLDER) && await api.ILIsParent(FV, await pidls[1], true)) || await api.ILIsParent(FV, await pidls[0], true)) {
 				const Id = await FV.Id;
 				if (Addons.ForceRefresh.tid[Id]) {
 					clearTimeout(Addons.ForceRefresh.tid[Id]);
 				}
-				Addons.ForceRefresh.tid[Id] = setTimeout(function (Id) {
+				Addons.ForceRefresh.tid[Id] = setTimeout(async function (Id) {
 					delete Addons.ForceRefresh.tid[Id];
-					FV.Refresh();
+					if (await api.GetClassName(await api.GetFocus()) != WC_EDIT) {
+						FV.Refresh();
+					}
 				}, Addons.ForceRefresh.Timeout, Id);
 			}
 		}
 	};
+
+	let db = {
+		"NewFile": SHCNE_CREATE,
+		"NewFolder": SHCNE_MKDIR,
+		"Delete": SHCNE_DELETE | SHCNE_RMDIR,
+		"Rename": SHCNE_RENAMEITEM | SHCNE_RENAMEFOLDER
+	}
+	for (let n in db) {
+		if (GetNum(item.getAttribute(n))) {
+			Addons.ForceRefresh.Notify |= db[n];
+		}
+	}
+	delete db;
+	if (Addons.ForceRefresh.Notify) {
+		AddEvent("ChangeNotify", async function (Ctrl, pidls) {
+			const lEvent = await pidls.lEvent;
+			if (lEvent & Addons.ForceRefresh.Notify) {
+				const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
+				for (let i = cFV.length; --i >= 0;) {
+					Addons.ForceRefresh.ChangeNotify(cFV[i], pidls, lEvent);
+				}
+			}
+		});
+	}
 
 	AddEvent("SelectionChanged", async function (Ctrl, uChange) {
 		if (await Ctrl.Type == CTRL_TC) {
@@ -39,14 +65,6 @@ if (window.Addon == 1) {
 		}
 	});
 
-	AddEvent("ChangeNotify", async function (Ctrl, pidls) {
-		if (await pidls.lEvent & Addons.ForceRefresh.Notify) {
-			const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
-			for (var i = cFV.length; --i >= 0;) {
-				Addons.ForceRefresh.ChangeNotify(cFV[i], pidls);
-			}
-		}
-	});
 } else {
 	const ar = (await ReadTextFile("addons\\" + Addon_Id + "\\options.html")).split(/<!--panel-->/);
 	SetTabContents(0, "Tabs", ar[0]);
