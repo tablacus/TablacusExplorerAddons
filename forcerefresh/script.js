@@ -9,18 +9,31 @@ if (window.Addon == 1) {
 		db: {},
 		tid: {},
 
+		Refresh: async function (FV) {
+			const Id = await FV.Id;
+			if (Addons.ForceRefresh.tid[Id]) {
+				clearTimeout(Addons.ForceRefresh.tid[Id]);
+			}
+			Addons.ForceRefresh.tid[Id] = setTimeout(async function (Id) {
+				delete Addons.ForceRefresh.tid[Id];
+				if (await api.GetClassName(await api.GetFocus()) != WC_EDIT) {
+					FV.Refresh();
+				}
+			}, Addons.ForceRefresh.Timeout, Id);
+		},
+
 		ChangeNotify: async function (FV, pidls, lEvent) {
 			if (((lEvent & SHCNE_RENAMEITEM | SHCNE_RENAMEFOLDER) && await api.ILIsParent(FV, await pidls[1], true)) || await api.ILIsParent(FV, await pidls[0], true)) {
-				const Id = await FV.Id;
-				if (Addons.ForceRefresh.tid[Id]) {
-					clearTimeout(Addons.ForceRefresh.tid[Id]);
+				Addons.ForceRefresh.Refresh(FV);
+			}
+		},
+
+		FO: async function (Dest) {
+			const cFV = await te.Ctrls(CTRL_FV, false, window.chrome);
+			for (let i = cFV.length; --i >= 0;) {
+				if (await api.ILIsEqual(cFV[i], Dest)) {
+					Addons.ForceRefresh.Refresh(cFV[i]);
 				}
-				Addons.ForceRefresh.tid[Id] = setTimeout(async function (Id) {
-					delete Addons.ForceRefresh.tid[Id];
-					if (await api.GetClassName(await api.GetFocus()) != WC_EDIT) {
-						FV.Refresh();
-					}
-				}, Addons.ForceRefresh.Timeout, Id);
 			}
 		}
 	};
@@ -49,6 +62,40 @@ if (window.Addon == 1) {
 		});
 	}
 
+
+	if (Addons.ForceRefresh.Drop) {
+		AddEvent("Drop", async function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
+			const nType = await Ctrl.Type;
+			if (nType == CTRL_SB || nType == CTRL_EB) {
+				let Dest = await Ctrl.HitTest(pt);
+				if (Dest) {
+					if (!await fso.FolderExists(await Dest.Path)) {
+						if (await api.DropTarget(Dest)) {
+							return;
+						}
+						Dest = await Ctrl.FolderItem;
+					}
+				} else {
+					Dest = await Ctrl.FolderItem;
+				}
+				if (Dest) {
+					Addons.ForceRefresh.FO(Dest);
+				}
+			}
+		}, true);
+	}
+
+	if (Addons.ForceRefresh.Paste) {
+		AddEvent("Command", async function (Ctrl, hwnd, msg, wParam, lParam) {
+			const nType = await Ctrl.Type;
+			if (nType == CTRL_SB || nType == CTRL_EB) {
+				if ((wParam & 0xfff) + 1 == CommandID_PASTE) {
+					Addons.ForceRefresh.FO(await Ctrl.FolderItem);
+				}
+			}
+		}, true);
+	}
+
 	AddEvent("SelectionChanged", async function (Ctrl, uChange) {
 		if (await Ctrl.Type == CTRL_TC) {
 			if (await Ctrl.Selected) {
@@ -64,7 +111,6 @@ if (window.Addon == 1) {
 			}
 		}
 	});
-
 } else {
 	const ar = (await ReadTextFile("addons\\" + Addon_Id + "\\options.html")).split(/<!--panel-->/);
 	SetTabContents(0, "Tabs", ar[0]);

@@ -89,6 +89,10 @@ Sync.Everything = {
 	},
 
 	Open: function (Path, hwndView) {
+		if (Sync.Everything.Busy) {
+			return;
+		}
+		Sync.Everything.Busy = true;
 		const hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
 		if (hwnd) {
 			const query = new ApiStruct({
@@ -108,8 +112,9 @@ Sync.Everything = {
 			cds.cbData = query.Size;
 			cds.dwData = 2;//EVERYTHING_IPC_COPYDATAQUERY;
 			cds.lpData = query.Memory;
-			api.SendMessage(hwnd, WM_COPYDATA, hwndView, cds);
+			api.SendMessageTimeout(hwnd, WM_COPYDATA, hwndView, cds, 2, 9999);
 		}
+		Sync.Everything.Busy = false;
 		return hwnd;
 	}
 
@@ -162,9 +167,9 @@ AddEvent("GetFolderItemName", function (pid) {
 	}
 }, true);
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	if (Sync.Everything.IsHandle(Ctrl)) {
-		return MakeImgDataEx(Sync.Everything.Icon, bSimple, 16);
+		return MakeImgDataEx(Sync.Everything.Icon, bSimple, 16, clBk);
 	}
 });
 
@@ -212,7 +217,7 @@ if (!Sync.Everything.ExePath) {
 		path = path.replace(/ \(x86\)\\/, "\\");
 	}
 	if (fso.FileExists(path)) {
-		Sync.Everything.ExePath = api.PathQuoteSpaces(path) + " -startup";
+		Sync.Everything.ExePath = PathQuoteSpaces(path) + " -startup";
 	}
 }
 let icon = ExtractPath(te, item.getAttribute("Icon"));
@@ -224,7 +229,7 @@ if (!icon) {
 		}
 	}
 	if (!icon) {
-		icon = "bitmap:ieframe.dll,216,16,17";
+		icon = "icon:general,17";
 	}
 }
 Sync.Everything.Icon = icon;
@@ -237,4 +242,5 @@ if (item.getAttribute("MenuExec")) {
 		return nPos;
 	});
 }
+
 AddTypeEx("Add-ons", "Everything", Sync.Everything.Exec);

@@ -29,7 +29,7 @@ if (window.Addon == 1) {
 				if (!/path:.+/.test(s) && ((await api.GetAsyncKeyState(VK_SHIFT) < 0 ? 1 : 0) ^ Addons.Everything.Subfolders)) {
 					const path = await FV.FolderItem.Path;
 					if (/^[A-Z]:\\|^\\\\/i.test(path)) {
-						s += " path:" + (await api.PathQuoteSpaces(path + "\\")).replace(/\\\\$/, "\\");
+						s += " path:" + (await PathQuoteSpaces(path + "\\")).replace(/\\\\$/, "\\");
 					}
 				}
 				FV.Navigate(Addons.Everything.PATH + s, Addons.Everything.NewTab ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER);
@@ -79,7 +79,7 @@ if (window.Addon == 1) {
 		const z = screen.deviceYDPI / 96;
 		const s = item.getAttribute("Width") || 176;
 		const width = GetNum(s) == s ? ((s * z) + "px") : s;
-		SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(event)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', (WINVER < 0x602 || window.chrome ? 32 : 16) * z, 'px; vertical-align: middle"><span style="position: relative"><span id="ButtonEverythingClear" onclick="Addons.Everything.Clear()" class="button" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left: ', -28 * z, 'px; top:', 4 * z, 'px">r</span>', await GetImgTag({
+		await SetAddon(Addon_Id, Default, ['<input type="text" name="everythingsearch" placeholder="Everything" onkeydown="return Addons.Everything.KeyDown(event)" onfocus="Addons.Everything.Focus(this)" onblur="Addons.Everything.ShowButton()" style="width:', EncodeSC(width), '; padding-right:', (WINVER < 0x602 || window.chrome ? 32 : 16) * z, 'px; vertical-align: middle"><span style="position: relative"><span id="ButtonEverythingClear" onclick="Addons.Everything.Clear()" class="button" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left: ', -28 * z, 'px; top:', 4 * z, 'px">r</span>', await GetImgTag({
 			onclick: "Addons.Everything.Search()",
 			hidefocus: "true",
 			style: ['position: absolute; left:', -18 * z, 'px; top:', z, 'px; width:', 16 * z, 'px; height:', 16 * z, 'px'].join(""),
