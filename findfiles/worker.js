@@ -9,11 +9,18 @@ if (MainWindow.Exchange) {
 		const mask1 = ar.shift();
 		const filter1 = ar.join("|").replace(/%2F/g, "/").replace(/%25/g, "%");
 		const length1 = filter1.length * 2;
+		const arMask = mask1.split(/;/);
+		for (let i in arMask) {
+			const res = /^([^\*\?]+)$/.exec(arMask[i]);
+			if (res) {
+				arMask[i] = "*" + res[1] + "*";
+			}
+		}
 		const Progress = ex.ProgressDialog;
 		Progress.StartProgressDialog(ex.hwnd, null, 0x20);
 		try {
 			Progress.SetAnimation(hShell32, 150);
-			SearchFolders(list, ex.FV, ex.SessionId, ex.Locale, mask1, length1, new RegExp(filter1.replace(/([\+\*\.\?\^\$\[\-\]\|\(\)\\])/g, "\\$1"), "i"), Progress);
+			SearchFolders(list, ex.FV, ex.SessionId, ex.Locale, arMask.join(";"), length1, new RegExp(filter1.replace(/([\+\*\.\?\^\$\[\-\]\|\(\)\\])/g, "\\$1"), "i"), Progress);
 		} catch (e) { }
 		Progress.StopProgressDialog();
 		delete MainWindow.Exchange[arg[3]];
