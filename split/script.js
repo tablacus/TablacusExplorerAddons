@@ -57,7 +57,6 @@ if (window.Addon == 1) {
 					break;
 			}
 			TC[0].Selected.Focus();
-			RunEvent1("VisibleChanged", TC[0]);
 		},
 
 		Exec2: async function (nMax, TC) {
@@ -262,7 +261,7 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("Layout", function () {
-		SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
+		return SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
 	});
 
 	const o = document.getElementById("client");
