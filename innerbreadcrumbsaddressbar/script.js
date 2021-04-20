@@ -36,7 +36,9 @@ if (window.Addon == 1) {
 
 		Resize: function (Id) {
 			clearTimeout(this.tid[Id]);
-			this.tid[Id] = setTimeout("Addons.InnerBreadcrumbsAddressBar.Arrange(null, " + Id + ");", 500);
+			this.tid[Id] = setTimeout(function (Id) {
+				Addons.InnerBreadcrumbsAddressBar.Arrange(null, Id);
+			}, 500, Id);
 		},
 
 		Arrange: async function (FolderItem, Id) {
@@ -58,10 +60,10 @@ if (window.Addon == 1) {
 				const oImg = document.getElementById("breadcrumbsaddr_img_" + Id);
 				const width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetWidth - 2;
 				const height = oAddr.offsetHeight - 6;
-				o.style.width = "auto";
 				o.style.height = (oAddr.offsetHeight - 2) + "px";
 				const bRoot = api.ILIsEmpty(FolderItem);
 				const Items = JSON.parse(await Sync.InnerBreadcrumbsAddressBar.SplitPath(FolderItem));
+				o.style.width = "auto";
 				let bEmpty = true, n;
 				o.innerHTML = "";
 				for (n = 0; n < Items.length; ++n) {
@@ -358,36 +360,30 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeView2", async function (Ctrl) {
 		const r = await Promise.all([Ctrl.Parent.Id, Ctrl.FolderItem, api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)]);
-		Addons.InnerBreadcrumbsAddressBar.path2[r[0]] = r[2]
-		let o = document.getElementById("breadcrumbsaddressbar_" + r[0]);
-		if (o) {
-			o.value = r[2];
-		}
-		Addons.InnerBreadcrumbsAddressBar.Arrange(r[1], r[0]);
-		o = document.getElementById("breadcrumbsaddr_img_" + r[0]);
-		if (o) {
-			o.src = await GetIconImage(r[1], CLR_DEFAULT | COLOR_WINDOW);
-		}
-		setTimeout("Addons.InnerBreadcrumbsAddressBar.Blur(" + r[0] + ")", 99);
+		Addons.InnerBreadcrumbsAddressBar.Blur(r[0]);
+		Addons.InnerBreadcrumbsAddressBar.path2[r[0]] = r[2];
+		await Addons.InnerBreadcrumbsAddressBar.Arrange(r[1], r[0]);
+		(document.getElementById("breadcrumbsaddressbar_" + r[0]) || {}).value = r[2];
+		(document.getElementById("breadcrumbsaddr_img_" + r[0]) || {}).src = await GetIconImage(r[1], CLR_DEFAULT | COLOR_WINDOW);
 	});
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {
 		const z = screen.deviceYDPI / 96;
 		let s = (Addons.InnerBreadcrumbsAddressBar.path2[Id] || "").replace(/"/, "");
 		s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbsbuttons_', Id, '"  class="breadcrumb" style="position: absolute; top: 1px; left: 1px; padding-left: ', 16 * z + 4, 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Click1(event,', Id, ')" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Popup1(event); return false" onmousedown="return Addons.InnerBreadcrumbsAddressBar.Down1(event,', Id, ')" onmouseup="Addons.InnerBreadcrumbsAddressBar.Up1(event); return false" onmouseover="Addons.InnerBreadcrumbsAddressBar.Over1(event)" onmouseout="Addons.InnerBreadcrumbsAddressBar.Out1(event)"></div><input id="breadcrumbsaddressbar_', Id, '" type="text" value="', s, '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(event, this,', Id, ')" oninput="AdjustAutocomplete(this.value)" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ContextMenu(this)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(', Id, ')" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(', Id, ')" onresize="Addons.InnerBreadcrumbsAddressBar.Resize(', Id, ')" style="width: 100%; vertical-align: middle; padding-left: ', 16 * z + 4, 'px; padding-right: 16px;"><div class="breadcrumb"><div id="breadcrumbsselect_', Id, '" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, ', Id, ')">', BUTTONS.dropdown, '</div></div>'];
-		s.push('<img id="breadcrumbsaddr_img_', Id, '" src="icon:shell32.dll,3,16"');
+		s.push('<img id="breadcrumbsaddr_img_', Id, '"');
 		s.push(' onclick="return Addons.InnerBreadcrumbsAddressBar.ExecEx(', Id, ');"');
 		s.push(' oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ExecEx(', Id, '); return false;"');
 		s.push(' style="position: absolute; left: 4px; top:', 2 * z, 'px; width: ', 16 * z, 'px; height: ', 16 * z, 'px; z-index: 3; border: 0px"></div>');
-		SetAddon(null, "Inner1Center_" + Id, s.join(""));
+		return SetAddon(null, "Inner1Center_" + Id, s.join(""));
 	});
 
-	AddEvent("Arrange", async function (Ctrl, rc) {
-		if (await Ctrl.Type == CTRL_TC) {
-			if (await Ctrl.Selected) {
-				Addons.InnerBreadcrumbsAddressBar.Resize(await Ctrl.Id);
+	AddEvent("Arrange", function (Ctrl, rc) {
+		Promise.all([Ctrl.Type, Ctrl.Selected, Ctrl.Id]).then(function (r) {
+			if (r[0] == CTRL_TC && r[1]) {
+				Addons.InnerBreadcrumbsAddressBar.Resize(r[2]);
 			}
-		}
+		});
 	});
 
 	//Menu
