@@ -169,7 +169,7 @@ AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		if (Common.Tabgroups.DragOpen) {
 			const i = Sync.Tabgroups.FromPt(pt);
 			if (i >= 0) {
-				if (i != te.Data.Tabgroups.Index) {
+				if (i + 1 != te.Data.Tabgroups.Index) {
 					if (IsDrag(pt, Common.Tabgroups.pt)) {
 						Common.Tabgroups.pt = pt.Clone();
 						InvokeUI("Addons.Tabgroups.Over", i + 1);

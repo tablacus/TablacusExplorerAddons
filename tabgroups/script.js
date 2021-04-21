@@ -11,22 +11,17 @@ if (window.Addon == 1) {
 		strNewTab: await GetText("New Tab"),
 
 		Init: async function () {
-			SetAddon(Addon_Id, Default, ['<ul class="', Addons.Tabgroups.bTab ? "tab0" : "menu0", '" id="tabgroups"><li> </li></ul>']);
+			await SetAddon(Addon_Id, Default, ['<ul class="', Addons.Tabgroups.bTab ? "tab0" : "menu0", '" id="tabgroups"><li> </li></ul>']);
 			if (!await te.Data.Tabgroups) {
 				te.Data.Tabgroups = await api.CreateObject("Object");
 				te.Data.Tabgroups.Data = await api.CreateObject("Array");
 				te.Data.Tabgroups.Index = 1;
 			}
 			Addons.Tabgroups.Data = await te.Data.Tabgroups.Data;
-
-			setTimeout(async function () {
-				if (!await te.Data.Tabgroups.Click) {
-					Sync.Tabgroups.LoadWindow(await OpenXml("window.xml", true, false));
-				}
-			}, 999);
 		},
 
-		Arrange: async function (bForce) {
+		Arrange: async function (bForce, bWait) {
+			const promise = [];
 			await Addons.Tabgroups.Fix();
 			const s = [];
 			const o = document.getElementById("tabgroups");
@@ -34,15 +29,17 @@ if (window.Addon == 1) {
 			const nLen = await GetLength(await te.Data.Tabgroups.Data);
 			if (bForce || tabs.length != nLen + 1) {
 				for (let i = 0; i < nLen; ++i) {
-					Addons.Tabgroups.Tab(s, i + 1);
+					promise.push(Addons.Tabgroups.Tab(s, i + 1));
 				}
 				s.push('<li class=', Addons.Tabgroups.bTab ? ' "tab3"' : "menu", ' title="', Addons.Tabgroups.strNewTab, '" onclick="Sync.Tabgroups.Add()">+</li>');
 				o.innerHTML = s.join("");
 			}
 			for (let i = 0; i < nLen; ++i) {
-				Addons.Tabgroups.Style(tabs, i + 1);
+				promise.push(Addons.Tabgroups.Style(tabs, i + 1));
 			}
-			Addons.Tabgroups.Change();
+			promise.push(Addons.Tabgroups.Change());
+			bWait && await Promise.all(promise);
+			Resize();
 		},
 
 		Tab: function (s, i) {
@@ -449,10 +446,9 @@ if (window.Addon == 1) {
 
 	AddEvent("Layout", Addons.Tabgroups.Init);
 
-	AddEvent("Load", function () {
+	AddEvent("Load", async function () {
 		Addons.Tabgroups.ImgLock = Addons.TabPlus ? Addons.TabPlus.ImgLock2 : '<img src="' + MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13) + '" style="width: ' + (13 * 96 / screen.deviceYDPI) + 'px; padding-right: 2px">';
-
-		setTimeout(Addons.Tabgroups.Arrange, 500);
+		await Addons.Tabgroups.Arrange(false, true);
 	});
 
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
