@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2021.4.19</MinVersion>
+    <pubDate>Thu, 22 Apr 2021 00:00:00 GMT</pubDate>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>New tab on forward</Name>
+    <Description>If you can't go forward, open a new tab.</Description>
+  </en>
+  <ja>
+    <Name>進めない時は新しいタブを開く</Name>
+  </ja>
+</TablacusExplorer>

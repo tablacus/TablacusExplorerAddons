@@ -66,6 +66,12 @@ Sync.Tabgroups = {
 		}
     },
 
+	Init: function () {
+		if (!te.Data.Tabgroups.Data.length) {
+			Sync.Tabgroups.Add();
+		}
+	},
+
     Load: function () {
         const commdlg = api.CreateObject("CommonDialog");
         commdlg.InitDir = BuildPath(te.Data.DataFolder, "layout");

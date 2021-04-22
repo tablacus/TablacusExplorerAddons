@@ -448,6 +448,7 @@ if (window.Addon == 1) {
 
 	AddEvent("Load", async function () {
 		Addons.Tabgroups.ImgLock = Addons.TabPlus ? Addons.TabPlus.ImgLock2 : '<img src="' + MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13) + '" style="width: ' + (13 * 96 / screen.deviceYDPI) + 'px; padding-right: 2px">';
+		Sync.Tabgroups.Init();
 		await Addons.Tabgroups.Arrange(false, true);
 	});
 
