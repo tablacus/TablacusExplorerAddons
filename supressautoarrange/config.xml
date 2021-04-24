@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.08</Version>
+    <Version>1.00</Version>
     <MinVersion>2020.4.23</MinVersion>
     <pubDate>Sat, 24 Apr 2021 00:00:00 GMT</pubDate>
-    <Options>Common:0:0</Options>
-    <DllVersion>1.0.2.0</DllVersion>
+    <DllVersion>1.0.0.0</DllVersion>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Thumbnail engine</Name>
-    <Description>Thumbnail engine</Description>
+    <Name>Suppress auto arrange</Name>
+    <Description>Suppress automatic arrangement when updating.</Description>
   </en>
   <ja>
-    <Name>サムネイルエンジン</Name>
+    <Name>更新時の自動整列を抑制</Name>
   </ja>
-  <zh>
-    <Name>預覽影片截圖</Name>
-  </zh>
 </TablacusExplorer>

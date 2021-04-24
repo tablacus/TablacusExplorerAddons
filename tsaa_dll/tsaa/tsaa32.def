@@ -1,0 +1,4 @@
+LIBRARY	"tsaa32"
+
+EXPORTS
+	MessageSFVCB PRIVATE

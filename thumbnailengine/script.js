@@ -2,9 +2,10 @@ const Addon_Id = "thumbnailengine";
 if (window.Addon == 1) {
 	const item = await GetAddonElement(Addon_Id);
 	Addons.ThumbnailEngine = {
-		hModule: await api.LoadLibraryEx(BuildPath(ui_.Installed, ["addons\\thumbnailengine\\thumb", ui_.bit, ".dll"].join("")), 0, 0),
+		hModule: await api.LoadLibraryEx(BuildPath(ui_.Installed, "addons\\thumbnailengine\\thumb" + ui_.bit + ".dll"), 0, 0),
 		Finalize: function () {
 			if (Addons.ThumbnailEngine.hModule) {
+				te.RemoveEvent("GetImage", Addons.ThumbnailEngine.Proc);
 				api.FreeLibrary(Addons.ThumbnailEngine.hModule);
 				delete Addons.ThumbnailEngine.hModule;
 			}
@@ -20,7 +21,8 @@ if (window.Addon == 1) {
 		api.RunDLL(hModule, "SetTPW", 0, 0, !GetNum(item.getAttribute("NoTP")), 1);
 		api.RunDLL(hModule, "SetEIW", 0, 0, !GetNum(item.getAttribute("NoEI")), 1);
 
-		te.AddEvent("GetImage", await api.GetProcAddress(hModule, "GetImage"));
+		Addons.ThumbnailEngine.Proc = await api.GetProcAddress(hModule, "GetImage");
+		te.AddEvent("GetImage", Addons.ThumbnailEngine.Proc);
 
 		AddEvent("Finalize", Addons.ThumbnailEngine.Finalize);
 
