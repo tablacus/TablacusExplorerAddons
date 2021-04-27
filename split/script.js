@@ -57,6 +57,7 @@ if (window.Addon == 1) {
 					break;
 			}
 			TC[0].Selected.Focus();
+			ChangeView(TC[0].Selected);
 		},
 
 		Exec2: async function (nMax, TC) {
