@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.22</Version>
+    <Version>1.00</Version>
     <MinVersion>2021.4.27</MinVersion>
     <pubDate>Wed, 28 Apr 2021 00:00:00 GMT</pubDate>
-    <Options>Common:0,1:0</Options>
-    <Creator>Gaku</Creator>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
   </General>
   <en>
-    <Name>Badge</Name>
-    <Description>Assign and sort items with a 1 to 5 rating system displayed as an icon badge</Description>
+    <Name>Items count</Name>
+    <Description>Show the number of items in the size column</Description>
   </en>
   <ja>
-    <Name>バッジ</Name>
+    <Name>項目数</Name>
+    <Description>サイズカラムに項目数を表示</Description>
   </ja>
-  <zh>
-    <Name>徽章</Name>
-  </zh>
 </TablacusExplorer>

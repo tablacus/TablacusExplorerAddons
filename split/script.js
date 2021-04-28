@@ -56,8 +56,9 @@ if (window.Addon == 1) {
 					TC[3].Height = "50%";
 					break;
 			}
-			TC[0].Selected.Focus();
-			ChangeView(TC[0].Selected);
+			const FV = await TC[0].Selected;
+			FV.Focus();
+			ChangeView(FV);
 		},
 
 		Exec2: async function (nMax, TC) {

@@ -114,7 +114,6 @@ Sync.Label = {
 		const db = Common.Label.Groups;
 		if (db) {
 			const mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 			db.ENumCB(function (n, v) {
 				mii.hSubMenu = api.CreatePopupMenu();
@@ -142,7 +141,6 @@ Sync.Label = {
 		if (nPos == g_nPos) {
 			hMenu = api.sscanf(hParent, "%llx");
 			const mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STATE;
 			mii.fState = MFS_DISABLED;
 			api.SetMenuItemInfo(hMenu, nIndex, true, mii);
@@ -436,7 +434,7 @@ Sync.Label.DB.OnLoad = function () {
 	});
 }
 
-AddEvent("Load", function () {
+AddEvent("Layout", function () {
 	Sync.Label.DB.Load();
 	Sync.Label.bModified = false;
 	if (Sync.Label.DB.OnLoad) {
@@ -475,9 +473,9 @@ AddEvent("GetFolderItemName", function (pid) {
 	}
 }, true);
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	if (Sync.Label.IsHandle(Ctrl)) {
-		return MakeImgDataEx(Sync.Label.Icon, bSimple, 16);
+		return MakeImgDataEx(Sync.Label.Icon, bSimple, 16, clBk);
 	}
 });
 
@@ -563,7 +561,6 @@ AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, N
 			const Items = api.OleGetClipboard();
 			if (Items && Items.Count) {
 				const mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
 				mii.fMask = MIIM_ID | MIIM_STATE;
 				const paste = api.LoadString(hShell32, 33562) || "&Paste";
 				for (let i = api.GetMenuItemCount(hMenu); i-- > 0;) {
@@ -684,7 +681,6 @@ if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
 		if (item && item.IsFileSystem) {
 			const mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 			mii.hSubMenu = api.CreatePopupMenu();
 			mii.dwTypeData = Sync.Label.strName;
@@ -716,7 +712,6 @@ if (item.getAttribute("MenuExec")) {
 				ExtraMenuCommand[nPos] = Sync.Label.DoSort;
 			}
 			const mii2 = api.Memory("MENUITEMINFO");
-			mii2.cbSize = mii.Size;
 			mii2.fMask = MIIM_STRING | MIIM_SUBMENU;
 			mii2.hSubMenu = api.CreatePopupMenu();
 			mii2.dwTypeData = GetText("Add");

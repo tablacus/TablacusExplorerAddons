@@ -294,7 +294,7 @@ Sync.Badge = {
 	}
 }
 
-AddEvent("Load", function () {
+AddEvent("Layout", function () {
 	Sync.Badge.DB = new SimpleDB("badge");
 	Sync.Badge.DB.Load();
 	Sync.Badge.DB.OnChange = function (n, s, old) {
@@ -306,9 +306,8 @@ AddEvent("Load", function () {
 	}
 	AddEvent("SaveConfig", Sync.Badge.DB.Save);
 	AddEvent("Finalize", Sync.Badge.DB.Close);
-
 	const Installed0 = Sync.Badge.DB.Get('%Installed%').toUpperCase();
-	const Installed1 = Sync.Badge.Portable ? fso.GetDriveName(api.GetModuleFileName(null)).toUpperCase() : "";
+	const Installed1 = Sync.Badge.Portable ? fso.GetDriveName(te.Data.Installed).toUpperCase() : "";
 	if (Installed0 && Sync.Badge.Portable && Installed0 != Installed1) {
 		Sync.Badge.DB.ENumCB(function (path, badge) {
 			const drv = fso.GetDriveName(path);
@@ -337,9 +336,9 @@ AddEvent("GetFolderItemName", function (pid) {
 	}
 }, true);
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	if (Sync.Badge.IsHandle(Ctrl)) {
-		return MakeImgDataEx("bitmap:ieframe.dll,699,16,28", bSimple, 16);
+		return MakeImgDataEx("bitmap:ieframe.dll,699,16,28", bSimple, 16, clBk);
 	}
 });
 
@@ -439,7 +438,6 @@ AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, N
 			const Items = api.OleGetClipboard();
 			if (Items && Items.Count) {
 				const mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
 				mii.fMask = MIIM_ID | MIIM_STATE;
 				const paste = api.LoadString(hShell32, 33562) || "&Paste";
 				for (let i = api.GetMenuItemCount(hMenu); i-- > 0;) {
@@ -568,7 +566,6 @@ if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
 		if (item && item.IsFileSystem) {
 			const mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 			mii.hSubMenu = api.CreatePopupMenu();
 			mii.dwTypeData = Sync.Badge.strName;
@@ -576,7 +573,6 @@ if (item.getAttribute("MenuExec")) {
 				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
 				if (path) {
 					const mii2 = api.Memory("MENUITEMINFO");
-					mii2.cbSize = mii.Size;
 					mii2.fMask = MIIM_STRING | MIIM_SUBMENU;
 					mii2.hSubMenu = api.CreatePopupMenu();
 					mii2.dwTypeData = api.LoadString(hShell32, 12850);
@@ -608,6 +604,7 @@ if (item.getAttribute("MenuExec")) {
 		return nPos;
 	});
 }
+
 //Image
 let hdc, hFont, s;
 for (let i = 6; --i;) {
@@ -623,8 +620,7 @@ for (let i = 6; --i;) {
 	}
 	const rc = api.Memory("RECT");
 	const w = 32 * screen.deviceYDPI / 96;
-	rc.right = w;
-	rc.bottom = w;
+	api.SetRect(rc, 0, 0, w, w);
 	const hbm = api.CreateCompatibleBitmap(hdc, w, w);
 	const hmdc = api.CreateCompatibleDC(hdc);
 	const hOld = api.SelectObject(hmdc, hbm);
@@ -647,6 +643,7 @@ for (let i = 6; --i;) {
 	api.SelectObject(hmdc, hOld);
 	api.DeleteDC(hmdc);
 	Sync.Badge.Image[i] = image.FromHBITMAP(hbm);
+	Sync.Badge.Image[i].AlphaBlend(null, 90);
 	api.DeleteObject(hbm);
 }
 if (hdc) {
