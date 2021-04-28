@@ -5,6 +5,7 @@ Sync.ItemsCount = {
 	Items: [await api.LoadString(hShell32, 38192) || (await api.LoadString(hShell32, 6466) || "%s items").replace(/%1!ls!/, "%s"), api.LoadString(hShell32, 38193) || (await api.LoadString(hShell32, 6466) || "%s item").replace(/%1!ls!/, "%s")],
 
 	ReplaceColumns: function (FV, pid, s) {
+		let n;
 		try {
 			if (s || !pid) {
 				return;
@@ -17,7 +18,7 @@ Sync.ItemsCount = {
 			if (!db) {
 				FV.Data.ItemsCount = db = api.CreateObject("Object");
 			}
-			let n = db[path];
+			n = db[path];
 			if (n || api.PathMatchSpec(path, BuildPath(GetTempPath(1), "*")) || !IsFolderEx(pid)) {
 				return n;
 			}
