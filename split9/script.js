@@ -54,13 +54,14 @@ if (window.Addon == 1) {
 			TC[8].Width = "33.33%";
 			TC[8].Height = "33.33%";
 
-			TC[0].Selected.Focus();
-			RunEvent1("VisibleChanged", TC[0]);
+			const FV = await TC[0].Selected;
+			FV.Focus();
+			ChangeView(FV);
 		}
 	};
 
 	AddEvent("Layout", function () {
-		SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
+		return SetAddon(Addon_Id, Default, '<span id="' + Addon_Id + '"></span>');
 	});
 
 	AddEvent("Load", function () {
