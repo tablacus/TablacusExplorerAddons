@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2021.5.2</MinVersion>
+    <pubDate>Mon, 03 May 2021 00:00:00 GMT</pubDate>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Down key next</Name>
+    <Description>In Icon View (Align left). Down-arrow key: Move to the next item. Up-arrow key: Move to the previous item.</Description>
+  </en>
+  <ja>
+    <Name>下キーで次に</Name>
+    <Description>アイコン表示(左揃え)で、下方向キー: 次の項目に移動。上方向キー: 前の項目に移動。</Description>
+  </ja>
+</TablacusExplorer>

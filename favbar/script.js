@@ -178,7 +178,6 @@ if (window.Addon == 1) {
 
 			const o = document.getElementById('_favbar');
 			o.innerHTML = s.join("");
-			ApplyLang(o);
 			Resize();
 		},
 
@@ -213,7 +212,7 @@ if (window.Addon == 1) {
 		}
 	};
 
-	AddEvent("Layout", async function () {
+	AddEvent("Layout", function () {
 		Addons.FavBar.Parent = document.getElementById(SetAddon(Addon_Id, Default, '<span id="_favbar"></span>'));
 	});
 

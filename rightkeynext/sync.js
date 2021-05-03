@@ -1,7 +1,7 @@
 Sync.RightKeyNext = {
 	Move: function (Ctrl, nMove, dwFlags) {
 		const hList = Ctrl.hwndList;
-		if (hList) {
+		if (hList && !(Ctrl.FolderFlags & 0x800)) {
 			if (!(api.SendMessage(hList, LVM_GETVIEW, 0, 0) & 1)) {
 				const nIndex = Ctrl.GetFocusedItem + nMove;
 				if (nIndex >= 0 && nIndex < Ctrl.ItemCount(SVGIO_ALLVIEW)) {

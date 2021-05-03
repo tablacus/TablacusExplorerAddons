@@ -10,7 +10,7 @@ Sync.EmptyFolder = {
 
 	GetSearchString: function (Ctrl) {
 		if (Ctrl) {
-			const res = new RegExp("^" + Sync.EmptyFolder.PATH + "\\s*(.*)", "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			const res = new RegExp("^" + Sync.EmptyFolder.PATH + "\\s*(.*)", "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			if (res) {
 				return res[1];
 			}
@@ -26,13 +26,13 @@ Sync.EmptyFolder = {
 			const Selected = FV.SelectedItems();
 			if (Selected && Selected.Count) {
 				for (let i = Selected.Count; i--;) {
-					const path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL);
+					const path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORPARSING);
 					if (/^[A-Z]:\\|^\\/i.test(path)) {
 						ar.unshift(path);
 					}
 				}
 			} else {
-				const path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				const path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING);
 				if (/^[A-Z]:\\|^\\/i.test(path)) {
 					ar.push(path);
 				}
@@ -50,7 +50,7 @@ Sync.EmptyFolder = {
 				const FV = TC[j];
 				if (this.GetSearchString(FV)) {
 					if (FV.RemoveItem(pid) == S_OK && pid2) {
-						FV.AddItem(api.GetDisplayNameOf(pid2, SHGDN_FORPARSING | SHGDN_ORIGINAL));
+						FV.AddItem(api.GetDisplayNameOf(pid2, SHGDN_FORPARSING));
 					}
 				}
 			}
@@ -68,7 +68,7 @@ Sync.EmptyFolder = {
 		for (let j in Items) {
 			let Item = Items.Item(j);
 			let path = Item.Path;
-			let r = api.CreateProcess(rd + api.PathQuoteSpaces(path));
+			let r = api.CreateProcess(rd + PathQuoteSpaces(path));
 			if (r) {
 				r = r.replace(/\s$/, "");
 				oErr[r] = (oErr[r] || '') + path + "\n"
@@ -110,9 +110,9 @@ AddEvent("BeginNavigate", function (Ctrl) {
 	}
 });
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	if (Sync.EmptyFolder.GetSearchString(Ctrl)) {
-		return MakeImgDataEx(Sync.EmptyFolder.Icon || "folder:closed", bSimple, 16);
+		return MakeImgDataEx(Sync.EmptyFolder.Icon || "folder:closed", bSimple, 16, clBk);
 	}
 });
 
