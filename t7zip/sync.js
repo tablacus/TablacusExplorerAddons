@@ -2,7 +2,7 @@ const Addon_Id = "t7zip";
 const item = GetAddonElement(Addon_Id);
 
 Sync.T7Zip = {
-	DLL: api.DllGetClassObject(BuildPath(GetParentFolderName(api.GetModuleFileName(null)), ["addons\\t7zip\\t7z", g_.bit, ".dll"].join("")), "{BFD084CA-C9AA-4bd3-9984-D5ED699A0711}"),
+	DLL: api.DllGetClassObject(BuildPath(te.Data.Installed, ["addons\\t7zip\\t7z", g_.bit, ".dll"].join("")), "{BFD084CA-C9AA-4bd3-9984-D5ED699A0711}"),
 
 	Cmd: {},
 	Mode: { Extract: 1, Add: 2, Delete: 3 },
@@ -16,14 +16,14 @@ Sync.T7Zip = {
 			return;
 		}
 		const lib = {
-			file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL),
+			file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING),
 			path: ""
 		}
 		for (let nDog = 32; /^[A-Z]:\\|^\\\\[A-Z]/i.test(lib.file) && nDog--;) {
 			if (Sync.T7Zip.DLL.IsSupported(lib.file, Sync.T7Zip.Mode[need])) {
 				return lib;
 			}
-			lib.path = BuildPath(fso.GetFileName(lib.file), lib.path);
+			lib.path = BuildPath(GetFileName(lib.file), lib.path);
 			lib.file = GetParentFolderName(lib.file);
 		}
 	},
@@ -484,9 +484,9 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 	});
 }
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	const lib = Sync.T7Zip.GetObject(Ctrl);
 	if (lib && lib.path) {
-		return MakeImgDataEx("icon:shell32.dll,3", bSimple, 16);
+		return MakeImgDataEx("icon:shell32.dll,3", bSimple, 16, clBk);
 	}
 });

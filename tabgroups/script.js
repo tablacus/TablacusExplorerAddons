@@ -31,7 +31,7 @@ if (window.Addon == 1) {
 				for (let i = 0; i < nLen; ++i) {
 					promise.push(Addons.Tabgroups.Tab(s, i + 1));
 				}
-				s.push('<li class=', Addons.Tabgroups.bTab ? ' "tab3"' : "menu", ' title="', Addons.Tabgroups.strNewTab, '" onclick="Sync.Tabgroups.Add()">+</li>');
+				s.push('<li class=', Addons.Tabgroups.bTab ? ' "tab3"' : "menu", ' title="', Addons.Tabgroups.strNewTab, '" onclick="Sync.Tabgroups.Add()" onmouseover="MouseOver(this)" onmouseout="MouseOut()">+</li>');
 				o.innerHTML = s.join("");
 			}
 			for (let i = 0; i < nLen; ++i) {
@@ -45,7 +45,7 @@ if (window.Addon == 1) {
 		Tab: function (s, i) {
 			s.push('<li id="tabgroups', i, '"');
 			s.push(' onmousedown="return Addons.Tabgroups.Down(event, this)" onmouseup="return Addons.Tabgroups.Up(this)"');
-			s.push(' oncontextmenu="Addons.Tabgroups.Popup(event, this); return false;" onmousewheel="Addons.Tabgroups.Wheel(event)" ondblclick="return Addons.Tabgroups.Edit(this)"');
+			s.push(' oncontextmenu="Addons.Tabgroups.Popup(event, this); return false;" onmousewheel="Addons.Tabgroups.Wheel(event)" ondblclick="return Addons.Tabgroups.Edit(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()"');
 			if (ui_.IEVer > 9) {
 				s.push(' draggable="true" ondragstart="return Addons.Tabgroups.Start5(event, this)" ondragend="Addons.Tabgroups.End5()"');
 			} else {

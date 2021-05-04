@@ -76,7 +76,7 @@ Sync.LabelSQLiteOdbc = {
 	}
 };
 
-AddEvent("Load", function (fn) {
+AddEvent("Layout", function (fn) {
 	if (!Sync.Label) {
 		return;
 	}

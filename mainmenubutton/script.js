@@ -11,7 +11,7 @@ if (window.Addon == 1) {
 			if (!el) {
 				el = document.getElementById("mainmenubutton_" + Id) || document.getElementById("mainmenubutton_$");
 			}
-			Ctrl = await GetFolderViewEx(el);
+			Ctrl = await GetFolderView(el);
 			Ctrl.Focus();
 			Sync.MainMenuButton.Popup(Ctrl, await GetPosEx(el, 9));
 		},
@@ -28,11 +28,10 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("Layout", async function () {
-		const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-		SetAddon(Addon_Id, Default, ['<span id="mainmenubutton_$" class="button" onmousedown="Addons.MainMenuButton.Popup(this)">', await GetImgTag({
+		await SetAddon(Addon_Id, Default, ['<span id="mainmenubutton_$" class="button" onmousedown="Addons.MainMenuButton.Popup(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: await GetText("Menus"),
 			src: item.getAttribute("Icon") || "font:Consolas,0x2630"
-		}, h), '</span>']);
+		}, GetIconSizeEx(item)), '</span>']);
 	});
 
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");

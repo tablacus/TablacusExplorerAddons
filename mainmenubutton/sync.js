@@ -25,7 +25,6 @@ Sync.MainMenuButton = {
 		const hMenu = api.CreatePopupMenu();
 		for (let i = Sync.MainMenuButton.strMenus.length; i--;) {
 			var mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 			mii.dwTypeData = GetText(Sync.MainMenuButton.strMenus[i]);
 			mii.hSubMenu = api.CreatePopupMenu();

@@ -17,7 +17,7 @@ Sync.SPIPlus = {
 			return;
 		}
 		const lib = {
-			file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL),
+			file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING),
 			path: ""
 		}
 		for (let nDog = 32; /^[A-Z]:\\|^\\\\[A-Z]/i.test(lib.file) && nDog--;) {
@@ -42,7 +42,7 @@ Sync.SPIPlus = {
 			if (dw) {
 				dw.Free();
 			}
-			lib.path = BuildPath(fso.GetFileName(lib.file), lib.path);
+			lib.path = BuildPath(GetFileName(lib.file), lib.path);
 			lib.file = GetParentFolderName(lib.file);
 		}
 	},
@@ -337,10 +337,10 @@ AddEvent("Load", function () {
 		});
 	}
 
-	AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+	AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 		const lib = Sync.SPIPlus.GetObject(Ctrl);
 		if (lib && lib.path) {
-			return MakeImgDataEx("icon:shell32.dll,3", bSimple, 16);
+			return MakeImgDataEx("icon:shell32.dll,3", bSimple, 16, clBk);
 		}
 	});
 

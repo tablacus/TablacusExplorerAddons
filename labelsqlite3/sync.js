@@ -108,7 +108,7 @@ Sync.LabelSQLite3 = {
 	}
 };
 
-AddEvent("Load", function () {
+AddEvent("Layout", function () {
 	if (!Sync.Label) {
 		return;
 	}
@@ -157,7 +157,7 @@ AddEvent("Load", function () {
 						Sync.LabelSQLite3.db.sqlite3_exec("DELETE FROM labels WHERE path='" + path.replace(/'/, "''") + "'");
 					}
 					const fn = api.ObjGetI(this, "OnChange");
-					fn && api.Invoke(fn, [path, s, s1]);
+					fn && InvokeFunc(fn, [path, s, s1]);
 				}
 			},
 
