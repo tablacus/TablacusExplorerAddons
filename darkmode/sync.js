@@ -1,16 +1,14 @@
-var Addon_Id = "darkmode";
+const Addon_Id = "darkmode";
 
 Sync.DarkMode = {
 	clrText: 0xffffff,
 	clrBk: 0x202020,
 	clrLine: 0x555555,
-	css: api.UrlCreateFromPath(BuildPath(te.Data.Installed, "addons\\darkmode\\style.css")),
-
 
 	Arrange: function (Ctrl) {
-		var FV = GetFolderView(Ctrl);
+		const FV = GetFolderView(Ctrl);
 		if (FV) {
-			var hwnd = FV.hwndList;
+			const hwnd = FV.hwndList;
 			if (hwnd) {
 				Sync.DarkMode.SetColor(FV, hwnd);
 			}
@@ -37,8 +35,8 @@ Sync.DarkMode = {
 	},
 
 	Init: function () {
-		var cFV = te.Ctrls(CTRL_FV);
-		for (var i in cFV) {
+		const cFV = te.Ctrls(CTRL_FV);
+		for (let i in cFV) {
 			this.Arrange(cFV[i]);
 		}
 	}
@@ -77,15 +75,13 @@ if (api.IsAppThemed() && WINVER > 0x603) {
 	AddEvent("Load", function () {
 		if (!Sync.ClassicStyle) {
 			AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes) {
-				if (pid) {
-					var uState = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, LVIS_SELECTED);
-					if (uState & LVIS_SELECTED || nmcd.uItemState & CDIS_HOT) {
-						var rc = api.Memory("RECT");
-						rc.left = LVIR_SELECTBOUNDS;
-						api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
-						api.SetDCBrushColor(nmcd.hdc, 0x555555);
-						api.FillRect(nmcd.hdc, rc, api.GetStockObject(DC_BRUSH));
-					}
+				const uState = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, LVIS_SELECTED);
+				if (uState & LVIS_SELECTED || nmcd.uItemState & CDIS_HOT) {
+					const rc = api.Memory("RECT");
+					rc.left = LVIR_SELECTBOUNDS;
+					api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
+					api.SetDCBrushColor(nmcd.hdc, 0x555555);
+					api.FillRect(nmcd.hdc, rc, api.GetStockObject(DC_BRUSH));
 				}
 			}, true);
 		}

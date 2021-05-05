@@ -7,11 +7,11 @@ Sync.History1 = {
 	CONFIG: BuildPath(te.Data.DataFolder, "config\\history.tsv"),
 	bSave: false,
 	Prev: null,
-	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-	nPos: api.LowPart(item.getAttribute("MenuPos")),
+	sName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+	nPos: GetNum(item.getAttribute("MenuPos")),
 
 	IsHandle: function (Ctrl) {
-		return api.PathMatchSpec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), Sync.History1.PATH + "*");
+		return new RegExp("^" + Sync.History1.PATH, "").test("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 	},
 
 	Enum: function (pid, Ctrl, fncb, SessionId) {
@@ -145,13 +145,13 @@ AddEvent("TranslatePath", function (Ctrl, Path) {
 
 AddEvent("GetFolderItemName", function (pid) {
 	if (Sync.History1.IsHandle(pid)) {
-		return Sync.History1.strName;
+		return Sync.History1.sName;
 	}
 }, true);
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	if (Sync.History1.IsHandle(Ctrl)) {
-		return MakeImgDataEx("icon:shell32.dll,20", bSimple, 16);
+		return MakeImgDataEx("icon:shell32.dll,20", bSimple, 16, clBk);
 	}
 });
 
@@ -185,7 +185,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 	}
 	if (!Verb || Verb == CommandID_STORE - 1) {
 		if (ContextMenu.Items.Count >= 1) {
-			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+			const path = ContextMenu.Items.Item(0).Path;
 			if (Sync.History1.IsHandle(path)) {
 				const FV = te.Ctrl(CTRL_FV);
 				FV.Navigate(path, SBSP_SAMEBROWSER);
@@ -206,7 +206,7 @@ AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-		api.InsertMenu(hMenu, Sync.History1.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.History1.strName));
+		api.InsertMenu(hMenu, Sync.History1.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.History1.sName);
 		ExtraMenuCommand[nPos] = Sync.History1.Exec;
 		return nPos;
 	});

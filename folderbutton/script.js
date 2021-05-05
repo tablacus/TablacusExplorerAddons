@@ -5,13 +5,13 @@ if (window.Addon == 1) {
 	Addons.FolderButton = {
 		bDrag: false,
 		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
-		IconSize: GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16),
+		IconSize: GetIconSizeEx(item),
 
 		Exec: async function (Ctrl, pt) {
 			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
-				InputDialog("Path", await api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), async function (r) {
+				InputDialog("Path", await api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), async function (r) {
 					if (r) {
 						FV.Navigate(r, await GetNavigateFlags(FV));
 					}
@@ -75,13 +75,8 @@ if (window.Addon == 1) {
 
 	AddEvent("Layout", async function () {
 		let s = item.getAttribute("Icon");
-		if (s) {
-			s = await GetImgTag({
-				title: Addons.FolderButton.sName,
-				src: s
-			}, Addons.FolderButton.IconSize);
-		} else {
-			s = "";
+		if (!s) {
+			s = "folder:closed";
 			AddEvent("ChangeView2", async function (Ctrl) {
 				const Id = await Ctrl.Parent.Id;
 				let o = document.getElementById("FolderButton_$");
@@ -94,7 +89,10 @@ if (window.Addon == 1) {
 				}
 			});
 		}
-		SetAddon(Addon_Id, Default, ['<span id="FolderButton_$" class="button" onclick="Addons.FolderButton.Exec(this)" oncontextmenu="return Addons.FolderButton.Popup(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut(); Addons.FolderButton.Drag(this)" onmousedown="Addons.FolderButton.Button(true)" onmouseup="Addons.FolderButton.Button(false)">', s, '</span>']);
+		await SetAddon(Addon_Id, Default, ['<span id="FolderButton_$" class="button" onclick="Addons.FolderButton.Exec(this)" oncontextmenu="return Addons.FolderButton.Popup(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut(); Addons.FolderButton.Drag(this)" onmousedown="Addons.FolderButton.Button(true)" onmouseup="Addons.FolderButton.Button(false)">', await GetImgTag({
+			title: Addons.FolderButton.sName,
+			src: s
+		}, Addons.FolderButton.IconSize), '</span>']);
 		delete item;
 	});
 

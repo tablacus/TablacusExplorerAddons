@@ -16,14 +16,17 @@ Sync.SaveSelection = {
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, GetText("Select"));
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 3, GetText("Remove"));
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+			const pt = {};
 			const mii = api.Memory("MENUITEMINFO");
 			mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
 			for (let i = 0; i < Items.Count; ++i) {
 				const FolderItem = Items.Item(i);
-				mii.wID = i + 9;
-				mii.dwTypeData = GetFileName(FolderItem.Path);
-				AddMenuIconFolderItem(mii, FolderItem);
-				api.InsertMenuItem(hMenu, MAXINT, false, mii);
+				if (FV.GetItemPosition(FolderItem, pt) == S_OK) {
+					mii.wID = i + 9;
+					mii.dwTypeData = GetFileName(FolderItem.Path);
+					AddMenuIconFolderItem(mii, FolderItem);
+					api.InsertMenuItem(hMenu, MAXINT, false, mii);
+				}
 			}
 		}
 		if (!pt) {
@@ -56,7 +59,7 @@ Sync.SaveSelection = {
 		}
 		if ("string" === typeof Items) {
 			if (FV.FolderItem.IsFolder) {
-				FolderItems = api.CreateObject("FolderItems");
+				const FolderItems = api.CreateObject("FolderItems");
 				const f = FV.FolderItem.GetFolder;
 				const ar = Items.split("\t");
 				if (ar.length) {
@@ -70,8 +73,9 @@ Sync.SaveSelection = {
 						Sync.SaveSelection.db[path] = FolderItems;
 					}
 				}
+				return FolderItems;
 			}
-			return FolderItems;
+			delete Sync.SaveSelection.db[path];
 		}
 	},
 
@@ -120,7 +124,7 @@ Sync.SaveSelection = {
 				}
 				v = ar.join("\t");
 			}
-			if (api.Invoke(fncb, [n, v]) < 0) {
+			if (InvokeFunc(fncb, [n, v]) < 0) {
 				break;
 			}
 		}

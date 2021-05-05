@@ -18,7 +18,7 @@ input[type="text"], input[type="button"], input[type="file"], input[type="submit
 	border: solid 1px #555;
 }
 
-input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover, input[type="reset"]:hover, .button:hover, .hoverbutton, .activebutton {
+input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover, input[type="reset"]:hover, .hoverbutton, .activebutton {
 	color: #fff;
 	background-color: #555;
 	border: solid 1px #777;
@@ -28,7 +28,7 @@ input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover
 	color: #fff;
 }
 
-.menu:hover, .hovermenu, .activemenu {
+.hovermenu, .activemenu {
 	color: #fff;
 	background-color: #555;
 	border: 1px solid #555;

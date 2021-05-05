@@ -7,11 +7,11 @@ Sync.EnteredHistory = {
 	CONFIG: BuildPath(te.Data.DataFolder, "config\\enteredhistory.tsv"),
 	bSave: false,
 	Prev: null,
-	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+	sName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 	nPos: GetNum(item.getAttribute("MenuPos")),
 
 	IsHandle: function (Ctrl) {
-		return api.PathMatchSpec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), Sync.EnteredHistory.PATH + "*");
+		return new RegExp("^" + Sync.EnteredHistory.PATH, "").test("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 	},
 
 	Enum: function (pid, Ctrl, fncb, SessionId) {
@@ -141,13 +141,13 @@ AddEvent("TranslatePath", function (Ctrl, Path) {
 
 AddEvent("GetFolderItemName", function (pid) {
 	if (Sync.EnteredHistory.IsHandle(pid)) {
-		return Sync.EnteredHistory.strName;
+		return Sync.EnteredHistory.sName;
 	}
 }, true);
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	if (Sync.EnteredHistory.IsHandle(Ctrl)) {
-		return MakeImgDataEx("icon:shell32.dll,20", bSimple, 16);
+		return MakeImgDataEx("icon:shell32.dll,20", bSimple, 16, clBk);
 	}
 });
 
@@ -181,7 +181,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 	}
 	if (!Verb || Verb == CommandID_STORE - 1) {
 		if (ContextMenu.Items.Count >= 1) {
-			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+			const path = ContextMenu.Items.Item(0).Path;
 			if (Sync.EnteredHistory.IsHandle(path)) {
 				const FV = te.Ctrl(CTRL_FV);
 				FV.Navigate(path, SBSP_SAMEBROWSER);

@@ -13,10 +13,10 @@ if (!item.getAttribute("Set")) {
 }
 if (window.Addon == 1) {
 	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.History1.Exec, this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+		await SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.History1.Exec, this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 			src: item.getAttribute("Icon") || "icon:browser,12"
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		}, GetIconSizeEx(item)), '</span>']);
 		delete item;
 	});
 

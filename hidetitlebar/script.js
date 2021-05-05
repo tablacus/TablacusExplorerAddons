@@ -24,8 +24,8 @@ if (window.Addon == 1) {
 					const rc = await api.Memory("RECT");
 					await api.GetWindowRect(ui_.hwnd, rc);
 					const r = await Promise.all([rc.left, rc.right, rc.top, rc.bottom]);
-					api.MoveWindow(ui_.hwnd, r[0], r[2], r[1] - r[0], r[3] - r[2] - 1, false);
-					api.MoveWindow(ui_.hwnd, r[0], r[2], r[1] - r[0], r[3] - r[2], false);
+					api.MoveWindow(ui_.hwnd, r[0], r[2], r[1] - r[0], r[3] - r[2] - 1, true);
+					api.MoveWindow(ui_.hwnd, r[0], r[2], r[1] - r[0], r[3] - r[2], true);
 				}
 				Addons.HideTitleBar.Resize();
 			} else {
@@ -66,9 +66,9 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.HideTitleBar.Exec();" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+		await SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.HideTitleBar.Exec();" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: Addons.HideTitleBar.sName,
-			src: item.getAttribute("Icon") || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe8ab" : "font:Segoe UI Emoji,0x21c4")
+			src: item.getAttribute("Icon") || GetWinIcon(0xa00, "font:Segoe MDL2 Assets,0xe8ab", 0, "font:Segoe UI Emoji,0x21c4")
 		}, GetIconSizeEx(item)), '</span>']);
 	});
 
