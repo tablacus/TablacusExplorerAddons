@@ -10,7 +10,7 @@ Sync.ClipFolder = {
 		const Items = FV.Items();
 		const path = Item.Path;
 		for (let i = Items.Count; i-- > 0;) {
-			if (SameText(path, Items.Item(i).Path)) {
+			if (SameText(path, api.GetDisplayNameOf(Items.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
 				return i;
 			}
 		}
@@ -39,7 +39,7 @@ Sync.ClipFolder = {
 	},
 
 	Enum: function (pid, Ctrl, fncb, SessionId) {
-		const Items = te.FolderItems();
+		const Items = api.CreateObject("FolderItems");
 		Sync.ClipFolder.Open(pid, Items);
 		return Items;
 	},
@@ -147,7 +147,7 @@ Sync.ClipFolder = {
 			const cFV = te.Ctrls(CTRL_FV);
 			for (let i in cFV) {
 				if (Ctrl.Id != cFV[i].Id) {
-					if (SameText(path, cFV[i].FolderItem.Path)) {
+					if (SameText(path, api.GetDisplayNameOf(cFV[i], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
 						arFV.push(cFV[i]);
 					}
 				}
@@ -200,13 +200,13 @@ Sync.ClipFolder = {
 
 	Exec: function (Ctrl, pt) {
 		const FV = GetFolderView(Ctrl, pt);
-		const path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+		const path = api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 		if (/^[A-Z]:\\|^\\/i.test(path)) {
 			if (Sync.ClipFolder.IsHandle(path)) {
 				const db = {};
 				const Items = FV.Items();
 				for (let i = 0; i < Items.Count; i++) {
-					db[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL)] = 1;
+					db[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR)] = 1;
 				}
 				Sync.ClipFolder.Save(FV, db);
 			} else {
@@ -299,7 +299,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 
 AddEvent("DefaultCommand", function (Ctrl, Selected) {
 	if (Selected.Count == 1) {
-		const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+		const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 		if (Sync.ClipFolder.IsHandle(path)) {
 			Ctrl.Navigate(path);
 			return S_OK;
@@ -314,9 +314,9 @@ AddEvent("ILGetParent", function (FolderItem) {
 	}
 });
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	if (Sync.ClipFolder.IsHandle(Ctrl)) {
-		return MakeImgDataEx("bitmap:ieframe.dll,699,16,15", bSimple, 16);
+		return MakeImgDataEx("bitmap:ieframe.dll,699,16,15", bSimple, 16, clBk);
 	}
 });
 
@@ -362,7 +362,6 @@ AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, N
 			const Items = api.OleGetClipboard();
 			if (Items && Items.Count) {
 				const mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
 				mii.fMask = MIIM_ID | MIIM_STATE;
 				const paste = api.LoadString(hShell32, 33562) || "&Paste";
 				for (let i = api.GetMenuItemCount(hMenu); i-- > 0;) {
@@ -384,7 +383,7 @@ AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, N
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
-		const path = api.GetDisplayNameOf(item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+		const path = api.GetDisplayNameOf(item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 		if (/^[A-Z]:\\|^\\/i.test(path)) {
 			if (Sync.ClipFolder.IsWritable(Ctrl)) {
 				api.InsertMenu(hMenu, Sync.ClipFolder.nPos, MF_BYPOSITION | MF_STRING, ++nPos, api.PathMatchSpec(path, Sync.ClipFolder.Spec) ? Sync.ClipFolder.strName2 : Sync.ClipFolder.strName);

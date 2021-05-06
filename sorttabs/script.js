@@ -42,5 +42,5 @@ if (window.Addon == 1) {
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 	delete item;
 } else {
-	SetTabContents(0, "General", '<label><input type="checkbox" id="Auto">Auto</label>');
+	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }

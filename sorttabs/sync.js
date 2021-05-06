@@ -1,7 +1,8 @@
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement("sorttabs");
 
 Sync.SortTabs = {
 	fn: [],
+	nSort: GetNum(item.getAttribute("Sort")),
 
 	Exec: function (Ctrl) {
 		const FV = GetFolderView(Ctrl);
@@ -26,20 +27,25 @@ Sync.SortTabs = {
 		}
 	},
 
-	Cmp: function (a, b) {
-		return api.CompareIDs(0, a, b);
-	},
+	Cmp: [
+		function (a, b) {
+			return api.CompareIDs(0, a, b);
+		},
+		function (a, b) {
+			return api.StrCmpLogical(GetTabName(a), GetTabName(b)) || api.CompareIDs(0, a, b);
+		},
+	],
 
 	Get: function (FV) {
 		return FV;
 	}
 }
 
-Sync.SortTabs.fn.push([Sync.SortTabs.Cmp, Sync.SortTabs.Get]);
+Sync.SortTabs.fn.push([Sync.SortTabs.Cmp[Sync.SortTabs.nSort], Sync.SortTabs.Get]);
 
 AddEvent("Load", function () {
 	if (Sync.LockedTabsTop && Sync.LockedTabsTop.fn) {
-		Sync.LockedTabsTop.fn.push([Sync.SortTabs.Cmp, Sync.SortTabs.Get]);
+		Sync.LockedTabsTop.fn.push([Sync.SortTabs.Cmp[Sync.SortTabs.nSort], Sync.SortTabs.Get]);
 	}
 });
 

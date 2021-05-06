@@ -71,7 +71,7 @@ Sync.PathIcon = {
 
 AddEvent("HandleIcon", function (Ctrl, pid, iItem) {
 	if (Ctrl.hwndList && pid) {
-		const i = Ctrl.IconSize < 32 ? 0 : 1, db = Sync.PathIcon.Icon[api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL).toLowerCase()];
+		const i = Ctrl.IconSize < 32 ? 0 : 1, db = Sync.PathIcon.Icon[api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING).toLowerCase()];
 		if (db) {
 			if (db[i]) {
 				if (db[i + 2]) {
@@ -88,7 +88,7 @@ AddEvent("HandleIcon", function (Ctrl, pid, iItem) {
 }, true);
 
 AddEvent("ItemPostPaint", function (Ctrl, pid, nmcd, vcd) {
-	const db = Sync.PathIcon.Icon[api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL).toLowerCase()];
+	const db = Sync.PathIcon.Icon[api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING).toLowerCase()];
 	if (db) {
 		const hList = Ctrl.hwndList;
 		if (hList) {
@@ -154,10 +154,10 @@ AddEvent("ItemPostPaint", function (Ctrl, pid, nmcd, vcd) {
 	}
 }, true);
 
-AddEvent("GetIconImage", function (Ctrl, BGColor) {
-	const db = Sync.PathIcon.Icon[(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL) || "").toLowerCase()];
+AddEvent("GetIconImage", function (Ctrl, clBk) {
+	const db = Sync.PathIcon.Icon[(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING) || "").toLowerCase()];
 	if (db && db[0]) {
-		return MakeImgSrc(db[0], 0, false, 16);
+		return MakeImgSrc(db[0], 0, false, 16, clBk);
 	}
 });
 
@@ -183,12 +183,12 @@ try {
 		while (!ado.EOS) {
 			const ar = ado.ReadText(adReadLine).split("\t");
 			if (ar[0]) {
-				let s = api.PathUnquoteSpaces(ExtractMacro(te, ar[0])).toLowerCase();
+				let s = ExtractPath(te, ar[0]).toLowerCase();
 				if (s) {
 					if (/^shell:|^::{/i.test(s)) {
 						s = api.ILCreateFromPath(s);
 						s.IsFileSystem;
-						s = api.GetDisplayNameOf(s, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL).toLowerCase();
+						s = api.GetDisplayNameOf(s, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING).toLowerCase();
 					}
 					const db = {};
 					Sync.PathIcon.Icon[s] = db;

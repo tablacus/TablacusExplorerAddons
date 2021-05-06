@@ -10,7 +10,7 @@ Sync.Flat = {
 
 	GetSearchString: function (Ctrl) {
 		if (Ctrl) {
-			const res = new RegExp("^" + Sync.Flat.PATH + "\\s*(.*)", "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			const res = new RegExp("^" + Sync.Flat.PATH + "\\s*(.*)", "i").exec(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			if (res) {
 				return res[1];
 			}
@@ -116,13 +116,13 @@ AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 AddEvent("GetFolderItemName", function (pid) {
 	const path = Sync.Flat.GetSearchString(pid);
 	if (path) {
-		return Sync.Flat.PATH + fso.GetFileName(path);
+		return Sync.Flat.PATH + GetFileName(path);
 	}
 }, true);
 
-AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
+AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	if (Sync.Flat.GetSearchString(Ctrl)) {
-		return MakeImgDataEx(Sync.Flat.Icon || "folder:closed", bSimple, 16);
+		return MakeImgDataEx(Sync.Flat.Icon || "folder:closed", bSimple, 16, clBk);
 	}
 });
 
