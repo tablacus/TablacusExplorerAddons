@@ -1,10 +1,6 @@
 if (window.Addon == 1) {
-	Addons.FolderIcon = {
-		clWindow: await GetSysColor(COLOR_WINDOW)
-	}
-
 	AddEvent("ChangeView1", async function (Ctrl) {
-		const icon = await GetIconImage(Ctrl, Addons.FolderIcon.clWindow, true);
+		const icon = await GetIconImage(Ctrl, CLR_DEFAULT | COLOR_WINDOW, true);
 		let hIcon = await MakeImgIcon(icon, 0, 16);
 		if (!hIcon) {
 			const image = await api.CreateObject("WICBitmap").FromFile(icon);
