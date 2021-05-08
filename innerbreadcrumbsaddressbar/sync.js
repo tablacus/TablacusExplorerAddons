@@ -22,37 +22,19 @@ Sync.InnerBreadcrumbsAddressBar = {
 			n++;
 		} while (!api.ILIsEmpty(FolderItem) && n < 99);
 		return JSON.stringify(Items);
-	},
-
-	Drag: function (Id) {
-		if (Id) {
-			if (api.GetKeyState(VK_LBUTTON) < 0) {
-				const res = /^breadcrumbsaddressbar_(\d+)_(\d+)_$/.exec(Id);
-				if (res) {
-					const pdwEffect = [DROPEFFECT_LINK];
-					api.SHDoDragDrop(null, Sync.InnerBreadcrumbsAddressBar.GetPath(res[2], res[1]), te, pdwEffect[0], pdwEffect);
-				}
-			}
-		}
-		Common.InnerBreadcrumbsAddressBar.DragId = void 0;
 	}
 }
 
 AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo) {
-	if (msg == WM_MOUSEMOVE) {
-		if (IsDrag(pt, Common.InnerBreadcrumbsAddressBar.pt)) {
-			Sync.InnerBreadcrumbsAddressBar.Drag(Common.InnerBreadcrumbsAddressBar.DragId);
-		}
-		if (Ctrl.Type == CTRL_TE && Common.InnerBreadcrumbsAddressBar.nLoopId && Common.InnerBreadcrumbsAddressBar.rcItem) {
-			const ptc = pt.Clone();
-			api.ScreenToClient(WebBrowser.hwnd, ptc);
-			if (!PtInRect(Common.InnerBreadcrumbsAddressBar.Item, ptc)) {
-				for (let i = Common.InnerBreadcrumbsAddressBar.rcItem.length; i-- > 0;) {
-					if (PtInRect(Common.InnerBreadcrumbsAddressBar.rcItem[i], ptc)) {
-						api.PostMessage(hwnd, WM_KEYDOWN, VK_ESCAPE, 0);
-						InvokeUI("Addons.InnerBreadcrumbsAddressBar.ChangeMenu", [Common.InnerBreadcrumbsAddressBar.nLoopId, i]);
-						break;
-					}
+	if (msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_TE && Common.InnerBreadcrumbsAddressBar.nLoopId && Common.InnerBreadcrumbsAddressBar.rcItem) {
+		const ptc = pt.Clone();
+		api.ScreenToClient(WebBrowser.hwnd, ptc);
+		if (!PtInRect(Common.InnerBreadcrumbsAddressBar.Item, ptc)) {
+			for (let i = Common.InnerBreadcrumbsAddressBar.rcItem.length; i-- > 0;) {
+				if (PtInRect(Common.InnerBreadcrumbsAddressBar.rcItem[i], ptc)) {
+					api.PostMessage(hwnd, WM_KEYDOWN, VK_ESCAPE, 0);
+					InvokeUI("Addons.InnerBreadcrumbsAddressBar.ChangeMenu", [Common.InnerBreadcrumbsAddressBar.nLoopId, i]);
+					break;
 				}
 			}
 		}

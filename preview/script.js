@@ -105,8 +105,7 @@ if (window.Addon == 1) {
 		},
 
 		Drag: function () {
-			const pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
-			api.SHDoDragDrop(null, Addons.Preview.Item, te, pdwEffect[0], pdwEffect);
+			DoDragDrop(Addons.Preview.Item, DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK);
 		},
 
 		Loaded: async function (o) {
@@ -140,7 +139,7 @@ if (window.Addon == 1) {
 			Addons.Preview.Width = 178;
 			te.Data["Conf_" + Addons.Preview.Align + "BarWidth"] = Addons.Preview.Width;
 		}
-		SetAddon(Addon_Id, Addons.Preview.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"></div>');
+		await SetAddon(Addon_Id, Addons.Preview.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"></div>');
 		setTimeout(Addons.Preview.Arrange, 99);
 	});
 

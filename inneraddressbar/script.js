@@ -73,6 +73,7 @@ if (window.Addon == 1) {
 		},
 
 		GetPath: async function (n, Id) {
+			let FolderItem;
 			const FV = await GetInnerFV(Id);
 			if (FV) {
 				FolderItem = await FV.FolderItem;
@@ -166,6 +167,13 @@ if (window.Addon == 1) {
 			return S_OK;
 		},
 
+		Drag: async function (ev, Id) {
+			const DataObj = await api.CreateObject("FolderItems");
+			DataObj.AddItem(await te.Ctrl(CTRL_TC, Id).Selected.FolderItem);
+			DataObj.dwEffect = DROPEFFECT_LINK;
+			DoDragDrop(DataObj, DROPEFFECT_LINK | DROPEFFECT_COPY | DROPEFFECT_MOVE);
+		},
+
 		ChangeView: async function(Ctrl) {
 			const pid = await Ctrl.FolderItem;
 			if (pid) {
@@ -176,7 +184,7 @@ if (window.Addon == 1) {
 				if (o) {
 					o.value = path;
 					Addons.InnerAddressBar.Arrange(await Ctrl.FolderItem, Id);
-					document.getElementById("inneraddr_img_" + Id).src = await GetIconImage(Ctrl, await GetSysColor(COLOR_WINDOW));
+					document.getElementById("inneraddr_img_" + Id).src = await GetIconImage(Ctrl, CLR_DEFAULT | COLOR_WINDOW);
 				}
 			}
 		}
@@ -190,7 +198,8 @@ if (window.Addon == 1) {
 		s.push('<img id="inneraddr_img_', Id, '"');
 		s.push(' onclick="return Addons.InnerAddressBar.ExecEx(', Id, ');"');
 		s.push(' oncontextmenu="Addons.InnerAddressBar.ExecEx(', Id, '); return false;"');
-		s.push(' style="position: absolute; left: 4px; top: 1.5pt; width: ', nSize, 'px; height: ', nSize, 'px; z-index: 3; border: 0px"></div>');
+		s.push(' ondragstart="Addons.InnerAddressBar.Drag(event,', Id, '); return false;"');
+		s.push(' style="position: absolute; left: 4px; top: 1.5pt; width: ', nSize, 'px; height: ', nSize, 'px; z-index: 3; border: 0px" draggable="true"></div>');
 		SetAddon(null, "Inner1Center_" + Id, s.join(""));
 		(async function () {
 			Addons.InnerAddressBar.ChangeView(await Ctrl.Selected);

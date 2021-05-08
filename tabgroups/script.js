@@ -407,12 +407,12 @@ if (window.Addon == 1) {
 				pt.x = ev.screenX * ui_.Zoom;
 				pt.y = ev.screenY * ui_.Zoom;
 				if (await IsDrag(pt, Common.Tabgroups.pt)) {
-					const pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 					const dataObj = await api.CreateObject("FolderItems");
 					dataObj.SetData("");
 					Common.Tabgroups.Drag5 = o.id;
-					api.SHDoDragDrop(null, dataObj, te, pdwEffect[0], pdwEffect);
-					Common.Tabgroups.Drag5 = void 0;
+					DoDragDrop(dataObj, DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK, false, function () {
+						Common.Tabgroups.Drag5 = void 0;
+					});
 				}
 			}
 		},
