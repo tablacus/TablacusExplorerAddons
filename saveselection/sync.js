@@ -51,6 +51,10 @@ Sync.SaveSelection = {
 		}
 	},
 
+	Drag: function (Ctrl) {
+		DoDragDrop(Sync.SaveSelection.GetItems(Ctrl), DROPEFFECT_LINK | DROPEFFECT_COPY | DROPEFFECT_MOVE);
+	},
+
 	GetItems: function (FV) {
 		const path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		const Items = Sync.SaveSelection.db[path];

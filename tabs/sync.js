@@ -38,11 +38,14 @@ AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode,
 					te.Data.pt = null;
 					const i = Ctrl.HitTest(pt, TCHT_ONITEM);
 					if (i >= 0) {
-						const pdwEffect = [DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK];
 						Sync.Tabs.DragTab = Ctrl;
 						Sync.Tabs.DragIndex = i;
-						api.SHDoDragDrop(null, Ctrl[i].FolderItem, te, pdwEffect[0], pdwEffect);
-						Sync.Tabs.DragTab = null;
+						const DataObj = api.CreateObject("FolderItems");
+						DataObj.AddItem(Ctrl[i].FolderItem);
+						DataObj.dwEffect = DROPEFFECT_LINK;
+						DoDragDrop(DataObj, DROPEFFECT_LINK | DROPEFFECT_COPY | DROPEFFECT_MOVE, false, function () {
+							Sync.Tabs.DragTab = null;
+						});
 					}
 				}
 			}

@@ -12,10 +12,13 @@ if (!item.getAttribute("Set")) {
 }
 if (window.Addon == 1) {
 	AddEvent("Layout", async function () {
-		await SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.SaveSelection.Exec, this, 9)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+		await SetAddon(Addon_Id, Default, [await GetImgTag({
 			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
-			src: item.getAttribute("Icon") || "icon:general,13"
-		}, GetIconSizeEx(item)), '</span>']);
+			src: item.getAttribute("Icon") || "icon:general,13",
+			onclick: "SyncExec(Sync.SaveSelection.Exec, this, 9)",
+			ondragstart: "SyncExec(Sync.SaveSelection.Drag, this); return false",
+			"class": "button"
+		}, GetIconSizeEx(item))]);
 	});
 
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
