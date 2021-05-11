@@ -16,7 +16,7 @@ if (window.Addon == 1) {
 			}
 			Addons.ColorLabels.tidSync = setTimeout(function () {
 				delete Addons.ColorLabels.tidSync;
-				api.Invoke(Sync.ColorLabels.ClearSync);
+				InvokeFunc(Sync.ColorLabels.ClearSync);
 			}, 500);
 		}
 	}

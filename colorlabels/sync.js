@@ -102,12 +102,12 @@ AddEvent("ItemPrePaint2", function (Ctrl, pid, nmcd, vcd, plRes) {
 AddEvent("ChangeNotify", function (Ctrl, pidls) {
 	if (Sync.ColorLabels.DB) {
 		if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
-			let name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			let name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			let s = Sync.ColorLabels.Get(pidls[0]);
 			if (s) {
 				Sync.ColorLabels.SetSync(name, s);
 			} else {
-				name = fso.GetFileName(api.GetDisplayNameOf(pidls[1], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				name = GetFileName(api.GetDisplayNameOf(pidls[1], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 				s = Sync.ColorLabels.SyncItem[name];
 			}
 			if (s) {
@@ -116,12 +116,12 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 			Sync.ColorLabels.Set(pidls[0]);
 		}
 		if (pidls.lEvent & SHCNE_DELETE) {
-			let name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			let name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			Sync.ColorLabels.SetSync(name, Sync.ColorLabels.Get(pidls[0]));
 			Sync.ColorLabels.Set(pidls[0]);
 		}
 		if (pidls.lEvent & SHCNE_CREATE) {
-			let name = fso.GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			let name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			const Item = Sync.ColorLabels.SyncItem[name];
 			if (Item) {
 				Sync.ColorLabels.Set(pidls[0], Item);

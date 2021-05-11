@@ -1,12 +1,12 @@
-var Addon_Id = "protecttabs";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "protecttabs";
+const item = GetAddonElement(Addon_Id);
 
 Sync.ProtectTabs = {
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 	nPos: GetNum(item.getAttribute("MenuPos")),
 
 	Exec: function (Ctrl, pt) {
-		var FV = GetFolderView(Ctrl, pt);
+		const FV = GetFolderView(Ctrl, pt);
 		if (FV) {
 			FV.Data.Protect = !FV.Data.Protect;
 			RunEvent1("Lock", FV.Parent, FV.Index, FV.Data.Lock);
@@ -14,9 +14,11 @@ Sync.ProtectTabs = {
 	}
 };
 
-AddEvent("CanClose", function (FV) {
-	if (FV.Data.Protect) {
-		return S_FALSE;
+AddEvent("CanClose", function (Ctrl) {
+	if (Ctrl.type = CTRL_SB || Ctrl.type == CTRL_EB) {
+		if (Ctrl.Data.Protect) {
+			return S_FALSE;
+		}
 	}
 });
 
