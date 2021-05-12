@@ -7,6 +7,7 @@ Sync.MultiProcess = {
 	Drop: GetNum(item.getAttribute("Drop")),
 	RDrop: GetNum(item.getAttribute("RDrop")),
 	NoTemp: item.getAttribute("NoTemp"),
+	pids: {},
 
 	FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, nMode) {
 		if (Items.Count == 0) {
@@ -70,7 +71,7 @@ Sync.MultiProcess = {
 								fso.MoveFile(path1, strTemp2);
 							}
 						}
-						path1 = strTemp2 + fso.GetFileName(path1);
+						path1 = strTemp2 + GetFileName(path1);
 					}
 					Items2.AddItem(path1);
 				} else {
@@ -111,6 +112,7 @@ Sync.MultiProcess = {
 				TimeOver: item.getAttribute("TimeOver"),
 				Sec: item.getAttribute("Sec"),
 				State: State,
+				pids: Sync.MultiProcess.pids,
 				Callback: Sync.MultiProcess.Player
 			});
 		return true;
@@ -186,5 +188,22 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 				return S_OK;
 			}
 			break;
+	}
+});
+
+AddEvent("CanClose", function (Ctrl) {
+	if (Ctrl.Type == CTRL_TE) {
+		let hwnd1 = null;
+		const pid = api.Memory("DWORD");
+		while (hwnd1 = api.FindWindowEx(null, hwnd1, null, null)) {
+			if (!/tablacus|_hidden/i.test(api.GetClassName(hwnd1)) && api.IsWindowVisible(hwnd1)) {
+				api.GetWindowThreadProcessId(hwnd1, pid);
+				for (let pid0 in Sync.MultiProcess.pids) {
+					if (pid[0] == pid0) {
+						return S_FALSE;
+					}
+				}
+			}
+		}
 	}
 });

@@ -1,17 +1,17 @@
 importScripts("..\\..\\script\\consts.js");
+ex = {};
 
 if (MainWindow.Exchange) {
-	te.OnSystemMessage = function (Ctrl, hwnd, msg, wParam, lParam)
-	{
+	te.OnSystemMessage = function (Ctrl, hwnd, msg, wParam, lParam) {
 		try {
 			if (msg == WM_TIMER && wParam == 1) {
-				var bClose = g_bClose;
-				var hwnd1 = null;
-				var pid = api.Memory("DWORD");
+				let bClose = ex.bClose;
+				let hwnd1 = null;
+				const pid = api.Memory("DWORD");
 				api.GetWindowThreadProcessId(hwnd, pid);
-				var pid0 = pid[0];
+				const pid0 = pid[0];
 				while (hwnd1 = api.FindWindowEx(null, hwnd1, null, null)) {
-					var strClass = api.GetClassName(hwnd1);
+					const strClass = api.GetClassName(hwnd1);
 					if (hwnd1 != hwnd && api.IsWindowVisible(hwnd1) && strClass != "Internet Explorer_Hidden") {
 						api.GetWindowThreadProcessId(hwnd1, pid);
 						if (pid[0] == pid0) {
@@ -37,7 +37,7 @@ if (MainWindow.Exchange) {
 					}
 				}
 				if (bClose) {
-					var nThreads = api.GetThreadCount(pid0);
+					const nThreads = api.GetThreadCount(pid0);
 					if (nThreads <= ex.nThreads) {
 						api.KillTimer(hwnd, wParam);
 					}
@@ -46,8 +46,9 @@ if (MainWindow.Exchange) {
 							ex.TimeOver = 0;
 							ex.Callback(true);
 						}
-					} catch (e) {}
+					} catch (e) { }
 					if (nThreads <= ex.nThreads) {
+						delete ex.pids[pid0];
 						api.PostMessage(hwnd, WM_CLOSE, 0, 0);
 					}
 				}
@@ -57,28 +58,36 @@ if (MainWindow.Exchange) {
 		}
 		return 0;
 	}
-	var pid = api.Memory("DWORD");
+	const pid = api.Memory("DWORD");
 	api.GetWindowThreadProcessId(te.hwnd, pid);
 	pid0 = pid[0];
 	api.GetWindowThreadProcessId(api.GetForegroundWindow(), pid);
 
-	g_bClose = false;
+	ex.bClose = false;
 	api.SetTimer(te.hwnd, 1, 1000, null);
-	var ex = MainWindow.Exchange[arg[3]];
-	if (ex) {
+	const ex0 = MainWindow.Exchange[arg[3]];
+	if (ex0) {
+		for (let s in ex0) {
+			ex[s] = ex0[s];
+		}
+		ex.State = [];
+		for (let i = ex.State.length; i-- > 0;) {
+			ex.State[i] = ex0.State[i];
+		}
 		delete MainWindow.Exchange[arg[3]];
-		var KeyState0 = api.Memory("KEYSTATE");
+		const KeyState0 = api.Memory("KEYSTATE");
 		api.GetKeyboardState(KeyState0);
 		if (ex.State.length) {
-			var KeyState = api.Memory("KEYSTATE");
+			const KeyState = api.Memory("KEYSTATE");
 			api.GetKeyboardState(KeyState);
-			for (var i = ex.State.length; i--;) {
+			for (let i = ex.State.length; i--;) {
 				KeyState.Write(ex.State[i], VT_UI1, 0x80);
 			}
 			api.SetKeyboardState(KeyState);
 		}
 		ex.time = new Date().getTime();
 		ex.nThreads = api.GetThreadCount(pid0);
+		ex.pids[pid0] = 1;
 		switch (ex.Mode) {
 			case 0:
 				api.DropTarget(ex.Dest).Drop(ex.Items, ex.grfKeyState, ex.pt, ex.dwEffect);
@@ -94,15 +103,14 @@ if (MainWindow.Exchange) {
 			api.SetKeyboardState(KeyState0);
 		}
 	}
-	g_bClose = true;
+	ex.bClose = true;
 	return "wait";
 }
 
-function InvokeCommand(nCommand, Items)
-{
-	var ContextMenu = api.ContextMenu(Items);
+function InvokeCommand(nCommand, Items) {
+	const ContextMenu = api.ContextMenu(Items);
 	if (ContextMenu) {
-		var hMenu = api.CreatePopupMenu();
+		const hMenu = api.CreatePopupMenu();
 		ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_DEFAULTONLY);
 		ContextMenu.InvokeCommand(0, te.hwnd, nCommand - 1, null, null, SW_SHOWNORMAL, null, null);
 		api.DestroyMenu(hMenu);
