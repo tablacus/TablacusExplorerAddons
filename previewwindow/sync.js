@@ -44,7 +44,7 @@ Sync.PreviewWindow = {
 			const ppid = api.Memory("DWORD");
 			api.GetWindowThreadProcessId(api.GetFocus(), ppid);
 			if (Sync.PreviewWindow.ppid[0] == ppid[0]) {
-				api.Invoke(Sync.PreviewWindow.dlg.Document.parentWindow.Common.PreviewWindow, te.hwnd, true);
+				InvokeFunc(Sync.PreviewWindow.dlg.Document.parentWindow.Common.PreviewWindow, [te.hwnd, true]);
 			}
 		}
 	}

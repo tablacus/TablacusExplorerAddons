@@ -76,7 +76,7 @@ Sync.RememberSelection = {
 				}
 				v = ar.join("\t");
 			}
-			if (api.Invoke(fncb, [n, v]) < 0) {
+			if (InvokeFunc(fncb, [n, v]) < 0) {
 				break;
 			}
 		}

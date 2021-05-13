@@ -10,8 +10,26 @@ if (window.Addon == 1) {
 	Addons.EmptyRecycleBin = {
 		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 
-		Exec: function () {
-			api.SHEmptyRecycleBin(ui_.hwnd, null, 0);
+		Exec: async function () {
+			const mii = await api.Memory("MENUITEMINFO");
+			mii.fMask = MIIM_ID | MIIM_STATE;
+			const hMenu = await api.CreatePopupMenu();
+			const ContextMenu = await api.ContextMenu(ssfBITBUCKET);
+			if (ContextMenu) {
+				await ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_NORMAL);
+				for (let i = await api.GetMenuItemCount(hMenu); i-- > 0;) {
+					if (await api.GetMenuItemInfo(hMenu, i, true, mii)) {
+						if (await ContextMenu.GetCommandString(await mii.wID - 1, GCS_VERB) == "empty") {
+							break;
+						}
+					}
+					mii.fState = 0;
+				}
+			}
+			api.DestroyMenu(hMenu);
+			if (!await mii.fState) {
+				api.SHEmptyRecycleBin(ui_.hwnd, null, 0);
+			}
 		},
 
 		Popup: async function (el) {
@@ -42,10 +60,13 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.EmptyRecycleBin.Exec();" oncontextmenu="Addons.EmptyRecycleBin.Popup(this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+		SetAddon(Addon_Id, Default, [await GetImgTag({
+			onclick: "Addons.EmptyRecycleBin.Exec()",
+			oncontextmenu: "Addons.EmptyRecycleBin.Popup(this); return false",
 			title: Addons.EmptyRecycleBin.sName,
-			src: item.getAttribute("Icon") || "icon:shell32.dll,31"
-		}, GetIconSizeEx(item)), '</span>']);
+			src: item.getAttribute("Icon") || "icon:shell32.dll,31",
+			"class": "button"
+		}, GetIconSizeEx(item))]);
 		delete item;
 	});
 
