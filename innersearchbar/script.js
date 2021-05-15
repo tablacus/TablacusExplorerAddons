@@ -103,17 +103,16 @@ if (window.Addon == 1) {
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {
 		const z = screen.deviceYDPI / 96;
-		SetAddon(null, "Inner1Right_" + Id, ['<input type="text" name="search_', Id, '" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(event,this,', Id, ')" onmouseup="Addons.InnerSearchBar.Change(this,', Id, ')" onfocus="Addons.InnerSearchBar.Focus(this, ', Id, ')" style="width: ', EncodeSC(Addons.InnerSearchBar.Width), '; padding-right:', 16 * z, 'px; vertical-align: middle"><span style="position: relative">', Addons.InnerSearchBar.Icon.replace(/\$/g, Id), '<span id="ButtonSearchClear_', Id, '" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left:', -28 * z, 'px; top:', 4 * z, 'px" class="button" onclick="Addons.InnerSearchBar.Clear(', Id, ')">r</span></span>'].join(""));
+		return SetAddon(null, "Inner1Right_" + Id, ['<input type="text" name="search_', Id, '" placeholder="Search" onkeydown="return Addons.InnerSearchBar.KeyDown(event,this,', Id, ')" onmouseup="Addons.InnerSearchBar.Change(this,', Id, ')" onfocus="Addons.InnerSearchBar.Focus(this, ', Id, ')" style="width: ', EncodeSC(Addons.InnerSearchBar.Width), '; padding-right:', 16 * z, 'px; vertical-align: middle"><span style="position: relative">', Addons.InnerSearchBar.Icon.replace(/\$/g, Id), '<span id="ButtonSearchClear_', Id, '" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left:', -28 * z, 'px; top:', 4 * z, 'px" class="button" onclick="Addons.InnerSearchBar.Clear(', Id, ')">r</span></span>'].join(""));
 	});
 
-	AddEvent("ChangeView", async function (Ctrl) {
-		if (await Ctrl.Type <= CTRL_EB) {
-			const Id = await Ctrl.Parent.Id;
-			const o = document.F.elements["search_" + Id];
-			if (o) {
-				o.value = await IsSearchPath(Ctrl) ? await api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER | SHGDN_ORIGINAL) : "";
-				Addons.InnerSearchBar.ShowButton(Id);
-			}
+	AddEvent("ChangeView2", async function (Ctrl) {
+		const Id = await Ctrl.Parent.Id;
+		const o = document.F.elements["search_" + Id];
+		if (o) {
+			const res = /^search\-ms:.*?crumb=([^&]*)/.exec(await Ctrl.FolderItem.Path);
+			o.value = res ? decodeURIComponent(res[1]) : "";
+			Addons.InnerSearchBar.ShowButton(Id);
 		}
 	});
 

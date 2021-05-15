@@ -86,7 +86,7 @@ if (window.Addon == 1) {
 		const z = screen.deviceYDPI / 96;
 		const s = item.getAttribute("Width") || 176;
 		const width = GetNum(s) == s ? ((s * z) + "px") : s;
-		SetAddon(Addon_Id, Default, ['<input type="text" name="search" placeholder="Search" onkeydown="return Addons.SearchBar.KeyDown(event, this)" onmouseup="Addons.SearchBar.Change()" onfocus="Addons.SearchBar.Focus(this)" style="width:', EncodeSC(width), '; padding-right:', (WINVER < 0x602 || window.chrome ? 32 : 16) * z, 'px; vertical-align: middle"><span style="position: relative"><span id="ButtonSearchClear" onclick="Addons.SearchBar.Clear()" class="button" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left:', -28 * z, 'px; top:', 4 * z, 'px" >r</span>', await GetImgTag({
+		await SetAddon(Addon_Id, Default, ['<input type="text" name="search" placeholder="Search" onkeydown="return Addons.SearchBar.KeyDown(event, this)" onmouseup="Addons.SearchBar.Change()" onfocus="Addons.SearchBar.Focus(this)" style="width:', EncodeSC(width), '; padding-right:', (WINVER < 0x602 || window.chrome ? 32 : 16) * z, 'px; vertical-align: middle"><span style="position: relative"><span id="ButtonSearchClear" onclick="Addons.SearchBar.Clear()" class="button" style="font-family: marlett; font-size:', 9 * z, 'px; display: none; position: absolute; left:', -28 * z, 'px; top:', 4 * z, 'px" >r</span>', await GetImgTag({
 			onclick: "Addons.SearchBar.Search()",
 			hidefocus: "true",
 			style: ['position: absolute; left:', -18 * z, 'px; top:', z, 'px'].join(""),
@@ -95,10 +95,9 @@ if (window.Addon == 1) {
 		delete item;
 	});
 
-//'<input type="image" src="', EncodeSC(icon), '" onclick="Addons.SearchBar.Search()" hidefocus="true" style="position: absolute; left:', -18 * z, 'px; top:', z, 'px; width:', 16 * z, 'px; height:', 16 * z, 'px">'
-
-	AddEvent("ChangeView", async function (Ctrl) {
-		document.F.search.value = await IsSearchPath(Ctrl) ? await api.GetDisplayNameOf(Ctrl, SHGDN_INFOLDER | SHGDN_ORIGINAL) : "";
+	AddEvent("ChangeView1", async function (Ctrl) {
+		const res = /^search\-ms:.*?crumb=([^&]*)/.exec(await Ctrl.FolderItem.Path);
+		document.F.search.value = res ? decodeURIComponent(res[1]) : "";
 		Addons.SearchBar.ShowButton();
 	});
 
