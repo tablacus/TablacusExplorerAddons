@@ -5,7 +5,7 @@ if (MainWindow.Exchange) {
 	te.OnSystemMessage = function (Ctrl, hwnd, msg, wParam, lParam) {
 		try {
 			if (msg == WM_TIMER && wParam == 1) {
-				let bClose = ex.bClose;
+				let bClose = true;
 				let hwnd1 = null;
 				const pid = api.Memory("DWORD");
 				api.GetWindowThreadProcessId(hwnd, pid);
@@ -37,20 +37,15 @@ if (MainWindow.Exchange) {
 					}
 				}
 				if (bClose) {
-					const nThreads = api.GetThreadCount(pid0);
-					if (nThreads <= ex.nThreads) {
-						api.KillTimer(hwnd, wParam);
-					}
+					api.KillTimer(hwnd, wParam);
 					try {
 						if (ex && ex.TimeOver && new Date().getTime() - ex.time > ex.Sec * 1000 + 500) {
 							ex.TimeOver = 0;
 							ex.Callback(true);
 						}
 					} catch (e) { }
-					if (nThreads <= ex.nThreads) {
-						delete ex.pids[pid0];
-						api.PostMessage(hwnd, WM_CLOSE, 0, 0);
-					}
+					delete ex.pids[pid0];
+					api.PostMessage(hwnd, WM_CLOSE, 0, 0);
 				}
 			}
 		} catch (e) {
@@ -63,8 +58,6 @@ if (MainWindow.Exchange) {
 	pid0 = pid[0];
 	api.GetWindowThreadProcessId(api.GetForegroundWindow(), pid);
 
-	ex.bClose = false;
-	api.SetTimer(te.hwnd, 1, 1000, null);
 	const ex0 = MainWindow.Exchange[arg[3]];
 	if (ex0) {
 		for (let s in ex0) {
@@ -86,7 +79,6 @@ if (MainWindow.Exchange) {
 			api.SetKeyboardState(KeyState);
 		}
 		ex.time = new Date().getTime();
-		ex.nThreads = api.GetThreadCount(pid0);
 		ex.pids[pid0] = 1;
 		switch (ex.Mode) {
 			case 0:
@@ -103,7 +95,7 @@ if (MainWindow.Exchange) {
 			api.SetKeyboardState(KeyState0);
 		}
 	}
-	ex.bClose = true;
+	api.SetTimer(te.hwnd, 1, 999, null);
 	return "wait";
 }
 
