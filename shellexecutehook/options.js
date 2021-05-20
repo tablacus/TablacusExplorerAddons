@@ -61,12 +61,13 @@ setTimeout(async function () {
 
 SaveLocation = async function () {
 	if (g_bChanged) {
-		const ex = await api.CreateObject("Object");
-		ex.EnableShellExecuteHooks = document.getElementById("EnableShellExecuteHooks").checked;
-		ex.Path = document.getElementById("Path").value;
-		ex[32] = document.getElementById("Reg32bit").checked;
-		ex[64] = document.getElementById("Reg64bit").checked;
-		ex.Explorer = document.getElementById("Explorer").checked;
-		MainWindow.OpenNewProcess("addons\\shellexecutehook\\worker.js", ex, false, WINVER >= 0x600 ? "RunAs" : null);
+		const db = await CreateSync("BasicDB", BuildPath(await GetTempPath(1), "shellexecutehook"));
+		await db.Set("EnableShellExecuteHooks", GetNum(document.getElementById("EnableShellExecuteHooks").checked));
+		await db.Set("Path", document.getElementById("Path").value);
+		await db.Set("32", GetNum(document.getElementById("Reg32bit").checked));
+		await db.Set("64", GetNum(document.getElementById("Reg64bit").checked));
+		await db.Set("Explorer", GetNum(document.getElementById("Explorer").checked));
+		await db.Save();
+		await ShellExecute([PathQuoteSpaces(await api.GetModuleFileName(null)), '/run', "addons\\shellexecutehook\\worker.js"].join(" "), WINVER >= 0x600 ? "RunAs" : null, SW_SHOWNOACTIVATE);
 	}
 }

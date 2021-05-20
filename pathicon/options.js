@@ -18,7 +18,7 @@ SaveIC = async function (mode) {
 	}
 }
 
-EditIC = function (mode) {
+EditIC = function () {
 	if (g_x.List.selectedIndex < 0) {
 		return;
 	}
@@ -46,8 +46,8 @@ ReplaceIC = function (mode) {
 }
 
 ShowIconX = async function (s, i) {
-	const image = await GetIconImage(document.E.elements[s].value, i);
-	document.getElementById('icon_' + i).src = image ? await GetThumbnail(image, [16, 192][i] * screen.deviceYDPI / 96, true).DataURI("image/png") : "";
+	const h = [16, 96][i] * screen.deviceYDPI / 96;
+	document.getElementById("icon_" + i).innerHTML = await GetImgTag({ src: await ExtractPath(te, document.E.elements[s].value) }, h);
 }
 
 SaveLocation = async function () {
@@ -69,4 +69,16 @@ setTimeout(async function () {
 		}
 	}
 	EnableSelectTag(g_x.List);
+	const path = await dialogArguments.Data.sPath;
+	if (path) {
+		for (let i = g_x.List.length; --i >=0;) {
+			const a = g_x.List[i].value.split(g_sep);
+			if (SameText(path, PathUnquoteSpaces(a[0]))) {
+				g_x.List.selectedIndex = i;
+				EditIC();
+				return;
+			}
+		}
+		document.E.Path.value = path;
+	}
 }, 99);

@@ -2,60 +2,70 @@ importScripts("..\\..\\script\\consts.js", "..\\..\\script\\sync.js");
 const clsid = "{E840AAD2-1EF2-4F00-8BA8-CE7B57BF8878}";
 let s, dllpath, Result, pnReboot = [0, 0];
 
-if (MainWindow.Exchange) {
-	const ex = MainWindow.Exchange[arg[3]];
-	if (ex) {
-		let Explorer;
-		if (ex.Explorer) {
-			Explorer = wsh.ExpandEnvironmentStrings("%SystemRoot%\\explorer.exe")
-			WmiProcess(" WHERE ExecutablePath='" + Explorer.replace(/\\/g, "\\\\") + "'", function (item) {
-				item.Terminate();
-				pnReboot[1] = 1;
-			});
-		}
-		let reg = "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\EnableShellExecuteHooks";
+const ado = api.CreateObject("ads");
+try {
+	ado.CharSet = "utf-8";
+	ado.Open();
+	ado.LoadFromFile(BuildPath(GetTempPath(1), "shellexecutehook.tsv"));
+	s = ado.ReadText();
+} catch (e) {
+	ado.Close();
+}
+if (s) {
+	const ex = {};
+	const ar = s.split(/\r?\n/);
+	for(let i = 0; i < ar.length; ++i) {
+		const db = ar[i].split(/\t/);
+		ex[db[0]] = db[1];
+	}
+	let Explorer;
+	if (ex.Explorer) {
+		Explorer = wsh.ExpandEnvironmentStrings("%SystemRoot%\\explorer.exe")
+		WmiProcess(" WHERE ExecutablePath='" + Explorer.replace(/\\/g, "\\\\") + "'", function (item) {
+			item.Terminate();
+			pnReboot[1] = 1;
+		});
+	}
+	let reg = "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\EnableShellExecuteHooks";
+	try {
+		s = !wsh.RegRead(reg);
+	} catch (e) {
+		s = true;
+	}
+	if (s != !ex.EnableShellExecuteHooks) {
 		try {
-			s = !wsh.RegRead(reg);
-		} catch (e) {
-			s = true;
-		}
-		if (s == ex.EnableShellExecuteHooks && /boolean/i.test(typeof ex.EnableShellExecuteHooks)) {
-			try {
-				if (s) {
-					wsh.RegWrite(reg, 1, "REG_DWORD");
-				} else {
-					wsh.RegDelete(reg);
-				}
-				pnReboot[0] |= 1;
-			} catch (e) { }
-		}
-		reg = "HKCU\\SOFTWARE\\Tablacus\\ShellExecuteHook\\ExePath";
-		try {
-			s = wsh.RegRead(reg);
+			if (s) {
+				wsh.RegWrite(reg, 1, "REG_DWORD");
+			} else {
+				wsh.RegDelete(reg);
+			}
+			pnReboot[0] |= 1;
 		} catch (e) { }
-		if (s != ex.Path && /string/i.test(typeof ex.Path)) {
-			try {
-				if (ex.Path) {
-					wsh.RegWrite(reg, PathUnquoteSpaces(MainWindow.ExtractMacro(te, ex.Path)), "REG_SZ");
-				} else {
-					wsh.RegDelete(reg);
-					wsh.RegDelete("HKCU\\SOFTWARE\\Tablacus\\ShellExecuteHook\\");
-					wsh.RegDelete("HKCU\\SOFTWARE\\Tablacus\\");
-				}
-			} catch (e) { }
-		}
-		SetDll(g_.bit, "", system32, pnReboot, ex);
-		if (g_.bit == 64) {
-			SetDll(32, "Wow6432Node\\", wsh.ExpandEnvironmentStrings("%WINDIR%\\SysWOW64"), pnReboot, ex);
-		}
-		delete MainWindow.Exchange[arg[3]];
-
-		if (pnReboot[1]) {
-			api.CreateProcess(Explorer);
-		}
-		if (pnReboot[0] & (ex.Explorer ? 2 : 3)) {
-			MessageBox(api.LoadString(hShell32, 61961) || "Reboot required.", TITLE, MB_ICONINFORMATION);
-		}
+	}
+	reg = "HKCU\\SOFTWARE\\Tablacus\\ShellExecuteHook\\ExePath";
+	try {
+		s = wsh.RegRead(reg);
+	} catch (e) { }
+	if (s != ex.Path) {
+		try {
+			if (ex.Path) {
+				wsh.RegWrite(reg, PathUnquoteSpaces(MainWindow.ExtractMacro(te, ex.Path)), "REG_SZ");
+			} else {
+				wsh.RegDelete(reg);
+				wsh.RegDelete("HKCU\\SOFTWARE\\Tablacus\\ShellExecuteHook\\");
+				wsh.RegDelete("HKCU\\SOFTWARE\\Tablacus\\");
+			}
+		} catch (e) { }
+	}
+	SetDll(g_.bit, "", system32, pnReboot, ex);
+	if (g_.bit == 64) {
+		SetDll(32, "Wow6432Node\\", wsh.ExpandEnvironmentStrings("%WINDIR%\\SysWOW64"), pnReboot, ex);
+	}
+	if (pnReboot[1]) {
+		api.CreateProcess(Explorer);
+	}
+	if (pnReboot[0] & (!!ex.Explorer ? 2 : 3)) {
+		MessageBox(api.LoadString(hShell32, 61961) || "Reboot required.", TITLE, MB_ICONINFORMATION);
 	}
 }
 
@@ -63,9 +73,6 @@ function SetDll(bit, wow64, sysdir, pnReboot, ex) {
 	let s = true;
 	const dllpath = [];
 	const ver = [];
-	if (!/boolean/.test(typeof ex[bit])) {
-		return;
-	}
 
 	try {
 		dllpath[2] = wsh.RegRead("HKCR\\" + wow64 + "CLSID\\" + clsid + "\\InprocServer32\\");

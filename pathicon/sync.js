@@ -2,7 +2,6 @@ const Addon_Id = "pathicon";
 const item = GetAddonElement(Addon_Id);
 
 Sync.PathIcon = {
-	Icon: {},
 	fStyle: LVIS_CUT | LVIS_SELECTED,
 	CONFIG: BuildPath(te.Data.DataFolder, "config\\pathicon.tsv"),
 
@@ -66,6 +65,36 @@ Sync.PathIcon = {
 
 	SetStyle: function () {
 		Sync.PathIcon.fStyle = LVIS_CUT;
+	},
+
+	Init: function () {
+		Sync.PathIcon.Icon = {};
+		try {
+			const ado = OpenAdodbFromTextFile(Sync.PathIcon.CONFIG);
+			if (ado) {
+				while (!ado.EOS) {
+					const ar = ado.ReadText(adReadLine).split("\t");
+					if (ar[0]) {
+						let s = ExtractPath(te, ar[0]).toLowerCase();
+						if (s) {
+							if (/^shell:|^::{/i.test(s)) {
+								s = api.ILCreateFromPath(s);
+								s.IsFileSystem;
+								s = api.GetDisplayNameOf(s, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING).toLowerCase();
+							}
+							const db = {};
+							Sync.PathIcon.Icon[s] = db;
+							for (let j = 2; j--;) {
+								if (ar[j + 1]) {
+									db[j] = ar[j + 1];
+								}
+							}
+						}
+					}
+				}
+				ado.Close();
+			}
+		} catch (e) { }
 	}
 };
 
@@ -177,29 +206,4 @@ AddEvent("SaveConfig", function () {
 	}
 });
 
-try {
-	const ado = OpenAdodbFromTextFile(Sync.PathIcon.CONFIG);
-	if (ado) {
-		while (!ado.EOS) {
-			const ar = ado.ReadText(adReadLine).split("\t");
-			if (ar[0]) {
-				let s = ExtractPath(te, ar[0]).toLowerCase();
-				if (s) {
-					if (/^shell:|^::{/i.test(s)) {
-						s = api.ILCreateFromPath(s);
-						s.IsFileSystem;
-						s = api.GetDisplayNameOf(s, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING).toLowerCase();
-					}
-					const db = {};
-					Sync.PathIcon.Icon[s] = db;
-					for (let j = 2; j--;) {
-						if (ar[j + 1]) {
-							db[j] = ar[j + 1];
-						}
-					}
-				}
-			}
-		}
-		ado.Close();
-	}
-} catch (e) { }
+AddEvent("Load", Sync.PathIcon.Init);
