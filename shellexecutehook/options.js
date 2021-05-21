@@ -61,13 +61,24 @@ setTimeout(async function () {
 
 SaveLocation = async function () {
 	if (g_bChanged) {
-		const db = await CreateSync("BasicDB", BuildPath(await GetTempPath(1), "shellexecutehook"));
-		await db.Set("EnableShellExecuteHooks", GetNum(document.getElementById("EnableShellExecuteHooks").checked));
-		await db.Set("Path", document.getElementById("Path").value);
-		await db.Set("32", GetNum(document.getElementById("Reg32bit").checked));
-		await db.Set("64", GetNum(document.getElementById("Reg64bit").checked));
-		await db.Set("Explorer", GetNum(document.getElementById("Explorer").checked));
-		await db.Save();
-		await ShellExecute([PathQuoteSpaces(await api.GetModuleFileName(null)), '/run', "addons\\shellexecutehook\\worker.js"].join(" "), WINVER >= 0x600 ? "RunAs" : null, SW_SHOWNOACTIVATE);
+		const arg = [PathQuoteSpaces(await api.GetModuleFileName(null)), "/run", "addons\\shellexecutehook\\worker.js"];
+		if (document.getElementById("EnableShellExecuteHooks").checked) {
+			arg.push("EnableShellExecuteHooks");
+		}
+		if (document.getElementById("Reg32bit").checked) {
+			arg.push(32);
+		}
+		if (document.getElementById("Reg64bit").checked) {
+			arg.push(64);
+		}
+		if (document.getElementById("Explorer").checked) {
+			arg.push("Explorer");
+		}
+		if (document.getElementById("Path").value) {
+			arg.push(PathQuoteSpaces(document.getElementById("Path").value));
+		} else {
+			arg.push('""');
+		}
+		await ShellExecute(arg.join(" "), WINVER >= 0x600 ? "RunAs" : null, SW_SHOWNOACTIVATE);
 	}
 }
