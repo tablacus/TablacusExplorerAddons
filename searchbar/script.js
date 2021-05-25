@@ -26,6 +26,7 @@ if (window.Addon == 1) {
 			if (ev.keyCode == VK_RETURN || window.chrome && /^Enter/i.test(ev.key)) {
 				Addons.SearchBar.Search();
 				setTimeout(function () {
+					WebBrowser.Focus();
 					o.focus();
 				}, 999, o);
 				return false;
