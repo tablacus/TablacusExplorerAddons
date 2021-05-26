@@ -3,11 +3,7 @@ AddEvent("Exec", function (Ctrl, s, type, hwnd, pt, dataObj, grfKeyState, pdwEff
 		const FV = GetFolderView(Ctrl, pt);
 		if (FV) {
 			if (FV.FilterView || FV.OnIncludeObject) {
-				FV.FilterView = null;
-				FV.OnIncludeObject = null;
-				setTimeout(function () {
-					FV.Refresh();
-				}, 99);
+				SetFilterView(FV);
 				return S_OK;
 			}
 		}

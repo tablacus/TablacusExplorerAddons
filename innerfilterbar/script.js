@@ -15,7 +15,7 @@ if (window.Addon == 1) {
 				this.filter[Id] = o.value;
 				clearTimeout(this.tid[Id]);
 				if (k == VK_RETURN) {
-					this.Change(Id);
+					this.Change(Id, ev.ctrlKey);
 					return false;
 				} else {
 					this.tid[Id] = setTimeout("Addons.InnerFilterBar.Change(" + Id + ")", 500);
@@ -39,11 +39,22 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Change: async function (Id) {
+		Change: async function (Id, bSearch) {
 			const o = document.F["filter_" + Id];
 			Addons.InnerFilterBar.ShowButton(o, Id);
 			const FV = await GetInnerFV(Id);
 			let s = o.value;
+			const res = await IsSearchPath(FV, true);
+			if (res || bSearch) {
+				if (!res || decodeURIComponent(await res[1]) != s) {
+					FV.Search(s);
+					setTimeout(function (o) {
+						WebBrowser.Focus();
+						o.focus();
+					}, 999, o);
+				}
+				return;
+			}
 			if (s) {
 				if (Addons.InnerFilterBar.RE && !/^\*|\//.test(s)) {
 					s = "/" + s + "/i";
@@ -60,15 +71,14 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			if (!SameText(s, await FV.FilterView)) {
-				FV.FilterView = s || null;
-				FV.Refresh();
-			}
+			SetFilterView(FV, s);
 		},
 
-		Focus: function (o, Id) {
+		Focus: async function (o, Id) {
 			Activate(o, Id);
-			o.select();
+			if (!await IsSearchPath(await GetInnerFV(Id))) {
+				o.select();
+			}
 			if (this.iCaret[Id] >= 0) {
 				const range = o.createTextRange();
 				range.move("character", this.iCaret[Id]);
@@ -83,8 +93,7 @@ if (window.Addon == 1) {
 			this.ShowButton(o, Id);
 			if (flag) {
 				const FV = await GetInnerFV(Id);
-				FV.FilterView = null;
-				FV.Refresh();
+				SetFilterView(FV);
 				FV.Focus();
 			}
 		},
@@ -111,8 +120,9 @@ if (window.Addon == 1) {
 				const o = document.F.elements["filter_" + Id];
 				if (o) {
 					clearTimeout(Addons.InnerFilterBar.tid[Id]);
-					const s = Addons.InnerFilterBar.GetString(await Ctrl.FilterView);
-					if (s != Addons.InnerFilterBar.GetString(o.value)) {
+					const bSearch = await IsSearchPath(Ctrl, true);
+					const s = Addons.InnerFilterBar.GetString(bSearch ? decodeURIComponent(await bSearch[1]) : await Ctrl.FilterView, bSearch);
+					if (s != Addons.InnerFilterBar.GetString(o.value, bSearch)) {
 						o.value = s;
 						Addons.InnerFilterBar.ShowButton(o, Id);
 					}
@@ -120,7 +130,10 @@ if (window.Addon == 1) {
 			}
 		},
 
-		GetString: function (s) {
+		GetString: function (s, bSearch) {
+			if (bSearch) {
+				return s;
+			}
 			if (Addons.InnerFilterBar.RE) {
 				const res = /^\/(.*)\/i/.exec(s);
 				if (res) {

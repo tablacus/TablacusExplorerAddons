@@ -10,6 +10,10 @@ if (window.Addon == 1) {
 			const FV = await GetFolderView(Ctrl, pt);
 			if (FV) {
 				FV.Focus();
+				if (await IsSearchPath(FV)) {
+					Exec(FV, "Search", "Tools", 0, pt);
+					return;
+				}
 				let s = await FV.FilterView
 				if (Addons.FilterButton.RE) {
 					const res = /^\/(.*)\/i/.exec(s);
@@ -40,8 +44,7 @@ if (window.Addon == 1) {
 							}
 							s = ar.join(";");
 						}
-						FV.FilterView = s || null;
-						FV.Refresh();
+						SetFilterView(FV, s);
 					}
 				});
 			}

@@ -49,6 +49,14 @@ if (window.Addon == 1) {
 			if (Verb) {
 				let ar = Addons.FilterList.Menus[Verb - 1].split("\t");
 				let s = ar[1];
+				if (await IsSearchPath(FV)) {
+					if (s) {
+						FV.Search(s.replace(/;/g, " OR "));
+						return S_OK;
+					}
+					FV.Navigate(null, SBSP_PARENT);
+					return S_OK;
+				}
 				if (!/^\//.test(s)) {
 					ar = s.split(/;/);
 					for (let i in ar) {
@@ -59,8 +67,7 @@ if (window.Addon == 1) {
 					}
 					s = ar.join(";");
 				}
-				FV.FilterView = s || null;
-				FV.Refresh();
+				SetFilterView(FV, s);
 			}
 			return S_OK;
 		}
