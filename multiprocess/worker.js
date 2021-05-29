@@ -5,7 +5,7 @@ if (MainWindow.Exchange) {
 	te.OnSystemMessage = function (Ctrl, hwnd, msg, wParam, lParam) {
 		try {
 			if (msg == WM_TIMER && wParam == 1) {
-				let bClose = true;
+				let bClose = ex.bClose;;
 				let hwnd1 = null;
 				const pid = api.Memory("DWORD");
 				api.GetWindowThreadProcessId(hwnd, pid);
@@ -19,6 +19,9 @@ if (MainWindow.Exchange) {
 								if (!(api.GetWindowLongPtr(hwnd1, GWL_EXSTYLE) & 8)) {
 									api.SetForegroundWindow(hwnd1);
 									api.SetWindowPos(hwnd1, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+									if (!ex.bClose) {
+										api.SetTimer(te.hwnd, 1, 99999, null);
+									}
 								}
 							}
 							bClose = false;
@@ -58,6 +61,8 @@ if (MainWindow.Exchange) {
 	pid0 = pid[0];
 	api.GetWindowThreadProcessId(api.GetForegroundWindow(), pid);
 
+	ex.bClose = false;
+	api.SetTimer(te.hwnd, 1, 999, null);
 	const ex0 = MainWindow.Exchange[arg[3]];
 	if (ex0) {
 		for (let s in ex0) {
@@ -95,6 +100,7 @@ if (MainWindow.Exchange) {
 			api.SetKeyboardState(KeyState0);
 		}
 	}
+	ex.bClose = true;
 	api.SetTimer(te.hwnd, 1, 999, null);
 	return "wait";
 }

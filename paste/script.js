@@ -3,7 +3,7 @@ const Default = "ToolBar2Left";
 if (window.Addon == 1) {
 	let item = await GetAddonElement(Addon_Id);
 	Addons.Paste = {
-		sNam: item.getAttribute("MenuName") || await api.LoadString(hShell32, 33562),
+		sName: item.getAttribute("MenuName") || await api.LoadString(hShell32, 33562),
 
 		Exec: async function (Ctrl, pt) {
 			const FV = await GetFolderView(Ctrl, pt);
@@ -28,8 +28,8 @@ if (window.Addon == 1) {
 			if (o) {
 				DisableImage(o, b);
 			} else {
-				const cTC = await te.Ctrls(CTRL_TC);
-				for (let i = await cTC.Count; i-- > 0;) {
+				const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
+				for (let i = cTC.length; i-- > 0;) {
 					o = document.getElementById("ImgPaste_" + await cTC[i].Id);
 					if (o) {
 						DisableImage(o, b);
@@ -59,11 +59,13 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Paste.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+		SetAddon(Addon_Id, Default, [await GetImgTag({
 			title: Addons.Paste.sName,
 			id: "ImgPaste_$",
-			src: item.getAttribute("Icon") || "icon:general,7"
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+			src: item.getAttribute("Icon") || "icon:general,7",
+			onclick: "Addons.Paste.Exec(this)",
+			"class": "button"
+		}, GetIconSizeEx(item))]);
 	});
 
 	AddEvent("Resize", Addons.Paste.State);
