@@ -2,7 +2,7 @@ const Addon_Id = "searchbymodified";
 const Default = "ToolBar2Left";
 if (window.Addon == 1) {
 	let item = await GetAddonElement(Addon_Id);
-	Addons.SearchByModified = {
+	Addons.SearchBySize = {
 		sName: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 
 		Exec: async function (Ctrl, pt) {
@@ -10,10 +10,9 @@ if (window.Addon == 1) {
 			const hDll = await api.GetModuleHandle("propsys.dll");
 			if (FV && hDll) {
 				FV.Focus();
-				const ar = [106, 105, 500, 104, 501, 502, 503, 504];
 				let str = [];
-				for (let i = ar.length; i--;) {
-					str[i] = api.LoadString(hDll, ar[i]);
+				for (let i = 7; i--;) {
+					str[i] = api.LoadString(hDll, 38569 + i);
 				}
 				str = await Promise.all(str);
 				const hMenu = await api.CreatePopupMenu();
@@ -23,8 +22,8 @@ if (window.Addon == 1) {
 				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				if (nVerb) {
-					const method = (await api.PSGetDisplayName("System.DateModified")).toLowerCase().replace(/\s/g, "");
-					const arg = Addons.SearchByModified.Parse(await FV.FolderItem);
+					const method = (await api.PSGetDisplayName("Size")).toLowerCase().replace(/\s/g, "");
+					const arg = Addons.SearchBySize.Parse(await FV.FolderItem);
 					const re = new RegExp("[:" + String.fromCharCode(0xff1a) + "]");
 					let nNew = arg.length;
 					for (let i = arg.length; --i >= 0;) {
@@ -36,7 +35,7 @@ if (window.Addon == 1) {
 							}
 						}
 					}
-					arg[nNew] = method + ":" + str[nVerb - 1].toLowerCase().replace(/\s/g, "");
+					arg[nNew] = method + ":" + (await api.LoadString(hDll, 39200 + nVerb)).toLowerCase().replace(/\s/g, "");
 					FV.Search(arg.join(" "));
 				}
 			}
@@ -64,27 +63,27 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Paste", Addons.SearchByModified.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("Paste", Addons.SearchBySize.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
-		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.SearchByModified.Exec, "Async");
+		SetKeyExec(item.getAttribute("KeyOn"), item.getAttribute("Key"), Addons.SearchBySize.Exec, "Async");
 	}
 	//Mouse
 	if (item.getAttribute("MouseExec")) {
-		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SearchByModified.Exec, "Async");
+		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.SearchBySize.Exec, "Async");
 	}
 
 	AddEvent("Layout", async function () {
 		SetAddon(Addon_Id, Default, [await GetImgTag({
-			title: Addons.SearchByModified.sName,
+			title: Addons.SearchBySize.sName,
 			src: item.getAttribute("Icon") || "icon:general,17",
-			onclick: "SyncExec(Addons.SearchByModified.Exec, this, 9)",
+			onclick: "SyncExec(Addons.SearchBySize.Exec, this, 9)",
 			"class": "button"
 		}, GetIconSizeEx(item))]);
 	});
 
-	AddEvent("Resize", Addons.SearchByModified.State);
+	AddEvent("Resize", Addons.SearchBySize.State);
 } else {
 	EnableInner();
 }
