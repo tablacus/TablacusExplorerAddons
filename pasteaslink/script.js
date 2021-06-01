@@ -7,93 +7,139 @@ if (window.Addon == 1) {
 
 		Exec: async function (Ctrl, pt) {
 			const FV = await GetFolderView(Ctrl, pt);
-			if (FV && await Addons.PasteAsLink.IsNTFS(FV)) {
-				FV.Focus();
-				const Items = await api.OleGetClipboard();
-				if (Items && await Items.Count && await IsFolderEx(await Items.Item(0))) {
-					const target = await Items.Item(0).Path;
-					const link = BuildPath(await FV.FolderItem.Path, GetFileName(target));
-					const db = {
-						"1": "Symbolic link, absolute path",
-						"2": "Symbolic link, absolute path without drive",
-						"3": "Symbolic link, relative path",
-						"4": "Junction"
-					};
-					if (!await api.PathIsSameRoot(target, link)) {
-						delete db["2"];
-						delete db["3"];
-					}
-					const hMenu = await api.CreatePopupMenu();
-					for (let i in db) {
-						await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, i, await GetText(db[i]));
-					}
-					if (!pt) {
-						pt = GetPos(Ctrl, 9)
-					}
-					const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null, null);
-					api.DestroyMenu(hMenu);
-					let cmd;
-					switch (nVerb) {
-						case 1:
-							cmd = ["mklink", "/d", PathQuoteSpaces(link), PathQuoteSpaces(target)];
-							break;
-						case 2:
-							const drv = await fso.GetDriveName(link);
-							cmd = ["mklink", "/d", PathQuoteSpaces(link), PathQuoteSpaces(target.substr(drv.length))];
-							break;
-						case 3:
-							const arLink = link.split("\\");
-							const arTarget = target.split("\\");
-							for (let i = arLink.length; --i >= 0;) {
-								if (arLink[0] === arTarget[0]) {
-									arLink.shift();
-									arTarget.shift();
-								} else {
-									break;
+			if (FV) {
+				const path = await FV.FolderItem.Path;
+				if (await Addons.PasteAsLink.IsNTFS(path)) {
+					FV.Focus();
+					const Items = await api.OleGetClipboard();
+					if (Items && await Items.Count) {
+						const wfd = api.Memory("WIN32_FIND_DATA");
+						let target = await Items.Item(0).Path;
+						const db = {
+							"1": "Symbolic link, absolute path",
+							"2": "Symbolic link, absolute path without drive",
+							"3": "Symbolic link, relative path",
+							"4": "Junction"
+						};
+						if (!await api.PathIsSameRoot(target, path)) {
+							delete db["2"];
+							delete db["3"];
+						}
+						if (!await Addons.PasteAsLink.IsNTFS(target) || !await api.PathIsDirectory(target)) {
+							delete db["4"];
+						}
+						const hMenu = await api.CreatePopupMenu();
+						for (let i in db) {
+							await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, i, await GetText(db[i]));
+						}
+						if (!pt) {
+							pt = GetPos(Ctrl, 9)
+						}
+						const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null, null);
+						api.DestroyMenu(hMenu);
+						const nCount = await Items.Count;
+						for (let i = 0; i < nCount; ++i) {
+							target = await Items.Item(i).Path;
+							const bRoot = target.length == 3;
+							let hFind = bRoot || await api.FindFirstFile(target, wfd);
+							if (bRoot || hFind != INVALID_HANDLE_VALUE) {
+								let dir, link;
+								if (bRoot) {
+									dir = " /d";
+									link = BuildPath(path, target.charAt(0));
+								}  else {
+									api.FindClose(hFind);
+									dir = (await wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? " /d" : "";
+									link = BuildPath(path, GetFileName(target));
+								}
+								let n = 0;
+								for (;;) {
+									hFind = await api.FindFirstFile(link, wfd);
+									if (hFind == INVALID_HANDLE_VALUE) {
+										break;
+									}
+									api.FindClose(hFind);
+									let ext = await fso.GetExtensionName(target);
+									if (ext) {
+										ext = "." + ext;
+									}
+									link = BuildPath(path, await fso.GetBaseName(target) + " (" + (++n) + ")" + ext);
+								}
+								let cmd;
+								switch (nVerb) {
+									case 1:
+										cmd = ["mklink" + dir, PathQuoteSpaces(link), PathQuoteSpaces(target)];
+										break;
+									case 2:
+										const drv = await fso.GetDriveName(link);
+										cmd = ["mklink" + dir, PathQuoteSpaces(link), PathQuoteSpaces(target.substr(drv.length))];
+										break;
+									case 3:
+										const arLink = link.split("\\");
+										const arTarget = target.split("\\");
+										for (let i = arLink.length; --i >= 0;) {
+											if (arLink[0] === arTarget[0]) {
+												arLink.shift();
+												arTarget.shift();
+											} else {
+												break;
+											}
+										}
+										if (arLink.length) {
+											for (let i = arLink.length; --i > 0;) {
+												arTarget.unshift("..");
+											}
+											cmd = ["mklink" + dir, PathQuoteSpaces(link), PathQuoteSpaces(arTarget.join("\\"))];
+										}
+										break;
+									case 4:
+										if (!dir) {
+											cmd = ["mklink", "/j", PathQuoteSpaces(link), PathQuoteSpaces(target)];
+										}
+										break;
+								}
+								if (cmd) {
+									await ShellExecute("%ComSpec% /c" + cmd.join(" "), WINVER >= 0x600 ? "RunAs" : null, SW_HIDE);
+									hFind = await api.FindFirstFile(link, wfd);
+									if (hFind == INVALID_HANDLE_VALUE) {
+										break;
+									}
+									api.FindClose(hFind);
 								}
 							}
-							if (arLink.length) {
-								for (let i = arLink.length; --i > 0;) {
-									arTarget.unshift("..");
-								}
-								cmd = ["mklink", "/d", PathQuoteSpaces(link), PathQuoteSpaces(arTarget.join("\\"))];
-							}
-							break;
-						case 4:
-							cmd = ["mklink", "/j", PathQuoteSpaces(link), PathQuoteSpaces(target)];
-							break;
-					}
-					if (cmd && cmd.length) {
-						ShellExecute("%ComSpec% /c" + cmd.join(" "), WINVER >= 0x600 ? "RunAs" : null, SW_HIDE);
+						}
 					}
 				}
 			}
 			return S_OK;
 		},
 
-		IsNTFS: async function (FV) {
+		IsNTFS: async function (path) {
+			if (await api.PathIsNetworkPath(path)) {
+				return false;
+			}
 			let d = {};
-			const drv = await fso.GetDriveName(await FV.FolderItem.Path);
+			const drv = await fso.GetDriveName(path);
 			if (drv) {
 				try {
 					d = await fso.GetDrive(drv);
 				} catch (e) { }
 			}
-			return /NTFS/i.test(await d.FileSystem) && await IsFolderEx(await FV.FolderItem);
+			return /NTFS/i.test(await d.FileSystem);
 		},
 
 		State: async function () {
 			const Items = await api.OleGetClipboard();
-			const b = !(Items && await Items.Count && await IsFolderEx(await Items.Item(0)));
+			const b = !(Items && await Items.Count);
 			let o = document.getElementById("ImgPasteAsLink_$");
 			if (o) {
-				DisableImage(o, b || !await Addons.PasteAsLink.IsNTFS(await GetFolderView()));
+				DisableImage(o, b || !await Addons.PasteAsLink.IsNTFS(await (await GetFolderView()).FolderItem.Path));
 			} else {
 				const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
 				for (let i = cTC.length; i-- > 0;) {
 					o = document.getElementById("ImgPasteAsLink_" + await cTC[i].Id);
 					if (o) {
-						DisableImage(o, b || !await Addons.PasteAsLink.IsNTFS(await cTC[i].Selected));
+						DisableImage(o, b || !await Addons.PasteAsLink.IsNTFS(await cTC[i].Selected.FolderItem.Path));
 					}
 				}
 			}
