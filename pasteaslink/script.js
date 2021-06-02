@@ -14,56 +14,53 @@ if (window.Addon == 1) {
 					const Items = await api.OleGetClipboard();
 					if (Items && await Items.Count) {
 						const wfd = api.Memory("WIN32_FIND_DATA");
-						let target = await Items.Item(0).Path;
 						const db = {
 							"1": "Symbolic link, absolute path",
 							"2": "Symbolic link, absolute path without drive",
 							"3": "Symbolic link, relative path",
 							"4": "Junction"
 						};
-						if (!await api.PathIsSameRoot(target, path)) {
-							delete db["2"];
-							delete db["3"];
-						}
-						if (!await Addons.PasteAsLink.IsNTFS(target) || !await api.PathIsDirectory(target)) {
-							delete db["4"];
+						const nCount = await Items.Count;
+						for (let i = 0; i < nCount && db["2"] && db["4"]; ++i) {
+							let target = await Items.Item(i).Path;
+							const bFS = await Addons.PasteAsLink.IsFileSystem(target, wfd);
+							if (!bFS) {
+								return;
+							}
+							if (db["2"] && !await api.PathIsSameRoot(target, path)) {
+								delete db["2"];
+								delete db["3"];
+							}
+							if (db["4"] && (!(await wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) || await api.PathIsNetworkPath(target))) {
+								delete db["4"];
+							}
 						}
 						const hMenu = await api.CreatePopupMenu();
 						for (let i in db) {
 							await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, i, await GetText(db[i]));
 						}
-						if (!pt) {
-							pt = GetPos(Ctrl, 9)
-						}
 						const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null, null);
 						api.DestroyMenu(hMenu);
-						const nCount = await Items.Count;
 						for (let i = 0; i < nCount; ++i) {
-							target = await Items.Item(i).Path;
-							const bRoot = target.length == 3;
-							let hFind = bRoot || await api.FindFirstFile(target, wfd);
-							if (bRoot || hFind != INVALID_HANDLE_VALUE) {
+							let target = await Items.Item(i).Path;
+							if (await Addons.PasteAsLink.IsFileSystem(target, wfd)) {
 								let dir, link;
-								if (bRoot) {
-									dir = " /d";
-									link = BuildPath(path, target.charAt(0));
-								}  else {
-									api.FindClose(hFind);
-									dir = (await wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? " /d" : "";
-									link = BuildPath(path, GetFileName(target));
-								}
-								let n = 0;
+								dir = (await wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? " /d" : "";
+								link = BuildPath(path, GetFileName(target) || target.charAt(0));
+								let n = 0, base = link;
 								for (;;) {
-									hFind = await api.FindFirstFile(link, wfd);
-									if (hFind == INVALID_HANDLE_VALUE) {
+									if (!await Addons.PasteAsLink.IsFileSystem(link, wfd)) {
 										break;
 									}
-									api.FindClose(hFind);
-									let ext = await fso.GetExtensionName(target);
-									if (ext) {
-										ext = "." + ext;
+									if (dir) {
+										link = base + " (" + (++n) + ")";
+									} else {
+										let ext = await fso.GetExtensionName(target);
+										if (ext) {
+											ext = "." + ext;
+										}
+										link = BuildPath(path, await fso.GetBaseName(target) + " (" + (++n) + ")" + ext);
 									}
-									link = BuildPath(path, await fso.GetBaseName(target) + " (" + (++n) + ")" + ext);
 								}
 								let cmd;
 								switch (nVerb) {
@@ -93,18 +90,23 @@ if (window.Addon == 1) {
 										}
 										break;
 									case 4:
-										if (!dir) {
+										if (dir) {
 											cmd = ["mklink", "/j", PathQuoteSpaces(link), PathQuoteSpaces(target)];
 										}
 										break;
 								}
 								if (cmd) {
-									await ShellExecute("%ComSpec% /c" + cmd.join(" "), WINVER >= 0x600 ? "RunAs" : null, SW_HIDE);
-									hFind = await api.FindFirstFile(link, wfd);
-									if (hFind == INVALID_HANDLE_VALUE) {
-										break;
+									await ShellExecute("%ComSpec% /c" + cmd.join(" "), WINVER >= 0x600 && nVerb != 4 ? "RunAs" : null, SW_HIDE);
+									await api.Sleep(99);
+									if (!await Addons.PasteAsLink.IsFileSystem(link, wfd)) {
+										if (nVerb == 4 && WINVER >= 0x600) {
+											await ShellExecute("%ComSpec% /c" + cmd.join(" "), "RunAs", SW_HIDE);
+										}
+										await api.Sleep(99);
+										if (!await Addons.PasteAsLink.IsFileSystem(link, wfd)) {
+											break;
+										}
 									}
-									api.FindClose(hFind);
 								}
 							}
 						}
@@ -126,6 +128,19 @@ if (window.Addon == 1) {
 				} catch (e) { }
 			}
 			return /NTFS/i.test(await d.FileSystem);
+		},
+
+		IsFileSystem: async function (path, wfd) {
+			const hFind = await api.FindFirstFile(path, wfd);
+			if (hFind != INVALID_HANDLE_VALUE) {
+				api.FindClose(hFind);
+				return true;
+			}
+			if (await api.PathIsRoot(path)) {
+				wfd.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
+				return true;
+			}
+			return false;
 		},
 
 		State: async function () {
@@ -172,7 +187,7 @@ if (window.Addon == 1) {
 			title: Addons.PasteAsLink.sName,
 			id: "ImgPasteAsLink_$",
 			src: item.getAttribute("Icon") || "icon:general,7",
-			onclick: "Addons.PasteAsLink.Exec(this)",
+			onclick: "SyncExec(Addons.PasteAsLink.Exec, this, 9)",
 			"class": "button"
 		}, GetIconSizeEx(item))]);
 	});

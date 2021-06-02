@@ -1,4 +1,4 @@
-const Addon_Id = "searchbymodified";
+const Addon_Id = "searchbysize";
 const Default = "ToolBar2Left";
 if (window.Addon == 1) {
 	let item = await GetAddonElement(Addon_Id);
