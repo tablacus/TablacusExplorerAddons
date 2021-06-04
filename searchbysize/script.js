@@ -63,7 +63,7 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Paste", Addons.SearchBySize.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("SearchBySize", Addons.SearchBySize.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {

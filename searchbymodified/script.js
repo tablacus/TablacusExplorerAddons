@@ -10,12 +10,18 @@ if (window.Addon == 1) {
 			const hDll = await api.GetModuleHandle("propsys.dll");
 			if (FV && hDll) {
 				FV.Focus();
-				const ar = [106, 105, 500, 104, 501, 502, 503, 504];
+				const ar = WINVER > 0x601 ? [106, 105, 500, 104, 501, 502, 503, 504] : [106, 105, 39265, 104, 39270, 39271, 39275, 39276];
 				let str = [];
 				for (let i = ar.length; i--;) {
 					str[i] = api.LoadString(hDll, ar[i]);
 				}
 				str = await Promise.all(str);
+				for (let i = ar.length; i--;) {
+					const res = /^([^\|]+)\|/.exec(str[i]);
+					if (res) {
+						str[i] = res[1];
+					}
+				}
 				const hMenu = await api.CreatePopupMenu();
 				for (let i = 0; i < ar.length; ++i) {
 					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, i + 1, str[i]);
@@ -64,7 +70,7 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Paste", Addons.SearchByModified.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("SearchByModified", Addons.SearchByModified.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {

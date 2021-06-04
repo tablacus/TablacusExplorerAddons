@@ -21,7 +21,7 @@ if (window.Addon == 1) {
 							"4": "Junction"
 						};
 						const nCount = await Items.Count;
-						for (let i = 0; i < nCount && db["2"] && db["4"]; ++i) {
+						for (let i = 0; i < nCount && db["2"] && db["3"] && db["4"]; ++i) {
 							let target = await Items.Item(i).Path;
 							const bFS = await Addons.PasteAsLink.IsFileSystem(target, wfd);
 							if (!bFS) {
@@ -29,6 +29,9 @@ if (window.Addon == 1) {
 							}
 							if (db["2"] && !await api.PathIsSameRoot(target, path)) {
 								delete db["2"];
+								delete db["3"];
+							}
+							if (db["3"] && SameText(target, path)) {
 								delete db["3"];
 							}
 							if (db["4"] && (!(await wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) || await api.PathIsNetworkPath(target))) {
@@ -171,7 +174,7 @@ if (window.Addon == 1) {
 
 	//Menu
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Paste", Addons.PasteAsLink.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("PasteAsLink", Addons.PasteAsLink.sName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {
