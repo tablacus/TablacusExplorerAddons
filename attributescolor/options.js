@@ -1,6 +1,6 @@
 const s = ['<table>'];
 const attrs = [FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_COMPRESSED, FILE_ATTRIBUTE_ENCRYPTED, FILE_ATTRIBUTE_REPARSE_POINT, FILE_ATTRIBUTE_DIRECTORY, "root"];
-let names = [8768, 8769, 8770, 8771, 8772, "Junction", WINVER >= 0x600 ? 33017 : 4131, "Root"];
+let names = [8768, 8769, 8770, 8771, 8772, WINVER >= 0x600 ? 4149 : 34560, WINVER >= 0x600 ? 33017 : 4131, "Root"];
 for (let i = names.length; i--;) {
 	names[i] = isFinite(names[i]) ? api.LoadString(hShell32, names[i]) : GetText(names[i]);
 }

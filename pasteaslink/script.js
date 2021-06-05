@@ -31,9 +31,6 @@ if (window.Addon == 1) {
 								delete db["2"];
 								delete db["3"];
 							}
-							if (db["3"] && SameText(target, path)) {
-								delete db["3"];
-							}
 							if (db["4"] && (!(await wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) || await api.PathIsNetworkPath(target))) {
 								delete db["4"];
 							}
@@ -89,7 +86,7 @@ if (window.Addon == 1) {
 											for (let i = arLink.length; --i > 0;) {
 												arTarget.unshift("..");
 											}
-											cmd = ["mklink" + dir, PathQuoteSpaces(link), PathQuoteSpaces(arTarget.join("\\"))];
+											cmd = ["mklink" + dir, PathQuoteSpaces(link), PathQuoteSpaces(arTarget.join("\\") || ".")];
 										}
 										break;
 									case 4:
