@@ -12,7 +12,11 @@ if (window.Addon == 1) {
 				if (await Addons.PasteAsLink.IsNTFS(path)) {
 					FV.Focus();
 					const Items = await api.OleGetClipboard();
-					if (Items && await Items.Count) {
+					if (Items) {
+						const nCount = await Items.Count;
+						if (!nCount) {
+							return;
+						}
 						const wfd = api.Memory("WIN32_FIND_DATA");
 						const db = {
 							"1": "Symbolic link, absolute path",
@@ -20,8 +24,7 @@ if (window.Addon == 1) {
 							"3": "Symbolic link, relative path",
 							"4": "Junction"
 						};
-						const nCount = await Items.Count;
-						for (let i = 0; i < nCount && db["2"] && db["3"] && db["4"]; ++i) {
+						for (let i = 0; i < nCount && (db["2"] || db["4"]); ++i) {
 							let target = await Items.Item(i).Path;
 							const bFS = await Addons.PasteAsLink.IsFileSystem(target, wfd);
 							if (!bFS) {
