@@ -1,0 +1,63 @@
+<form name="E">
+  <table style="width: 100%; height: calc(100% - 2em)">
+    <tr>
+      <td style="width: 12em; vertical-align: top; height: 100%">
+        <select name="List" size="4" style="width: 12em; height: 100%" onchange="EditXEx(Addons.DragDropMenu.Edit)" ondblclick="Addons.DragDropMenu.Edit()" multiple>
+        </select>
+      </td>
+      <td style="vertical-align: top">
+        <div id="pane" style="height: 100%; overflow: auto">
+          <label>Name</label>
+          <br>
+          <input type="text" name="Name" class="full">
+          <table class="full">
+            <tr>
+              <td style="width: 100%; vertical-align: bottom"><label>Class</label></td>
+              <td><input type="button" value="Browse..." title="Class" onclick="Addons.DragDropMenu.RefClass(this)"></td>
+            </tr>
+          </table>
+          <input type="text" name="Class" class="full">
+          <table class="full">
+            <tr>
+              <td style="width: 100%; vertical-align: bottom"><label>Path</label></td>
+              <td><input type="button" value="Portable" title="Path" onclick="PortableX('Path')"></td>
+              <td><input type="button" value="Browse..." title="Path" onclick="RefX('Path', false, this)"></td>
+            </tr>
+          </table>
+          <input type="text" name="Path" class="full">
+          <label>Options</label>
+          <input type="text" name="Options" class="full">
+          <input type="button" value="%Selected%" onclick="Addons.DragDropMenu.AddOptions(this)">
+          <input type="button" value='"%Each%"' onclick="Addons.DragDropMenu.AddOptions(this)">
+          <input type="button" value='"%Src%"' onclick="Addons.DragDropMenu.AddOptions(this)">
+          <input type="button" value='"%Dest%"' onclick="Addons.DragDropMenu.AddOptions(this)"><br>
+          <input type="button" value='"%Name%"' onclick="Addons.DragDropMenu.AddOptions(this)">
+          <input type="button" value='"%Unique%"' onclick="Addons.DragDropMenu.AddOptions(this)">
+          <input type="button" value="%IsFolder:/d%" onclick="Addons.DragDropMenu.AddOptions(this)">
+          <input type="hidden" name="Flags">
+          <br>
+          <label><input type="checkbox" id="Flags:1" onclick="SetCheckbox(this)">RunAs</label><br>
+          <label><input type="checkbox" id="Flags:2" onclick="SetCheckbox(this)">NTFS</label><br>
+          <label><input type="checkbox" id="Flags:4" onclick="SetCheckbox(this)">Hidden</label><br>
+          <label><input type="checkbox" id="Flags:8" onclick="SetCheckbox(this)">@shell32.dll,-21815[Temporary Burn Folder]</label><br>
+          <label>Filter</label>
+          <input type="text" name="Filter" placeholder="*" class="full">
+        </div>
+      </td>
+    </tr>
+  </table>
+  <table id="tools" class="full">
+    <tr>
+      <td>
+        <input type="button" value="Remove" onclick="RemoveX('List')">
+        <input type="button" value="Up" onclick="MoveX('List', -1)">
+        <input type="button" value="Down" onclick="MoveX('List', 1)">
+        <input type="checkbox" id="_EDIT" checked><label for="_EDIT">Edit</label>
+      </td>
+      <td align="right">
+        <input type="button" value="Add" onclick="AddX('List', Addons.DragDropMenu.Replace)">
+        <input type="button" value="Replace" onclick="Addons.DragDropMenu.Replace()">
+      </td>
+    </tr>
+  </table>
+</form>
