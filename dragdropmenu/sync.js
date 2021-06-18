@@ -40,12 +40,14 @@ Sync.DragDropMenu = {
 			const nCount = api.GetMenuItemCount(hMenu);
 			if (/^{/.test(cls)) {
 				const dll = ExtractPath(te, item.getAttribute("Path"));
-				const ContextMenu = api.ContextMenu(dll, cls, Dest, Items, HKEY_CLASSES_ROOT, item.getAttribute("Options"), null);
-				if (ContextMenu) {
-					ContextMenu.QueryContextMenu(hMenu, nCount, wID, wID + 0xFF, CMF_NORMAL);
-					ContextMenus.push(ContextMenu);
-					wID = ContextMenu.idCmdLast + 1;
-				}
+				try {
+					const ContextMenu = api.ContextMenu(dll, cls, Dest, Items, HKEY_CLASSES_ROOT, item.getAttribute("Options"), null);
+					if (ContextMenu) {
+						ContextMenu.QueryContextMenu(hMenu, nCount, wID, wID + 0xfff, CMF_NORMAL);
+						ContextMenus.push(ContextMenu);
+						wID = ContextMenu.idCmdLast + 1;
+					}
+				} catch (e) { }
 				continue;
 			}
 			if (SameText(cls, "separator")) {
