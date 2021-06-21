@@ -167,13 +167,13 @@ Sync.DragDropMenu = {
 					const ar = [];
 					for (let i = Items.Count; i > 0; ar.unshift(PathQuoteSpaces(GetFileName(Items.Item(--i).Path)))) {
 					}
-					s = ExtractMacro(te, s.replace(/%selected%/ig, ar.join(" ")).replace(/%dest%/ig, Dest.Path).replace(/%src%/ig, GetParentFolderName(Items.Item(0).Path)));
+					s = ExtractMacro(te, s.replace(/%dropped%/ig, ar.join(" ")).replace(/%dest%/ig, Dest.Path).replace(/%src%/ig, GetParentFolderName(Items.Item(0).Path)));
 					ShellExecute(PathQuoteSpaces(cmd.Path) + " " + s, (cmd.Flags & 2) ? "RunAs" : null, (cmd.Flags & 4) ? SW_HIDE : SW_SHOWNORMAL);
-				} else if (/%selected%/i.test(s)) {
+				} else if (/%dropped%/i.test(s)) {
 					const ar = [];
 					for (let i = Items.Count; i > 0; ar.unshift(PathQuoteSpaces(Items.Item(--i).Path))) {
 					}
-					s = ExtractMacro(te, s.replace(/%selected%/ig, ar.join(" ")).replace(/%dest%/ig, Dest.Path));
+					s = ExtractMacro(te, s.replace(/%dropped%/ig, ar.join(" ")).replace(/%dest%/ig, Dest.Path));
 					ShellExecute(PathQuoteSpaces(cmd.Path) + " " + s, (cmd.Flags & 2) ? "RunAs" : null, (cmd.Flags & 4) ? SW_HIDE : SW_SHOWNORMAL);
 				} else {
 					const oExec = wsh.Exec([cmd.Path, ExtractMacro(te, s.replace(/%dest%/i, Dest.Path))].join(" "));

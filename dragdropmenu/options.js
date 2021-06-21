@@ -122,12 +122,7 @@ Addons.DragDropMenu = {
 					}
 				}
 				g_bChanged = true;
-				for (let i = 0; i < document.E.length; ++i) {
-					let el = document.E[i];
-					if (SameText(el.type, 'checkbox')) {
-						el.checked = false;
-					}
-				}
+				Addons.DragDropMenu.ClearChecked();
 				LoadChecked(document.E);
 			}
 		} finally {
@@ -146,6 +141,7 @@ Addons.DragDropMenu = {
 		document.E.Options.value = a[3];
 		document.E.Flags.value = a[4];
 		document.E.Filter.value = a[5];
+		Addons.DragDropMenu.ClearChecked();
 		LoadChecked(document.E);
 	},
 
@@ -161,8 +157,23 @@ Addons.DragDropMenu = {
 		g_Chg.List = true;
 	},
 
+	ClearChecked: function () {
+		for (let i = 0; i < document.E.length; ++i) {
+			const el = document.E[i];
+			if (SameText(el.type, 'checkbox') && el.id != "_EDIT") {
+				el.checked = false;
+			}
+		}
+	},
+
 	AddOptions: function (el) {
-		document.E.Options.value += el.value;
+		const el1 = document.E.Options;
+		if (el1.selectionStart != null) {
+			el1.value = el1.value.substr(0, el1.selectionStart) + el.value + el1.value.substr(el1.selectionStart);
+		} else {
+			el1.value += el.value;
+		}
+		el1.focus();
 	},
 
 	FastCopy: async function () {
