@@ -100,6 +100,9 @@ Sync.DragDropMenu = {
 			}
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 			api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 0, GetText("Cancel"));
+			if (!pt.x && !pt.y) {
+				api.GetCursorPos(pt);
+			}
 			const nVerb = api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, te.hwnd, null, ContextMenus);
 			if (IdFO[nVerb]) {
 				const DropTarget = api.DropTarget(Dest);

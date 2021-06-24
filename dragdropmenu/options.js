@@ -113,7 +113,7 @@ Addons.DragDropMenu = {
 					document.E.Class.value = cls[nVerb - ar.length];
 					if (/^FastCopy/.test(name)) {
 						Addons.DragDropMenu.FastCopy();
-						document.E.Options.value = /copy/i.test(name) ? '/cmd=diff /auto_close /to="%Dest%\"' : '/cmd=move /auto_close /to="%Dest%\"';
+						document.E.Options.value = /move/i.test(name) ? '/cmd=move /auto_close /to="%Dest%\"' : '/cmd=diff /auto_close /to="%Dest%\"';
 						document.E.Flags.value = 8;
 					} else if (/symbolic/i.test(name)) {
 						document.E.Path.value = '%ComSpec%';
