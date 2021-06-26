@@ -1,5 +1,5 @@
-var Addon_Id = "checkbox";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "checkbox";
+let item = GetAddonElement(Addon_Id);
 
 Sync.CheckBox = {
 	pt: api.Memory("POINT"),
@@ -9,7 +9,7 @@ Sync.CheckBox = {
 	Background: GetNum(item.getAttribute("Background")),
 
 	Init: function (Ctrl) {
-		var fFlags = Ctrl.FolderFlags;
+		const fFlags = Ctrl.FolderFlags;
 		if ((fFlags & (FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) != Sync.CheckBox.FWF) {
 			Ctrl.FolderFlags = fFlags & (~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) | Sync.CheckBox.FWF;
 		}
@@ -20,12 +20,12 @@ Sync.CheckBox = {
 			InvokeUI("Addons.CheckBox.Set", Id);
 			return;
 		}
-		var Ctrl = te.Ctrl(CTRL_FV, Id);
-		var item = api.Memory("LVITEM");
+		const Ctrl = te.Ctrl(CTRL_FV, Id);
+		const item = api.Memory("LVITEM");
 		item.stateMask = LVIS_SELECTED | LVIS_STATEIMAGEMASK;
-		var nCount = Ctrl.ItemCount(SVGIO_ALLVIEW);
+		const nCount = Ctrl.ItemCount(SVGIO_ALLVIEW);
 
-		for (var i = nCount; i-- > 0;) {
+		for (let i = nCount; i-- > 0;) {
 			item.state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, i, LVIS_SELECTED) ? LVIS_SELECTED | 0x2000 : 0x1000;
 			api.SendMessage(Ctrl.hwndList, LVM_SETITEMSTATE, i, item);
 		}
@@ -33,7 +33,7 @@ Sync.CheckBox = {
 	},
 
 	SetCtrl: function (bCtrl) {
-		var KeyState = api.Memory("KEYSTATE");
+		const KeyState = api.Memory("KEYSTATE");
 		api.GetKeyboardState(KeyState);
 		KeyState.Write(VK_CONTROL, VT_UI1, bCtrl ? 0x80 : 0);
 		api.SetKeyboardState(KeyState);
@@ -47,15 +47,15 @@ AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode,
 	}
 	if (msg == WM_LBUTTONDOWN) {
 		Sync.CheckBox.pt = pt.Clone();
-		var ptc = pt.Clone();
+		const ptc = pt.Clone();
 		api.ScreenToClient(Ctrl.hwndList, ptc);
-		var ht = api.Memory("LVHITTESTINFO");
+		const ht = api.Memory("LVHITTESTINFO");
 		ht.pt = ptc;
 		api.SendMessage(Ctrl.hwndList, LVM_HITTEST, 0, ht);
 		Sync.CheckBox.state = ht.iItem >= 0 ? api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_STATEIMAGEMASK) : 0;
 		if (Sync.CheckBox.All && Ctrl.ItemCount(SVGIO_SELECTION) > 1) {
 			if (Sync.CheckBox.Background || ht.flags & (LVHT_ONITEMICON | LVHT_ONITEMLABEL)) {
-				for (var i = VK_RBUTTON; i <= VK_MENU; i++) {
+				for (let i = VK_RBUTTON; i <= VK_MENU; ++i) {
 					if (api.GetKeyState(i) < 0) {
 						return;
 					}
@@ -71,13 +71,13 @@ AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode,
 		}
 		if (!IsDrag(pt, Sync.CheckBox.pt)) {
 			Sync.CheckBox.pt.x = MAXINT;
-			var ht = api.Memory("LVHITTESTINFO");
-			var ptc = pt.Clone();
+			const ht = api.Memory("LVHITTESTINFO");
+			const ptc = pt.Clone();
 			api.ScreenToClient(Ctrl.hwndList, ptc);
 			ht.pt = ptc;
 			api.SendMessage(Ctrl.hwndList, LVM_HITTEST, 0, ht);
 			if (ht.iItem >= 0 && ht.flags & LVHT_ABOVE) {
-				var item = api.Memory("LVITEM");
+				const item = api.Memory("LVITEM");
 				item.stateMask = LVIS_SELECTED | LVIS_STATEIMAGEMASK;
 				item.state = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, ht.iItem, LVIS_SELECTED) ? 0x1000 : LVIS_SELECTED | 0x2000; Ctrl.SelectItem(ht.iItem, SVSI_FOCUSED | (Boolean(Sync.CheckBox.FWF & FWF_CHECKSELECT) ^ Boolean(item.state & LVIS_SELECTED) ? SVSI_DESELECT : SVSI_SELECT));
 				api.SendMessage(Ctrl.hwndList, 0x1000 + 67, 0, ht.iItem);
@@ -93,8 +93,16 @@ AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode,
 });
 
 AddEvent("SelectionChanged", function (Ctrl, uChange) {
-	if (Ctrl.Type <= CTRL_EB) {
+	if (Ctrl.Type <= CTRL_EB && !(Sync.CheckBox.keydata & 0x40000000)) {
 		InvokeUI("Addons.CheckBox.Set", Ctrl.Id);
+	}
+});
+
+AddEvent("KeyMessage", function (Ctrl, hwnd, msg, key, keydata) {
+	if (msg == WM_KEYDOWN) {
+		Sync.CheckBox.keydata = keydata;
+	} else if (msg == WM_KEYUP) {
+		Sync.CheckBox.keydata = 0;
 	}
 });
 
@@ -116,8 +124,8 @@ AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 }, true);
 
 AddEvent("Load", function () {
-	var cFV = te.Ctrls(CTRL_FV);
-	for (i in cFV) {
+	const cFV = te.Ctrls(CTRL_FV);
+	for (let i in cFV) {
 		Sync.CheckBox.Init(cFV[i]);
 	}
 	te.Data.View_fFlags &= ~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT);
@@ -125,13 +133,15 @@ AddEvent("Load", function () {
 });
 
 AddEventId("AddonDisabledEx", Addon_Id, function () {
-	var cFV = te.Ctrls(CTRL_FV);
-	for (i in cFV) {
-		var FV = cFV[i];
-		var fFlags = FV.FolderFlags;
+	const cFV = te.Ctrls(CTRL_FV);
+	for (let i in cFV) {
+		const FV = cFV[i];
+		const fFlags = FV.FolderFlags;
 		if (fFlags & (FWF_CHECKSELECT | FWF_AUTOCHECKSELECT)) {
 			FV.FolderFlags = fFlags & ~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT);
 		}
 	}
 	te.Data.View_fFlags &= ~(FWF_CHECKSELECT | FWF_AUTOCHECKSELECT);
 });
+
+delete item;

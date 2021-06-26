@@ -1,4 +1,4 @@
-var Addon_Id = "checkbox";
+const Addon_Id = "checkbox";
 if (window.Addon == 1) {
 	Addons.CheckBox = {
 		tid: {},
@@ -12,7 +12,7 @@ if (window.Addon == 1) {
 			if (Addons.CheckBox.tid[Id]) {
 				clearTimeout(Addons.CheckBox.tid[Id]);
 			}
-			Addons.CheckBox.tid[Id] = setTimeout(Sync.CheckBox.Arrange, 99, Id);
+			Addons.CheckBox.tid[Id] = setTimeout(Addons.CheckBox.Arrange, 99, Id);
 		}
 	}
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
