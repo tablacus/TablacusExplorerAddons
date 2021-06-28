@@ -1,5 +1,4 @@
 const Addon_Id = "sidetreeview";
-
 const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("List", 1);
@@ -85,12 +84,12 @@ if (window.Addon == 1) {
 	AddEvent("Load", async function () {
 		Addons.SideTreeView.Init();
 		if (WINVER >= 0x600) {
-			importJScript("addons\\" + Addon_Id + "\\sync.js");
+			$.importScript("addons\\" + Addon_Id + "\\sync.js");
 		}
 		if (Addons.TreeView) {
 			return;
 		}
-		SetGestureExec("Tree", "1", async function (Ctrl, pt) {
+		SetGestureExec("Tree", Addons.SideTreeView.List ? "1" : "11", async function (Ctrl, pt) {
 			let Item = await Ctrl.HitTest(pt);
 			if (Item) {
 				let FV = await Ctrl.FolderView;
