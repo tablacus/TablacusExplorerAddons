@@ -310,8 +310,6 @@ if (window.Addon == 1) {
 			}
 			const x = ev.screenX * ui_.Zoom;
 			const y = ev.screenY * ui_.Zoom;
-			pt.x = x;
-			pt.y = y;
 			let nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, null);
 			api.DestroyMenu(hMenu);
 			switch (nVerb) {
