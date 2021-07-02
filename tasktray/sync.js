@@ -114,11 +114,19 @@ AddEvent("TaskTray", function (Ctrl, hMenu, nPos) {
 });
 
 if (Sync.TaskTray.AlwaysInTray) {
-	setTimeout(function () {
+	AddEvent("Load", function () {
 		Sync.TaskTray.CreateIcon(true, true);
-	}, 999);
+	});
 } else {
 	AddEvent("RestoreFromTray", function () {
 		Sync.TaskTray.DeleteIcon();
+	});
+}
+
+if (Sync.TaskTray.CloseToTray || Sync.TaskTray.MinimizeToTray) {
+	AddEvent("Load", function () {
+		if (api.IsIconic(te.hwnd)) {
+			Sync.TaskTray.CreateIcon(true, false);
+		}
 	});
 }
