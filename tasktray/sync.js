@@ -114,19 +114,18 @@ AddEvent("TaskTray", function (Ctrl, hMenu, nPos) {
 });
 
 if (Sync.TaskTray.AlwaysInTray) {
-	AddEvent("Load", function () {
+	AddEvent("Layout", function () {
 		Sync.TaskTray.CreateIcon(true, true);
 	});
 } else {
 	AddEvent("RestoreFromTray", function () {
 		Sync.TaskTray.DeleteIcon();
 	});
-}
-
-if (Sync.TaskTray.CloseToTray || Sync.TaskTray.MinimizeToTray) {
-	AddEvent("Load", function () {
-		if (api.IsIconic(te.hwnd)) {
-			Sync.TaskTray.CreateIcon(true, false);
-		}
-	});
+	if (Sync.TaskTray.CloseToTray || Sync.TaskTray.MinimizeToTray) {
+		AddEvent("Layout", function () {
+			if (api.IsIconic(te.hwnd)) {
+				Sync.TaskTray.CreateIcon(true, false);
+			}
+		});
+	}
 }
