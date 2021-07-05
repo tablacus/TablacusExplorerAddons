@@ -38,6 +38,12 @@ Sync.TaskTray = {
 				api.Sleep(100);
 			}
 		}
+	},
+
+	Iconic: function () {
+		if (api.IsIconic(te.hwnd)) {
+			Sync.TaskTray.CreateIcon(true, false);
+		}
 	}
 }
 
@@ -121,11 +127,10 @@ if (Sync.TaskTray.AlwaysInTray) {
 	AddEvent("RestoreFromTray", function () {
 		Sync.TaskTray.DeleteIcon();
 	});
-	if (Sync.TaskTray.CloseToTray || Sync.TaskTray.MinimizeToTray) {
-		AddEvent("Layout", function () {
-			if (api.IsIconic(te.hwnd)) {
-				Sync.TaskTray.CreateIcon(true, false);
-			}
-		});
+	if (Sync.TaskTray.MinimizeToTray) {
+		AddEvent("Resize", Sync.TaskTray.Iconic);
+	}
+	if (Sync.TaskTray.MinimizeToTray || Sync.TaskTray.CloseToTray) {
+		AddEvent("Layout", Sync.TaskTray.Iconic);
 	}
 }
