@@ -17,9 +17,12 @@ if (window.Addon == 1) {
 			title: await GetText("Refresh"),
 			src: item.getAttribute("Icon") || "bitmap:ieframe.dll,204,24,3"
 		}, h);
+		Addons.InnerRefresh.Position = item.getAttribute("Right") ? "Inner1Right_" : "Inner1Left_";
 	});
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {
-		SetAddon(null, "Inner1Left_" + Id, ['<span class="button" onclick="return Addons.InnerRefresh.Exec(', Id, ')" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', Addons.InnerRefresh.src, '</span>']);
+		SetAddon(null, Addons.InnerRefresh.Position + Id, ['<span class="button" onclick="return Addons.InnerRefresh.Exec(', Id, ')" oncontextmenu="return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', Addons.InnerRefresh.src, '</span>']);
 	});
+} else {
+	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }
