@@ -3,9 +3,11 @@ const Default = "ToolBar1Right";
 const item = await GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.DriveBar = {
+		SBSP: SBSP_NEWBROWSER,
+
 		Open: function (o) {
 			const path = o.path || o.getAttribute("path");
-			Navigate(path, SBSP_NEWBROWSER);
+			Navigate(path, Addons.DriveBar.SBSP);
 		},
 
 		Popup: async function (ev, o) {
@@ -31,11 +33,15 @@ if (window.Addon == 1) {
 			} else {
 				setTimeout(Addons.DriveBar.Update, 999, s);
 			}
+		},
+
+		SetSBSP: function () {
+			Addons.DriveBar.SBSP = null;
 		}
 	};
 
-	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, '<span id="drivebar"></span>');
+	AddEvent("Layout", function () {
+		return SetAddon(Addon_Id, Default, '<span id="drivebar"></span>');
 	});
 
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");

@@ -1,5 +1,5 @@
 const Addon_Id = "drivebar";
-const item = GetAddonElement(Addon_Id);
+let item = GetAddonElement(Addon_Id);
 
 Sync.DriveBar = {
 	Filter: ExtractFilter(item.getAttribute("Filter") || "*"),
@@ -22,7 +22,7 @@ Sync.DriveBar = {
 				const vol = api.GetDisplayNameOf(Item, SHGDN_INFOLDER);
 				let src = '';
 				if (g_.IEVer >= 8) {
-					src = GetIconImage(Item, GetSysColor(COLOR_BTNFACE));
+					src = GetIconImage(Item, CLR_DEFAULT | COLOR_BTNFACE);
 				}
 				if (!src) {
 					let nIcon = icon[0];
@@ -50,3 +50,7 @@ AddEvent("ChangeNotify", async function (Ctrl, pidls, wParam, lParam) {
 	}
 });
 Sync.DriveBar.Update();
+if (item.getAttribute("NoNewTab")) {
+	InvokeUI("Addons.DriveBar.SetSBSP");
+}
+delete item;
