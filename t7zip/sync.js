@@ -81,7 +81,7 @@ Sync.T7Zip = {
 					const lib = Sync.T7Zip.GetObject(Ctrl, "Extract");
 					if (lib) {
 						api.OleSetClipboard(Ctrl.SelectedItems());
-						Sync.T7Zip.ClipId = api.sprintf(9, "%x", Ctrl.SessionId);
+						Sync.T7Zip.ClipId = Ctrl.SessionId.toString(16);
 						Sync.T7Zip.ClipPath = lib.file;
 						return S_OK;
 					}
@@ -211,8 +211,7 @@ Sync.T7Zip = {
 		}
 	},
 
-	Init: function ()
-	{
+	Init: function () {
 		if (Sync.T7Zip.DLL) {
 			const strDll = ExtractPath(te, item.getAttribute("Dll" + g_.bit));
 			if (!strDll || !Sync.T7Zip.DLL.Init(strDll)) {
@@ -269,7 +268,7 @@ Sync.T7Zip = {
 			Sync.T7Zip.Cmd.Delete = (item.getAttribute("CmdDelete") || 'd') + ' %archive% %items%';
 
 			Sync.T7Zip.DLL.hwnd = te.hwnd;
-			if  (!GetNum(item.getAttribute("NoExSort"))) {
+			if (!GetNum(item.getAttribute("NoExSort"))) {
 				AddEvent("ColumnClick", function (Ctrl, iItem) {
 					if (Ctrl.Type <= CTRL_EB) {
 						if (Sync.T7Zip.IsHandle(Ctrl)) {

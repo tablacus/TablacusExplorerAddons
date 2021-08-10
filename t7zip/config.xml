@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.08</Version>
-    <MinVersion>2021.5.2</MinVersion>
-    <pubDate>Tue, 04 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.09</Version>
+    <MinVersion>2021.7.23</MinVersion>
+    <pubDate>Tue, 10 Aug 2021 00:00:00 GMT</pubDate>
     <Options>Common:0,1,2:0</Options>
     <DllVersion>1.1.0.0</DllVersion>
     <Level>2</Level>
@@ -13,7 +13,7 @@
   </General>
   <en>
     <Name>7-Zip</Name>
-    <Description>7-Zip *Require 7d.dll and 7zG.exe</Description>
+    <Description>7-Zip *7d.dll and 7zG.exe is required.</Description>
   </en>
   <ja>
     <Name>7-Zip</Name>
