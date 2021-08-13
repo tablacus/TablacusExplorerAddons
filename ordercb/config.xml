@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2021.7.23</MinVersion>
+    <pubDate>Fri, 13 Aug 2021 00:00:00 GMT</pubDate>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Order of clipboard</Name>
+    <Description>Cut/copy to clipboard will be done in the order in which they are displayed in the view.</Description>
+  </en>
+  <ja>
+    <Name>クリップボードの順序を表示順に</Name>
+    <Description>クリップボードへのカット/コピーを表示された順にします。</Description>
+  </ja>
+</TablacusExplorer>
