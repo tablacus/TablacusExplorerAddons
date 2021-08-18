@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
+    <Version>1.03</Version>
     <MinVersion>2020.12.5</MinVersion>
-    <pubDate>Mon, 07 Dec 2020 00:00:00 GMT</pubDate>
+    <pubDate>Wed, 18 Aug 2021 00:00:00 GMT</pubDate>
     <Options>Common:5:5</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,9 @@
     <Name>Application Icon</Name>
     <Description>Application icon</Description>
   </en>
+  <fr>
+    <Name>Icône de l'application</Name>
+  </fr>
   <ja>
     <Name>アプリアイコン</Name>
   </ja>

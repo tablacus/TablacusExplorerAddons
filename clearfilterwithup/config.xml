@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
+    <Version>1.04</Version>
     <MinVersion>2021.5.25</MinVersion>
-    <pubDate>Wed, 26 May 2021 00:00:00 GMT</pubDate>
+    <pubDate>Wed, 18 Aug 2021 00:00:00 GMT</pubDate>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -13,6 +13,10 @@
     <Name>Clear filter with "Up"</Name>
     <Description>If there is a filter, clear it without moving up with "Up".</Description>
   </en>
+  <fr>
+    <Name>Vider le filtre en "remontant"</Name>
+    <Description>Ne transfère pas un filtre existant au niveau supérieur.</Description>
+  </fr>
   <ja>
     <Name>「上へ」でフィルタ解除</Name>
     <Description>フィルターがある場合は、「上へ」で上に移動しないでフィルターを解除します。</Description>

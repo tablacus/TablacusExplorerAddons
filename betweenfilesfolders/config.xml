@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
+    <Version>1.01</Version>
     <MinVersion>2021.4.26</MinVersion>
-    <pubDate>Tue, 27 Apr 2021 00:00:00 GMT</pubDate>
+    <pubDate>Wed, 18 Aug 2021 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,10 @@
     <Name>Between files and folders</Name>
     <Description>Jump to the boundary between files and folders.</Description>
   </en>
+  <fr>
+    <Name>Entre dossiers et fichiers</Name>
+    <Description>Affiche la frontière entre les dossiers et les fichiers.</Description>
+  </fr>
   <ja>
     <Name>ファイルとフォルダの境目にジャンプ</Name>
   </ja>
