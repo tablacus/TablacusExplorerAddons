@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
+    <Version>1.06</Version>
     <MinVersion>2021.6.25</MinVersion>
-    <pubDate>Fri, 09 Jul 2021 00:00:00 GMT</pubDate>
+    <pubDate>Thu, 19 Aug 2021 00:00:00 GMT</pubDate>
     <Options>Common:0,5:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,10 @@
     <Name>Inner Refresh</Name>
     <Description>Refresh button of every pane</Description>
   </en>
+  <fr>
+    <Name>Actualiser - interne</Name>
+    <Description>Place un bouton "Actualiser" dans chaque volet.</Description>
+  </fr>
   <ja>
     <Name>Inner 更新</Name>
     <Description>ペイン毎の更新ボタン</Description>

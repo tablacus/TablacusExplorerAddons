@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
+    <Version>1.05</Version>
     <MinVersion>2021.3.24</MinVersion>
-    <pubDate>Thu, 25 Mar 2021 00:00:00 GMT</pubDate>
+    <pubDate>Thu, 19 Aug 2021 00:00:00 GMT</pubDate>
     <Options>Common:5:5</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,10 @@
     <Name>Inner New folder</Name>
     <Description>New folder button of every pane</Description>
   </en>
+  <fr>
+    <Name>Nouveau dossier - interne</Name>
+    <Description>Place un bouton "Nouveau dossier" dans chaque volet.</Description>
+  </fr>
   <ja>
     <Name>Inner 新規フォルダ</Name>
     <Description>ペイン毎の新規フォルダボタン</Description>

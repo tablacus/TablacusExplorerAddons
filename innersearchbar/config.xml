@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.11</Version>
+    <Version>1.12</Version>
     <MinVersion>2021.5.16</MinVersion>
-    <pubDate>Tue, 25 May 2021 00:00:00 GMT</pubDate>
+    <pubDate>Thu, 19 Aug 2021 00:00:00 GMT</pubDate>
     <Options>Common:0,5,7,8,9:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,10 @@
     <Name>Inner Search bar</Name>
     <Description>Search bar for each pane</Description>
   </en>
+  <fr>
+    <Name>Barre de recherche - interne</Name>
+    <Description>Place un champ de clés de recherche dans chaque volet</Description>
+  </fr>
   <ja>
     <Name>Inner 検索バー</Name>
     <Description>ペイン毎の検索バー</Description>
