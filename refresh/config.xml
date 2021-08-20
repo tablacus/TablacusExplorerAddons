@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
+    <Version>1.10</Version>
     <MinVersion>2021.4.1</MinVersion>
-    <pubDate>Fri, 02 Apr 2021 00:00:00 GMT</pubDate>
+    <pubDate>Fri, 20 Aug 2021 00:00:00 GMT</pubDate>
     <Options>Common:5,6:5</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,10 @@
     <Name>Refresh</Name>
     <Description>Refresh button</Description>
   </en>
+  <fr>
+    <Name>Actualiser - global</Name>
+    <Description>Place un bouton "Actualiser" dans la barre d'outils principale</Description>
+  </fr>
   <ja>
     <Name>更新</Name>
   </ja>

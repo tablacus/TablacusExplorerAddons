@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<text s="&amp;Restore">&amp;Restaurer</text>
+	<text s="Minimize to tray">Minimiser dans la zone de notification</text>
+	<text s="Close to tray">Fermer dans la zone de notification</text>
+	<text s="Always in tray">Toujours dans la zone de notification</text>
+</resources>

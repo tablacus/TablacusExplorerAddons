@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.07</Version>
-    <MinVersion>2020.11.15</MinVersion>
-    <pubDate>Mon, 16 Nov 2020 00:00:00 GMT</pubDate>
+    <Version>1.08</Version>
+    <MinVersion>2021.7.23</MinVersion>
+    <pubDate>Fri, 20 Aug 2021 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -15,6 +15,11 @@
     <Description>Change tab color. Require "Tab plus"
     </Description>
   </en>
+  <fr>
+    <Name>Changer la couleur d'onglet</Name>
+    <Description>Change la couleur de l'onglet. "Tab plus" est requis.
+    </Description>
+  </fr>
   <ja>
     <Name>タブに色を付ける</Name>
     <Description>タブに色を付けます。※タブプラスが必要</Description>
