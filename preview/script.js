@@ -22,7 +22,17 @@ if (window.Addon == 1) {
 			if (Item) {
 				const infoName = await Item.Name;
 				if ("string" === typeof infoName) {
-					const info = EncodeSC(infoName + "\n" + (await Item.ExtendedProperty("infotip"))) + "\n";
+					const info = [];
+					const col = ["type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13"];
+					if (!await IsFolderEx(Item)) {
+						col.push("size");
+					}
+					for (let i = col.length; i--;) {
+						const s1 = await api.PSFormatForDisplay(col[i], await Item.ExtendedProperty(col[i]), PDFF_DEFAULT);
+						if (s1) {
+							info.unshift(EncodeSC(" " + await api.PSGetDisplayName(col[i]) + ": " + s1));
+						}
+					}
 					if (await Item.IsLink) {
 						const path = await Item.ExtendedProperty("linktarget");
 						if (path) {
@@ -52,11 +62,11 @@ if (window.Addon == 1) {
 					} else {
 						style = nWidth > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
 					}
-					s.splice(s.length, 0, '<div align="center" id="previewimg1"><img id="previewimg2" src="', path, '" style="display: none;', style, '" title="', info, '" oncontextmenu="Addons.Preview.Popup(event); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)" onload="Addons.Preview.Loaded(this)"></div>');
+					s.splice(s.length, 0, '<div align="center" id="previewimg1"><img id="previewimg2" src="', path, '" style="display: none;', style, '" title="', info.join("\n"), '" oncontextmenu="Addons.Preview.Popup(event); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)" onload="Addons.Preview.Loaded(this)"></div>');
 					if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
 						s.push('<input id="previewplay1" type="button" value=" &#x25B6; " title="Play" onclick="Addons.Preview.Play()"><br>');
 					}
-					s.push(info.replace(/\n/, "<br>"));
+					s.push(info.join("<br>"));
 				}
 			}
 			o.innerHTML = s.join("");
