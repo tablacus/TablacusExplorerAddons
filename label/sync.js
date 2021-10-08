@@ -14,11 +14,13 @@ Sync.Label = {
 	SyncItem: {},
 	DB: new SimpleDB("label"),
 	Portable: GetNum(item.getAttribute("Portable")),
+	ConfirmAdd: !GetNum(item.getAttribute("NoConfirmAdd")),
+	ConfirmRemove: !GetNum(item.getAttribute("NoConfirmRemove")),
 	Icon: item.getAttribute("Icon") || (WINVER >= 0x600 ? "icon:shell32.dll,289" : "bitmap:ieframe.dll,206,16,18"),
 	tid: {},
 
 	IsHandle: function (Ctrl) {
-		return Sync.Label.RE.exec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+		return Sync.Label.RE.exec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 	},
 
 	IsWritable: function (Ctrl) {
@@ -32,13 +34,13 @@ Sync.Label = {
 		const Selected = GetSelectedArray(Ctrl, pt, true).shift();
 		if (Selected && Selected.Count) {
 			try {
-				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				if (path) {
 					const Label = Sync.Label.DB.Get(path);
 					InputDialog(path + (Selected.Count > 1 ? " : " + Selected.Count : "") + "\nlabel:" + Label, Label, function (s) {
 						if ("string" === typeof s) {
 							for (let i = Selected.Count; i-- > 0;) {
-								Sync.Label.Set(api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), s);
+								Sync.Label.Set(api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), s);
 							}
 						}
 					});
@@ -53,14 +55,14 @@ Sync.Label = {
 		const Selected = GetSelectedArray(Ctrl, pt, true).shift();
 		if (Selected && Selected.Count == 1) {
 			try {
-				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				if (path) {
 					const Label = Sync.Label.DB.Get(path);
 					InputDialog("label:" + Label + "\n" + path, path, function (s) {
 						if ("string" === typeof s) {
 							api.SHParseDisplayName(function (pid, s, path, Label) {
 								if (pid) {
-									s = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+									s = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 								}
 								if (s != path) {
 									if (Sync.Label.DB.Get(s)) {
@@ -85,7 +87,7 @@ Sync.Label = {
 	},
 
 	ExecRemoveItems: function (Ctrl, pt) {
-		if (!confirmOk()) {
+		if (Sync.Label.ConfirmRemove && !confirmOk()) {
 			return;
 		}
 		const ar = GetSelectedArray(Ctrl, pt);
@@ -148,7 +150,7 @@ Sync.Label = {
 	},
 
 	ExecAdd: function (Ctrl, pt, Name, nVerb) {
-		if (!confirmOk()) {
+		if (Sync.Label.ConfirmAdd && !confirmOk()) {
 			return;
 		}
 		const FV = GetFolderView(Ctrl, pt);
@@ -159,7 +161,7 @@ Sync.Label = {
 	},
 
 	ExecRemove: function (Ctrl, pt, Name, nVerb) {
-		if (!confirmOk()) {
+		if (Sync.Label.ConfirmRemove && !confirmOk()) {
 			return;
 		}
 		const FV = GetFolderView(Ctrl, pt);
@@ -170,7 +172,7 @@ Sync.Label = {
 	},
 
 	Append: function (Item, Label) {
-		const path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+		const path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		if (path) {
 			let ar = Sync.Label.DB.Get(path).split(/\s*;\s*/);
 			const o = {};
@@ -208,7 +210,7 @@ Sync.Label = {
 
 	Remove: function (Item, Label) {
 		let s = "";
-		const path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+		const path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		if (path) {
 			s = Sync.Label.DB.Get(path);
 			const arNew = [];
@@ -296,7 +298,7 @@ Sync.Label = {
 		for (let i in cFV) {
 			const FV = cFV[i];
 			if (FV.hwnd) {
-				const path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				const path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				if (Sync.Label.Redraw[path]) {
 					api.InvalidateRect(FV.hwndList || FV.hwndView || FV.hwnd, null, false);
 				}
@@ -403,7 +405,7 @@ Sync.Label = {
 		if (/^\-?System\.Contact\.Label$/i.test(Name)) {
 			CustomSort(Ctrl, 'System.Contact.Label', /^\-/.test(Name),
 				function (pid, FV) {
-					return Sync.Label.DB.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					return Sync.Label.DB.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 				},
 				function (a, b) {
 					return api.StrCmpLogical(b[1], a[1]);
@@ -510,7 +512,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 	}
 	if (!Verb || Verb == CommandID_STORE - 1) {
 		if (ContextMenu.Items.Count >= 1) {
-			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			if (Sync.Label.IsHandle(path)) {
 				const FV = te.Ctrl(CTRL_FV);
 				FV.Navigate(path, SBSP_SAMEBROWSER);
@@ -582,12 +584,12 @@ AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, N
 AddEvent("ChangeNotify", function (Ctrl, pidls) {
 	if (te.Labels) {
 		if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
-			let name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			let name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			let s = Sync.Label.Remove(pidls[0]);
 			if (s) {
 				Sync.Label.SetSync(name, s);
 			} else {
-				name = GetFileName(api.GetDisplayNameOf(pidls[1], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				name = GetFileName(api.GetDisplayNameOf(pidls[1], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 				s = Sync.Label.SyncItem[name];
 			}
 			if (s) {
@@ -595,11 +597,11 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 			}
 		}
 		if (pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR)) {
-			const name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			const name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			Sync.Label.SetSync(name, Sync.Label.Remove(pidls[0]));
 		}
 		if (pidls.lEvent & (SHCNE_CREATE | SHCNE_MKDIR)) {
-			const name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			const name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			const Item = Sync.Label.SyncItem[name];
 			if (Item) {
 				Sync.Label.Append(pidls[0], Item);
@@ -685,7 +687,7 @@ if (item.getAttribute("MenuExec")) {
 			mii.hSubMenu = api.CreatePopupMenu();
 			mii.dwTypeData = Sync.Label.strName;
 			if (Selected && Selected.Count) {
-				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				if (path) {
 					const ar = [GetText("&Edit")];
 					const s = Sync.Label.DB.Get(path);
@@ -724,7 +726,7 @@ if (item.getAttribute("MenuExec")) {
 			mii2.dwTypeData = GetText("Remove");
 			const o = {};
 			for (let i = Selected.Count; i-- > 0;) {
-				const path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				const path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				if (path) {
 					const ar = Sync.Label.DB.Get(path).split(/\s*;\s*/);
 					for (let j in ar) {

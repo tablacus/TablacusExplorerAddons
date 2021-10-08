@@ -1,4 +1,4 @@
-var Addon_Id = "fastcopy";
+const Addon_Id = "fastcopy";
 if (window.Addon == 1) {
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {

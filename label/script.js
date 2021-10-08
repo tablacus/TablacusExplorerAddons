@@ -11,6 +11,6 @@ if (!item.getAttribute("Set")) {
 if (window.Addon == 1) {
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
-	SetTabContents(0, "General", '<input type="checkbox" id="Portable"><label for="Portable">Portable</label>');
+	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 	ChangeForm([["__IconSize", "style/display", "none"]]);
 }

@@ -33,7 +33,7 @@ Sync.FastCopy = {
 							strTemp2 = GetTempPath(7);
 							CreateFolder(strTemp2);
 						}
-						path1 = strTemp2 + fso.GetFileName(path1);
+						path1 = strTemp2 + GetFileName(path1);
 					}
 				} else {
 					return false;
@@ -100,10 +100,10 @@ const attrs = item.attributes;
 for (let i = attrs.length; i-- > 0;) {
 	Sync.FastCopy.opt[attrs[i].name] = attrs[i].value;
 }
-Sync.FastCopy.opt.strCmd = api.PathUnquoteSpaces(ExtractMacro(te, Sync.FastCopy.opt.Path));
+Sync.FastCopy.opt.strCmd = ExtractPath(te, Sync.FastCopy.opt.Path);
 
 if (Sync.FastCopy.opt.strCmd && fso.FileExists(Sync.FastCopy.opt.strCmd)) {
-	Sync.FastCopy.opt.strCmd = api.PathQuoteSpaces(Sync.FastCopy.opt.strCmd);
+	Sync.FastCopy.opt.strCmd = PathQuoteSpaces(Sync.FastCopy.opt.strCmd);
 	AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		switch (Ctrl.Type) {
 			case CTRL_SB:
