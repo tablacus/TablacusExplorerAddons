@@ -91,7 +91,7 @@ Sync.LabelButton = {
 				mii2.dwTypeData = GetText("Remove");
 				const oExists = {};
 				for (let i = Selected.Count; i-- > 0;) {
-					const path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+					const path = api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 					if (path) {
 						const ar = Sync.Label.DB.Get(path).split(/\s*;\s*/);
 						for (let j in ar) {
@@ -136,17 +136,17 @@ Sync.LabelButton = {
 			FV.Columns = FV.Columns + ' "System.Contact.Label" -1';
 		}
 		if (nVerb > 30000) {
-			if (confirmOk()) {
+			if (!Sync.Label.ConfirmRemove || confirmOk()) {
 				Sync.Label.RemoveItems(Selected, arList[nVerb - 30001]);
 			}
 		} else if (nVerb > 20000) {
-			if (confirmOk()) {
+			if (!Sync.Label.ConfirmAdd || confirmOk()) {
 				Sync.Label.AppendItems(Selected, arList[nVerb - 20001]);
 			}
 		} else if (nVerb > 10000) {
 			let path = "label:";
 			if (api.GetKeyState(VK_SHIFT) < 0) {
-				const res = /^(label:.*)$/.exec(api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				const res = /^(label:.*)$/.exec(api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 				if (res) {
 					path = res[1] + (/;/.test(res[1]) ? ";" : " ");
 				}

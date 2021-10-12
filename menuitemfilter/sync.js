@@ -41,7 +41,7 @@ try {
 
 AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt) {
 	if (api.GetKeyState(VK_SHIFT) >= 0) {
-		Sync.MenuItemFilter.Remove(hMenu, Sync.MenuItemFilter.Menus[Name], api.GetDisplayNameOf(SelItem || GetFolderView(Ctrl, pt), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+		Sync.MenuItemFilter.Remove(hMenu, Sync.MenuItemFilter.Menus[Name], api.GetDisplayNameOf(SelItem || GetFolderView(Ctrl, pt), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 	}
 	return nPos;
 });

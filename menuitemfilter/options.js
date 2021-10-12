@@ -9,7 +9,7 @@ Add = function (ar) {
 	const table = document.getElementById("T");
 	const nRows = table.rows.length;
 	s = ['<td><input type="radio" name="sel" id="i', nRows, '"></td>'];
-	s.push('<td><select name="m', nRows, '"><option value="">Select</option>');
+	s.push('<td><select name="m', nRows, '" class="translate"><option value="">Select</option>');
 	for (let j in g_arMenuTypes) {
 		const s1 = g_arMenuTypes[j];
 		s.push('<option value="', s1, '">', s1, '</option>');
