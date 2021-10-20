@@ -89,13 +89,28 @@ if (window.Addon == 1) {
 		if (Addons.TreeView) {
 			return;
 		}
-		SetGestureExec("Tree", Addons.SideTreeView.List ? "1" : "11", async function (Ctrl, pt) {
+
+		if (Addons.SideTreeView.List) {
+			SetGestureExec("Tree", "1", async function (Ctrl, pt) {
+				let Item = await Ctrl.HitTest(pt);
+				if (Item && (await Item.Enum || await Item.IsFolder)) {
+					let FV = await Ctrl.FolderView;
+					if (!await api.ILIsEqual(await FV.FolderItem, Item)) {
+						setTimeout(async function () {
+							FV.Navigate(Item, await GetNavigateFlags(FV));
+						}, 99);
+					}
+				}
+			}, "Async", true);
+		}
+
+		SetGestureExec("Tree", "11", async function (Ctrl, pt) {
 			let Item = await Ctrl.HitTest(pt);
 			if (Item) {
 				let FV = await Ctrl.FolderView;
 				if (!await api.ILIsEqual(await FV.FolderItem, Item)) {
-					setTimeout(async function () {
-						FV.Navigate(Item, await GetNavigateFlags(FV));
+					setTimeout(function () {
+						FolderMenu.Invoke(Item, void 0, FV);
 					}, 99);
 				}
 			}
