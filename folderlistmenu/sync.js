@@ -15,7 +15,6 @@ AddType("Folder list menu", {
 		}
 		let res, Name = "", Img = "";
 		const mii = api.Memory("MENUITEMINFO");
-		mii.cbSize = mii.Size;
 		mii.fMask = MIIM_ID | MIIM_BITMAP | MIIM_SUBMENU | MIIM_DATA | MIIM_STRING | MIIM_FTYPE;
 		MenusIcon(mii, "folder:closed");
 		const hbmFolder = mii.hbmpItem;
@@ -34,7 +33,7 @@ AddType("Folder list menu", {
 				}
 				res = /^#EXTIMG:\s*(.*)/i.exec(path);
 				if (res) {
-					Img = res[1];
+					Img = res[1].replace(/"/g, "");
 				}
 				continue;
 			}
@@ -54,22 +53,29 @@ AddType("Folder list menu", {
 				if (Img == "...") {
 					Img = path;
 				}
+				let image;
 				const ar = Img.split(/,/);
-				const fn = api.PathUnquoteSpaces(ExtractMacro(te, ar[0]));
-				let image = api.CreateObject("WICBitmap");
-				if (/\.ico$/i.test(fn) || !image.FromFile(fn)) {
-					const sfi = api.Memory("SHFILEINFO");
-					api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-					image.FromHICON(sfi.hIcon);
-					api.DestroyIcon(sfi.hIcon);
+				const fn = ExtractPath(te, ar.shift());
+				if (/^icon:|^font:/i.test(fn)) {
+					image = MakeImgData([fn, ar.shift()].join(","), 0, ar[0] || 16, CLR_DEFAULT | COLOR_MENU)
+				} else if (/^bitmap:/i.test(fn)) {
+					image = MakeImgData([fn, ar.shift(), ar.shift(), ar.shift()].join(","), 0, ar[0] || 16, CLR_DEFAULT | COLOR_MENU);
+				} else {
+					image = api.CreateObject("WICBitmap");
+					if (/\.ico$/i.test(fn) || !image.FromFile(fn)) {
+						const sfi = api.Memory("SHFILEINFO");
+						api.SHGetFileInfo(fn, 0, sfi, sfi.Size, SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+						image.FromHICON(sfi.hIcon);
+						api.DestroyIcon(sfi.hIcon);
+					}
 				}
-				if (ar[1] > 0) {
-					image = GetThumbnail(image, ar[1], false);
+				if (ar[0] > 0) {
+					image = GetThumbnail(image, ar[0], false);
 				}
 				AddMenuImage(mii, image, fn);
 				hbm = mii.hbmpItem;
 			}
-			const arName = (Name || fso.GetFileName(api.PathUnquoteSpaces(path.replace(/`/g, ""))) || path.replace(/\\/g, "")).split(/\\|\/|\|/);
+			const arName = (Name || GetFileName(api.PathUnquoteSpaces(path.replace(/`/g, ""))) || path.replace(/\\/g, "")).split(/\\|\/|\|/);
 			let strPath = '';
 			let hMenu = oMenu['\\'];
 			while (arName.length > 1) {
