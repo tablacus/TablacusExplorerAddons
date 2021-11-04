@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
-    <MinVersion>2021.7.23</MinVersion>
-    <pubDate>Wed, 11 Aug 2021 00:00:00 GMT</pubDate>
+    <Version>1.01</Version>
+    <MinVersion>2021.10.12</MinVersion>
+    <pubDate>Thu, 04 Nov 2021 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Fix Windows 11 Preview bug</Name>
-    <Description>Workaround: Selection problem.</Description>
+    <Name>Fix Windows 11 bug</Name>
+    <Description>Workaround: Tooltip issues.</Description>
   </en>
   <ja>
-    <Name>Windows 11 Previewのバグ対策</Name>
-    <Description>選択がおかしくなるバグ対策</Description>
+    <Name>Windows 11のバグ対策</Name>
+    <Description>ツールチップ問題の回避</Description>
   </ja>
 </TablacusExplorer>
