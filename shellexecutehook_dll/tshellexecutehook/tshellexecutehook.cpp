@@ -1,7 +1,8 @@
 // Tablacus Shel Execute Hook (C)2016 Gaku
 // MIT Lisence
-// Visual C++ 2010 Express Edition SP1
-// Windows SDK v7.1
+// Visual Studio Express 2017 for Windows Desktop
+// 32-bit Visual Studio 2015 - Windows XP (v140_xp)
+// 64-bit Visual Studio 2017 (v141)
 // https://tablacus.github.io/
 
 #include "tshellexecutehook.h"
@@ -46,10 +47,11 @@ HRESULT ShowRegError(LSTATUS ls)
 	return HRESULT_FROM_WIN32(ls);
 }
 
-HRESULT ExecuteTE(LPCTSTR lpParam)
+HRESULT ExecuteTE(LPCTSTR lpParam, BOOL bCreateProcess)
 {
 	TCHAR szArg[32768];
 	TCHAR szExe[MAX_PATH];
+	TCHAR szHash[MAX_PATH];
 	HKEY hKey;
 
 	szExe[0] = NULL;
@@ -57,20 +59,58 @@ HRESULT ExecuteTE(LPCTSTR lpParam)
 		DWORD dwSize = sizeof(szExe);
 		RegQueryValueEx(hKey, L"ExePath", NULL, NULL, (LPBYTE)&szExe, &dwSize);
 		RegCloseKey(hKey);
-		ExpandEnvironmentStrings(szExe, szArg, sizeof(szArg));
-		if (!PathMatchSpec(szArg, L"\"*\"")) {
-			PathQuoteSpaces(szArg);
+		for (int i = 0; i < MAX_PATH; ++i) {
+			WCHAR wc = towupper(szExe[i]);
+			if (wc == '\\') {
+				wc = '/';
+			}
+			szHash[i] = wc;
+			if (!wc) {
+				break;
+			}
 		}
-		if (lpParam) {
-			lstrcat(szArg, L" ");
-			lstrcat(szArg, lpParam);
+		LONG_PTR nHash;
+		HashData((BYTE *)szHash, lstrlen(szHash) * sizeof(WCHAR), (LPBYTE)&nHash, sizeof(LONG_PTR));
+		HWND hwndTE = NULL;
+		while (hwndTE = FindWindowEx(NULL, hwndTE, L"TablacusExplorer", NULL)) {
+			if (GetWindowLongPtr(hwndTE, GWLP_USERDATA) == nHash) {
+				for (int i = 1000; (GetWindowLong(hwndTE, GWL_EXSTYLE) & WS_EX_LAYERED) && --i;) {
+					Sleep(500);
+				}
+				ExpandEnvironmentStrings(szExe, szArg, sizeof(szArg));
+				if (!PathMatchSpec(szArg, L"\"*\"")) {
+					PathQuoteSpaces(szArg);
+				}
+				if (lpParam) {
+					lstrcat(szArg, L" ");
+					lstrcat(szArg, lpParam);
+				}
+				COPYDATASTRUCT cd;
+				cd.dwData = 0;
+				cd.lpData = szArg;
+				cd.cbData = (lstrlen(szArg) + 1) * sizeof(WCHAR);
+				DWORD_PTR dwResult;
+				LRESULT lResult = SendMessageTimeout(hwndTE, WM_COPYDATA, SW_SHOWNORMAL, LPARAM(&cd), SMTO_ABORTIFHUNG, 1000 * 30, &dwResult);
+				if (lResult && dwResult == S_OK) {
+					SetForegroundWindow(hwndTE);
+					return S_OK;
+				}
+			}
 		}
-		STARTUPINFO si = { sizeof(STARTUPINFO) };
-		PROCESS_INFORMATION pi = { 0 };
-		if (CreateProcess(NULL, (LPTSTR)szArg, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi)) {
-			CloseHandle(pi.hThread);
-			CloseHandle(pi.hProcess);
-			return S_OK;
+		if (bCreateProcess) {
+			STARTUPINFO si = { sizeof(STARTUPINFO) };
+			PROCESS_INFORMATION pi = { 0 };
+			if (CreateProcess(szExe, NULL, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi)) {
+				if (lpParam) {
+					WaitForInputIdle(pi.hProcess, 500);
+					for (int i = 0; ExecuteTE(lpParam, FALSE) && i < 10; ++i) {
+						Sleep(500);
+					}
+				}
+				CloseHandle(pi.hThread);
+				CloseHandle(pi.hProcess);
+				return S_OK;
+			}
 		}
 	}
 	return S_FALSE;
@@ -141,19 +181,19 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 				if SUCCEEDED(SHBindToParent((LPCITEMIDLIST)pei->lpIDList, IID_PPV_ARGS(&pSF), &pidlPart)) {
 					if SUCCEEDED(teGetDisplayNameBSTR(pSF, pidlPart, SHGDN_FORPARSING, &bs)) {
 						if (lstrcmpi(bs, szExplorer) == 0) {
-							hr = ExecuteTE(pei->lpParameters);
+							hr = ExecuteTE(pei->lpParameters, TRUE);
 						} else {
 							SFGAOF sfAttr = SFGAO_FOLDER | SFGAO_FILESYSTEM;
 							if FAILED(pSF->GetAttributesOf(1, &pidlPart, &sfAttr)) {
 								sfAttr = 0;
 							}
 							if ((sfAttr & (SFGAO_FOLDER | SFGAO_FILESYSTEM)) == (SFGAO_FOLDER | SFGAO_FILESYSTEM)) {
-								hr = ExecuteTE(bs);
+								hr = ExecuteTE(bs, TRUE);
 							} else if (!PathMatchSpec(bs, FILTER_CONTROLPANEL)) {
 								if (sfAttr & SFGAO_FOLDER) { 
-									hr = ExecuteTE(bs);
+									hr = ExecuteTE(bs, TRUE);
 								} else if (PathMatchSpec(bs, FILTER_WINE10)) {
-									hr = ExecuteTE(NULL);
+									hr = ExecuteTE(NULL, TRUE);
 								}
 							}
 						}
@@ -168,11 +208,11 @@ STDMETHODIMP CShellExecuteHook::Execute(LPSHELLEXECUTEINFO pei)
 		if (hr == E_NOTIMPL && pei->lpFile) {
 			try {
 				if (lstrcmpi(pei->lpFile, szExplorer) == 0) {
-					hr = ExecuteTE(pei->lpParameters);
+					hr = ExecuteTE(pei->lpParameters, TRUE);
 				} else if (PathMatchSpec(pei->lpFile, FILTER_WINE10)) {
-					hr = ExecuteTE(pei->lpFile);
+					hr = ExecuteTE(pei->lpFile, TRUE);
 				} else if (PathIsDirectory(pei->lpFile)) {
-					hr = ExecuteTE(pei->lpFile);
+					hr = ExecuteTE(pei->lpFile, TRUE);
 				}
 			} catch (...) {
 				return S_FALSE;

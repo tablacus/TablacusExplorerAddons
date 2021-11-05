@@ -5,6 +5,7 @@ const arg = api.CommandLineToArgv(api.GetCommandLine());
 const ex = {
 	Path: arg.pop()
 };
+const msg = [];
 for (let i = 3; i < arg.length; ++i) {
 	ex[arg[i]] = true;
 }
@@ -29,7 +30,9 @@ if (s != !ex.EnableShellExecuteHooks) {
 			wsh.RegDelete(reg);
 		}
 		pnReboot[0] |= 1;
-	} catch (e) { }
+	} catch (e) {
+		msg.push(e.toString());
+	}
 }
 reg = "HKCU\\SOFTWARE\\Tablacus\\ShellExecuteHook\\ExePath";
 try {
@@ -38,13 +41,15 @@ try {
 if (s != ex.Path) {
 	try {
 		if (ex.Path) {
-			wsh.RegWrite(reg, PathUnquoteSpaces(MainWindow.ExtractMacro(te, ex.Path)), "REG_SZ");
+			wsh.RegWrite(reg, PathUnquoteSpaces(ex.Path), "REG_SZ");
 		} else {
 			wsh.RegDelete(reg);
 			wsh.RegDelete("HKCU\\SOFTWARE\\Tablacus\\ShellExecuteHook\\");
 			wsh.RegDelete("HKCU\\SOFTWARE\\Tablacus\\");
 		}
-	} catch (e) { }
+	} catch (e) {
+		msg.push(e.toString());
+	}
 }
 SetDll(g_.bit, "", system32, pnReboot, ex);
 if (g_.bit == 64) {
@@ -54,7 +59,10 @@ if (pnReboot[1]) {
 	api.CreateProcess(Explorer);
 }
 if (pnReboot[0] & (!!ex.Explorer ? 2 : 3)) {
-	MessageBox(api.LoadString(hShell32, 61961) || "Reboot required.", TITLE, MB_ICONINFORMATION);
+	msg.push(api.LoadString(hShell32, 61961) || "Reboot required.");
+}
+if (msg.length) {
+	MessageBox(msg.join("\n"), TITLE, MB_ICONINFORMATION);
 }
 
 function SetDll(bit, wow64, sysdir, pnReboot, ex) {

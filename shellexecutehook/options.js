@@ -75,7 +75,7 @@ SaveLocation = async function () {
 			arg.push("Explorer");
 		}
 		if (document.getElementById("Path").value) {
-			arg.push(PathQuoteSpaces(document.getElementById("Path").value));
+			arg.push(PathQuoteSpaces(MainWindow.ExtractMacro(te, document.getElementById("Path").value)));
 		} else {
 			arg.push('""');
 		}
