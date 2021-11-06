@@ -12,7 +12,7 @@ AddEvent("ToolTip", function (Ctrl, Index) {
 });
 
 AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
-	if (msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_SB && Ctrl.hList == Sync.FixWin11Preview.hList) {
+	if (msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_SB && Ctrl.hwndList == Sync.FixWin11Preview.hList) {
 		let hwnd, hwnd1;
 		while (hwnd1 = api.FindWindowEx(null, hwnd1, null, null)) {
 			if (api.GetClassName(hwnd1) == "tooltips_class32") {

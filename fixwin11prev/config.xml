@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
+    <Version>1.02</Version>
     <MinVersion>2021.10.12</MinVersion>
-    <pubDate>Thu, 04 Nov 2021 00:00:00 GMT</pubDate>
+    <pubDate>Sat, 06 Nov 2021 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
     <Name>Fix Windows 11 bug</Name>
-    <Description>Workaround: Tooltip issues.</Description>
+    <Description>Workaround: Tooltips problem.</Description>
   </en>
   <ja>
     <Name>Windows 11のバグ対策</Name>
-    <Description>ツールチップ問題の回避</Description>
+    <Description>ツールチップのバグ対策</Description>
   </ja>
 </TablacusExplorer>
