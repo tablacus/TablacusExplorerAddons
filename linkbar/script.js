@@ -136,7 +136,7 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			s.push('<label id="_linkbar+" title="Edit" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
+			s.push('<label id="_linkbar+" title="', await GetText("Add"), '" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
 			s.push('&nbsp;</label>');
 
 			document.getElementById('_linkbar').innerHTML = s.join("");
@@ -148,8 +148,8 @@ if (window.Addon == 1) {
 			return await ExtractPath(te, line[0]);
 		},
 
-		ShowOptions: function (nEdit) {
-			const opt = api.CreateObject("Object");
+		ShowOptions: async function (nEdit) {
+			const opt = await api.CreateObject("Object");
 			opt.nEdit = nEdit;
 			AddonOptions("linkbar", Addons.LinkBar.Changed, opt);
 		},

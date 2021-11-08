@@ -2,7 +2,7 @@ const Addon_Id = "dataurischeme";
 const item = GetAddonElement(Addon_Id);
 
 Sync.DataURIScheme = {
-	strName: item.getAttribute("MenuName") || "Copy Data URI Scheme",
+	strName: item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name),
 
 	Exec: function (Ctrl, pt) {
 		const Selected = GetSelectedArray(Ctrl, pt, true).shift();
