@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2021.11.1</MinVersion>
+    <pubDate>Tue, 16 Nov 2021 00:00:00 GMT</pubDate>
+    <Options>Common:4:4</Options>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Extension tooltips changer</Name>
+    <Description>Change tooltips with file extension</Description>
+  </en>
+  <ja>
+    <Name>拡張子でツールチップを変更</Name>
+  </ja>
+</TablacusExplorer>

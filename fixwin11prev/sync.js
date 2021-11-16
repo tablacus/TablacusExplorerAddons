@@ -9,7 +9,7 @@ AddEvent("ToolTip", function (Ctrl, Index) {
 		api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, Index, Sync.FixWin11Preview.rc);
 		Sync.FixWin11Preview.hList = Ctrl.hwndList;
 	}
-});
+}, true);
 
 AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
 	if (msg == WM_MOUSEMOVE && Ctrl.Type == CTRL_SB && Ctrl.hwndList == Sync.FixWin11Preview.hList) {

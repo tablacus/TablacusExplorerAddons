@@ -1,0 +1,54 @@
+<form name="E">
+  <table style="width: 100%; height: calc(100% - 2em)">
+    <tr>
+      <td style="width: 12em; vertical-align: top; width: 40%">
+        <select name="List" size="20" style="width: 100%; height: 100%" onchange="EditXEx(EditIC, 'List')" ondblclick="EditIC('List')" oncontextmenu="CancelX('List')" multiple>
+        </select>
+      </td>
+      <td style="width: 60%; height: 100%">
+        <div class="panel" style="width: 100%; height: 100%">
+          <table style="width: 100%; height: 100%">
+            <tr>
+              <td><label>{E4F10A3C-49E6-405D-8288-A23BD4EEAA6C} 100|Extension</label></td>
+            </tr>
+            <tr>
+              <td><input type="text" name="Type" style="width: 100%" onchange="ChangeX('List')" onfocus="this.select()"></td>
+            </tr>
+            <tr>
+              <td>
+                <table>
+                  <tr>
+                    <td style="width: 100%">
+                      <label>Options</label>
+                    </td>
+                    <td><input type="button" value="Browse..." onclick="BrowseType(this);"></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr style="width: 100%; height: 100%">
+              <td>
+                <textarea name="Data" style="width: 100%; height: 100%" onchange="ChangeX('List')"></textarea>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <table style="width: 100%">
+    <tr>
+      <td style="width: 100%; white-space: nowrap">
+        <input type="button" value="Remove" onclick="RemoveX('List')">
+        <input type="button" value="Up" onclick="MoveX('List',-1)">
+        <input type="button" value="Down" onclick="MoveX('List',1)">
+        <input type="checkbox" id="_EDIT" checked="">
+        <label for="_EDIT">Edit</label>
+      </td>
+      <td style="white-space: nowrap">
+        <input type="button" value="Add" onclick="AddX('List', ReplaceIC)">
+        <input type="button" value="Replace" onclick="ReplaceIC('List')">
+      </td>
+    </tr>
+  </table>
+</form>
