@@ -45,29 +45,31 @@ SaveLocation = async function () {
 	await SaveIC("List");
 };
 
-BrowseType = async function (el) {
-	const f = await sha.NameSpace(ui_.Installed);
-	let ar = [];
-	for (let i = 0; i < 999; ++i) {
-		ar.push(f.GetDetailsOf(null, i));
-	}
-	ar = await Promise.all(ar);
-	const hMenu = await api.CreatePopupMenu();
-	for (let i = 0; i < ar.length; ++i) {
-		if (ar[i]) {
-			await api.InsertMenu(hMenu, i, MF_BYPOSITION | MF_STRING, i + 1, ar[i]);
+BrowseType = async function () {
+	const elData = document.getElementById("DataArea");
+	const elMenu = document.getElementById("MenuArea");
+	if (elData.style.width.replace(/\D/, "") == 100) {
+		elData.style.width = "50%";
+		elMenu.style.display = "";
+		const el = document.E.Menu;
+		if (el.length) {
+			return;
 		}
-	}
-	const pt = GetPos(el, 9);
-	const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, ui_.hwnd, null, null);
-	api.DestroyMenu(hMenu);
-	if (nVerb) {
-		const s = PathQuoteSpaces(ar[nVerb - 1]);
-		if (document.E.Data.value) {
-			document.E.Data.value += "\n" + s;
-		} else {
-			document.E.Data.value = s;
+		const f = await sha.NameSpace(ui_.Installed);
+		let ar = [];
+		for (let i = 0; i < 999; ++i) {
+			ar.push(f.GetDetailsOf(null, i));
 		}
+		ar = await Promise.all(ar);
+		for (let i = 0; i < ar.length; ++i) {
+			if (ar[i]) {
+				const j = el.length++;
+				el[j].text = ar[i];
+			}
+		}
+	} else {
+		elData.style.width = "100%";
+		elMenu.style.display = "none";
 	}
 }
 
@@ -80,4 +82,9 @@ setTimeout(async function () {
 		SetData(g_x.List[i], [name, db[name]]);
 	}
 	EnableSelectTag(g_x.List);
+	document.getElementById("MenuArea").style.display = "none";
+	document.E.Menu.onclick = function () {
+		const el = document.E.Menu;
+		AddPath("Data", PathQuoteSpaces(el[el.selectedIndex].text), document.E);
+	}
 }, 99);

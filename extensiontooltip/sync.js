@@ -3,7 +3,7 @@ Sync.ExtensionTooltip = {
 }
 
 AddEvent("ToolTip", function (Ctrl, Index) {
-	if (Ctrl.Type == CTRL_SB && Index >= 0) {
+	if (Ctrl.Type <= CTRL_EB && Index >= 0) {
 		const Item = Ctrl.Item(Index);
 		if (!Item) {
 			return;
@@ -20,7 +20,8 @@ AddEvent("ToolTip", function (Ctrl, Index) {
 			for (let i = 0; i < ar.length; ++i) {
 				s = api.PSGetDisplayName(ar[i], 2);
 				if (s) {
-					dt.push(api.PSGetDisplayName(s) + ": " + (api.PSFormatForDisplay(s, Item.ExtendedProperty(s), PDFF_DEFAULT) || ""));
+					const v = api.PSFormatForDisplay(s, Item.ExtendedProperty(s), PDFF_DEFAULT);
+					dt.push(api.PSGetDisplayName(s) + ": " + (v || ""));
 				} else {
 					dt.push(Item.ExtendedProperty(ar[i]) || ar[i]);
 				}
