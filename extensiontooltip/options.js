@@ -56,16 +56,25 @@ BrowseType = async function () {
 			return;
 		}
 		const f = await sha.NameSpace(ui_.Installed);
+		const db = {};
 		let ar = [];
+		const FV = await GetFolderView();
+		const col = await Promise.all(await api.CommandLineToArgv(FV.Columns));
+		for (let i = 0; i < col.length; i += 2) {
+			db[col[i]] = 1;
+		}
 		for (let i = 0; i < 999; ++i) {
 			ar.push(f.GetDetailsOf(null, i));
 		}
 		ar = await Promise.all(ar);
+		ar.sort();
 		for (let i = 0; i < ar.length; ++i) {
 			if (ar[i]) {
-				const j = el.length++;
-				el[j].text = ar[i];
+				db[ar[i]] = 1;
 			}
+		}
+		for (let n in db) {
+			el[el.length++].text = n;
 		}
 	} else {
 		elData.style.width = "100%";

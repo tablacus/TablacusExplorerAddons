@@ -1,5 +1,6 @@
 Sync.ExtensionTooltip = {
-	db: {}
+	db: {},
+	TFS: api.PSGetDisplayName("System.TotalFileSize")
 }
 
 AddEvent("ToolTip", function (Ctrl, Index) {
@@ -20,8 +21,15 @@ AddEvent("ToolTip", function (Ctrl, Index) {
 			for (let i = 0; i < ar.length; ++i) {
 				s = api.PSGetDisplayName(ar[i], 2);
 				if (s) {
-					const v = api.PSFormatForDisplay(s, Item.ExtendedProperty(s), PDFF_DEFAULT);
-					dt.push(api.PSGetDisplayName(s) + ": " + (v || ""));
+					const n = api.PSGetDisplayName(s);
+					let v;
+					if (n != Sync.ExtensionTooltip.TFS) {
+						v = Item.ExtendedProperty(s);
+					} else {
+						v = Ctrl.TotalFileSize[api.GetDisplayNameOf(Item, SHGDN_FORPARSING)] || Item.ExtendedProperty("Size");
+					}
+					const v2 = api.PSFormatForDisplay(s, v, PDFF_DEFAULT)
+					dt.push(n + ": " + (v2 || v || ""));
 				} else {
 					dt.push(Item.ExtendedProperty(ar[i]) || ar[i]);
 				}
@@ -33,9 +41,9 @@ AddEvent("ToolTip", function (Ctrl, Index) {
 });
 
 //try {
-let db = JSON.parse(ReadTextFile(BuildPath(te.Data.DataFolder, "config\\extensiontooltip.json")) || {});
+let db = JSON.parse(ReadTextFile(BuildPath(te.Data.DataFolder, "config\\extensiontooltip.json")) || "{}");
 for (let name in db) {
-	const ar = name.toLowerCase().split(/\W/);
+	const ar = name.toLowerCase().split(/[\.,:;\*\/\\\|]]/);
 	for (let i = ar.length; i--;) {
 		if (ar[i]) {
 			Sync.ExtensionTooltip.db[ar[i]] = db[name];
