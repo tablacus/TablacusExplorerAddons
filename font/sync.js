@@ -90,6 +90,6 @@ if (h >= 6 && h <= 24) {
 	DefaultFont.lfHeight = - (h * screen.deviceYDPI / 72);
 }
 DefaultFont.lfWeight = item.getAttribute("Weight") || DefaultFont.lfWeight;
-DefaultFont.lfCharSet = 1;
+DefaultFont.lfCharSet = item.getAttribute("CharSet") || 1;
 Sync.Font.hFont = CreateFont(DefaultFont);
 FontChanged();

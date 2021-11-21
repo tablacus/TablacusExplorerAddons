@@ -8,6 +8,7 @@ if (window.Addon == 1) {
 		Align: GetNum(item.getAttribute("Align")) ? "Right" : "Left",
 		List: item.getAttribute("List"),
 		Depth: GetNum(item.getAttribute("Depth")),
+		Collapse: GetNum(item.getAttribute("Collapse")),
 		Height: item.getAttribute("Height") || '100%',
 		Root: item.getAttribute("Root"),
 		tid: {},
@@ -47,18 +48,9 @@ if (window.Addon == 1) {
 			});
 		},
 
-		Expand: async function (Ctrl) {
+		Expand: function () {
 			if (Addons.SideTreeView.List) {
-				FV = await GetFolderView();
-				if (FV) {
-					const FolderItem = await FV.FolderItem;
-					if (FolderItem) {
-						const TV = await Common.SideTreeView.TV;
-						if (TV && await TV.Visible) {
-							TV.Expand(FolderItem, Addons.SideTreeView.Depth);
-						}
-					}
-				}
+				Sync.SideTreeView.Expand(Addons.SideTreeView.Depth, Addons.SideTreeView.Collapse);
 			}
 		},
 
@@ -71,7 +63,7 @@ if (window.Addon == 1) {
 				api.MoveWindow(hwnd, pt.x, pt.y, o.offsetWidth, o.offsetHeight, true);
 				api.RedrawWindow(hwnd, null, 0, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 				api.BringWindowToTop(hwnd);
-				Addons.SideTreeView.Expand(await GetFolderView());
+				Addons.SideTreeView.Expand();
 			} else {
 				if (TV) {
 					TV.Visible = true;
