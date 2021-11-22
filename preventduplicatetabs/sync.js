@@ -10,7 +10,7 @@ Sync.PreventDuplicateTabs = {
 		for (let i = TC.Count; i-- > 0;) {
 			const Item = TC[i];
 			if (Sync.PreventDuplicateTabs.Compare(Ctrl, Item)) {
-				if (CanClose(Item)) {
+				if (Ctrl.hwnd ? CanClose(Item) : !CanClose(Ctrl)) {
 					if (!(wFlags & SBSP_ACTIVATE_NOFOCUS) || TC.Selected.Id == Ctrl.Id) {
 						(function (TC, Item, Selected) {
 							setTimeout(function () {
