@@ -1,9 +1,21 @@
 const Addon_Id = "darkmode";
 
+if (!api.ShouldAppsUseDarkMode() && GetAddonOptionEx(Addon_Id, "Auto")) {
+	return;
+}
+
 Sync.DarkMode = {
 	clrText: 0xffffff,
 	clrBk: 0x202020,
 	clrLine: 0x555555,
+
+	SetCss: function () {
+		const link = document.createElement("link");
+		link.rel = "stylesheet";
+		link.type = "text/css";
+		link.href = "style.css";
+		document.head.appendChild(link);
+	},
 
 	Arrange: function (Ctrl) {
 		const FV = GetFolderView(Ctrl);
@@ -71,6 +83,9 @@ AddEventId("AddonDisabledEx", "darkmode", function () {
 	Sync.DarkMode.clrLine = GetSysColor(COLOR_WINDOWTEXT);
 	Sync.DarkMode.Init();
 });
+
+AddEvent("BrowserCreatedEx", Sync.DarkMode.SetCss.toString().replace(/^[^{]+{|}$/g, "").replace("style\.css", api.UrlCreateFromPath(BuildPath(ui_.Installed, "addons\\darkmode\\style.css"))), true);
+
 if (api.IsAppThemed() && WINVER > 0x603) {
 	AddEvent("Load", function () {
 		if (!Sync.ClassicStyle) {
