@@ -1015,7 +1015,7 @@ AddEvent("GetIconImage", function (Ctrl, ckBk, bSimple) {
 				const phIcon = [0];
 				const r = lib.X.FsExtractCustomIcon(lib.path + "\\", 1, phIcon);
 				if (r == 1 || r == 2) {
-					const image = te.WICBitmap().FromHICON(phIcon[0], BGColor);
+					const image = te.WICBitmap().FromHICON(phIcon[0], ckBk);
 					if (r == 2) {
 						api.DestroyIcon(phIcon[0]);
 					}
