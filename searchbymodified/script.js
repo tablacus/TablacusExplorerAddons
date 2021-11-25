@@ -52,7 +52,7 @@ if (window.Addon == 1) {
 		Parse: async function (pid) {
 			const res = /^search\-ms:.*?crumb=([^&]*)/.exec(await pid.Path);
 			const groups = [];
-			const ar = (res ? decodeURIComponent(res[1]) : "").replace(/(\([^\(\)]*\))/g, function (strMatch, ref1) {
+			const ar = (res ? unescape(res[1]) : "").replace(/(\([^\(\)]*\))/g, function (strMatch, ref1) {
 				groups.push(ref1);
 				return "(%" + (groups.length - 1) + ")";
 			}).replace(/("[^")]")/g, function (strMatch, ref1) {

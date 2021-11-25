@@ -98,7 +98,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeView1", async function (Ctrl) {
 		const res = /^search\-ms:.*?crumb=([^&]*)/.exec(await Ctrl.FolderItem.Path);
-		document.F.search.value = res ? decodeURIComponent(res[1]) : "";
+		document.F.search.value = res ? unescape(res[1]) : "";
 		Addons.SearchBar.ShowButton();
 	});
 

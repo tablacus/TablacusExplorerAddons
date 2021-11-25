@@ -112,7 +112,7 @@ if (window.Addon == 1) {
 		const o = document.F.elements["search_" + Id];
 		if (o) {
 			const res = /^search\-ms:.*?crumb=([^&]*)/.exec(await Ctrl.FolderItem.Path);
-			o.value = res ? decodeURIComponent(res[1]) : "";
+			o.value = res ? unescape(res[1]) : "";
 			Addons.InnerSearchBar.ShowButton(Id);
 		}
 	});
