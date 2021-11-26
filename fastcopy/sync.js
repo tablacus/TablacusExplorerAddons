@@ -17,6 +17,9 @@ Sync.FastCopy = {
 		}
 		if (bDelete || (Dest != "" && fso.FolderExists(Dest))) {
 			const strTemp = GetTempPath(4);
+			if (Items.Count == 1 && api.PathMatchSpec(Items.Item(0).Path, strTemp + "*.bmp")) {
+				return false;
+			}
 			let strTemp2;
 			const wfd = api.Memory("WIN32_FIND_DATA");
 			const Items2 = api.CreateObject("FolderItems");

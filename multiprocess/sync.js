@@ -49,6 +49,9 @@ Sync.MultiProcess = {
 		if (Dest !== null) {
 			const wfd = api.Memory("WIN32_FIND_DATA");
 			const strTemp = GetTempPath(4);
+			if (Items.Count == 1 && api.PathMatchSpec(Items.Item(0).Path, strTemp + "*.bmp")) {
+				return false;
+			}
 			let strTemp2;
 			const Items2 = api.CreateObject("FolderItems");
 			for (let i = 0; i < Items.Count; ++i) {

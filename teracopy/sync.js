@@ -20,6 +20,9 @@ Sync.TeraCopy = {
 			}
 			if (path && fso.FolderExists(path)) {
 				const strTemp = GetTempPath(4);
+				if (Items.Count == 1 && api.PathMatchSpec(Items.Item(0).Path, strTemp + "*.bmp")) {
+					return false;
+				}
 				let strTemp2;
 				const wfd = api.Memory("WIN32_FIND_DATA");
 				const Items2 = api.CreateObject("FolderItems");
@@ -36,7 +39,7 @@ Sync.TeraCopy = {
 								strTemp2 = GetTempPath(7);
 								CreateFolder(strTemp2);
 							}
-							path1 = strTemp2 + fso.GetFileName(path1);
+							path1 = strTemp2 + GetFileName(path1);
 						}
 					} else {
 						delete strTemp2;

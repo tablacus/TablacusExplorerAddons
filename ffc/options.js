@@ -27,7 +27,7 @@ RefClass = async function (o, s) {
 	const ar = await RegEnumKey(HKEY_CLASSES_ROOT, "Folder\\ShellEx\\DragDropHandlers", window.chrome);
 	const hMenu = await api.CreatePopupMenu();
 	try {
-		for (var i = ar.length; i-- > 0;) {
+		for (let i = ar.length; i-- > 0;) {
 			if (!/^{/.test(ar[i])) {
 				await api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, i + 1, ar[i]);
 			}

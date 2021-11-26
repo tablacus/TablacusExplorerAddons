@@ -4,7 +4,7 @@ const item = GetAddonElement(Addon_Id);
 Sync.FFC = {
 	bDiffDriveOnly: item.getAttribute("DiffDriveOnly"),
 	NoTemp: item.getAttribute("NoTemp"),
-	Class: item.getAttribute("Class") || "{E6385E40-E2A6-11d5-ABE6-9EB61339EA35}",
+	"Class": item.getAttribute("Class") || "{E6385E40-E2A6-11d5-ABE6-9EB61339EA35}",
 
 	FO: function (Ctrl, Items, Dest, grfKeyState, pt, pdwEffect, bOver) {
 		if (Items.Count == 0 || !(grfKeyState & MK_LBUTTON)) {
@@ -19,6 +19,9 @@ Sync.FFC = {
 			}
 			if (path && fso.FolderExists(path)) {
 				const strTemp = GetTempPath(4);
+				if (Items.Count == 1 && api.PathMatchSpec(Items.Item(0).Path, strTemp + "*.bmp")) {
+					return false;
+				}
 				let strTemp2;
 				const Items2 = api.CreateObject("FolderItems");
 				const wfd = api.Memory("WIN32_FIND_DATA");
@@ -35,7 +38,7 @@ Sync.FFC = {
 								strTemp2 = GetTempPath(7);
 								CreateFolder(strTemp2);
 							}
-							path1 = strTemp2 + fso.GetFileName(path1);
+							path1 = strTemp2 + GetFileName(path1);
 						}
 					} else {
 						delete strTemp2;
@@ -75,7 +78,7 @@ Sync.FFC = {
 							}
 							Items = Items2;
 						}
-						const dll = api.PathUnquoteSpaces(ExtractMacro(te, GetAddonOption("ffc", "Path") + ""));
+						const dll = ExtractPath(te, GetAddonOption("ffc", "Path") + "");
 						const ContextMenu = api.ContextMenu(dll, Sync.FFC.Class, path, Items, HKEY_CLASSES_ROOT, "Folder", null) || api.ContextMenu(dll.replace(/_?64(\.dll)/i, "$1"), Sync.FFC.Class, path, Items, HKEY_CLASSES_ROOT, "Folder", null);
 						if (ContextMenu) {
 							const hMenu = api.CreatePopupMenu();
