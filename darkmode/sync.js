@@ -54,6 +54,8 @@ Sync.DarkMode = {
 	}
 }
 
+AddEvent("BrowserCreatedEx", Sync.DarkMode.SetCss.toString().replace(/^[^{]+{|}$/g, "").replace("style\.css", api.UrlCreateFromPath(BuildPath(te.Data.Installed, "addons\\darkmode\\style.css"))), true);
+
 if (Sync.Color) {
 	return;
 }
@@ -83,8 +85,6 @@ AddEventId("AddonDisabledEx", "darkmode", function () {
 	Sync.DarkMode.clrLine = GetSysColor(COLOR_WINDOWTEXT);
 	Sync.DarkMode.Init();
 });
-
-AddEvent("BrowserCreatedEx", Sync.DarkMode.SetCss.toString().replace(/^[^{]+{|}$/g, "").replace("style\.css", api.UrlCreateFromPath(BuildPath(ui_.Installed, "addons\\darkmode\\style.css"))), true);
 
 if (api.IsAppThemed() && WINVER > 0x603) {
 	AddEvent("Load", function () {

@@ -38,22 +38,24 @@ AddEvent("HandleIcon", function (Ctrl, pid, iItem) {
 		}
 		const path = pid.Path;
 		if (IsFolderEx(pid) ? Sync.ThumbPlus.Folder : (api.PathMatchSpec(path, Sync.ThumbPlus.Priority) || (!api.HasThumbnail(pid) && api.PathMatchSpec(path, Sync.ThumbPlus.Filter) && !api.PathMatchSpec(path, Sync.ThumbPlus.Disable)))) {
-			if (db[path]) {
-				return /object/i.test(typeof db[path]) ? true : void 0;
-			}
-			db[path] = 1;
-			Threads.GetImage({
-				path: pid,
-				cx: Ctrl.IconSize * screen.deviceYDPI / 96,
-				f: true,
-				hList: Ctrl.hwndList,
-				iItem: iItem,
-				db: db,
-				onload: function (o) {
-					o.db[o.path.Path] = o.out;
-					api.PostMessage(o.hList, LVM_REDRAWITEMS, o.iItem, o.iItem);
+			if (!/[NO]/.test(pid.ExtendedProperty("Attributes"))) {
+				if (db[path]) {
+					return /object/i.test(typeof db[path]) ? true : void 0;
 				}
-			});
+				db[path] = 1;
+				Threads.GetImage({
+					path: pid,
+					cx: Ctrl.IconSize * screen.deviceYDPI / 96,
+					f: true,
+					hList: Ctrl.hwndList,
+					iItem: iItem,
+					db: db,
+					onload: function (o) {
+						o.db[o.path.Path] = o.out;
+						api.PostMessage(o.hList, LVM_REDRAWITEMS, o.iItem, o.iItem);
+					}
+				});
+			}
 		}
 	}
 }, true);
