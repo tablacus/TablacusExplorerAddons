@@ -17,6 +17,13 @@ Sync.DarkMode = {
 		document.head.appendChild(link);
 	},
 
+	SetCssIE: function () {
+		const style = document.createElement("style");
+		style.media = "screen";
+		style.appendChild(document.createTextNode(ReadTextFile(BuildPath(te.Data.Installed, "addons\\darkmode\\style.css"))));
+		document.head.appendChild(style);
+	},
+
 	Arrange: function (Ctrl) {
 		const FV = GetFolderView(Ctrl);
 		if (FV) {
@@ -54,7 +61,11 @@ Sync.DarkMode = {
 	}
 }
 
-AddEvent("BrowserCreatedEx", Sync.DarkMode.SetCss.toString().replace(/^[^{]+{|}$/g, "").replace("style\.css", api.UrlCreateFromPath(BuildPath(te.Data.Installed, "addons\\darkmode\\style.css"))), true);
+if (window.chrome) {
+	AddEvent("BrowserCreatedEx", Sync.DarkMode.SetCss.toString().replace(/^[^{]+{|}$/g, "").replace("style\.css", api.UrlCreateFromPath(BuildPath(te.Data.Installed, "addons\\darkmode\\style.css"))), true);
+} else {
+	AddEvent("BrowserCreatedEx", Sync.DarkMode.SetCssIE.toString().replace(/^[^{]+{|}$/g, ""), true);
+}
 
 if (Sync.Color) {
 	return;

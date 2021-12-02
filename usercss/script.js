@@ -1,11 +1,10 @@
 var Addons_Id = "usercss";
 if (window.Addon == 1) {
 	AddEvent("BrowserCreatedEx", async function () {
-		var link = document.createElement("link");
-		link.rel = "stylesheet";
-		link.type = "text/css";
-		link.href = await api.UrlCreateFromPath(BuildPath(await te.Data.DataFolder, "config\\user.css"));
-		document.head.appendChild(link);
+		const style = document.createElement("style");
+		style.media = "screen";
+		style.appendChild(document.createTextNode(await ReadTextFile(BuildPath(ui_.DataFolder, "config\\user.css"))));
+		document.head.appendChild(style);
 	}.toString().replace(/^[^{]+{|}$/g, ""));
 } else {
 	importScript("addons\\" + Addon_Id + "\\options.js");
