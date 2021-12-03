@@ -1,14 +1,14 @@
 {
-	"fr_lidgeu.xml": {
-		name: "Français",
-		en: "French",
-		author: "Pierre le Lidgeu",
-		pubDate: "2021-12-02"
-	},
-	"zh_hk_ccfs.xml": {
-		name: "正體中文",
-		en: "Traditional Chinese",
-		author: "ccfs",
-		pubDate: "2019-05-05"
-	}
+    "fr_lidgeu.xml": {
+        "name": "Français",
+        "en": "French",
+        "author": "Pierre le Lidgeu",
+        "pubDate": "2021-12-02"
+    },
+    "zh_hk_ccfs.xml": {
+        "name": "正體中文",
+        "en": "Traditional Chinese",
+        "author": "ccfs",
+        "pubDate": "2019-05-05"
+    }
 }
