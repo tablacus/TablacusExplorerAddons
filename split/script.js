@@ -144,7 +144,7 @@ if (window.Addon == 1) {
 			return TC;
 		},
 
-		SetButtons: async function (Addon_Id, Default, item, n, ar) {
+		SetButtons: function (Addon_Id, Default, item, n, ar) {
 			const el = document.getElementById(Addon_Id);
 			if (!el) {
 				setTimeout(function (Addon_Id, Default, item, n, ar) {
@@ -156,7 +156,7 @@ if (window.Addon == 1) {
 			const s = [];
 			for (let i = 0; i < ar.length; i++) {
 				if (!item.getAttribute("No" + ar[i].id)) {
-					s.push('<span class="button" onclick="Addons.Split', n, '.Exec(', ar[i].exec, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', ar[i].id, '" src="../addons/split', n, '/', ar[i].img || ar[i].id, '.png" style="width: ', px, 'px"></span>');
+					s.push('<span class="button" onclick="Addons.Split', n, '.Exec(', ar[i].exec, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', ar[i].name || ar[i].id, '" src="../addons/split', n, '/', ar[i].img || ar[i].id, '.png" style="width: ', px, 'px"></span>');
 				}
 			}
 			el.innerHTML = s.join("");

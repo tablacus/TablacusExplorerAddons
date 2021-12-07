@@ -90,23 +90,23 @@ if (window.Addon == 1) {
 			for (let i = 0; i < items.length; i++) {
 				const item = items[i];
 				const strType = item.Type;
-				const strFlag = (SameText(strType, "Menus") ? item.text : "").toLowerCase();
-				if (strFlag == "close" && menus) {
+				const strFlag = SameText(strType, "Menus") ? item.text : "";
+				if (SameText(strFlag, "close" && menus)) {
 					menus--;
 					continue;
 				}
-				if (strFlag == "open") {
+				if (SameText(strFlag, "open")) {
 					if (menus++) {
 						continue;
 					}
 				} else if (menus) {
 					continue;
 				}
-				if (strFlag == "break") {
+				if (SameText(strFlag, "break")) {
 					s.push('<br class="break">');
-				} else if (strFlag == "barbreak") {
+				} else if (SameText(strFlag, "barbreak")) {
 					s.push('<hr class="barbreak">');
-				} else if (strFlag == "separator") {
+				} else if (SameText(strFlag, "separator")) {
 					s.push('<span class="separator">|</span>');
 				} else {
 					let img = '';
