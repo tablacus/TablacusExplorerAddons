@@ -9,7 +9,7 @@ Addons.DarkMode = {
 				r[0] = "@media (prefers-color-scheme: dark) {" + r[0] + "}";
 			}
 			style.appendChild(document.createTextNode(r[0]));
-			if (r[1] || r[2]) {
+			if (r[1] || !r[2]) {
 				document.head.appendChild(style);
 			}
 		});
