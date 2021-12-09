@@ -30,20 +30,6 @@ if (window.Addon == 1) {
 			if (!await mii.fState) {
 				api.SHEmptyRecycleBin(ui_.hwnd, null, 0);
 			}
-		},
-
-		Popup: async function (el) {
-			const hMenu = await api.CreatePopupMenu();
-			const ContextMenu = await api.ContextMenu(ssfBITBUCKET);
-			if (ContextMenu) {
-				await ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_EXTENDEDVERBS);
-				const pt = GetPos(el, 9);
-				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, ui_.hwnd, null, ContextMenu);
-				if (nVerb) {
-					ContextMenu.InvokeCommand(0, ui_.hwnd, nVerb - 1, null, null, SW_SHOWNORMAL, 0, 0);
-				}
-			}
-			api.DestroyMenu(hMenu);
 		}
 	};
 	//Menu
@@ -62,7 +48,7 @@ if (window.Addon == 1) {
 	AddEvent("Layout", async function () {
 		SetAddon(Addon_Id, Default, [await GetImgTag({
 			onclick: "Addons.EmptyRecycleBin.Exec()",
-			oncontextmenu: "Addons.EmptyRecycleBin.Popup(this); return false",
+			oncontextmenu: "PopupContextMenu(ssfBITBUCKET); return false",
 			title: Addons.EmptyRecycleBin.sName,
 			src: item.getAttribute("Icon") || "icon:shell32.dll,31",
 			"class": "button"

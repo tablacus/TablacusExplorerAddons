@@ -41,6 +41,21 @@ if (window.Addon == 1) {
 					}
 				}
 			}
+		},
+
+		SetRect: async function () {
+			let el = document.getElementById("ImgDelete_$");
+			if (el) {
+				Common.Delete.rc[el.id] = await GetRect(el);
+			} else {
+				const cTC = await te.Ctrls(CTRL_TC, true, window.chrome);
+				for (let i = cTC.length; --i >= 0;) {
+					el = document.getElementById("ImgDelete_" + await cTC[i].Id);
+					if (el) {
+						Common.Delete.rc[el.id] = await GetRect(el);
+					}
+				}
+			}
 		}
 	};
 
@@ -59,7 +74,7 @@ if (window.Addon == 1) {
 
 	if (item.getAttribute("Location") != "None") {
 		AddEvent("Layout", async function () {
-			await SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Delete.Exec(this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+			await SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Delete.Exec(this);" oncontextmenu="PopupContextMenu(ssfBITBUCKET); return false" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 				title: Addons.Delete.sName,
 				id: "ImgDelete_$",
 				src: item.getAttribute("Icon") || "icon:general,10"
@@ -79,6 +94,7 @@ if (window.Addon == 1) {
 			}
 		});
 	}
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();
 }
