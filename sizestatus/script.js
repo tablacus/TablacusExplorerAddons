@@ -7,22 +7,38 @@ if (window.Addon == 1) {
 		Folder: item.getAttribute("Folder"),
 		FileSize: item.getAttribute("FileSize"),
 		strFreeSpace: await api.PSGetDisplayName("{9B174B35-40FF-11D2-A27E-00C04FC30871} 2") + " ",
+		SessionId: {},
 
 		Exec: async function (Ctrl) {
+			if (document.getElementById("size_statusbar_$")) {
+				const FV = await GetFolderView(Ctrl);
+				if (FV) {
+					Addons.SizeStatus.Show(FV, "$");
+				}
+				return;
+			}
+			const cTC = await te.Ctrls(CTRL_TC, true, window.chrome);
+			for (let i = cTC.length; --i >= 0;) {
+				const Id = await cTC[i].Id;
+				Addons.SizeStatus.Show(await cTC[i].Selected, Id);
+			}
+		},
+
+		Show: async function (FV, Id) {
+			const el = document.getElementById("size_statusbar_" + Id);
+			if (!el) {
+				return E_FAIL;
+			}
 			let s = "";
 			let bYet = false;
 			let nSize = 0;
-			const FV = await GetFolderView(Ctrl);
-			if (!FV) {
-				return;
-			}
 			const pid = await FV.FolderItem;
 			if (!pid) {
 				return;
 			}
 			const nCount = await FV.ItemCount(SVGIO_SELECTION);
 			const SessionId = await api.HashData(nCount ? await ExtractMacro(te, '%Selected%') : BuildPath(await pid.Path, await FV.FilterView), 8);
-			if (SessionId == Addons.SizeStatus.SessionId) {
+			if (SessionId == Addons.SizeStatus.SessionId[Id]) {
 				return;
 			}
 			if (nCount || Addons.SizeStatus.FileSize) {
@@ -33,7 +49,7 @@ if (window.Addon == 1) {
 						const Item = await Selected.Item(i);
 						if (await IsFolderEx(Item)) {
 							if (Addons.SizeStatus.Folder) {
-								const n = await TFS[await api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_ORIGINAL)];
+								const n = await TFS[await api.GetDisplayNameOf(Item, SHGDN_FORPARSING)];
 								if (n == null) {
 									FV.Notify(0, Item, null, 1);
 									bYet = true;
@@ -44,7 +60,7 @@ if (window.Addon == 1) {
 								}
 							} else {
 								bYet = true;
-								Addons.SizeStatus.SessionId = SessionId;
+								Addons.SizeStatus.SessionId[Id] = SessionId;
 							}
 							continue;
 						}
@@ -52,30 +68,35 @@ if (window.Addon == 1) {
 					}
 				}
 				if (!bYet) {
-					Addons.SizeStatus.SessionId = SessionId;
+					Addons.SizeStatus.SessionId[Id] = SessionId;
 				}
 			} else {
 				bYet = true;
-				Addons.SizeStatus.SessionId = SessionId;
+				Addons.SizeStatus.SessionId[Id] = SessionId;
 			}
 			if (bYet && (Addons.SizeStatus.Folder || !nSize)) {
 				s = " ";
-				if (!await FV.FolderItem.Unavailable) {
+				if (!await pid.Unavailable) {
 					const oDrive = await api.GetDiskFreeSpaceEx(await pid.Path);
 					if (oDrive) {
 						s = Addons.SizeStatus.strFreeSpace + await api.StrFormatByteSize(await oDrive.FreeBytesOfAvailable);
 					}
 				}
 			}
-			document.getElementById("size_statusbar").innerHTML = "&nbsp;" + (s || await api.StrFormatByteSize(nSize));
+			el.innerHTML = "&nbsp;" + (s || await api.StrFormatByteSize(nSize));
 		}
 	}
 
 	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, '<span id="size_statusbar">&nbsp;</span>');
+		SetAddon(Addon_Id, Default, '<span id="size_statusbar_$" style="float: right">&nbsp;</span>');
 	});
 
 	AddEvent("StatusText", Addons.SizeStatus.Exec);
+
+	AddEvent("PanelCreated", function (Ctrl, Id) {
+		delete Addons.SizeStatus.SessionId[Id];
+	});
 } else {
+	EnableInner();
 	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 }

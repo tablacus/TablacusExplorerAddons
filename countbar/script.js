@@ -12,32 +12,47 @@ if (window.Addon == 1) {
 				if (nType != CTRL_SB && nType != CTRL_EB) {
 					return;
 				}
-				let s;
 				if (Text || !Ctrl) {
-					s = [];
-					let nCount = await FV.ItemCount(SVGIO_SELECTION);
-					if (nCount) {
-						const s1 = nCount > 1 ? Addons.CountBar.Item[2] : Addons.CountBar.Item[3];
-						if (nCount > 999 && g_.IEVer > 8) {
-							nCount = nCount.toLocaleString();
-						}
-						s.push(await api.sprintf(s1.length + 9, s1, nCount));
-					}
-					nCount = await FV.ItemCount();
-					if (!nCount && !/^0/.test(Text)) {
+					if (document.getElementById("countbar_$")) {
+						Addons.CountBar.Show(FV, "$", Text);
 						return;
 					}
-					const s1 = nCount > 1 ? Addons.CountBar.Item[0] : Addons.CountBar.Item[1];
-					if (nCount > 999 && g_.IEVer > 8) {
-						nCount = nCount.toLocaleString();
-					}
-					s.push(await api.sprintf(s1.length + 9, s1, nCount));
-					s = s.join(" / ") + " ";
-					document.getElementById("countbar").innerHTML = "&nbsp;" + s;
-					if (Addons.CountBar.Title) {
-						api.SetWindowText(ui_.hwnd, s + " - " + TITLE);
+					const cTC = await te.Ctrls(CTRL_TC, true, window.chrome);
+					for (let i = cTC.length; --i >= 0;) {
+						const Id = await cTC[i].Id;
+						Addons.CountBar.Show(await cTC[i].Selected, Id, Text);
 					}
 				}
+			}
+		},
+
+		Show: async function (FV, Id, Text) {
+			const el = document.getElementById("countbar_" + Id);
+			if (!el) {
+				return E_FAIL;
+			}
+			let s = [];
+			let nCount = await FV.ItemCount(SVGIO_SELECTION);
+			if (nCount) {
+				const s1 = nCount > 1 ? Addons.CountBar.Item[2] : Addons.CountBar.Item[3];
+				if (nCount > 999 && g_.IEVer > 8) {
+					nCount = nCount.toLocaleString();
+				}
+				s.push(await api.sprintf(s1.length + 9, s1, nCount));
+			}
+			nCount = await FV.ItemCount();
+			if (!nCount && !/^0/.test(Text)) {
+				return;
+			}
+			const s1 = nCount > 1 ? Addons.CountBar.Item[0] : Addons.CountBar.Item[1];
+			if (nCount > 999 && g_.IEVer > 8) {
+				nCount = nCount.toLocaleString();
+			}
+			s.push(await api.sprintf(s1.length + 9, s1, nCount));
+			s = s.join(" / ") + " ";
+			el.innerHTML = "&nbsp;" + s;
+			if (Addons.CountBar.Title) {
+				api.SetWindowText(ui_.hwnd, s + " - " + TITLE);
 			}
 		}
 	}
@@ -54,10 +69,11 @@ if (window.Addon == 1) {
 	});
 
 	AddEvent("Layout", function () {
-		SetAddon(Addon_Id, Default, '<span id="countbar">&nbsp;</span>');
+		SetAddon(Addon_Id, Default, '<span id="countbar_$">&nbsp;</span>');
 	});
 
 	AddEvent("StatusText", Addons.CountBar.Exec);
 } else {
+	EnableInner();
 	SetTabContents(0, "View", '<label><input type="checkbox" id="Title">Title bar</label>');
 }
