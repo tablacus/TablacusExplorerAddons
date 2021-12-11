@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<resources><!--Full version completed and updated by 21/12/05-->
+<resources><!--Full version completed and updated by 21/12/10-->
 	<lang author="Pierre le Lidgeu" en="French">Français</lang>
 	<text s="General">Général</text>
 	<text s="Mouse">Souris</text>
@@ -216,7 +216,8 @@
 	<text s="&amp;Up one level">&amp;Remonter d&apos;un niveau</text>
 	<text s="Add favorite">Ajout d&apos;un favori</text>
 	<text s="Check for updates">Vérifier les mises à jour</text>
-	<text s="the latest version">la dernière version</text>
+	<text s="%s is up to date.">%s est à jour.</text>
+	<text s="the latest version">Vous avez la dernière version disponible</text>
 	<text s="&amp;About %s">&amp;A propos de %s</text>
 
 
@@ -333,7 +334,6 @@
 	<text s="Folder filter">Dossier de filtres</text>
 	<text s="Clear filter with &quot;Up&quot;">Vider le filtre en &quot;remontant&quot;</text>
 	<text s="Search bar">Barre de recherche</text>
-	<text s="Everything">Tout</text>
 	<text s="Action">Action</text>
 
 	<text s="Find files">Trouver des fichiers</text>
