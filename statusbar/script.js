@@ -19,8 +19,7 @@ if (window.Addon == 1) {
 
 	AddEvent("StatusText", async function (Ctrl, Text, iPart) {
 		if (/^1 /.test(Text)) {
-			const nType = await Ctrl.Type;
-			if (nType == CTRL_SB || nType == CTRL_EB) {
+			if (await Ctrl.Type <= CTRL_EB) {
 				if (await Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
 					Addons.StatusBar.arg.FV = Ctrl;
 					api.ExecScript('var Selected = FV.SelectedItems(); api.Invoke(Set, Selected && Selected.Count == 1 && Selected.Item(0).ExtendedProperty("infotip") || "' + Text.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '", FV.Parent.Id);', "JScript", Addons.StatusBar.arg, true);
@@ -28,7 +27,7 @@ if (window.Addon == 1) {
 				}
 			}
 		}
-		Addons.StatusBar.Set(Text);
+		Addons.StatusBar.Set(Text, await GetFolderView(Ctrl).Parent.Id);
 	});
 } else {
 	EnableInner();
