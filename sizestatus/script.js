@@ -88,7 +88,7 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, '<span id="size_statusbar_$" style="float: right">&nbsp;</span>');
+		SetAddon(Addon_Id, Default, '<span id="size_statusbar_$">&nbsp;</span>');
 	});
 
 	AddEvent("StatusText", Addons.SizeStatus.Exec);
