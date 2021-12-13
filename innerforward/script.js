@@ -58,7 +58,7 @@ if (window.Addon == 1) {
 			id: "ImgForward_$",
 			title: await GetText("Forward"),
 			src: item.getAttribute("Icon") || "icon:general,1"
-		}, GetIconSize(item.getAttribute("IconSize"), 16)), '</span>'].join("");
+		}, GetIconSize(item.getAttribute("IconSize"), ui_.InnerIconSize || 16)), '</span>'].join("");
 	});
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {

@@ -59,7 +59,7 @@ if (window.Addon == 1) {
 			id: "ImgBack_$",
 			title: await GetText("Back"),
 			src: item.getAttribute("Icon") || "icon:general,0"
-		}, GetIconSize(item.getAttribute("IconSize"), 16)), '</span>'].join("");
+		}, GetIconSize(item.getAttribute("IconSize"), ui_.InnerIconSize || 16)), '</span>'].join("");
 	});
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {

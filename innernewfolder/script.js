@@ -12,11 +12,10 @@ if (window.Addon == 1) {
 
 	AddEvent("Layout", async function () {
 		const item = await GetAddonElement(Addon_Id);
-		const h = GetIconSize(item.getAttribute("IconSize"), 16);
 		Addons.InnerNewFolder.src = await GetImgTag({
 			title: await GetText("New folder"),
-			src: item.getAttribute("Icon") || "bitmap:ieframe.dll,214,24,31"
-		}, h);
+			src: item.getAttribute("Icon") || "icon:general,31"
+		}, GetIconSize(item.getAttribute("IconSize"), ui_.InnerIconSize || 16));
 	});
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {

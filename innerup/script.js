@@ -34,12 +34,11 @@ if (window.Addon == 1) {
 
 	AddEvent("Layout", async function () {
 		const item = await GetAddonElement(Addon_Id);
-		const h = await GetIconSize(item.getAttribute("IconSize"), 16);
 		Addons.InnerUp.src = ['<span class="button" onclick="return Addons.InnerUp.Exec($)" oncontextmenu="Addons.InnerUp.Popup(event, $); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			id: "iImgUp_$",
 			title: await GetText("Up"),
-			src: item.getAttribute("Icon") || "bitmap:ieframe.dll,214,24,28"
-		}, h), '</span>'].join("");
+			src: item.getAttribute("Icon") || "icon:general,28"
+		}, GetIconSize(item.getAttribute("IconSize"), ui_.InnerIconSize || 16)), '</span>'].join("");
 	});
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {

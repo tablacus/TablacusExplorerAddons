@@ -12,11 +12,10 @@ if (window.Addon == 1) {
 
 	AddEvent("Layout", async function () {
 		const item = await GetAddonElement(Addon_Id);
-		const h = GetIconSize(item.getAttribute("IconSize"), 16);
 		Addons.InnerRefresh.src = await GetImgTag({
 			title: await GetText("Refresh"),
-			src: item.getAttribute("Icon") || "bitmap:ieframe.dll,204,24,3"
-		}, h);
+			src: item.getAttribute("Icon") || "icon:browser,3"
+		}, GetIconSize(item.getAttribute("IconSize"), ui_.InnerIconSize || 16));
 		Addons.InnerRefresh.Position = item.getAttribute("Right") ? "Inner1Right_" : "Inner1Left_";
 	});
 
