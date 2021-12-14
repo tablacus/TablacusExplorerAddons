@@ -104,6 +104,6 @@ if (window.Addon == 1) {
 
 	AddTypeEx("Add-ons", "Search Bar", Addons.SearchBar.Exec);
 } else {
-	SetTabContents(0, "View", '<table style="width: 100%"><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10"></td><td><input type="button" value="Default" onclick="document.F.Width.value=\'\'"></td></tr></table>');
+	SetTabContents(0, "View", '<table><tr><td><label>Width</label></td></tr><tr><td><input type="text" name="Width" size="10"></td><td><input type="button" value="Default" onclick="SetDefault(document.F.Width, \'\')"></td></tr></table>');
 	ChangeForm([["__IconSize", "style/display", "none"]]);
 }
