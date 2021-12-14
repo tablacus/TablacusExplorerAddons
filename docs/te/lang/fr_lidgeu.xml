@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<resources><!--Full version completed and updated by 21/12/10-->
+<resources><!--Full version completed and updated by 21/12/13-->
 	<lang author="Pierre le Lidgeu" en="French">Français</lang>
 	<text s="General">Général</text>
 	<text s="Mouse">Souris</text>
 	<text s="&amp;Add-ons...">&amp;Compléments ...</text>
 	<text s="Get Add-ons...">Obtenir des compléments ...</text>
 	<text s="Get %s...">Obtenir des %s ...</text>
-	<text s="Icon">Icônes</text>
+	<text s="Icons">Icônes</text>
 	<text s="Menus">Menus</text>
 	<text s="Default">Par défaut</text>
 	<text s="Context">Contexte</text>
@@ -22,7 +22,7 @@
 	<text s="Systray">Zone de notification</text>
 	<text s="System">Système</text>
 	<text s="Alias">Alias</text>
-	<text s="Root">Racine dé(re)pliable</text>
+	<text s="Root">Racine</text>
 	<text s="List">Liste des fichiers</text>
 	<text s="Style">Style</text>
 	<text s="Filter">Filtre</text>
@@ -38,8 +38,7 @@
 	<text s="Width">Largeur</text>
 
 	<text s="Right bar">Barre de droite</text>
-	<text s="Tool bar">Barre d&apos;outils</text>
-
+	<text s="Tool bar icon">Icône de barre d&apos;outils</text>
 	<text s="Size">Taille</text>
 	<text s="Include hidden items">Inclure les éléments cachés</text>
 	<text s="Input">Entrée</text>
@@ -75,7 +74,8 @@
 	<text s="Install">Installer</text>
 	<text s="Update available">Mise à jour disponible</text>
 	<text s="Do you want to install it now?">Voulez-vous l&apos;installer maintenant ?</text>
-	<text s="Installed">Installé</text>
+	<text s="Installed">Installée</text>
+	<text s="Completed.">terminée.</text>
 	<text s="Folder">Dossier</text>
 	<text s="Name">Nom</text>
 	<text s="Base">Base</text>
@@ -86,7 +86,7 @@
 	<text s="Add before">Ajouter avant</text>
 	<text s="Add after">Ajouter après</text>
 	<text s="Type">Type</text>
-
+	<text s="Portable">Portable</text>
 	<text s="Remove">Retirer</text>
 	<text s="Height">Hauteur</text>
 	<text s="Test">Tester</text>
@@ -153,6 +153,8 @@
 	<text s="Rich tooltip">Infobulle détaillée</text>
 	<text s="Tab stop">Taquet de tabulation</text>
 	<text s="Auto">Auto</text>
+	<text s="Root has expando">Racine dé(re)pliable</text>
+	<text s="Auto horizontal scroll">Auto-défilement horizontal</text>
 	<text s="Fade in out expandos">Fondu-enchaîné au dépliage</text>
 	<text s="Empty text">Texte vide</text>
 	<text s="Checkboxes">Cases à cocher</text>
@@ -189,13 +191,16 @@
 
 	<text s="Single selection">Sélection unique</text>
 	<text s="Single click activate">Activer par simple-clic</text>
+	<text s="Select by middle button">Sélection via bouton médian</text>
+	<text s="Process selected items in view sequence">Traiter les éléments sélectionnés dans la séquence affichée</text>
+	<text s="Apply Filter to Libraries">Activer le filtrage des librairies</text>
+	<text s="Auto arrange upon refresh">Auto-réorganisation à l&apos;actualisation</text>
 
-	<text s="Auto arrange">Réorganisation automatique</text>
-	<text s="Item check boxes">Case à cocher</text>
+	<text s="Check boxes">Cases à cocher</text>
 
 	<text s="Number of items">Nombre d&apos;éléments</text>
 	<text s="Column header">En-tête de colonne</text>
-	<text s="Only Allow">Uniquement autoriser</text>
+	<text s="Column header details only">En-tête de colonne uniquement en mode ‘Détails&apos;</text>
 	<text s="Emphasis">Soulignage</text>
 
 
@@ -216,7 +221,6 @@
 	<text s="&amp;Up one level">&amp;Remonter d&apos;un niveau</text>
 	<text s="Add favorite">Ajout d&apos;un favori</text>
 	<text s="Check for updates">Vérifier les mises à jour</text>
-	<text s="%s is up to date.">%s est à jour.</text>
 	<text s="the latest version">Vous avez la dernière version disponible</text>
 	<text s="&amp;About %s">&amp;A propos de %s</text>
 
@@ -227,6 +231,7 @@
 	<text s="Title bar">Barre de titre</text>
 	<text s="Center">Centrer</text>
 	<text s="Right">Droite</text>
+	<text s="Tool bar">Barre d&apos;outils</text>
 	<text s="Bottom bar">Barre du bas</text>
 	<text s="Inner bar">Barre intérieure</text>
 	<text s="All">Tout</text>
@@ -258,6 +263,7 @@
 
 	<text s="Main menu">Menu principal</text>
 	<text s="Tab plus">Tab+</text>
+	<text s="Icon">Icône</text>
 
 	<text s="Protected">Protégé</text>
 	<text s="Fixed width">Largeur fixe</text>
@@ -303,6 +309,7 @@
 	<text s="Columns">Colonnes</text>
 	<text s="Sort">Trier</text>
 	<text s="Group">Grouper</text>
+	<text s="Subset groups">Sous-groupes</text>
 	<text s="Get the current folder view">Obtenir la vue du dossier courant</text>
 	<text s="Take over folder view settings">Reprendre les paramètres d&apos;affichage des dossiers</text>
 	<text s="Folder settings">Paramètres d&apos;affichage des dossiers</text>
@@ -353,7 +360,7 @@
 	<text s="Select plus">Sélection +</text>
 	<text s="Check box">Case à cocher</text>
 	<text s="shift key to select in X-Finder style">touche Maj pour sélectionner dans le style X-Finder</text>
-	<text s="Selected to top">Sélectionné en haut</text>
+	<text s="Selected to top">Sélectionnés&#160;: en haut</text>
 	<text s="Full row select plus">Sélection + ligne entière</text>
 	<text s="Classic style">Style classique</text>
 	<text s="Disable classic style during drag">Désactiver le style classique en « glissant »</text>
@@ -430,7 +437,7 @@
 	<text s="First">Premier</text>
 	<text s="Last">Dernier</text>
 	<text s="Parent folder">Dossier parent</text>
-	<text s="In actived order">Dans la séquence activée</text>
+	<text s="In actived order">Dans la séquence active</text>
 	<text s="Locked tabs top">Haut d&apos;onglets verrouillés</text>
 	<text s="Sort tabs">Trier les onglets</text>
 	<text s="Tab list">Liste d&apos;onglet</text>
@@ -471,11 +478,11 @@
 	<text s="Select all items that are also listed in the other pane.">Sélectionner tous les éléments également listés dans l&apos;autre panneau</text>
 	<text s="Select uniques">Sélectionner les uniques</text>
 	<text s="Select all items that are only listed in this pane.">Sélectionner tous les éléments uniquement listés dans ce panneau</text>
-	<text s="Select newer">Sélectionner le nouveau</text>
+	<text s="Select newer">Sélectionner le plus récent</text>
 	<text s="Select all matches with a more recent modified date.">Sélectionner toutes les correspondances modifiées plus récemment</text>
 	<text s="Select different">Sélectionner les différents</text>
 	<text s="Select all matches with a different size or modified date.">Sélectionner toutes les correspondances de taille ou date de modification différentes</text>
-	<text s="Select uniques and newer">Sélectionner les uniques et plus nouveaux</text>
+	<text s="Select uniques and newer">Sélectionner les uniques et plus récents</text>
 	<text s="Select all items that are unique or newer.">Sélectionner tous les éléments différents et plus nouveaux</text>
 	<text s="Select uniques and different">Sélectionner les uniques et différents</text>
 	<text s="Select all items that are unique or different.">Sélectionner tous les éléments uniques ou différents</text>
@@ -540,7 +547,6 @@
 
 
 	<text s="Completed.">Terminé.</text>
-	<text s="QuickLook">Coup d’œil</text>
 
 	<text s="Detect string">Détecter la chaîne</text>
 
@@ -666,7 +672,7 @@
 	<text s="To the top in the drag">En haut du glissement</text>
 	<text s="Confirm drop">Confirmer le dépôt</text>
 
-
+	<text s="Right button drag-and-drop menu">Menu ‘Glisser-Déposer&apos; du bouton droit</text>
 
 
 
