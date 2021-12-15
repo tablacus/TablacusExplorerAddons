@@ -9,14 +9,13 @@ Sync.RecentlyClosedTabs = {
 				const Items = Sync.UndoCloseTab.Get(i);
 				let s = [seed];
 				for (let j = Items.length; j--;) {
-					s.unshift(api.PathQuoteSpaces(Items.Item(j).Path));
+					s.unshift(PathQuoteSpaces(Items.Item(j).Path));
 				}
 				s = s.join(" ");
 				const Item = Items.Item(Items.Index);
 				if (Item && !db[s]) {
 					db[s] = 1;
 					const mii = api.Memory("MENUITEMINFO");
-					mii.cbSize = mii.Size;
 					mii.fMask = MIIM_STRING | MIIM_ID | MIIM_BITMAP;
 					AddMenuIconFolderItem(mii, Item);
 					s = Item.Path;

@@ -34,7 +34,7 @@ Sync.TotalFileSizeSort = {
 		for (let i = Items.Count; i--;) {
 			api.SHGetDataFromIDList(Items.Item(i), SHGDFIL_FINDDATA, wfd, wfd.Size);
 			if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				let n = FV.TotalFileSize[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING | SHGDN_ORIGINAL)];
+				let n = FV.TotalFileSize[api.GetDisplayNameOf(Items.Item(i), SHGDN_FORPARSING)];
 				if (n == null) {
 					FV.Notify(0, Items.Item(i), null, 1);
 					bYet = true;
@@ -53,7 +53,7 @@ Sync.TotalFileSizeSort = {
 			function (pid, FV) {
 				const wfd = api.Memory("WIN32_FIND_DATA");
 				api.SHGetDataFromIDList(pid, SHGDFIL_FINDDATA, wfd, wfd.Size);
-				return wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? FV.TotalFileSize[api.GetDisplayNameOf(pid, SHGDN_FORPARSING | SHGDN_ORIGINAL)] : pid.ExtendedProperty("Size");
+				return wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? FV.TotalFileSize[api.GetDisplayNameOf(pid, SHGDN_FORPARSING)] : pid.ExtendedProperty("Size");
 			},
 			function (a, b) {
 				return api.UQuadCmp(b[1], a[1]);

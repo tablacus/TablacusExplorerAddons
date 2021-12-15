@@ -6,7 +6,7 @@ if (window.Addon == 1) {
 		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.TotalFileSizeSort.Exec, this, 9);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 			src: item.getAttribute("Icon") || "icon:general,25",
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>'].join(""));
+		}, GetIconSizeEx(item)), '</span>'].join(""));
 	});
 
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");

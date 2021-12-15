@@ -11,7 +11,7 @@ if (window.Addon == 1) {
 		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.AddTabs2Fav.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: item.getAttribute("MenuName") || GetText("Add all tabs to favorites..."),
 			src: item.getAttribute("Icon") || "icon:general,3"
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		}, GetIconSizeEx(item)), '</span>']);
 	});
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {

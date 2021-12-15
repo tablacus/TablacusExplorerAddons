@@ -11,8 +11,8 @@ if (window.Addon == 1) {
 	AddEvent("Layout", async function () {
 		SetAddon(Addon_Id, Default, ['<span class="button" id="Run" onclick="SyncExec(Sync.RotatePane.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
-			src: item.getAttribute("Icon") || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe7ad" : "bitmap:ieframe.dll,214,24,33")
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+			src: item.getAttribute("Icon") || GetWinIcon(0xa00, "font:Segoe MDL2 Assets,0xe7ad", 0, "icon:general,33")
+		}, GetIconSizeEx(item)), '</span>']);
 		delete item;
 	});
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");

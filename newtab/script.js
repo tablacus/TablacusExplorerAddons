@@ -3,10 +3,10 @@ if (window.Addon == 1) {
 		const Addon_Id = "newtab";
 		const Default = "ToolBar2Left";
 		const item = await GetAddonElement(Addon_Id);
-		const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
+		const h = GetIconSizeEx(item);
 		SetAddon(Addon_Id, Default, ['<span class="button" onclick="CreateTab(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: await GetText("New Tab"),
-			src: item.getAttribute("Icon") || "bitmap:ieframe.dll,214,24,12"
+			src: item.getAttribute("Icon") || "icon:general,12"
 		}, h), '</span>']);
 	});
 } else {

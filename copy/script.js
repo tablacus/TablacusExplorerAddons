@@ -25,18 +25,21 @@ if (window.Addon == 1) {
 		},
 
 		State: async function (Ctrl) {
-			if (Ctrl && await Ctrl.Type <= CTRL_EB) {
-				let o = document.getElementById("ImgCopy_$");
-				if (o) {
-					if (await Ctrl.Id == await te.Ctrl(CTRL_FV).Id) {
-						DisableImage(o, await Ctrl.ItemCount(SVGIO_SELECTION) == 0);
-					}
-				} else {
-					const cTC = await te.Ctrls(CTRL_TC);
-					for (let i = await cTC.Count; i-- > 0;) {
-						o = document.getElementById("ImgCopy_" + await cTC[i].Id);
-						if (o) {
-							DisableImage(o, await cTC[i].Selected.ItemCount(SVGIO_SELECTION) == 0);
+			if (Ctrl) {
+				const nType =await Ctrl.Type;
+				if (nType == CTRL_SB || nType == CTRL_EB) {
+					let o = document.getElementById("ImgCopy_$");
+					if (o) {
+						if (await Ctrl.Id == await te.Ctrl(CTRL_FV).Id) {
+							DisableImage(o, await Ctrl.ItemCount(SVGIO_SELECTION) == 0);
+						}
+					} else {
+						const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
+						for (let i = cTC.length; i-- > 0;) {
+							o = document.getElementById("ImgCopy_" + await cTC[i].Id);
+							if (o) {
+								DisableImage(o, await cTC[i].Selected.ItemCount(SVGIO_SELECTION) == 0);
+							}
 						}
 					}
 				}
@@ -62,7 +65,7 @@ if (window.Addon == 1) {
 			title: Addons.Copy.sName,
 			id: "ImgCopy_$",
 			src: item.getAttribute("Icon") || "icon:general,6"
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		}, GetIconSizeEx(item)), '</span>']);
 	});
 
 	AddEvent("SelectionChanged", Addons.Copy.State);

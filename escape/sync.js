@@ -52,10 +52,10 @@ Sync.EscapeUnicode = {
 			const List = [];
 			for (let i = 0; i < Items.Count; i++) {
 				const Path = Items.Item(i).Path;
-				const From = fso.GetFileName(Path);
+				const From = GetFileName(Path);
 				const To = Sync.EscapeUnicode.EscapeFile(From, nVerb);
 				if (!SameText(From, To)) {
-					List.push([From, To, fso.GetParentFolderName(Path)].join("\0"));
+					List.push([From, To, GetParentFolderName(Path)].join("\0"));
 				}
 			}
 			if (List.length) {
@@ -107,7 +107,6 @@ if (item.getAttribute("MenuExec")) {
 	Sync.EscapeUnicode.nPos = api.LowPart(item.getAttribute("MenuPos"));
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 		var mii = api.Memory("MENUITEMINFO");
-		mii.cbSize = mii.Size;
 		mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 		mii.dwTypeData = Sync.EscapeUnicode.strName;
 		mii.hSubMenu = api.CreatePopupMenu();

@@ -43,7 +43,7 @@ if (window.Addon == 1) {
 		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Addons.RecentlyClosedTabs.Exec, this, 9)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 			src: item.getAttribute("Icon") || "icon:dsuiext.dll,0"
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		}, GetIconSizeEx(item)), '</span>']);
 		delete item;
 	});
 

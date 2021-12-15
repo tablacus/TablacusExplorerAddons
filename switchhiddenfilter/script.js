@@ -35,8 +35,8 @@ if (window.Addon == 1) {
 	AddEvent("Layout", async function () {
 		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.SwitchHiddenFilter.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: Addons.SwitchHiddenFilter.sName,
-			src: item.getAttribute("Icon") || (WINVER >= 0xa00 ? "font:Segoe MDL2 Assets,0xe8ab" : "font:Segoe UI Emoji,0x21c4")
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+			src: item.getAttribute("Icon") || GetWinIcon(0xa00, "font:Segoe MDL2 Assets,0xe8ab", 0, "font:Segoe UI Emoji,0x21c4")
+		}, GetIconSizeEx(item)), '</span>']);
 		delete item;
 	});
 

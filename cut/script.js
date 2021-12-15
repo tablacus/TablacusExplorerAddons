@@ -30,8 +30,8 @@ if (window.Addon == 1) {
 						DisableImage(o, await Ctrl.ItemCount(SVGIO_SELECTION) == 0);
 					}
 				} else {
-					const cTC = await te.Ctrls(CTRL_TC);
-					for (let i = await cTC.Count; i-- > 0;) {
+					const cTC = await te.Ctrls(CTRL_TC, false, window.chrome);
+					for (let i = cTC.length; i-- > 0;) {
 						o = document.getElementById("ImgCut_" + await cTC[i].Id);
 						if (o) {
 							DisableImage(o, await cTC[i].Selected.ItemCount(SVGIO_SELECTION) == 0);
@@ -60,7 +60,7 @@ if (window.Addon == 1) {
 			title: Addons.Cut.sName,
 			id: "ImgCut_$",
 			src: item.getAttribute("Icon") || "icon:general,5"
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		}, GetIconSizeEx(item)), '</span>']);
 		delete item;
 	});
 

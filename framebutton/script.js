@@ -10,8 +10,8 @@ if (window.Addon == 1) {
 	}
 	AddEvent("Layout", async function () {
 		const item = await GetAddonElement(Addon_Id);
-		const h = GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16);
-		const src = item.getAttribute("Icon") || "bitmap:ieframe.dll,214,24,4";
+		const h = GetIconSizeEx(item);
+		const src = item.getAttribute("Icon") || "icon:general,4";
 		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.FrameButton.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({ title: await GetText("Show frames"), src: src }, h), '</span>']);
 	});
 } else {

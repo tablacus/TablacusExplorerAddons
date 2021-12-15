@@ -18,7 +18,7 @@ Sync.ImportExplorer = {
 				if (exp && exp.Visible && !exp.Busy) {
 					let doc = exp.Document;
 					if (doc) {
-						if (Sync.ImportExplorer.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL))) {
+						if (Sync.ImportExplorer.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
 							exp.Visible = false;
 							FV = FV.Navigate(doc, SBSP_NEWBROWSER);
 							if (Sync.ImportExplorer.TakeOver) {

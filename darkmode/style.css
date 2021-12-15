@@ -12,7 +12,7 @@ body {
 	background-color: #202020;
 }
 
-input[type="text"], input[type="button"], input[type="file"], input[type="submit"], input[type="reset"], select, textarea {
+input[type="text"], input[type="number"], input[type="button"], input[type="file"], input[type="submit"], input[type="reset"], select, textarea {
 	color: #fff;
 	background-color: #191919;
 	border: solid 1px #555;
@@ -22,6 +22,14 @@ input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover
 	color: #fff;
 	background-color: #555;
 	border: solid 1px #777;
+}
+
+input[type="button"]:disabled {
+	color: #777;
+}
+
+input:-ms-input-placeholder {
+  color: #777;
 }
 
 .menu {

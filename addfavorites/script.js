@@ -20,7 +20,7 @@ if (window.Addon == 1) {
 		SetAddon(Addon_Id, Default, ['<span class="button" onclick="AddFavoriteEx(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: strName,
 			src: item.getAttribute("Icon") || "icon:general,3"
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		}, GetIconSizeEx(item)), '</span>']);
 		delete item;
 	});
 } else {

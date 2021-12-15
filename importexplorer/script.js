@@ -11,7 +11,7 @@ if (window.Addon == 1) {
 		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.ImportExplorer.Exec, this);" oncontextmenu="SyncExec(Sync.ImportExplorer.Exec, this); return false;" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 			src: item.getAttribute("Icon") || "%SystemRoot%\\explorer.exe"
-		}, GetIconSize(item.getAttribute("IconSize"), item.getAttribute("Location") == "Inner" && 16)), '</span>']);
+		}, GetIconSizeEx(item)), '</span>']);
 	});
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {

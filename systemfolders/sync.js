@@ -55,7 +55,6 @@ Sync.SystemFolders = {
 			}
 		}
 		const mii = api.Memory("MENUITEMINFO");
-		mii.cbSize = mii.Size;
 		mii.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
 		for (let i = 0; i < dir.length; i++) {
 			mii.wID = i + nOffset;
@@ -83,7 +82,6 @@ if (item.getAttribute("MenuExec")) {
 			Sync.SystemFolders.GetMenu(hMenu, nPos + 1)
 		} else {
 			const mii = api.Memory("MENUITEMINFO");
-			mii.cbSize = mii.Size;
 			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 			mii.dwTypeData = Sync.SystemFolders.strName;
 			mii.hSubMenu = Sync.SystemFolders.GetMenu(api.CreatePopupMenu(), nPos + 1);
