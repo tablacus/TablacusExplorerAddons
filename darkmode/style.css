@@ -1,10 +1,7 @@
 @charset "ISO-8859-1";
 
-* {
-	scrollbar-base-color: #000;
-	scrollbar-face-color: #555;
-	scrollbar-track-color: #111;
-	scrollbar-arrow-color: #777;
+:root {
+    color-scheme: dark;
 }
 
 body {
@@ -12,28 +9,20 @@ body {
 	background-color: #202020;
 }
 
-input[type="text"], input[type="number"], input[type="button"], input[type="file"], input[type="submit"], input[type="reset"], select, textarea {
+input[type="text"], input[type="number"], select, textarea {
 	color: #fff;
 	background-color: #191919;
 	border: solid 1px #555;
 }
 
-input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover, input[type="reset"]:hover, .hoverbutton, .activebutton {
+.menu {
+	color: #fff;
+}
+
+.hoverbutton, .activebutton {
 	color: #fff;
 	background-color: #555;
 	border: solid 1px #777;
-}
-
-input[type="button"]:disabled {
-	color: #777;
-}
-
-input:-ms-input-placeholder {
-  color: #777;
-}
-
-.menu {
-	color: #fff;
 }
 
 .hovermenu, .activemenu {
@@ -110,42 +99,34 @@ input:-ms-input-placeholder {
 }
 
 .link {
-  color: #29e;
-}
-::-webkit-scrollbar, ::-webkit-scrollbar-track {
-	background-color: #111;
+	color: #29e;
 }
 
-::-webkit-scrollbar-thumb {
-	background-color: #555;
-}
+@media all and (-ms-high-contrast: none) {
+	* {
+		scrollbar-base-color: #000;
+		scrollbar-face-color: #555;
+		scrollbar-track-color: #111;
+		scrollbar-arrow-color: #777;
+	}
 
-::-webkit-scrollbar-button:vertical:decrement {
-  border: .3rem solid #111;
-  background:linear-gradient(to top left, #555 50%, transparent 50%) top left/ 50% 100% no-repeat,
-    linear-gradient(to top right, #555 50%, transparent 50%) top right / 50% 100% no-repeat;
-}
+	input[type="button"], input[type="file"], input[type="submit"], input[type="reset"] {
+		color: #fff;
+		background-color: #191919;
+		border: solid 1px #555;
+	}
 
-::-webkit-scrollbar-button:vertical:increment {
-  border: .3rem solid #111;
-  background:linear-gradient(to bottom left, #555 50%, transparent 50%) top left/ 50% 100% no-repeat,
-    linear-gradient(to bottom right, #555 50%, transparent 50%) top right / 50% 100% no-repeat;
-}
+	input[type="button"]:hover, input[type="file"]:hover, input[type="submit"]:hover, input[type="reset"]:hover {
+		color: #fff;
+		background-color: #555;
+		border: solid 1px #777;
+	}
 
-::-webkit-scrollbar-button:horizontal:decrement {
-  border: .3rem solid #111;
-  background:linear-gradient(to bottom right, transparent 50%, #555 50%) top left/ 100% 50% no-repeat,
-    linear-gradient(to top right, transparent 50%, #555 50%) bottom left / 100% 50% no-repeat;
-}
+	input[type="button"]:disabled {
+		color: #777;
+	}
 
-::-webkit-scrollbar-button:horizontal:increment {
-  border: .3rem solid #111;
-  background:linear-gradient(to bottom left, transparent 50%, #555 50%) top left/ 100% 50% no-repeat,
-    linear-gradient(to top left, transparent 50%, #555 50%) bottom left / 100% 50% no-repeat;
-  }
-
-::-webkit-resizer {
-  background-color: #111;
-  border: .2rem double;
-  border-color: transparent #555 #555 transparent;
+	input:-ms-input-placeholder {
+		color: #777;
+	}
 }

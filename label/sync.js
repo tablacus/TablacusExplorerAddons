@@ -239,6 +239,28 @@ Sync.Label = {
 		return s;
 	},
 
+	RemoveEx: function (Item, Label) {
+		let s = "";
+		const path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+		if (path) {
+			if (s = Sync.Label.DB.Get(path)) {
+				setTimeout(Sync.Label.RemoveEx2, 9999, Item, Label, s);
+			}
+		}
+		return s;
+	},
+
+	RemoveEx2: function (Item, Label, s) {
+		const path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+		if (path) {
+			if (s == Sync.Label.DB.Get(path)) {
+				if (!IsExists(path)) {
+					Sync.Label.Remove(Item, Label);
+				}
+			}
+		}
+	},
+
 	Set: function (path, s) {
 		if (path) {
 			Sync.Label.DB.Set(path, s.replace(/[\\?\\*"]|^ +| +$/g, ""));
@@ -585,7 +607,7 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 	if (te.Labels) {
 		if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
 			let name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
-			let s = Sync.Label.Remove(pidls[0]);
+			let s = Sync.Label.RemoveEx(pidls[0]);
 			if (s) {
 				Sync.Label.SetSync(name, s);
 			} else {
@@ -598,7 +620,7 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 		}
 		if (pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR)) {
 			const name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
-			Sync.Label.SetSync(name, Sync.Label.Remove(pidls[0]));
+			Sync.Label.SetSync(name, Sync.Label.RemoveEx(pidls[0]));
 		}
 		if (pidls.lEvent & (SHCNE_CREATE | SHCNE_MKDIR)) {
 			const name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
