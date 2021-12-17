@@ -18,20 +18,19 @@ if (window.Addon == 1) {
 		},
 
 		List: async function (xhr, url, arg) {
-			const xml = await xhr.get_responseXML ? await xhr.get_responseXML() : xhr.responseXML;
+			const xml = window.chrome && await xhr.get_responseText ? new DOMParser().parseFromString(await xhr.get_responseText(), "application/xml") : xhr.responseXML;
 			if (xml) {
-				const items = await xml.getElementsByTagName("Item");
+				const items = xml.getElementsByTagName("Item");
 				const TEVer = await AboutTE(0);
 				const bAll = GetNum(await arg.all);
-				const nLen = await GetLength(items);
-				for (let i = 0; i < nLen; i++) {
-					const item = await items[i];
+				for (let i = 0; i < items.length; i++) {
+					const item = items[i];
 					const info = {};
-					const Id = await item.getAttribute("Id");
-					const installed = await GetAddonInfo(Id);
-					if (installed && await installed.Version) {
+					const Id = item.getAttribute("Id");
+					const installedVersion = await GetAddonInfo(Id).Version;
+					if (installedVersion) {
 						GetAddonInfo2(item, info, "General");
-						if (await installed.Version < info.Version) {
+						if (installedVersion < info.Version) {
 							if (bAll || TEVer >= CalcVersion(info.MinVersion)) {
 								await MainWindow.AddonDisabled(Id);
 								if (await AddonBeforeRemove(Id) < 0) {
