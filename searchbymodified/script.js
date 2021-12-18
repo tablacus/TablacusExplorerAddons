@@ -26,31 +26,44 @@ if (window.Addon == 1) {
 				for (let i = 0; i < ar.length; ++i) {
 					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, i + 1, str[i]);
 				}
+				const method = (await api.PSGetDisplayName("System.DateModified")).toLowerCase().replace(/\s/g, "");
+				const arg = Addons.SearchByModified.Parse(await FV.FolderItem.Path);
+				const re = new RegExp("[:" + String.fromCharCode(0xff1a) + "]");
+				let nNew = arg.length;
+				for (let i = arg.length; --i >= 0;) {
+					const a = arg[i].split(re);
+					if (a.length > 1) {
+						if (a[0].toLowerCase().replace(/\s/g, "") == method || String(await api.PSGetDisplayName(a[0])).toLowerCase().replace(/\s/g, "") == method) {
+							nNew = i;
+							break;
+						}
+					}
+				}
+				if (nNew != arg.length) {
+					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
+					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, str.length, await GetText("None"));
+				}
 				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, await pt.x, await pt.y, ui_.hwnd, null, null);
 				api.DestroyMenu(hMenu);
 				if (nVerb) {
-					const method = (await api.PSGetDisplayName("System.DateModified")).toLowerCase().replace(/\s/g, "");
-					const arg = Addons.SearchByModified.Parse(await FV.FolderItem);
-					const re = new RegExp("[:" + String.fromCharCode(0xff1a) + "]");
-					let nNew = arg.length;
-					for (let i = arg.length; --i >= 0;) {
-						const a = arg[i].split(re);
-						if (a.length > 1) {
-							if (a[0].toLowerCase().replace(/\s/g, "") == method || String(await api.PSGetDisplayName(a[0])).toLowerCase().replace(/\s/g, "") == method) {
-								nNew = i;
-								break;
-							}
-						}
+					if (nVerb == str.length) {
+						arg.splice(nNew, 1);
+					} else {
+						arg[nNew] = method + ":" + str[nVerb - 1].toLowerCase().replace(/\s/g, "");
 					}
-					arg[nNew] = method + ":" + str[nVerb - 1].toLowerCase().replace(/\s/g, "");
-					FV.Search(arg.join(" "));
+					const s = arg.join(" ");
+					if (/^\s*$/.test(s)) {
+						CancelFilterView(FV);
+					} else {
+						FV.Search(s);
+					}
 				}
 			}
 			return S_OK;
 		},
 
-		Parse: async function (pid) {
-			const res = /^search\-ms:.*?crumb=([^&]*)/.exec(await pid.Path);
+		Parse: function (path) {
+			const res = /^search\-ms:.*?crumb=([^&]*)/.exec(path);
 			const groups = [];
 			const ar = (res ? unescape(res[1]) : "").replace(/(\([^\(\)]*\))/g, function (strMatch, ref1) {
 				groups.push(ref1);
@@ -89,8 +102,6 @@ if (window.Addon == 1) {
 			"class": "button"
 		}, GetIconSizeEx(item))]);
 	});
-
-	AddEvent("Resize", Addons.SearchByModified.State);
 } else {
 	EnableInner();
 }
