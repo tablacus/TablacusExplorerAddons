@@ -1,6 +1,6 @@
 const Addon_Id = "virtualrecyclebin";
-const item = await $.GetAddonElement(Addon_Id);
-if (!await item.getAttribute("Set")) {
+const item = await GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
 	item.setAttribute("Network", 1);
 	item.setAttribute("Removable", 1);
 	item.setAttribute("Path", "recyclebin");

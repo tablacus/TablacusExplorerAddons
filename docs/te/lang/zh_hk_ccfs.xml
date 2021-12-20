@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<resources><!-- For TE 21.12.13 -->
+<resources><!-- For TE 21.12.18 -->
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
 	<text s="Mouse">滑鼠</text>
@@ -30,6 +30,7 @@
 	<text s="Search">搜尋</text>
 	<text s="OK">確定</text>
 	<text s="Cancel">取消</text>
+	<text s="Set default">設為預設值</text>
 	<text s="Are you sure?">您確定嗎？</text>
 	<text s="Do you want to replace?">您要儲存設定嗎？</text>
 	<text s="Browse...">瀏覽...</text>
@@ -43,13 +44,13 @@
 	<text s="Input">輸入</text>
 	<text s="Initialize config folder">初始化設定檔資料夾</text>
 	<text s="If you installed Tablacus Explorer to the Program Files directory, please press this button.">如果您將 Tablacus Explorer 安裝在 Program Files 資料夾內，請按下此按鈕。</text>
-	<text s="Gestures">動作</text>
+	<text s="Gestures">操控</text>
 	<text s="None">棄用</text>
 	<text s="Wheel">中按鈕</text>
 	<text s="Normal">標準</text>
 	<text s="Priority">優先</text>
 	<text s="Trails">軌跡</text>
-	<text s="Size">大小</text>
+	<text s="Color">色彩</text>
 	<text s="Tooltips">提示</text>
 	<text s="Drag-and-Drop">拖放</text>
 	<text s="Please wait.">請稍候...</text>
@@ -59,6 +60,7 @@
 	<text s="Enable">啟用</text>
 	<text s="Enabled">已啟用</text>
 	<text s="is required.">為必要的。</text>
+	<text s="@wmploc.dll,-29080">排序&#160;</text>
 	<text s="Up">上移</text>
 	<text s="Down">下移</text>
 	<text s="Install">安裝</text>
@@ -76,9 +78,9 @@
 	<text s="Add before">在之前加入</text>
 	<text s="Add after">在之後加入</text>
 	<text s="Type">類型</text>
+	<text s="Height">高度</text>
 	<text s="Portable">便攜式</text>
 	<text s="Remove">移除</text>
-	<text s="Height">高度</text>
 	<text s="Test">測試</text>
 	<text s="Add">加入</text>
 	<text s="Replace">取代</text>
@@ -152,6 +154,7 @@
 	<text s="Thumbstrip">單個預覽</text>
 	<text s="Content">內容</text>
 	<text s="Auto">自動</text>
+	<text s="Size">大小</text>
 	<text s="Single selection">單選</text>
 	<text s="Single click activate">按一下開啟項目</text>
 	<text s="Select by middle button">中按鈕選取</text>
@@ -176,7 +179,7 @@
 	<text s="&amp;Up one level">上移一層(&amp;U)</text>
 	<text s="Add favorite">新增我的最愛項目</text>
 	<text s="Check for updates">檢查更新</text>
-	<text s="%s is up to date.">%s 版本已是最新</text>
+	<text s="%s is up to date.">您的 %s 已是最新版本</text>
 	<text s="&amp;About %s">關於 %s (&amp;A)</text>
 	<text s="Information">資訊</text>
 	<text s="Visit website">訪問網站</text>
@@ -186,9 +189,9 @@
 	<text s="Right">右</text>
 	<text s="Tool bar">工具列</text>
 	<text s="Bottom bar">按鈕列</text>
-	<text s="Internal Tool bar">窗格內工具列</text>
+	<text s="Internal Tool bar">窗格左工具列</text>
 	<text s="Internal Tool bar Right">窗格右工具列</text>
-	<text s="Internal Bottom bar">窗格內按鈕列</text>
+	<text s="Internal Bottom bar">窗格左按鈕列</text>
 	<text s="Internal Bottom bar Right">窗格右按鈕列</text>
 	<text s="All">全部</text>
 	<text s="◴">&#160;左&#160;</text>
@@ -220,7 +223,7 @@
 	<text s="Download">下載</text>
 	<text s="Long press">長按</text>
 	<text s="Timeout">時限</text>
-	<text s="Gesture priority plus">調整滑鼠動作</text>
+	<text s="Gesture priority plus">調整滑鼠操控</text>
 	<text s="Main menu button">主選單按鈕</text>
 	<text s="Menu item filter">屏蔽選單項目</text>
 	<text s="Quicker menu display">簡潔功能選單</text>
@@ -258,7 +261,6 @@
 	<text s="Down key next">上下鍵換行移動</text>
 	<text s="Between files and folders">跳到資料夾及檔案邊界</text>
 	<text s="Regular Expression/Migemo Incremental Search">規則運算式/Migemo 漸進式搜尋</text>
-	<text s="Set default">設為預設值</text>
 	<text s="Show focused item frame">永遠顯示焦點框</text>
 	<text s="Fix Single click activate">按一下立刻開啟項目</text>
 	<text s="Mixed sort">混合排序</text>
@@ -346,7 +348,6 @@
 	<text s="Load">載入</text>
 	<text s="Change tab color...">變更頁籤色彩...</text>
 	<text s="Tab color plus">頁籤色彩規則</text>
-	<text s="Color">色彩</text>
 	<text s="Tab drive name">在頁籤顯示磁碟代號</text>
 	<text s="Tab parent folder name">在頁籤顯示上層資料夾名稱</text>
 	<text s="Change tab name...">變更分頁名稱...</text>

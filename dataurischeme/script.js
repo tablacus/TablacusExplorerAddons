@@ -1,6 +1,6 @@
 const Addon_Id = "dataurischeme";
-const item = await $.GetAddonElement(Addon_Id);
-if (!await item.getAttribute("Set")) {
+const item = await GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Context");
 	item.setAttribute("MenuPos", 1);

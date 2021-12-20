@@ -27,7 +27,6 @@ Addons.ReplaceCommand = {
 		if (ContextMenu) {
 			await ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_EXTENDEDVERBS | CMF_ITEMMENU);
 			const mii = await api.Memory("MENUITEMINFO");
-			mii.cbSize = await mii.Size;
 			mii.fMask = MIIM_ID;
 			for (let i = await api.GetMenuItemCount(hMenu); i--;) {
 				await api.GetMenuItemInfo(hMenu, i, true, mii);

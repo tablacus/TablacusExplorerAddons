@@ -12,7 +12,6 @@ if (item.getAttribute("MenuExec")) {
 			const item = Selected.Item(i);
 			if (item && item.IsFileSystem) {
 				const mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
 				mii.fMask = MIIM_ID | MIIM_BITMAP | MIIM_STRING | MIIM_SUBMENU;
 				const image = api.CreateObject("WICBitmap").FromFile(item.Path);
 				if (image) {

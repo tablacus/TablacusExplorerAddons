@@ -1,4 +1,4 @@
-﻿const Addon_Id = "virtualrecyclebin";
+const Addon_Id = "virtualrecyclebin";
 const item = GetAddonElement(Addon_Id);
 
 Sync.VirtualRecycleBin = {

@@ -1,6 +1,6 @@
 const Addon_Id = "clipboardhistory";
-const item = await $.GetAddonElement(Addon_Id);
-if (!await item.getAttribute("Set")) {
+const item = await GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Background");
 	item.setAttribute("MenuPos", 0);
