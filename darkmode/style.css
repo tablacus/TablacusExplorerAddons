@@ -102,6 +102,11 @@ input[type="text"], input[type="number"], select, textarea {
 	color: #29e;
 }
 
+.activecaption {
+	color: #fff;
+	background-color: #000;
+}
+
 @media all and (-ms-high-contrast: none) {
 	* {
 		scrollbar-base-color: #000;

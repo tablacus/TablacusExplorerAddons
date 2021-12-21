@@ -107,7 +107,7 @@ AddEventId("AddonDisabledEx", "darkmode", function () {
 if (api.IsAppThemed() && WINVER > 0x603) {
 	AddEvent("Load", function () {
 		if (!Sync.ClassicStyle) {
-			AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes) {
+			AddEvent("ItemPrePaint2", function (Ctrl, pid, nmcd, vcd, plRes) {
 				if (Sync.DarkMode.bDark) {
 					const uState = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, LVIS_SELECTED);
 					if (uState & LVIS_SELECTED || nmcd.uItemState & CDIS_HOT) {
@@ -118,7 +118,7 @@ if (api.IsAppThemed() && WINVER > 0x603) {
 						api.FillRect(nmcd.hdc, rc, api.GetStockObject(DC_BRUSH));
 					}
 				}
-			}, true);
+			});
 		}
 	});
 }
