@@ -1,4 +1,4 @@
-var Addon_Id = "tooltippreview";
+const Addon_Id = "tooltippreview";
 if (window.Addon == 1) {
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {

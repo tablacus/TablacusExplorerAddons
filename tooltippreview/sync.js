@@ -16,22 +16,10 @@ Sync.TooltipPreview = {
 	Draw: function () {
 		Sync.TooltipPreview.DeleteBM();
 		const q = Sync.TooltipPreview.q;
-		if (!q || !q.image) {
+		if (!q || !q.image || !q.hwnd) {
 			return;
 		}
-		if (!q.hwnd) {
-			let hwnd;
-			while (hwnd = api.FindWindowEx(null, hwnd, null, null)) {
-				if (api.GetClassName(hwnd) == "tooltips_class32") {
-					if (api.IsWindowVisible(hwnd)) {
-						q.hwnd = hwnd;
-						break;
-					}
-				}
-			}
-		}
-		if (q.hwnd && api.IsWindowVisible(q.hwnd) && q.image) {
-			Sync.TooltipPreview.MAX = Math.max(api.SendMessage(q.hwnd, WM_USER + 25, 0, 0), 400);
+		if (api.IsWindowVisible(q.hwnd) && q.image) {
 			Sync.TooltipPreview.Path = q.Item.Path;
 			if (api.IsWindowVisible(q.hwnd)) {
 				const hdc = api.GetWindowDC(q.hwnd);
@@ -40,7 +28,7 @@ Sync.TooltipPreview = {
 					const rc = api.Memory("RECT");
 					api.GetClientRect(q.hwnd, rc);
 					const w1 = rc.right - rc.left - 8;
-					const h1 = rc.bottom - rc.top - Sync.TooltipPreview.nCols * Sync.TooltipPreview.cy - 4;
+					const h1 = Math.max(rc.bottom - rc.top - Sync.TooltipPreview.nCols * Sync.TooltipPreview.cy - 4, 16);
 					const z = q.z;
 					if (w1 < q.w * z) {
 						q.z = Math.min(z, w1 / q.w);
@@ -48,7 +36,7 @@ Sync.TooltipPreview = {
 					}
 					if (h1 < q.h * z) {
 						q.z = Math.min(q.z, h1 / q.h);
-						Sync.TooltipPreview.cy = h1 / Sync.TooltipPreview.cyn;
+						Sync.TooltipPreview.cy = Math.max(h1 / Sync.TooltipPreview.cyn, 1);
 					}
 					cr = false;
 					let hOld1, nDelay, bAnime = false;
@@ -184,7 +172,7 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 				}
 			}
 		}
-		const q = { Item: Item, path: Item };
+		const q = { Item: Item, path: Item, q: Sync.TooltipPreview.q.hwnd };
 		Sync.TooltipPreview.q = q;
 		q.w = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 3");
 		q.h = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 4");
@@ -213,24 +201,25 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 		}
 		delete Sync.TooltipPreview.Path;
 		if (q.w && q.h) {
-			q.z = Math.min(Sync.TooltipPreview.MAX / Math.max(q.w, q.h), 1);
 			if (Sync.TooltipPreview.cx == 0) {
-				const hdc = api.GetWindowDC(Ctrl.hwndList);
+				Sync.TooltipPreview.MAX = api.SendMessage(hwnd, WM_USER + 25, 0, 0) || 400;
+				const hdc = api.GetWindowDC(q.hwnd);
 				if (hdc) {
-					const size = api.Memory("SIZE");
-					api.GetTextExtentPoint32(hdc, " ", size);
-					Sync.TooltipPreview.cx = size.cx * .7;
-					Sync.TooltipPreview.cy = size.cy * .8;
-					api.ReleaseDC(Ctrl.hwndList, hdc);
+					const rc = api.Memory("RECT");
+					api.DrawText(hdc, String.fromCharCode(0x2002), -1, rc, DT_CALCRECT);
+					Sync.TooltipPreview.cx = rc.right * .7;
+					Sync.TooltipPreview.cy = rc.bottom;
+					api.ReleaseDC(q.hwnd, hdc);
 				} else {
 					Sync.TooltipPreview.cx = 6;
 					Sync.TooltipPreview.cy = 13;
 				}
 			}
+			q.z = Math.min(Sync.TooltipPreview.MAX / Math.max(q.w, q.h), 1);
 			Sync.TooltipPreview.cyn = Math.max(Math.round(q.h * q.z / Sync.TooltipPreview.cy), 1);
 			const ar = new Array(Sync.TooltipPreview.cyn);
 			Sync.TooltipPreview.cxn = Math.max(Math.round(q.w * q.z / Sync.TooltipPreview.cx), 1);
-			ar.push(new Array(Sync.TooltipPreview.cxn).join(" "));
+			ar.push(new Array(Sync.TooltipPreview.cxn).join(String.fromCharCode(0x2002)));
 			const col = ["type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13"];
 			if (!IsFolderEx(Item)) {
 				col.push("size");
@@ -248,9 +237,10 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 		}
 	}
 	if (Ctrl.Type == CTRL_TE) {
-		if (Index == WM_PAINT && Sync.TooltipPreview.q.image) {
+		if (Index == WM_ERASEBKGND) {
 			Sync.TooltipPreview.q.hwnd = hwnd;
-			setTimeout(Sync.TooltipPreview.Draw, 99);
+		} else if (Index == WM_PAINT && Sync.TooltipPreview.q.image) {
+			setTimeout(Sync.TooltipPreview.Draw);
 		}
 	}
 });

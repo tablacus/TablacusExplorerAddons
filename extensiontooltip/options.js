@@ -49,17 +49,20 @@ BrowseType = async function () {
 	const elData = document.getElementById("DataArea");
 	const elMenu = document.getElementById("MenuArea");
 	if (elData.style.width.replace(/\D/, "") == 100) {
-		elData.style.width = "50%";
-		elMenu.style.display = "";
 		const el = document.E.Menu;
 		if (el.length) {
+			elData.style.width = "50%";
+			elMenu.style.display = "";
 			return;
 		}
 		const f = await sha.NameSpace(ui_.Installed);
 		const db = {};
 		let ar = [];
 		const FV = await GetFolderView();
-		const col = await Promise.all(await api.CommandLineToArgv(FV.Columns));
+		let col = await api.CommandLineToArgv(await FV.Columns);
+		if (window.chrome) {
+			col = await api.CreateObject("SafeArray", col);
+		}
 		for (let i = 0; i < col.length; i += 2) {
 			db[col[i]] = 1;
 		}
@@ -76,6 +79,8 @@ BrowseType = async function () {
 		for (let n in db) {
 			el[el.length++].text = n;
 		}
+		elData.style.width = "50%";
+		elMenu.style.display = "";
 	} else {
 		elData.style.width = "100%";
 		elMenu.style.display = "none";
