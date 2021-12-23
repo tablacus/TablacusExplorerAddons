@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<resources><!-- For TE 21.12.18 -->
+<resources><!-- For TE 21.12.21 -->
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
 	<text s="Mouse">滑鼠</text>
@@ -356,7 +356,7 @@
 	<text s="First">第一</text>
 	<text s="Last">最後</text>
 	<text s="Parent folder">上層資料夾</text>
-	<text s="In actived order">上次使用</text>
+	<text s="In activated order">上次使用</text>
 	<text s="Locked tabs top">自動排列已鎖分頁到左邊</text>
 	<text s="Sort tabs">排序頁籤</text>
 	<text s="Tab list">分頁列表</text>
@@ -443,7 +443,8 @@
 	<text s="Limit">檔案大小上限</text>
 	<text s="Preview window">預覽視窗</text>
 	<text s="Tooltip preview">彈出預覽</text>
-	<text s="Limited">限於</text>
+	<text s="Only Allow">限於</text>
+	<text s="Limits">&#160;檔案大小上限</text>
 	<text s="Preview in background">分頁上預覽</text>
 	<text s="Menu image">選單彈出預覽</text>
 	<text s="Menu image plus">資料夾選單彈出預覽</text>
