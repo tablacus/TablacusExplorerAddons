@@ -91,7 +91,7 @@ if (window.Addon == 1) {
 				const item = items[i];
 				const strType = item.Type;
 				const strFlag = SameText(strType, "Menus") ? item.text : "";
-				if (SameText(strFlag, "close" && menus)) {
+				if (SameText(strFlag, "close") && menus) {
 					menus--;
 					continue;
 				}

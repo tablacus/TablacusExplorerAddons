@@ -12,6 +12,7 @@ Sync.TooltipPreview = {
 	TextLimit: item.getAttribute("TextLimit") || 10000000,
 	Selected: GetNum(item.getAttribute("Selected")),
 	q: {},
+	TT: {},
 
 	Draw: function () {
 		Sync.TooltipPreview.DeleteBM();
@@ -20,7 +21,7 @@ Sync.TooltipPreview = {
 			return;
 		}
 		if (api.IsWindowVisible(q.hwnd) && q.image) {
-			Sync.TooltipPreview.Path = q.Item.Path;
+			Sync.TooltipPreview.TT[q.hwnd] = q;
 			if (api.IsWindowVisible(q.hwnd)) {
 				const hdc = api.GetWindowDC(q.hwnd);
 				if (hdc) {
@@ -144,11 +145,25 @@ Sync.TooltipPreview = {
 			api.DeleteObject(Sync.TooltipPreview.hbm2);
 			delete Sync.TooltipPreview.hbm2;
 		}
+	},
+
+	Close: function (Ctrl) {
+		if (Ctrl.Type <= CTRL_EB) {
+			const cTT = Sync.TooltipPreview.TT;
+			for (let hwnd in cTT) {
+				if (cTT[hwnd].Id == Ctrl.Id) {
+					delete cTT[hwnd];
+				}
+			}
+		}
 	}
 };
 
 AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 	if (Ctrl.Type <= CTRL_EB && Index >= 0) {
+		Sync.TooltipPreview.q = {
+			del: new Date().getTime()
+		};
 		const Item = Ctrl.Item(Index);
 		if (!Item) {
 			return;
@@ -172,14 +187,14 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 				}
 			}
 		}
-		const q = { Item: Item, path: Item, q: Sync.TooltipPreview.q.hwnd };
+		const q = { Item: Item, path: Item, tm: new Date().getTime(), Id: Ctrl.Id };
 		Sync.TooltipPreview.q = q;
 		q.w = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 3");
 		q.h = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 4");
 		if (q.w && q.h) {
 			q.onload = function (q) {
 				q.image = api.CreateObject("WICBitmap").FromSource(q.out);
-				Sync.TooltipPreview.Draw();
+				api.InvalidateRect(q.hwnd, null, false);
 			}
 			Threads.GetImage(Sync.TooltipPreview.q);
 		} else {
@@ -199,17 +214,16 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 				q.h = q.image.GetHeight();
 			}
 		}
-		delete Sync.TooltipPreview.Path;
 		if (q.w && q.h) {
 			if (Sync.TooltipPreview.cx == 0) {
 				Sync.TooltipPreview.MAX = api.SendMessage(hwnd, WM_USER + 25, 0, 0) || 400;
-				const hdc = api.GetWindowDC(q.hwnd);
+				const hdc = api.GetWindowDC(hwnd);
 				if (hdc) {
 					const rc = api.Memory("RECT");
 					api.DrawText(hdc, String.fromCharCode(0x2002), -1, rc, DT_CALCRECT);
 					Sync.TooltipPreview.cx = rc.right * .7;
 					Sync.TooltipPreview.cy = rc.bottom;
-					api.ReleaseDC(q.hwnd, hdc);
+					api.ReleaseDC(hwnd, hdc);
 				} else {
 					Sync.TooltipPreview.cx = 6;
 					Sync.TooltipPreview.cy = 13;
@@ -237,16 +251,29 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 		}
 	}
 	if (Ctrl.Type == CTRL_TE) {
-		if (Index == WM_ERASEBKGND) {
-			Sync.TooltipPreview.q.hwnd = hwnd;
-		} else if (Index == WM_PAINT && Sync.TooltipPreview.q.image) {
-			setTimeout(Sync.TooltipPreview.Draw);
+		if (Index == WM_PAINT) {
+			let q = Sync.TooltipPreview.q;
+			if (new Date().getTime() - q.del < 999) {
+				delete Sync.TooltipPreview.TT[hwnd];
+			}
+			if (new Date().getTime() - q.tm < 999) {
+				q.hwnd = hwnd;
+				if (Sync.TooltipPreview.q.image) {
+					setTimeout(Sync.TooltipPreview.Draw);
+				}
+				return;
+			}
+			q = Sync.TooltipPreview.TT[hwnd];
+			if (q && q.hwnd == hwnd) {
+				Sync.TooltipPreview.q = q;
+				setTimeout(Sync.TooltipPreview.Draw);
+			}
 		}
 	}
 });
 
-AddEvent("ListViewCreated", function (Ctrl) {
-	delete Sync.TooltipPreview.Path;
-});
+AddEvent("ListViewCreated", Sync.TooltipPreview.Close);
+
+AddEvent("Close", Sync.TooltipPreview.Close);
 
 AddEvent("Finalize", Sync.TooltipPreview.DeleteBM);

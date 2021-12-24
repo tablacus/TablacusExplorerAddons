@@ -6,6 +6,7 @@ if (window.Addon == 1) {
 		SessionId: 0,
 		Folder: item.getAttribute("Folder"),
 		FileSize: item.getAttribute("FileSize"),
+		FreeSpace: item.getAttribute("FreeSpace"),
 		strFreeSpace: await api.PSGetDisplayName("{9B174B35-40FF-11D2-A27E-00C04FC30871} 2") + " ",
 		SessionId: {},
 
@@ -42,11 +43,14 @@ if (window.Addon == 1) {
 				return;
 			}
 			if (nCount || Addons.SizeStatus.FileSize) {
-				const Selected = nCount ? await FV.SelectedItems() : await FV.Items();
+				let Selected = nCount ? await FV.SelectedItems() : await FV.Items();
+				if (window.chrome) {
+					Selected = await api.GetObject("SafeArray", Selected);
+				}
 				const TFS = await FV.TotalFileSize;
 				if (TFS) {
-					for (let i = await Selected.Count; i-- > 0;) {
-						const Item = await Selected.Item(i);
+					for (let i = Selected.length; i-- > 0;) {
+						const Item = Selected[i];
 						if (await IsFolderEx(Item)) {
 							if (Addons.SizeStatus.Folder) {
 								const n = await TFS[await api.GetDisplayNameOf(Item, SHGDN_FORPARSING)];
@@ -76,7 +80,7 @@ if (window.Addon == 1) {
 			}
 			if (bYet && (Addons.SizeStatus.Folder || !nSize)) {
 				s = " ";
-				if (!await pid.Unavailable) {
+				if (Addons.SizeStatus.FreeSpace && !await pid.Unavailable) {
 					const oDrive = await api.GetDiskFreeSpaceEx(await pid.Path);
 					if (oDrive) {
 						s = Addons.SizeStatus.strFreeSpace + await api.StrFormatByteSize(await oDrive.FreeBytesOfAvailable);
