@@ -80,7 +80,7 @@ if (Lang == "de") {
 		Search: "搜尋",
 		Filter: "篩選",
 		Details: "詳細資料",
-		Up: "上移へ",
+		Up: "上移",
 	};
 } else if (Lang == "zh-cn") {
 	te.Data.Lang = {
@@ -88,7 +88,7 @@ if (Lang == "de") {
 		Search: "搜索",
 		Filter: "过滤",
 		Details: "详细信息",
-		Up: "上へ",
+		Up: "上一个",
 	};
 }
 
