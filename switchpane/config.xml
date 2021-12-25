@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2021.4.4</MinVersion>
-    <pubDate>Mon, 05 Apr 2021 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2021.12.18</MinVersion>
+    <pubDate>Sat, 25 Dec 2021 00:00:00 GMT</pubDate>
     <Creator>Gaku</Creator>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -13,6 +13,10 @@
     <Name>Switch to next pane</Name>
     <Description>Command: "Switch to next pane", Environment: "%other%".</Description>
   </en>
+  <fr>
+    <Name>Basculer au panneau suivant</Name>
+    <Description>Commande : "Switch to next pane", Variable d'environment: "%other%".</Description>
+  </fr>
   <ja>
     <Name>次のペインに切り替える</Name>
     <Description>次のペインに切り替えるコマンドと、次のペインを表す環境変数「%other%」を追加します。</Description>

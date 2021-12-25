@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2020.12.9</MinVersion>
-    <pubDate>Thu, 10 Dec 2020 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2021.12.18</MinVersion>
+    <pubDate>Sat, 25 Dec 2021 00:00:00 GMT</pubDate>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -12,6 +12,10 @@
   <en>
     <Name>Switch to previous pane</Name>
     <Description>Command: "Switch to previous pane", Environment: "%prevpane%".</Description>
+  </en>
+  <en>
+    <Name>Basculer au panneau précédent</Name>
+    <Description>Commande : "Switch to previous pane", Variable d'environment: "%prevpane%".</Description>
   </en>
   <ja>
     <Name>前のペインに切り替える</Name>

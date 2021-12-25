@@ -1,6 +1,6 @@
-var Addon_Id = "attributes";
+const Addon_Id = "attributes";
 
-var item = await GetAddonElement(Addon_Id);
+const item = await GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Context");
@@ -11,5 +11,5 @@ if (!item.getAttribute("Set")) {
 }
 
 if (window.Addon == 1) {
-	importJScript("addons\\" + Addon_Id + "\\sync.js");
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 }

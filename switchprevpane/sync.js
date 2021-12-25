@@ -30,7 +30,7 @@ Sync.SwitchPrevPane = {
 AddEnv("PrevPane", function (Ctrl) {
 	const FV = Sync.SwitchPrevPane.Exec(Ctrl);
 	if (FV) {
-		return api.PathQuoteSpaces(api.GetDisplayNameOf(FV, SHGDN_FORPARSING));
+		return PathQuoteSpaces(api.GetDisplayNameOf(FV, SHGDN_FORPARSING));
 	}
 });
 

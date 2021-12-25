@@ -2,7 +2,9 @@ RunEventUI("BrowserCreatedEx");
 
 arAttrib = [FILE_ATTRIBUTE_READONLY, FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM, FILE_ATTRIBUTE_ARCHIVE];
 arStr = ["R", "H", "S", "A"];
-arHelp = ["Read Only", "Hidden", "System", "Archive"];
+Promise.all([GetTextR("@shell32.dll,-8768"), GetTextR("@shell32.dll,-8769"), GetTextR("@shell32.dll,-8770"), GetTextR("@DscCoreConfProv.dll,-32[Archive]")]).then(function (r) {
+	arHelp = r;
+});
 cItems = [];
 
 Resize = function () {
@@ -11,20 +13,20 @@ Resize = function () {
 }
 
 CheckAll = function (e) {
-	var o = e ? e.currentTarget : window.event.srcElement;
-	for (var i in cItems) {
+	const o = e ? e.currentTarget : window.event.srcElement;
+	for (let i in cItems) {
 		cItems[i].ckbx[o.value].checked = o.checked;
 	}
 }
 
 SetAttributes = async function () {
-	var filter = 0;
-	for (var j in arAttrib) {
+	let filter = 0;
+	for (let j in arAttrib) {
 		filter |= arAttrib[j];
 	}
-	for (var i in cItems) {
-		var attr = 0;
-		for (var j in arAttrib) {
+	for (let i in cItems) {
+		let attr = 0;
+		for (let j in arAttrib) {
 			attr |= cItems[i].ckbx[j].checked ? arAttrib[j] : 0;
 		}
 		if ((cItems[i].Attributes ^ attr) & filter) {
@@ -39,26 +41,28 @@ SetAttributes = async function () {
 
 InitDialog = async function () {
 	ApplyLang(document);
-	var FV = await te.Ctrl(CTRL_FV);
+	const FV = await te.Ctrl(CTRL_FV);
 	if (FV) {
-		Selected = await FV.SelectedItems();
+		let Selected = await FV.SelectedItems();
 		if (Selected) {
-			var table = document.getElementById("T");
-			var nSelected = await Selected.Count;
-			var tr = document.createElement('tr');
+			if (window.chrome) {
+				Selected = await api.CreateObject("SafeArray", Selected);
+			}
+			const table = document.getElementById("T");
+			let tr = document.createElement('tr');
 			tr.className = "oddline";
-			var td = document.createElement('td');
-			td.innerText = await GetText("Name");
+			let td = document.createElement('td');
+			td.innerText = await GetTextR("@shell32.dll,-8976");
 			td.style.width = "100%";
 			td.style.verticalAlign = "middle";
 			td.style.paddingLeft = "8px";
 			tr.appendChild(td);
-			for (var i in arStr) {
-				var td = document.createElement('th');
+			for (let i in arStr) {
+				td = document.createElement('th');
 				td.innerText = arStr[i];
-				td.title = await GetText(arHelp[i]);
-				if (nSelected > 1) {
-					var input = document.createElement('input');
+				td.title = arHelp[i];
+				if (Selected.length > 1) {
+					const input = document.createElement('input');
 					input.type = "checkbox";
 					input.value = i;
 					input.onclick = CheckAll;
@@ -67,31 +71,32 @@ InitDialog = async function () {
 				tr.appendChild(td);
 			}
 			table.appendChild(tr);
-			for (i = 0; i < nSelected; i++) {
+			const wfd = await api.Memory("WIN32_FIND_DATA");
+			const wfdSize = await wfd.Size;
+			for (let i = 0; i < Selected.length; i++) {
 				tr = document.createElement('tr');
 				if (i & 1) {
 					tr.className = "oddline";
 				}
 				td = document.createElement('td');
-				var Item = await Selected.Item(i);
-				var wfd = await api.Memory("WIN32_FIND_DATA");
-				if (await api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, await wfd.Size) == S_OK) {
+				const Item = Selected[i];
+				if (await api.SHGetDataFromIDList(Item, SHGDFIL_FINDDATA, wfd, wfdSize) == S_OK) {
 					oItem = {};
 					oItem.Path = await Item.Path;
-					var attr = await wfd.dwFileAttributes;
+					const attr = await wfd.dwFileAttributes;
 					oItem.Attributes = attr;
 					td.innerText = await wfd.cFileName;
 					td.style.paddingLeft = "8px";
 					tr.appendChild(td);
 					oItem.ckbx = [];
-					for (var j = 0; j < 4; j++) {
+					for (let j = 0; j < arStr.length; j++) {
 						td = document.createElement('th');
-						var input = document.createElement('input');
+						const input = document.createElement('input');
 						input.type = "checkbox";
 						input.checked = (attr & arAttrib[j]);
 						oItem.ckbx[j] = input;
 						td.appendChild(input);
-						td.title = await GetText(arHelp[j]);
+						td.title = arHelp[j];
 						tr.appendChild(td);
 					}
 					table.appendChild(tr);

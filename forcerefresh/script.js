@@ -102,7 +102,7 @@ if (window.Addon == 1) {
 				const Id = await Ctrl.Id;
 				const FV = await te.Ctrl(CTRL_FV, Addons.ForceRefresh.db[Id]);
 				if (FV && await FV.Id != await Ctrl.Selected.Id) {
-					const path = await api.GetDisplayNameOf(await Ctrl.Selected, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+					const path = await api.GetDisplayNameOf(await Ctrl.Selected, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 					if (await PathMatchEx(path, Addons.ForceRefresh.Filter) && !await PathMatchEx(path, Addons.ForceRefresh.Disable)) {
 						Ctrl.Selected.Refresh();
 					}
