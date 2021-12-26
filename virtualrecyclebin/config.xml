@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2021.11.1</MinVersion>
-    <pubDate>Mon, 20 Dec 2021 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2021.12.18</MinVersion>
+    <pubDate>Sun, 26 Dec 2021 00:00:00 GMT</pubDate>
     <Options>Common:0,7:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,8 +14,15 @@
     <Name>Virtual recycle bin</Name>
     <Description>Recycle bin folder for network folder and removable disk.</Description>
   </en>
+  <fr>
+    <Name>Poubelle virtuelle</Name>
+    <Description>Dossier poubelle (corbeille) pour les dossiers réseau et disques amovibles.</Description>
+  </fr>
   <ja>
     <Name>仮想ごみ箱</Name>
     <Description>ネットワークフォルダとリムーバブルディスクのごみ箱フォルダ</Description>
   </ja>
+  <zh>
+    <Name>虛擬資源回收筒</Name>
+  </zh>
 </TablacusExplorer>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2021.11.1</MinVersion>
-    <pubDate>Mon, 20 Dec 2021 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2021.12.18</MinVersion>
+    <pubDate>Sun, 26 Dec 2021 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,8 +14,15 @@
     <Name>Copy Data URI Scheme</Name>
     <Description>Copy Data URI Scheme to Clipboard.</Description>
   </en>
+  <fr>
+    <Name>Schéma URI des données de copie</Name>
+    <Description>Copier le schéma URI des données dans le presse-papiers.</Description>
+  </fr>
   <ja>
     <Name>Data URI Schemeをコピー</Name>
     <Description>ファイルのData URI Schemeをクリップボードにコピー</Description>
   </ja>
+  <zh>
+    <Name>製作 Data URI</Name>
+  </zh>
 </TablacusExplorer>

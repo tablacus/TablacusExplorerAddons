@@ -148,6 +148,13 @@ AddEvent("FontChanged", function () {
 	Sync.Tabs.hFont = CreateFont(DefaultFont);
 });
 
+AddEvent(WM_SETTINGCHANGE + "!", function (Ctrl, Type, hwnd, msg, wParam, lParam) {
+	const cTC = te.Ctrls(CTRL_TC, true);
+	for (let i in cTC) {
+		api.InvalidateRect(cTC[i].hwnd, null, true);
+	}
+});
+
 AddEvent("Finalize", function () {
 	if (Sync.Tabs.himl) {
 		api.ImageList_Destroy(Sync.Tabs.himl);
@@ -156,9 +163,19 @@ AddEvent("Finalize", function () {
 });
 
 AddEvent("Load", function () {
-	const hModule = api.GetModuleHandle(BuildPath(system32, "ieframe.dll"), 0, LOAD_LIBRARY_AS_DATAFILE) || api.GetModuleHandle(BuildPath(system32, "browseui.dll"), 0, LOAD_LIBRARY_AS_DATAFILE);
-	if (hModule) {
-		Sync.Tabs.himl = api.ImageList_LoadImage(hModule, 545, 13, 0, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION);
+	if (WINVER >= 0x602) {
+		const cx = 13 * 96 / screen.deviceYDPI;
+		Sync.Tabs.himl = api.ImageList_Create(cx, cx, 32, 0, 0);
+		const hIcon = MakeImgIcon("font:Segoe UI Emoji,0x1f4cc", 0, cx, false, CLR_DEFAULT | COLOR_BTNFACE);
+		api.ImageList_AddIcon(Sync.Tabs.himl, hIcon);
+		api.ImageList_AddIcon(Sync.Tabs.himl, hIcon);
+		api.ImageList_AddIcon(Sync.Tabs.himl, hIcon);
+		api.DestroyIcon(hIcon);
+	} else {
+		const hModule = api.GetModuleHandle(BuildPath(system32, "ieframe.dll"), 0, LOAD_LIBRARY_AS_DATAFILE) || api.GetModuleHandle(BuildPath(system32, "browseui.dll"), 0, LOAD_LIBRARY_AS_DATAFILE);
+		if (hModule) {
+			Sync.Tabs.himl = api.ImageList_LoadImage(hModule, 545, 13, 0, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION);
+		}
 	}
 	Sync.Tabs.hFont = CreateFont(DefaultFont);
 

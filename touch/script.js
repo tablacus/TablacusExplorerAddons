@@ -33,9 +33,8 @@ if (window.Addon == 1) {
 		}
 	};
 	//Menu
-	const strName = item.getAttribute("MenuName") || await GetText("Change the Date modified...");
 	if (item.getAttribute("MenuExec")) {
-		SetMenuExec("Touch", strName, item.getAttribute("Menu"), item.getAttribute("MenuPos"));
+		SetMenuExec("Touch", item.getAttribute("MenuName") || (await GetAddonInfo(Addon_Id).Name + "..."), item.getAttribute("Menu"), item.getAttribute("MenuPos"));
 	}
 	//Key
 	if (item.getAttribute("KeyExec")) {

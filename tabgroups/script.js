@@ -445,7 +445,14 @@ if (window.Addon == 1) {
 	AddEvent("Layout", Addons.Tabgroups.Init);
 
 	AddEvent("Load", async function () {
-		Addons.Tabgroups.ImgLock = Addons.TabPlus ? Addons.TabPlus.ImgLock2 : '<img src="' + MakeImgSrc("bitmap:ieframe.dll,545,13,2", 0, false, 13) + '" style="width: ' + (13 * 96 / screen.deviceYDPI) + 'px; padding-right: 2px">';
+		if (Addons.TabPlus) {
+			Addons.Tabgroups.ImgLock = Addons.TabPlus.ImgLock2;
+		} else {
+			Addons.Tabgroups.ImgLock = await GetImgTag({
+				draggable: "false",
+				src: GetWinIcon(0x602, "font:Segoe UI Emoji,0x1f4cc", 0, "bitmap:ieframe.dll,545,13,2")
+			}, 13 * ui_.Zoom);
+		}
 		Sync.Tabgroups.Init();
 		await Addons.Tabgroups.Arrange(false, true);
 	});

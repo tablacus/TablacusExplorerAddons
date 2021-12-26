@@ -1,5 +1,13 @@
-var Addon_Id = "touchex";
+const Addon_Id = "touchex";
+const item = await GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
+	item.setAttribute("MenuExec", 1);
+	item.setAttribute("Menu", "Context");
+	item.setAttribute("MenuPos", 1);
 
+	item.setAttribute("KeyOn", "List");
+	item.setAttribute("MouseOn", "List");
+}
 if (window.Addon == 1) {
-	importJScript("addons\\" + Addon_Id + "\\sync.js");	
+	$.importScript("addons\\" + Addon_Id + "\\sync.js");	
 }

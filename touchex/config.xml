@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2020.11.10</MinVersion>
-    <pubDate>Wed, 11 Nov 2020 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2021.12.18</MinVersion>
+    <pubDate>Sun, 26 Dec 2021 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,10 @@
     <Name>Change the timestamp</Name>
     <Description>Change the date and time that the specified file or directory was created, last accessed, or last modified.</Description>
   </en>
+  <fr>
+    <Name>Modifier l'horodatage</Name>
+    <Description>Modifier la date et l'heure de la création, dernier accès ou dernière modification du fichier ou du répertoire spécifié.</Description>
+  </fr>
   <ja>
     <Name>タイムスタンプの変更</Name>
     <Description>ファイルやフォルダの更新日時、作成日時、アクセス日時の変更</Description>

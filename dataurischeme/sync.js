@@ -2,7 +2,7 @@ const Addon_Id = "dataurischeme";
 const item = GetAddonElement(Addon_Id);
 
 Sync.DataURIScheme = {
-	strName: item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name),
+	sName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 
 	Exec: function (Ctrl, pt) {
 		const Selected = GetSelectedArray(Ctrl, pt, true).shift();
@@ -33,7 +33,7 @@ if (item.getAttribute("MenuExec")) {
 	Sync.DataURIScheme.nPos = GetNum(item.getAttribute("MenuPos"));
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
 		if (item && item.IsFileSystem && !item.IsFolder) {
-			api.InsertMenu(hMenu, Sync.DataURIScheme.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.DataURIScheme.strName);
+			api.InsertMenu(hMenu, Sync.DataURIScheme.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.DataURIScheme.sName);
 			ExtraMenuCommand[nPos] = Sync.DataURIScheme.Exec;
 		}
 		return nPos;

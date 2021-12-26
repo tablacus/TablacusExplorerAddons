@@ -113,7 +113,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 
 AddEvent("EmptyRecycleBin", Sync.VirtualRecycleBin.EmptyRecycleBin);
 
-Sync.VirtualRecycleBin.strName = item.getAttribute("MenuName") || GetText(GetAddonInfo(Addon_Id).Name);
+Sync.VirtualRecycleBin.strName = item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name;
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {

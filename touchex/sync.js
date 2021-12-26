@@ -1,22 +1,13 @@
-var Addon_Id = "touchex";
-
-var item = GetAddonElement(Addon_Id);
-if (!item.getAttribute("Set")) {
-	item.setAttribute("MenuExec", 1);
-	item.setAttribute("Menu", "Context");
-	item.setAttribute("MenuPos", 1);
-
-	item.setAttribute("KeyOn", "List");
-	item.setAttribute("MouseOn", "List");
-}
+const Addon_Id = "touchex";
+const item = GetAddonElement(Addon_Id);
 
 Sync.TouchEx = {
-	strName: GetText(item.getAttribute("MenuName") || "Change the timestamp...") || GetAddonInfo(Addon_Id).Name,
+	sName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name + "...",
 
 	Exec: function (Ctrl, pt) {
-		var Selected = (GetSelectedArray(Ctrl, pt, true)).shift();
+		const Selected = (GetSelectedArray(Ctrl, pt, true)).shift();
 		if (Selected && Selected.Count) {
-			var opt = api.CreateObject("Object");
+			const opt = api.CreateObject("Object");
 			opt.MainWindow = $;
 			opt.Selected = Selected;
 			opt.width = 320;
@@ -31,7 +22,7 @@ if (item.getAttribute("MenuExec")) {
 	Sync.TouchEx.nPos = GetNum(item.getAttribute("MenuPos"));
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
 		if (item && item.IsFileSystem) {
-			api.InsertMenu(hMenu, Sync.TouchEx.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.TouchEx.strName);
+			api.InsertMenu(hMenu, Sync.TouchEx.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.TouchEx.sName);
 			ExtraMenuCommand[nPos] = Sync.TouchEx.Exec;
 		}
 		return nPos;
