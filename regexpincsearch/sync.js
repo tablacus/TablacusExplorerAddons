@@ -8,52 +8,16 @@ Sync.RegExpIncSearch = {
 	Search: function () {
 		if (Sync.RegExpIncSearch.str && Sync.RegExpIncSearch.str != '^') {
 			if (!Sync.RegExpIncSearch.SearchEx(0, 1)) {
-				let re, nIndex;
 				const FV = te.Ctrl(CTRL_FV);
-				const hwnd = FV.hwndList;
-				if (hwnd) {
-					nIndex = -1;
-					const c0 = Sync.RegExpIncSearch.str.charAt(0);
-					const lvfi = api.Memory("LVFINDINFO");
-					lvfi.flags = LVFI_STRING;
-					lvfi.psz = c0;
-					for (let i = 0; i < Sync.RegExpIncSearch.str.length; i++) {
-						const c = Sync.RegExpIncSearch.str.charAt(i);
-						if (c != c0) {
-							nIndex = -1;
-							break;
-						}
-						const n = api.SendMessage(hwnd, LVM_FINDITEM, nIndex, lvfi);
-						nIndex = n >= 0 ? n : api.SendMessage(hwnd, LVM_FINDITEM, -1, lvfi);
-					}
-					re = nIndex >= 0;
-				} else {
-					Sync.RegExpIncSearch.nIndex = -1;
-					const c = Sync.RegExpIncSearch.str.charAt(0);
-					re = new RegExp("^" + c, "i");
-					if (Sync.RegExpIncSearch.SearchEx(0, 1, re)) {
-						const nBase = Sync.RegExpIncSearch.nIndex;
-						for (let i = 1; i < Sync.RegExpIncSearch.str.length; i++) {
-							if (c != Sync.RegExpIncSearch.str.charAt(i)) {
-								re = null;
-								break;
-							}
-							if (!Sync.RegExpIncSearch.SearchEx(Sync.RegExpIncSearch.nIndex + 1, 1, re)) {
-								Sync.RegExpIncSearch.nIndex = nBase;
-							}
-						}
-						nIndex = Sync.RegExpIncSearch.nIndex;
-					} else {
-						re = null;
-					}
-				}
-				if (re) {
-					FV.SelectItem(nIndex, SVSI_SELECT | SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_DESELECTOTHERS);
-				} else {
+				const s = api.sprintf(999, Sync.RegExpIncSearch.ErrMsg, Sync.RegExpIncSearch.str);
+				ShowStatusText(FV, s);
+				if (FV.ItemCount(SVGIO_SELECTION)) {
 					FV.SelectItem(-1, SVSI_DESELECTOTHERS);
-					ShowStatusText(te.Ctrl(CTRL_FV), api.sprintf(999, Sync.RegExpIncSearch.ErrMsg, Sync.RegExpIncSearch.str));
-					Sync.RegExpIncSearch.Clear(true);
+					setTimeout(function () {
+						ShowStatusText(FV, s);
+					}, 500);
 				}
+				Sync.RegExpIncSearch.Clear(true);
 			}
 		}
 	},

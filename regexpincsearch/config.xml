@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.08</Version>
-    <MinVersion>2021.2.18</MinVersion>
-    <pubDate>Sun, 21 Feb 2021 00:00:00 GMT</pubDate>
+    <Version>1.09</Version>
+    <MinVersion>2021.12.18</MinVersion>
+    <pubDate>Mon, 27 Dec 2021 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,9 @@
     <Name>Regular Expression/Migemo Incremental Search</Name>
     <Description>Regular Expression/Migemo Incremental Search</Description>
   </en>
+  <fr>
+    <Name>Expression régulière/Recherche incrémentale Migemo</Name>
+  </fr>
   <ja>
     <Name>正規表現/Migemo インクリメンタルサーチ</Name>
   </ja>

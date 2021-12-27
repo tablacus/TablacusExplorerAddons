@@ -70,7 +70,6 @@ BrowseType = async function () {
 			ar.push(f.GetDetailsOf(null, i));
 		}
 		ar = await Promise.all(ar);
-		ar.sort();
 		for (let i = 0; i < ar.length; ++i) {
 			if (ar[i]) {
 				db[ar[i]] = 1;

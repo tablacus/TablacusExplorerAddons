@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
+    <Version>1.04</Version>
     <MinVersion>2021.12.18</MinVersion>
-    <pubDate>Wed, 22 Dec 2021 00:00:00 GMT</pubDate>
+    <pubDate>Mon, 27 Dec 2021 00:00:00 GMT</pubDate>
     <Options>Common:4:4</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,7 +14,14 @@
     <Name>Extension tooltips changer</Name>
     <Description>Change tooltips with file extension</Description>
   </en>
+  <fr>
+    <Name>Adaptateur d'infobulles par extension</Name>
+    <Description>Adapter les infobulles en fonction de l'extension du fichier.</Description>
+  </fr>
   <ja>
     <Name>拡張子でツールチップを変更</Name>
   </ja>
+  <zh>
+    <Name>依副檔名設定提示</Name>
+  </zh>
 </TablacusExplorer>
