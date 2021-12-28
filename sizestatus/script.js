@@ -42,29 +42,33 @@ if (window.Addon == 1) {
 			if (SessionId == Addons.SizeStatus.SessionId[Id]) {
 				return;
 			}
+			let TFS;
 			if (nCount || Addons.SizeStatus.FileSize) {
+				if (nCount) {
+					TFS =  await FV.TotalFileSize;
+				}
 				let Selected = nCount ? await FV.SelectedItems() : await FV.Items();
 				if (window.chrome) {
 					Selected = await api.CreateObject("SafeArray", Selected);
 				}
-				bYet = !Selected.length;
-				const TFS = await FV.TotalFileSize;
 				for (let i = Selected.length; i-- > 0;) {
 					const Item = Selected[i];
-					if (TFS && await IsFolderEx(Item)) {
-						if (Addons.SizeStatus.Folder) {
-							const n = await TFS[await api.GetDisplayNameOf(Item, SHGDN_FORPARSING)];
-							if (n == null) {
-								FV.Notify(0, Item, null, 1);
-								bYet = true;
-							} else if (n === "") {
-								bYet = true;
+					if (await IsFolderEx(Item)) {
+						if (TFS) {
+							if (Addons.SizeStatus.Folder) {
+								const n = await TFS[await api.GetDisplayNameOf(Item, SHGDN_FORPARSING)];
+								if (n == null) {
+									FV.Notify(0, Item, null, 1);
+									bYet = 1;
+								} else if (n === "") {
+									bYet = 2;
+								} else {
+									nSize += n;
+								}
 							} else {
-								nSize += n;
+								bYet = 3;
+								Addons.SizeStatus.SessionId[Id] = SessionId;
 							}
-						} else {
-							bYet = true;
-							Addons.SizeStatus.SessionId[Id] = SessionId;
 						}
 						continue;
 					}
@@ -74,15 +78,17 @@ if (window.Addon == 1) {
 					Addons.SizeStatus.SessionId[Id] = SessionId;
 				}
 			} else {
-				bYet = true;
+				bYet = 4;
 				Addons.SizeStatus.SessionId[Id] = SessionId;
 			}
-			if (bYet && (Addons.SizeStatus.Folder || !nSize)) {
-				s = " ";
-				if (Addons.SizeStatus.FreeSpace && !await pid.Unavailable) {
-					const oDrive = await api.GetDiskFreeSpaceEx(await pid.Path);
-					if (oDrive) {
-						s = Addons.SizeStatus.strFreeSpace + await api.StrFormatByteSize(await oDrive.FreeBytesOfAvailable);
+			if (Addons.SizeStatus.Folder || !nSize) {
+				if (bYet || (!nSize && !TFS) || !await FV.ItemCount(SVGIO_ALLVIEW)) {
+					s = " ";
+					if (Addons.SizeStatus.FreeSpace && !await pid.Unavailable) {
+						const oDrive = await api.GetDiskFreeSpaceEx(await pid.Path);
+						if (oDrive) {
+							s = Addons.SizeStatus.strFreeSpace + await api.StrFormatByteSize(await oDrive.FreeBytesOfAvailable);
+						}
 					}
 				}
 			}
@@ -96,7 +102,10 @@ if (window.Addon == 1) {
 
 	AddEvent("StatusText", Addons.SizeStatus.Exec);
 
-	AddEvent("NavigateComplete", Addons.SizeStatus.Exec);
+	AddEvent("NavigateComplete", async function (Ctrl) {
+		delete Addons.SizeStatus.SessionId[await Ctrl.Parent.Id];
+		Addons.SizeStatus.Exec(Ctrl);
+	});
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {
 		delete Addons.SizeStatus.SessionId[Id];

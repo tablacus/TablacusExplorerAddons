@@ -28,8 +28,8 @@ AddEvent("ToolTip", function (Ctrl, Index) {
 					} else {
 						v = Ctrl.TotalFileSize[api.GetDisplayNameOf(Item, SHGDN_FORPARSING)] || Item.ExtendedProperty("Size");
 					}
-					const v2 = api.PSFormatForDisplay(s, v, PDFF_DEFAULT)
-					dt.push(n + ": " + (v2 || v || ""));
+					const v2 = api.PSFormatForDisplay(s, v, PDFF_DEFAULT);
+					dt.push(n + ": " + (v2 || (/string|number|date/.test(typeof v) ? v : "")));
 				} else {
 					dt.push(Item.ExtendedProperty(ar[i]) || ar[i]);
 				}
