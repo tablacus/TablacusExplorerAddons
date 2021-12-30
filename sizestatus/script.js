@@ -30,15 +30,19 @@ if (window.Addon == 1) {
 			if (!el) {
 				return E_FAIL;
 			}
-			let s = "";
-			let bYet = false;
-			let nSize = 0;
+			const nAll = await FV.ItemCount(SVGIO_ALLVIEW);
+			if ("number" !== typeof nAll) {
+				return;
+			}
 			const pid = await FV.FolderItem;
 			if (!pid) {
 				return;
 			}
+			let s = "";
+			let bYet = false;
+			let nSize = 0;
 			const nCount = await FV.ItemCount(SVGIO_SELECTION);
-			const SessionId = await api.HashData(nCount ? await ExtractMacro(te, '%Selected%') : BuildPath(await pid.Path, await FV.FilterView), 8);
+			const SessionId = await api.HashData(nCount ? await ExtractMacro(te, '%Selected%') : BuildPath(await pid.Path, await FV.FilterView, nAll.toString()), 8);
 			if (SessionId == Addons.SizeStatus.SessionId[Id]) {
 				return;
 			}
@@ -82,7 +86,7 @@ if (window.Addon == 1) {
 				Addons.SizeStatus.SessionId[Id] = SessionId;
 			}
 			if (Addons.SizeStatus.Folder || !nSize) {
-				if (bYet || (!nSize && !TFS) || !await FV.ItemCount(SVGIO_ALLVIEW)) {
+				if (bYet || (!nSize && !TFS) || !nAll) {
 					s = " ";
 					if (Addons.SizeStatus.FreeSpace && !await pid.Unavailable) {
 						const oDrive = await api.GetDiskFreeSpaceEx(await pid.Path);
@@ -101,11 +105,6 @@ if (window.Addon == 1) {
 	});
 
 	AddEvent("StatusText", Addons.SizeStatus.Exec);
-
-	AddEvent("NavigateComplete", async function (Ctrl) {
-		delete Addons.SizeStatus.SessionId[await Ctrl.Parent.Id];
-		Addons.SizeStatus.Exec(Ctrl);
-	});
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {
 		delete Addons.SizeStatus.SessionId[Id];
