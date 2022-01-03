@@ -174,23 +174,20 @@ AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 });
 
 AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
-	let Items;
-	switch (Verb + 1) {
-		case CommandID_PASTE:
-			const Target = ContextMenu.Items();
-			if (Target.Count) {
-				Items = api.OleGetClipboard()
-				if (Sync.MultiProcess.FO(null, Items, Target.Item(0), MK_LBUTTON, null, Items.pdwEffect, 2)) {
-					return S_OK;
-				}
-			}
-			break;
-		case CommandID_DELETE:
-			Items = ContextMenu.Items();
-			if (Sync.MultiProcess.FO(null, Items, null, MK_LBUTTON, null, Items.pdwEffect, 1)) {
+	const sVerb = ContextMenu.GetCommandString(Verb, GCS_VERB);
+	if (SameText(sVerb, "paste")) {
+		const Target = ContextMenu.Items();
+		if (Target.Count) {
+			const Items = api.OleGetClipboard()
+			if (Sync.MultiProcess.FO(null, Items, Target.Item(0), MK_LBUTTON, null, Items.pdwEffect, 2)) {
 				return S_OK;
 			}
-			break;
+		}
+	} else if (SameText(sVerb, "delete")) {
+		const Items = ContextMenu.Items();
+		if (Sync.MultiProcess.FO(null, Items, null, MK_LBUTTON, null, Items.pdwEffect, 1)) {
+			return S_OK;
+		}
 	}
 });
 

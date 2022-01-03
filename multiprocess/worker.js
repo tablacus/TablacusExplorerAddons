@@ -90,10 +90,10 @@ if (MainWindow.Exchange) {
 				api.DropTarget(ex.Dest).Drop(ex.Items, ex.grfKeyState, ex.pt, ex.dwEffect);
 				break;
 			case 1:
-				InvokeCommand(CommandID_DELETE, ex.Items);
+				InvokeCommandMP("delete", ex.Items);
 				break;
 			case 2:
-				InvokeCommand(CommandID_PASTE, ex.Dest);
+				InvokeCommandMP("paste", ex.Dest);
 				break;
 		}
 		if (ex.State.length) {
@@ -105,12 +105,12 @@ if (MainWindow.Exchange) {
 	return "wait";
 }
 
-function InvokeCommand(nCommand, Items) {
+function InvokeCommandMP(sCommand, Items) {
 	const ContextMenu = api.ContextMenu(Items);
 	if (ContextMenu) {
 		const hMenu = api.CreatePopupMenu();
 		ContextMenu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, CMF_DEFAULTONLY);
-		ContextMenu.InvokeCommand(0, te.hwnd, nCommand - 1, null, null, SW_SHOWNORMAL, null, null);
+		ContextMenu.InvokeCommand(0, te.hwnd, sCommand, null, null, SW_SHOWNORMAL, null, null);
 		api.DestroyMenu(hMenu);
 	}
 }
