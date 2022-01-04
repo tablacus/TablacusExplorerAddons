@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.08</Version>
-    <MinVersion>2021.5.8</MinVersion>
-    <pubDate>Tue, 11 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.09</Version>
+    <MinVersion>2022.1.3</MinVersion>
+    <pubDate>Tue, 04 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,7,8,9:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,9 @@
     <Name>Color labels</Name>
     <Description>Color labels</Description>
   </en>
+  <fr>
+    <Name>Colorier les étiquettes</Name>
+  </fr>
   <ja>
     <Name>カラーラベル</Name>
   </ja>

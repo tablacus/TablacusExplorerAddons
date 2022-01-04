@@ -58,6 +58,21 @@ Sync.ColorLabels = {
 
 	ClearSync: function () {
 		Sync.ColorLabels.SyncItem = {};
+	},
+
+	RemoveEx: function (Item) {
+		const cl = Sync.ColorLabels.Get(Item);
+		if (cl != null) {
+			setTimeout(Sync.ColorLabels.RemoveEx2, 9999, api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING) || "", cl);
+		}
+	},
+
+	RemoveEx2: function (path, cl) {
+		if (cl == Sync.ColorLabels.Get(path)) {
+			if (!IsExists(path)) {
+				Sync.ColorLabels.Set(path);
+			}
+		}
 	}
 
 }
@@ -113,12 +128,12 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 			if (s) {
 				Sync.ColorLabels.Set(pidls[1], s);
 			}
-			Sync.ColorLabels.Set(pidls[0]);
+			Sync.ColorLabels.RemoveEx(pidls[0]);
 		}
 		if (pidls.lEvent & SHCNE_DELETE) {
 			let name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			Sync.ColorLabels.SetSync(name, Sync.ColorLabels.Get(pidls[0]));
-			Sync.ColorLabels.Set(pidls[0]);
+			Sync.ColorLabels.RemoveEx(pidls[0]);
 		}
 		if (pidls.lEvent & SHCNE_CREATE) {
 			let name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));

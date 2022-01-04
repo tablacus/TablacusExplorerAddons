@@ -19,14 +19,14 @@ Sync.Badge = {
 	tid: {},
 
 	IsHandle: function (Ctrl) {
-		return Sync.Badge.RE.exec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+		return Sync.Badge.RE.exec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 	},
 
 	SetX: function (Ctrl, pt, s) {
 		const Selected = GetSelectedArray(Ctrl, pt, true).shift();
 		if (Selected && Selected.Count) {
 			for (let i = Selected.Count; i-- > 0;) {
-				Sync.Badge.Set(api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), s);
+				Sync.Badge.Set(api.GetDisplayNameOf(Selected.Item(i), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), s);
 			}
 		}
 	},
@@ -95,14 +95,14 @@ Sync.Badge = {
 		const Selected = GetSelectedArray(Ctrl, pt, true).shift();
 		if (Selected && Selected.Count == 1) {
 			try {
-				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				if (path) {
 					const Badge = Sync.Badge.DB.Get(path);
 					InputDialog("badge:" + Badge + "\n" + path, path, function (s) {
 						if ("string" === typeof s) {
 							api.SHParseDisplayName(function (pid, s, path, Badge) {
 								if (pid) {
-									s = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+									s = api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 								}
 								if (s != path) {
 									if (Sync.Badge.DB.Get(s)) {
@@ -183,7 +183,7 @@ Sync.Badge = {
 
 	Remove: function (Item) {
 		let s = "";
-		const path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+		const path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		if (path) {
 			s = Sync.Badge.DB.Get(path);
 			Sync.Badge.Set(path, 0);
@@ -191,10 +191,32 @@ Sync.Badge = {
 		return s;
 	},
 
+	RemoveEx: function (Item) {
+		let s = "";
+		const path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+		if (path) {
+			if (s = Sync.Badge.DB.Get(path)) {
+				setTimeout(Sync.Badge.RemoveEx2, 9999, Item, s);
+			}
+		}
+		return s;
+	},
+
+	RemoveEx2: function (Item, s) {
+		const path = api.GetDisplayNameOf(Item, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+		if (path) {
+			if (s == Sync.Badge.DB.Get(path)) {
+				if (!IsExists(path)) {
+					Sync.Badge.Remove(Item);
+				}
+			}
+		}
+	},
+
 	Set: function (path, s) {
 		if (path) {
 			if ("string" !== typeof path) {
-				path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			}
 			Sync.Badge.DB.Set(path, GetNum(s));
 		}
@@ -223,7 +245,7 @@ Sync.Badge = {
 		for (let i in cFV) {
 			const FV = cFV[i];
 			if (FV.hwnd) {
-				const path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				const path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				if (Sync.Badge.Redraw[path]) {
 					api.InvalidateRect(FV.hwndList || FV.hwndView || FV.hwnd, null, false);
 				}
@@ -283,7 +305,7 @@ Sync.Badge = {
 		if (/\-?Tablacus\.Badge$/i.test(Name)) {
 			CustomSort(Ctrl, Sync.Badge.strName, /^\-/.test(Name),
 				function (pid, FV) {
-					return Sync.Badge.DB.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+					return Sync.Badge.DB.Get(api.GetDisplayNameOf(pid, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 				},
 				function (a, b) {
 					return api.StrCmpLogical(b[1], a[1]);
@@ -373,7 +395,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 	}
 	if (!Verb || Verb == CommandID_STORE - 1) {
 		if (ContextMenu.Items.Count >= 1) {
-			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			if (Sync.Badge.IsHandle(path)) {
 				const FV = te.Ctrl(CTRL_FV);
 				FV.Navigate(path, SBSP_SAMEBROWSER);
@@ -459,12 +481,12 @@ AddEvent("Menus", function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, N
 AddEvent("ChangeNotify", function (Ctrl, pidls) {
 	if (Sync.Badge.DB) {
 		if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
-			let name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-			let s = Sync.Badge.Remove(pidls[0]);
+			let name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+			let s = Sync.Badge.RemoveEx(pidls[0]);
 			if (s) {
 				Sync.Badge.SetSync(name, s);
 			} else {
-				name = GetFileName(api.GetDisplayNameOf(pidls[1], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+				name = GetFileName(api.GetDisplayNameOf(pidls[1], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 				s = Sync.Badge.SyncItem[name];
 			}
 			if (s) {
@@ -472,11 +494,11 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 			}
 		}
 		if (pidls.lEvent & (SHCNE_DELETE | SHCNE_RMDIR)) {
-			const name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
-			Sync.Badge.SetSync(name, Sync.Badge.Remove(pidls[0]));
+			const name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
+			Sync.Badge.SetSync(name, Sync.Badge.RemoveEx(pidls[0]));
 		}
 		if (pidls.lEvent & (SHCNE_CREATE | SHCNE_MKDIR)) {
-			const name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+			const name = GetFileName(api.GetDisplayNameOf(pidls[0], SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 			const Item = Sync.Badge.SyncItem[name];
 			if (Item) {
 				Sync.Badge.Set(pidls[0], Item);
@@ -570,7 +592,7 @@ if (item.getAttribute("MenuExec")) {
 			mii.hSubMenu = api.CreatePopupMenu();
 			mii.dwTypeData = Sync.Badge.strName;
 			if (Selected && Selected.Count) {
-				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+				const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				if (path) {
 					const mii2 = api.Memory("MENUITEMINFO");
 					mii2.fMask = MIIM_STRING | MIIM_SUBMENU;
