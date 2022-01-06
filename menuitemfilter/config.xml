@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2021.9.5</MinVersion>
-    <pubDate>Tue, 12 Oct 2021 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2022.1.4</MinVersion>
+    <pubDate>Thu, 06 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:4:4</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,9 @@
     <Name>Menu item filter</Name>
     <Description>Menu item filter</Description>
   </en>
+  <fr>
+    <Name>Filtre d'élément de menu</Name>
+  </fr>
   <ja>
     <Name>メニュー項目フィルタ</Name>
   </ja>

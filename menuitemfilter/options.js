@@ -1,5 +1,5 @@
 
-const ar = (await ReadTextFile("addons\\" + Addon_Id + "\\options.html")).split("<!--toolbar-->");
+let ar = (await ReadTextFile(BuildPath("addons", Addon_Id, "options.html"))).split("<!--toolbar-->");
 SetTabContents(4, "", ar[0]);
 document.getElementById("toolbar").innerHTML = ar[1];
 
@@ -21,7 +21,6 @@ Add = function (ar) {
 	const tr = table.insertRow();
 	tr.innerHTML = s.join("");
 	Set(nRows, ar);
-	return tr;
 }
 
 Get = function (i) {
@@ -105,35 +104,20 @@ Remove = async function () {
 SaveLocation = async function () {
 	const table = document.getElementById("T");
 	const nRows = table.rows.length;
-//	try {
-		const ado = await api.CreateObject("ads");
-		ado.CharSet = "utf-8";
-		await ado.Open();
-		const empty = ["", "", ""].join("\t");
-		const empty2 = ["", "*", ""].join("\t");
-		for (let i = 0; i < nRows; i++) {
-			const s = Get(i);
-			if (s != empty && s != empty2) {
-				await ado.WriteText(s + "\r\n");
-			}
+	const ar = [];
+	const empty = ["", "", ""].join("\t");
+	const empty2 = ["", "*", ""].join("\t");
+	for (let i = 0; i < nRows; i++) {
+		const s = Get(i);
+		if (s != empty && s != empty2) {
+			ar.push(s);
 		}
-		await ado.SaveToFile(BuildPath(await te.Data.DataFolder, "config", Addon_Id + ".tsv"), adSaveCreateOverWrite);
-		ado.Close();
-//	} catch (e) { }
+	}
+	await WriteTextFile(BuildPath(ui_.DataFolder, "config", Addon_Id + ".tsv"), ar.join("\r\n"));
 }
 
-try {
-	const ado = await api.CreateObject("ads");
-	ado.CharSet = "utf-8";
-	ado.Open();
-	ado.LoadFromFile(BuildPath(await te.Data.DataFolder, "config", Addon_Id + ".tsv"));
-	let o;
-	while (!await ado.EOS) {
-		o = Add(await ado.ReadText(adReadLine));
-	}
-	ado.Close();
-	if (o) {
-		ApplyLang(o);
-	}
-} catch (e) { }
-
+ar = (await ReadTextFile(BuildPath(ui_.DataFolder, "config", Addon_Id + ".tsv"))).split(/\r?\n/);
+let s;
+while (s = ar.shift()) {
+	Add(s);
+}
