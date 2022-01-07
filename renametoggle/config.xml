@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.35</Version>
+    <Version>1.00</Version>
     <MinVersion>2021.1.5</MinVersion>
     <pubDate>Fri, 07 Jan 2022 00:00:00 GMT</pubDate>
-    <Options>Default</Options>
+    <Options>Common:8:8</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Folder settings</Name>
-    <Description>Folder settings</Description>
+    <Name>Toggle selection while inline renaming</Name>
+    <Description>Toggle selection while inline renaming</Description>
   </en>
-  <fr>
-    <Name>Paramètres d'affichage des dossiers</Name>
-  </fr>
   <ja>
-    <Name>フォルダ設定</Name>
+    <Name>名前の変更中に選択範囲を変更</Name>
   </ja>
-  <zh>
-    <Name>資料夾檢視規則</Name>
-  </zh>
 </TablacusExplorer>

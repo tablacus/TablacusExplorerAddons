@@ -1,5 +1,5 @@
 const Addon_Id = "multiprocess";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (!GetNum(item.getAttribute("Delete")) && !GetNum(item.getAttribute("Paste")) && !GetNum(item.getAttribute("Drop")) && !GetNum(item.getAttribute("RDrop"))) {
 	item.setAttribute("Delete", 1);
 	item.setAttribute("Paste", 1);

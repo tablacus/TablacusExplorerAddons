@@ -1,6 +1,5 @@
 const AddonName = "FolderSettings";
 const Addon_Id = AddonName.toLowerCase();
-const g_Chg = { List: false };
 RunEventUI("BrowserCreatedEx");
 
 GetCurrentSettingFS = async function (bForce) {
@@ -41,18 +40,16 @@ LoadFS = async function () {
 		}
 		g_x.List = document.E.List;
 		g_x.List.length = 0;
-		let xml = await te.Data["xml" + AddonName];
-		if (!xml) {
-			xml = await OpenXml(AddonName + ".xml", false, false);
-			te.Data["xml" + AddonName] = xml;
-		}
+		const xml = await OpenXmlUI(AddonName + ".xml", false, false);
 		if (xml) {
-			const items = await GetXmlItems(await xml.getElementsByTagName("Item"));
+			document.E.Format.selectedIndex = xml.documentElement.getAttribute("Format") || 0;
+			document.E.XP.checked = xml.documentElement.getAttribute("XP") || false;
+			const items = xml.getElementsByTagName("Item");
 			let i = items.length;
 			g_x.List.length = i;
 			while (--i >= 0) {
 				const item = items[i];
-				SetData(g_x.List[i], [item.Filter, item.text, item.Type]);
+				SetData(g_x.List[i], [item.getAttribute("Filter"), item.text || item.textContent, item.getAttribute("Type")]);
 			}
 		}
 		EnableSelectTag(g_x.List);
@@ -61,20 +58,19 @@ LoadFS = async function () {
 
 SaveFS = async function () {
 	if (g_Chg.List) {
-		const xml = await CreateXml();
-		const root = await xml.createElement("TablacusExplorer");
+		const xml = CreateXmlUI(true);
+		xml.documentElement.setAttribute("Format", document.E.Format.selectedIndex);
+		xml.documentElement.setAttribute("XP", document.E.XP.checked);
 		const o = document.E.List;
 		for (let i = 0; i < o.length; i++) {
-			const item = await xml.createElement("Item");
+			const item = xml.createElement("Item");
 			const a = o[i].value.split(g_sep);
-			await item.setAttribute("Filter", a[0]);
-			item.text = a[1];
-			await item.setAttribute("Type", a[2]);
-			await root.appendChild(item);
+			item.setAttribute("Filter", a[0]);
+			SetXmlText(item, a[1]);
+			item.setAttribute("Type", a[2]);
+			xml.documentElement.appendChild(item);
 		}
-		await xml.appendChild(root);
-		await SaveXmlEx(Addon_Id + ".xml", xml);
-		te.Data["xml" + AddonName] = xml;
+		await SaveXmlExUI(Addon_Id + ".xml", xml);
 	}
 }
 
@@ -126,15 +122,12 @@ Init1 = async function () {
 	document.body.style.visibility = "";
 	if (await dialogArguments.GetCurrent) {
 		let bNew = true;
-		const FV = await te.Ctrl(CTRL_FV);
+		const FV = te.Ctrl(CTRL_FV);
 		let path = await api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 		const path2 = await api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-		if (path != path2) {
-			path += ";" + path2;
-		}
 		for (let i = g_x.List.length; i-- > 0;) {
 			const a = g_x.List[i].value.split(g_sep);
-			if (await api.PathMatchSpec(a[0], path)) {
+			if (SameText(a[0], path) || SameText(a[0], path2)) {
 				g_x.List.selectedIndex = i;
 				await EditFS();
 				bNew = false;
