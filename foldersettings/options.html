@@ -55,12 +55,12 @@
     <table width="100%">
       <tr>
         <td style="width: 100%; white-space: nowrap">
-          <select name="Format" class="translate">
+          <select name="Format" class="translate" onchange="ChangeX('List')">
             <option value="0">Normal</option>
             <option value="1">Path</option>
             <option value="2">Key</option>
           </select>
-          <label><input type="checkbox" name="XP" id="_XP">XP</label>
+          <label><input type="checkbox" name="XP" id="_XP" onchange="ChangeX('List')">XP</label>
           <input type="button" value="Get the current folder view" onclick="GetCurrentSettingFS()">
         </td>
         <td style="white-space: nowrap">

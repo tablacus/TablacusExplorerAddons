@@ -42,8 +42,8 @@ LoadFS = async function () {
 		g_x.List.length = 0;
 		const xml = await OpenXmlUI(AddonName + ".xml", false, false);
 		if (xml) {
-			document.E.Format.selectedIndex = xml.documentElement.getAttribute("Format") || 0;
-			document.E.XP.checked = xml.documentElement.getAttribute("XP") || false;
+			document.E.Format.selectedIndex = GetNum(xml.documentElement.getAttribute("Format"));
+			document.E.XP.checked = GetNum(xml.documentElement.getAttribute("XP"));
 			const items = xml.getElementsByTagName("Item");
 			let i = items.length;
 			g_x.List.length = i;
@@ -60,7 +60,7 @@ SaveFS = async function () {
 	if (g_Chg.List) {
 		const xml = CreateXmlUI(true);
 		xml.documentElement.setAttribute("Format", document.E.Format.selectedIndex);
-		xml.documentElement.setAttribute("XP", document.E.XP.checked);
+		xml.documentElement.setAttribute("XP", GetNum(document.E.XP.checked));
 		const o = document.E.List;
 		for (let i = 0; i < o.length; i++) {
 			const item = xml.createElement("Item");
