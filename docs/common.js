@@ -3,6 +3,8 @@ var Lang = (navigator.userLanguage || navigator.language || navigator.browserLan
 if (Lang != "zh-cn") {
 	Lang = Lang.replace(/\-.*/,"");
 }
+var ui_ = {};
+var g_nSort = 0;
 
 te = {
 	Data: {
@@ -275,4 +277,19 @@ FindKeyEvent = function (o)
 		return false;
 	}
 	g_nFind = 0;
+}
+
+function SetTable(table, td) {
+	if (table) {
+		while (table.rows.length > 0) {
+			table.deleteRow(0);
+		}
+		for (let i = 0; i < td.length; ++i) {
+			const tr = table.insertRow(i);
+			const td1 = tr.insertCell(0);
+			td[i].shift();
+			td1.innerHTML = td[i].join("");
+			ApplyLang(td1);
+		}
+	}
 }
