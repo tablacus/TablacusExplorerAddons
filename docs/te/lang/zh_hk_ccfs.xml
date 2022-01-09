@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<resources><!-- For TE 21.12.21 -->
+﻿<!-- TE 22.1.7 -->
+<resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
 	<text s="Mouse">滑鼠</text>
@@ -59,7 +59,7 @@
 	<text s="&amp;Options...">選項(&amp;O)...</text>
 	<text s="Enable">啟用</text>
 	<text s="Enabled">已啟用</text>
-	<text s="is required.">為必要的。</text>
+	<text s="%s is required.">需要%s</text>
 	<text s="@wmploc.dll,-29080">排序&#160;</text>
 	<text s="Up">上移</text>
 	<text s="Down">下移</text>
@@ -222,7 +222,6 @@
 	<text s="Get %s...">取得 %s...</text>
 	<text s="Download">下載</text>
 	<text s="Long press">長按</text>
-	<text s="Timeout">時限</text>
 	<text s="Gesture priority plus">調整滑鼠操控</text>
 	<text s="Main menu button">主選單按鈕</text>
 	<text s="Menu item filter">屏蔽選單項目</text>
@@ -312,15 +311,15 @@
 	<text s="Move content up">移出資料夾內容</text>
 	<text s="Rename dialog box...">重新命名對話框...</text>
 	<text s="Rename dialog plus...">完整重新命名...</text>
+	<text s="Toggle selection while inline renaming">輪選命名部份</text>
 	<text s="Fix selection on renaming">修正重新命名</text>
 	<text s="Escape Unicode">換走萬國碼字元</text>
 	<text s="Unescape Unicode">換回萬國碼字元</text>
 	<text s="Empty recycle bin">清理資源回收筒</text>
 	<text s="Virtual recycle bin">虛擬資源回收筒</text>
 	<text s="Properties">檔案資訊</text>
-	<text s="Change file attributes">變更屬性</text>
+	<text s="Change file attributes...">變更屬性...</text>
 	<text s="Attributes...">屬性...</text>
-	<text s="Read Only">唯讀</text>
 	<text s="Archive">保存</text>
 	<text s="Change the Date modified...">變更修改日期...</text>
 	<text s="Change the timestamp...">變更時間戳記...</text>
@@ -428,8 +427,6 @@
 	<text s="NETSCAPE Bookmarks">網景格式書籤</text>
 	<text s="Folder list menu">文字格式選單</text>
 	<text s="Multi process">多程序檔案操作</text>
-	<text s="Time over">完成後播放音訊，如果處理時間超過</text>
-	<text s="Audio">音訊</text>
 	<text s="Different drive only">僅用於跨磁碟移動</text>
 	<text s="Overwrite all">覆蓋同名檔</text>
 	<text s="No Overwrite">略過同名檔</text>
