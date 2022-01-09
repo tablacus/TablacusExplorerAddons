@@ -90,6 +90,6 @@ function IconPacksList1(s, Id, info, json) {
 		ui_.strInstall = GetText("Download");
 	}
 	s.push('<a href="./te/iconpacks/', Id, '/', Id, "_", info.version.replace(/\./, ""), '.zip" class="btn btn-primary" style="float: right;">', ui_.strInstall, '</a>');
-	s.push("<br>", new Date(info.pubDate).toLocaleString());
+	s.push("<br>", new Date(info.pubDate).toLocaleDateString());
 	return true;
 }

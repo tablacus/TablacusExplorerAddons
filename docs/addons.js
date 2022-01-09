@@ -96,7 +96,7 @@ function ArrangeAddon(xml, Id, td, ts)
 		var pubDate = "";
 		var dt = new Date(info.pubDate);
 		if (info.pubDate) {
-			pubDate = dt.toLocaleString() + " ";
+			pubDate = dt.toLocaleDateString() + " ";
 		}
 		s.push('<b>' + info.Name + "</b>&nbsp;" + info.Version + "&nbsp;" + info.Creator + "<br>" + info.Description + "<br>");
 		if (info.Details) {
@@ -151,7 +151,7 @@ function Search(xml)
 	if (q == "") {
 		return true;
 	}
-	var Tags = ["General", "en", "ja"];
+	var Tags = ["General", "en", "fr", "ja", "zh"];
 
 	for (var k = 0; k < Tags.length; k++) {
 		var items = xml.getElementsByTagName(Tags[k]);
@@ -175,84 +175,9 @@ function Search(xml)
 	return false;
 }
 
-function Install(o)
-{
-	if (!confirmYN(GetText("Do you want to install it now?"))) {
-		return;
-	}
-	document.body.style.cursor = "wait";
-	setTimeout(function ()
-	{
-		var Id = o.title.replace(/_.*$/, "");
-		var file = o.title.replace(/\./, "") + '.zip';
-		var temp = fso.BuildPath(wsh.ExpandEnvironmentStrings("%TEMP%"), "tablacus");
-		DeleteItem(temp);
-		CreateFolder(temp);
-		var xml = createHttpRequest();
-		xml.open("GET", location.href + Id + '/' + file, false);
-		xml.send(null);
-
-		var zipfile = fso.BuildPath(temp, file);
-		var ado = te.CreateObject("Adodb.Stream");
-		ado.Type = adTypeBinary;
-		ado.Open();
-		ado.Write(xml.responseBody);
-		ado.SaveToFile(zipfile, adSaveCreateOverWrite);
-
-		if (MainWindow.Extract(zipfile, temp) != S_OK) {
-			document.body.style.cursor = "auto";
-			return;
-		}
-
-		var configxml = fso.BuildPath(temp, Id) + "\\config.xml";
-		var nDog = 300;
-		while (!fso.FileExists(configxml)) {
-			if (wsh.Popup(GetText("Please wait."), 1, "Tablacus Explorer", MB_ICONINFORMATION | MB_OKCANCEL) == IDCANCEL || nDog-- == 0) {
-				document.body.style.cursor = "auto";
-				return;
-			}
-		}
-		var oSrc = sha.NameSpace(fso.BuildPath(temp, Id));
-		if (oSrc) {
-			var Items = oSrc.Items();
-			var dist = fso.BuildPath(fso.GetParentFolderName(api.GetModuleFileName(null)), "addons\\" + Id);
-			CreateFolder(dist);
-			var oDist = sha.NameSpace(dist);
-			if (oDist) {
-				oDist.MoveHere(Items, FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR);
-				o.disabled = true;
-				o.value = GetText("Installed");
-				o = document.getElementById('_' + Id);
-				if (o) {
-					o.style.display = "none";
-				}
-				wsh.Popup(GetText("Completed."), 0, "Tablacus Explorer", MB_ICONINFORMATION);
-				UpdateAddon(Id, o);
-			}
-		}
-		document.body.style.cursor = "auto";
-	}, 100);
-}
-
-function Resize()
-{
-	var w = document.documentElement.clientWidth || document.body.clientWidth;
-	var h = document.documentElement.clientHeight || document.body.clientHeight;
-	var o = document.getElementById("panel0");
-	if (o) {
-		var p = GetPos(o, false, true);
-		h -= p.y;
-		o.style.width = w + 'px';
-		o.style.width = 2 * w - o.offsetWidth + "px";
-		o.style.height = h + 'px';
-		o.style.height = 2 * h - o.offsetHeight + "px";
-	}
-}
-
 AddEventEx(window, "load", function ()
 {
 	ApplyLang(document);
-	Resize();
 	if (location.search.match(/q=(.*)/)) {
 		document.F.q.value = decodeURI(RegExp.$1);
 	}
@@ -273,5 +198,3 @@ AddEventEx(window, "load", function ()
 		xhr.send(null);
 	} catch (e) {}
 });
-
-AddEventEx(window, "resize", Resize);
