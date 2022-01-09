@@ -44,6 +44,9 @@ function LangPacksList(xhr) {
 		if (JsonSearch(info, q)) {
 			const tm = new Date(info.pubDate).toLocaleDateString();
 			const ar = [tm, '<b style="font-size: 1.3em">', info.name, " / ", info.en, "</b><br>", info.author, '<a href="', urlLang, n, '" class="btn btn-primary" style="float: right">', bt, '</a><br>', tm];
+			if (info.size) {
+				ar.push("<br>", (info.size / 1024).toFixed(1), " KB");
+			}
 			td.push(ar);
 		}
 	}

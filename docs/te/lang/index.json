@@ -3,120 +3,140 @@
     "name": "Deutsch",
     "en": "German",
     "author": "LightTempler",
-    "pubDate": "Wed, 5 Jan 2022 12:13:14 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:13:14 GMT",
+    "size": 8756
   },
   "el.xml": {
     "name": "Ελληνικά",
     "en": "Greek",
     "author": "geogeo.gr",
-    "pubDate": "Wed, 5 Jan 2022 12:13:02 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:13:02 GMT",
+    "size": 11565
   },
   "el_geogeo_gr.xml": {
     "name": "Ελληνικά",
     "en": "Greek",
     "author": "geogeo.gr",
-    "pubDate": "Sat, 11 Dec 2021 12:10:36 GMT"
+    "pubDate": "Sat, 11 Dec 2021 12:10:36 GMT",
+    "size": 15992
   },
   "en.xml": {
     "name": "English",
     "en": "English",
     "author": "Gaku",
-    "pubDate": "Wed, 5 Jan 2022 12:10:26 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:10:26 GMT",
+    "size": 8287
   },
   "es.xml": {
     "name": "Español",
     "en": "Spanish",
     "author": "Patricio M. Ros",
-    "pubDate": "Wed, 5 Jan 2022 12:10:50 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:10:50 GMT",
+    "size": 8976
   },
   "es_la.xml": {
     "name": "Español latino",
     "en": "Spanish la",
     "author": "DasinFlameS",
-    "pubDate": "Wed, 5 Jan 2022 12:10:58 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:10:58 GMT",
+    "size": 9060
   },
   "fr.xml": {
     "name": "Français",
     "en": "French",
     "author": "Olivier Wuillemin/bufferUnderrun/Lidgeu",
-    "pubDate": "Wed, 5 Jan 2022 12:11:12 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:11:12 GMT",
+    "size": 9124
   },
   "fr_lidgeu.xml": {
     "name": "Français",
     "en": "French",
     "author": "Pierre le Lidgeu",
-    "pubDate": "Fri, 24 Dec 2021 17:47:50 GMT"
+    "pubDate": "Fri, 24 Dec 2021 17:47:50 GMT",
+    "size": 53197
   },
   "it.xml": {
     "name": "Italiano",
     "en": "Italian",
     "author": "Michele Pezza",
-    "pubDate": "Wed, 5 Jan 2022 12:11:22 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:11:22 GMT",
+    "size": 8813
   },
   "ja.xml": {
     "name": "日本語",
     "en": "Japanese",
     "author": "Gaku",
-    "pubDate": "Wed, 5 Jan 2022 12:14:30 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:14:30 GMT",
+    "size": 9467
   },
   "nl.xml": {
     "name": "Nederlands",
     "en": "Nederlands",
     "author": "mlohnen",
-    "pubDate": "Wed, 5 Jan 2022 12:12:56 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:12:56 GMT",
+    "size": 8623
   },
   "pl.xml": {
     "name": "Polski",
     "en": "Polish",
     "author": "Matthaiks",
-    "pubDate": "Wed, 5 Jan 2022 12:12:48 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:12:48 GMT",
+    "size": 8839
   },
   "pt.xml": {
     "name": "Português",
     "en": "Portuguese",
     "author": "Sérgio Nova",
-    "pubDate": "Wed, 5 Jan 2022 12:12:42 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:12:42 GMT",
+    "size": 8793
   },
   "ru.xml": {
     "name": "русский",
     "en": "Russian",
     "author": "Hunter User",
-    "pubDate": "Wed, 5 Jan 2022 12:12:34 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:12:34 GMT",
+    "size": 10979
   },
   "sr_lat.xml": {
     "name": "Srpski",
     "en": "Serbian",
     "author": "Ognjen Ninić",
-    "pubDate": "Wed, 5 Jan 2022 12:12:24 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:12:24 GMT",
+    "size": 9082
   },
   "tr.xml": {
     "name": "Türkçe",
     "en": "Turkish",
     "author": "Ferhat Aydin",
-    "pubDate": "Wed, 5 Jan 2022 12:12:18 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:12:18 GMT",
+    "size": 8774
   },
   "uk.xml": {
     "name": "українська",
     "en": "Ukrainian",
     "author": "Henaro aka Ironwool",
-    "pubDate": "Wed, 5 Jan 2022 12:12:10 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:12:10 GMT",
+    "size": 10918
   },
   "zh.xml": {
     "name": "正體中文",
     "en": "Traditional Chinese",
     "author": "風逸蘭",
-    "pubDate": "Wed, 5 Jan 2022 12:12:02 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:12:02 GMT",
+    "size": 8596
   },
   "zh_cn.xml": {
     "name": "简体中文",
     "en": "Simplified Chinese",
     "author": "秋寥",
-    "pubDate": "Wed, 5 Jan 2022 12:11:48 GMT"
+    "pubDate": "Wed, 5 Jan 2022 12:11:48 GMT",
+    "size": 8538
   },
   "zh_hk_ccfs.xml": {
     "name": "正體中文",
     "en": "Traditional Chinese",
     "author": "ccfs",
-    "pubDate": "Thu, 23 Dec 2021 02:46:00 GMT"
+    "pubDate": "Thu, 23 Dec 2021 02:46:00 GMT",
+    "size": 30026
   }
 }

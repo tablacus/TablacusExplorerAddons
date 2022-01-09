@@ -22,7 +22,8 @@ for (var i = 0; i < Items.Count; ++i) {
 			ar.push('    "name": "', res[3], '",\n');
 			ar.push('    "en": "', res[2], '",\n');
 			ar.push('    "author": "', res[1], '",\n');
-			ar.push('    "pubDate": "', pubDate, '"\n');
+			ar.push('    "pubDate": "', pubDate, '",\n');
+			ar.push('    "size": ', Items.Item(i).Size, '\n');
 			ar.push('  }');
 			ar.push(',\n');
 		}
