@@ -1,15 +1,117 @@
 ﻿{
+  "de.xml": {
+    "name": "Deutsch",
+    "en": "German",
+    "author": "LightTempler",
+    "pubDate": "Wed, 5 Jan 2022 12:13:14 GMT"
+  },
+  "el.xml": {
+    "name": "Ελληνικά",
+    "en": "Greek",
+    "author": "geogeo.gr",
+    "pubDate": "Wed, 5 Jan 2022 12:13:02 GMT"
+  },
   "el_geogeo_gr.xml": {
     "name": "Ελληνικά",
     "en": "Greek",
     "author": "geogeo.gr",
     "pubDate": "Sat, 11 Dec 2021 12:10:36 GMT"
   },
+  "en.xml": {
+    "name": "English",
+    "en": "English",
+    "author": "Gaku",
+    "pubDate": "Wed, 5 Jan 2022 12:10:26 GMT"
+  },
+  "es.xml": {
+    "name": "Español",
+    "en": "Spanish",
+    "author": "Patricio M. Ros",
+    "pubDate": "Wed, 5 Jan 2022 12:10:50 GMT"
+  },
+  "es_la.xml": {
+    "name": "Español latino",
+    "en": "Spanish la",
+    "author": "DasinFlameS",
+    "pubDate": "Wed, 5 Jan 2022 12:10:58 GMT"
+  },
+  "fr.xml": {
+    "name": "Français",
+    "en": "French",
+    "author": "Olivier Wuillemin/bufferUnderrun/Lidgeu",
+    "pubDate": "Wed, 5 Jan 2022 12:11:12 GMT"
+  },
   "fr_lidgeu.xml": {
     "name": "Français",
     "en": "French",
     "author": "Pierre le Lidgeu",
     "pubDate": "Fri, 24 Dec 2021 17:47:50 GMT"
+  },
+  "it.xml": {
+    "name": "Italiano",
+    "en": "Italian",
+    "author": "Michele Pezza",
+    "pubDate": "Wed, 5 Jan 2022 12:11:22 GMT"
+  },
+  "ja.xml": {
+    "name": "日本語",
+    "en": "Japanese",
+    "author": "Gaku",
+    "pubDate": "Wed, 5 Jan 2022 12:14:30 GMT"
+  },
+  "nl.xml": {
+    "name": "Nederlands",
+    "en": "Nederlands",
+    "author": "mlohnen",
+    "pubDate": "Wed, 5 Jan 2022 12:12:56 GMT"
+  },
+  "pl.xml": {
+    "name": "Polski",
+    "en": "Polish",
+    "author": "Matthaiks",
+    "pubDate": "Wed, 5 Jan 2022 12:12:48 GMT"
+  },
+  "pt.xml": {
+    "name": "Português",
+    "en": "Portuguese",
+    "author": "Sérgio Nova",
+    "pubDate": "Wed, 5 Jan 2022 12:12:42 GMT"
+  },
+  "ru.xml": {
+    "name": "русский",
+    "en": "Russian",
+    "author": "Hunter User",
+    "pubDate": "Wed, 5 Jan 2022 12:12:34 GMT"
+  },
+  "sr_lat.xml": {
+    "name": "Srpski",
+    "en": "Serbian",
+    "author": "Ognjen Ninić",
+    "pubDate": "Wed, 5 Jan 2022 12:12:24 GMT"
+  },
+  "tr.xml": {
+    "name": "Türkçe",
+    "en": "Turkish",
+    "author": "Ferhat Aydin",
+    "pubDate": "Wed, 5 Jan 2022 12:12:18 GMT"
+  },
+  "uk.xml": {
+    "name": "українська",
+    "en": "Ukrainian",
+    "author": "Henaro aka Ironwool",
+    "pubDate": "Wed, 5 Jan 2022 12:12:10 GMT"
+  },
+  "zh.xml": {
+    "name": "正體中文",
+    "en": "Traditional Chinese",
+    "author": "風逸蘭",
+    "pubDate": "Wed, 5 Jan 2022 12:12:02 GMT"
+  },
+  "zh_cn.xml": {
+    "name": "简体中文",
+    "en": "Simplified Chinese",
+    "author": "秋寥",
+    "pubDate": "Wed, 5 Jan 2022 12:11:48 GMT"
   },
   "zh_hk_ccfs.xml": {
     "name": "正體中文",
