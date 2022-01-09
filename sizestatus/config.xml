@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.25</Version>
-    <MinVersion>2021.12.18</MinVersion>
-    <pubDate>Thu, 30 Dec 2021 00:00:00 GMT</pubDate>
+    <Version>1.26</Version>
+    <MinVersion>2022.1.7</MinVersion>
+    <pubDate>Sun, 09 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,6:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,10 @@
     <Name>Size status bar</Name>
     <Description>Show size status</Description>
   </en>
+  <fr>
+    <Name>Barre d'état de la taille</Name>
+    <Description>Afficher l'état de la taille</Description>
+  </fr>
   <ja>
     <Name>サイズ情報バー</Name>
     <Description>バーにサイズ情報を表示します。</Description>

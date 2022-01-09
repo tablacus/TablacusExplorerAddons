@@ -51,7 +51,7 @@ if (window.Addon == 1) {
 				if (nCount) {
 					TFS =  await FV.TotalFileSize;
 				}
-				let Selected = nCount ? await FV.SelectedItems() : await FV.Items();
+				let Selected = (nCount || Addons.SizeStatus.FreeSpace) ? await FV.SelectedItems() : await FV.Items();
 				if (window.chrome) {
 					Selected = await api.CreateObject("SafeArray", Selected);
 				}
