@@ -28,7 +28,7 @@ Sync.MainMenuButton = {
 			mii.fMask = MIIM_STRING | MIIM_SUBMENU;
 			mii.dwTypeData = GetText(Sync.MainMenuButton.strMenus[i]);
 			mii.hSubMenu = api.CreatePopupMenu();
-			api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, api.sprintf(99, '\tJScript\tSync.MainMenuButton.OpenSubMenu("%llx",%d,"%llx")', hMenu, i, mii.hSubMenu));
+			api.InsertMenu(mii.hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, api.sprintf(99, '\tJScript\tSync.MainMenuButton.OpenSubMenu("%llx", %d)', mii.hSubMenu, i));
 			api.InsertMenuItem(hMenu, 0, true, mii);
 		}
 		Ctrl = Ctrl || te;
@@ -99,8 +99,8 @@ Sync.MainMenuButton = {
 		return S_OK;
 	},
 
-	OpenSubMenu: function (hMenu, wID, hSubMenu) {
-		hMenu = api.sscanf(hSubMenu, "%llx");
+	OpenSubMenu: function (hSubMenu, wID) {
+		const hMenu = api.sscanf(hSubMenu, "%llx");
 		const Name = Sync.MainMenuButton.strMenus[wID].replace("&", "");
 		let items = null;
 		const menus = teMenuGetElementsByTagName(Name);
@@ -133,6 +133,8 @@ Sync.MainMenuButton = {
 				}
 			}
 		}
+		api.DeleteMenu(hMenu, -2, MF_BYCOMMAND);
+		AdjustMenuBreak(hMenu);
 	}
 };
 

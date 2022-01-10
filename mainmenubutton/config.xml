@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.15</Version>
-    <MinVersion>2021.5.2</MinVersion>
-    <pubDate>Tue, 04 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.16</Version>
+    <MinVersion>2022.1.7</MinVersion>
+    <pubDate>Mon, 10 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:5,6,8,9:5</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,9 @@
     <Name>Main menu button</Name>
     <Description>Main menu button</Description>
   </en>
+  <fr>
+    <Name>Bouton de menu principal</Name>
+  </fr>
   <ja>
     <Name>メインメニューボタン</Name>
   </ja>

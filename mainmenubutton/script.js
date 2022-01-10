@@ -1,6 +1,6 @@
 const Addon_Id = "mainmenubutton";
 const Default = "ToolBar1Left";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("KeyOn", "List");
 	item.setAttribute("MouseOn", "List");
