@@ -107,7 +107,7 @@ Sync.MainMenuButton = {
 		if (menus && menus.length) {
 			items = menus[0].getElementsByTagName("Item");
 			const nBase = GetNum(menus[0].getAttribute("Base"));
-			Sync.MainMenuButton.ContextMenu.push(GetBaseMenuEx(hMenu, nBase, Sync.MainMenuButton.FV, Sync.MainMenuButton.Selected, Sync.MainMenuButton.uCMF, 0, Sync.MainMenuButton.SelItem, Sync.MainMenuButton.ContextMenu));
+			GetBaseMenuEx(hMenu, nBase, Sync.MainMenuButton.FV, Sync.MainMenuButton.Selected, Sync.MainMenuButton.uCMF, 0, Sync.MainMenuButton.SelItem, Sync.MainMenuButton.ContextMenu);
 			if (nBase < 5) {
 				AdjustMenuBreak(hMenu);
 			}
