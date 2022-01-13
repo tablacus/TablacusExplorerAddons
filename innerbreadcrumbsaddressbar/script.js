@@ -1,5 +1,5 @@
 const Addon_Id = "innerbreadcrumbsaddressbar";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Menu", "Edit");
 	item.setAttribute("MenuPos", -1);
@@ -219,14 +219,16 @@ if (window.Addon == 1) {
 			}
 		},
 
-		Popup: async function (o, n, Id) {
+		Popup: function (o, n, Id) {
 			delete Addons.InnerBreadcrumbsAddressBar.tidPopup;
 			if (Addons.InnerBreadcrumbsAddressBar.CanPopup(o, Id)) {
-				Common.InnerBreadcrumbsAddressBar.Item = await GetRect(o);
-				await Addons.InnerBreadcrumbsAddressBar.SavePos(Id);
-				const pt = GetPos(o, 9);
-				MouseOver(o);
-				FolderMenu.Invoke(await FolderMenu.Open(await Sync.InnerBreadcrumbsAddressBar.GetPath(n, Id), pt.x, pt.y, null, 1));
+				setTimeout(async function (o, n, Id) {
+					Common.InnerBreadcrumbsAddressBar.Item = await GetRect(o);
+					await Addons.InnerBreadcrumbsAddressBar.SavePos(Id);
+					const pt = GetPos(o, 9);
+					MouseOver(o);
+					FolderMenu.Invoke(await FolderMenu.Open(await Sync.InnerBreadcrumbsAddressBar.GetPath(n, Id), pt.x, pt.y, null, 1));
+				}, 9, o, n, Id);
 			}
 		},
 
@@ -358,7 +360,7 @@ if (window.Addon == 1) {
 	AddEvent("PanelCreated", function (Ctrl, Id) {
 		const z = screen.deviceYDPI / 96;
 		let s = (Addons.InnerBreadcrumbsAddressBar.path2[Id] || "").replace(/"/, "");
-		s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbsbuttons_', Id, '"  class="breadcrumb" style="position: absolute; top: 1px; left: 1px; padding-left: ', 16 * z + 4, 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Click1(event,', Id, ')" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Popup1(event); return false" onmousedown="return Addons.InnerBreadcrumbsAddressBar.Down1(event,', Id, ')" onmouseup="Addons.InnerBreadcrumbsAddressBar.Up1(event); return false"></div><input id="breadcrumbsaddressbar_', Id, '" type="text" value="', s, '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(event, this,', Id, ')" oninput="AdjustAutocomplete(this.value)" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ContextMenu(this)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(', Id, ')" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(', Id, ')" onresize="Addons.InnerBreadcrumbsAddressBar.Resize(', Id, ')" style="width: 100%; vertical-align: middle; padding-left: ', 16 * z + 4, 'px; padding-right: 16px;"><div class="breadcrumb"><div id="breadcrumbsselect_', Id, '" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, ', Id, ')">', BUTTONS.dropdown, '</div></div>'];
+		s = ['<div style="position: relative; overflow: hidden"><div id="breadcrumbsbuttons_', Id, '" class="breadcrumb" style="position: absolute; top: 1px; left: 1px; padding-left: ', 16 * z + 4, 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Click1(event,', Id, ')" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.Popup1(event); return false" onmousedown="return Addons.InnerBreadcrumbsAddressBar.Down1(event,', Id, ')" onmouseup="Addons.InnerBreadcrumbsAddressBar.Up1(event); return false"></div><input id="breadcrumbsaddressbar_', Id, '" type="text" value="', s, '" autocomplate="on" list="AddressList" onkeydown="return Addons.InnerBreadcrumbsAddressBar.KeyDown(event, this,', Id, ')" oninput="AdjustAutocomplete(this.value)" oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ContextMenu(this)" onfocus="Addons.InnerBreadcrumbsAddressBar.Focus(', Id, ')" onblur="Addons.InnerBreadcrumbsAddressBar.Blur(', Id, ')" onresize="Addons.InnerBreadcrumbsAddressBar.Resize(', Id, ')" style="width: 100%; vertical-align: middle; padding-left: ', 16 * z + 4, 'px; padding-right: 16px;"><div class="breadcrumb"><div id="breadcrumbsselect_', Id, '" class="button" style="position: absolute; top: 1px" onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.InnerBreadcrumbsAddressBar.Popup3(this, ', Id, ')">', BUTTONS.dropdown, '</div></div>'];
 		s.push('<img id="breadcrumbsaddr_img_', Id, '"');
 		s.push(' onclick="return Addons.InnerBreadcrumbsAddressBar.ExecEx(', Id, ');"');
 		s.push(' oncontextmenu="Addons.InnerBreadcrumbsAddressBar.ExecEx(', Id, '); return false;"');

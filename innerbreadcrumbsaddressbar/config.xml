@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.49</Version>
-    <MinVersion>2021.5.7</MinVersion>
-    <pubDate>Sat, 08 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.50</Version>
+    <MinVersion>2022.1.12</MinVersion>
+    <pubDate>Thu, 13 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,10 @@
     <Name>Inner breadcrumbs address bar</Name>
     <Description>Breadcrumbs address bar for each pane</Description>
   </en>
+  <fr>
+    <Name>Intérieur : Barre d'adresse en fil d'Ariane</Name>
+    <Description>Placer la barre d'adresse de chaque panneau &quot;en fil d'Ariane&quot;.</Description>
+  </fr>
   <ja>
     <Name>Inner パンくずリストアドレスバー</Name>
     <Description>ペイン毎のパンくずリストアドレスバー</Description>
