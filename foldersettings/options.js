@@ -6,7 +6,7 @@ Addons.FolderSettings = {
 	GetCurrentSetting: async function (bForce) {
 		const nFormat = GetNum(document.E.Format.value);
 		const FV = await te.Ctrl(CTRL_FV);
-		const r = await Promise.all([api.GetDisplayNameOf(FV, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING | SHGDN_FORPARSINGEX), FV.CurrentViewMode, FV.IconSize, FV.GetColumns(nFormat), FV.GroupBy, FV.SortColumns, FV.SortColumn, FV.GetSortColumn(nFormat)]);
+		const r = await Promise.all([api.GetDisplayNameOf(FV, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING), FV.CurrentViewMode, FV.IconSize, FV.GetColumns(nFormat), FV.GroupBy, FV.SortColumns, FV.SortColumn, FV.GetSortColumn(nFormat)]);
 		const path = r[0];
 		let s = ["FV.SetViewMode(", r[1], ",", r[2], ");\n"];
 		s.push("FV.Columns='", r[3], "';\n");
@@ -72,6 +72,9 @@ Addons.FolderSettings = {
 				xml.documentElement.appendChild(item);
 			}
 			await SaveXmlExUI(Addon_Id + ".xml", xml);
+			if (await MainWindow.Sync.FolderSettings) {
+				MainWindow.Sync.FolderSettings.xml = null;
+			}
 		}
 	},
 
@@ -117,8 +120,8 @@ Addons.FolderSettings = {
 		if (await dialogArguments.GetCurrent) {
 			let bNew = true;
 			const FV = te.Ctrl(CTRL_FV);
-			let path = await api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-			const path2 = await api.GetDisplayNameOf(FV, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+			let path = await api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+			const path2 = await api.GetDisplayNameOf(FV, SHGDN_FORPARSING);
 			for (let i = g_x.List.length; i-- > 0;) {
 				const a = g_x.List[i].value.split(g_sep);
 				if (SameText(a[0], path) || SameText(a[0], path2)) {

@@ -27,6 +27,14 @@ Sync.QuickMenu = {
 		};
 		api.SetMenuDefaultItem(hMenu, -1, true);
 		api.InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, wID++, GetText("Default"));
+	},
+
+	HasSystemFolder: function (Items) {
+		for (let i = Items.Count; --i >= 0;) {
+			if (!/^[A-Z]:\\|^\\\\\w/i.test(Items.Item(i).Path)) {
+				return true;
+			}
+		}
 	}
 }
 
@@ -42,6 +50,9 @@ AddEvent("GetBaseMenuEx", function (hMenu, nBase, FV, Selected, uCMF, Mode, SelI
 			let Items = Selected;
 			if (!Items || !Items.Count) {
 				Items = SelItem;
+			}
+			if (Sync.QuickMenu.HasSystemFolder(Items)) {
+				return;
 			}
 			ContextMenu = arContextMenu && arContextMenu[1] || api.ContextMenu(Items, FV);
 			if (ContextMenu) {
@@ -81,6 +92,9 @@ AddEvent("GetBaseMenuEx", function (hMenu, nBase, FV, Selected, uCMF, Mode, SelI
 				Items = SelItem;
 			}
 			if (Items && Items.Count) {
+				if (Sync.QuickMenu.HasSystemFolder(Items)) {
+					return;
+				}
 				ContextMenu = arContextMenu && arContextMenu[1] || api.ContextMenu(Items, FV);
 				if (ContextMenu) {
 					if (arContextMenu) {

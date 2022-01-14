@@ -1,9 +1,11 @@
-te.Data.xmlFolderSettings = OpenXml("foldersettings.xml", false, true);
 Sync.FolderSettings = {
 	Get: function (Ctrl) {
-		const items = te.Data.xmlFolderSettings.getElementsByTagName("Item");
-		const path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
-		let path2 = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+		if (!Sync.FolderSettings.xml) {
+			Sync.FolderSettings.xml = OpenXml("foldersettings.xml", false, true).getElementsByTagName("Item");
+		}
+		const items = Sync.FolderSettings.xml;
+		const path = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+		let path2 = api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSING);
 		if (path == path2) {
 			path2 = "";
 		}
@@ -21,21 +23,22 @@ AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 	if (Ctrl.Data && !Ctrl.Data.Setting) {
 		const item = Sync.FolderSettings.Get(Ctrl);
 		if (item) {
-			let res = /SetViewMode\(\s*(\-?\d)\s*,\s*(\d+)/i.exec(item.text);
+			const s = item.text || item.textContent;
+			let res = /SetViewMode\(\s*(\-?\d)\s*,\s*(\d+)/i.exec(s);
 			if (res) {
 				fs.ViewMode = res[1];
 				fs.ImageSize = res[2];
 			}
-			res = /CurrentViewMode\(\s*(\-?\d)\s*,\s*(\d+)/i.exec(item.text);
+			res = /CurrentViewMode\(\s*(\-?\d)\s*,\s*(\d+)/i.exec(s);
 			if (res) {
 				fs.ViewMode = res[1];
 				fs.ImageSize = res[2];
 			}
-			res = /CurrentViewMode\s*=\s*(\-?\d)/i.exec(item.text);
+			res = /CurrentViewMode\s*=\s*(\-?\d)/i.exec(s);
 			if (res) {
 				fs.ViewMode = res[1];
 			}
-			res = /IconSize\s*=\s*(\d+)/i.exec(item.text);
+			res = /IconSize\s*=\s*(\d+)/i.exec(s);
 			if (res) {
 				fs.ImageSize = res[1];
 			}
@@ -47,8 +50,11 @@ AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 AddEvent("NavigateComplete", function (Ctrl) {
 	if (Ctrl.Data && Ctrl.Data.Setting === 'FolderSettings') {
 		const item = Sync.FolderSettings.Get(Ctrl);
-		if (item && item.text) {
-			Exec(Ctrl, item.text, item.getAttribute("Type"), null);
+		if (item) {
+			const s = item.text || item.textContent;
+			if (s) {
+				Exec(Ctrl, s, item.getAttribute("Type"), null);
+			}
 		}
 	}
 });

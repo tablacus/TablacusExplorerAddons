@@ -2,7 +2,6 @@
 CreateXml = function () {
 	var xml = new ActiveXObject("Msxml2.DOMDocument");
 	xml.async = false;
-	xml.appendChild(xml.createProcessingInstruction("xml", 'version="1.0" encoding="UTF-8"'));
 	return xml;
 }
 
