@@ -1,24 +1,22 @@
-var Addon_Id = "color";
+const Addon_Id = "color";
 
-var item = GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 Sync.Color = {
 	clrText: GetWinColor(item.getAttribute("Default") || GetWebColor(GetSysColor(COLOR_WINDOWTEXT))),
 	clrBk: GetWinColor(item.getAttribute("Background") || GetWebColor(GetSysColor(COLOR_WINDOW))),
 	clrLine: GetWinColor(item.getAttribute("Lines") || 0x777777),
 
-	Arrange: function (Ctrl)
-	{
-		var FV = GetFolderView(Ctrl);
+	Arrange: function (Ctrl) {
+		const FV = GetFolderView(Ctrl);
 		if (FV) {
-			var hwnd = FV.hwndList;
+			const hwnd = FV.hwndList;
 			if (hwnd) {
 				Sync.Color.SetColor(FV, hwnd);
 			}
 		}
 	},
 
-	SetColor: function (FV, hwnd)
-	{
+	SetColor: function (FV, hwnd) {
 		api.SendMessage(hwnd, LVM_SETTEXTCOLOR, 0, Sync.Color.clrText);
 		api.SendMessage(hwnd, LVM_SETBKCOLOR, 0, Sync.Color.clrBk);
 		api.SendMessage(hwnd, LVM_SETTEXTBKCOLOR, 0, Sync.Color.clrBk);
@@ -29,8 +27,7 @@ Sync.Color = {
 		}
 	},
 
-	SetTV: function (hwnd)
-	{
+	SetTV: function (hwnd) {
 		if (hwnd) {
 			api.SendMessage(hwnd, TVM_SETTEXTCOLOR, 0, Sync.Color.clrText);
 			api.SendMessage(hwnd, TVM_SETBKCOLOR, 0, Sync.Color.clrBk);
@@ -38,10 +35,9 @@ Sync.Color = {
 		}
 	},
 
-	Init: function ()
-	{
-		var cFV = te.Ctrls(CTRL_FV);
-		for (var i in cFV) {
+	Init: function () {
+		const cFV = te.Ctrls(CTRL_FV);
+		for (let i in cFV) {
 			this.Arrange(cFV[i]);
 		}
 	}
@@ -53,8 +49,7 @@ AddEvent("NavigateComplete", Sync.Color.Arrange);
 
 AddEvent("ChangeView", Sync.Color.Arrange);
 
-AddEvent("Create", function (Ctrl)
-{
+AddEvent("Create", function (Ctrl) {
 	if (Ctrl.Type <= CTRL_EB) {
 		Sync.Color.Arrange(Ctrl);
 		return;
@@ -64,8 +59,7 @@ AddEvent("Create", function (Ctrl)
 	}
 });
 
-AddEventId("AddonDisabledEx", "color", function ()
-{
+AddEventId("AddonDisabledEx", "color", function () {
 	SetSysColor(COLOR_WINDOWTEXT, void 0);
 	SetSysColor(COLOR_WINDOW, void 0);
 	Sync.Color.clrText = GetSysColor(COLOR_WINDOWTEXT);
@@ -77,7 +71,7 @@ AddEventId("AddonDisabledEx", "color", function ()
 SetSysColor(COLOR_WINDOWTEXT, Sync.Color.clrText);
 SetSysColor(COLOR_WINDOW, Sync.Color.clrBk);
 
-var clSelected = item.getAttribute("Selected");
+const clSelected = item.getAttribute("Selected");
 
 if (clSelected) {
 	AddEvent("Load", function () {
@@ -85,9 +79,9 @@ if (clSelected) {
 		AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes) {
 			if (Ctrl.Type == CTRL_SB) {
 				if (pid) {
-					var uState = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, LVIS_SELECTED);
+					const uState = api.SendMessage(Ctrl.hwndList, LVM_GETITEMSTATE, nmcd.dwItemSpec, LVIS_SELECTED);
 					if (uState & LVIS_SELECTED || nmcd.uItemState & CDIS_HOT) {
-						var rc = api.Memory("RECT");
+						const rc = api.Memory("RECT");
 						rc.left = LVIR_SELECTBOUNDS;
 						api.SendMessage(Ctrl.hwndList, LVM_GETITEMRECT, nmcd.dwItemSpec, rc);
 						rc.right -= 2;
@@ -97,7 +91,7 @@ if (clSelected) {
 				}
 			} else if (Ctrl.Type == CTRL_TV) {
 				if (nmcd.uItemState & CDIS_SELECTED) {
-					var cl = Sync.Color.clSelected;
+					let cl = Sync.Color.clSelected;
 					vcd.clrTextBk = cl;
 					api.SetDCBrushColor(nmcd.hdc, cl);
 					api.FillRect(nmcd.hdc, nmcd.rc, api.GetStockObject(DC_BRUSH));

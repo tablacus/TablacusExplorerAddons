@@ -1,9 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2020.10.30</MinVersion>
-    <pubDate>Thu, 05 Nov 2020 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2021.1.14</MinVersion>
+    <pubDate>Sat, 15 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,8 +13,15 @@
     <Name>Notepad alternative</Name>
     <Description>Replace Notepad with another application.</Description>
   </en>
+  <fr>
+    <Name>Remplacer Notepad</Name>
+    <Description>Remplacer Notepad par un autre éditeur</Description>
+  </fr>
   <ja>
     <Name>メモ帳の置き換え</Name>
     <Description>メモ帳を別のアプリに置き換えます。</Description>
   </ja>
+  <zh>
+    <Name>記事本替代程式</Name>
+  </zh>
 </TablacusExplorer>

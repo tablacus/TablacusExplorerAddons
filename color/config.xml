@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.12</Version>
-    <MinVersion>2020.11.8</MinVersion>
-    <pubDate>Mon, 09 Nov 2020 00:00:00 GMT</pubDate>
+    <Version>1.13</Version>
+    <MinVersion>2021.1.14</MinVersion>
+    <pubDate>Sat, 15 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,9 @@
     <Name>Color</Name>
     <Description>Color settings of font and background.</Description>
   </en>
+  <fr>
+    <Name>Couleur</Name>
+  </fr>
   <ja>
     <Name>色</Name>
     <Description>文字とバックグラウンドの色の設定</Description>

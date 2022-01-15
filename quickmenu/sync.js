@@ -30,11 +30,16 @@ Sync.QuickMenu = {
 	},
 
 	HasSystemFolder: function (Items) {
-		for (let i = Items.Count; --i >= 0;) {
-			if (!/^[A-Z]:\\|^\\\\\w/i.test(Items.Item(i).Path)) {
-				return true;
+		let i = Items.Count;
+		if (i) {
+			while (--i >= 0) {
+				if (!/^[A-Z]:\\|^\\\\\w/i.test(Items.Item(i).Path)) {
+					return true;
+				}
 			}
+			return;
 		}
+		return !/^[A-Z]:\\|^\\\\\w/i.test(Items.Path);
 	}
 }
 

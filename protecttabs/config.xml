@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2021.5.8</MinVersion>
-    <pubDate>Tue, 11 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2021.1.14</MinVersion>
+    <pubDate>Sat, 15 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,7 +13,13 @@
     <Name>Protect tabs</Name>
     <Description>Protect tabs</Description>
   </en>
+  <fr>
+    <Name>Protéger les onglets</Name>
+  </fr>
   <ja>
     <Name>タブを保護</Name>
   </ja>
+  <zh>
+    <Name>保留分頁</Name>
+  </zh>
 </TablacusExplorer>
