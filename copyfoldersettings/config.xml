@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
-    <MinVersion>2021.11.1</MinVersion>
-    <pubDate>Mon, 20 Dec 2021 00:00:00 GMT</pubDate>
+    <Version>1.02</Version>
+    <MinVersion>2022.1.12</MinVersion>
+    <pubDate>Sun, 16 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,7,8,9:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,8 +13,15 @@
     <Name>Copy folder settings</Name>
     <Description>Copy the script for the current folder settings to the clipboard.</Description>
   </en>
+  <fr>
+    <Name>Copier les paramètres d&apos;affichage des dossiers</Name>
+    <Description>Copier dans le presse-papiers la configuration des paramètres d&apos;affichage du dossier actuel.</Description>
+  </fr>
   <ja>
     <Name>フォルダ設定をコピー</Name>
     <Description>現在のフォルダ設定のスクリプトをクリップボードにコピーします。</Description>
   </ja>
+  <zh>
+    <Name>複製資料夾檢視</Name>
+  </zh>
 </TablacusExplorer>

@@ -19,6 +19,10 @@ Sync.RecentlyClosedTabs = {
 					mii.fMask = MIIM_STRING | MIIM_ID | MIIM_BITMAP;
 					AddMenuIconFolderItem(mii, Item);
 					s = Item.Path;
+					if (/^::{|^\d+$/.test(s)) {
+						Item.IsFolder;
+						s = Item.Path || s;
+					}
 					const nCount = Items.Count;
 					if (nCount > 1) {
 						s += "...\t" + nCount;

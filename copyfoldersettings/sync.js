@@ -2,11 +2,12 @@ const Addon_Id = "copyfoldersettings";
 const item = GetAddonElement(Addon_Id);
 
 Sync.CopyFolderSettings = {
-	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+	sName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 	nPos: GetNum(item.getAttribute("MenuPos")),
+	Format: GetNum(item.getAttribute("Format")),
 
 	Exec: function (Ctrl, pt) {
-		const FV = await te.Ctrl(CTRL_FV);
+		const FV = te.Ctrl(CTRL_FV);
 		const s = ["FV.SetViewMode(", FV.CurrentViewMode, ",", FV.IconSize, ");\n"];
 		s.push("FV.Columns='", FV.GetColumns(Sync.CopyFolderSettings.Format), "';\n");
 		s.push("FV.GroupBy='", FV.GroupBy, "';\n");
@@ -21,7 +22,7 @@ Sync.CopyFolderSettings = {
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, item) {
-		api.InsertMenu(hMenu, Sync.CopyFolderSettings.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.CopyFolderSettings.strName);
+		api.InsertMenu(hMenu, Sync.CopyFolderSettings.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.CopyFolderSettings.sName);
 		ExtraMenuCommand[nPos] = Sync.CopyFolderSettings.Exec;
 		return nPos;
 	});

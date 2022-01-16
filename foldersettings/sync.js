@@ -4,8 +4,8 @@ Sync.FolderSettings = {
 			Sync.FolderSettings.xml = OpenXml("foldersettings.xml", false, true).getElementsByTagName("Item");
 		}
 		const items = Sync.FolderSettings.xml;
-		const path = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
-		let path2 = api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSING);
+		const path = api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
+		let path2 = api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSING | SHGDN_FORPARSINGEX);
 		if (path == path2) {
 			path2 = "";
 		}

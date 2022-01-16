@@ -6,7 +6,7 @@ Addons.FolderSettings = {
 	GetCurrentSetting: async function (bForce) {
 		const nFormat = GetNum(document.E.Format.value);
 		const FV = await te.Ctrl(CTRL_FV);
-		const r = await Promise.all([api.GetDisplayNameOf(FV, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING), FV.CurrentViewMode, FV.IconSize, FV.GetColumns(nFormat), FV.GroupBy, FV.SortColumns, FV.SortColumn, FV.GetSortColumn(nFormat)]);
+		const r = await Promise.all([api.GetDisplayNameOf(FV, (nFormat ? 0 : SHGDN_FORADDRESSBAR) | SHGDN_FORPARSING | SHGDN_FORPARSINGEX), FV.CurrentViewMode, FV.IconSize, FV.GetColumns(nFormat), FV.GroupBy, FV.SortColumns, FV.SortColumn, FV.GetSortColumn(nFormat)]);
 		const path = r[0];
 		let s = ["FV.SetViewMode(", r[1], ",", r[2], ");\n"];
 		s.push("FV.Columns='", r[3], "';\n");
