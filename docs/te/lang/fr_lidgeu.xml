@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<resources><!--"Copy/paste" generated from fr.21.12.21.updated.ods on 21/12/24-->
+<resources><!--"Copy/paste" generated from fr.22.1.07.updated.ods on 22/01/16-->
 	<lang author="Pierre le Lidgeu" en="French">Français</lang>
 
 <text s="General">Général</text>
@@ -11,7 +11,7 @@
 <text s="Menus">Menus</text>
 <text s="Default">Par défaut</text>
 <text s="Context">Contexte</text>
-<text s="Background">Arrière-plan de l'inventaire</text>
+<text s="Background">Arrière-plan de l&apos;inventaire</text>
 <text s="Tabs">Onglets</text>
 <text s="Tree">Arbre</text>
 <text s="&amp;File">&amp;Fichier</text>
@@ -41,14 +41,14 @@
 <text s="Width">Largeur</text>
 
 <text s="Right bar">Barre de droite</text>
-<text s="Tool bar icon">Icône de barre d'outils</text>
-<text s="Internal Tool bar icon">Icône de barre d'outils intérieure</text>
+<text s="Tool bar icon">Icône de barre d&apos;outils</text>
+<text s="Internal Tool bar icon">Icône de barre d&apos;outils intérieure</text>
 <text s="Include hidden items">Inclure les éléments cachés</text>
 
 <text s="Input">Entrée</text>
 
 <text s="Initialize config folder">Initialiser le dossier de configuration</text>
-<text s="If you installed Tablacus Explorer to the Program Files directory, please press this button.">Si vous avez installé Tablacus Explorer dans le dossier 'Program Files", appuyez sur ce bouton.</text>
+<text s="If you installed Tablacus Explorer to the Program Files directory, please press this button.">Si vous avez installé Tablacus Explorer dans le dossier &apos;Program Files&apos;, appuyez sur ce bouton.</text>
 <text s="Gestures">Manipulations</text>
 <text s="None">Aucune</text>
 <text s="Wheel">Molette</text>
@@ -70,7 +70,7 @@
 <text s="Enable">Activer</text>
 <text s="Enabled">Activé</text>
 
-<text s="is required.">est nécessaire.</text>
+<text s="%s is required.">%s est nécessaire.</text>
 
 <text s="@wmploc.dll,-29080">Trier par</text>
 
@@ -81,7 +81,7 @@
 <text s="Down">Descendre</text>
 <text s="Install">Installer</text>
 <text s="Update available">Mise à jour disponible</text>
-<text s="Do you want to install it now?">Voulez-vous l'installer maintenant ?</text>
+<text s="Do you want to install it now?">Voulez-vous l&apos;installer maintenant ?</text>
 <text s="Installed">Installée</text>
 <text s="Completed.">Terminé.</text>
 <text s="Folder">Dossier</text>
@@ -111,7 +111,7 @@
 <text s="&amp;Save layout...">&amp;Enregistrer la disposition ...</text>
 <text s="Open with...">Ouvrir avec ...</text>
 <text s="Send to...">Envoyer vers ...</text>
-<text s="&amp;Close tab">&amp;Fermer l'onglet</text>
+<text s="&amp;Close tab">&amp;Fermer l&apos;onglet</text>
 <text s="Cl&amp;ose other tabs">F&amp;ermer les autres onglets</text>
 <text s="Close tabs on left">Fermer les onglets à gauche</text>
 <text s="Close tabs on right">Fermer les onglets à droite</text>
@@ -124,15 +124,15 @@
 <text s="Forward">Avancer</text>
 <text s="&amp;Refresh">&amp;Actualiser</text>
 <text s="Show frames">Afficher en mode Explorateur</text>
-<text s="Switch Explorer engine">Commuter le moteur d'Explorateur</text>
-<text s="Open in E&amp;xplorer">Ouvrir dans l'E&amp;xplorateur</text>
+<text s="Switch Explorer engine">Commuter le moteur d&apos;Explorateur</text>
+<text s="Open in E&amp;xplorer">Ouvrir dans l&apos;E&amp;xplorateur</text>
 <text s="New folder">Nouveau dossier</text>
 <text s="New file">Nouveau fichier</text>
 <text s="Copy full path">Copier le chemin complet</text>
 <text s="Run dialog">Exécuter le dialogue</text>
 <text s="&amp;Add to favorites...">&amp;Ajouter aux favoris ...</text>
 <text s="&amp;Reload customize">&amp;Recharger la personnalisation</text>
-<text s="&amp;Close application">&amp;Fermer l'application</text>
+<text s="&amp;Close application">&amp;Fermer l&apos;application</text>
 <text s="Close">Fermer</text>
 <text s="Separator">Séparateur</text>
 <text s="Break">Coupure</text>
@@ -151,11 +151,11 @@
 <text s="Navigation enumeration">Recensement de navigation</text>
 <text s="Fast items">Eléments rapides</text>
 <text s="Flat">Plat</text>
-<text s="Checking for children">Recherche d'enfant</text>
+<text s="Checking for children">Recherche d&apos;enfant</text>
 <text s="Buttons">Boutons dé(re)pliage</text>
 <text s="Lines">Lignes</text>
 <text s="No edit labels">Renommage désactivé</text>
-<text s="Disable Drag-and-Drop">Désactiver le 'Glisser-Déposer"</text>
+<text s="Disable Drag-and-Drop">Désactiver le &apos;Glisser-Déposer&apos;</text>
 <text s="Single click expand">Déplier par simple clic</text>
 <text s="Spring expand">Déplier par bondissement</text>
 <text s="Full row select">Sélection ligne entière</text>
@@ -195,14 +195,14 @@
 <text s="Select by middle button">Sélection via bouton médian</text>
 <text s="Process selected items in view sequence">Traiter les éléments sélectionnés dans la séquence affichée</text>
 <text s="Apply Filter to Libraries">Activer le filtrage des librairies</text>
-<text s="Auto arrange upon refresh">Auto-réorganisation à l'actualisation</text>
+<text s="Auto arrange upon refresh">Auto-réorganisation à l&apos;actualisation</text>
 
 <text s="Group">Grouper</text>
 <text s="Subset groups">Sous-groupes</text>
 <text s="Column header">En-tête de colonne</text>
-<text s="Column header details only">En-tête de colonne uniquement en mode "Détails"</text>
-<text s="Background color on sorted column">Colorier les colonnes triées</text>
+<text s="Column header details only">En-tête de colonne uniquement en mode ‘Détails&apos;</text>
 
+<text s="Background color on sorted column">Colorier les colonnes triées</text>
 
 
 
@@ -218,7 +218,7 @@
 <text s="Swap">Permuter</text>
 <text s="Please enter the width.">Entrez la largeur.</text>
 <text s="Please enter the height.">Entrez la hauteur.</text>
-<text s="&amp;Up one level">&amp;Remonter d'un niveau</text>
+<text s="&amp;Up one level">&amp;Remonter d&apos;un niveau</text>
 <text s="Add favorite">Ajouter un favori</text>
 <text s="Check for updates">Vérifier les mises à jour</text>
 
@@ -232,12 +232,12 @@
 <text s="Title bar">Barre de titre</text>
 <text s="Center">Centre</text>
 <text s="Right">Droite</text>
-<text s="Tool bar">Barre d'outils</text>
+<text s="Tool bar">Barre d&apos;outils</text>
 <text s="Bottom bar">Barre du bas</text>
-<text s="Internal Tool bar">Barre d'outil interne</text>
-<text s="Internal Tool bar Right">Barre d'outil interne droite</text>
-<text s="Internal Bottom bar">Barre d'outil interne inférieure</text>
-<text s="Internal Bottom bar Right">Barre d'outil interne inférieure droite</text>
+<text s="Internal Tool bar">Barre d&apos;outils interne</text>
+<text s="Internal Tool bar Right">Barre d&apos;outils interne droite</text>
+<text s="Internal Bottom bar">Barre d&apos;outils interne inférieure</text>
+<text s="Internal Bottom bar Right">Barre d&apos;outils interne inférieure droite</text>
 <text s="All">Tout</text>
 
 <text s="Shift">Maj</text>
@@ -257,10 +257,10 @@
 <text s="Notepad alternative">Remplacer Notepad</text>
 <text s="Replace Notepad with another application.">Remplacer Notepad par un autre éditeur</text>
 <text s="Path">Chemin</text>
-<text s="Mouse button and gestures">Définition des boutons et manipulations de la souris.</text>
-<text s="Definition of keyboard shortcuts">Définition de raccourci(s) clavier</text>
-<text s="Address bar">Barre d'adresse</text>
-<text s="Breadcrumbs and XP style is available.">Les styles &quot;XP&quot; et &quot;Fil d'Ariane&quot; sont disponibles.</text>
+<text s="Mouse button and gestures">Définir la fonction des boutons et manipulations de la souris.</text>
+<text s="Definition of keyboard shortcuts">Définir de(s) raccourci(s) clavier</text>
+<text s="Address bar">Barre d&apos;adresse</text>
+<text s="Breadcrumbs and XP style is available.">Les styles &quot;XP&quot; et &quot;Fil d&apos;Ariane&quot; sont disponibles.</text>
 
 <text s="Filter bar">Barre de filtre</text>
 <text s="Regular Expression">Expression régulière</text>
@@ -269,7 +269,7 @@
 
 
 <text s="Main menu">Menu principal</text>
-<text s="Tab plus">Tab+</text>
+<text s="Tab plus">Tab plus</text>
 <text s="Icon">Icône</text>
 
 <text s="Protected">Protégé</text>
@@ -280,17 +280,17 @@
 <text s="Multi-threaded file operation.">Opérations sur fichier parallélisées.</text>
 
 <text s="File is in operation.">Fichier en cours de traitement.</text>
-<text s="Remember folder view settings">Mémoriser les paramètres d'affichage de dossiers</text>
-<text s="Automatically remember folder view settings.">Enregistre automatiquement les paramètres d'affichage des dossiers.</text>
-<text s="Number of items">Nombre d'éléments</text>
+<text s="Remember folder view settings">Mémoriser les paramètres d&apos;affichage de dossiers</text>
+<text s="Automatically remember folder view settings.">Enregistrer automatiquement les paramètres d&apos;affichage des dossiers.</text>
+<text s="Number of items">Nombre d&apos;éléments</text>
 <text s="Disable">Désactiver</text>
-<text s="Undo close tab">Défaire la fermeture d'onglet</text>
-<text s="Undo close tab.">Annule la dernière fermeture d'onglet.</text>
+<text s="Undo close tab">Défaire la fermeture d&apos;onglet</text>
+<text s="Undo close tab.">Annule la dernière fermeture d&apos;onglet.</text>
 <text s="Blank page">Page blanche</text>
 
-<text s="Replace the standard icon with Segoe Fluent Icons or Segoe UI MDL2 Assets. *Windows 10 or higher is required">Remplace les icônes standards par les icônes fluides Segoe ou les disponibilités Segoe UI MDL2. *Windows 10 ou plus requis !!</text>
+<text s="Replace the standard icon with Segoe Fluent Icons or Segoe UI MDL2 Assets. *Windows 10 or higher is required">Remplacer les icônes standards par les icônes fluides Segoe ou les disponibilités Segoe UI MDL2. *Windows 10 ou plus requis !!</text>
 <text s="Extract">Extraire</text>
-<text s="Extract the compressed files.">Extraire le contenu de fichiers compressés.</text>
+<text s="Extract the compressed files.">Utiliser un logiciel tiers d&apos;extraction ZIP.</text>
 
 <text s="Get %s...">Obtenir des %s ...</text>
 <text s="Download">Télécharger</text>
@@ -301,72 +301,71 @@
 
 <text s="Long press">Appui long</text>
 <text s="Long press. &quot;1-&quot;">Appui long. “1-”</text>
-<text s="Timeout">Temporisation</text>
 
-<text s="Right drag for selected items, otherwise the mouse gesture.">"Déplacer' droit pour les éléments sélectionnés, sinon la manipulation souris.</text>
+<text s="Right drag for selected items, otherwise the mouse gesture.">&apos;Déplacer&apos; droit pour les éléments sélectionnés, sinon la manipulation souris.</text>
 <text s="Main menu button">Bouton de menu principal</text>
-<text s="Menu item filter">Filtre d'élément de menu</text>
+<text s="Menu item filter">Filtre d&apos;élément de menu</text>
 <text s="Quicker menu display">Affichage plus rapide du menu</text>
 <text s="Quicker menu display by simplifying menus.">Afficher de menu plus rapide par simplification des menus</text>
 <text s="Link bar">Barre de lien</text>
-<text s="Simple Tool bar">Barre simple d'outils</text>
+<text s="Simple Tool bar">Barre simple d&apos;outils</text>
 <text s="Set home">Définir le début</text>
-<text s="Set home for each tab *&quot;Go home&quot; is required.">Définir le début pour chaque onglet *&quot;Aller au début&quot; est requis. </text>
+<text s="Set home for each tab *&quot;Go home&quot; is required.">Définir le début pour chaque onglet *&quot;Aller au début&quot; est requis.&#160;</text>
 <text s="Go home">Aller au début</text>
 <text s="Navigate to home for each tab *&quot;Set home&quot; is required.">Naviguer au début pour chaque onglet *&quot;Définir le début&quot; est requis.</text>
 <text s="Drive bar">Barre de lecteur</text>
 <text s="Drive button">Bouton de lecteur</text>
 <text s="Recently closed tabs">Onglets fermés récemment</text>
-<text s="Recently closed tabs *Require &quot;Undo close tab&quot;">Afficher les onglets fermés récemment *&quot;Défaire la fermeture d'onglet&quot; est requis.</text>
+<text s="Recently closed tabs *Require &quot;Undo close tab&quot;">Afficher les onglets fermés récemment *&quot;Défaire la fermeture d&apos;onglet&quot; est requis.</text>
 <text s="History">Historique</text>
 
 <text s="Speed dial">Appel rapide</text>
-<text s="Show a list of up to 9 most frequently opened folders in new tabs">A l'ouverture d'un nouvel onglet, affiche la liste des 9 dossiers les plus souvent ouverts</text>
-<text s="Simple Address bar">Barre simple d'adresse</text>
+<text s="Show a list of up to 9 most frequently opened folders in new tabs">A l&apos;ouverture d&apos;un nouvel onglet, affiche la liste des 9 dossiers les plus souvent ouverts</text>
+<text s="Simple Address bar">Barre simple d&apos;adresse</text>
 <text s="Entered history">Historique entré</text>
-<text s="Change the addressbar drop-down to the entered history.">Remplacer la liste déroulante de la barre d'adresse par l'historique entré.</text>
+<text s="Change the addressbar drop-down to the entered history.">Remplacer la liste déroulante de la barre d&apos;adresse par l&apos;historique entré.</text>
 <text s="Navigation sound">Son de navigation</text>
 <text s="Play">Jouer</text>
-<text s="About remember">A propos de "Mémoriser"</text>
-<text s="Edit the remember folder view settings. *Require &quot;Remember folder view settings&quot;">Editer les paramètres de mémorisation d'affichage de dossiers. *&quot;Mémoriser les paramètres d'affichage de dossiers&quot; est requis.</text>
+<text s="About remember">A propos de ‘Mémoriser&apos;</text>
+<text s="Edit the remember folder view settings. *Require &quot;Remember folder view settings&quot;">Editer les paramètres de mémorisation d&apos;affichage de dossiers. *&quot;Mémoriser les paramètres d&apos;affichage de dossiers&quot; est requis.</text>
 <text s="Remember">Mémoriser</text>
 <text s="Columns">Colonnes</text>
 <text s="Sort">Trier</text>
 <text s="Get the current folder view">Obtenir la vue du dossier courant</text>
-<text s="Take over folder view settings">Reprendre les paramètres d'affichage des dossiers</text>
-<text s="Take over folder view settings.">Mémorise les paramètres de l'affichage actuel et l'applique dans votre navigation.</text>
-<text s="Folder settings">Paramètres d'affichage des dossiers</text>
-<text s="Copy folder settings">Copier les paramètres d'affichage des dossiers</text>
-<text s="Copy the script for the current folder settings to the clipboard.">Copier dans le presse-papiers la configuration des paramètres d'affichage du dossier actuel.</text>
+<text s="Take over folder view settings">Reprendre les paramètres d&apos;affichage des dossiers</text>
+<text s="Take over folder view settings.">Mémorise les paramètres de l&apos;affichage actuel et l&apos;applique dans votre navigation.</text>
+<text s="Folder settings">Paramètres d&apos;affichage des dossiers</text>
+<text s="Copy folder settings">Copier les paramètres d&apos;affichage des dossiers</text>
+<text s="Copy the script for the current folder settings to the clipboard.">Copier dans le presse-papiers la configuration des paramètres d&apos;affichage du dossier actuel.</text>
 <text s="Reset columns">Rétablir les colonnes</text>
 <text s="Replace slow columns">Remplacer les colonnes lentes</text>
 <text s="Replace slow &quot;Date&quot; to &quot;Date modified&quot;.">Remplacer la &quot;Date&quot; lente par la rapide &quot;Date de modification&quot;.</text>
-<text s="Items count">Nombre d'éléments</text>
-<text s="Show the number of items in the size column">Dans la colonne &quot;Taille&quot; de l'affichage &quot;Détails&quot; d'un dossier, indique le nombre d'éléments contenus.</text>
+<text s="Items count">Nombre d&apos;éléments</text>
+<text s="Show the number of items in the size column">Dans la colonne &quot;Taille&quot; de l&apos;affichage &quot;Détails&quot; d&apos;un dossier, indique le nombre d&apos;éléments contenus.</text>
 <text s="Space free column">Colonne &quot;Espace libre&quot;</text>
-<text s="Space free column. *Windows Vista or higher is required.">Personnaliser l'unité d'espace libre.*Windows Vista ou plus récent est requis</text>
-<text s="Explorer browser filter">Filtre de l'Explorateur</text>
+<text s="Space free column. *Windows Vista or higher is required.">Personnaliser l&apos;unité d&apos;espace libre.*Windows Vista ou plus récent est requis</text>
+<text s="Explorer browser filter">Filtre de l&apos;Explorateur</text>
 <text s="Refresh button">Bouton &quot;Actualiser&quot;</text>
-<text s="Force refresh">Forcer l'actualisation</text>
-<text s="Force refresh on change tab.">Auto-actualisation au changement d'onglet</text>
+<text s="Force refresh">Forcer l&apos;actualisation</text>
+<text s="Force refresh on change tab.">Auto-actualisation au changement d&apos;onglet</text>
 <text s="Rename">Renommer</text>
 
 <text s="Switch hidden items">Afficher/masquer les éléments cachés</text>
 
 <text s="Switch hidden filter">Afficher/masquer les éléments filtrés</text>
 <text s="Display items and their subfolders items as a flat list.">Afficher les éléments et sous-dossiers en liste plate.</text>
-<text s="Right key next">Suivant : touche droite →</text>
+<text s="Right key next">Suivant&#160;: touche droite →</text>
 <text s="In Icon View. Right-arrow key: Move to the next item. Left-arrow key: Move to the previous item.">Affichage &quot;Icônes&quot;. Touche flèche-droite : élément suivant. Touche flèche-gauche : élément précédent.</text>
-<text s="Down key next">Suivant : touche bas ↓</text>
+<text s="Down key next">Suivant&#160;: touche bas ↓</text>
 <text s="In Icon View (Align left). Down-arrow key: Move to the next item. Up-arrow key: Move to the previous item.">Affichage &quot;Icônes&quot; (Aligner à gauche). Touche flèche-bas : élément suivant. Touche flèche-haut : élément précédent.</text>
 <text s="Between files and folders">Entre dossiers et fichiers</text>
 <text s="Jump to the boundary between files and folders.">Sauter à la frontière entre les dossiers et fichiers.</text>
 <text s="Regular Expression/Migemo Incremental Search">Expression régulière/Recherche incrémentale Migemo</text>
 
-<text s="Show focused item frame">Cadre d'affichage de l'élément ciblé</text>
-<text s="Show focused item frame on navigate.">Durant la navigation, maintenir le rectangle de focus sur l'élément ciblé,</text>
-<text s="Fix Single click activate">Améliore l'activation par clic simple</text>
-<text s="Open item quickly with &quot;Single click activate&quot; style.">Accélèrer l'ouverture en mode &quot;Activer par simple clic&quot;.</text>
+<text s="Show focused item frame">Cadre d&apos;affichage de l&apos;élément ciblé</text>
+<text s="Show focused item frame on navigate.">Durant la navigation, maintenir le rectangle de focus sur l&apos;élément ciblé,</text>
+<text s="Fix Single click activate">Améliore l&apos;activation par clic simple</text>
+<text s="Open item quickly with &quot;Single click activate&quot; style.">Accélèrer l&apos;ouverture en mode &quot;Activer par simple clic&quot;.</text>
 <text s="Mixed sort">Tri mixte</text>
 <text s="Sort by files and folders. Require Window Vista or higher.">Tirer sans séparer dossiers et fichiers. *Windows Vista ou plus récent requis.</text>
 <text s="Total file size sort">Tri &quot;Taille totale&quot;</text>
@@ -377,7 +376,7 @@
 <text s="Filter list">Liste de filtres</text>
 <text s="Folder filter">Dossier de filtres</text>
 <text s="Clear filter with &quot;Up&quot;">Vider le filtre en &quot;remontant&quot;</text>
-<text s="If there is a filter, clear it without moving up with &quot;Up&quot;.">Ne transfère pas au niveau supérieur un filtre existant.</text>
+<text s="If there is a filter, clear it without moving up with &quot;Up&quot;.">Ne pas transférer un filtre existant au niveau supérieur.</text>
 <text s="Search bar">Barre de recherche</text>
 
 <text s="Search using Everything Search Engine.">Chercher en utilisant Everything Search Engine.</text>
@@ -386,7 +385,7 @@
 <text s="Find files">Trouver des fichiers</text>
 <text s="Simple find files">Recherche simple de fichiers.</text>
 <text s="Location">Emplacement</text>
-<text s="Information search">Recherche d'informations</text>
+<text s="Information search">Recherche d&apos;informations</text>
 <text s="Search by date modified">Chercher par date de modification</text>
 <text s="Search by size">Chercher par taille</text>
 <text s="Empty folder">Dossier vide</text>
@@ -405,19 +404,20 @@
 <text s="Check box">Case à cocher</text>
 <text s="shift key to select in X-Finder style">touche Maj pour sélectionner dans le style X-Finder</text>
 <text s="Use the Shift key and cursor keys to select multiple items in X-Finder style.">Utiliser la touche Maj et les touches du curseur pour sélectionner plusieurs éléments dans le style X-Finder.</text>
-<text s="Selected to top">Sélectionnés : en haut</text>
+<text s="Selected to top">Sélectionnés&#160;: en haut</text>
 <text s="Move selected items to top.">Déplacer au sommet les éléments sélectionnés.</text>
 <text s="Full row select plus">Sélection plus : ligne entière</text>
 <text s="Disable full row selection on mouse-over.">Désactiver la sélection entière des lignes lors du survol de la souris.</text>
 <text s="Classic style">Style classique</text>
 <text s="Show selection in a classic style.">Afficher la sélection dans un style classique.</text>
-<text s="Disable classic style during drag">Désactiver le style classique en "glissant"</text>
+<text s="Disable classic style during drag">Désactiver le style classique en ‘glissant&apos;</text>
 <text s="Disable the classic style during drag &amp;amp; drop. Require &quot;Classic Style&quot;">Désactiver le style classique pendant le glisser-déposer. *&quot;Style classique&quot; est requis.</text>
-<text s="Status bar">Barre d' état</text>
+<text s="Status bar">Barre d&apos; état</text>
 <text s="Count bar">Barre de comptage</text>
-<text s="Show selected item count in the status bar.">Afficher le nombre d'éléments sélectionnés dans la barre d'état.</text>
-<text s="Size status bar">Barre d'état de la taille</text>
-<text s="Show size status">Afficher l'état de la taille</text>
+<text s="Show selected item count in the status bar.">Afficher le nombre d&apos;éléments sélectionnés dans la barre d&apos;état.</text>
+<text s="Size status bar">Barre d&apos;état de la taille</text>
+<text s="Show size status">Afficher l&apos;état de la taille</text>
+
 
 <text s="Full path bar">Barre de chemin complet</text>
 <text s="Show full path.">Afficher le chemin complet</text>
@@ -426,7 +426,7 @@
 
 <text s="Copy button">Bouton &quot;Copier&quot;</text>
 <text s="Paste">Coller</text>
-<text s="Paste button">Boutone &quot;Coller&quot;</text>
+<text s="Paste button">Bouton &quot;Coller&quot;</text>
 <text s="Paste as link">Coller comme lien</text>
 <text s="Symbolic link, absolute path">Lien symbolique, chemin absolu</text>
 <text s="Symbolic link, absolute path without drive">Lien symbolique, chemin absolu sans lecteur</text>
@@ -436,22 +436,23 @@
 <text s="Clipboard history">Historique du presse-papiers</text>
 <text s="Clipboard list">Liste du presse-papiers</text>
 <text s="Order of clipboard">Séquence du presse-papiers</text>
-
+<text s="Cut/copy to clipboard will be done in the order in which they are displayed in the view.">Couper/Coller dans le presse-papiers sera fait dans la séquence de leur affichage</text>
 <text s="Clipboard copy">Copie du presse-papiers</text>
 <text s="Stored in both text and files when copying to the clipboard.">Stocker du texte et des fichiers en copiant dans le presse-papiers.</text>
 <text s="Clipboard image">Image du presse-papiers</text>
-<text s="Save the clipboard image to a file by pasting.">Sauvegarder l'image du presse-papier en la collant dans un fichier</text>
+<text s="Save the clipboard image to a file by pasting.">Sauvegarder l&apos;image du presse-papier en la collant dans un fichier</text>
 <text s="Duplicate copy">Doublon</text>
 <text s="Move content up">Monter le contenu</text>
 <text s="Move all items in the selected folder to the current folder.">Déplacer tous les éléments du dossier sélectionné vers le dossier actif.</text>
 <text s="Rename dialog box...">Boîte de dialogue &quot;Renommer&quot; ..</text>
 <text s="Rename dialog plus...">Dialogue &quot;Renommer&quot; plus ..</text>
 <text s="Rename dialog box plus">Boîte de dialogue &quot;Renommer&quot; plus (extension incluse).</text>
+<text s="Toggle selection while inline renaming">Basculer la sélection pendant le renommage en ligne</text>
 <text s="Fix selection on renaming">Corriger la sélection au renommage</text>
 <text s="Fix selection on renaming. (Results folder / Windows XP)">Corriger la sélection au renommage. (Dossier résultats / Windows XP)</text>
-<text s="Prevent renaming of selected items on second click or slow double-click or F2 key in listview">Empêcher le changement de nom des éléments sélectionnés lors d'un 2ième clic, double-clic lent ou appui touche F2 dans l'affichage &quot;Détails&quot;</text>
+<text s="Prevent renaming of selected items on second click or slow double-click or F2 key in listview">Empêcher le changement de nom des éléments sélectionnés lors d&apos;un 2ième clic, double-clic lent ou appui touche F2 dans l&apos;affichage &quot;Détails&quot;</text>
 <text s="Escape Unicode">Quitter Unicode</text>
-<text s="Unicode characters and bad characters to escape.">Pour s'échapper des caractères Unicode et caractères incorrects.</text>
+<text s="Unicode characters and bad characters to escape.">Pour s&apos;échapper des caractères Unicode et caractères incorrects.</text>
 <text s="Unescape Unicode">Revenir à Unicode</text>
 <text s="Delete button">Bouton &quot;Supprimer&quot;</text>
 <text s="Empty recycle bin">Vider la poubelle</text>
@@ -459,30 +460,33 @@
 <text s="Recycle bin folder for network folder and removable disk.">Dossier poubelle (corbeille) pour les dossiers réseau et disques amovibles.</text>
 
 
+
 <text s="Properties">Propriétés</text>
 <text s="Properties button">Bouton &quot;Propriétés&quot;</text>
-<text s="Change file attributes">Modifier les attributs de fichier</text>
+<text s="Change file attributes...">Modifier les attributs de fichier ...</text>
 <text s="Dialog to change file attributes, accessible from context menu, configurable hotkeys or gestures.">Dialogue pour modifier les attributs de fichiers, accessible depuis le menu contextuel, les raccourcis clavier configurables ou les manipulations.</text>
 <text s="Attributes...">Attributs ...</text>
-<text s="Read Only">Lecture seule</text>
+
+
+
 <text s="Archive">Archive</text>
 <text s="Change the Date modified...">Changer la date de modification ...</text>
 
-<text s="Change the timestamp...">Modifier l'horodatage ...</text>
-<text s="Change the date and time that the specified file or directory was created, last accessed, or last modified.">Modifier la date et l'heure de la création, dernier accès ou dernière modification du fichier ou du répertoire spécifié.</text>
+<text s="Change the timestamp...">Modifier l&apos;horodatage ...</text>
+<text s="Change the date and time that the specified file or directory was created, last accessed, or last modified.">Modifier la date et l&apos;heure de la création, dernier accès ou dernière modification du fichier ou du répertoire spécifié.</text>
 
 
 
 <text s="Virtual name">Nom virtuel</text>
-<text s="Extension tooltips changer">Adaptateur d'infobulles par extension</text>
-<text s="Change tooltips with file extension">Adapter les infobulles en fonction de l'extension du fichier.</text>
+<text s="Extension tooltips changer">Adaptateur d&apos;infobulles par extension</text>
+<text s="Change tooltips with file extension">Adapter les infobulles en fonction de l&apos;extension du fichier.</text>
 
-<text s="No infotip">Pas d'infobulle</text>
+<text s="No infotip">Pas d&apos;infobulle</text>
 <text s="No infotip on Listview">Aucune infobulle disponible dans la la liste affichée.</text>
-<text s="Side tree view">Affichage latéral d'arborescence</text>
-<text s="Disable Tree drop">Désactiver le dépôt dans d'arborescence</text>
-<text s="Disable drop in tree view.">Désactiver &quot;Déposer&quot; dans l'affichage en arborescence.</text>
-<text s="Tree view filter">Filtre d'arborescence</text>
+<text s="Side tree view">Affichage latéral d&apos;arborescence</text>
+<text s="Disable Tree drop">Désactiver le dépôt dans d&apos;arborescence</text>
+<text s="Disable drop in tree view.">Désactiver &quot;Déposer&quot; dans l&apos;affichage en arborescence.</text>
+<text s="Tree view filter">Filtre d&apos;arborescence</text>
 <text s="Add all tabs to favorites...">Ajouter tous les onglets aux favoris ...</text>
 <text s="Add all tabs to favorites.">Ajouter tous les onglets du panneau actif dans les favoris</text>
 <text s="Favorites Open in a New Tab">Ouvrir les favoris dans un nouvel onglet</text>
@@ -494,25 +498,25 @@
 <text s="Right/Bottom">Droit/bas</text>
 <text s="Vertical">Vertical</text>
 <text s="Hot track">Sélection au vol</text>
-<text s="Force icon left">Forcer l'icône à gauche</text>
+<text s="Force icon left">Forcer l&apos;icône à gauche</text>
 <text s="Force label left">Forcer le texte à gauche</text>
-<text s="Tab design">Aspect d'onglet</text>
-<text s="Tab appearence with CSS styling. Requires &quot;Tab Plus&quot;">Personnaliser l'apparence d'onglet via CSS. *&quot;Tab plus&quot; requis.</text>
+<text s="Tab design">Aspect d&apos;onglet</text>
+<text s="Tab appearence with CSS styling. Requires &quot;Tab Plus&quot;">Personnaliser l&apos;apparence d&apos;onglet via CSS. *&quot;Tab plus&quot; requis.</text>
 <text s="Underline">Souligner</text>
 <text s="Load">Charger</text>
-<text s="Change tab color...">Changer la couleur d'onglet ...</text>
-<text s="Change tab color. Require &quot;Tab plus&quot;">Personnaliser la couleur d'un onglet. *&quot;Tab plus&quot; requis.</text>
+<text s="Change tab color...">Changer la couleur d&apos;onglet ...</text>
+<text s="Change tab color. Require &quot;Tab plus&quot;">Personnaliser la couleur d&apos;un onglet. *&quot;Tab plus&quot; requis.</text>
 
-<text s="Color the tab by wild card, or regular expression. Require &quot;Tab plus&quot;">Colorier l'onglet par caractère générique ou expression régulière. *&quot;Tab plus&quot; requis.</text>
-<text s="Tab drive name">Nom d'onglet de lecteur</text>
-<text s="Display drive letter additionally on tab.">Ajouter la lettre de lecteur à l'onglet.</text>
-<text s="Tab parent folder name">Nom d'onglet de dossier parent</text>
-<text s="Display parent folder name additionally on tab.">Ajouter le nom du dossier parent à l'onglet.</text>
-<text s="Change tab name...">Modifier le nom d'onglet ...</text>
-<text s="Display a specific name, instead of the folder name, on tab for a specific folder.">Afficher un nom spécifique sur l'onglet d'un dossier, au lieu du nom de dossier</text>
-<text s="Tab position">Position d'onglet</text>
-<text s="Tab position of new tab and Active tab after tab closing.">Définir la position d'un nouvel onglet et celle de l'actif après une fermeture.</text>
-<text s="Active tab after tab closing">Onglet actif après fermeture d'onglet </text>
+<text s="Color the tab by wild card, or regular expression. Require &quot;Tab plus&quot;">Colorier l&apos;onglet par caractère générique ou expression régulière. *&quot;Tab plus&quot; requis.</text>
+<text s="Tab drive name">Nom d&apos;onglet de lecteur</text>
+<text s="Display drive letter additionally on tab.">Ajouter la lettre de lecteur à l&apos;onglet.</text>
+<text s="Tab parent folder name">Nom d&apos;onglet de dossier parent</text>
+<text s="Display parent folder name additionally on tab.">Ajouter le nom du dossier parent à l&apos;onglet.</text>
+<text s="Change tab name...">Modifier le nom d&apos;onglet ...</text>
+<text s="Display a specific name, instead of the folder name, on tab for a specific folder.">Afficher un nom spécifique sur l&apos;onglet d&apos;un dossier, au lieu du nom de dossier</text>
+<text s="Tab position">Position d&apos;onglet</text>
+<text s="Tab position of new tab and Active tab after tab closing.">Définir la position d&apos;un nouvel onglet et celle de l&apos;actif après une fermeture.</text>
+<text s="Active tab after tab closing">Onglet actif après fermeture d&apos;onglet </text>
 <text s="First">Premier</text>
 <text s="Last">Dernier</text>
 <text s="Parent folder">Dossier parent</text>
@@ -521,23 +525,23 @@
 <text s="Move all locked tabs at the top.">Regrouper tous les onglets verrouillés à gauche.</text>
 <text s="Sort tabs">Trier les onglets</text>
 
-<text s="Tab list">Liste d'onglet</text>
+<text s="Tab list">Liste d&apos;onglet</text>
 <text s="Recently used tabs">Onglets utilisés récemment</text>
 <text s="Select tab">Sélectionner un onglet</text>
-<text s="Switch the tab with folder path specified in &quot;Options&quot;.">Commutez l'onglet avec le chemin du dossier spécifié dans &quot;Options&quot;.</text>
+<text s="Switch the tab with folder path specified in &quot;Options&quot;.">Commutez l&apos;onglet avec le chemin du dossier spécifié dans &quot;Options&quot;.</text>
 <text s="New tab button">Bouton &quot;Nouvel onglet&quot;</text>
 <text s="New tab on forward">Nouvel onglet en avançant</text>
-<text s="If you can't go forward, open a new tab.">Si vous ne pouvez plus avancer, ouvrir un nouvel onglet.</text>
+<text s="If you can&apos;t go forward, open a new tab.">Si vous ne pouvez plus avancer, ouvrir un nouvel onglet.</text>
 <text s="Close on back">Fermer en reculant</text>
-<text s="If you can't go back, close the tab.">Si vous ne pouvez plus reculer, fermer l'onglet.</text>
-<text s="Close tab when deleting">Fermer l'onglet en supprimant</text>
-<text s="Close tab when folder is deleted.">Fermer l'onglet quand son dossier est supprimé.</text>
+<text s="If you can&apos;t go back, close the tab.">Si vous ne pouvez plus reculer, fermer l&apos;onglet.</text>
+<text s="Close tab when deleting">Fermer l&apos;onglet en supprimant</text>
+<text s="Close tab when folder is deleted.">Fermer l&apos;onglet quand son dossier est supprimé.</text>
 <text s="Close duplicate tabs">Fermer les onglets doublons</text>
 <text s="Prevent duplicate tabs">Empêcher les onglets doublons</text>
-<text s="Automatically prevent from any duplicated tab in the same pane">Empêcher automatiquement l'ouverture d'onglet doublon dans le même panneau.</text>
+<text s="Automatically prevent from any duplicated tab in the same pane">Empêcher automatiquement l&apos;ouverture d&apos;onglet doublon dans le même panneau.</text>
 <text s="Open the same locked tab instead">Ouvrir plutôt le même onglet verrouillé</text>
 <text s="Multiple panes">Panneaux multiples</text>
-<text s="Lock only disables &quot;Close tab&quot;">Le verrouillage ne désactive que &quot;Fermer l'onglet&quot;.</text>
+<text s="Lock only disables &quot;Close tab&quot;">Le verrouillage ne désactive que &quot;Fermer l&apos;onglet&quot;.</text>
 <text s="Protect tabs">Protéger les onglets</text>
 <text s="Split">Fractionner</text>
 <text s="Split window">Diviser la fenêtre TE en plusieurs panneaux.</text>
@@ -560,19 +564,19 @@
 <text s="Split a window into 9 frames. **&quot;Split&quot; is required.">Diviser la fenêtre en 9 panneaux. *&quot;Fractionner&quot; est requis.</text>
 <text s="3x3">3x3</text>
 <text s="Switch to previous pane">Basculer au panneau précédent</text>
-<text s="Command: &quot;Switch to previous pane&quot;, Environment: &quot;%prevpane%&quot;.">Commande : &quot;Switch to previous pane&quot;, Variable d'environment: &quot;%prevpane%&quot;.</text>
+<text s="Command: &quot;Switch to previous pane&quot;, Environment: &quot;%prevpane%&quot;.">Commande : &quot;Switch to previous pane&quot;, Variable d&apos;environment: &quot;%prevpane%&quot;.</text>
 <text s="Switch to next pane">Basculer au panneau suivant</text>
-<text s="Command: &quot;Switch to next pane&quot;, Environment: &quot;%other%&quot;.">Commande : &quot;Switch to next pane&quot;, Variable d'environment: &quot;%other%&quot;.</text>
+<text s="Command: &quot;Switch to next pane&quot;, Environment: &quot;%other%&quot;.">Commande : &quot;Switch to next pane&quot;, Variable d&apos;environment: &quot;%other%&quot;.</text>
 <text s="Rotate pane">Pivoter le panneau</text>
 <text s="Inactive pane">Panneau inactif</text>
-<text s="Clearly discriminate active pane by color the inactive pane.">Distinguer clairement le volet actif par la couleur du volet inactif.</text>
+<text s="Clearly discriminate active pane by color the inactive pane.">Distinguer clairement le panneau actif en coloriant les inactifs.</text>
 
 <text s="Synchronize">Synchroniser</text>
-
+<text s="Synchronize browsing">Synchroniser la navigation</text>
 <text s="Sync select">Synchroniser la sélection</text>
 <text s="Synchronize selection">Synchroniser la sélection.</text>
 <text s="Select matches">Sélectionner les correspondances</text>
-<text s="Select all items that are also listed in the other pane.">Sélectionner tous les éléments également listés dans l'autre panneau</text>
+<text s="Select all items that are also listed in the other pane.">Sélectionner tous les éléments également listés dans l&apos;autre panneau</text>
 <text s="Select uniques">Sélectionner les uniques</text>
 <text s="Select all items that are only listed in this pane.">Sélectionner tous les éléments uniquement listés dans ce panneau</text>
 <text s="Select newer">Sélectionner le nouveau</text>
@@ -584,30 +588,30 @@
 <text s="Select uniques and different">Sélectionner les uniques et différents</text>
 <text s="Select all items that are unique or different.">Sélectionner tous les éléments uniques ou différents</text>
 <text s="Select selected">Sélectionner les sélectionnés</text>
-<text s="Select all items that are selected in the other pane.">Sélectionner tous les éléments sélectionnés dans l'autre panneau</text>
-<text s="Inner breadcrumbs address bar">Intérieur : Barre d'adresse en fil d'Ariane</text>
-<text s="Breadcrumbs address bar for each pane">Placer la barre d'adresse de chaque panneau &quot;en fil d'Ariane&quot;.</text>
-<text s="Inner address bar">Intérieur : Barre d'adresse</text>
-<text s="Address bar of every pane">Placer une barre d'adresse dans chaque panneau.</text>
-<text s="Inner Back">Intérieur :  "Reculer"</text>
+<text s="Select all items that are selected in the other pane.">Sélectionner tous les éléments sélectionnés dans l&apos;autre panneau</text>
+<text s="Inner breadcrumbs address bar">Intérieur&#160;: Barre d&apos;adresse en fil d&apos;Ariane</text>
+<text s="Breadcrumbs address bar for each pane">Placer la barre d&apos;adresse de chaque panneau &quot;en fil d&apos;Ariane&quot;.</text>
+<text s="Inner address bar">Intérieur&#160;: Barre d&apos;adresse</text>
+<text s="Address bar of every pane">Placer une barre d&apos;adresse dans chaque panneau.</text>
+<text s="Inner Back">Intérieur&#160;:  ‘Reculer&apos;</text>
 <text s="Back button of every pane">Placer un bouton &quot;Reculer&quot; dans chaque panneau.</text>
-<text s="Inner Forward">Intérieur :  "Avancer"</text>
+<text s="Inner Forward">Intérieur&#160;:  ‘Avancer&apos;</text>
 <text s="Forward button of every pane">Placer un bouton &quot;Avancer&quot; dans chaque panneau.</text>
-<text s="Inner Up">Intérieur : "Monter"</text>
+<text s="Inner Up">Intérieur&#160;: ‘Monter&apos;</text>
 <text s="Up button of every pane">Placer un bouton &quot;Monter&quot; dans chaque panneau.</text>
-<text s="Inner Refresh">Intérieur : "Actualiser"</text>
+<text s="Inner Refresh">Intérieur&#160;: ‘Actualiser&apos;</text>
 <text s="Refresh button of every pane">Placer un bouton &quot;Actualiser&quot; dans chaque panneau.</text>
-<text s="Inner Filter bar">Intérieur : Barre de filtre</text>
+<text s="Inner Filter bar">Intérieur&#160;: Barre de filtre</text>
 <text s="Filter bar for each pane">Placer une barre de filtre dans chaque panneau</text>
-<text s="Inner Search bar">Intérieur : Barre de recherche</text>
+<text s="Inner Search bar">Intérieur&#160;: Barre de recherche</text>
 <text s="Search bar for each pane">Placer une barre de recherche dans chaque panneau</text>
-<text s="Inner New folder">Intérieur : "Nouveau dossier"</text>
+<text s="Inner New folder">Intérieur&#160;: ‘Nouveau dossier&apos;</text>
 <text s="New folder button of every pane">Placer un bouton &quot;Nouveau dossier&quot; dans chaque panneau.</text>
-<text s="Tab groups">Groupes d'onglet</text>
-<text s="Groups all panes containing several tabs into independent workspaces displayed as a tab bar">Regrouper tous les volets contenant plusieurs onglets en espaces de travail indépendants affichés sous forme de barre d'onglets.</text>
-<text s="Tab groups button">Bouton "Groupes d'onglets"</text>
-<text s="Tab groups button *&quot;Tab groups&quot; is required.">Bouton de gestion des groupes d'onglets.</text>
-<text s="Show frames button">Bouton "Afficher les cadres"</text>
+<text s="Tab groups">Groupes d&apos;onglet</text>
+<text s="Groups all panes containing several tabs into independent workspaces displayed as a tab bar">Regrouper tous les volets contenant plusieurs onglets en espaces de travail indépendants affichés sous forme de barre d&apos;onglets.</text>
+<text s="Tab groups button">Bouton &quot;Groupes d&apos;onglets&quot;</text>
+<text s="Tab groups button *&quot;Tab groups&quot; is required.">Gérer des groupes d&apos;onglets. *&quot;Tab groups&quot; est requis.</text>
+<text s="Show frames button">Bouton ‘Afficher les cadres&apos;</text>
 <text s="Frame pane">Cadre des panneaux.</text>
 <text s="Frame pane settings">Paramètres de cadre des panneaux</text>
 
@@ -617,26 +621,25 @@
 
 <text s="It takes time to apply these changes.">Appliquer ces changements prend du temps.</text>
 <text s="Folder button">Bouton de dossier</text>
-<text s="Hot button">Bouton "chaud"</text>
+<text s="Hot button">Bouton ‘chaud&apos;</text>
 <text s="Clip folder">Vade-mecum</text>
-<text s="Clip folder is a folder that can hold items from all over the folder and represent them to the user in a single folder.">Le dossier &quot;Vade-mecum&quot; est un aide-mémoire contenant toutes les informations que l'utilisateur conserve, pour consultation.</text>
-<text s="Create clip folder...">Créer un dossier "Vade-mecum"...</text>
+<text s="Clip folder is a folder that can hold items from all over the folder and represent them to the user in a single folder.">Le dossier &quot;Vade-mecum&quot; est un aide-mémoire contenant toutes les informations que l&apos;utilisateur conserve, pour consultation.</text>
+<text s="Create clip folder...">Créer un dossier ‘Vade-mecum&apos;...</text>
 <text s="Save clip folder">Sauvegarder le vade-mecum</text>
 <text s="NETSCAPE Bookmarks">Signets NETSCAPE</text>
 <text s="Folder list menu">Menu liste de dossier</text>
 <text s="Show a menu of folders listed in a text file">Afficher un menu de dossier listés dans un fichier texte</text>
 <text s="Multi process">Multitâches</text>
 <text s="Multi-process file operations.">Opérations sur fichier en multitâches.</text>
-<text s="Time over">Temps échu</text>
-<text s="s">secondes</text>
-<text s="Audio">Audio</text>
 
 
+
+<text s="File operations in TeraCopy.">Copier/déplacer les fichiers avec Teracopy</text>
 <text s="Different drive only">Lecteur différent uniquement</text>
 
-
+<text s="File operations in FastCopy.">Copier/déplacer les fichiers avec Fastcopy</text>
 <text s="Overwrite all">Ecraser tout</text>
-<text s="No Overwrite">Pas d'écrasement</text>
+<text s="No Overwrite">Pas d&apos;écrasement</text>
 <text s="Update">Mise à jour</text>
 <text s="Sync">Synchro</text>
 <text s="No Confirm">Pas de confirmation</text>
@@ -645,18 +648,18 @@
 <text s="File operations in Fire File Copy.">Traitement de fichier avec Fire File Copy.</text>
 <text s="Class">Classe</text>
 <text s="Preview">Aperçu</text>
-<text s="Displays the contents of selected text, image and media files in a preview pane.">Afficher le contenu des fichiers texte, image et média sélectionnés dans un panneau d'aperçu.</text>
+<text s="Displays the contents of selected text, image and media files in a preview pane.">Afficher le contenu des fichiers texte, image et média sélectionnés dans un panneau d&apos;aperçu.</text>
 <text s="Charset">Jeu de caractères</text>
 <text s="Limit">Limite</text>
 
 
 
 
-<text s="Preview window">Fenêtre d'aperçu</text>
-<text s="Displays the contents of selected text, image and media files in a external preview window.">Afficher le contenu des fichiers texte, image et média sélectionnés dans une fenêtre d'aperçu externe.</text>
-<text s="Tooltip preview">Aperçu d'infobulle</text>
-<text s="Image preview with tooltip.">Aperçu d'image avec infobulle.</text>
-<text s="Only Allow">N'autoriser que </text>
+<text s="Preview window">Fenêtre d&apos;aperçu</text>
+<text s="Displays the contents of selected text, image and media files in a external preview window.">Afficher le contenu des fichiers texte, image et média sélectionnés dans une fenêtre d&apos;aperçu externe.</text>
+<text s="Tooltip preview">Aperçu d&apos;infobulle</text>
+<text s="Image preview with tooltip.">Aperçu d&apos;image avec infobulle.</text>
+<text s="Only Allow">N&apos;autoriser que </text>
 
 <text s="Limits">Limites</text>
 <text s="Preview in background">Aperçu en arrière-plan</text>
@@ -664,13 +667,13 @@
 <text s="Menu image">Menu image</text>
 <text s="List the selected image files in a context menu.">Lister les fichiers images sélectionnés dans un menu contextuel.</text>
 <text s="Menu image plus">Image de manu plus</text>
-<text s="Preview in menu.">Aperçu de l'image au survol.</text>
+<text s="Preview in menu.">Aperçu de l&apos;image au survol.</text>
 <text s="Retouch">Retoucher</text>
-<text s="Basic image editor with rotation and scaling.">Editeur élémentaire d'images  avec rotation et mise à l'échelle.</text>
+<text s="Basic image editor with rotation and scaling.">Editeur élémentaire d&apos;images  avec rotation et mise à l&apos;échelle.</text>
 
 
 
-<text s="QuickLook">Coup d'œil</text>
+<text s="QuickLook">Coup d&apos;œil</text>
 <text s="QuickLook is required.">&quot;Quick Look&quot; est requis.</text>
 
 <text s="Detect string">Détecter la chaîne</text>
@@ -680,11 +683,11 @@
 <text s="IThumbnailProvider">IFournisseurVignette</text>
 <text s="IExtractImage">IextraireImage</text>
 <text s="Folder image">Image de dossier</text>
-<text s="Display an image in folder">Affiche la 1ère image d'un dossier dans son icône.</text>
-<text s="Cache">Cache d'image de dossier</text>
-<text s="Clear folder image cache">Vider le cache d'images de dossiers</text>
-<text s="Archive image">Image d'archive</text>
-<text s="Show archive images in preview etc. (.zip)">Afficher des images d'archive dans les aperçus, etc. (zip)</text>
+<text s="Display an image in folder">Affiche la 1ère image d&apos;un dossier dans son icône.</text>
+<text s="Cache">Cache d&apos;image de dossier</text>
+<text s="Clear folder image cache">Vider le cache d&apos;images de dossiers</text>
+<text s="Archive image">Image d&apos;archive</text>
+<text s="Show archive images in preview etc. (.zip)">Afficher des images d&apos;archive dans les aperçus, etc. (zip)</text>
 
 
 
@@ -715,26 +718,26 @@
 <text s="Order of Selected items">Séquence des éléments sélectionnés</text>
 <text s="Selected items are in the order they appear in the view.">Traiter les éléments dans la séquence de leur affichage.</text>
 <text s="Add &quot;Send to&quot; to the type.">Ajouter &quot;Envoyer vers&quot; au type</text>
-<text s="Execution filter">Filtre d'exécution</text>
+<text s="Execution filter">Filtre d&apos;exécution</text>
 <text s="Badge">Badge</text>
-<text s="Assign and sort items with a 1 to 5 rating system displayed as an icon badge">Attribuer et trie des éléments avec un système d'évaluation de 1 à 5 affiché sous forme de badge d'icône</text>
+<text s="Assign and sort items with a 1 to 5 rating system displayed as an icon badge">Attribuer et trie des éléments avec un système d&apos;évaluation de 1 à 5 affiché sous forme de badge d&apos;icône</text>
 
 
 
 
 
 
-<text s="badge:">badge :</text>
+<text s="badge:">badge&#160;:</text>
 <text s="Label">Etiquette</text>
-<text s="Context commands to manage user-defined tags for sorting and searching.">Commandes contextuelles pour gérer les balises définies par l'utilisateur pour le tri et la recherche.</text>
+<text s="Context commands to manage user-defined tags for sorting and searching.">Commandes contextuelles pour gérer les balises définies par l&apos;utilisateur pour le tri et la recherche.</text>
 <text s="Confirm">Confirmer</text>
 
 <text s="label:">étiquette :</text>
-<text s="Label button">Bouton "Etiquette"</text>
+<text s="Label button">Bouton ‘Etiquette&apos;</text>
 <text s="Label button *&quot;Label&quot; is required">Place un bouton “Etiquette”. *”Etiquette” est requis.</text>
-<text s="Label groups">Groupes d'étiquettes</text>
-<text s="Group management of the label. * Require &quot;Label&quot;">Gestion de groupe d'étiquettes. *”Etiquette” est requis.</text>
-<text s="Overlay label">Calque d'étiquette</text>
+<text s="Label groups">Groupes d&apos;étiquettes</text>
+<text s="Group management of the label. * Require &quot;Label&quot;">Gestion de groupe d&apos;étiquettes. *”Etiquette” est requis.</text>
+<text s="Overlay label">Calque d&apos;étiquette</text>
 <text s="Overlay label  * Require &quot;Label&quot;">Etiquette de superposition. *”Etiquette” est requis.</text>
 <text s="View flags">Afficher les marqueurs</text>
 <text s="Small icon">Petites icônes</text>
@@ -745,29 +748,26 @@
 <text s="Color labels">Colorier les étiquettes</text>
 <text s="Colored with filter">Colorier selon filtre</text>
 <text s="Colored with extension">Colorier selon extension</text>
-<text s="Colored with file extension">Colorier selon l'extension fichier</text>
+<text s="Colored with file extension">Colorier selon l&apos;extension fichier</text>
 <text s="Colored with attributes">Colorier selon attributs</text>
 
 
 
 
-
-
-
 <text s="Colored with modify date">Colorier selon date de modification</text>
-<text s="Colored with access date">Colorier selon date d'accès</text>
+<text s="Colored with access date">Colorier selon date d&apos;accès</text>
 <text s="Colored with create date">Colorier selon date de création</text>
-<text s="Extension icon changer">Changeur d'icône d'extension</text>
-<text s="Icon change with file extension">Changer l'icône selon l'extension de fichier.</text>
+<text s="Extension icon changer">Changeur d&apos;icône d&apos;extension</text>
+<text s="Icon change with file extension">Changer l&apos;icône selon l&apos;extension de fichier.</text>
 
 
-<text s="Path icon changer">Modificateur d'icône par chemin</text>
-<text s="Icon change with file path">Changer l'icône selon le chemin.</text>
-<text s="Filter icon changer">Modificateur d'icône par filtre</text>
-<text s="Icon change with filter">Changer l'icône selon le filtre</text>
-<text s="Icon changer">Modificateur d'icône</text>
+<text s="Path icon changer">Modificateur d&apos;icône par chemin</text>
+<text s="Icon change with file path">Changer l&apos;icône selon le chemin.</text>
+<text s="Filter icon changer">Modificateur d&apos;icône par filtre</text>
+<text s="Icon change with filter">Changer l&apos;icône selon le filtre</text>
+<text s="Icon changer">Modificateur d&apos;icône</text>
 <text s="Small">Petites</text>
-#RÉF !
+<text s="SysSmall">Icône de dossier dans l&apos;arbre </text>
 <text s="Large">Grandes</text>
 <text s="ExtraLarge">Très grandes</text>
 <text s="Folder closed">Dossier fermé</text>
@@ -783,29 +783,29 @@
 <text s="ADS Thumbnail">Vignettes ADS</text>
 <text s="NTFS Alternate Data Streams thumbnails (filename.ext:thumbnail.jpg)">Vignette des flux alternatifs de données NTFS (nomfichier.ext:vignette.jpg)</text>
 <text s="Overlay icon of nonexistent items">Icône de superposition des éléments inexistants</text>
-<text s="Show overlay icon in nonexistent items">Affiche l'icône de superposition dans des éléments inexistants.</text>
-<text s="Icon overlay">Calque d'icône</text>
-<text s="Icon overlay unlimited">Calque d'icône illimité</text>
+<text s="Show overlay icon in nonexistent items">Affiche l&apos;icône de superposition dans des éléments inexistants.</text>
+<text s="Icon overlay">Calque d&apos;icône</text>
+<text s="Icon overlay unlimited">Calque d&apos;icône illimité</text>
 <text s="Folder icon">Icône de dossier</text>
-<text s="Change App icon into a folder icon.">Change l'icône d'application en icône de dossier.</text>
-<text s="Application Icon">Icône d'application</text>
+<text s="Change App icon into a folder icon.">Change l&apos;icône d&apos;application en icône de dossier.</text>
+<text s="Application Icon">Icône d&apos;application</text>
 
-<text s="Replace the standard icon with Segoe UI MDL2 Assets. *Windows 10 is required">Remplace l'icône standard avec celle de &quot;Segoe UI MDL2 Assets&quot;. *Windows 10  est requis.</text>
+<text s="Replace the standard icon with Segoe UI MDL2 Assets. *Windows 10 is required">Remplace l&apos;icône standard avec celle de &quot;Segoe UI MDL2 Assets&quot;. *Windows 10  est requis.</text>
 <text s="Font settings">Paramètre de police</text>
 
 
 <text s="Frame">Cadre</text>
-
+<text s="Color settings of font and background.">Paramètres de couleur des police et arrière-plan.</text>
 <text s="Dark mode">Mode sombre</text>
-<text s="Background image">Image d'arrière-plan</text>
+<text s="Background image">Image d&apos;arrière-plan</text>
 <text s="Show underline">Afficher le soulignement</text>
 <text s="Size bar chart">Histogramme des tailles</text>
 <text s="Display size as bar chart">Afficher la taille en histogramme.</text>
 
 
 <text s="List width">Largeur de liste</text>
-<text s="Custom width list view">Personnaliser la largeur de l'affichage en liste.</text>
-<text s="Fast list mode">Mode "Liste rapide"</text>
+<text s="Custom width list view">Personnaliser la largeur de l&apos;affichage en liste.</text>
+<text s="Fast list mode">Mode ‘Liste rapide&apos;</text>
 <text s="Speed up scrolling in list mode. Require Window Vista or higher.">Accélérer le défilement en mode liste. *Windows Vista ou plu récent requis.</text>
 <text s="Gridlines">Quadrillage</text>
 <text s="Display gridlines when details view.">Afficher les lignes de quadrillages en vue &quot;Détails&quot;.</text>
@@ -813,25 +813,25 @@
 <text s="Display alternating stripes in the background when the detail view.">Afficher des bandes alternatives en arriè-plan de la vue &quot;Détails&quot;.</text>
 <text s="Stripes lite">Bandes légères</text>
 <text s="No emphasis">Pas de soulignage</text>
-<text s="Don't emphasize the selected column">Ne pas mettre la colonne soulignée en évidence.</text>
+<text s="Don&apos;t emphasize the selected column">Ne pas mettre la colonne soulignée en évidence.</text>
 <text s="User style sheet">Feuille de style utilisateur</text>
 <text s="User style sheet (CSS) settings">Paramètres de la feuille de style utilisateur (CSS).</text>
 <text s="VBS InputBox">Boîte de saisie VBS</text>
 <text s="Hide Title bar">Masquer la barre de titre</text>
 <text s="Grab bar">Barre de saisie</text>
 <text s="Grab button">Bouton de saisie</text>
-<text s="Minimize button">Bouton "Minimiser"</text>
+<text s="Minimize button">Bouton ‘Minimiser&apos;</text>
 
-<text s="Maximize button">Bouton "Maximiser"</text>
+<text s="Maximize button">Bouton ‘Maximiser&apos;</text>
 
 
-<text s="Close button">Bouton "Fermer"</text>
+<text s="Close button">Bouton ‘Fermer&apos;</text>
 
 <text s="To the top in the drag">En avant-plan au glissement</text>
-<text s="To the top window in the drag operation.">Mettre en avan-plan la fenêtre recevant un glissement.</text>
+<text s="To the top window in the drag operation.">Mettre en avant-plan la fenêtre recevant un glissement.</text>
 <text s="Confirm drop">Confirmer le dépôt</text>
 
-<text s="Right button drag-and-drop menu">Menu "Glisser-Déposer' du bouton droit</text>
+<text s="Right button drag-and-drop menu">Menu ‘Glisser-Déposer&apos; du bouton droit</text>
 
 
 
@@ -839,21 +839,21 @@
 <text s="FastCopy (Copy)">FastCopy (Copier)</text>
 <text s="FastCopy (Move)">FastCopy (Déplacer)</text>
 
-<text s="Folder menu settings">Paramètres du menu "Dossier"</text>
+<text s="Folder menu settings">Paramètres du menu ‘Dossier&apos;</text>
 <text s="Folder menu settings.">Etablir les paramètres du menu &quot;Dossier&quot;</text>
 
 
-<text s="Folder menu filter">Filtre du menu "Dossier"</text>
+<text s="Folder menu filter">Filtre du menu ‘Dossier&apos;</text>
 <text s="Add-on switcher">Commutateur de complément</text>
 <text s="Enable or disable add-ons.">Activer ou désactiver les compléments installés.</text>
 
 <text s="Launch the app on system startup">Lancer TE au démarrage système</text>
-<text s="Launch the app at system startup on Windows">Démarrer l'application au sémarrage de Windows.</text>
+<text s="Launch the app at system startup on Windows">Démarrer l&apos;application au démarrage de Windows.</text>
 
 
 <text s="Jump list">Liste de sauts</text>
 
-<text s="System tray">Zone de notification</text>
+<text s="System tray">Définir le comportement de l&apos;icône TE.</text>
 <text s="Minimize to tray">Minimiser dans la zone de notification</text>
 <text s="Close to tray">Fermer dans la zone de notification</text>
 <text s="Always in tray">Toujours dans la zone de notification</text>
@@ -866,7 +866,7 @@
 <text s="Restart">Redémarrer</text>
 <text s="Restart Tablacus Explorer">Fermer et redémarrer Tablacus Explorer.</text>
 <text s="Auto restart">Auto-redémarrage</text>
-<text s="Restart Tablacus Explorer after a period of inactivity.">Redémarrer Tablacus Explorer après une période d'inactivité.</text>
+<text s="Restart Tablacus Explorer after a period of inactivity.">Redémarrer Tablacus Explorer après une période d&apos;inactivité.</text>
 <text s="Auto save">Auto-sauvegarde</text>
 <text s="Save settings periodically.">Sauvegarde périodiquement les paramètres.</text>
 <text s="Save custom colors">Sauvegarder les couleurs personnelles</text>
@@ -876,20 +876,20 @@
 <text s="Multiple executions">Instances multiples</text>
 <text s="Always">Toujours</text>
 <text s="Open in new window">Ouvrir dans une nouvelle fenêtre</text>
-<text s="Shell execute hook">Remplacer l'Explorateur Windows</text>
-<text s="Open Instead of Explorer with shell execute hook. &quot;Save settings to the registry.&quot;">Ouvrir TE à la place de l'Explorateur en modifiant le Registre par &quot;shell execute hooks&quot;. &quot;Sauvegarder les paramètres dans le registre&quot;.</text>
+<text s="Shell execute hook">Remplacer l&apos;Explorateur Windows</text>
+<text s="Open Instead of Explorer with shell execute hook. &quot;Save settings to the registry.&quot;">Ouvrir TE à la place de l&apos;Explorateur en modifiant le Registre par &quot;shell execute hooks&quot;. &quot;Sauvegarder les paramètres dans le registre&quot;.</text>
 <text s="Registry">Registre</text>
 <text s="EnableShellExecuteHooks">Activer les modifications du registre</text>
 
 
 <text s="Open instead">Ouvrir à la place</text>
-<text s="Open instead of Explorer">Ouvrir TE à la place de l'Explorateur.</text>
+<text s="Open instead of Explorer">Ouvrir TE à la place de l&apos;Explorateur.</text>
 <text s="Real Folders">Dossiers réels</text>
 <text s="Special Folders">Dossiers spéciaux</text>
-<text s="Take over the Explorer view">Reprendre l'affichage de l'Explorateur Windows</text>
-<text s="Import Explorer">Importer l'Explorateur</text>
+<text s="Take over the Explorer view">Reprendre l&apos;affichage de l&apos;Explorateur Windows</text>
+<text s="Import Explorer">Importer l&apos;Explorateur</text>
 <text s="Auto update">Auto-mise à jour</text>
-<text s="Update Tablacus Explorer after a period of inactivity.">Mettre Tablacus Explorer à jour après une période d'inactivité.</text>
+<text s="Update Tablacus Explorer after a period of inactivity.">Mettre Tablacus Explorer à jour après une période d&apos;inactivité.</text>
 
 <text s="time 1m 1h">période 1m 1h</text>
 <text s="Add-ons updater">Actualiseur des compléments</text>
@@ -897,24 +897,27 @@
 
 <text s="WebView2 (Edge Blink engine)">WebView2 (Moteur Blink Edge)</text>
 <text s="WebView2 (Edge Blink browser engine) *Microsoft Edge WebView2 Runtime and Windows 10 is required.">WebView2 (Moteur Blink Edge). *Microsoft Edge WebView2 Runtime et Windows 10 sont requis.</text>
-<text s="Open Control Panel in Explorer">Ouvrir le Panneau de configuration dans l'Explorateur</text>
-<text s="Open Control Panel in Explorer.">Ouvrir le Panneau de configuration dans l'Explorateur</text>
+
+<text s="Edg">Edge</text>
+
+<text s="Open Control Panel in Explorer">Ouvrir le Panneau de configuration dans l&apos;Explorateur</text>
+<text s="Open Control Panel in Explorer.">Ouvrir le Panneau de configuration dans l&apos;Explorateur</text>
 <text s="Fix selection on sort and update dir">Correction de la sélection sur le répertoire de tri et de mise à jour</text>
 <text s="Fix selection on sort and update directory. (It becomes heavy when there are many selections on fix.)">Correction de la sélection sur le répertoire de tri et de mise à jour. (Il devient lourd quand il y a beaucoup de sélections sur le correctif.)</text>
-<text s="Fix Windows 11 bug">Correction : bogues Windows 11</text>
-<text s="Workaround: Tooltips problem.">Contournement : problèmes d'infobulle.</text>
-<text s="Fix Windows 10 Fall Creators Update bug">Correction : bogue de la mise à jour d'automne  de Creators Windows 10</text>
-<text s="Fix: Mouse Cursor jumping to corner of screen on selection.">Correction : à la sélection, le curseur saute au coin de l'écran.</text>
-<text s="Fix Windows 10 Creators Update (RS2) bug">Correction : bogue de la mise à jour (RS2) de Creators Windows 10</text>
+<text s="Fix Windows 11 bug">Correction&#160;: bogues Windows 11</text>
+<text s="Workaround: Tooltips problem.">Contournement : problèmes d&apos;infobulle.</text>
+<text s="Fix Windows 10 Fall Creators Update bug">Correction&#160;: bogue de la mise à jour d&apos;automne  de Creators Windows 10</text>
+<text s="Fix: Mouse Cursor jumping to corner of screen on selection.">Correction : à la sélection, le curseur saute au coin de l&apos;écran.</text>
+<text s="Fix Windows 10 Creators Update (RS2) bug">Correction&#160;: bogue de la mise à jour (RS2) de Creators Windows 10</text>
 <text s="Fix: The list is deviated or vanished.">Correction: da liste est déviée ou disparue.</text>
-<text s="Dll directory">Répertoire "DLL"</text>
+<text s="Dll directory">Répertoire ‘DLL&apos;</text>
 <text s="Total Commander File System Plug-in">Greffon de système de fichiersTotal Commander</text>
 <text s="Master Password">Mot de passe principal</text>
-<text s="Control Panel button">Bouton "Panneau de configuration"</text>
+<text s="Control Panel button">Bouton ‘Panneau de configuration&apos;</text>
 
 <text s="Run">Exécuter ...</text>
-<text s="Command in address bar">Commande dans la barre d'adresse</text>
-<text s="Command input in the address bar.">Possibiliter d'entrer des commandes dans la barre d'adresse.</text>
+<text s="Command in address bar">Commande dans la barre d&apos;adresse</text>
+<text s="Command input in the address bar.">Possibilité d&apos;entrer des commandes dans la barre d&apos;adresse.</text>
 
 <text s="Search by romanized Japanese. (C/Migemo version)">Recherche en japonais romanisé. (Version C / Migemo)</text>
 
