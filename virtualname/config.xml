@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
-    <MinVersion>2021.3.7</MinVersion>
-    <pubDate>Fri, 12 Mar 2021 00:00:00 GMT</pubDate>
+    <Version>1.07</Version>
+    <MinVersion>2022.1.16</MinVersion>
+    <pubDate>Wed, 05 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,7,8,9:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,9 @@
     <Name>Virtual name</Name>
     <Description>Virtual name</Description>
   </en>
+  <fr>
+    <Name>Nom virtuel</Name>
+  </fr>
   <ja>
     <Name>仮想名</Name>
   </ja>

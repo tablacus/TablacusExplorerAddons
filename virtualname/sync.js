@@ -24,16 +24,6 @@ Sync.VirtualName = {
 		return S_OK;
 	},
 
-	SetFilters: function (s) {
-		const cFV = te.Ctrls(CTRL_FV);
-		for (let i in cFV) {
-			const FV = cFV[i];
-			if (FV.FolderItem && PathMatchEx(FV.FolderItem.Path, Sync.VirtualName.Filter)) {
-				ColumnsReplace(FV, "Name", HDF_LEFT, Sync.VirtualName.ReplaceColumns);
-			}
-		}
-	},
-
 	ReplaceColumns: function (FV, pid, s) {
 		if (Sync.VirtualName.DB) {
 			return Sync.VirtualName.DB.Get(pid.Path);
@@ -47,6 +37,12 @@ Sync.VirtualName = {
 			Sync.VirtualName.tidSync = null;
 			Sync.VirtualName.SyncItem = {};
 		}, 500);
+	},
+
+	Init: function(FV) {
+		if (FV.FolderItem && PathMatchEx(FV.FolderItem.Path, Sync.VirtualName.Filter)) {
+			ColumnsReplace(FV, "Name", HDF_LEFT, Sync.VirtualName.ReplaceColumns);
+		}
 	}
 }
 
@@ -69,18 +65,17 @@ AddEvent("Load", function () {
 	if (Sync.VirtualName.Portable || Installed0) {
 		Sync.VirtualName.DB.Set('%Installed%', Installed1);
 	}
-	Sync.VirtualName.SetFilters();
 });
 
 AddEvent("ChangeNotify", function (Ctrl, pidls) {
 	if (Sync.VirtualName.DB) {
 		if (pidls.lEvent & (SHCNE_RENAMEFOLDER | SHCNE_RENAMEITEM)) {
-			let name = fso.GetFileName(pidls[0].Path);
+			let name = GetFileName(pidls[0].Path);
 			let s = Sync.VirtualName.DB.Get(pidls[0].Path);
 			if (s) {
 				Sync.VirtualName.SetSync(name, s);
 			} else {
-				name = fso.GetFileName(pidls[1].Path);
+				name = GetFileName(pidls[1].Path);
 				s = Sync.VirtualName.SyncItem[name];
 			}
 			if (s) {
@@ -89,12 +84,12 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 			Sync.VirtualName.DB.Set(pidls[0].Path, "");
 		}
 		if (pidls.lEvent & SHCNE_DELETE) {
-			const name = fso.GetFileName(pidls[0].Path);
+			const name = GetFileName(pidls[0].Path);
 			Sync.VirtualName.SetSync(name, Sync.VirtualName.DB.Get(pidls[0].Path));
 			Sync.VirtualName.DB.Set(pidls[0].Path, "");
 		}
 		if (pidls.lEvent & SHCNE_CREATE) {
-			const name = fso.GetFileName(pidls[0].Path);
+			const name = GetFileName(pidls[0].Path);
 			const Item = Sync.VirtualName.SyncItem[name];
 			if (Item) {
 				Sync.VirtualName.DB.Set(pidls[0].Path, Item);
@@ -103,11 +98,7 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 	}
 });
 
-AddEvent("ViewCreated", function (Ctrl) {
-	if (Ctrl.FolderItem && PathMatchEx(Ctrl.FolderItem.Path, Sync.VirtualName.Filter)) {
-		ColumnsReplace(Ctrl, "Name", HDF_LEFT, Sync.VirtualName.ReplaceColumns);
-	}
-});
+AddEvent("ViewCreated", Sync.VirtualName.Init);
 
 //Menu
 if (item.getAttribute("MenuExec")) {
@@ -127,3 +118,8 @@ if (item.getAttribute("MouseExec")) {
 }
 
 AddTypeEx("Add-ons", "Virtual name", Sync.VirtualName.Exec);
+
+const cFV = te.Ctrls(CTRL_FV);
+for (let i in cFV) {
+	Sync.VirtualName.Init(cFV[i]);
+}

@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.08</Version>
-    <MinVersion>2021.11.1</MinVersion>
-    <pubDate>Mon, 20 Dec 2021 00:00:00 GMT</pubDate>
+    <Version>1.09</Version>
+    <MinVersion>2022.1.16</MinVersion>
+    <pubDate>Wed, 05 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,8 +13,12 @@
     <Name>Change tab name</Name>
     <Description>Display a specific name, instead of the folder name, on tab for a specific folder.</Description>
   </en>
+  <fr>
+    <Name>Modifier le nom</Name>
+    <Description>Afficher un nom spécifique sur l&apos;onglet d&apos;un dossier, au lieu du nom de dossier</Description>
+  </fr>
   <ja>
-    <Name>タブに名前を付ける</Name>
+    <Name>タブ名を変更</Name>
     <Description>タブにフォルダ名ではない任意の名前を付けます。</Description>
   </ja>
   <zh>

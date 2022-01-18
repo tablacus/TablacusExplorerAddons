@@ -1,4 +1,4 @@
-const Addon_Id = "tabname";
+const Addon_Id = "fixedtabname";
 const item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);

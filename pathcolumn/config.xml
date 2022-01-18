@@ -1,25 +1,18 @@
 <TablacusExplorer>
   <General>
-    <Version>1.91</Version>
+    <Version>1.00</Version>
     <MinVersion>2022.1.16</MinVersion>
     <pubDate>Wed, 05 Jan 2022 00:00:00 GMT</pubDate>
-    <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
     <License>MIT License</License>
   </General>
   <en>
-    <Name>Tab plus</Name>
-    <Description>Tab plus</Description>
+    <Name>Path column</Name>
+    <Description>Path column</Description>
   </en>
-  <fr>
-    <Name>Tab+</Name>
-  </fr>
   <ja>
-    <Name>タブプラス</Name>
+    <Name>パス列</Name>
   </ja>
-  <zh>
-    <Name>進階頁籤</Name>
-  </zh>
 </TablacusExplorer>

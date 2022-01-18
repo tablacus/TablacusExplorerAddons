@@ -4,7 +4,7 @@ const item = GetAddonElement(Addon_Id);
 Sync.TabName = {
 	db: {},
 	nPos: GetNum(item.getAttribute("MenuPos")),
-	strName: item.getAttribute("MenuName") || GetText("Change tab name..."),
+	sName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name + "...",
 
 	Exec: function (Ctrl, pt) {
 		const FV = GetFolderView(Ctrl, pt);
@@ -25,7 +25,7 @@ Sync.TabName = {
 			Sync.TabName.db[path] = NewName;
 		} else {
 			delete Sync.TabName.db[path];
-			NewName = FV.FolderItem.Name;
+			NewName = GetTabName(FV);
 		}
 		FV.Title = NewName;
 		Sync.TabName.db[true] = true;
@@ -42,7 +42,7 @@ if (xml) {
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-		api.InsertMenu(hMenu, Sync.TabName.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.TabName.strName));
+		api.InsertMenu(hMenu, Sync.TabName.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.TabName.sName));
 		ExtraMenuCommand[nPos] = Sync.TabName.Exec;
 		return nPos;
 	});
@@ -63,21 +63,18 @@ AddEvent("GetTabName", function (Ctrl) {
 AddEvent("SaveConfig", function () {
 	if (Sync.TabName.db[true]) {
 		delete Sync.TabName.db[true];
-		const xml = CreateXml();
-		const root = xml.createElement("TablacusExplorer");
-
+		const xml = CreateXml(true);
 		for (let path in Sync.TabName.db) {
 			const name = Sync.TabName.db[path];
 			if (path && name) {
-				var item = xml.createElement("Item");
+				const item = xml.createElement("Item");
 				item.setAttribute("Path", path);
-				item.text = name;
-				root.appendChild(item);
+				SetXmlText(item, name);
+				xml.documentElement.appendChild(item);
 			}
 		}
-		xml.appendChild(root);
 		SaveXmlEx("tabname.xml", xml, true);
 	}
 });
 
-AddTypeEx("Add-ons", Sync.TabName.strName, Sync.TabName.Exec);
+AddTypeEx("Add-ons", "Change tab name", Sync.TabName.Exec);
