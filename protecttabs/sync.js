@@ -15,7 +15,7 @@ Sync.ProtectTabs = {
 };
 
 AddEvent("CanClose", function (Ctrl) {
-	if (Ctrl.type = CTRL_SB || Ctrl.type == CTRL_EB) {
+	if (Ctrl.type == CTRL_SB || Ctrl.type == CTRL_EB) {
 		if (Ctrl.Data.Protect) {
 			return S_FALSE;
 		}
