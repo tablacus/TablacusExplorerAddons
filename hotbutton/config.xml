@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.12</Version>
-    <MinVersion>2020.12.1</MinVersion>
-    <pubDate>Thu, 03 Dec 2020 00:00:00 GMT</pubDate>
+    <Version>1.13</Version>
+    <MinVersion>2022.1.16</MinVersion>
+    <pubDate>Thu, 20 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,5:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,9 @@
     <Name>Hot button</Name>
     <Description>Hot button</Description>
   </en>
+  <fr>
+    <Name>Bouton ‘chaud&apos;</Name>
+  </fr>
   <ja>
     <Name>ホットボタン</Name>
   </ja>

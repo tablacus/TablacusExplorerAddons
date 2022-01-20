@@ -147,6 +147,7 @@ Sync.Label = {
 			mii.fState = MFS_DISABLED;
 			api.SetMenuItemInfo(hMenu, nIndex, true, mii);
 		}
+		api.DeleteMenu(hMenu, -2, MF_BYCOMMAND);
 	},
 
 	ExecAdd: function (Ctrl, pt, Name, nVerb) {
@@ -653,27 +654,29 @@ AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 	}
 }, true);
 
-AddEvent("ColumnClick", function (Ctrl, iItem) {
-	const cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
-	if (cColumns[iItem * 2] == "System.Contact.Label") {
-		Ctrl.SortColumn = (Ctrl.SortColumn != 'System.Contact.Label') ? 'System.Contact.Label' : '-System.Contact.Label';
-		return S_OK;
-	}
-});
+if (GetNum(item.getAttribute("Sort"))) {
+	AddEvent("ColumnClick", function (Ctrl, iItem) {
+		const cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
+		if (cColumns[iItem * 2] == "System.Contact.Label") {
+			Ctrl.SortColumn = (Ctrl.SortColumn != 'System.Contact.Label') ? 'System.Contact.Label' : '-System.Contact.Label';
+			return S_OK;
+		}
+	});
 
-AddEvent("Sort", function (Ctrl) {
-	if (Sync.Label.tid[Ctrl.Id]) {
-		clearTimeout(Sync.Label.tid[Ctrl.Id]);
-		delete Sync.Label.tid[Ctrl.Id];
-	}
-	if (/\-?System\.Contact\.Label;$/.exec(Ctrl.GetSortColumn(1))) {
-		Sync.Label.tid[Ctrl.Id] = setTimeout(function () {
-			Sync.Label.Sort(Ctrl, Ctrl.GetSortColumn(1));
-		}, 99);
-	}
-});
+	AddEvent("Sort", function (Ctrl) {
+		if (Sync.Label.tid[Ctrl.Id]) {
+			clearTimeout(Sync.Label.tid[Ctrl.Id]);
+			delete Sync.Label.tid[Ctrl.Id];
+		}
+		if (/\-?System\.Contact\.Label;$/.exec(Ctrl.GetSortColumn(1))) {
+			Sync.Label.tid[Ctrl.Id] = setTimeout(function () {
+				Sync.Label.Sort(Ctrl, Ctrl.GetSortColumn(1));
+			}, 99);
+		}
+	});
 
-AddEvent("Sorting", Sync.Label.Sort);
+	AddEvent("Sorting", Sync.Label.Sort);
+}
 
 AddEvent("FilterChanged", function (Ctrl) {
 	const res = /^\*?label:.+/i.exec(Ctrl.FilterView);

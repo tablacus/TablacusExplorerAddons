@@ -78,6 +78,10 @@ AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
 					ptm.y = rc.top;
 					api.ClientToScreen(Ctrl.hwndList, ptm);
 					setTimeout(function (Item, ptm) {
+						const hwnd = Sync.HotButton.hTooltop;
+						if (hwnd && api.IsWindowVisible(hwnd)) {
+							api.ShowWindow(hwnd, SW_HIDE);
+						}
 						Sync.HotButton.IsMenuOpened = true;
 						const FolderItem = FolderMenu.Open(Item, ptm.x, ptm.y, "*", 1);
 						Sync.HotButton.IsMenuOpened = false;
@@ -123,22 +127,26 @@ AddEvent("Load", function () {
 	}
 });
 
-AddEvent("ToolTip", function (Ctrl, Index) {
-	if (Ctrl.Type == CTRL_SB && Index >= 0) {
-		const pid = Ctrl.Item(Index);
-		if (pid) {
-			if (pid.IsFolder || api.ILCreateFromPath(pid.Path).Enum) {
-				if (Sync.HotButton.NoInfotip || Sync.HotButton.IsMenuOpened) {
-					return "";
+AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
+	if (Ctrl.Type == CTRL_SB) {
+		if (Index >= 0) {
+			const pid = Ctrl.Item(Index);
+			if (pid) {
+				if (pid.IsFolder || api.ILCreateFromPath(pid.Path).Enum) {
+					if (Sync.HotButton.NoInfotip || Sync.HotButton.IsMenuOpened) {
+						return "";
+					}
 				}
 			}
 		}
+	} else if (Ctrl.Type == CTRL_TE) {
+		Sync.HotButton.hTooltop = hwnd;
 	}
 }, true);
 
 //Image
 const w = 14 * screen.deviceYDPI / 96;
-const s = api.PathUnquoteSpaces(ExtractMacro(te, item.getAttribute("Icon")));
+const s = ExtractPath(te, item.getAttribute("Icon"));
 if (s) {
 	Sync.HotButton.Image = MakeImgData(s, 0, w) || api.CreateObject("WICBitmap").FromFile(s);
 }
@@ -147,8 +155,7 @@ if (Sync.HotButton.Image) {
 } else {
 	const hdc = api.GetDC(te.hwnd);
 	const rc = api.Memory("RECT");
-	rc.right = w;
-	rc.bottom = w;
+	api.SetRect(rc, 0, 0, w, w);
 	const hbm = api.CreateCompatibleBitmap(hdc, w, w);
 	const hmdc = api.CreateCompatibleDC(hdc);
 	const hOld = api.SelectObject(hmdc, hbm);

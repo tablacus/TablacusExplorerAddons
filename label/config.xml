@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.43</Version>
-    <MinVersion>2021.11.1</MinVersion>
-    <pubDate>Thu, 16 Dec 2021 00:00:00 GMT</pubDate>
+    <Version>1.44</Version>
+    <MinVersion>2022.1.16</MinVersion>
+    <pubDate>Thu, 20 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,5,7,8,9:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,10 @@
     <Name>Label</Name>
     <Description>Context commands to manage user-defined tags for sorting and searching.</Description>
   </en>
+  <fr>
+    <Name>Etiquette</Name>
+    <Description>Commandes contextuelles pour gérer les balises définies par l&apos;utilisateur pour le tri et la recherche.</Description>
+  </fr>
   <ja>
     <Name>ラベル</Name>
   </ja>

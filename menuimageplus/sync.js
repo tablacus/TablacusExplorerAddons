@@ -17,7 +17,6 @@ Sync.MenuImagePlus = {
 		if (image) {
 			if (image = GetThumbnail(image, Sync.MenuImagePlus.Size, true)) {
 				const mii = api.Memory("MENUITEMINFO");
-				mii.cbSize = mii.Size;
 				mii.fMask = MIIM_ID | MIIM_BITMAP;
 				mii.wID = wID;
 				AddMenuImage(mii, image);
@@ -26,6 +25,7 @@ Sync.MenuImagePlus = {
 		} else {
 			RemoveSubMenu(hParent, wID);
 		}
+		api.DeleteMenu(hMenu, -2, MF_BYCOMMAND);
 	}
 };
 
