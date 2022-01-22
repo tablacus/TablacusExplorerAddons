@@ -5,13 +5,13 @@ Addons.FolderMenuFilter = {
 		if (!path) {
 			return;
 		}
-		path = await api.PathUnquoteSpaces(path);
+		path = PathUnquoteSpaces(path);
 		if (await api.GetKeyState(VK_SHIFT) < 0) {
-			path = BuildPath("*", await fso.GetFileName(path));
+			path = BuildPath("*", GetFileName(path));
 		}
 		if (path || path === ssfDESKTOP) {
-			const ar = [document.F.Hidden.value.replace(/\s+$/, ""), path];
-			document.F.Hidden.value = (ar[0] ? ar.join("\n") : path).replace(/^\s+|\s$/g, "");
+			const ar = [document.F.TextContent.value.replace(/\s+$/, ""), path];
+			document.F.TextContent.value = (ar[0] ? ar.join("\n") : path).replace(/^\s+|\s$/g, "");
 		}
 	},
 
@@ -23,4 +23,26 @@ Addons.FolderMenuFilter = {
 	BrowseFolder: async function () {
 		this.AddPath(await BrowseForFolder(ssfDESKTOP));
 	}
+}
+
+GetXmlAttr = async function (item, n, s) {
+	if (n == "TextContent") {
+		if (!s) {
+			s = ui_.AttrPath;
+			if (!s) {
+				ui_.AttrPath = await $.GetAddonElement(Addon_Id).getAttribute("Path");
+				s = ui_.AttrPath;
+			}
+		}
+	}
+	return s;
+}
+
+SetXmlAttr = async function (item, n, s) {
+	if (n == "TextContent") {
+		if (ui_.AttrPath) {
+			item.removeAttribute("Path");
+		}
+	}
+	return s;
 }

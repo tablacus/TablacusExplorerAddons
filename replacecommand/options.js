@@ -68,7 +68,6 @@ Addons.ReplaceCommand = {
 		sr = '^(' + sr.substr(0, arg0.length + d) + ')' + sr.substr(arg0.length + d) + "$";
 		arg = api.CommandLineToArgv(s);
 		arg0 = await arg[0];
-		debugger;
 		s = "$1" + s.substr(arg0.length + d);
 		document.F.elements["_aqs"].value = spliter + sr + spliter + s + spliter + "i";
 	},
@@ -76,11 +75,11 @@ Addons.ReplaceCommand = {
 	Add: function () {
 		const s = document.F.elements["_aqs"].value;
 		if (/^[\/\|!#]/.test(s)) {
-			const r = document.F.re.value;
+			const r = document.F.TextContent.value;
 			if (!r || /\n$/.test(r)) {
-				document.F.re.value += s;
+				document.F.TextContent.value += s;
 			} else {
-				document.F.re.value += "\n" + s;
+				document.F.TextContent.value += "\n" + s;
 			}
 		}
 	},
@@ -94,4 +93,26 @@ Addons.ReplaceCommand = {
 		}
 		return Item;
 	}
+}
+
+GetXmlAttr = async function (item, n, s) {
+	if (n == "TextContent") {
+		if (!s) {
+			s = ui_.AttrPath;
+			if (!s) {
+				ui_.AttrPath = await $.GetAddonElement(Addon_Id).getAttribute("re");
+				s = ui_.AttrPath;
+			}
+		}
+	}
+	return s;
+}
+
+SetXmlAttr = async function (item, n, s) {
+	if (n == "TextContent") {
+		if (ui_.AttrPath) {
+			item.removeAttribute("re");
+		}
+	}
+	return s;
 }

@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.08</Version>
-    <MinVersion>2021.11.1</MinVersion>
-    <pubDate>Mon, 20 Dec 2021 00:00:00 GMT</pubDate>
+    <Version>1.09</Version>
+    <MinVersion>2022.1.21</MinVersion>
+    <pubDate>Sat, 22 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,10 @@
     <Name>Replace command</Name>
     <Description>Replace the command with the regular expression.</Description>
   </en>
+  <fr>
+    <Name>Remplacer la commande</Name>
+    <Description>Remplacer la commande par une expression régulière.</Description>
+  </fr>
   <ja>
     <Name>コマンドの差し替え</Name>
     <Description>正規表現を使ってコマンドを差し替えます。</Description>

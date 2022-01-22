@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2021.1.5</MinVersion>
-    <pubDate>Wed, 06 Jan 2021 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2022.1.21</MinVersion>
+    <pubDate>Sat, 22 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,7 +13,13 @@
     <Name>Folder menu filter</Name>
     <Description>Folder menu filter</Description>
   </en>
+  <fr>
+    <Name>Filtre du menu ‘Dossier&apos;</Name>
+  </fr>
   <ja>
     <Name>フォルダメニューフィルタ</Name>
   </ja>
+  <zh>
+    <Name>屏蔽資料夾選單項目</Name>
+  </zh>
 </TablacusExplorer>

@@ -2,7 +2,7 @@ const Addon_Id = "foldermenufilter";
 const item = GetAddonElement(Addon_Id);
 
 Sync.FolderMenuFilter = {
-	Hidden: ExtractFilter(GetAddonOption(Addon_Id, "Hidden") || "-"),
+	Hidden: ExtractFilter(item.text || item.textContent || item.getAttribute("Hidden") || "-"),
 };
 
 AddEvent("FolderMenuAddMenuItem", function (hMenu, mii, FolderItem, bSelect) {

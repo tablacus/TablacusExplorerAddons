@@ -1,7 +1,7 @@
 const Addon_Id = "replacecommand";
 const item = GetAddonElement(Addon_Id);
 Sync.ReplaceCommand = {
-	lines: (GetAddonOption("replacecommand", "re") || "").split("\n")
+	lines: (item.text || item.textContent || item.getAttribute("re") || "").split("\n")
 }
 
 AddEvent("ExtractMacro", [/./, function (Ctrl, s, re) {

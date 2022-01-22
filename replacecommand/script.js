@@ -1,5 +1,5 @@
 const Addon_Id = "replacecommand";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("re", "/^(notepad\\.exe)/$1/i");
 }

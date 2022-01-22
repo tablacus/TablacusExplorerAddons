@@ -1,21 +1,21 @@
 <label>Regular Expression</label>/<label>Replace text</label>/<label>Options</label>
 <span style="float: right">
-  <input type="button" value="Browse..." onclick="RefX('re', true, this)" />
+  <input type="button" value="Browse..." onclick="RefX('TextContent', true, this)" />
 </span>
-<textarea name="re" style="width: 100%;  height: 250pt; height: calc(100% - 9em)">
+<textarea name="TextContent" style="width: 100%;  height: 250pt; height: calc(100% - 9em)">
 </textarea>
 <table style="width: 100%">
   <tr>
     <td style="vertical-align: middle; white-space: nowrap"><label>Path</label></td>
     <td style="width: 100%"><input type="text" id="_file" style="width: 100%"></td>
-    <td><input type="button" value="..." onclick="Addons.ReplaceCommand.BrowseFile()"></td>
+    <td><input type="button" value="Browse..." onclick="Addons.ReplaceCommand.BrowseFile()"></td>
   </tr>
 </table>
 <table style="width: 100%">
   <tr>
     <td style="vertical-align: middle; white-space: nowrap"><label>Verb</label></td>
     <td style="width: 100%"><input type="text" id="_verb" value="default" style="width: 100%"></td>
-    <td><input type="button" value="..." onclick="Addons.ReplaceCommand.BrowseVerb(this)"></td>
+    <td><input type="button" value="Browse..." onclick="Addons.ReplaceCommand.BrowseVerb(this)"></td>
     <td><input type="button" value="Get" onclick="Addons.ReplaceCommand.Get()"></td>
     <td><input type="button" value="Regular Expression" onclick="Addons.ReplaceCommand.SetRE()"></td>
   </tr>
@@ -23,7 +23,7 @@
 <table style="width: 100%">
   <tr>
     <td style="width: 100%"><input type="text" name="_aqs" style="width: 100%"></td>
-    <td><input type="button" value="..." onclick="Addons.ReplaceCommand.BrowseFile1()"></td>
+    <td><input type="button" value="Browse..." onclick="Addons.ReplaceCommand.BrowseFile1()"></td>
     <td><input type="button" value="Add" onclick="Addons.ReplaceCommand.Add()"></td>
   </tr>
 </table>

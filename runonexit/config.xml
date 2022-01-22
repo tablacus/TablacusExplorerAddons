@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.01</Version>
-    <MinVersion>2020.12.26</MinVersion>
-    <pubDate>Mon, 28 Dec 2020 00:00:00 GMT</pubDate>
+    <Version>1.02</Version>
+    <MinVersion>2022.1.21</MinVersion>
+    <pubDate>Sat, 22 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,7 +13,13 @@
     <Name>Run on exit</Name>
     <Description>Run on exit</Description>
   </en>
+  <fr>
+    <Name>Exécuter en quittant</Name>
+  </fr>
   <ja>
     <Name>終了時に実行</Name>
   </ja>
+  <zh>
+    <Name>離開程式時執行</Name>
+  </zh>
 </TablacusExplorer>

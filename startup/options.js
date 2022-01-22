@@ -10,18 +10,38 @@ for (let i = 0; i < arFunc.length; i++) {
 	o.value = arFunc[i];
 	o.innerText = (await GetText(arFunc[i])).replace(/&|\.\.\.$/g, "").replace(/\(\w\)/, "");
 }
-setTimeout(async function () {
-	const o = document.F.Type;
-	const p = await api.CreateObject("Object");
-	p.s = document.F.Path.value;
-	await MainWindow.OptionDecode(o[o.selectedIndex].value, p);
-	document.F.Path.value = await p.s;
-}, 999);
 
-SaveLocation = async function () {
-	const o = document.F.Type;
-	const p = await api.CreateObject("Object");
-	p.s = document.F.Path.value;
-	await MainWindow.OptionEncode(o[o.selectedIndex].value, p);
-	document.F.Path.value = await p.s;
+GetXmlAttr = async function (item, n, s) {
+	if (n == "TextContent") {
+		const p = await api.CreateObject("Object");
+		if (!s && !ui_.AttrType) {
+			s = ui_.AttrPath;
+			if (!s) {
+				ui_.AttrPath = await $.GetAddonElement(Addon_Id).getAttribute("Path");
+				s = ui_.AttrPath;
+			}
+		}
+		p.s = s;
+		await MainWindow.OptionDecode(ui_.AttrType || item.getAttribute("Type"), p);
+		s = await p.s;
+	}
+	return s;
 }
+
+SetXmlAttr = async function (item, n, s) {
+	if (n == "TextContent") {
+		if (ui_.AttrPath) {
+			item.removeAttribute("Path");
+		}
+		const p = await api.CreateObject("Object");
+		p.s = s;
+		await MainWindow.OptionEncode(ui_.AttrType, p);
+		s = await p.s;
+	}
+	return s;
+}
+
+SaveLocation = function () {
+	const o = document.F.Type;
+	ui_.AttrType = o[o.selectedIndex].value;
+};

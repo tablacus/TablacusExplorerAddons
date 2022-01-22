@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2021.5.4</MinVersion>
-    <pubDate>Wed, 05 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2022.1.21</MinVersion>
+    <pubDate>Sat, 22 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,8 +13,15 @@
     <Name>Startup settings</Name>
     <Description>Startup settings of Tablacus Explorer.</Description>
   </en>
+  <fr>
+    <Name>Paramètres de démarrage</Name>
+    <Description>Définir les paramètres de démarrage de Tablacus Explorer.</Description>
+  </fr>
   <ja>
     <Name>開始時の設定</Name>
     <Description>Tablacus Explorer開始時の設定</Description>
   </ja>
+  <zh>
+    <Name>啟動程式時執行</Name>
+  </zh>
 </TablacusExplorer>

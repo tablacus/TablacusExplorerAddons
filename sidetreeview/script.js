@@ -1,5 +1,5 @@
 const Addon_Id = "sidetreeview";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("List", 1);
 }
@@ -10,7 +10,7 @@ if (window.Addon == 1) {
 		Depth: GetNum(item.getAttribute("Depth")),
 		Collapse: GetNum(item.getAttribute("Collapse")),
 		Height: item.getAttribute("Height") || '100%',
-		Root: item.getAttribute("Root"),
+		Root: item.text || item.textContent || item.getAttribute("Root"),
 		tid: {},
 
 		Init: async function () {
@@ -131,5 +131,5 @@ if (window.Addon == 1) {
 	});
 	Addons.SideTreeView.Create();
 } else {
-	SetTabContents(0, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }
