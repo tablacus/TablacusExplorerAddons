@@ -6,7 +6,7 @@ if (window.Addon == 1) {
 			if (item.getAttribute("Shift") && await api.GetKeyState(VK_SHIFT) < 0) {
 				return;
 			}
-			const s = item.text || item.textContent || await $.GetAddonElement(Addon_Id).item.getAttribute("Path");
+			const s = item.text || item.textContent || await $.GetAddonElement(Addon_Id).getAttribute("Path");
 			Exec(te, s, item.getAttribute("Type"), ui_.hwnd);
 		});
 	}
