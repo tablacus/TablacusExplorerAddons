@@ -1,6 +1,6 @@
 const Addon_Id = "synchronize";
 const Default = "ToolBar2Left";
-let item = await GetAddonElement(Addon_Id);
+let item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Menu", "Edit");
 	item.setAttribute("MenuPos", -1);

@@ -46,7 +46,7 @@ AddEvent("Load", function () {
 					if (f) {
 						const pid = f.ParseName(GetFileName(Ctrl.FolderItem.Path));
 						if (pid) {
-							FV.Navigate(pid, SBSP_SAMEBROWSER);
+							FV.Navigate(pid, GetNavigateFlags(FV));
 						}
 					}
 				}
@@ -54,7 +54,7 @@ AddEvent("Load", function () {
 		} else if (api.ILIsParent(Ctrl, Prev, true)) {
 			Sync.Synchronize.Run(Ctrl, Prev, function (Ctrl, FV, parent) {
 				if (SameText(parent, GetFileName(FV.FolderItem.Path))) {
-					FV.Navigate(null, SBSP_PARENT);
+					FV.Navigate(null, SBSP_PARENT | GetNavigateFlags(FV));
 				}
 			});
 		}

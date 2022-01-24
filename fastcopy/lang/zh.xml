@@ -1,0 +1,9 @@
+<resources>
+	<text s="Automatically start">自動開始</text>
+	<text s="Different drive only">僅用於跨磁碟移動</text>
+	<text s="Overwrite all">覆蓋同名檔</text>
+	<text s="No Overwrite">略過同名檔</text>
+	<text s="Update">覆蓋同名舊檔</text>
+	<text s="Sync">同步目的地</text>
+	<text s="No Confirm">無需確認</text>
+</resources>

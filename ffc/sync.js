@@ -100,17 +100,7 @@ AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		case CTRL_SB:
 		case CTRL_EB:
 		case CTRL_TV:
-			let Dest = Ctrl.HitTest(pt);
-			if (Dest) {
-				if (!fso.FolderExists(Dest.Path)) {
-					if (api.DropTarget(Dest)) {
-						return E_FAIL;
-					}
-					Dest = Ctrl.FolderItem;
-				}
-			} else {
-				Dest = Ctrl.FolderItem;
-			}
+			const Dest = GetDropTargetItem(Ctrl, Ctrl.hwndList, pt);
 			if (Dest && Sync.FFC.FO(Ctrl, dataObj, Dest, grfKeyState, pt, pdwEffect, true)) {
 				return S_OK
 			}

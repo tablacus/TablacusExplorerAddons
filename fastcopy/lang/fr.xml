@@ -1,0 +1,9 @@
+<resources>
+	<text s="Automatically start">Auto-démarrage</text>
+	<text s="Different drive only">Lecteur différent uniquement</text>
+	<text s="Overwrite all">Ecraser tout</text>
+	<text s="No Overwrite">Pas d&apos;écrasement</text>
+	<text s="Update">Mise à jour</text>
+	<text s="Sync">Synchro</text>
+	<text s="No Confirm">Pas de confirmation</text>
+</resources>
