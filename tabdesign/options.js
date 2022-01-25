@@ -82,3 +82,17 @@ ImportCss1 = function (cls, name, name2) {
 		o.value = (cls['.' + name] || "").replace(/^ {1,2}|\s*$/gm, "");
 	}
 }
+
+GetXmlAttr = async function (item, n, s) {
+	if (/\xa0/.test(s)) {
+		return s.replace(/\xa0/g, "\n");
+	}
+	return s;
+}
+
+SetXmlAttr = async function (item, n, s) {
+	if (/\n/.test(s)) {
+		return s.replace(/\n/g, "\xa0");
+	}
+	return s;
+}
