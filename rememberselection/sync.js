@@ -67,7 +67,8 @@ Sync.RememberSelection = {
 		for (let n in Sync.RememberSelection.db) {
 			let v = Sync.RememberSelection.db[n];
 			if ("string" !== typeof v) {
-				if (!v.Item(-1).IsFolder || !v.Item(-1).IsFileSystem) {
+				const Item = v.Item(-1);
+				if (!Item || !Item.IsFolder || !Item.IsFileSystem) {
 					continue;
 				}
 				const ar = [v.Data];

@@ -164,22 +164,24 @@ AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 		ExtraMenuCommand[nPos] = Sync.History1.Remove;
 	}
 	return nPos;
-});
+}, true);
 
 AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 	if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
-		if (Sync.History1.IsHandle(Ctrl)) {
-			if ((wParam & 0xfff) == CommandID_DELETE - 1) {
+		if ((wParam & 0xfff) == CommandID_DELETE - 1) {
+			if (Sync.History1.IsHandle(Ctrl)) {
+				Sync.History1.Remove(Ctrl);
 				return S_OK;
 			}
 		}
 	}
-});
+}, true);
 
 AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 	if (Verb == CommandID_DELETE - 1) {
 		const FV = ContextMenu.FolderView;
 		if (FV && Sync.History1.IsHandle(FV)) {
+			Sync.History1.Remove(FV);
 			return S_OK;
 		}
 	}
@@ -193,7 +195,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 			}
 		}
 	}
-});
+}, true);
 
 AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 	if (Ctrl.Type <= CTRL_EB) {

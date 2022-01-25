@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2021.5.4</MinVersion>
-    <pubDate>Wed, 05 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2022.1.25</MinVersion>
+    <pubDate>Tue, 25 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,8 +13,15 @@
     <Name>Entered history</Name>
     <Description>Change the addressbar drop-down to the entered history.</Description>
   </en>
+  <fr>
+    <Name>Historique entré</Name>
+    <Description>Remplacer la liste déroulante de la barre d&apos;adresse par l&apos;historique entré.</Description>
+  </fr>
   <ja>
     <Name>入力履歴</Name>
     <Description>アドレスバーのドロップダウンを入力履歴に変更</Description>
   </ja>
+  <zh>
+    <Name>位址輸入記錄</Name>
+  </zh>
 </TablacusExplorer>

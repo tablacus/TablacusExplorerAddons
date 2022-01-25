@@ -30,7 +30,7 @@ GetXmlAttr = async function (item, n, s) {
 		if (!s) {
 			s = ui_.AttrPath;
 			if (!s) {
-				ui_.AttrPath = await $.GetAddonElement(Addon_Id).getAttribute("Path");
+				ui_.AttrPath = await $.GetAddonElement(Addon_Id).getAttribute("Hidden");
 				s = ui_.AttrPath;
 			}
 		}
@@ -41,7 +41,7 @@ GetXmlAttr = async function (item, n, s) {
 SetXmlAttr = async function (item, n, s) {
 	if (n == "TextContent") {
 		if (ui_.AttrPath) {
-			item.removeAttribute("Path");
+			item.removeAttribute("Hidden");
 		}
 	}
 	return s;

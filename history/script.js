@@ -1,6 +1,6 @@
 const Addon_Id = "history";
 const Default = "ToolBar2Left";
-let item = await GetAddonElement(Addon_Id);
+let item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Menu", "File");
 	item.setAttribute("MenuPos", -1);
@@ -8,8 +8,6 @@ if (!item.getAttribute("Set")) {
 	item.setAttribute("KeyExec", 1);
 	item.setAttribute("KeyOn", "All");
 	item.setAttribute("Key", "Ctrl+H");
-
-	item.setAttribute("Save", 1000);
 }
 if (window.Addon == 1) {
 	AddEvent("Layout", async function () {
@@ -23,5 +21,5 @@ if (window.Addon == 1) {
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();
-	SetTabContents(0, "General", '<label>Number of items</label><br><input type="text" name="Save" size="4">');
+	SetTabContents(0, "General", '<label>Number of items</label><br><input type="text" name="Save" placeholder="1000" class="number">');
 }

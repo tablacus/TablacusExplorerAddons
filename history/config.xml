@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.17</Version>
-    <MinVersion>2021.5.4</MinVersion>
-    <pubDate>Wed, 05 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.18</Version>
+    <MinVersion>2022.1.25</MinVersion>
+    <pubDate>Tue, 25 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,5,6,7,8,9:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -13,6 +12,9 @@
   <en>
     <Name>History</Name>
     <Description>History</Description>
+  </en>
+  <en>
+    <Name>Historique</Name>
   </en>
   <ja>
     <Name>履歴</Name>
