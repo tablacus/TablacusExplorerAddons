@@ -1,5 +1,5 @@
 const Addon_Id = "clipfolder";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("Filter", "*.cfu");
 	item.setAttribute("MenuExec", 1);

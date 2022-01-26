@@ -17,7 +17,7 @@ InitDialog = async function () {
 	if (/^([1-9]+\d*)$/.test(path)) {
 		const Item = /^([1-9]+\d*)$/.test(path) ? await api.ILCreateFromPath(path) : await api.SHSimpleIDListFromPath(path, FILE_ATTRIBUTE_DIRECTORY, new Date(ar[0] - 0).getTime(), 0);
 		Item.IsFolder;
-		path = await api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+		path = await api.GetDisplayNameOf(Item, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 	}
 	document.title = path + " - Tablacus Explorer";
 	let ar = await MainWindow.Common.Remember.db[g_path];

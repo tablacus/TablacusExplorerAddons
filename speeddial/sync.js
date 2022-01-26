@@ -27,8 +27,15 @@ Sync.SpeedDial = {
 			return true;
 		}
 		return false;
-	}
+	},
 
+	ProcessMenu: function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
+		const FV = GetFolderView(Ctrl);
+		if (Sync.SpeedDial.IsHandle(FV)) {
+			RemoveCommand(hMenu, ContextMenu, "delete;rename");
+		}
+		return nPos;
+	}
 }
 
 const ar = ReadTextFile(Sync.SpeedDial.CONFIG, true).split(/\r?\n/);
@@ -105,11 +112,16 @@ AddEvent("GetIconImage", function (Ctrl, BGColor, bSimple) {
 	}
 });
 
-AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-	if (Sync.SpeedDial.IsHandle(Ctrl)) {
-		RemoveCommand(hMenu, ContextMenu, "delete;rename");
+AddEvent("Context", Sync.SpeedDial.ProcessMenu);
+
+AddEvent("File", Sync.SpeedDial.ProcessMenu);
+
+AddEvent("BeginLabelEdit", function (Ctrl, Name) {
+	if (Ctrl.Type <= CTRL_EB) {
+		if (Sync.SpeedDial.IsHandle(Ctrl)) {
+			return 1;
+		}
 	}
-	return nPos;
 });
 
 AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {

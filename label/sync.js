@@ -445,6 +445,20 @@ Sync.Label = {
 			Sync.Label.tidSync = null;
 			Sync.Label.SyncItem = {};
 		}, 500);
+	},
+
+	ProcessMenu: function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
+		const FV = GetFolderView(Ctrl);
+		if (Sync.Label.IsHandle(FV)) {
+			RemoveCommand(hMenu, ContextMenu, "delete;rename");
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetTextR("@shell32.dll,-31368"));
+			ExtraMenuCommand[nPos] = OpenContains;
+			if (Sync.Label.IsWritable(FV)) {
+				api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
+				ExtraMenuCommand[nPos] = Sync.Label.ExecRemoveItems;
+			}
+		}
+		return nPos;
 	}
 }
 
@@ -633,18 +647,9 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 	}
 });
 
-AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-	if (Sync.Label.IsHandle(Ctrl)) {
-		RemoveCommand(hMenu, ContextMenu, "delete;rename");
-		api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
-		ExtraMenuCommand[nPos] = OpenContains;
-		if (Sync.Label.IsWritable(Ctrl)) {
-			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
-			ExtraMenuCommand[nPos] = Sync.Label.ExecRemoveItems;
-		}
-	}
-	return nPos;
-});
+AddEvent("Context", Sync.Label.ProcessMenu);
+
+AddEvent("File", Sync.Label.ProcessMenu);
 
 AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 	if (Ctrl.Type <= CTRL_EB) {
@@ -655,14 +660,6 @@ AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 }, true);
 
 if (GetNum(item.getAttribute("Sort"))) {
-	AddEvent("ColumnClick", function (Ctrl, iItem) {
-		const cColumns = api.CommandLineToArgv(Ctrl.Columns(1));
-		if (cColumns[iItem * 2] == "System.Contact.Label") {
-			Ctrl.SortColumn = (Ctrl.SortColumn != 'System.Contact.Label') ? 'System.Contact.Label' : '-System.Contact.Label';
-			return S_OK;
-		}
-	});
-
 	AddEvent("Sort", function (Ctrl) {
 		if (Sync.Label.tid[Ctrl.Id]) {
 			clearTimeout(Sync.Label.tid[Ctrl.Id]);

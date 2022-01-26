@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.14</Version>
-    <MinVersion>2020.12.31</MinVersion>
-    <pubDate>Sun, 03 Jan 2021 00:00:00 GMT</pubDate>
+    <Version>1.15</Version>
+    <MinVersion>2022.1.25</MinVersion>
+    <pubDate>Wed, 26 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,10 @@
     <Name>Speed dial</Name>
     <Description>Show a list of up to 9 most frequently opened folders in new tabs</Description>
   </en>
+  <fr>
+    <Name>Appel rapide</Name>
+    <Description>A l&apos;ouverture d&apos;un nouvel onglet, affiche la liste des 9 dossiers les plus souvent ouverts</Description>
+  </fr>
   <ja>
     <Name>スピードダイヤル</Name>
   </ja>

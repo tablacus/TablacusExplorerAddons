@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2021.4.5</MinVersion>
-    <pubDate>Tue, 06 Apr 2021 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2022.1.25</MinVersion>
+    <pubDate>Wed, 26 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,10 @@
     <Name>About remember</Name>
     <Description>Edit the remember folder view settings. *Require "Remember folder view settings"</Description>
   </en>
+  <fr>
+    <Name>A propos de ‘Mémoriser&apos;</Name>
+    <Description>Editer les paramètres de mémorisation d&apos;affichage de dossiers. *&quot;Mémoriser les paramètres d&apos;affichage de dossiers&quot; est requis.</Description>
+  </fr>
   <ja>
     <Name>覚えたフォルダの表示設定を編集</Name>
     <Description>覚えたフォルダの表示設定を編集する。 ※"フォルダの表示設定を覚える"が必要</Description>

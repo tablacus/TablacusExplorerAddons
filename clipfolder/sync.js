@@ -233,6 +233,20 @@ Sync.ClipFolder = {
 					return Sync.ClipFolder.Remove(Ctrl);
 			}
 		}
+	},
+
+	ProcessMenu: function(Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
+		const FV = GetFolderView(Ctrl);
+		if (Sync.ClipFolder.IsHandle(FV)) {
+			RemoveCommand(hMenu, ContextMenu, "delete;rename");
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetTextR("@shell32.dll,-31368"));
+			ExtraMenuCommand[nPos] = OpenContains;
+			if (Sync.ClipFolder.IsWritable(FV)) {
+				api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
+				ExtraMenuCommand[nPos] = Sync.ClipFolder.Remove;
+			}
+		}
+		return nPos;
 	}
 };
 
@@ -320,18 +334,9 @@ AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	}
 });
 
-AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-	if (Sync.ClipFolder.IsHandle(Ctrl)) {
-		RemoveCommand(hMenu, ContextMenu, "delete;rename");
-		api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
-		ExtraMenuCommand[nPos] = OpenContains;
-		if (Sync.ClipFolder.IsWritable(Ctrl)) {
-			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
-			ExtraMenuCommand[nPos] = Sync.ClipFolder.Remove;
-		}
-	}
-	return nPos;
-});
+AddEvent("Context", Sync.ClipFolder.ProcessMenu);
+
+AddEvent("File", Sync.ClipFolder.ProcessMenu);
 
 AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 	if (Ctrl.Type <= CTRL_EB) {

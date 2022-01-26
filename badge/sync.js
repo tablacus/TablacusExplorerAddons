@@ -313,6 +313,18 @@ Sync.Badge = {
 			);
 			return true;
 		}
+	},
+
+	ProcessMenu: function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
+		const FV = GetFolderView(Ctrl);
+		if (Sync.Badge.IsHandle(FV)) {
+			RemoveCommand(hMenu, ContextMenu, "delete;rename");
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetTextR("@shell32.dll,-31368"));
+			ExtraMenuCommand[nPos] = OpenContains;
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
+			ExtraMenuCommand[nPos] = Sync.Badge.ExecRemoveItems;
+		}
+		return nPos;
 	}
 }
 
@@ -384,6 +396,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 	if (Verb == CommandID_DELETE - 1) {
 		const FV = ContextMenu.FolderView;
 		if (FV && Sync.Badge.IsHandle(FV)) {
+			Sync.Badge.ExecRemoveItems(FV);
 			return S_OK;
 		}
 	}
@@ -507,16 +520,9 @@ AddEvent("ChangeNotify", function (Ctrl, pidls) {
 	}
 });
 
-AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-	if (Sync.Badge.IsHandle(Ctrl)) {
-		RemoveCommand(hMenu, ContextMenu, "delete;rename");
-		api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
-		ExtraMenuCommand[nPos] = OpenContains;
-		api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
-		ExtraMenuCommand[nPos] = Sync.Badge.ExecRemoveItems;
-	}
-	return nPos;
-});
+AddEvent("Context", Sync.Badge.ProcessMenu);
+
+AddEvent("File", Sync.Badge.ProcessMenu);
 
 AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 	if (Ctrl.Type <= CTRL_EB) {

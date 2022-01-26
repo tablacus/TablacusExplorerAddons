@@ -14,7 +14,7 @@ Sync.AboutRemember = {
 		}
 		const Selected = GetSelectedArray(Ctrl, pt, true).shift();
 		if (Selected && Selected.Count) {
-			const path1 = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+			const path1 = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 			const path = te.Data.AddonsData.AboutRemember[path1];
 			const opt = api.CreateObject("Object");
 			opt.MainWindow = MainWindow;
@@ -43,6 +43,20 @@ Sync.AboutRemember = {
 		}
 		FV.Parent.UnlockUpdate();
 	},
+
+	ProcessMenu: function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
+		const FV = GetFolderView(Ctrl);
+		if (Sync.AboutRemember.IsHandle(FV)) {
+			RemoveCommand(hMenu, ContextMenu, "delete;rename");
+			if (te.Data.AddonsData.AboutRemember) {
+				api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Edit"));
+				ExtraMenuCommand[nPos] = Sync.AboutRemember.Edit;
+				api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Remove"));
+				ExtraMenuCommand[nPos] = Sync.AboutRemember.Remove;
+			}
+		}
+		return nPos;
+	}
 }
 
 AddEvent("TranslatePath", function (Ctrl, Path) {
@@ -79,18 +93,9 @@ AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	}
 });
 
-AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-	if (Sync.AboutRemember.IsHandle(Ctrl)) {
-		RemoveCommand(hMenu, ContextMenu, "delete;rename");
-		if (te.Data.AddonsData.AboutRemember) {
-			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Edit"));
-			ExtraMenuCommand[nPos] = Sync.AboutRemember.Edit;
-			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText("Remove"));
-			ExtraMenuCommand[nPos] = Sync.AboutRemember.Remove;
-		}
-	}
-	return nPos;
-});
+AddEvent("Context", Sync.AboutRemember.ProcessMenu);
+
+AddEvent("File", Sync.AboutRemember.ProcessMenu);
 
 AddEvent("BeginLabelEdit", function (Ctrl, Name) {
 	if (Ctrl.Type <= CTRL_EB) {
@@ -114,12 +119,13 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 	if (Verb == CommandID_DELETE - 1) {
 		const FV = ContextMenu.FolderView;
 		if (FV && Sync.AboutRemember.IsHandle(FV)) {
+			Sync.AboutRemember.Remove(FV);
 			return S_OK;
 		}
 	}
 	if (!Verb) {
 		if (ContextMenu.Items.Count >= 1) {
-			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			if (Sync.AboutRemember.IsHandle(path)) {
 				const FV = te.Ctrl(CTRL_FV);
 				FV.Navigate(path, SBSP_SAMEBROWSER);

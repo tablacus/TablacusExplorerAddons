@@ -114,6 +114,18 @@ Sync.History1 = {
 			} catch (e) { }
 			Sync.History1.ModifyDate = api.ILCreateFromPath(Sync.History1.CONFIG).ModifyDate;
 		}
+	},
+
+	ProcessMenu: function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
+		const FV = GetFolderView(Ctrl);
+		if (Sync.History1.IsHandle(FV)) {
+			RemoveCommand(hMenu, ContextMenu, "delete;rename");
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetTextR("@shell32.dll,-31368"));
+			ExtraMenuCommand[nPos] = OpenContains;
+			api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
+			ExtraMenuCommand[nPos] = Sync.History1.Remove;
+		}
+		return nPos;
 	}
 }
 Sync.History1.Load();
@@ -155,16 +167,9 @@ AddEvent("GetIconImage", function (Ctrl, clBk, bSimple) {
 	}
 });
 
-AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-	if (Sync.History1.IsHandle(Ctrl)) {
-		RemoveCommand(hMenu, ContextMenu, "delete;rename");
-		api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, api.LoadString(hShell32, 31368));
-		ExtraMenuCommand[nPos] = OpenContains;
-		api.InsertMenu(hMenu, -1, MF_BYPOSITION | MF_STRING, ++nPos, GetText('Remove'));
-		ExtraMenuCommand[nPos] = Sync.History1.Remove;
-	}
-	return nPos;
-}, true);
+AddEvent("Context", Sync.History1.ProcessMenu);
+
+AddEvent("File", Sync.History1.ProcessMenu);
 
 AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 	if (Ctrl.Type == CTRL_SB || Ctrl.Type == CTRL_EB) {
