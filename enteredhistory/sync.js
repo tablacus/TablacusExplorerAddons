@@ -38,9 +38,10 @@ Sync.EnteredHistory = {
 		}
 		const ar = GetSelectedArray(Ctrl, pt, true);
 		const Selected = ar[0];
+		const FV = ar[2];
 		for (let j = Selected.Count; j--;) {
 			const item = Selected.Item(j);
-			Ctrl.RemoveItem(item);
+			FV.RemoveItem(item);
 			const path = GetSavePath(item);
 			if (Sync.EnteredHistory.db[path]) {
 				delete Sync.EnteredHistory.db[path];

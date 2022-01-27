@@ -55,8 +55,12 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 		desc.innerHTML = ar.join("<br>");
 		if (!Handled) {
 			img1.onload = Addons.PreviewWindow.Loaded;
-			img1.onerror = Addons.PreviewWindow.FromFile;
-			img1.src = await MainWindow.Sync.PreviewWindow.File;
+			if (!window.chrome && Item.ExtendedProperty("{14B81DA1-0135-4D31-96D9-6CBFC9671A99} 274") > 1) {
+				Addons.PreviewWindow.FromFile();
+			} else {
+				img1.onerror = Addons.PreviewWindow.FromFile;
+				img1.src = await MainWindow.Sync.PreviewWindow.File;
+			}
 		}
 	} else {
 		desc.innerHTML = "";

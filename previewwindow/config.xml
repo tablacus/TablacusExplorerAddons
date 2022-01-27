@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.24</Version>
-    <MinVersion>2021.5.11</MinVersion>
-    <pubDate>Thu, 13 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.25</Version>
+    <MinVersion>2022.1.25</MinVersion>
+    <pubDate>Thu, 27 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,5,6,7,8,9:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,10 @@
     <Name>Preview window</Name>
     <Description>Displays the contents of selected text, image and media files in a external preview window.</Description>
   </en>
+  <fr>
+    <Name>Fenêtre d&apos;aperçu</Name>
+    <Description>Afficher le contenu des fichiers texte, image et média sélectionnés dans une fenêtre d&apos;aperçu externe.</Description>
+  </fr>
   <ja>
     <Name>プレビューウインドウ</Name>
     <Description>外部ウインドウを用いたプレビュー</Description>

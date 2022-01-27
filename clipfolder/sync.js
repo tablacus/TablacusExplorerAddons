@@ -93,15 +93,15 @@ Sync.ClipFolder = {
 	},
 
 	Remove: function (Ctrl, pt) {
-		if (!Sync.ClipFolder.IsHandle(Ctrl)) {
-			return;
-		}
-		if (!Sync.ClipFolder.IsWritable(Ctrl) || !confirmOk()) {
-			return S_OK;
-		}
 		const ar = GetSelectedArray(Ctrl, pt, true);
 		const Selected = ar[0];
 		const FV = ar[2];
+		if (!Sync.ClipFolder.IsHandle(FV)) {
+			return;
+		}
+		if (!Sync.ClipFolder.IsWritable(FV) || !confirmOk()) {
+			return S_OK;
+		}
 		const db = {};
 		let bSave = false;
 		Sync.ClipFolder.Open(FV, null, db);

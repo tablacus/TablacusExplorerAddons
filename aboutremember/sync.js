@@ -9,6 +9,7 @@ Sync.AboutRemember = {
 	},
 
 	Edit: function (Ctrl, pt) {
+		Ctrl = GetFolderView(Ctrl, pt);
 		if (!Sync.AboutRemember || !Sync.AboutRemember.IsHandle(Ctrl)) {
 			return;
 		}
@@ -26,12 +27,12 @@ Sync.AboutRemember = {
 	},
 
 	Remove: function (Ctrl, pt) {
-		if (!Sync.AboutRemember || !Sync.AboutRemember.IsHandle(Ctrl) || !confirmOk()) {
-			return;
-		}
 		const ar = GetSelectedArray(Ctrl, pt, true);
 		const Selected = ar[0];
 		const FV = ar[2];
+		if (!Sync.AboutRemember || !Sync.AboutRemember.IsHandle(FV) || !confirmOk()) {
+			return;
+		}
 		FV.Parent.LockUpdate();
 		for (let j = Selected.Count; j--;) {
 			const Item = Selected.Item(j);

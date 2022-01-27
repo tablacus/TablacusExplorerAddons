@@ -1,5 +1,5 @@
 const Addon_Id = "preview";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Preview = {
 		Align: SameText(item.getAttribute("Align"), "Right") ? "Right" : "Left",
@@ -61,6 +61,9 @@ if (window.Addon == 1) {
 						style = "max-width: 100%; max-height: 100%";
 					} else {
 						style = nWidth > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
+					}
+					if (!window.chrome && Item.ExtendedProperty("{14B81DA1-0135-4D31-96D9-6CBFC9671A99} 274") > 1) {
+						path = "";
 					}
 					s.splice(s.length, 0, '<div align="center" id="previewimg1"><img id="previewimg2" src="', path, '" style="display: none;', style, '" title="', info.join("\n"), '" oncontextmenu="Addons.Preview.Popup(event); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)" onload="Addons.Preview.Loaded(this)"></div>');
 					if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {

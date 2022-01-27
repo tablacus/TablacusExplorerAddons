@@ -53,9 +53,10 @@ Sync.History1 = {
 		}
 		const ar = GetSelectedArray(Ctrl, pt, true);
 		const Selected = ar[0];
+		const FV = ar[2];
 		for (let j = Selected.Count; j--;) {
 			const item = Selected.Item(j);
-			Ctrl.RemoveItem(item);
+			FV.RemoveItem(item);
 			const path = GetSavePath(item);
 			if (Sync.History1.db[path]) {
 				delete Sync.History1.db[path];
@@ -69,6 +70,7 @@ Sync.History1 = {
 			}
 		}
 	},
+
 	Load: function () {
 		Sync.History1.db = {};
 		try {
