@@ -189,8 +189,10 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 		}
 		const q = { Item: Item, path: Item, tm: new Date().getTime(), Id: Ctrl.Id };
 		Sync.TooltipPreview.q = q;
-		q.w = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 3");
-		q.h = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 4");
+		if (WINVER > 0x601 || Item.ExtendedProperty("{14B81DA1-0135-4D31-96D9-6CBFC9671A99} 274") < 2) {
+			q.w = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 3");
+			q.h = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 4");
+		}
 		if (q.w && q.h) {
 			q.onload = function (q) {
 				q.image = api.CreateObject("WICBitmap").FromSource(q.out);
