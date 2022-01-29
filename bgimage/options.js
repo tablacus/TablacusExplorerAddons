@@ -39,9 +39,9 @@ ReplaceIC = function (mode) {
 	if (g_x[mode].selectedIndex < 0) {
 		g_x[mode].selectedIndex = ++g_x[mode].length - 1;
 	}
-	var a = [];
-	for (var i = arIndex.length; i--;) {
-		var el = document.E.elements[arIndex[i]];
+	const a = [];
+	for (let i = arIndex.length; i--;) {
+		const el = document.E.elements[arIndex[i]];
 		if (SameText(el.type, 'checkbox')) {
 			a.unshift(el.checked ? 1 : 0);
 		} else {
@@ -53,13 +53,13 @@ ReplaceIC = function (mode) {
 }
 
 ShowIconX = async function () {
-	document.getElementById('Image1').src = await ExtractPath(te, document.E.Path.value);
+	document.getElementById('Image1').src = await MakeImgSrc(document.E.Path.value, 0, true);
 }
 
-GetCurrentPath = async function () {
-	if (await confirmOk()) {
+GetCurrentPath = function () {
+	ConfirmThenExec(GetText("Get the current folder view"), async function () {
 		document.E.Filter.value = await te.Ctrl(CTRL_FV).FolderItem.Path;
-	}
+	});
 }
 
 g_x.List = document.E.List;

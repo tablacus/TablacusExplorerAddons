@@ -15,7 +15,7 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 	if (MainWindow.Sync.PreviewWindow.File) {
 		const Item = await MainWindow.Sync.PreviewWindow.Item;
 		const ar = [];
-		const col = ["type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13"];
+		const col = ["Type", "Write", "Dimensions", "System.Photo.Orientation"];
 		if (!await IsFolderEx(Item)) {
 			col.push("size");
 		}
@@ -27,35 +27,37 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 		}
 		let Handled = false;
 		const path = await Item.Path;
-		if (await PathMatchEx(path, await MainWindow.Sync.PreviewWindow.TextFilter)) {
-			let el;
-			if (await Item.ExtendedProperty("size") <= await MainWindow.Sync.PreviewWindow.TextLimit) {
-				const ado = await OpenAdodbFromTextFile(path, await MainWindow.Sync.PreviewWindow.Charset);
-				if (ado) {
-					el = document.createElement("textarea");
-					el.innerHTML = await ado.ReadText(await MainWindow.Sync.PreviewWindow.TextSize);
-					ado.Close()
+		if (!await IsCloud(Item)) {
+			if (await PathMatchEx(path, await MainWindow.Sync.PreviewWindow.TextFilter)) {
+				let el;
+				if (await Item.ExtendedProperty("Size") <= await MainWindow.Sync.PreviewWindow.TextLimit) {
+					const ado = await OpenAdodbFromTextFile(path, await MainWindow.Sync.PreviewWindow.Charset);
+					if (ado) {
+						el = document.createElement("textarea");
+						el.innerHTML = await ado.ReadText(await MainWindow.Sync.PreviewWindow.TextSize);
+						ado.Close()
+					}
+				}
+				if (el) {
+					el.style.width = "100%";
+					el.style.height = "calc(100vh - 5em)";
+					div1.appendChild(el);
+					Handled = true;
 				}
 			}
-			if (el) {
-				el.style.width = "100%";
-				el.style.height = "calc(100vh - 5em)";
-				div1.appendChild(el);
-				Handled = true;
+			if (await api.PathMatchSpec(path, await MainWindow.Sync.PreviewWindow.Embed)) {
+				ar.unshift('<input type="button" value=" &#x25B6; " title="Play" id="play1"" onclick="Addons.PreviewWindow.Play()">');
+				img1.onclick = Addons.PreviewWindow.Play;
+				img1.style.cursor = "pointer";
+			} else {
+				img1.style.cursor = "";
 			}
-		}
-		if (await api.PathMatchSpec(path, await MainWindow.Sync.PreviewWindow.Embed)) {
-			ar.unshift('<input type="button" value=" &#x25B6; " title="Play" id="play1"" onclick="Addons.PreviewWindow.Play()">');
-			img1.onclick = Addons.PreviewWindow.Play;
-			img1.style.cursor = "pointer";
-		} else {
-			img1.style.cursor = "";
 		}
 		document.title = await Item.Name;
 		desc.innerHTML = ar.join("<br>");
 		if (!Handled) {
 			img1.onload = Addons.PreviewWindow.Loaded;
-			if (!window.chrome && Item.ExtendedProperty("{14B81DA1-0135-4D31-96D9-6CBFC9671A99} 274") > 1) {
+			if (!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) {
 				Addons.PreviewWindow.FromFile();
 			} else {
 				img1.onerror = Addons.PreviewWindow.FromFile;
@@ -93,9 +95,10 @@ Addons.PreviewWindow = {
 		o.Parent = await MainWindow.Sync.PreviewWindow;
 		o.onload = async function (o) {
 			const org = await o.Parent.Item;
-			if (org && SameText(await o.path.Path, await org.Path)) {
+			const path = await o.path.Path;
+			if (org && SameText(path, await org.Path)) {
 				const img = document.getElementById("img1");
-				img.src = await o.out.DataURI();
+				img.src = await o.out.DataURI(/\.jpe?g?$/i.test(path) ? "image/jpeg" : "image/png");
 				o.Parent.w = await o.out.GetWidth();
 				o.Parent.h = await o.out.GetHeight();
 			}
@@ -119,7 +122,7 @@ Addons.PreviewWindow = {
 	Loaded: async function () {
 		document.getElementById("img1").style.display = "";
 		const Item = MainWindow.Sync.PreviewWindow.Item;
-		const wh = "{6444048F-4C8B-11D1-8B70-080036B11A03} 13";
+		const wh = "Dimensions";
 		let s = await api.PSFormatForDisplay(wh, await Item.ExtendedProperty(wh), PDFF_DEFAULT);
 		if (s) {
 			s = ' (' + s + ')';
@@ -165,16 +168,16 @@ Addons.PreviewWindow = {
 	Play: async function () {
 		const div1 = document.getElementById("div1");
 		const path = await MainWindow.Sync.PreviewWindow.Item.Path;
-		if (await api.PathMatchSpec(path, "*.wav")) {
+		if (!window.chrome && await api.PathMatchSpec(path, "*.wav")) {
 			api.PlaySound(path, null, 3);
-		} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp3;*.m4a")) {
+		} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
 			document.getElementById("play1").style.display = "none";
 			div1.innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 		} else {
 			document.getElementById("img1").style.display = "none";
 			document.getElementById("desc1").innerHTML = "";
 			div1.style.height = g_.IEVer >= 8 ? "calc(100% - 5px)" : "99%";
-			if (!window.chrome && ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.webm;*.mp4")) {
+			if (!window.chrome && ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.webm;*.mp4;*.ogg;*.ogv" : "*.mp4")) {
 				div1.innerHTML = '<video controls autoplay style="width: 100%; max-height: 100%"><source src="' + path + '"></video>';
 			} else {
 				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
@@ -233,4 +236,4 @@ FullscreenChange = async function () {
 }
 
 AddEventEx(document, "MSFullscreenChange", FullscreenChange);
-AddEventEx(document, "FullscreenChange", FullscreenChange);
+AddEventEx(document, "fullscreenchange", FullscreenChange);

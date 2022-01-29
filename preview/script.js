@@ -23,7 +23,7 @@ if (window.Addon == 1) {
 				const infoName = await Item.Name;
 				if ("string" === typeof infoName) {
 					const info = [];
-					const col = ["type", "write", "{6444048F-4C8B-11D1-8B70-080036B11A03} 13"];
+					const col = ["Type", "Write", "Dimensions", "System.Photo.Orientation"];
 					if (!await IsFolderEx(Item)) {
 						col.push("size");
 					}
@@ -44,30 +44,32 @@ if (window.Addon == 1) {
 						path = EncodeSC(BuildPath(await Ctrl.FolderItem.Path, path));
 					}
 					let nWidth = 0, nHeight = 0;
-					if (await PathMatchEx(path, Addons.Preview.TextFilter)) {
-						if (await Item.ExtendedProperty("size") <= Addons.Preview.TextLimit) {
-							const ado = await OpenAdodbFromTextFile(path, Addons.Preview.Charset);
-							if (ado) {
-								o.innerText = await ado.ReadText(Addons.Preview.TextSize);
-								ado.Close()
-								return;
+					if (!await IsCloud(Item)) {
+						if (await PathMatchEx(path, Addons.Preview.TextFilter)) {
+							if (await Item.ExtendedProperty("Size") <= Addons.Preview.TextLimit) {
+								const ado = await OpenAdodbFromTextFile(path, Addons.Preview.Charset);
+								if (ado) {
+									o.innerText = await ado.ReadText(Addons.Preview.TextSize);
+									ado.Close()
+									return;
+								}
 							}
 						}
-					}
-					let style;
-					nWidth = await Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 3");
-					nHeight = await Item.ExtendedProperty("{6444048f-4c8b-11d1-8b70-080036b11a03} 4");
-					if (ui_.IEVer > 6) {
-						style = "max-width: 100%; max-height: 100%";
-					} else {
-						style = nWidth > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
-					}
-					if (!window.chrome && Item.ExtendedProperty("{14B81DA1-0135-4D31-96D9-6CBFC9671A99} 274") > 1) {
-						path = "";
-					}
-					s.splice(s.length, 0, '<div align="center" id="previewimg1"><img id="previewimg2" src="', path, '" style="display: none;', style, '" title="', info.join("\n"), '" oncontextmenu="Addons.Preview.Popup(event); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)" onload="Addons.Preview.Loaded(this)"></div>');
-					if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
-						s.push('<input id="previewplay1" type="button" value=" &#x25B6; " title="Play" onclick="Addons.Preview.Play()"><br>');
+						let style;
+						nWidth = await Item.ExtendedProperty("ImageX");
+						nHeight = await Item.ExtendedProperty("ImageY");
+						if (ui_.IEVer > 6) {
+							style = "max-width: 100%; max-height: 100%";
+						} else {
+							style = nWidth > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
+						}
+						if (!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) {
+							path = "";
+						}
+						s.splice(s.length, 0, '<div align="center" id="previewimg1"><img id="previewimg2" src="', path, '" style="display: none;', style, '" title="', info.join("\n"), '" oncontextmenu="Addons.Preview.Popup(event); return false;" ondrag="Addons.Preview.Drag(); return false" onerror="Addons.Preview.FromFile(this)" onload="Addons.Preview.Loaded(this)"></div>');
+						if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
+							s.push('<input id="previewplay1" type="button" value=" &#x25B6; " title="Play" onclick="Addons.Preview.Play()"><br>');
+						}
 					}
 					s.push(info.join("<br>"));
 				}
@@ -81,9 +83,10 @@ if (window.Addon == 1) {
 			o.path = Addons.Preview.Item;
 			o.onload = async function (o) {
 				const org = Addons.Preview.Item;
-				if (org && SameText(await o.path.Path, await org.Path)) {
+				const path = await o.path.Path;
+				if (org && SameText(path, await org.Path)) {
 					const img = document.getElementById("previewimg2");
-					img.src = await o.out.DataURI();
+					img.src = await o.out.DataURI(/\.jpe?g?$/i.test(path) ? "image/jpeg" : "image/png");
 				}
 			}
 			o.onerror = async function (o) {
@@ -133,12 +136,12 @@ if (window.Addon == 1) {
 		Play: async function () {
 			const div1 = document.getElementById("PreviewBar");
 			const path = await Addons.Preview.Item.Path;
-			if (await api.PathMatchSpec(path, "*.wav")) {
+			if (!window.chrome && await api.PathMatchSpec(path, "*.wav")) {
 				api.PlaySound(path, null, 3);
-			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp3;*.m4a")) {
+			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
 				document.getElementById("previewplay1").style.display = "none";
 				document.getElementById("previewimg1").innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
-			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.webm;*.mp4")) {
+			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.webm;*.mp4;*.ogg;*.ogv" : "*.mp4")) {
 				div1.innerHTML = '<video controls autoplay style="width: 100%"><source src="' + path + '"></video>';
 			} else {
 				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';

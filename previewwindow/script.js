@@ -1,7 +1,7 @@
 const Addon_Id = "previewwindow";
 const Default = "ToolBar2Left";
-const item = await GetAddonElement(Addon_Id);
-if (!await item.getAttribute("Set")) {
+const item = GetAddonElement(Addon_Id);
+if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Edit");
 	item.setAttribute("MenuPos", -1);
