@@ -32,6 +32,7 @@ Sync.OpenInstead = {
 									FV.SortColumns = doc.SortColumns;
 								}
 							}
+							FV.SelectItem(doc.FocusedItem, SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_DESELECTOTHERS | SVSI_SELECTIONMARK | SVSI_SELECT);
 							exp.Quit();
 							RestoreFromTray();
 							api.SetForegroundWindow(te.hwnd);

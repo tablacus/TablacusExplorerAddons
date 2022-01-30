@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.11</Version>
-    <MinVersion>2021.1.24</MinVersion>
-    <pubDate>Tue, 26 Jan 2021 00:00:00 GMT</pubDate>
+    <Version>1.12</Version>
+    <MinVersion>2022.1.25</MinVersion>
+    <pubDate>Sun, 30 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,10 @@
     <Name>Open instead</Name>
     <Description>Open instead of Explorer</Description>
   </en>
+  <fr>
+    <Name>Ouvrir à la place</Name>
+    <Description>Ouvrir TE à la place de l&apos;Explorateur.</Description>
+  </fr>
   <ja>
     <Name>エクスプローラの代わりに開く</Name>
     <Description>エクスプローラの代わりにTablacus Explorerで開きます。</Description>

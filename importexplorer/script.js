@@ -1,6 +1,6 @@
 const Addon_Id = "importexplorer";
 const Default = "ToolBar2Left";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("RealFolders", 1);
 	item.setAttribute("SpecialFolders", 1);

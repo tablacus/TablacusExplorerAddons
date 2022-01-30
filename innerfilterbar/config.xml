@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.33</Version>
-    <MinVersion>2021.11.1</MinVersion>
-    <pubDate>Thu, 25 Nov 2021 00:00:00 GMT</pubDate>
+    <Version>1.34</Version>
+    <MinVersion>2022.1.25</MinVersion>
+    <pubDate>Sun, 30 Jan 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,5,7,8,9:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,10 @@
     <Name>Inner Filter bar</Name>
     <Description>Filter bar for each pane</Description>
   </en>
+  <fr>
+    <Name>Intérieur&#160;: Barre de filtre</Name>
+    <Description>Placer une barre de filtre dans chaque panneau</Description>
+  </fr>
   <ja>
     <Name>Inner フィルターバー</Name>
     <Description>ペイン毎のフィルターバー</Description>
