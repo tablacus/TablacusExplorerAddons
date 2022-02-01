@@ -5,9 +5,14 @@ Sync.IconOverlay = {
 	db: {},
 
 	Callback: function (path, key, Id) {
-		Sync.IconOverlay.db[Id][path] = key;
-		if (Id && Sync.IconOverlay.db[0] != null && Sync.IconOverlay.db[0][path] !== Sync.IconOverlay.db[Id][path]) {
-			Sync.IconOverlay.db[0][path] = key;
+		const db = Sync.IconOverlay.db[Id];
+		if (!db) {
+			return;
+		}
+		const db0 = Sync.IconOverlay.db[0];
+		db[path] = key;
+		if (Id && db0 != null && db0[path] !== key) {
+			db0[path] = key;
 		}
 		InvokeUI("Addons.IconOverlay.Redraw");
 	},
