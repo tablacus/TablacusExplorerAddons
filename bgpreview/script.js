@@ -22,5 +22,8 @@ if (window.Addon == 1) {
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();
-	SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
+	await SetTabContents(0, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
+	if (!item.getAttribute("Alpha")) {
+		document.F.Alpha.value = 100;
+	}
 }

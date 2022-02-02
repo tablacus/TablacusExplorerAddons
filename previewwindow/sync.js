@@ -33,13 +33,11 @@ Sync.PreviewWindow = {
 		}
 		if (Sync.PreviewWindow.dlg) {
 			Sync.PreviewWindow.Item = void 0;
-			Sync.PreviewWindow.File = void 0;
 			if (!Item && Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
 				Item = Ctrl.SelectedItems().Item(0);
 			}
 			if (Item) {
 				Sync.PreviewWindow.Item = Item;
-				Sync.PreviewWindow.File = Item.Path;
 			}
 			const ppid = api.Memory("DWORD");
 			api.GetWindowThreadProcessId(api.GetFocus(), ppid);

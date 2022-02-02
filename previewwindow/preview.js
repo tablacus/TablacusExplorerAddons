@@ -12,8 +12,8 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 	document.title = await MainWindow.Sync.PreviewWindow.strName;
 	Addons.PreviewWindow.w = 0;
 	Addons.PreviewWindow.h = 0;
-	if (MainWindow.Sync.PreviewWindow.File) {
-		const Item = await MainWindow.Sync.PreviewWindow.Item;
+	if (MainWindow.Sync.PreviewWindow.Item) {
+		let Item = await MainWindow.Sync.PreviewWindow.Item;
 		const ar = [];
 		const col = ["Type", "Write", "Dimensions", "System.Photo.Orientation"];
 		if (!await IsFolderEx(Item)) {
@@ -26,7 +26,12 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 			}
 		}
 		let Handled = false;
-		const path = await Item.Path;
+		let path = await Item.ExtendedProperty("linktarget");
+		if (path) {
+			Item = await api.ILCreateFromPath(path);
+		} else {
+			path = await Item.Path;
+		}
 		if (!await IsCloud(Item)) {
 			if (await PathMatchEx(path, await MainWindow.Sync.PreviewWindow.TextFilter)) {
 				let el;
@@ -61,7 +66,7 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 				Addons.PreviewWindow.FromFile();
 			} else {
 				img1.onerror = Addons.PreviewWindow.FromFile;
-				img1.src = await MainWindow.Sync.PreviewWindow.File;
+				img1.src = path;
 			}
 		}
 	} else {
@@ -93,14 +98,16 @@ Addons.PreviewWindow = {
 		const o = await api.CreateObject("Object");
 		o.path = await MainWindow.Sync.PreviewWindow.Item;
 		o.Parent = await MainWindow.Sync.PreviewWindow;
+		o.cx = Math.max(document.documentElement.offsetWidth || document.body.offsetWidth, document.documentElement.offsetHeight || document.body.offsetHeight);
+		o.f = true;
+		o.quality = window.chrome ? -2 : -1;
+		o.type = GetEncodeType(await o.path.Path);
+		o.anime = true;
 		o.onload = async function (o) {
 			const org = await o.Parent.Item;
 			const path = await o.path.Path;
 			if (org && SameText(path, await org.Path)) {
-				const img = document.getElementById("img1");
-				img.src = await o.out.DataURI(/\.jpe?g?$/i.test(path) ? "image/jpeg" : "image/png");
-				o.Parent.w = await o.out.GetWidth();
-				o.Parent.h = await o.out.GetHeight();
+				document.getElementById("img1").src = await o.out;
 			}
 		};
 		o.onerror = async function (o) {
@@ -126,8 +133,6 @@ Addons.PreviewWindow = {
 		let s = await api.PSFormatForDisplay(wh, await Item.ExtendedProperty(wh), PDFF_DEFAULT);
 		if (s) {
 			s = ' (' + s + ')';
-		} else if (await Addons.PreviewWindow.w) {
-			s = [' (', await Addons.PreviewWindow.w, ' x ', await Addons.PreviewWindow.h, ')'].join("");
 		}
 		document.title = await MainWindow.Sync.PreviewWindow.Item.Name + s;
 	},
@@ -167,7 +172,7 @@ Addons.PreviewWindow = {
 
 	Play: async function () {
 		const div1 = document.getElementById("div1");
-		const path = await MainWindow.Sync.PreviewWindow.Item.Path;
+		const path = await MainWindow.Sync.PreviewWindow.Item.ExtendedProperty("linktarget") || await MainWindow.Sync.PreviewWindow.Item.Path;
 		if (!window.chrome && await api.PathMatchSpec(path, "*.wav")) {
 			api.PlaySound(path, null, 3);
 		} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
@@ -177,7 +182,7 @@ Addons.PreviewWindow = {
 			document.getElementById("img1").style.display = "none";
 			document.getElementById("desc1").innerHTML = "";
 			div1.style.height = g_.IEVer >= 8 ? "calc(100% - 5px)" : "99%";
-			if (!window.chrome && ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.webm;*.mp4;*.ogg;*.ogv" : "*.mp4")) {
+			if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
 				div1.innerHTML = '<video controls autoplay style="width: 100%; max-height: 100%"><source src="' + path + '"></video>';
 			} else {
 				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';

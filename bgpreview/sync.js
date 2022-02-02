@@ -7,6 +7,7 @@ Sync.BGPreview = {
 	Extract: GetNum(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 	Size: GetNum(item.getAttribute("Size")) || 256,
 	Visible: !GetNum(item.getAttribute("Hidden")),
+	Alpha: GetNum(item.getAttribute("Alpha")) || 100,
 	Items: {},
 
 	Exec: function (Ctrl, pt) {
@@ -25,6 +26,9 @@ Sync.BGPreview = {
 		if (!Item && FV.ItemCount(SVGIO_SELECTION) == 1) {
 			Item = FV.SelectedItems().Item(0);
 		}
+		if (IsCloud(Item)) {
+			return;
+		}
 		const hwnd = FV.hwndList;
 		if (Sync.BGPreview.Visible && hwnd) {
 			if (!api.ILIsEqual(Item, Sync.BGPreview.Items[hwnd])) {
@@ -38,12 +42,14 @@ Sync.BGPreview = {
 					f: true,
 					Extract: Sync.BGPreview.Extract,
 					bClear: bClear,
+					type: -2,
+					mix: Sync.BGPreview.Alpha,
 
 					onload: function (o) {
 						if (o.path === Sync.BGPreview.Items[o.hwnd]) {
 							Sync.BGPreview.Items[o.hwnd] = null;
 							const lvbk = api.Memory("LVBKIMAGE");
-							lvbk.hbm = o.out.GetHBITMAP(-2);
+							lvbk.hbm = o.out;
 							lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
 							if (!api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
 								api.DeleteObject(lvbk.hbm);

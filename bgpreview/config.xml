@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.07</Version>
-    <MinVersion>2021.4.3</MinVersion>
-    <pubDate>Sun, 04 Apr 2021 00:00:00 GMT</pubDate>
+    <Version>1.08</Version>
+    <MinVersion>2022.2.1</MinVersion>
+    <pubDate>Wed, 02 Feb 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,5,6,7,8,9:0</Options>
     <Creator>Gaku</Creator>
     <Level>2</Level>
@@ -14,7 +13,14 @@
     <Name>Preview in background</Name>
     <Description>Displays the contents of selected image files in a background.</Description>
   </en>
+  <fr>
+    <Name>Aperçu en arrière-plan</Name>
+    <Description>Afficher le contenu des fichiers image sélectionnés en arrière-plan.</Description>
+  </fr>
   <ja>
     <Name>背景でプレビュー</Name>
   </ja>
+  <zh>
+    <Name>分頁上預覽</Name>
+  </zh>
 </TablacusExplorer>
