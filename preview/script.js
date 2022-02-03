@@ -17,10 +17,8 @@ if (window.Addon == 1) {
 				return;
 			}
 			Addons.Preview.Item = Item;
-			const o = document.getElementById('PreviewBar');
-			const s = [];
-			let bFromFile;
 			if (Item) {
+				const info = [];
 				let infoName;
 				try {
 					infoName = await Item.Name;
@@ -28,7 +26,6 @@ if (window.Addon == 1) {
 					return;
 				}
 				if ("string" === typeof infoName) {
-					const info = [];
 					const col = ["Type", "Write", "Dimensions", "System.Photo.Orientation"];
 					if (!await IsFolderEx(Item)) {
 						col.push("size");
@@ -53,42 +50,41 @@ if (window.Addon == 1) {
 							if (await Item.ExtendedProperty("Size") <= Addons.Preview.TextLimit) {
 								const ado = await OpenAdodbFromTextFile(path, Addons.Preview.Charset);
 								if (ado) {
-									o.innerText = await ado.ReadText(Addons.Preview.TextSize);
+									document.getElementById("previewimg2").style.display = "none";
+									document.getElementById("previewdesc1").innerText = await ado.ReadText(Addons.Preview.TextSize);
 									ado.Close()
 									return;
 								}
 							}
 						}
-						let style;
+						const img = document.getElementById("previewimg2");
 						if (ui_.IEVer > 6) {
-							style = "max-width: 100%; max-height: " + document.getElementById('PreviewBar').offsetHeight + "px";
+							img.style.maxWidth = "100%";
+							img.style.maxHeight = document.getElementById("PreviewBar").offsetHeight + "px";
 						} else {
 							const nWidth = await Item.ExtendedProperty("ImageX");
 							const nHeight = await Item.ExtendedProperty("ImageY");
-							style = nWidth > nHeight ? "width: 100%" : "width: " + (100 * nWidth / nHeight) + "%";
+							img.style.width = nWidth > nHeight ? "100%" : (100 * nWidth / nHeight) + "%";
 						}
-						let error = "";
-						if (!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) {
-							path = "";
-							bFromFile = true;
-						} else {
-							error = ' onerror="Addons.Preview.FromFile(this)"';
-						}
-						s.splice(s.length, 0, '<div align="center" id="previewimg1"><img id="previewimg2" src="', path, '" style="display: none;', style, '" title="', info.join("\n"), '" oncontextmenu="Addons.Preview.Popup(event); return false;" ondrag="Addons.Preview.Drag(); return false"', error, ' onload="Addons.Preview.Loaded(this)"></div>');
 						if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
-							s.push('<input id="previewplay1" type="button" value=" &#x25B6; " title="Play" onclick="Addons.Preview.Play()"><br>');
+							img.style.display = "none";
+							info.unshift('<input id="previewplay1" type="button" value=" &#x25B6; " title="Play" onclick="Addons.Preview.Play()">');
+							document.getElementById("previewdesc1").innerHTML = info.join("<br>");
+						}
+						Addons.Preview.info = info;
+						if ((!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) || !await fso.FileExists(path)) {
+							Addons.Preview.FromFile();
+						} else {
+							img.onerror = Addons.Preview.FromFile;
+							img.src = path;
 						}
 					}
-					s.push(info.join("<br>"));
 				}
-			}
-			o.innerHTML = s.join("");
-			if (bFromFile) {
-				Addons.Preview.FromFile(o);
 			}
 		},
 
-		FromFile: async function (img) {
+		FromFile: async function () {
+			const img = document.getElementById("previewimg2");
 			img.onerror = null;
 			const div1 = document.getElementById("PreviewBar");
 			const o = await api.CreateObject("Object");
@@ -102,7 +98,9 @@ if (window.Addon == 1) {
 				const org = await Addons.Preview.Item;
 				const path = await o.path.Path;
 				if (org && SameText(path, await org.Path)) {
-					document.getElementById("previewimg2").src = await o.out;
+					const img = document.getElementById("previewimg2");
+					img.src = await o.out;
+					img.style.display = "";
 				}
 			}
 			o.onerror = async function (o) {
@@ -113,8 +111,11 @@ if (window.Addon == 1) {
 					if (await IsExists(await o.path.Path)) {
 						o.onerror = null;
 						MainWindow.Threads.GetImage(o);
+						return;
 					}
 				}
+				document.getElementById("previewimg2").style.display = "none";
+				document.getElementById("previewdesc1").innerHTML = Addons.Preview.info.join("<br>");
 			}
 			Threads.GetImage(o);
 		},
@@ -141,7 +142,9 @@ if (window.Addon == 1) {
 		},
 
 		Loaded: async function (o) {
-			o.style.display = "block";
+			o.style.display = "";
+			o.title = Addons.Preview.info.join("\n");
+			document.getElementById("previewdesc1").innerHTML = Addons.Preview.info.join("<br>");
 			const path = await Addons.Preview.Item.ExtendedProperty("linktarget") || await Addons.Preview.Item.Path;
 			if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
 				o.onclick = Addons.Preview.Play;
@@ -150,14 +153,14 @@ if (window.Addon == 1) {
 		},
 
 		Play: async function () {
-			const div1 = document.getElementById("PreviewBar");
+			const div1 = document.getElementById("previewdesc1");
 			const path = await Addons.Preview.Item.ExtendedProperty("linktarget") || await Addons.Preview.Item.Path;
 			if (!window.chrome && await api.PathMatchSpec(path, "*.wav")) {
 				api.PlaySound(path, null, 3);
 			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
 				document.getElementById("previewplay1").style.display = "none";
 				document.getElementById("previewimg1").innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
-			} else if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec("*.mp4"))) {
+			} else if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
 				div1.innerHTML = '<video controls autoplay style="width: 100%"><source src="' + path + '"></video>';
 			} else {
 				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
@@ -171,7 +174,7 @@ if (window.Addon == 1) {
 			Addons.Preview.Width = 178;
 			te.Data["Conf_" + Addons.Preview.Align + "BarWidth"] = Addons.Preview.Width;
 		}
-		await SetAddon(Addon_Id, Addons.Preview.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"></div>');
+		await SetAddon(Addon_Id, Addons.Preview.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"><div align="center" id="previewimg1"><img id="previewimg2" oncontextmenu="Addons.Preview.Popup(event); return false;" ondrag="Addons.Preview.Drag(); return false" onload="Addons.Preview.Loaded(this)"></div><div id="previewdesc1"></div></div>');
 		setTimeout(Addons.Preview.Arrange, 99);
 	});
 

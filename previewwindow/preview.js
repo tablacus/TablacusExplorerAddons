@@ -4,14 +4,12 @@ RunEventUI("BrowserCreatedEx");
 Common.PreviewWindow = async function (hwnd, bFocus) {
 	const desc = document.getElementById("desc1");
 	const img1 = document.getElementById("img1");
-	img1.style.display = "none";
 	const div1 = document.getElementById("div1");
 	div1.innerHTML = "";
 	div1.style.height = "";
+	Addons.PreviewWindow.desc = "";
 
 	document.title = await MainWindow.Sync.PreviewWindow.strName;
-	Addons.PreviewWindow.w = 0;
-	Addons.PreviewWindow.h = 0;
 	if (MainWindow.Sync.PreviewWindow.Item) {
 		let Item = await MainWindow.Sync.PreviewWindow.Item;
 		const ar = [];
@@ -52,17 +50,19 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 			}
 			if (await api.PathMatchSpec(path, await MainWindow.Sync.PreviewWindow.Embed)) {
 				ar.unshift('<input type="button" value=" &#x25B6; " title="Play" id="play1"" onclick="Addons.PreviewWindow.Play()">');
+				img1.style.display = "none";
 				img1.onclick = Addons.PreviewWindow.Play;
 				img1.style.cursor = "pointer";
+				document.getElementById("desc1").innerHTML = ar.join("<br>");
 			} else {
 				img1.style.cursor = "";
 			}
 		}
 		document.title = await Item.Name;
-		desc.innerHTML = ar.join("<br>");
+		Addons.PreviewWindow.info = ar;
 		if (!Handled) {
 			img1.onload = Addons.PreviewWindow.Loaded;
-			if (!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) {
+			if ((!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) || !await fso.FileExists(path)) {
 				Addons.PreviewWindow.FromFile();
 			} else {
 				img1.onerror = Addons.PreviewWindow.FromFile;
@@ -107,7 +107,11 @@ Addons.PreviewWindow = {
 			const org = await o.Parent.Item;
 			const path = await o.path.Path;
 			if (org && SameText(path, await org.Path)) {
-				document.getElementById("img1").src = await o.out;
+				document.getElementById("desc1").innerHTML = Addons.PreviewWindow.info.join("<br>");
+				const img = document.getElementById("img1");
+				img.title = Addons.PreviewWindow.info.join("\n");
+				img.src = await o.out;
+				img.style.display = "";
 			}
 		};
 		o.onerror = async function (o) {
@@ -118,12 +122,14 @@ Addons.PreviewWindow = {
 				if (await IsExists(await o.path.Path)) {
 					o.onerror = null;
 					MainWindow.Threads.GetImage(o);
+					return;
 				}
 			}
+			document.getElementById("img1").style.display = "none";
+			document.getElementById("desc1").innerHTML = Addons.PreviewWindow.info.join("<br>");
 		};
 		MainWindow.Threads.GetImage(o);
-		const img = document.getElementById("img1");
-		img.onerror = null;
+		document.getElementById("img1").onerror = null;
 	},
 
 	Loaded: async function () {
