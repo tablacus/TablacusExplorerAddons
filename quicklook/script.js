@@ -24,5 +24,5 @@ if (window.Addon == 1) {
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();
-	SetTabContents(0, "General", (await ReadTextFile("addons\\" + Addon_Id + "\\options.html")).replace("%s", (await GetText(" Get %s...")).replace("%s", "QuickLook")));
+	SetTabContents(0, "General", (await ReadTextFile("addons\\" + Addon_Id + "\\options.html")).replace("%s", (await GetText("Get %s...")).replace("%s", "QuickLook")));
 }
