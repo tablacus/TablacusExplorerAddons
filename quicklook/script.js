@@ -24,5 +24,5 @@ if (window.Addon == 1) {
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
 	EnableInner();
-	SetTabContents(0, "General", '<input type="button" value="' + await api.sprintf(99, await GetText("Get %s..."), "QuickLook") + '" title="https://github.com/QL-Win/QuickLook/releases" onclick="wsh.Run(this.title)">');
+	SetTabContents(0, "General", (await ReadTextFile("addons\\" + Addon_Id + "\\options.html")).replace("%s", (await GetText(" Get %s...")).replace("%s", "QuickLook")));
 }

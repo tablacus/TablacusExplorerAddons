@@ -100,7 +100,6 @@ if (window.Addon == 1) {
 				if (org && SameText(path, await org.Path)) {
 					const img = document.getElementById("previewimg2");
 					img.src = await o.out;
-					img.style.display = "";
 				}
 			}
 			o.onerror = async function (o) {
@@ -143,12 +142,15 @@ if (window.Addon == 1) {
 
 		Loaded: async function (o) {
 			o.style.display = "";
-			o.title = Addons.Preview.info.join("\n");
+			o.title = Addons.Preview.info.join("\n").replace(/<[\w\W]*>\n?/g, "");
 			document.getElementById("previewdesc1").innerHTML = Addons.Preview.info.join("<br>");
 			const path = await Addons.Preview.Item.ExtendedProperty("linktarget") || await Addons.Preview.Item.Path;
 			if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
 				o.onclick = Addons.Preview.Play;
 				o.style.cursor = "pointer";
+			} else {
+				o.onclick = null;
+				o.style.cursor = "";
 			}
 		},
 
@@ -158,12 +160,14 @@ if (window.Addon == 1) {
 			if (!window.chrome && await api.PathMatchSpec(path, "*.wav")) {
 				api.PlaySound(path, null, 3);
 			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
-				document.getElementById("previewplay1").style.display = "none";
-				document.getElementById("previewimg1").innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
-			} else if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
-				div1.innerHTML = '<video controls autoplay style="width: 100%"><source src="' + path + '"></video>';
+				div1.innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 			} else {
-				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
+				document.getElementById("previewimg2").style.display = "none";
+				if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
+					div1.innerHTML = '<video controls autoplay style="width: 100%"><source src="' + path + '"></video>';
+				} else {
+					div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
+				}
 			}
 		}
 	}
@@ -174,7 +178,7 @@ if (window.Addon == 1) {
 			Addons.Preview.Width = 178;
 			te.Data["Conf_" + Addons.Preview.Align + "BarWidth"] = Addons.Preview.Width;
 		}
-		await SetAddon(Addon_Id, Addons.Preview.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"><div align="center" id="previewimg1"><img id="previewimg2" oncontextmenu="Addons.Preview.Popup(event); return false;" ondrag="Addons.Preview.Drag(); return false" onload="Addons.Preview.Loaded(this)"></div><div id="previewdesc1"></div></div>');
+		await SetAddon(Addon_Id, Addons.Preview.Align + "Bar3", '<div id="PreviewBar" class="pane selectable" style="overflow: hidden;"><div align="center" id="previewimg1"><img id="previewimg2" oncontextmenu="Addons.Preview.Popup(event); return false;" ondrag="Addons.Preview.Drag(); return false" onload="Addons.Preview.Loaded(this)"></div><div id="previewdesc1" class="selectable" style="width: 100%; height: 100%"></div></div>');
 		setTimeout(Addons.Preview.Arrange, 99);
 	});
 

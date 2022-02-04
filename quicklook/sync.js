@@ -4,6 +4,7 @@ Sync.QuickLook = {
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 	nPos: api.LowPart(item.getAttribute("MenuPos")),
 	Key: item.getAttribute("Key"),
+	Extract: GetNum(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 
 	Exec: function (Ctrl, pt) {
 		Sync.QuickLook.SendMessage(GetFolderView(Ctrl, pt), "Toggle");
@@ -25,7 +26,21 @@ Sync.QuickLook = {
 				Items = FV.Items();
 			}
 			if (Items && Items.Count) {
-				Path = Items.Item(0).Path;
+				const Item = Items.Item(0);
+				Path = Item.Path;
+				if (PathMatchEx(Path, Sync.QuickLook.Extract)) {
+					if (SameText(api.GetClassName(FV), "{E88DCCE0-B7B3-11D1-A9F0-00AA0060FA31}")) {
+						const Parent = BuildPath(GetTempPath(1), FV.SessionId.toString(16));
+						CreateFolders(Parent);
+						const fn = BuildPath(Parent, GetFileName(Path));
+						api.URLDownloadToFile(null, Item, fn);
+						Path = fn;
+					} else if (!IsFolderEx(Item)) {
+						Items = api.CreateObject("FolderItems");
+						Items.AddItem(Item);
+						te.OnBeforeGetData(FV, Items, 11);
+					}
+				}
 			} else {
 				Path = FV.FolderItem.Path;
 			}

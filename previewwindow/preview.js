@@ -53,12 +53,11 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 				img1.style.display = "none";
 				img1.onclick = Addons.PreviewWindow.Play;
 				img1.style.cursor = "pointer";
-				document.getElementById("desc1").innerHTML = ar.join("<br>");
 			} else {
+				img1.onclick = null;
 				img1.style.cursor = "";
 			}
 		}
-		document.title = await Item.Name;
 		Addons.PreviewWindow.info = ar;
 		if (!Handled) {
 			img1.onload = Addons.PreviewWindow.Loaded;
@@ -109,9 +108,8 @@ Addons.PreviewWindow = {
 			if (org && SameText(path, await org.Path)) {
 				document.getElementById("desc1").innerHTML = Addons.PreviewWindow.info.join("<br>");
 				const img = document.getElementById("img1");
-				img.title = Addons.PreviewWindow.info.join("\n");
+				img.title = Addons.PreviewWindow.info.join("\n").replace(/<[\w\W]*>\n?/g, "");
 				img.src = await o.out;
-				img.style.display = "";
 			}
 		};
 		o.onerror = async function (o) {
@@ -125,6 +123,7 @@ Addons.PreviewWindow = {
 					return;
 				}
 			}
+			document.title = await MainWindow.Sync.PreviewWindow.Item.Name;
 			document.getElementById("img1").style.display = "none";
 			document.getElementById("desc1").innerHTML = Addons.PreviewWindow.info.join("<br>");
 		};
@@ -134,6 +133,7 @@ Addons.PreviewWindow = {
 
 	Loaded: async function () {
 		document.getElementById("img1").style.display = "";
+		document.getElementById("desc1").innerHTML = Addons.PreviewWindow.info.join("<br>");
 		const Item = MainWindow.Sync.PreviewWindow.Item;
 		const wh = "Dimensions";
 		let s = await api.PSFormatForDisplay(wh, await Item.ExtendedProperty(wh), PDFF_DEFAULT);
@@ -181,17 +181,18 @@ Addons.PreviewWindow = {
 		const path = await MainWindow.Sync.PreviewWindow.Item.ExtendedProperty("linktarget") || await MainWindow.Sync.PreviewWindow.Item.Path;
 		if (!window.chrome && await api.PathMatchSpec(path, "*.wav")) {
 			api.PlaySound(path, null, 3);
-		} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
-			document.getElementById("play1").style.display = "none";
-			div1.innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 		} else {
-			document.getElementById("img1").style.display = "none";
 			document.getElementById("desc1").innerHTML = "";
-			div1.style.height = g_.IEVer >= 8 ? "calc(100% - 5px)" : "99%";
-			if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
-				div1.innerHTML = '<video controls autoplay style="width: 100%; max-height: 100%"><source src="' + path + '"></video>';
+			if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
+				div1.innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 			} else {
-				div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
+				document.getElementById("img1").style.display = "none";
+				div1.style.height = g_.IEVer >= 8 ? "calc(100% - 5px)" : "99%";
+				if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
+					div1.innerHTML = '<video controls autoplay style="width: 100%; max-height: 100%"><source src="' + path + '"></video>';
+				} else {
+					div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
+				}
 			}
 		}
 	}
