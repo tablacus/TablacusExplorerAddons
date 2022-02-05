@@ -1,8 +1,8 @@
-﻿var Addon_Id = "stripeslite";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "stripeslite";
+const item = GetAddonElement(Addon_Id);
 
 Sync.StripesLite = {
-	Color2: GetWinColor(item.getAttribute("Color2") || "#ececec")
+	Color: GetBGRA(GetWinColor(item.getAttribute("Color2") || "#7f7f7f"), (item.getAttribute("Alpha") & 0xff) || 64),
 };
 
 AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes) {
@@ -10,10 +10,7 @@ AddEvent("ItemPrePaint", function (Ctrl, pid, nmcd, vcd, plRes) {
 		if (nmcd.dwItemSpec & 1) {
 			return;
 		}
-		vcd.clrTextBk = Sync.StripesLite.Color2;
-		if (nmcd.uItemState & CDIS_SELECTED) {
-			api.SetDCBrushColor(nmcd.hdc, Sync.StripesLite.Color2);
-			api.FillRect(nmcd.hdc, nmcd.rc, api.GetStockObject(DC_BRUSH));
-		}
+		vcd.clrTextBk = CLR_NONE;
+		api.FillRect(nmcd.hdc, nmcd.rc, null, Sync.StripesLite.Color);
 	}
 }, true);

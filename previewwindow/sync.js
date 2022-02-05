@@ -33,7 +33,7 @@ Sync.PreviewWindow = {
 		}
 		if (Sync.PreviewWindow.dlg) {
 			Sync.PreviewWindow.Item = void 0;
-			if (!Item && Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
+			if (!Item && Ctrl.ItemCount(SVGIO_SELECTION) > 0) {
 				Item = Ctrl.SelectedItems().Item(0);
 			}
 			if (Item) {

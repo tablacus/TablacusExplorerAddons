@@ -16,6 +16,8 @@ if (window.Addon == 1) {
 			if (await api.ILIsEqual(await Addons.Preview.Item, Item)) {
 				return;
 			}
+			const img = document.getElementById("previewimg2");
+			const desc = document.getElementById("previewdesc1");
 			Addons.Preview.Item = Item;
 			if (Item) {
 				const info = [];
@@ -50,14 +52,13 @@ if (window.Addon == 1) {
 							if (await Item.ExtendedProperty("Size") <= Addons.Preview.TextLimit) {
 								const ado = await OpenAdodbFromTextFile(path, Addons.Preview.Charset);
 								if (ado) {
-									document.getElementById("previewimg2").style.display = "none";
-									document.getElementById("previewdesc1").innerText = await ado.ReadText(Addons.Preview.TextSize);
+									img.style.display = "none";
+									desc.innerText = await ado.ReadText(Addons.Preview.TextSize);
 									ado.Close()
 									return;
 								}
 							}
 						}
-						const img = document.getElementById("previewimg2");
 						if (ui_.IEVer > 6) {
 							img.style.maxWidth = "100%";
 							img.style.maxHeight = document.getElementById("PreviewBar").offsetHeight + "px";
@@ -68,19 +69,23 @@ if (window.Addon == 1) {
 						}
 						if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
 							img.style.display = "none";
-							info.unshift('<input id="previewplay1" type="button" value=" &#x25B6; " title="Play" onclick="Addons.Preview.Play()">');
-							document.getElementById("previewdesc1").innerHTML = info.join("<br>");
+							info.unshift('<input id="previewplay1" type="button" value=" &#x25B6; " title="' + (await GetTextR("@wmploc.dll,-1800")) + '" onclick="Addons.Preview.Play()">');
+							desc.innerHTML = info.join("<br>");
 						}
 						Addons.Preview.info = info;
-						if ((!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) || !await fso.FileExists(path)) {
+						if (!REGEXP_IMAGE.test(path) || (!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) || !await fso.FileExists(path)) {
 							Addons.Preview.FromFile();
 						} else {
 							img.onerror = Addons.Preview.FromFile;
 							img.src = path;
 						}
+						return;
 					}
 				}
 			}
+			img.style.display = "none";
+			desc.innerHTML = "";
+			Addons.Preview.Item = null;
 		},
 
 		FromFile: async function () {
@@ -189,8 +194,12 @@ if (window.Addon == 1) {
 			} else {
 				const nType = await Ctrl.Type;
 				if ((nType == CTRL_SB || nType == CTRL_EB) && Text) {
-					if (await Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
+					if (await Ctrl.ItemCount(SVGIO_SELECTION) > 0) {
 						Addons.Preview.Arrange(await Ctrl.SelectedItems().Item(0), Ctrl);
+					} else {
+						document.getElementById("previewimg2").style.display = "none";
+						document.getElementById("previewdesc1").innerHTML = "";
+						Addons.Preview.Item = null;
 					}
 				}
 			}

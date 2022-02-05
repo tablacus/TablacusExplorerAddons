@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.08</Version>
-    <MinVersion>2020.11.20</MinVersion>
-    <pubDate>Sat, 21 Nov 2020 00:00:00 GMT</pubDate>
+    <Version>1.09</Version>
+    <MinVersion>2022.2.3</MinVersion>
+    <pubDate>Sat, 05 Feb 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,10 @@
     <Name>Stripes lite</Name>
     <Description>Display alternating stripes in the background when the detail view.</Description>
   </en>
+  <fr>
+    <Name>Bandes légères</Name>
+    <Description>Afficher des bandes alternatives en arriè-plan de la vue &quot;Détails&quot;.</Description>
+  </fr>
   <ja>
     <Name>ストライプ ライト</Name>
     <Description>詳細表示の際に背景を交互縞で表示します。</Description>

@@ -23,13 +23,16 @@ Sync.BGPreview = {
 		if (!FV) {
 			FV = te.Ctrl(CTRL_FV);
 		}
-		if (!Item && FV.ItemCount(SVGIO_SELECTION) == 1) {
+		if (!Item && FV.ItemCount(SVGIO_SELECTION) > 0) {
 			Item = FV.SelectedItems().Item(0);
 		}
-		if (IsCloud(Item)) {
+		const hwnd = FV.hwndList;
+		if (!Item || IsCloud(Item)) {
+			const lvbk = api.Memory("LVBKIMAGE");
+			lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
+			api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 			return;
 		}
-		const hwnd = FV.hwndList;
 		if (Sync.BGPreview.Visible && hwnd) {
 			if (!api.ILIsEqual(Item, Sync.BGPreview.Items[hwnd])) {
 				const bClear = Sync.BGPreview.Items[hwnd] === null;
@@ -95,9 +98,7 @@ AddEvent("StatusText", function (Ctrl, Text, iPart) {
 	if (Ctrl.Path) {
 		Sync.BGPreview.Arrange(null, Ctrl);
 	} else if (Ctrl.Type <= CTRL_EB && Text) {
-		if (Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
-			Sync.BGPreview.Arrange(Ctrl);
-		}
+		Sync.BGPreview.Arrange(Ctrl);
 	}
 });
 
