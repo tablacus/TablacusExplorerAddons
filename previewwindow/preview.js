@@ -40,9 +40,6 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 						el.readOnly = true;
 						el.innerHTML = await ado.ReadText(await MainWindow.Sync.PreviewWindow.TextSize);
 						ado.Close();
-						document.getElementById("img1").style.display = "none";
-						document.getElementById("desc1").innerHTML = ar.join("<br>");
-						document.title = await MainWindow.Sync.PreviewWindow.Item.Name;
 					}
 				}
 				if (el) {
@@ -50,6 +47,17 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 					el.style.height = "calc(100vh - 5em)";
 					div1.appendChild(el);
 					Handled = true;
+				}
+			}
+			if (window.chrome || g_.IEVer > 8) {
+				if (/\.svg$/i.test(path)) {
+					const res = /(<svg)([\w\W]*?<\/svg[^>]*>)/i.exec(await ReadTextFile(path));
+					if (res) {
+						img1.style.display = "none";
+						div1.innerHTML = res[1] + ' style="max-width: 100%; max-height: calc(100vh - 6em)" ' + res[2];
+						div1.style.display = "";
+						Handled = true;
+					}
 				}
 			}
 			if (await api.PathMatchSpec(path, await MainWindow.Sync.PreviewWindow.Embed)) {
@@ -65,7 +73,10 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 			}
 		}
 		Addons.PreviewWindow.info = ar;
-		if (!Handled) {
+		if (Handled) {
+			document.getElementById("desc1").innerHTML = ar.join("<br>");
+			document.title = await MainWindow.Sync.PreviewWindow.Item.Name;
+		} else {
 			img1.onload = Addons.PreviewWindow.Loaded;
 			if (!REGEXP_IMAGE.test(path) || (!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) || !await fso.FileExists(path)) {
 				Addons.PreviewWindow.FromFile();
@@ -123,7 +134,11 @@ Addons.PreviewWindow = {
 				Items.AddItem(await o.path);
 				await te.OnBeforeGetData(await te.Ctrl(CTRL_FV), Items, 11);
 				if (await IsExists(await o.path.Path)) {
-					o.onerror = null;
+					o.onerror = async function () {
+						document.title = await MainWindow.Sync.PreviewWindow.Item.Name;
+						document.getElementById("img1").style.display = "none";
+						document.getElementById("desc1").innerHTML = Addons.PreviewWindow.info.join("<br>");
+					}
 					MainWindow.Threads.GetImage(o);
 					return;
 				}

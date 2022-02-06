@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.04</Version>
-    <MinVersion>2021.10.12</MinVersion>
-    <pubDate>Wed, 17 Nov 2021 00:00:00 GMT</pubDate>
+    <Version>1.05</Version>
+    <MinVersion>2022.2.5</MinVersion>
+    <pubDate>Sun, 06 Feb 2022 00:00:00 GMT</pubDate>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>http://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -13,8 +12,15 @@
     <Name>Fix Windows 11 bug</Name>
     <Description>Workaround: Tooltips problem.</Description>
   </en>
+  <fr>
+    <Name>Correction&#160;: bogues Windows 11</Name>
+    <Description>Contournement : problèmes d&apos;infobulle.</Description>
+  </fr>
   <ja>
     <Name>Windows 11のバグ対策</Name>
     <Description>ツールチップのバグ対策</Description>
   </ja>
+  <zh>
+    <Name>修正 Windows 11 提示問題</Name>
+  </zh>
 </TablacusExplorer>
