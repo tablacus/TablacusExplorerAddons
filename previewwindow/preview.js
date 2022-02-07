@@ -5,15 +5,16 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 	const desc = document.getElementById("desc1");
 	const img1 = document.getElementById("img1");
 	const div1 = document.getElementById("div1");
-	div1.innerHTML = "";
 	div1.style.height = "";
+	div1.innerHTML = "";
 	Addons.PreviewWindow.desc = "";
 
 	document.title = await MainWindow.Sync.PreviewWindow.strName;
 	if (await MainWindow.Sync.PreviewWindow.Item) {
 		let Item = await MainWindow.Sync.PreviewWindow.Item;
+		let elText;
 		const ar = [];
-		const col = ["Type", "Write", "Dimensions", "System.Photo.Orientation"];
+		const col = ["Type", "Write", "Dimensions"];
 		if (!await IsFolderEx(Item)) {
 			col.push("size");
 		}
@@ -32,41 +33,30 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 		}
 		if (!await IsCloud(Item)) {
 			if (await PathMatchEx(path, await MainWindow.Sync.PreviewWindow.TextFilter)) {
-				let el;
 				if (await Item.ExtendedProperty("Size") <= await MainWindow.Sync.PreviewWindow.TextLimit) {
 					const ado = await OpenAdodbFromTextFile(path, await MainWindow.Sync.PreviewWindow.Charset);
 					if (ado) {
-						el = document.createElement("textarea");
-						el.readOnly = true;
-						el.innerHTML = await ado.ReadText(await MainWindow.Sync.PreviewWindow.TextSize);
+						elText = document.createElement("textarea");
+						elText.readOnly = true;
+						elText.innerHTML = await ado.ReadText(await MainWindow.Sync.PreviewWindow.TextSize);
 						ado.Close();
 					}
 				}
-				if (el) {
-					el.style.width = "100%";
-					el.style.height = "calc(100vh - 5em)";
-					div1.appendChild(el);
-					Handled = true;
-				}
+				Handled = elText;
 			}
 			if (window.chrome || g_.IEVer > 8) {
 				if (/\.svg$/i.test(path)) {
 					const res = /(<svg)([\w\W]*?<\/svg[^>]*>)/i.exec(await ReadTextFile(path));
 					if (res) {
-						img1.style.display = "none";
-						div1.innerHTML = res[1] + ' style="max-width: 100%; max-height: calc(100vh - 6em)" ' + res[2];
-						div1.style.display = "";
+						ar.unshift(res[1] + ' style="max-width: 100%; max-height: calc(100vh - 6em)"' + res[2]);
 						Handled = true;
 					}
 				}
 			}
 			if (await api.PathMatchSpec(path, await MainWindow.Sync.PreviewWindow.Embed)) {
 				ar.unshift('<input type="button" value=" &#x25B6; " title="' + (await GetTextR("@wmploc.dll,-1800")) + '" id="play1"" onclick="Addons.PreviewWindow.Play()">');
-				img1.style.display = "none";
 				img1.onclick = Addons.PreviewWindow.Play;
 				img1.style.cursor = "pointer";
-				document.getElementById("desc1").innerHTML = ar.join("<br>");
-				document.title = await MainWindow.Sync.PreviewWindow.Item.Name;
 			} else {
 				img1.onclick = null;
 				img1.style.cursor = "";
@@ -74,7 +64,17 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 		}
 		Addons.PreviewWindow.info = ar;
 		if (Handled) {
-			document.getElementById("desc1").innerHTML = ar.join("<br>");
+			img1.style.display = "none";
+			const desc1 = document.getElementById("desc1");
+			if (elText) {
+				desc1.innerHTML = "";
+				elText.style.width = "100%";
+				elText.style.height = "calc(100vh - 5em)";
+				desc1.appendChild(elText);
+				desc1.insertAdjacentHTML("beforeend", ar.join("<br>"));
+			} else {
+				desc1.innerHTML = ar.join("<br>");
+			}
 			document.title = await MainWindow.Sync.PreviewWindow.Item.Name;
 		} else {
 			img1.onload = Addons.PreviewWindow.Loaded;
@@ -152,10 +152,14 @@ Addons.PreviewWindow = {
 	},
 
 	Loaded: async function () {
+		const desc1 = document.getElementById("desc1");
 		const img = document.getElementById("img1");
+		desc1.innerHTML = Addons.PreviewWindow.info.join("<br>");
 		img.title = Addons.PreviewWindow.info.join("\n").replace(/<[\w\W]*>\n?/g, "");
+		if (window.chrome || g_.IEVer > 8) {
+			img1.style.maxHeight = "calc(100vh - " + desc1.offsetHeight + "px)";
+		}
 		img.style.display = "";
-		document.getElementById("desc1").innerHTML = Addons.PreviewWindow.info.join("<br>");
 		const Item = MainWindow.Sync.PreviewWindow.Item;
 		const wh = "Dimensions";
 		let s = await api.PSFormatForDisplay(wh, await Item.ExtendedProperty(wh), PDFF_DEFAULT);
@@ -176,30 +180,33 @@ Addons.PreviewWindow = {
 	GetRect: async function () {
 		const rc = await api.Memory("RECT");
 		const hwnd = await GetTopWindow();
-		if (!await api.IsZoomed(hwnd)) {
-			await api.GetWindowRect(hwnd, rc);
-			if (await te.Data.AddonsData.PreviewWindow.left != await rc.Left) {
-				te.Data.AddonsData.PreviewWindow.left = await rc.Left;
-				te.Data.bSaveConfig = true;
-			}
-			if (await te.Data.AddonsData.PreviewWindow.top != await rc.Top) {
-				te.Data.AddonsData.PreviewWindow.top = await rc.Top;
-				te.Data.bSaveConfig = true;
-			}
-			const o = document.documentElement || document.body;
-			if (await te.Data.AddonsData.PreviewWindow.width != o.offsetWidth) {
-				te.Data.AddonsData.PreviewWindow.width = o.offsetWidth;
-				te.Data.bSaveConfig = true;
-			}
-			if (await te.Data.AddonsData.PreviewWindow.height != o.offsetHeight) {
-				te.Data.AddonsData.PreviewWindow.height = o.offsetHeight;
-				te.Data.bSaveConfig = true;
+		if (!document.msFullscreenElement && !document.fullscreenElement) {
+			if (!await api.IsZoomed(hwnd)) {
+				await api.GetWindowRect(hwnd, rc);
+				if (await te.Data.AddonsData.PreviewWindow.left != await rc.Left) {
+					te.Data.AddonsData.PreviewWindow.left = await rc.Left;
+					te.Data.bSaveConfig = true;
+				}
+				if (await te.Data.AddonsData.PreviewWindow.top != await rc.Top) {
+					te.Data.AddonsData.PreviewWindow.top = await rc.Top;
+					te.Data.bSaveConfig = true;
+				}
+				const o = document.documentElement || document.body;
+				if (await te.Data.AddonsData.PreviewWindow.width != o.offsetWidth) {
+					te.Data.AddonsData.PreviewWindow.width = o.offsetWidth;
+					te.Data.bSaveConfig = true;
+				}
+				if (await te.Data.AddonsData.PreviewWindow.height != o.offsetHeight) {
+					te.Data.AddonsData.PreviewWindow.height = o.offsetHeight;
+					te.Data.bSaveConfig = true;
+				}
 			}
 		}
 	},
 
 	Play: async function () {
 		const div1 = document.getElementById("div1");
+		const img1 = document.getElementById("img1");
 		const path = await MainWindow.Sync.PreviewWindow.Item.ExtendedProperty("linktarget") || await MainWindow.Sync.PreviewWindow.Item.Path;
 		if (!window.chrome && await api.PathMatchSpec(path, "*.wav")) {
 			api.PlaySound(path, null, 3);
@@ -208,35 +215,51 @@ Addons.PreviewWindow = {
 			if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
 				div1.innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 			} else {
-				document.getElementById("div1").style.display = "";
-				document.getElementById("img1").style.display = "none";
 				div1.style.height = g_.IEVer >= 8 ? "calc(100% - 5px)" : "99%";
+				img1.style.display = "none";
+				div1.style.display = "";
 				if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
 					div1.innerHTML = '<video controls autoplay style="width: 100%; max-height: 100%"><source src="' + path + '"></video>';
 				} else {
 					div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
 				}
 			}
+			div1.style.display = "";
 		}
 	},
 
 	FullscreenChange: async function () {
 		const hwnd = await GetTopWindow();
 		const dwStyle = await api.GetWindowLongPtr(hwnd, GWL_STYLE);
-		if (document.msFullscreenElement || document.fullscreenElement) {
-			await api.SetWindowLongPtr(hwnd, GWL_STYLE, dwStyle & ~WS_CAPTION);
-			api.SendMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
-		} else {
-			await api.SetWindowLongPtr(hwnd, GWL_STYLE, dwStyle | WS_CAPTION);
-			await api.SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+		if (!Addons.PreviewWindow.rc) {
+			Addons.PreviewWindow.rc = await api.Memory("RECT");
+			await api.GetWindowRect(hwnd, Addons.PreviewWindow.rc);
 		}
+		if (document.msFullscreenElement || document.fullscreenElement) {
+			await api.GetWindowRect(hwnd, Addons.PreviewWindow.rc);
+			await api.SetWindowLongPtr(hwnd, GWL_STYLE, dwStyle & ~(WS_CAPTION | WS_THICKFRAME));
+			const hMonitor = await api.MonitorFromRect(Addons.PreviewWindow.rc, MONITOR_DEFAULTTOPRIMARY);
+			const mi = await api.Memory("MONITORINFOEX");
+			await api.GetMonitorInfo(hMonitor, mi);
+			rc = await mi.rcMonitor;
+		} else {
+			await api.SetWindowLongPtr(hwnd, GWL_STYLE, dwStyle | (WS_CAPTION | WS_THICKFRAME));
+			rc = Addons.PreviewWindow.rc;
+		}
+		const x = await rc.left;
+		const y = await rc.top;
+		const w = await rc.right - x;
+		const h = await rc.bottom - y;
+		if (w > 0 && h > 0) {
+			api.MoveWindow(hwnd, x, y, w, h, true);
+		}
+	},
+
+	Init: function () {
+		ApplyLang(document);
+		MainWindow.Sync.PreviewWindow.Arrange()
 	}
 };
-
-InitPreview = function () {
-	ApplyLang(document);
-	MainWindow.Sync.PreviewWindow.Arrange()
-}
 
 WebBrowser.OnClose = async function (WB) {
 	MainWindow.Sync.PreviewWindow.dlg = void 0;

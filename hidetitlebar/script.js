@@ -1,6 +1,6 @@
 const Addon_Id = "hidetitlebar";
 const Default = "None";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.HideTitleBar = {
 		Enabled: true,
@@ -10,6 +10,18 @@ if (window.Addon == 1) {
 			if (Addons.HideTitleBar.tid) {
 				clearTimeout(Addons.HideTitleBar.tid);
 				delete Addons.HideTitleBar.tid;
+			}
+			if (await g_.Fullscreen) {
+				let dwStyle = await g_.FullscreenWS;
+				if (dwStyle != null) {
+					if (Addons.HideTitleBar.Enabled) {
+						dwStyle &= ~WS_CAPTION;
+					} else {
+						dwStyle |= WS_CAPTION;
+					}
+					g_.FullscreenWS = dwStyle;
+				}
+				return;
 			}
 			if (await api.IsWindowVisible(ui_.hwnd)) {
 				let dwStyle = await api.GetWindowLongPtr(ui_.hwnd, GWL_STYLE);
@@ -40,7 +52,7 @@ if (window.Addon == 1) {
 		},
 
 		Resize: async function () {
-			if (Addons.HideTitleBar.Enabled && await api.IsZoomed(ui_.hwnd)) {
+			if (Addons.HideTitleBar.Enabled && await api.IsZoomed(ui_.hwnd) && !await g_.Fullscreen) {
 				const rc = await api.Memory("RECT");
 				await api.GetWindowRect(ui_.hwnd, rc);
 				const hMonitor = await api.MonitorFromRect(rc, MONITOR_DEFAULTTOPRIMARY);

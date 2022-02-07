@@ -1,6 +1,6 @@
 const Addon_Id = "thumbnailengine";
 if (window.Addon == 1) {
-	const item = await GetAddonElement(Addon_Id);
+	const item = GetAddonElement(Addon_Id);
 	Addons.ThumbnailEngine = {
 		hModule: await api.LoadLibraryEx(BuildPath(ui_.Installed, "addons\\thumbnailengine\\thumb" + ui_.bit + ".dll"), 0, 0),
 		Finalize: function () {
@@ -18,9 +18,10 @@ if (window.Addon == 1) {
 		api.RunDLL(hModule, "SetDisableW", 0, 0, item.getAttribute("Disable") || "-", 1);
 		api.RunDLL(hModule, "SetSizeW", 0, 0, item.getAttribute("Size") || 1024, 1);
 		api.RunDLL(hModule, "SetFolderW", 0, 0, !GetNum(item.getAttribute("NoFolder")), 1);
-		api.RunDLL(hModule, "SetTPW", 0, 0, !GetNum(item.getAttribute("NoTP")), 1);
-		api.RunDLL(hModule, "SetEIW", 0, 0, !GetNum(item.getAttribute("NoEI")), 1);
-
+		const ar = ["Folder", "IF", "TP", "EI"];
+		for (let i = ar.length; i--;) {
+			api.RunDLL(hModule, "Set" + ar[i] + "W", 0, 0, !GetNum(item.getAttribute("No" + ar[i])), 1);
+		}
 		Addons.ThumbnailEngine.Proc = await api.GetProcAddress(hModule, "GetImage");
 		te.AddEvent("GetImage", Addons.ThumbnailEngine.Proc);
 

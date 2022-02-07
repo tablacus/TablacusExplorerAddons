@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
-    <MinVersion>2021.5.4</MinVersion>
-    <pubDate>Wed, 05 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.10</Version>
+    <MinVersion>2022.2.5</MinVersion>
+    <pubDate>Mon, 07 Feb 2022 00:00:00 GMT</pubDate>
     <Options>Common:5,6,7,8,9:5</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,7 +13,13 @@
     <Name>Hide Title bar</Name>
     <Description>Hide Title bar</Description>
   </en>
+  <fr>
+    <Name>Masquer la barre de titre</Name>
+  </fr>
   <ja>
     <Name>タイトルバーを消す</Name>
   </ja>
+  <zh>
+    <Name>隱藏標題列</Name>
+  </zh>
 </TablacusExplorer>

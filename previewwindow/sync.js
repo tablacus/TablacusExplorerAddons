@@ -39,11 +39,7 @@ Sync.PreviewWindow = {
 			if (Item) {
 				Sync.PreviewWindow.Item = Item;
 			}
-			const ppid = api.Memory("DWORD");
-			api.GetWindowThreadProcessId(api.GetFocus(), ppid);
-			if (Sync.PreviewWindow.ppid[0] == ppid[0]) {
-				InvokeFunc(Sync.PreviewWindow.dlg.Document.parentWindow.Common.PreviewWindow, [te.hwnd, true]);
-			}
+			InvokeFunc(Sync.PreviewWindow.dlg.Document.parentWindow.Common.PreviewWindow, [te.hwnd, true]);
 		}
 	}
 };
@@ -106,5 +102,3 @@ if (item.getAttribute("MouseExec")) {
 }
 
 AddTypeEx("Add-ons", "Preview window", Sync.PreviewWindow.Exec);
-
-api.GetWindowThreadProcessId(te.hwnd, Sync.PreviewWindow.ppid);

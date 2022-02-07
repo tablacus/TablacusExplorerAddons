@@ -16,7 +16,7 @@
       ScriptBase = "../..";
       LoadScript(["script/ui.js", "script/common.js"], function () {
         LoadScripts(["script/sync.js"], ["addons/previewwindow/preview.js"], function () {
-          InitPreview();
+          Addons.PreviewWindow.Init();
         });
       });
     </script>

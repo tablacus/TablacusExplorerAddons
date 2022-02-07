@@ -61,7 +61,6 @@ if (window.Addon == 1) {
 						}
 						if (ui_.IEVer > 6) {
 							img.style.maxWidth = "100%";
-							img.style.maxHeight = document.getElementById("PreviewBar").offsetHeight + "px";
 						} else {
 							const nWidth = await Item.ExtendedProperty("ImageX");
 							const nHeight = await Item.ExtendedProperty("ImageY");
@@ -79,9 +78,7 @@ if (window.Addon == 1) {
 							}
 						}
 						if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
-							img.style.display = "none";
 							info.unshift('<input id="previewplay1" type="button" value=" &#x25B6; " title="' + (await GetTextR("@wmploc.dll,-1800")) + '" onclick="Addons.Preview.Play()">');
-							desc.innerHTML = info.join("<br>");
 						}
 						Addons.Preview.info = info;
 						if (!REGEXP_IMAGE.test(path) || (!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) || !await fso.FileExists(path)) {
@@ -157,8 +154,9 @@ if (window.Addon == 1) {
 		},
 
 		Loaded: async function (o) {
-			o.style.display = "";
 			o.title = Addons.Preview.info.join("\n").replace(/<[\w\W]*>\n?/g, "");
+			o.style.maxHeight = Math.max(document.getElementById("PreviewBar").offsetHeight - (/&#x25B6;/.test(Addons.Preview.info[0]) ? 60 : 0), 64) + "px"
+			o.style.display = "";
 			document.getElementById("previewdesc1").innerHTML = Addons.Preview.info.join("<br>");
 			const path = await Addons.Preview.Item.ExtendedProperty("linktarget") || await Addons.Preview.Item.Path;
 			if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
@@ -172,13 +170,13 @@ if (window.Addon == 1) {
 
 		Play: async function () {
 			const div1 = document.getElementById("previewdesc1");
+			const img = document.getElementById("previewimg2");
 			const path = await Addons.Preview.Item.ExtendedProperty("linktarget") || await Addons.Preview.Item.Path;
 			if (!window.chrome && await api.PathMatchSpec(path, "*.wav")) {
 				api.PlaySound(path, null, 3);
 			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
 				div1.innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 			} else {
-				document.getElementById("previewimg2").style.display = "none";
 				if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
 					div1.innerHTML = '<video controls autoplay style="width: 100%"><source src="' + path + '"></video>';
 				} else {

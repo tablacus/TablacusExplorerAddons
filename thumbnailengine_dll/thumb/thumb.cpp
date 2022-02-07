@@ -1,18 +1,21 @@
 // Tablacus Thumbnail engine (C)2020 Gaku
 // MIT Lisence
-// Visual C++ 2017 Express Edition
-// Windows SDK v7.1
+// Visual Studio Express 2017 for Windows Desktop
+// Visual Studio 2017 (v141) - x64
+// Visual Studio 2015 - Windows XP (v140_xp) - x86
 // https://tablacus.github.io/
 
 #include "resource.h"
 #include "thumb.h"
 
+LPFNSHCreateItemFromParsingName _SHCreateItemFromParsingName = NULL;
 LPWSTR g_bsFilter = NULL;
 LPWSTR g_bsDisable = NULL;
 int g_nSize = 1024;
 BOOL g_bFolder = TRUE;
 BOOL g_bTP = TRUE;
 BOOL g_bEI = TRUE;
+BOOL g_bIF = TRUE;
 
 // Unit
 VOID SafeRelease(PVOID ppObj)
@@ -39,6 +42,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
+		_SHCreateItemFromParsingName = (LPFNSHCreateItemFromParsingName)GetProcAddress(GetModuleHandleA("shell32.dll"), "SHCreateItemFromParsingName");
 		break;
 	case DLL_PROCESS_DETACH:
 		teSysFreeString(&g_bsFilter);
@@ -52,26 +56,46 @@ BOOL WINAPI DllMain(HINSTANCE hinstDll, DWORD dwReason, LPVOID lpReserved)
 HRESULT WINAPI GetImage(IStream *pStream, LPWSTR lpszPath, int cx, HBITMAP *phBM, int *pnAlpha)
 {
 	IThumbnailProvider *pTP;
-	IInitializeWithStream *pInitStream;
 	HRESULT hr = E_NOTIMPL;
 	BOOL bFile = PathMatchSpec(lpszPath, g_bsFilter) && !PathMatchSpec(lpszPath, g_bsDisable);
-	if (bFile && g_bTP) { 
-		hr = CoCreateInstance(CLSID_PhotoThumbnailProvider, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pInitStream));
-		if SUCCEEDED(hr) {
-			hr = pInitStream->Initialize(pStream, STGM_READ);
+	if (bFile) {
+		if (g_bIF && _SHCreateItemFromParsingName) {
+			IShellItemImageFactory *pImageFactory;
+			hr = SHCreateItemFromParsingName(lpszPath, NULL, IID_PPV_ARGS(&pImageFactory));
 			if SUCCEEDED(hr) {
-				hr = pInitStream->QueryInterface(IID_PPV_ARGS(&pTP));
+				SIZE size;
+				size.cx = cx ? cx : g_nSize;
+				size.cy = size.cx;
+				hr = pImageFactory->GetImage(size, SIIGBF_THUMBNAILONLY, phBM);
+				*pnAlpha = 3;
+				pImageFactory->Release();
 				if SUCCEEDED(hr) {
-					WTS_ALPHATYPE alphaType = WTSAT_RGB;
-					hr = pTP->GetThumbnail(cx ? cx : g_nSize, phBM, &alphaType);
-					pTP->Release();
-					*pnAlpha = alphaType == WTSAT_ARGB ? 0 : 2;
+					return hr;
 				}
 			}
-			pInitStream->Release();
+		}
+		if (g_bTP) {
+			IInitializeWithStream *pInitStream;
+			hr = CoCreateInstance(CLSID_PhotoThumbnailProvider, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pInitStream));
+			if SUCCEEDED(hr) {
+				hr = pInitStream->Initialize(pStream, STGM_READ);
+				if SUCCEEDED(hr) {
+					hr = pInitStream->QueryInterface(IID_PPV_ARGS(&pTP));
+					if SUCCEEDED(hr) {
+						WTS_ALPHATYPE alphaType = WTSAT_RGB;
+						hr = pTP->GetThumbnail(cx ? cx : g_nSize, phBM, &alphaType);
+						pTP->Release();
+						*pnAlpha = alphaType == WTSAT_ARGB ? 0 : 2;
+					}
+				}
+				pInitStream->Release();
+				if SUCCEEDED(hr) {
+					return hr;
+				}
+			}
 		}
 	}
-	if (hr != S_OK && PathMatchSpec(lpszPath, L"?:\\*;\\\\*\\*")) {
+	if (PathMatchSpec(lpszPath, L"?:\\*;\\\\*\\*")) {
 		LPITEMIDLIST pidl = ILCreateFromPath(lpszPath);
 		if (pidl) {
 			SIZE size;
@@ -148,4 +172,9 @@ void __stdcall SetTPW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdSh
 void __stdcall SetEIW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)
 {
 	swscanf_s(lpszCmdLine, L"%ld", &g_bEI);
+}
+
+void __stdcall SetIFW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)
+{
+	swscanf_s(lpszCmdLine, L"%ld", &g_bIF);
 }
