@@ -195,7 +195,7 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 		}
 		if (q.w && q.h) {
 			q.onload = function (q) {
-				q.image = api.CreateObject("WICBitmap").FromSource(q.out);
+				q.image = q.out;
 				api.InvalidateRect(q.hwnd, null, false);
 			}
 			Threads.GetImage(Sync.TooltipPreview.q);
@@ -223,8 +223,10 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 				if (hdc) {
 					const rc = api.Memory("RECT");
 					api.DrawText(hdc, String.fromCharCode(0x2002), -1, rc, DT_CALCRECT);
-					Sync.TooltipPreview.cx = rc.right * .7;
-					Sync.TooltipPreview.cy = rc.bottom;
+					if (rc.right < 256 && rc.bottom < 99) {
+						Sync.TooltipPreview.cx = rc.right * .7;
+						Sync.TooltipPreview.cy = rc.bottom;
+					}
 					api.ReleaseDC(hwnd, hdc);
 				} else {
 					Sync.TooltipPreview.cx = 6;
