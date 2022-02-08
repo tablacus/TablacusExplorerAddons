@@ -177,6 +177,7 @@ if (window.Addon == 1) {
 			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
 				div1.innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 			} else {
+				img.style.display = "none";
 				if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
 					div1.innerHTML = '<video controls autoplay style="width: 100%"><source src="' + path + '"></video>';
 				} else {

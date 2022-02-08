@@ -22,14 +22,17 @@ Sync.TooltipPreview = {
 		}
 		if (api.IsWindowVisible(q.hwnd) && q.image) {
 			Sync.TooltipPreview.TT[q.hwnd] = q;
+			const rc = api.Memory("RECT");
+			api.GetClientRect(q.hwnd, rc);
+			const w1 = rc.right - rc.left - 8;
+			const h1 = rc.bottom - rc.top - Sync.TooltipPreview.nCols * Sync.TooltipPreview.cy - 4;
+			if (h1 < 8) {
+				return;
+			}
 			if (api.IsWindowVisible(q.hwnd)) {
 				const hdc = api.GetWindowDC(q.hwnd);
 				if (hdc) {
 					q.image.Frame = 0;
-					const rc = api.Memory("RECT");
-					api.GetClientRect(q.hwnd, rc);
-					const w1 = rc.right - rc.left - 8;
-					const h1 = Math.max(rc.bottom - rc.top - Sync.TooltipPreview.nCols * Sync.TooltipPreview.cy - 4, 16);
 					const z = q.z;
 					if (w1 < q.w * z) {
 						q.z = Math.min(z, w1 / q.w);
@@ -37,7 +40,10 @@ Sync.TooltipPreview = {
 					}
 					if (h1 < q.h * z) {
 						q.z = Math.min(q.z, h1 / q.h);
-						Sync.TooltipPreview.cy = Math.max(h1 / Sync.TooltipPreview.cyn, 1);
+						const cy = h1 / Sync.TooltipPreview.cyn;
+						if (cy > 8) {
+							Sync.TooltipPreview.cy = cy;
+						}
 					}
 					cr = false;
 					let hOld1, nDelay, bAnime = false;
@@ -223,10 +229,8 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 				if (hdc) {
 					const rc = api.Memory("RECT");
 					api.DrawText(hdc, String.fromCharCode(0x2002), -1, rc, DT_CALCRECT);
-					if (rc.right < 256 && rc.bottom < 99) {
-						Sync.TooltipPreview.cx = rc.right * .7;
-						Sync.TooltipPreview.cy = rc.bottom;
-					}
+					Sync.TooltipPreview.cx = rc.right * .7;
+					Sync.TooltipPreview.cy = rc.bottom;
 					api.ReleaseDC(hwnd, hdc);
 				} else {
 					Sync.TooltipPreview.cx = 6;
