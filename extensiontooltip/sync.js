@@ -1,6 +1,7 @@
 Sync.ExtensionTooltip = {
 	db: {},
-	TFS: api.PSGetDisplayName("System.TotalFileSize")
+	TFS: api.PSGetDisplayName("System.TotalFileSize"),
+	Label: api.PSGetDisplayName("System.Contact.Label")
 }
 
 AddEvent("ToolTip", function (Ctrl, Index) {
@@ -23,10 +24,12 @@ AddEvent("ToolTip", function (Ctrl, Index) {
 				if (s) {
 					const n = api.PSGetDisplayName(s);
 					let v;
-					if (n != Sync.ExtensionTooltip.TFS) {
-						v = Item.ExtendedProperty(s);
-					} else {
+					if (n == Sync.ExtensionTooltip.TFS) {
 						v = Ctrl.TotalFileSize[api.GetDisplayNameOf(Item, SHGDN_FORPARSING)] || Item.ExtendedProperty("Size");
+					} else if (n == Sync.ExtensionTooltip.Label && Sync.Label) {
+						v = Sync.Label.DB.Get(Item.Path) || Item.ExtendedProperty("System.Contact.Label");
+					} else {
+						v = Item.ExtendedProperty(s);
 					}
 					const v2 = api.PSFormatForDisplay(s, v, PDFF_DEFAULT);
 					dt.push(n + ": " + (v2 || (/string|number|date/.test(typeof v) ? v : "")));

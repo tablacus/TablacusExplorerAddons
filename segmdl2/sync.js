@@ -82,10 +82,12 @@ Sync.SegMDL2 = {
 	}
 }
 
-for (let n in Sync.SegMDL2) {
-	for (let i in Sync.SegMDL2[n]) {
-		if (fso.FileExists(BuildPath(te.Data.DataFolder, "icons", n, i + ".png"))) {
-			delete Sync.SegMDL2[n][i];
+if (g_.IconExt) {
+	for (let n in Sync.SegMDL2) {
+		for (let i in Sync.SegMDL2[n]) {
+			if (fso.FileExists(BuildPath(te.Data.DataFolder, "icons", n, i + g_.IconExt))) {
+				delete Sync.SegMDL2[n][i];
+			}
 		}
 	}
 }

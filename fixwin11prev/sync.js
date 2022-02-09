@@ -27,8 +27,12 @@ AddEvent("MouseMessage", function (Ctrl, hwnd, msg, wParam, pt) {
 				const ptc = pt.Clone();
 				api.ScreenToClient(hList, ptc);
 				if (!PtInRect(Sync.FixWin11Preview.rc, ptc)) {
-					api.ShowWindow(Sync.FixWin11Preview.hwnd, SW_HIDE);
-					Sync.FixWin11Preview.hwnd = 0;
+					const rc = api.Memory("RECT");
+					api.GetWindowRect(Sync.FixWin11Preview.hwnd, rc);
+					if (!PtInRect(rc, pt)) {
+						api.ShowWindow(Sync.FixWin11Preview.hwnd, SW_HIDE);
+						Sync.FixWin11Preview.hwnd = 0;
+					}
 				}
 			} else {
 				Sync.FixWin11Preview.hwnd = 0;

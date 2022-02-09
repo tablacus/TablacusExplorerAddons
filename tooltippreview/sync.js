@@ -23,6 +23,17 @@ Sync.TooltipPreview = {
 		if (api.IsWindowVisible(q.hwnd) && q.image) {
 			Sync.TooltipPreview.TT[q.hwnd] = q;
 			const rc = api.Memory("RECT");
+			api.GetWindowRect(q.hwnd, rc);
+			const hMonitor = api.MonitorFromRext(rc, MONITOR_DEFAULTTOPRIMARY);
+			const mi = api.Memory("MONITORINFOEX");
+			api.GetMonitorInfo(hMonitor, mi);
+			if (rc.top < mi.rcMonitor.top) {
+				const x = rc.left;
+				const y = rc.top;
+				const w = rc.right - x;
+				const h = rc.bottom - y;
+				api.MoveWindow(q.hwnd, x, mi.rcMonitor.top, w, h, true);
+			}
 			api.GetClientRect(q.hwnd, rc);
 			const w1 = rc.right - rc.left - 8;
 			const h1 = rc.bottom - rc.top - Sync.TooltipPreview.nCols * Sync.TooltipPreview.cy - 4;
@@ -183,9 +194,10 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 		if (IsCloud(Item)) {
 			return;
 		}
-		if (PathMatchEx(Item.Path, Sync.TooltipPreview.TextFilter)) {
-			if (Item.ExtendedProperty("size") <= Sync.TooltipPreview.TextLimit) {
-				const ado = OpenAdodbFromTextFile(Item.Path, Sync.TooltipPreview.Charset);
+		const Item2 = Item.IsLink ? api.ILCreateFromPath(Item.ExtendedProperty("linktarget")) : Item;
+		if (PathMatchEx(Item2.Path, Sync.TooltipPreview.TextFilter)) {
+			if (Item2.ExtendedProperty("size") <= Sync.TooltipPreview.TextLimit) {
+				const ado = OpenAdodbFromTextFile(Item2.Path, Sync.TooltipPreview.Charset);
 				if (ado) {
 					const s = ado.ReadText(Sync.TooltipPreview.TextSize);
 					ado.Close()
@@ -193,34 +205,22 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 				}
 			}
 		}
-		const q = { Item: Item, path: Item, tm: new Date().getTime(), Id: Ctrl.Id };
+		const q = { Item: Item2, tm: new Date().getTime() };
 		Sync.TooltipPreview.q = q;
-		if (WINVER > 0x601 || Item.ExtendedProperty("{14B81DA1-0135-4D31-96D9-6CBFC9671A99} 274") < 2) {
-			q.w = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 3");
-			q.h = Item.ExtendedProperty("{6444048F-4C8B-11D1-8B70-080036B11A03} 4");
-		}
-		if (q.w && q.h) {
-			q.onload = function (q) {
-				q.image = q.out;
-				api.InvalidateRect(q.hwnd, null, false);
-			}
-			Threads.GetImage(Sync.TooltipPreview.q);
-		} else {
-			q.image = api.CreateObject("WICBitmap").FromFile(q.path);
-			if (!q.image) {
-				if (api.PathMatchSpec(Item.Path, Sync.TooltipPreview.Extract) && !IsFolderEx(Item)) {
-					const Items = api.CreateObject("FolderItems");
-					Items.AddItem(Item);
-					te.OnBeforeGetData(Ctrl, Items, 11);
-					if (IsExists(Item.Path)) {
-						q.image = api.CreateObject("WICBitmap").FromFile(Item.Path);
-					}
+		q.image = api.CreateObject("WICBitmap").FromFile(Item2);
+		if (!q.image) {
+			if (PathMatchEx(Item2.Path, Sync.TooltipPreview.Extract) && !IsFolderEx(Item2)) {
+				const Items = api.CreateObject("FolderItems");
+				Items.AddItem(Item2);
+				te.OnBeforeGetData(Ctrl, Items, 11);
+				if (IsExists(Item2.Path)) {
+					q.image = api.CreateObject("WICBitmap").FromFile(Item2.Path);
 				}
 			}
-			if (q.image) {
-				q.w = q.image.GetWidth();
-				q.h = q.image.GetHeight();
-			}
+		}
+		if (q.image) {
+			q.w = q.image.GetWidth();
+			q.h = q.image.GetHeight();
 		}
 		if (q.w && q.h) {
 			if (Sync.TooltipPreview.cx == 0) {
