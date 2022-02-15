@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.02</Version>
-    <MinVersion>2020.12.1</MinVersion>
-    <pubDate>Wed, 02 Dec 2020 00:00:00 GMT</pubDate>
+    <Version>1.03</Version>
+    <MinVersion>2022.2.14</MinVersion>
+    <pubDate>Tue, 15 Feb 2022 00:00:00 GMT</pubDate>
     <Options>Common:7,8,9:7</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -12,10 +12,16 @@
   </General>
   <en>
     <Name>Set home</Name>
-    <Description>Set home for each tab *"Go home" is required.
-    </Description>
+    <Description>Set home for each tab *"Go home" is required.</Description>
   </en>
+  <fr>
+    <Name>Définir le début</Name>
+    <Description>Définir le début pour chaque onglet *&quot;Aller au début&quot; est requis.</Description>
+  </fr>
   <ja>
     <Name>ホームに設定</Name>
   </ja>
+  <zh>
+    <Name>設為首頁</Name>
+  </zh>
 </TablacusExplorer>

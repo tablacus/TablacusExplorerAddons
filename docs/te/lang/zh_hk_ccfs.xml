@@ -1,4 +1,5 @@
-﻿<!-- TE 22.1.7 -->
+﻿<!-- Tablacus Explorer and add-ons language file -->
+<!-- Version 22.2.12 -->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -350,6 +351,7 @@
 	<text s="Tab drive name">在頁籤顯示磁碟代號</text>
 	<text s="Tab parent folder name">在頁籤顯示上層資料夾名稱</text>
 	<text s="Change tab name...">變更分頁名稱...</text>
+	<text s="Fixed tab name...">固定分頁名稱...</text>
 	<text s="Tab position">分頁定位</text>
 	<text s="Active tab after tab closing">關閉目前分頁之後，前往哪個分頁</text>
 	<text s="First">第一</text>
@@ -436,12 +438,11 @@
 	<text s="Automatically start">自動開始</text>
 	<text s="Class">類別</text>
 	<text s="Preview">預覽窗格</text>
-	<text s="Charset">字元編碼</text>
-	<text s="Limit">檔案大小上限</text>
+	<text s="Limits">檔案大小上限</text>
+	<text s="@wmploc.dll,-1800">播放&#160;</text>
 	<text s="Preview window">預覽視窗</text>
 	<text s="Tooltip preview">彈出預覽</text>
 	<text s="Only Allow">限於</text>
-	<text s="Limits">&#160;檔案大小上限</text>
 	<text s="Preview in background">分頁上預覽</text>
 	<text s="Menu image">選單彈出預覽</text>
 	<text s="Menu image plus">資料夾選單彈出預覽</text>
@@ -574,7 +575,7 @@
 	<text s="Command in address bar">用位址列執行命令</text>
 	<text s="Auto Disable IME">自動變成英文輸入</text>
 	<text s="System folders">開發者常用資料夾</text>
-	<text s="Copy Data URI Scheme">製作 Data URI</text>
+	<text s="Copy Data URI Scheme">複製成 Data URI</text>
 	<text s="External script">外部指令檔</text>
 	<text s="Async script">多程序指令檔</text>
 	<text s="Debug">偵錯窗格</text>

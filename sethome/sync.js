@@ -1,16 +1,5 @@
 const Addon_Id = "sethome";
 const item = GetAddonElement(Addon_Id);
-if (!item.getAttribute("Set")) {
-	item.setAttribute("MenuExec", 1);
-	item.setAttribute("Menu", "Tabs");
-	item.setAttribute("MenuPos", -1);
-
-	item.setAttribute("KeyOn", "List");
-	item.setAttribute("Key", "");
-
-	item.setAttribute("MouseOn", "List");
-	item.setAttribute("Mouse", "");
-}
 
 Sync.SetHome = {
 	nPos: GetNum(item.getAttribute("MenuPos")),

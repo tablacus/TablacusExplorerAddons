@@ -1,16 +1,5 @@
 const Addon_Id = "gohome";
 const item = GetAddonElement(Addon_Id);
-if (!item.getAttribute("Set")) {
-	item.setAttribute("MenuExec", 1);
-	item.setAttribute("Menu", "Tabs");
-	item.setAttribute("MenuPos", -1);
-
-	item.setAttribute("KeyOn", "All");
-	item.setAttribute("Key", "$4147");
-
-	item.setAttribute("MouseOn", "List");
-	item.setAttribute("Mouse", "");
-}
 
 Sync.GoHome = {
 	nPos: GetNum(item.getAttribute("MenuPos")),
