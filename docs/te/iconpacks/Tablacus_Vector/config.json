@@ -1,0 +1,20 @@
+{
+  "info": {
+    "name": {
+      "en": "Tablacus Vector"
+    },
+    "descprition": {
+      "en": "Default vector SVG icons",
+      "pt": "Ícones vectoriais SVG pré-definidos"
+    },
+    "creator": {
+      "en": "Duarte Farrajota Ramos"
+    },
+    "id": "Tablacus_Vector",
+    "ext": ".svg",
+    "version": "0.01",
+    "pubDate" : "Wed, 16 Feb 2022 11:00:00 GMT",
+    "license": "MIT License",
+    "URL": "https://duarteramos.pt"
+  }
+}
