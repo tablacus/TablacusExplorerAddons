@@ -3,7 +3,9 @@ const item = GetAddonElement(Addon_Id);
 
 Sync.SetHome = {
 	nPos: GetNum(item.getAttribute("MenuPos")),
-	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+	sName: [item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		(item.getAttribute("KeyExec") && item.getAttribute("KeyOn")) ? GetKeyName(item.getAttribute("Key")) : ""
+	].join("\t"),
 
 	Exec: function (Ctrl, pt) {
 		const FV = GetFolderView(Ctrl, pt);
@@ -16,13 +18,13 @@ Sync.SetHome = {
 };
 
 AddEvent("SaveFV", function (FV, item) {
-	if (FV.Data.Home !== void 0) {
+	if (FV.Data.Home != null) {
 		item.setAttribute("Home", GetSavePath(FV.Data.Home));
 	}
 });
 
 AddEvent("LoadFV", function (FV, item) {
-	const Home = item.getAttribute("Home");;
+	const Home = item.getAttribute("Home");
 	if (Home) {
 		FV.Data.Home = api.ILCreateFromPath(Home);
 	}
@@ -31,7 +33,7 @@ AddEvent("LoadFV", function (FV, item) {
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
-		api.InsertMenu(hMenu, Sync.SetHome.nPos, MF_BYPOSITION | MF_STRING, ++nPos, GetText(Sync.SetHome.strName));
+		api.InsertMenu(hMenu, Sync.SetHome.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.SetHome.sName);
 		ExtraMenuCommand[nPos] = Sync.SetHome.Exec;
 		return nPos;
 	});

@@ -1,7 +1,7 @@
 const Addon_Id = "gohome";
 let item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
-	if (window.chrome) {
+	if (window.Addon == 1 && window.chrome) {
 		item = await $.GetAddonElement(Addon_Id);
 	}
 	item.setAttribute("MenuExec", 1);

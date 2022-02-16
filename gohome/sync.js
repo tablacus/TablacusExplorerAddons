@@ -3,8 +3,9 @@ const item = GetAddonElement(Addon_Id);
 
 Sync.GoHome = {
 	nPos: GetNum(item.getAttribute("MenuPos")),
-	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
-	strKey: item.getAttribute("KeyOn") ? GetKeyName(item.getAttribute("Key")) : "",
+	sName: [item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
+		(item.getAttribute("KeyExec") && item.getAttribute("KeyOn")) ? GetKeyName(item.getAttribute("Key")) : ""
+	].join("\t"),
 
 	Exec: function (Ctrl, pt) {
 		const FV = GetFolderView(Ctrl, pt);
@@ -19,7 +20,7 @@ Sync.GoHome = {
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos, Selected, SelItem, ContextMenu, Name, pt) {
 		const FV = GetFolderView(Ctrl, pt);
-		api.InsertMenu(hMenu, Sync.GoHome.nPos, MF_BYPOSITION | MF_STRING | (FV && FV.Data.Home ? 0 : MF_DISABLED), ++nPos, [GetText(Sync.GoHome.strName), Sync.GoHome.strKey].join("\t"));
+		api.InsertMenu(hMenu, Sync.GoHome.nPos, MF_BYPOSITION | MF_STRING | (FV && FV.Data.Home ? 0 : MF_DISABLED), ++nPos, Sync.GoHome.sName);
 		ExtraMenuCommand[nPos] = Sync.GoHome.Exec;
 		return nPos;
 	});
