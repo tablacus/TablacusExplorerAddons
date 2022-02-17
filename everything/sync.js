@@ -6,16 +6,16 @@ Sync.Everything = {
 	strName: item.getAttribute("MenuName") || "Everything",
 	nPos: GetNum(item.getAttribute("MenuPos")),
 	Max: GetNum(item.getAttribute("Folders")) || 1000,
-	RE: false,
+	RE: GetNum(item.getAttribute("RE")),
 	fncb: {},
 	nDog: 0,
 
 	IsHandle: function (Ctrl) {
-		return api.PathMatchSpec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL), Sync.Everything.PATH + "*");
+		return api.PathMatchSpec("string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING), Sync.Everything.PATH + "*");
 	},
 
 	GetSearchString: function (Ctrl) {
-		const Path = "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+		const Path = "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		if (Sync.Everything.IsHandle(Path)) {
 			return Path.replace(new RegExp("^" + Sync.Everything.PATH, "i"), "").replace(/^\s+|\s+$/g, "");
 		}
@@ -39,7 +39,7 @@ Sync.Everything = {
 			if (FV.hwnd && this.IsHandle(FV)) {
 				if (Sync.Everything.IsHandle(FV)) {
 					if (FV.RemoveItem(pidl) == S_OK) {
-						FV.AddItem(api.GetDisplayNameOf(pidl2, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL));
+						FV.AddItem(api.GetDisplayNameOf(pidl2, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 					}
 				}
 			}
@@ -50,7 +50,8 @@ Sync.Everything = {
 		if (fncb) {
 			let Path = Sync.Everything.GetSearchString(pid);
 			if (Sync.Everything.RE) {
-				for (let ar = [], ar2 = Path.split(" "); ar2.length;) {
+				const ar = []
+				for (let ar2 = Path.split(" "); ar2.length;) {
 					let s = ar2.shift();
 					if (/^\\\\|:/.test(s)) {
 						if (/"/.test(s)) {
@@ -184,7 +185,7 @@ AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
 AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, Directory, nShow, dwHotKey, hIcon) {
 	if (!Verb || Verb == CommandID_STORE - 1) {
 		if (ContextMenu.Items.Count >= 1) {
-			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL);
+			const path = api.GetDisplayNameOf(ContextMenu.Items.Item(0), SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 			if (Sync.Everything.IsHandle(path)) {
 				const FV = te.Ctrl(CTRL_FV);
 				FV.Navigate(path, SBSP_SAMEBROWSER);

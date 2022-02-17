@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.44</Version>
-    <MinVersion>2021.4.15</MinVersion>
-    <pubDate>Sat, 17 Apr 2021 00:00:00 GMT</pubDate>
+    <Version>1.45</Version>
+    <MinVersion>2022.2.16</MinVersion>
+    <pubDate>Thu, 17 Feb 2022 00:00:00 GMT</pubDate>
     <Options>Common:0,5,6,7,8,9:0</Options>
     <Creator>Gaku</Creator>
     <Level>2</Level>
@@ -14,6 +14,10 @@
     <Name>Everything</Name>
     <Description>Search using Everything Search Engine.</Description>
   </en>
+  <fr>
+    <Name>Everything</Name>
+    <Description>Chercher en utilisant Everything Search Engine.</Description>
+  </fr>
   <ja>
     <Name>Everything</Name>
     <Description>Everything Search Engineで検索を行います。</Description>
