@@ -7,6 +7,7 @@ Sync.Flat = {
 	strName: item.getAttribute("MenuName") || GetText("Flat"),
 	nPos: GetNum(item.getAttribute("MenuPos")),
 	Icon: item.getAttribute("Icon"),
+	Arc: GetNum(item.getAttribute("Arc")),
 
 	GetSearchString: function (Ctrl) {
 		if (Ctrl) {
@@ -40,6 +41,7 @@ Sync.Flat = {
 					List: api.CreateObject("FolderItems"),
 					GetEnum: GetEnum,
 					Conf_MenuHidden: te.Data.Conf_MenuHidden,
+					Arc: Sync.Flat.Arc,
 					ILCreateFromPath: api.ILCreateFromPath,
 					fncb: fncb
 				}, api: api

@@ -1,6 +1,6 @@
 const Addon_Id = "sizestatus";
 const Default = "BottomBar3Right";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.SizeStatus = {
 		SessionId: 0,
@@ -89,7 +89,7 @@ if (window.Addon == 1) {
 				if (bYet || (!nSize && !TFS) || !nAll) {
 					s = " ";
 					if (Addons.SizeStatus.FreeSpace && !await pid.Unavailable) {
-						const oDrive = await api.GetDiskFreeSpaceEx(await pid.Path);
+						const oDrive = await api.GetDiskFreeSpaceEx(await api.GetDisplayNameOf(pid, SHGDN_FORPARSING));
 						if (oDrive) {
 							s = Addons.SizeStatus.strFreeSpace + await api.StrFormatByteSize(await oDrive.FreeBytesOfAvailable);
 						}

@@ -3,7 +3,7 @@ const sitems = (api.LoadString(hShell32, 38192) || api.LoadString(hShell32, 6466
 GetList = function (Item) {
 	let Items;
 	if (Item.IsFolder) {
-		if (Item.ExtendedProperty("size")) {
+		if (!ex.Arc && Item.ExtendedProperty("size")) {
 			return;
 		}
 		const link = Item.ExtendedProperty("linktarget");

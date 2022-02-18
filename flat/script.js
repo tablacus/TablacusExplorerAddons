@@ -10,10 +10,11 @@ if (window.Addon == 1) {
 	AddEvent("Layout", async function () {
 		await SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.Flat.Exec, this);" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: item.getAttribute("MenuName") || await GetText("Flat"),
-			src: item.getAttribute("Icon") || await GetMiscIcon(Addon_Id) || "icon:browser,15"
+			src: item.getAttribute("Icon") || ("string" === ui_.MiscIcon[Addon_Id] ? ui_.MiscIcon[Addon_Id] : await GetMiscIcon(Addon_Id)) || "icon:browser,15"
 		}, GetIconSizeEx(item)), '</span>']);
 	});
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
+	SetTabContents(0, "General", '<label><input type="checkbox" name="Arc">@srm.dll,-4027[Compressed Files]</label>');
 	EnableInner();
 }
