@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
-    <MinVersion>2020.12.1</MinVersion>
-    <pubDate>Wed, 02 Dec 2020 00:00:00 GMT</pubDate>
+    <Version>1.04</Version>
+    <MinVersion>2022.2.18</MinVersion>
+    <pubDate>Sat, 19 Feb 2022 00:00:00 GMT</pubDate>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -13,8 +12,15 @@
     <Name>Fast list mode</Name>
     <Description>Speed up scrolling in list mode. Require Window Vista or higher.</Description>
   </en>
+  <en>
+    <Name>Mode &apos;Liste rapide&apos;</Name>
+    <Description>Accélérer le défilement en mode liste. *Windows Vista ou plu récent requis.</Description>
+  </en>
   <ja>
     <Name>高速一覧表示</Name>
     <Description>一覧表示でスクロールを高速化 ※Windows Vista以降</Description>
   </ja>
+  <en>
+    <Name>快速清單檢視</Name>
+  </en>
 </TablacusExplorer>

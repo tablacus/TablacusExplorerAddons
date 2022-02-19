@@ -1,6 +1,6 @@
 const Addon_Id = "split3";
 const Default = "ToolBar1Right";
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 Addons.Split3 = {
 	ar: ["3x1", "1x3", "left1right2", "left2right1", "top1bottom2", "top2bottom1"],
 	en: ["left", "right", "top", "bottom"],
@@ -11,7 +11,9 @@ Addons.Split3 = {
 		for (let i = 0; i < Addons.Split3.en.length; ++i) {
 			ww.push(GetText(Addons.Split3.en[i]));
 		}
-		Addons.Split3.ww = Promise.all(ww);
+		Promise.all(ww).then(function (r) {
+			Addons.Split3.ww = r;
+		});
 	},
 
 	GetText: function (n) {
@@ -146,7 +148,8 @@ if (window.Addon == 1) {
 			ar.push({
 				id: Addons.Split3.ar[i],
 				exec: "3, " + (i + 1),
-				name: Addons.Split3.GetText(Addons.Split3.ar[i])
+				name: Addons.Split3.GetText(Addons.Split3.ar[i]),
+				ext: ".svg"
 			});
 		}
 		Addons.Split.SetButtons(Addon_Id, Default, item, 3, ar);

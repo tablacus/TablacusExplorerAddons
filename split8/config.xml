@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
-    <MinVersion>2021.4.28</MinVersion>
-    <pubDate>Thu, 29 Apr 2021 00:00:00 GMT</pubDate>
+    <Version>1.04</Version>
+    <MinVersion>2022.2.18</MinVersion>
+    <pubDate>Sat, 19 Feb 2022 00:00:00 GMT</pubDate>
     <Options>Common:6:6</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +13,10 @@
     <Name>Split8</Name>
     <Description>Split a window into 8 frames. *"Split" is required.</Description>
   </en>
+  <fr>
+    <Name>Fractionner en 8</Name>
+    <Description>Diviser la fenêtre en 8 panneaux. *&quot;Fractionner&quot; est requis.</Description>
+  </fr>
   <ja>
     <Name>8分割</Name>
     <Description>画面の8分割 ※"分割"が必要</Description>

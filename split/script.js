@@ -1,7 +1,7 @@
 const Addon_Id = "split";
 const Default = "ToolBar1Right";
 
-const item = await GetAddonElement(Addon_Id);
+const item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Split = {
 		NoTop: item.getAttribute("NoTop"),
@@ -144,7 +144,7 @@ if (window.Addon == 1) {
 			return TC;
 		},
 
-		SetButtons: function (Addon_Id, Default, item, n, ar) {
+		SetButtons: async function (Addon_Id, Default, item, n, ar) {
 			const el = document.getElementById(Addon_Id);
 			if (!el) {
 				setTimeout(function (Addon_Id, Default, item, n, ar) {
@@ -152,11 +152,14 @@ if (window.Addon == 1) {
 				}, 999, Addon_Id, Default, item, n, ar);
 				return;
 			}
-			const px = screen.deviceYDPI / 96 * 16;
 			const s = [];
 			for (let i = 0; i < ar.length; i++) {
-				if (!item.getAttribute("No" + ar[i].id)) {
-					s.push('<span class="button" onclick="Addons.Split', n, '.Exec(', ar[i].exec, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()"><img title="', ar[i].name || ar[i].id, '" src="../addons/split', n, '/', ar[i].img || ar[i].id, '.png" style="width: ', px, 'px"></span>');
+				const o = ar[i];
+				if (!item.getAttribute("No" + o.id)) {
+					s.push('<span class="button" onclick="Addons.Split', n, '.Exec(', o.exec, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+						title: o.name || o.id,
+						src: ("string" === ui_.MiscIcon["split_" + o.id] ? ui_.MiscIcon["split_" + o.id] : await GetMiscIcon("split_" + o.id)) || BuildPath(ui_.Installed, "addons", "split" + n, (o.img || o.id) + (o.ext || ".png"))
+					}, 16), "</span>");
 				}
 			}
 			el.innerHTML = s.join("");
@@ -273,10 +276,10 @@ if (window.Addon == 1) {
 	AddEvent("Load", async function () {
 		Addons.Split.SetButtons(Addon_Id, Default, await GetAddonElement(Addon_Id), "",
 		[
-			{ id: "1x1", exec: "1, 1", img: "1tab" },
-			{ id: "1x2", exec: "2, 2", img: "h2tabs" },
-			{ id: "2x1", exec: "2, 3", img: "v2tabs" },
-			{ id: "2x2", exec: "4, 4", img: "4tabs" }
+			{ id: "1x1", exec: "1, 1", ext: ".svg" },
+			{ id: "1x2", exec: "2, 2", ext: ".svg" },
+			{ id: "2x1", exec: "2, 3", ext: ".svg" },
+			{ id: "2x2", exec: "4, 4", ext: ".svg" }
 		]);
 
 		AddEvent("Arrange", async function (Ctrl, rc) {

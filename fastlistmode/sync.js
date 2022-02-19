@@ -5,14 +5,18 @@ Sync.FastListMode = {
 			const dwStyle = api.GetWindowLongPtr(hList, GWL_STYLE);
 			if (Ctrl.CurrentViewMode == FVM_LIST) {
 				if (!(dwStyle & 0x800)) {
-					api.SetWindowLongPtr(hList, GWL_STYLE, dwStyle ^ 0x800);
+					if (!(Ctrl.FolderFlags & FWF_ALIGNLEFT)) {
+						api.SetWindowLongPtr(hList, GWL_STYLE, dwStyle | 0x800);
+					}
 				}
 				api.SendMessage(Ctrl.hwndList, LVM_SETVIEW, 2, 0);
 				if (Ctrl.GroupBy) {
 					Ctrl.GroupBy = "System.Null";
 				}
 			} else if (dwStyle & 0x800) {
-				api.SetWindowLongPtr(hList, GWL_STYLE, dwStyle ^ 0x800);
+				if (!(Ctrl.FolderFlags & FWF_ALIGNLEFT)) {
+					api.SetWindowLongPtr(hList, GWL_STYLE, dwStyle & ~0x800);
+				}
 				const nView = api.SendMessage(Ctrl.hwndList, LVM_GETVIEW, 0, 0);
 				api.SendMessage(Ctrl.hwndList, LVM_SETVIEW, 1, 0);
 				api.SendMessage(Ctrl.hwndList, LVM_SETVIEW, nView, 0);
