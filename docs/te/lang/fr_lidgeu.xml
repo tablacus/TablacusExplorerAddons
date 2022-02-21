@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources><!--"Copy/paste" generated from fr.22.2.12.updated.ods on 22/02/15-->
+<resources><!--"Copy/paste" generated from fr.22.2.18.updated.ods on 22/02/21-->
 	<lang author="Pierre le Lidgeu" en="French">Français</lang>
 
 <text s="General">Général</text>
@@ -353,6 +353,7 @@
 
 <text s="Switch hidden filter">Afficher/masquer les éléments filtrés</text>
 <text s="Display items and their subfolders items as a flat list.">Afficher les éléments et sous-dossiers en liste plate.</text>
+<text s="Compressed Files">Fichiers compressés</text>
 <text s="Right key next">Suivant : touche droite →</text>
 <text s="In Icon View. Right-arrow key: Move to the next item. Left-arrow key: Move to the previous item.">Affichage &quot;Icônes&quot;. Touche flèche-droite : élément suivant. Touche flèche-gauche : élément précédent.</text>
 <text s="Down key next">Suivant : touche bas ↓</text>
