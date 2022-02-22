@@ -1,0 +1,18 @@
+{
+  "info": {
+    "name": {
+      "en": "Tablacus PNG"
+    },
+    "descprition": {
+      "en": "PNG icons for add-ons (Split)"
+    },
+    "creator": {
+      "en": "Gaku"
+    },
+    "id": "Tablacus_PNG",
+    "version": "0.01",
+    "pubDate" : "Tue, 22 Feb 2022 00:00:00 GMT",
+    "license": "MIT License",
+    "URL": "https://github.com/tablacus"
+  }
+}

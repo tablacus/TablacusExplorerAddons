@@ -159,7 +159,7 @@ if (window.Addon == 1) {
 					s.push('<span class="button" onclick="Addons.Split', n, '.Exec(', o.exec, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 						title: o.name || o.id,
 						src: ("string" === ui_.MiscIcon["split_" + o.id] ? ui_.MiscIcon["split_" + o.id] : await GetMiscIcon("split_" + o.id)) || BuildPath(ui_.Installed, "addons", "split" + n, (o.img || o.id) + (o.ext || ".png"))
-					}, 16), "</span>");
+					}, GetIconSize(0, 16)), "</span>");
 				}
 			}
 			el.innerHTML = s.join("");
