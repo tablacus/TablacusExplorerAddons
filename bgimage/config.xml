@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Background image</Name>
-    <Description>Background image</Description>
+    <Description>Set filter based rules to define a background image used for the folder list</Description>
   </en>
   <fr>
     <Name>Image d&apos;arrière-plan</Name>
@@ -19,6 +19,10 @@
   <ja>
     <Name>背景画像</Name>
   </ja>
+  <pt>
+    <Name>Imagem de Fundo</Name>
+    <Description>Defina regras com filtros para aplicar imagens de fundo para a lista de ficheiros</Description>
+  </pt>
   <zh>
     <Name>分頁背景</Name>
   </zh>
