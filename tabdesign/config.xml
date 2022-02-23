@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Tab design</Name>
-    <Description>Tab appearence with CSS styling. Requires "Tab Plus"</Description>
+    <Description>Change tab appearence with CSS styling. Requires "Tab Plus"</Description>
   </en>
   <fr>
     <Name>Aspect d&apos;onglet</Name>
@@ -24,4 +24,8 @@
   <zh>
     <Name>頁籤設計室</Name>
   </zh>
+  <en>
+    <Name>Design de Separadores</Name>
+    <Description>Altere a aparência dos separadores com estilos CSS. Requer "Tab Plus"</Description>
+  </en>
 </TablacusExplorer>
