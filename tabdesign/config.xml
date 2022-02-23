@@ -21,11 +21,11 @@
     <Name>タブのデザイン</Name>
     <Description>タブのデザイン。※タブプラスが必要</Description>
   </ja>
+  <pt>
+    <Name>Design de Separadores</Name>
+    <Description>Altere a aparência dos separadores com estilos CSS. Requer "Tab Plus"</Description>
+  </pt>
   <zh>
     <Name>頁籤設計室</Name>
   </zh>
-  <en>
-    <Name>Design de Separadores</Name>
-    <Description>Altere a aparência dos separadores com estilos CSS. Requer "Tab Plus"</Description>
-  </en>
 </TablacusExplorer>
