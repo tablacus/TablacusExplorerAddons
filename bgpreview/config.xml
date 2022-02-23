@@ -11,7 +11,7 @@
   </General>
   <en>
     <Name>Preview in background</Name>
-    <Description>Displays the contents of selected image files in a background.</Description>
+    <Description>Displays the contents of the selected image file as background behind the file list.</Description>
   </en>
   <fr>
     <Name>Aperçu en arrière-plan</Name>
@@ -20,6 +20,10 @@
   <ja>
     <Name>背景でプレビュー</Name>
   </ja>
+  <pt>
+    <Name>Previsualização como fundo</Name>
+    <Description>Mostra o conteúdo da imagem seleccionada como fundo por trás da lista de ficheiros.</Description>
+  </pt>
   <zh>
     <Name>分頁上預覽</Name>
   </zh>
