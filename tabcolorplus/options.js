@@ -1,17 +1,21 @@
 SetTabContents(4, "Color", '<form name="E" id="data1"><table id="T" style="width: 100%"></table></form>');
 document.getElementById("toolbar").innerHTML = '<input type="button" value="Add" onclick=\'Add(["",""])\'>&emsp;<input type="button" value="Up" onclick="Up()"><input type="button" value="Down" onclick="Down()">&emsp;<input type="button" value="Remove" onclick="Remove()">';
 
-ConfigTSV = BuildPath(await te.Data.DataFolder, "config", Addon_Id + ".tsv");
-const g_strColor = await GetText("Color");
+const r = await Promise.all([await te.Data.DataFolder, GetTextR("@oleaccrc.dll,-4042"), GetTextR("@oleaccrc.dll,-4043")]);
+ConfigTSV = BuildPath(r[0], "config", Addon_Id + ".tsv");
+const g_strColor = r[1];
+const g_strFColor = r[2];
 
 Get = function (i) {
-	return [document.E.elements['p' + i].value, document.E.elements['c' + i].value];
+	return [document.E.elements['p' + i].value, document.E.elements['c' + i].value, document.E.elements['f' + i].value];
 }
 
 Set = function (i, ar) {
-	document.E.elements['p' + i].value = ar[0];
-	document.E.elements['c' + i].value = ar[1];
-	document.E.elements['b' + i].style.backgroundColor = ar[1];
+	document.E.elements['p' + i].value = ar[0] || "";
+	document.E.elements['c' + i].value = ar[1] || "";
+	document.E.elements['b' + i].style.backgroundColor = ar[1] || "";
+	document.E.elements['f' + i].value = ar[2] || "";
+	document.E.elements['e' + i].style.backgroundColor = ar[2] || "";
 }
 
 Add = function (ar) {
@@ -24,6 +28,8 @@ Add = function (ar) {
 	s.push('<td><input type="text" name="p', nRows, '" style="width: 100%" onchange="FilterChanged(this)" placeholder="', hint, '" title="', hint, '"></td>');
 	s.push('<td style="width: 7em"><input type="text" name="c', nRows, '" style="width: 100%" placeholder="', g_strColor, '" title="', g_strColor, '" onchange="ChangeColor(this)" ></td>');
 	s.push('<td style="width: 1em"><input type="button" name="b', nRows, '" value=" " class="color" style="width: 100%" onclick="ChooseColor2(this)" title="', g_strColor, '"></td>');
+	s.push('<td style="width: 7em"><input type="text" name="f', nRows, '" style="width: 100%" placeholder="', g_strFColor, '" title="', g_strFColor, '" onchange="ChangeColor(this, true)" ></td>');
+	s.push('<td style="width: 1em"><input type="button" name="e', nRows, '" value=" " class="color" style="width: 100%" onclick="ChooseColor2(this, true)" title="', g_strFColor, '"></td>');
 	const tr = table.insertRow();
 	tr.innerHTML = s.join("");
 	Set(nRows, ar);
@@ -80,19 +86,19 @@ FilterChanged = function (o) {
 	g_bChanged = true;
 }
 
-ChangeColor = function (o) {
+ChangeColor = function (o, f) {
 	const n = o.name.replace(/\D/, "");
-	document.E.elements["b" + n].style.backgroundColor = o.value;
+	document.E.elements[(f ? "e" : "b") + n].style.backgroundColor = o.value;
 	g_bChanged = true;
 }
 
-ChooseColor2 = async function (o) {
+ChooseColor2 = async function (o, f) {
 	const n = o.name.replace(/\D/, "");
-	const oc = document.E.elements["c" + n];
+	const oc = document.E.elements[(f ? "f" : "c") + n];
 	const c = await ChooseWebColor(oc.value);
 	if (c) {
 		oc.value = c;
-		ChangeColor(oc);
+		ChangeColor(oc, f);
 	}
 }
 
@@ -105,7 +111,7 @@ SaveLocation = async function () {
 		const nRows = table.rows.length;
 		let data = "";
 		for (let i = 0; i < nRows; i++) {
-			data += [document.E.elements['p' + i].value, document.E.elements['c' + i].value].join("\t") + "\r\n";
+			data += Get(i).join("\t") + "\r\n";
 		}
 		await ado.WriteText(data);
 		await ado.SaveToFile(ConfigTSV, adSaveCreateOverWrite);

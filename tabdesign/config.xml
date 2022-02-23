@@ -1,8 +1,8 @@
 <TablacusExplorer>
   <General>
-    <Version>1.15</Version>
+    <Version>1.16</Version>
     <MinVersion>2022.2.3</MinVersion>
-    <pubDate>Sat, 05 Feb 2022 00:00:00 GMT</pubDate>
+    <pubDate>Wed, 23 Feb 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -18,8 +18,8 @@
     <Description>Personnaliser l&apos;apparence d&apos;onglet via CSS. *&quot;Tab plus&quot; requis.</Description>
   </fr>
   <ja>
-    <Name>タブのデザイン</Name>
-    <Description>タブのデザイン。※タブプラスが必要</Description>
+    <Name>タブをデザイン</Name>
+    <Description>タブをデザイン。※タブプラスが必要</Description>
   </ja>
   <pt>
     <Name>Design de Separadores</Name>
