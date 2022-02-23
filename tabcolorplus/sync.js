@@ -12,19 +12,20 @@ try {
 	while (!ado.EOS) {
 		const ar = ado.ReadText(adReadLine).split("\t");
 		if (ar[0] != "") {
-			const res = re.exec(ar[0]);
-			if (res || /\*|\?/.test(ar[0])) {
-				Sync.TabColorPlus.cc.push(res ? new RegExp(res[1], res[2]) : ar[0]);
-				Sync.TabColorPlus.Color.push(ar[1] + "\n" + ar[2]);
+			let cc = ar.shift();
+			const res = re.exec(cc);
+			if (res || /\*|\?/.test(cc)) {
+				Sync.TabColorPlus.cc.push(res ? new RegExp(res[1], res[2]) : cc);
+				Sync.TabColorPlus.Color.push(ar.join("\n"));
 				continue;
 			}
-			const a2 = ar[0].toLowerCase().split(/;/);
+			const a2 = cc.toLowerCase().split(/;/);
 			for (let i = 0; i < a2.length; ++i) {
 				const n = a2[i].replace(/^\s+|\s+$/g, "");
 				if (Sync.TabColorPlus.db[n]) {
 					continue;
 				}
-				Sync.TabColorPlus.db[n] = ar[1] + "\n" + ar[2];
+				Sync.TabColorPlus.db[n] = ar.join("\n");
 			}
 		}
 	}
