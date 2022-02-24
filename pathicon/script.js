@@ -1,5 +1,5 @@
 const Addon_Id = "pathicon";
-let item = await GetAddonElement(Addon_Id);
+let item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 
 	Addons.PathIcon = {

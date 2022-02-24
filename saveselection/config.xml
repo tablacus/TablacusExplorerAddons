@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.03</Version>
-    <MinVersion>2021.5.8</MinVersion>
-    <pubDate>Sun, 09 May 2021 00:00:00 GMT</pubDate>
-    <Options>Common:5,6:5</Options>
+    <Version>1.04</Version>
+    <MinVersion>2022.2.23</MinVersion>
+    <pubDate>Thu, 24 Feb 2022 00:00:00 GMT</pubDate>
+    <Options>Common:4,5,6:4</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
@@ -14,7 +13,13 @@
     <Name>Save selected items</Name>
     <Description>Save selected items</Description>
   </en>
+  <fr>
+    <Name>Sauvegarder les éléments sélectionnés</Name>
+  </fr>
   <ja>
     <Name>選択項目を保存</Name>
   </ja>
+  <zh>
+    <Name>儲存選擇</Name>
+  </zh>
 </TablacusExplorer>

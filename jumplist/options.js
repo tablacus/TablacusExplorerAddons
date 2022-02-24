@@ -43,7 +43,7 @@ SetNameX = async function (o) {
 	const el = document.E.Name;
 	if (el.value === "") {
 		const sfi = await api.Memory("SHFILEINFO");
-		await api.SHGetFileInfo(await api.PathUnquoteSpaces(o.value), 0, sfi, await sfi.Size, SHGFI_TYPENAME);
+		await api.SHGetFileInfo(PathUnquoteSpaces(o.value), 0, sfi, await sfi.Size, SHGFI_TYPENAME);
 		el.value = await sfi.szTypeName;
 	}
 }

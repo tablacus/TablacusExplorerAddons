@@ -14,10 +14,10 @@
               <label>Path</label>
             </td>
             <td>
-              <input type="button" value="Portable" onclick="PortableX('Path')">
+              <button onclick="PortableX('Path')">Portable</button>
             </td>
             <td>
-              <input type="button" value="Browse..." onclick="RefX('Path', false, this, false, '@shell32.dll,-4131\t|<Folder>')">
+              <button onclick="RefX('Path', false, this, false, '@shell32.dll,-4131\t|<Folder>')">Browse...</button>
             </td>
           </tr>
         </table>
@@ -26,13 +26,13 @@
           <tr>
             <td style="width: 100%; vertical-align: bottom"><label>Icon</label></td>
             <td align="right">
-              <input type="button" value="Portable" title="Icon" onclick="PortableX('Icon1')">
+              <button title="Icon" onclick="PortableX('Icon1')">Portable</button>
             </td>
             <td align="right">
-              <input type="button" value="Select" onclick="ShowIcon(document.E.Icon1, 2);" title="Icon">
+              <button onclick="ShowIcon(document.E.Icon1, 2);" title="Icon">Select</button>
             </td>
             <td align="right">
-              <input type="button" value="Browse..." onclick="RefX('Icon1', false, this, false, GetText('Icon') + '(*.ico)#*.ico')">
+              <button onclick="RefX('Icon1', false, this, false, GetText('Icon') + '(*.ico)#*.ico')">Browse...</button>
             </td>
           </tr>
         </table>
@@ -46,16 +46,16 @@
   <table style="width: 100%">
     <tr>
       <td style="width: 100%; white-space: nowrap">
-        <input type="button" value="Remove" onclick="RemoveX('List')">
-        <input type="button" value="Up" onclick="MoveX('List',-1)">
-        <input type="button" value="Down" onclick="MoveX('List',1)">
+        <button onclick="RemoveX('List')">Remove</button>
+        <button onclick="MoveX('List',-1)">Up</button>
+        <button onclick="MoveX('List',1)">Down</button>
         <input type="checkbox" id="_EDIT" checked="">
         <label for="_EDIT">Edit</label>
-        <input type="button" value="Get the current folder view" onclick="GetCurrentX()">
+        <button onclick="GetCurrentX()">Get the current folder view</button>
       </td>
       <td style="white-space: nowrap">
-        <input type="button" value="Add" onclick="AddX('List', ReplaceIC)">
-        <input type="button" value="Replace" onclick="ReplaceIC('List')">
+        <button onclick="AddX('List', ReplaceIC)">Add</button>
+        <button onclick="ReplaceIC('List')">Replace</button>
       </td>
     </tr>
   </table>

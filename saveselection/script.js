@@ -1,6 +1,6 @@
 const Addon_Id = "saveselection";
 const Default = "ToolBar2Left";
-let item = await GetAddonElement(Addon_Id);
+let item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "Edit");
@@ -22,4 +22,6 @@ if (window.Addon == 1) {
 	});
 
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
+} else {
+	importScript("addons\\" + Addon_Id + "\\options.js");
 }

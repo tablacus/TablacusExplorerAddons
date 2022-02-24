@@ -1,6 +1,6 @@
 const Addon_Id = "tablist";
 const Default = "ToolBar2Left";
-let item = await GetAddonElement(Addon_Id);
+let item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
 	item.setAttribute("MenuExec", 1);
 	item.setAttribute("Menu", "View");

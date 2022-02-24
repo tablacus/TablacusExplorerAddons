@@ -82,15 +82,20 @@ Addons.TabList = {
 				const td = tr.cells[0];
 				td.id = "n" + i + "_" + Id;
 				td.innerText = p[0];
-				const cl = p[2];
-				if (/^#/.test(cl)) {
-					let c = Number(cl.replace(/^#/, "0x"));
-					c = (c & 0xff0000) * .0045623779296875 + (c & 0xff00) * 2.29296875 + (c & 0xff) * 114;
-					td.style.color = c > 127000 ? "#000" : "#fff";
-					td.style.backgroundColor = cl;
+				const cl = (p[2] || "").split(/\s/);
+				if (/^#/.test(cl[0])) {
+					 if (!cl[1]) {
+						let c = Number(cl[0].replace(/^#/, "0x"));
+						c = (c & 0xff0000) * .0045623779296875 + (c & 0xff00) * 2.29296875 + (c & 0xff) * 114;
+						td.className = c > 127000 ? "lightbg" : "darkbg";
+					 }
+					td.style.backgroundColor = cl[0];
 				} else {
 					td.style.color = "";
 					td.style.backgroundColor = "";
+				}
+				if (cl[1]) {
+					td.style.color = cl[1];
 				}
 				tr.cells[1].innerText = p[1];
 				tr.cells[1].id = "p" + i + "_" + Id;

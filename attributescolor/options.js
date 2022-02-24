@@ -8,8 +8,8 @@ names = await Promise.all(names);
 for (let i = 0; i < names.length; ++i) {
 	s.push('<tr><td>', names[i], '</td>');
 	s.push('<td style="width: 7em"><input type="text" name="c', attrs[i], '" style="width: 100%" placeholder="Color" title="Color" onchange="ColorChanged(this)"></td>');
-	s.push('<td style="width: 1em"><input type="button" id="Color_c', attrs[i], '" value=" " class="color" style="background-color:', attrs[i], '; width: 100%" onclick="ChooseColor2(this)" title="Color"></td>');
-	s.push('<td><input type="button" value="Default" onclick="SetDefault(document.F.c', attrs[i], ", ''", ')"></td>');
+	s.push('<td style="width: 1em"><button id="Color_c', attrs[i], '" class="color" style="background-color:', attrs[i], '; width: 100%" onclick="ChooseColor2(this)" title="Color">&ensp;</button></td>');
+	s.push('<td><button onclick="SetDefault(document.F.c', attrs[i], ", ''", ')">Default</button></td>');
 	s.push('</tr>');
 }
 s.push('</table>');

@@ -14,7 +14,7 @@
                 <label>Path</label>
               </td>
               <td>
-                <input type="button" value="Browse..." onclick="RefX('Path', false, this, false, '@shell32.dll,-4131\t|<Folder>')">
+                <button onclick="RefX('Path', false, this, false, '@shell32.dll,-4131\t|<Folder>')">Browse...</button>
               </td>
             </tr>
           </table>
@@ -22,7 +22,7 @@
         </div>
         <div class="panel" style="display: block">
           <label>Selected items</label><br>
-          <textarea name="Selection" style="width: 100%; height: " onchange="ChangeX('List')"></textarea>
+          <textarea name="Selection" style="width: 100%; height: calc(100vh - 15em)" onchange="ChangeX('List')"></textarea>
         </div>
       </td>
     </tr>
@@ -30,15 +30,15 @@
   <table style="width: 100%">
     <tr>
       <td style="width: 100%; white-space: nowrap">
-        <input type="button" value="Remove" onclick="RemoveX('List')">
-        <input type="button" value="Up" onclick="MoveX('List',-1)">
-        <input type="button" value="Down" onclick="MoveX('List',1)">
+        <button onclick="RemoveX('List')">Remove</button>
+        <button onclick="MoveX('List',-1)">Up</button>
+        <button onclick="MoveX('List',1)">Down</button>
         <input type="checkbox" id="_EDIT" checked="">
         <label for="_EDIT">Edit</label>
       </td>
       <td style="white-space: nowrap">
-        <input type="button" value="Add" onclick="AddX('List', ReplaceIC)">
-        <input type="button" value="Replace" onclick="ReplaceIC('List')">
+        <button onclick="AddX('List', ReplaceIC)">Add</button>
+        <button onclick="ReplaceIC('List')">Replace</button>
       </td>
     </tr>
   </table>

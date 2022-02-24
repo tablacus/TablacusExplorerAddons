@@ -14,10 +14,10 @@
                 <label>Path</label>
               </td>
               <td>
-                <input type="button" value="Portable" onclick="PortableX('Path')">
+                <button onclick="PortableX('Path')">Portable</button>
               </td>
               <td>
-                <input type="button" value="Browse..." onclick="RefX('Path', false, this, false, '@shell32.dll,-4131\t|<Folder>')">
+                <button onclick="RefX('Path', false, this, false, '@shell32.dll,-4131\t|<Folder>')">Browse...</button>
               </td>
             </tr>
           </table>
@@ -30,14 +30,13 @@
                 <label>@shell32.dll,-33578</label>
               </td>
               <td>
-                <input type="button" value="Portable" onclick="PortableX('Small')">
+                <button onclick="PortableX('Small')">Portable</button>
               </td>
               <td>
-                <input type="button" value="Select" onclick="ShowIcon(document.E.Small)">
+                <button onclick="ShowIcon(document.E.Small)">Select</button>
               </td>
               <td>
-                <input type="button" value="Browse..."
-                  onclick="RefX('Small', false, this, true, '@shell32.dll,-9007')">
+                <button onclick="RefX('Small', false, this, true, '@shell32.dll,-9007')">Browse...</button>
               </td>
             </tr>
           </table>
@@ -52,14 +51,13 @@
                 <label>@shell32.dll,-33577</label>
               </td>
               <td>
-                <input type="button" value="Portable" onclick="PortableX('Large')">
+                <button onclick="PortableX('Large')">Portable</button>
               </td>
               <td>
-                <input type="button" value="Select" onclick="ShowIcon(document.E.Large)">
+                <button onclick="ShowIcon(document.E.Large)">Select</button>
               </td>
               <td>
-                <input type="button" value="Browse..."
-                  onclick="RefX('Large', false, this, true, '@shell32.dll,-9007')">
+                <button onclick="RefX('Large', false, this, true, '@shell32.dll,-9007')">Browse...</button>
               </td>
             </tr>
           </table>
@@ -74,15 +72,15 @@
   <table style="width: 100%">
     <tr>
       <td style="width: 100%; white-space: nowrap">
-        <input type="button" value="Remove" onclick="RemoveX('List')">
-        <input type="button" value="Up" onclick="MoveX('List',-1)">
-        <input type="button" value="Down" onclick="MoveX('List',1)">
+        <button onclick="RemoveX('List')">Remove</button>
+        <button onclick="MoveX('List',-1)">Up</button>
+        <button onclick="MoveX('List',1)">Down</button>
         <input type="checkbox" id="_EDIT" checked="">
         <label for="_EDIT">Edit</label>
       </td>
       <td style="white-space: nowrap">
-        <input type="button" value="Add" onclick="AddX('List', ReplaceIC)">
-        <input type="button" value="Replace" onclick="ReplaceIC('List')">
+        <button onclick="AddX('List', ReplaceIC)">Add</button>
+        <button onclick="ReplaceIC('List')">Replace</button>
       </td>
     </tr>
   </table>

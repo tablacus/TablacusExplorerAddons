@@ -2,7 +2,7 @@ const Addon_Id = "jumplist";
 const item = GetAddonElement(Addon_Id);
 
 Sync.JumpList = {
-	DLL: api.DllGetClassObject(BuildPath(te.Data.Installed, ["addons\\jumplist\\jumplist", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{3B821327-7ACA-4d96-A311-05B7C5E6D07B}"),
+	DLL: api.DllGetClassObject(BuildPath(te.Data.Installed, ["addons\\jumplist\\jumplist", g_.bit, ".dll"].join("")), "{3B821327-7ACA-4d96-A311-05B7C5E6D07B}"),
 	strName: item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name,
 	nPos: GetNum(item.getAttribute("MenuPos")),
 
@@ -56,7 +56,7 @@ if (Sync.JumpList.DLL) {
 			}
 			const icon = ar[2].replace(/^icon:/, "").split(",");
 			obj[cat].push({
-				Name: ar[0] || fso.GetFileName(api.PathUnquoteSpaces(ar[1])),
+				Name: ar[0] || GetFileName(PathUnquoteSpaces(ar[1])),
 				Path: ar[1],
 				Icon: icon[0] || api.ILCreateFromPath(ar[1]),
 				iIcon: icon[1]
