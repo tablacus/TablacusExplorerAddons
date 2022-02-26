@@ -1,12 +1,6 @@
 SetTabContents(4, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 
 ConfigFile = BuildPath(ui_.DataFolder, "config", Addon_Id + ".tsv");
-arIndex = ["Path", "Selection"];
-
-GetIconImage = async function (fn, Large) {
-	fn = await ExtractPath(te, fn);
-	return await api.CreateObject("WICBitmap").FromFile(fn) || (await MakeImgData(fn, 0, Large ? 48 : 16));
-}
 
 SaveIC = async function (mode) {
 	if (g_Chg[mode]) {
@@ -16,6 +10,9 @@ SaveIC = async function (mode) {
 		}
 		await WriteTextFile(ConfigFile, data);
 		g_Chg[mode] = false;
+		if (await MainWindow.Sync.SaveSelection) {
+			MainWindow.Sync.SaveSelection.bSave = false;
+		}
 	}
 }
 
@@ -25,9 +22,8 @@ EditIC = function (mode) {
 	}
 	ClearX("List");
 	const a = g_x.List[g_x.List.selectedIndex].value.split(g_sep);
-	for (let i = arIndex.length; i--;) {
-		document.E.elements[arIndex[i]].value = a[i] || "";
-	}
+	document.E.Path.value = a[0] || "";
+	document.E.Selection.value = (a.slice(1) || []).join("\n");
 }
 
 ReplaceIC = function (mode) {
@@ -35,10 +31,8 @@ ReplaceIC = function (mode) {
 	if (g_x[mode].selectedIndex < 0) {
 		g_x[mode].selectedIndex = ++g_x[mode].length - 1;
 	}
-	const a = [];
-	for (let i = arIndex.length; i--;) {
-		a.unshift(document.E.elements[arIndex[i]].value);
-	}
+	const a = document.E.Selection.value.replace(/^\r?\n|\r?\n$/m, "").split(/\r?\n/);
+	a.unshift(document.E.Path.value);
 	SetData(g_x.List[g_x.List.selectedIndex], a);
 	g_Chg[mode] = true;
 }
@@ -53,12 +47,21 @@ SaveLocation = async function () {
 setTimeout(async function () {
 	g_x.List = document.E.List;
 
-	const ar = (await ReadTextFile(ConfigFile)).split(/\r?\n/);
-	while (ar.length) {
-		const line = ar.shift();
-		if (line) {
+	if (await MainWindow.Sync.SaveSelection) {
+		await MainWindow.Sync.SaveSelection.ENumCB(function (n, s) {
+			const ar = s.split("\t");
+			ar.unshift(n);
 			const i = g_x.List.length++;
-			SetData(g_x.List[i], line.split("\t"));
+			SetData(g_x.List[i], ar);
+		});
+	} else {
+		const ar = (await ReadTextFile(ConfigFile)).split(/\r?\n/);
+		while (ar.length) {
+			const line = ar.shift();
+			if (line) {
+				const i = g_x.List.length++;
+				SetData(g_x.List[i], line.split("\t"));
+			}
 		}
 	}
 	EnableSelectTag(g_x.List);
