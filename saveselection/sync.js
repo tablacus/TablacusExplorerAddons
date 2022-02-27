@@ -112,7 +112,7 @@ Sync.SaveSelection = {
 	},
 
 	Set: function (n, v) {
-		Sync.SaveSelection.db[n] = v;
+		Sync.SaveSelection.db[PathUnquoteSpaces(n)] = v;
 	},
 
 	ENumCB: function (fncb) {

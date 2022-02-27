@@ -32,7 +32,7 @@ ReplaceIC = function (mode) {
 		g_x[mode].selectedIndex = ++g_x[mode].length - 1;
 	}
 	const a = document.E.Selection.value.replace(/^\r?\n|\r?\n$/m, "").split(/\r?\n/);
-	a.unshift(document.E.Path.value);
+	a.unshift(PathUnquoteSpaces(document.E.Path.value));
 	SetData(g_x.List[g_x.List.selectedIndex], a);
 	g_Chg[mode] = true;
 }
