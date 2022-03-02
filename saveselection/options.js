@@ -11,7 +11,7 @@ SaveIC = async function (mode) {
 		await WriteTextFile(ConfigFile, data);
 		g_Chg[mode] = false;
 		if (await MainWindow.Sync.SaveSelection) {
-			MainWindow.Sync.SaveSelection.bSave = false;
+			MainWindow.Sync.SaveSelection.Init();
 		}
 	}
 }
@@ -35,6 +35,14 @@ ReplaceIC = function (mode) {
 	a.unshift(PathUnquoteSpaces(document.E.Path.value));
 	SetData(g_x.List[g_x.List.selectedIndex], a);
 	g_Chg[mode] = true;
+}
+
+BrowseIC = async function () {
+	const path = await BrowseForFolder(document.E.Path.value);
+	if (path) {
+		document.E.Path.value = PathUnquoteSpaces(path);
+		FireEvent(document.E.Path, "change");
+	}
 }
 
 SaveLocation = async function () {

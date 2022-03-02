@@ -3,7 +3,6 @@ const item = GetAddonElement(Addon_Id);
 
 Sync.SaveSelection = {
 	path: OrganizePath(Addon_Id, BuildPath(te.Data.DataFolder, "config")) + ".tsv",
-	db: {},
 
 	Exec: function (Ctrl, pt) {
 		const FV = GetFolderView(Ctrl, pt);
@@ -55,7 +54,15 @@ Sync.SaveSelection = {
 		DoDragDrop(Sync.SaveSelection.GetItems(Ctrl), DROPEFFECT_LINK | DROPEFFECT_COPY | DROPEFFECT_MOVE);
 	},
 
+	CheckDB: function () {
+		if (!Sync.SaveSelection.db) {
+			Sync.SaveSelection.Clear();
+			LoadDBFromTSV(Sync.SaveSelection, Sync.SaveSelection.path);
+		}
+	},
+
 	GetItems: function (FV) {
+		Sync.SaveSelection.CheckDB();
 		const path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 		const Items = Sync.SaveSelection.db[path];
 		if (/object|function/.test(typeof Items)) {
@@ -68,7 +75,10 @@ Sync.SaveSelection = {
 				const ar = Items.split("\t");
 				if (ar.length) {
 					for (let i = 0; i < ar.length; ++i) {
-						const pid = f.ParseName(ar[i]);
+						let pid = ar[i];
+						if (!/^[A-Z]:\\|^\\\\\w/i.test(pid)) {
+							pid = f.ParseName(pid);
+						}
 						if (pid) {
 							FolderItems.AddItem(pid);
 						}
@@ -79,7 +89,6 @@ Sync.SaveSelection = {
 				}
 				return FolderItems;
 			}
-			delete Sync.SaveSelection.db[path];
 		}
 	},
 
@@ -104,6 +113,7 @@ Sync.SaveSelection = {
 		}
 		const FV = GetFolderView(Ctrl, pt);
 		const path = api.GetDisplayNameOf(FV, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+		Sync.SaveSelection.CheckDB();
 		delete Sync.SaveSelection.db[path];
 	},
 
@@ -112,16 +122,15 @@ Sync.SaveSelection = {
 	},
 
 	Set: function (n, v) {
+		Sync.SaveSelection.CheckDB();
 		Sync.SaveSelection.db[PathUnquoteSpaces(n)] = v;
 	},
 
 	ENumCB: function (fncb) {
+		Sync.SaveSelection.CheckDB();
 		for (let n in Sync.SaveSelection.db) {
 			let v = Sync.SaveSelection.db[n];
 			if ("string" !== typeof v) {
-				if (!v.Item(-1).IsFolder || !v.Item(-1).IsFileSystem) {
-					continue;
-				}
 				const ar = [];
 				for (let i = 0; i < v.Count; ++i) {
 					ar.push(GetFileName(v.Item(i).Path));
@@ -132,12 +141,13 @@ Sync.SaveSelection = {
 				break;
 			}
 		}
+	},
+
+	Init: function () {
+		Sync.SaveSelection.bSave = false;
+		Sync.SaveSelection.db = void 0;
 	}
 }
-
-AddEvent("Load", function () {
-	LoadDBFromTSV(Sync.SaveSelection, Sync.SaveSelection.path);
-});
 
 AddEvent("SaveConfig", function () {
 	if (Sync.SaveSelection.bSave) {
