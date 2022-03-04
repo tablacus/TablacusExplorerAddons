@@ -315,7 +315,7 @@ AddEvent("DefaultCommand", function (Ctrl, Selected) {
 	if (Selected.Count == 1) {
 		const path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 		if (Sync.ClipFolder.IsHandle(path)) {
-			Ctrl.Navigate(path);
+			Ctrl.Navigate(path, GetNavigateFlags(Ctrl));
 			return S_OK;
 		}
 	}
