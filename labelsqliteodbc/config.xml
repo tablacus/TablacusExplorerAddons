@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.06</Version>
-    <MinVersion>2021.5.2</MinVersion>
-    <pubDate>Tue, 04 May 2021 00:00:00 GMT</pubDate>
+    <Version>1.07</Version>
+    <MinVersion>2022.3.4</MinVersion>
+    <pubDate>Sun, 06 Mar 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,8 +14,15 @@
     <Name>Label SQLite ODBC Driver</Name>
     <Description>Label(SQLite ODBC Driver) * Require Label and SQLite ODBC Driver</Description>
   </en>
+  <fr>
+    <Name>Etiquette du pilote SQLite ODBC</Name>
+    <Description>Etiquette (Pilote ODBC SQLite). *&quot;Etiquette&quot; et &quot;Pilote ODBC SQLite&quot; sont requis.</Description>
+  </fr>
   <ja>
     <Name>ラベル SQLite ODBC Driver</Name>
     <Description>ラベル(SQLite ODBC Driver ※ラベルとSQLite ODBC Driverが必要</Description>
   </ja>
+  <zh>
+    <Name>標籤資料庫 (SQLite ODBC)</Name>
+  </zh>
 </TablacusExplorer>

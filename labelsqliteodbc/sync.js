@@ -132,8 +132,8 @@ AddEvent("Layout", function (fn) {
 		Close: function () { }
 	}
 
+	const bExists = fso.FileExists(Sync.LabelSQLiteOdbc.DBFILE);
 	try {
-		const bExists = fso.FileExists(Sync.LabelSQLiteOdbc.DBFILE);
 		if (bExists) {
 			Sync.LabelSQLiteOdbc.Open();
 		} else {
