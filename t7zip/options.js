@@ -4,9 +4,6 @@ SetTabContents(1, "Path", ar[1]);
 SetTabContents(2, "@shell32.dll,-12852", ar[2]);
 
 setTimeout(async function () {
-	const el = document.getElementById("_7zip");
-	el.value = (await GetText("Get %s...")).replace("%s", "7-Zip");
-
 	if (ui_.bit == 32) {
 		let strPath = "C:\\Program Files (x86)\\7-Zip\\7z.dll";
 		const hDll = await api.LoadLibraryEx(strPath, 0, 0);

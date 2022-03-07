@@ -81,7 +81,7 @@ Sync.T7Zip = {
 					const lib = Sync.T7Zip.GetObject(Ctrl, "Extract");
 					if (lib) {
 						api.OleSetClipboard(Ctrl.SelectedItems());
-						Sync.T7Zip.ClipId = Ctrl.SessionId.toString(16);
+						Sync.T7Zip.ClipId = Ctrl.FolderItem.Id.toString(16);
 						Sync.T7Zip.ClipPath = lib.file;
 						return S_OK;
 					}
@@ -98,14 +98,14 @@ Sync.T7Zip = {
 		if (lib) {
 			let ar = [], root;
 			if (lib.path) {
-				root = BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16));
+				root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 				const path = BuildPath(root, lib.path);
 				DeleteItem(path);
 				Sync.T7Zip.CreateFolder(path);
 				const oDest = sha.NameSpace(path);
 				if (oDest) {
 					oDest.CopyHere(Items, FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR);
-					ar.push(lib.path);
+					ar.push(PathQuoteSpaces(lib.path));
 				}
 			} else {
 				root = Items.Item(-1).Path;
@@ -132,7 +132,7 @@ Sync.T7Zip = {
 			if (!confirmOk()) {
 				return;
 			}
-			const root = BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16));
+			const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 			const ar = [];
 			for (let i = Items.Count; i-- > 0;) {
 				ar.unshift(PathQuoteSpaces(Items.Item(i).Path.replace(root, "").replace(/^\\/, "")));
@@ -204,7 +204,7 @@ Sync.T7Zip = {
 	GetDropEffect: function (Ctrl, dataObj, pdwEffect) {
 		pdwEffect[0] = DROPEFFECT_NONE;
 		if (dataObj.Count) {
-			if (!api.PathMatchSpec(dataObj.Item(0).Path, BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16), "*"))) {
+			if (!api.PathMatchSpec(dataObj.Item(0).Path, BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16), "*"))) {
 				pdwEffect[0] = DROPEFFECT_COPY;
 				return true;
 			}
@@ -393,7 +393,7 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 			if (Sync.T7Zip.IsFolder(Item)) {
 				const lib = Sync.T7Zip.GetObject(Ctrl);
 				if (lib) {
-					const root = BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16));
+					const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 					path = path.replace(root, lib.file);
 					Ctrl.Navigate(path);
 					return S_OK;
@@ -457,7 +457,7 @@ if (Sync.T7Zip.DLL && Sync.T7Zip.Init()) {
 
 	AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 		if (Ctrl.Type <= CTRL_EB && Sync.T7Zip.IsHandle(Prev)) {
-			const root = BuildPath(te.Data.TempFolder, Ctrl.SessionId.toString(16));
+			const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 			DeleteItem(root);
 		}
 	});
