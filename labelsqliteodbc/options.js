@@ -1,13 +1,13 @@
-var s = []
-if (await MainWindow.Sync.LabelSQLiteOdbc) {
-	s.push('<input type="button" value="Load" onclick="Addons.LabelSQLiteOdbc.Import()"><br><input type="button" value="Save" onclick="Addons.LabelSQLiteOdbc.Export()"><br><br>');
+const s = [];
+if (await MainWindow.Sync.Label && await MainWindow.Sync.LabelSQLiteOdbc) {
+	s.push('<button onclick="Addons.LabelSQLiteOdbc.Import()">Load</button><br><button onclick="Addons.LabelSQLiteOdbc.Export()">Save</button><br><br>');
 }
-s.push('<input type="button" value="', await api.sprintf(999, await GetText("Get %s..."), "SQLite ODBC Driver"), '" title="http://www.ch-werner.de/sqliteodbc/" onclick="wsh.Run(this.title)">');
+s.push('<button title="http://www.ch-werner.de/sqliteodbc/" onclick="wsh.Run(this.title)">Get SQLite ODBC Driver...</button>');
 SetTabContents(0, "", s);
 
 Addons.LabelSQLiteOdbc = {
 	Import: async function () {
-		var commdlg = await api.CreateObject("CommonDialog");
+		const commdlg = await api.CreateObject("CommonDialog");
 		commdlg.InitDir = BuildPath(ui_.DataFolder, "config")
 		commdlg.Filter = await MakeCommDlgFilter("*.tsv");
 		commdlg.Flags = OFN_FILEMUSTEXIST;
@@ -17,7 +17,7 @@ Addons.LabelSQLiteOdbc = {
 	},
 
 	Export: async function () {
-		var commdlg = await api.CreateObject("CommonDialog");
+		const commdlg = await api.CreateObject("CommonDialog");
 		commdlg.InitDir = BuildPath(ui_.DataFolder, "config")
 		commdlg.Filter = await MakeCommDlgFilter("*.tsv");
 		commdlg.DefExt = "tsv";
