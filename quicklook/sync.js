@@ -85,22 +85,24 @@ AddEvent("StatusText", function (Ctrl, Text, iPart) {
 	}
 });
 
-AddEvent("ToolTip", function (Ctrl, Index) {
-	if (Ctrl.Type == CTRL_SB && Index >= 0) {
-		const Item = Ctrl.Item(Index);
-		if (Item) {
-			let hwnd = api.GetTopWindow(null);
-			do {
-				if (api.PathMatchSpec(api.GetClassName(hwnd), "*QuickLook*")) {
-					if (api.IsWindowVisible(hwnd)) {
-						Sync.QuickLook.SendMessage(Ctrl, "Switch", Item.Path);
-						break;
+if (item.getAttribute("Hover")) {
+	AddEvent("ToolTip", function (Ctrl, Index) {
+		if (Ctrl.Type == CTRL_SB && Index >= 0) {
+			const Item = Ctrl.Item(Index);
+			if (Item) {
+				let hwnd = api.GetTopWindow(null);
+				do {
+					if (api.PathMatchSpec(api.GetClassName(hwnd), "*QuickLook*")) {
+						if (api.IsWindowVisible(hwnd)) {
+							Sync.QuickLook.SendMessage(Ctrl, "Switch", Item.Path);
+							break;
+						}
 					}
-				}
-			} while (hwnd = api.GetWindow(hwnd, GW_HWNDNEXT));
+				} while (hwnd = api.GetWindow(hwnd, GW_HWNDNEXT));
+			}
 		}
-	}
-}, true);
+	}, true);
+}
 
 //Menu
 if (item.getAttribute("MenuExec")) {
