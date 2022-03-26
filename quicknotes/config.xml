@@ -1,0 +1,19 @@
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2022.3.24</MinVersion>
+    <pubDate>Sat, 26 Mar 2022 00:00:00 GMT</pubDate>
+    <Options>Common:4:4</Options>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Quick notes</Name>
+    <Description>Quick notes</Description>
+  </en>
+  <ja>
+    <Name>クイックノート</Name>
+  </ja>
+</TablacusExplorer>
