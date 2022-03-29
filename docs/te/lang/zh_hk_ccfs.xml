@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 22.2.18 -->
+<!-- Version 22.3.27 -->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -229,6 +229,7 @@
 	<text s="Quicker menu display">簡潔功能選單</text>
 	<text s="Link bar">冠名工具列</text>
 	<text s="Simple Tool bar">簡單工具列</text>
+	<text s="Quick notes">熱選單</text>
 	<text s="Set home">設為本壘</text>
 	<text s="Go home">返回本壘</text>
 	<text s="Drive bar">磁碟列</text>
@@ -257,7 +258,6 @@
 	<text s="Rename">重新命名</text>
 	<text s="Switch hidden items">隱藏項目開關</text>
 	<text s="Switch hidden filter">屏蔽項目開關</text>
-	<text s="Compressed Files">壓縮檔</text>
 	<text s="Right key next">左右鍵換行移動</text>
 	<text s="Down key next">上下鍵換行移動</text>
 	<text s="Between files and folders">跳到資料夾及檔案邊界</text>
