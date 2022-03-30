@@ -151,7 +151,7 @@ if (window.Addon == 1) {
 		ShowOptions: async function (nEdit) {
 			const opt = await api.CreateObject("Object");
 			opt.nEdit = nEdit;
-			AddonOptions("linkbar", Addons.LinkBar.Changed, opt);
+			AddonOptions("linkbar", "Addons.LinkBar.Changed", opt);
 		},
 
 		Changed: function () {
