@@ -14,8 +14,8 @@
           <table style="width: 100%"><tr>
             <td style="white-space: nowrap; vertical-align: bottom"><label>Path</label><span id="bit1"><span></td>
             <td style="white-space: nowrap; vertical-align: bottom; width: 100%"></td>
-            <td><input type="button" value="Portable" title="Path" onclick="PortableX('Path')"></td>
-            <td><input type="button" value="Browse..." title="Path" id="_browse1"></td>
+            <td><button title="Path" onclick="PortableX('Path')">Portable</button></td>
+            <td><button title="Path" id="_browse1">Browse...</button></td>
           </tr></table>
           <input type="text" name="Path" style="width: 100%" onchange="PathChanged()">
           <label><input type="checkbox" name="Filter">Filter</label>
@@ -33,14 +33,14 @@
     <table style="width: 100%">
       <tr>
         <td>
-          <input type="button" value="Remove" onclick="RemoveX('List')">
-          <input type="button" value="Up" onclick="MoveX('List', -1)">
-          <input type="button" value="Down" onclick="MoveX('List', 1)">
+          <button onclick="RemoveX('List')">Remove</button>
+          <button onclick="MoveX('List', -1)">Up</button>
+          <button onclick="MoveX('List', 1)">Down</button>
           <input type="checkbox" id="_EDIT" checked><label for="_EDIT">Edit</label>
         </td>
         <td align="right">
-          <input type="button" value="Add" onclick="AddX('List', ReplaceFS)">
-          <input type="button" value="Replace" onclick="ReplaceFS()">
+          <button onclick="AddX('List', ReplaceFS)">Add</button>
+          <button onclick="ReplaceFS()">Replace</button>
         </td>
       </tr>
     </table>

@@ -534,9 +534,10 @@ BOOL teFileTimeToVariantTime(LPFILETIME pft, DOUBLE *pdt)
 VOID teSetSusieTime(VARIANT *pv, susie_time_t t)
 {
     FILETIME ft;
-    LONGLONG ll = Int32x32To64(t, 10000000) + 116444736000000000;
-    ft.dwLowDateTime = (DWORD)ll;
-    ft.dwHighDateTime = (DWORD)(ll >> 32);
+	ULARGE_INTEGER uli;
+	uli.QuadPart = (t * 10000000LL) + 116444736000000000LL;
+	ft.dwLowDateTime = uli.LowPart;
+	ft.dwHighDateTime = uli.HighPart;
 	if (teFileTimeToVariantTime(&ft, &pv->date)) {
 		pv->vt = VT_DATE;
 	}

@@ -85,7 +85,6 @@ PathChanged = function () {
 SetProp = async function (bName) {
 	const dllPath = await ExtractPath(te, document.E.Path.value);
 	g_.DLL = await api.DllGetClassObject(BuildPath(ui_.Installed, ["addons\\spi\\tspi", ui_.bit, ".dll"].join("")), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
-//	g_.DLL = await api.DllGetClassObject(["C:\\cpp\\tspi\\Debug\\tspi", ui_.bit, "d.dll"].join(""), "{211571E6-E2B9-446F-8F9F-4DFBE338CE8C}");
 	if (g_.DLL) {
 		g_.SPI = await g_.DLL.open(dllPath);
 	}
@@ -111,7 +110,7 @@ SetProp = async function (bName) {
 		if (await g_.SPI.GetPluginInfo) {
 			await g_.SPI.GetPluginInfo(ar);
 		} else {
-			await ar.unshift(await fso.GetFileName(dllPath));
+			await ar.unshift(GetFileName(dllPath));
 		}
 		if (await g_.SPI.ConfigurationDlg) {
 			await s.push('<input type="button" value="', await GetText("Options..."), '" onclick="g_.SPI.ConfigurationDlg(', await GetTopWindow(), ', 1)"><br>');
