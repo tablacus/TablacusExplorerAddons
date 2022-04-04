@@ -68,6 +68,12 @@ Sync.Font = {
 
 AddEvent("ListViewCreated", Sync.Font.Exec);
 
+AddEvent("NavigateComplete", function(Ctrl) {
+	if (api.PathIsNetworkPath(api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSING))) {
+		Sync.Font.Exec(Ctrl);
+	}
+});
+
 AddEvent("ChangeView", Sync.Font.SetFrame);
 
 AddEvent("Create", function (Ctrl) {
