@@ -8,27 +8,31 @@ Sync.Font = {
 	Exec: function (Ctrl) {
 		const FV = GetFolderView(Ctrl);
 		if (FV) {
-			const hwnd = FV.hwndList;
-			if (hwnd) {
-				const hFont = api.SendMessage(hwnd, WM_GETFONT, 0, 0);
-				if (hFont != Sync.Font.hFont) {
-					api.SendMessage(hwnd, WM_SETFONT, Sync.Font.hFont, 1);
-				}
-			}
+			Sync.Font.SetFV(FV);
 			if (Ctrl.TreeView) {
-				Sync.Font.SetTV(Ctrl.TreeView.hwndTree, Sync.Font.TreeHeight);
+				Sync.Font.SetTV(Ctrl.TreeView);
 			}
-			Sync.Font.SetFrame(FV);
 		}
 	},
 
-	SetFrame: function (FV) {
+	SetFV: function (FV) {
+		const hwnd = FV.hwndList;
+		if (hwnd) {
+			const hFont = api.SendMessage(hwnd, WM_GETFONT, 0, 0);
+			if (hFont != Sync.Font.hFont) {
+				api.SendMessage(hwnd, WM_SETFONT, Sync.Font.hFont, 1);
+			}
+		}
 		if (FV.Type == CTRL_EB) {
-			Sync.Font.SetTV(FindChildByClass(FV.hwnd, WC_TREEVIEW), Sync.Font.FrameHeight);
+			Sync.Font.SetTV2(FindChildByClass(FV.hwnd, WC_TREEVIEW), Sync.Font.FrameHeight);
 		}
 	},
 
-	SetTV: function (hwnd, nHeight) {
+	SetTV: function (TV) {
+		Sync.Font.SetTV2(TV.hwndTree, Sync.Font.TreeHeight);
+	},
+
+	SetTV2: function (hwnd, nHeight) {
 		if (hwnd) {
 			const hFont = api.SendMessage(hwnd, WM_GETFONT, 0, 0);
 			if (hFont != Sync.Font.hFont) {
@@ -66,25 +70,11 @@ Sync.Font = {
 	}
 }
 
-AddEvent("ListViewCreated", Sync.Font.Exec);
+AddEvent("ListViewCreated", Sync.Font.SetFV);
 
-AddEvent("NavigateComplete", function(Ctrl) {
-	if (api.PathIsNetworkPath(api.GetDisplayNameOf(Ctrl, SHGDN_FORPARSING))) {
-		Sync.Font.Exec(Ctrl);
-	}
-});
+AddEvent("TreeViewCreated", Sync.Font.SetTV);
 
-AddEvent("ChangeView", Sync.Font.SetFrame);
-
-AddEvent("Create", function (Ctrl) {
-	if (Ctrl.Type <= CTRL_EB) {
-		Sync.Font.Exec(Ctrl);
-		return;
-	}
-	if (Ctrl.Type == CTRL_TV) {
-		Sync.Font.SetTV(Ctrl.hwndTree, Sync.Font.TreeHeight);
-	}
-});
+AddEvent("ChangeView", Sync.Font.SetFV);
 
 AddEvent("FontChanged", Sync.Font.Init);
 
