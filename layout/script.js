@@ -14,7 +14,6 @@ if (window.Addon == 1) {
 
 	$.importScript("addons\\" + Addon_Id + "\\sync.js");
 } else {
-	const folder = item.getAttribute("Menu") || BuildPath(ui_.DataFolder, "layout");
-	SetTabContents(0, "General", ['<label>Folder</label><input type="text" name="Folder" class="full" placeholder="', folder, '">']);
+	SetTabContents(0, "General", (await ReadTextFile("addons\\" + Addon_Id + "\\options.html")).replace("%s", BuildPath(ui_.DataFolder, "layout")));
 	EnableInner();
 }

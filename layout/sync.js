@@ -3,7 +3,7 @@ const item = GetAddonElement(Addon_Id);
 
 Sync.Layout = {
 	Exec: function (Ctrl, pt) {
-		const folder = item.getAttribute("Menu") || BuildPath(te.Data.DataFolder, "layout");
+		const folder = ExtractPath(te, item.getAttribute("Folder")) || BuildPath(te.Data.DataFolder, "layout");
 		const Items = GetFileList(BuildPath(folder, "*.xml"));
 		const hMenu = api.CreatePopupMenu();
 		for (let i = 0; i < Items.length; ++i) {
