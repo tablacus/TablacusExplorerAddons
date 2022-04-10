@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources><!--"Copy/paste" generated from fr.22.2.23.updated.ods on 22/02/28-->
+<resources><!--"Copy/paste" generated from fr.22.3.27.updated.ods on 22/04/09-->
 	<lang author="Pierre le Lidgeu" en="French">Français</lang>
 
 <text s="General">Général</text>
@@ -310,6 +310,7 @@
 <text s="Quicker menu display by simplifying menus.">Affichage de menu plus rapide par simplification des menus</text>
 <text s="Link bar">Barre de lien</text>
 <text s="Simple Tool bar">Barre simple d&apos;outils</text>
+<text s="Quick notes">Notes rapides</text>
 <text s="Set home">Définir le début</text>
 <text s="Set home for each tab *&quot;Go home&quot; is required.">Définir le début pour chaque onglet *&quot;Aller au début&quot; est requis. </text>
 <text s="Go home">Aller au début</text>
@@ -611,6 +612,8 @@
 <text s="Search bar for each pane">Placer une barre de recherche dans chaque panneau</text>
 <text s="Inner New folder">Intérieur : &apos;Nouveau dossier&apos;</text>
 <text s="New folder button of every pane">Placer un bouton &quot;Nouveau dossier&quot; dans chaque panneau.</text>
+<text s="Layout">Disposition</text>
+<text s="Layout button">Bouton &quot;Disposition&quot;</text>
 <text s="Tab groups">Groupes d&apos;onglet</text>
 <text s="Groups all panes containing several tabs into independent workspaces displayed as a tab bar">Regrouper tous les volets contenant plusieurs onglets en espaces de travail indépendants affichés sous forme de barre d&apos;onglets.</text>
 <text s="Tab groups button">Bouton &quot;Groupes d&apos;onglets&quot;</text>
@@ -692,6 +695,7 @@
 <text s="Folder image">Image de dossier</text>
 <text s="Display an image in folder">Affiche la 1ère image d&apos;un dossier dans son icône.</text>
 <text s="Cache">Cache d&apos;image de dossier</text>
+
 <text s="Clear folder image cache">Vider le cache d&apos;images de dossiers</text>
 <text s="Archive image">Image d&apos;archive</text>
 <text s="Show archive images in preview etc. (.zip)">Afficher des images d&apos;archive dans les aperçus, etc. (zip)</text>
@@ -752,6 +756,7 @@
 <text s="Label(SQLite ODBC Driver) * Require Label and SQLite ODBC Driver">Etiquette (Pilote ODBC SQLite). *&quot;Etiquette&quot; et &quot;Pilote ODBC SQLite&quot; sont requis.</text>
 <text s="Label SQLite3">Etiquette de SQLite3</text>
 <text s="Label(SQLite3) *Label and sqlite3.dll is required">Etiquette (SQLite3). *&quot;Etiquette&quot; et &quot;sqlit3.dll&quot; sont requis.</text>
+
 <text s="Color labels">Colorier les étiquettes</text>
 <text s="Colored with filter">Colorier selon filtre</text>
 <text s="Colored with extension">Colorier selon extension</text>
@@ -801,7 +806,7 @@
 <text s="Font settings">Paramètre de police</text>
 
 
-<text s="Frame">Cadre</text>
+
 <text s="Color settings of font and background.">Paramètres de couleur des police et arrière-plan.</text>
 <text s="Dark mode">Mode sombre</text>
 <text s="Background image">Image d&apos;arrière-plan</text>
