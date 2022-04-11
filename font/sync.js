@@ -28,6 +28,12 @@ Sync.Font = {
 		}
 	},
 
+	SetFVDelayed: function (FV) {
+		if (!FV.hwndList) {
+			setTimeout(Sync.Font.SetFV, 99, FV);
+		}
+	},
+
 	SetTV: function (TV) {
 		Sync.Font.SetTV2(TV.hwndTree, Sync.Font.TreeHeight);
 	},
@@ -74,7 +80,7 @@ AddEvent("ListViewCreated", Sync.Font.SetFV);
 
 AddEvent("TreeViewCreated", Sync.Font.SetTV);
 
-AddEvent("ChangeView", Sync.Font.SetFV);
+AddEvent("ChangeView", Sync.Font.SetFVDelayed);
 
 AddEvent("FontChanged", Sync.Font.Init);
 
