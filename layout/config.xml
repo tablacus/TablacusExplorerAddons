@@ -11,9 +11,13 @@
   </General>
   <en>
     <Name>Layout</Name>
-    <Description>Layout button</Description>
+    <Description>Adds a toolbar button that opens a popover listing all layouts</Description>
   </en>
   <ja>
     <Name>レイアウト</Name>
   </ja>
+  <pt>
+    <Name>Layout</Name>
+    <Description>Adiciona botão na barra de ferramentas que lista todos os layouts</Description>
+  </pt>
 </TablacusExplorer>
