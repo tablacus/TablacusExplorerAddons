@@ -9,9 +9,8 @@ Sync.Font = {
 		const FV = GetFolderView(Ctrl);
 		if (FV) {
 			Sync.Font.SetFV(FV);
-			if (Ctrl.TreeView) {
-				Sync.Font.SetTV(Ctrl.TreeView);
-			}
+			Sync.Font.SetTV(FV.TreeView);
+			Sync.Font.SetFrame(FV);
 		}
 	},
 
@@ -23,19 +22,21 @@ Sync.Font = {
 				api.SendMessage(hwnd, WM_SETFONT, Sync.Font.hFont, 1);
 			}
 		}
-		if (FV.Type == CTRL_EB) {
-			Sync.Font.SetTV2(FindChildByClass(FV.hwnd, WC_TREEVIEW), Sync.Font.FrameHeight);
-		}
 	},
 
 	SetFVDelayed: function (FV) {
 		if (!FV.hwndList) {
 			setTimeout(Sync.Font.SetFV, 99, FV);
 		}
+		Sync.Font.SetFrame(FV);
 	},
 
 	SetTV: function (TV) {
 		Sync.Font.SetTV2(TV.hwndTree, Sync.Font.TreeHeight);
+	},
+
+	SetFrame: function(FV) {
+		Sync.Font.SetTV2(FindChildByClass(FV.hwnd, WC_TREEVIEW), Sync.Font.FrameHeight);
 	},
 
 	SetTV2: function (hwnd, nHeight) {
@@ -87,7 +88,7 @@ AddEvent("FontChanged", Sync.Font.Init);
 AddEventId("AddonDisabledEx", "font", Sync.Font.Clear);
 
 DefaultFont.lfFaceName = item.getAttribute("Name") || DefaultFont.lfFaceName;
-const h = item.getAttribute("Size");
+const h = GetNum(item.getAttribute("Size"));
 if (h >= 6 && h <= 24) {
 	DefaultFont.lfHeight = - (h * screen.deviceYDPI / 72);
 }
