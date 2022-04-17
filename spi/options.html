@@ -3,13 +3,12 @@
     <table style="width: 100%">
       <tr>
         <td style="width: 12.5em; vertical-align: top">
-          <select name="List" size="19" style="width: 12.5em; height: 34em; height: calc(100vh - 5.7em); min-height: 16em" onchange="EditXEx(EditFS)" ondblclick="EditFS()" multiple>
+          <select name="List" size="19" class="clientheight" style="width: 12.5em; min-height: 16em"  onchange="EditXEx(EditFS)" ondblclick="EditFS()" multiple>
           </select>
         </td>
         <td valign="top">
-        <div  style="height: 34em; height: calc(100vh - 5.7em); min-height: 16em; overflow: auto; word-break: break-all">
-          <label>Name</label>&nbsp;<label><input type="checkbox" name="Enable" checked>Enable</label>&nbsp;<label><input type="checkbox" name="Sync">@shell32.dll,-31494[22062]</label>&nbsp;<label><input type="checkbox"
-              name="Ansi">Ansi</label>
+        <div class="clientheight" style="min-height: 16em; overflow: auto; word-break: break-all">
+          <label>Name</label>&nbsp;<label><input type="checkbox" name="Enable" checked>Enable</label>&nbsp;<label><input type="checkbox" name="Sync">@shell32.dll,-31494[22062]</label>&nbsp;<label><input type="checkbox" name="Ansi">ANSI</label>
           <input type="text" name="Name" style="width: 100%">
           <table style="width: 100%"><tr>
             <td style="white-space: nowrap; vertical-align: bottom"><label>Path</label><span id="bit1"><span></td>
@@ -30,7 +29,7 @@
         </td>
       </tr>
     </table>
-    <table style="width: 100%">
+    <table id="bottombuttons" style="width: 100%">
       <tr>
         <td>
           <button onclick="RemoveX('List')">Remove</button>

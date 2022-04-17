@@ -148,6 +148,26 @@ ED = function (s) {
 	return ar.join("");
 }
 
+SetClientHeight = function() {
+	if (document.getElementById("P").style.display) {
+		setTimeout(SetClientHeight, 99);
+		return;
+	}
+	if (ui_.IEVer > 8) {
+		let h;
+		if (window.chrome) {
+			h = window.g_Inline ? 4 : 7;
+		} else {
+			h = window.g_Inline ? 4 : 6;
+		}
+		AddRule([".clientheight { height: calc(100vh - " + h + "em); }"].join(""));
+	} else {
+		AddRule(".clientheight { height: 34em; }");
+	}
+}
+
+SetClientHeight();
+
 const bitName = await GetTextR(ui_.bit + "-bit");
 const infoName = await GetAddonInfo(Addon_Id).Name;
 document.title = infoName + " " + bitName;
