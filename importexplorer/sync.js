@@ -9,18 +9,39 @@ Sync.ImportExplorer = {
 	TakeOver: item.getAttribute("TakeOver"),
 
 	Exec: function (Ctrl, pt) {
-		try {
-			let FV = GetFolderView(Ctrl, pt);
-			FV.Focus();
-			const sw = sha.Windows();
-			for (let i = sw.Count; i-- > 0;) {
-				let exp = sw.item(i);
-				if (exp && exp.Visible && !exp.Busy) {
-					let doc = exp.Document;
-					if (doc) {
-						if (Sync.ImportExplorer.Match(api.GetDisplayNameOf(doc, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING))) {
+		let FV = GetFolderView(Ctrl, pt);
+		FV.Focus();
+		const o = api.CreateObject("Object");
+		o.Data = api.CreateObject("Object");
+		o.Data.FV0 = FV;
+		o.Data.Sync = Sync;
+		o.Data.hwnd = te.hwnd;
+		o.Data.MainWindow = window;
+		o.Data.uFlags = SHGDN_FORADDRESSBAR | SHGDN_FORPARSING;
+		o.Data.wFlags = SBSP_NEWBROWSER;
+		o.Data.dwFlags = SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_DESELECTOTHERS | SVSI_SELECTIONMARK | SVSI_SELECT;
+		api.ExecScript(FixScript(Sync.ImportExplorer.Worker.toString().replace(/^[^{]+{|}$/g, "")), "JScript", o, true);
+		return S_OK;
+	},
+
+	Worker: function () {
+		const sha = api.CreateObject("sha");
+		const sw = sha.Windows();
+		for (let i = sw.Count; i-- > 0;) {
+			let exp = sw.item(i);
+			if (exp && exp.Visible && !exp.Busy) {
+				let doc = exp.Document;
+				if (doc) {
+					try {
+						let path = api.GetDisplayNameOf(doc, uFlags);
+						let url = doc;
+						if (!path && /\\explorer\.exe$/i.test(exp.FullName)) {
+							path = api.PathCreateFromUrl(exp.LocationURL);
+							url = path;
+						}
+						if (Sync.ImportExplorer.Match(path)) {
 							exp.Visible = false;
-							FV = FV.Navigate(doc, SBSP_NEWBROWSER);
+							let FV = FV0.Navigate(api.ILCreateFromPath(url).ExtendedProperty("linktarget") || url, wFlags);
 							if (Sync.ImportExplorer.TakeOver) {
 								FV.CurrentViewMode = doc.CurrentViewMode;
 								if (doc.IconSize) {
@@ -30,16 +51,15 @@ Sync.ImportExplorer = {
 									FV.SortColumns = doc.SortColumns;
 								}
 							}
-							FV.SelectItem(doc.FocusedItem, SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_DESELECTOTHERS | SVSI_SELECTIONMARK | SVSI_SELECT);
+							FV.SelectItem(doc.FocusedItem, dwFlags);
 							exp.Quit();
-							RestoreFromTray();
-							api.SetForegroundWindow(te.hwnd);
+							MainWindow.RestoreFromTray();
+							api.SetForegroundWindow(hwnd);
 						}
-					}
+					} catch (e) { }
 				}
 			}
-		} catch (e) { }
-		return S_OK;
+		}
 	},
 
 	Match: function (path) {
