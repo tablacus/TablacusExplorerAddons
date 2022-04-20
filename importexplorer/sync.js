@@ -50,6 +50,9 @@ Sync.ImportExplorer = {
 								if (doc.SortColumns) {
 									FV.SortColumns = doc.SortColumns;
 								}
+								if (doc.GroupBy) {
+									FV.GroupBy = doc.GroupBy;
+								}
 							}
 							FV.SelectItem(doc.FocusedItem, dwFlags);
 							exp.Quit();
