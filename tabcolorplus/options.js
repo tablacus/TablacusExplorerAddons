@@ -1,21 +1,22 @@
-SetTabContents(4, "Color", '<form name="E" id="data1"><table id="T" style="width: 100%"></table></form>');
-document.getElementById("toolbar").innerHTML = '<input type="button" value="Add" onclick=\'Add(["",""])\'>&emsp;<input type="button" value="Up" onclick="Up()"><input type="button" value="Down" onclick="Down()">&emsp;<input type="button" value="Remove" onclick="Remove()">';
+SetTabContents(4, "Color", '<form name="E" id="data1"><table id="T" class="full"></table></form>');
+document.getElementById("toolbar").innerHTML = '<button onclick=\'Add(["",""])\'>Add</button>&emsp;<button onclick="Up()">Up</button><button onclick="Down()">Down</button>&emsp;<button onclick="Remove()">Remove</button>';
 
-const r = await Promise.all([await te.Data.DataFolder, GetTextR("@oleaccrc.dll,-4042"), GetTextR("@oleaccrc.dll,-4043")]);
+const r = await Promise.all([te.Data.DataFolder, GetTextR("@oleaccrc.dll,-4042"), GetTextR("@oleaccrc.dll,-4043"), GetText("Filter")]);
 ConfigTSV = BuildPath(r[0], "config", Addon_Id + ".tsv");
 const g_strColor = r[1];
 const g_strFColor = r[2];
+const hint = r[3];
 
 Get = function (i) {
-	return [document.E.elements['p' + i].value, document.E.elements['c' + i].value, document.E.elements['f' + i].value];
+	return [document.E['p' + i].value, document.E['c' + i].value, document.E['f' + i].value];
 }
 
 Set = function (i, ar) {
-	document.E.elements['p' + i].value = ar[0] || "";
-	document.E.elements['c' + i].value = ar[1] || "";
-	document.E.elements['b' + i].style.backgroundColor = ar[1] || "";
-	document.E.elements['f' + i].value = ar[2] || "";
-	document.E.elements['e' + i].style.backgroundColor = ar[2] || "";
+	document.E['p' + i].value = ar[0] || "";
+	document.E['c' + i].value = ar[1] || "";
+	document.E['b' + i].style.backgroundColor = ar[1] || "";
+	document.E['f' + i].value = ar[2] || "";
+	document.E['e' + i].style.backgroundColor = ar[2] || "";
 }
 
 Add = function (ar) {
@@ -25,11 +26,11 @@ Add = function (ar) {
 	const table = document.getElementById("T");
 	const nRows = table.rows.length;
 	s = ['<td style="width: 1em"><input type="radio" name="sel" id="i', nRows, '"></td>'];
-	s.push('<td><input type="text" name="p', nRows, '" style="width: 100%" onchange="FilterChanged(this)" placeholder="', hint, '" title="', hint, '"></td>');
-	s.push('<td style="width: 7em"><input type="text" name="c', nRows, '" style="width: 100%" placeholder="', g_strColor, '" title="', g_strColor, '" onchange="ChangeColor(this)" ></td>');
-	s.push('<td style="width: 1em"><input type="button" name="b', nRows, '" value=" " class="color" style="width: 100%" onclick="ChooseColor2(this)" title="', g_strColor, '"></td>');
-	s.push('<td style="width: 7em"><input type="text" name="f', nRows, '" style="width: 100%" placeholder="', g_strFColor, '" title="', g_strFColor, '" onchange="ChangeColor(this, true)" ></td>');
-	s.push('<td style="width: 1em"><input type="button" name="e', nRows, '" value=" " class="color" style="width: 100%" onclick="ChooseColor2(this, true)" title="', g_strFColor, '"></td>');
+	s.push('<td><input type="text" name="p', nRows, '" class="full" onchange="FilterChanged(this)" placeholder="', hint, '" title="', hint, '"></td>');
+	s.push('<td style="width: 7em"><input type="text" name="c', nRows, '" class="full" placeholder="', g_strColor, '" title="', g_strColor, '" onchange="ChangeColor(this)" ></td>');
+	s.push('<td style="width: 1em"><button name="b', nRows, '" class="color full" onclick="ChooseColor2(this)" title="', g_strColor, '">&ensp;</button></td>');
+	s.push('<td style="width: 7em"><input type="text" name="f', nRows, '" class="full" placeholder="', g_strFColor, '" title="', g_strFColor, '" onchange="ChangeColor(this, true)" ></td>');
+	s.push('<td style="width: 1em"><button name="e', nRows, '" class="color full" onclick="ChooseColor2(this, true)" title="', g_strFColor, '">&ensp;</button></td>');
 	const tr = table.insertRow();
 	tr.innerHTML = s.join("");
 	Set(nRows, ar);
@@ -54,7 +55,7 @@ Up = function () {
 	const s = Get(nPos);
 	Set(nPos, Get(nPos - 1));
 	Set(--nPos, s);
-	document.E.elements["i" + nPos].checked = true;
+	document.E["i" + nPos].checked = true;
 }
 
 Down = function () {
@@ -66,7 +67,7 @@ Down = function () {
 	const s = Get(nPos);
 	Set(nPos, Get(nPos + 1));
 	Set(++nPos, s);
-	document.E.elements["i" + nPos].checked = true;
+	document.E["i" + nPos].checked = true;
 }
 
 Remove = async function () {
@@ -88,13 +89,13 @@ FilterChanged = function (o) {
 
 ChangeColor = function (o, f) {
 	const n = o.name.replace(/\D/, "");
-	document.E.elements[(f ? "e" : "b") + n].style.backgroundColor = o.value;
+	document.E[(f ? "e" : "b") + n].style.backgroundColor = o.value;
 	g_bChanged = true;
 }
 
 ChooseColor2 = async function (o, f) {
 	const n = o.name.replace(/\D/, "");
-	const oc = document.E.elements[(f ? "f" : "c") + n];
+	const oc = document.E[(f ? "f" : "c") + n];
 	const c = await ChooseWebColor(oc.value);
 	if (c) {
 		oc.value = c;
