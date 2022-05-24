@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="MSThemeCompatible" content="Yes">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Show hash</title>
+    <link rel="stylesheet" type="text/css" href="../../script/options.css">
+    <script type="text/javascript" charset="utf-8" src="../../script/consts.js"></script>
+  </head>
+  <body>
+    <form name="F" class="full">
+      <div id="P" class="panel" style="display: block; width: 100%; height: calc(100vh - 3em)">
+      </div>
+      <table class="full">
+        <tr>
+          <td align="right">
+            <input type="button" value="OK" class="ok" onclick="CloseWindow();">
+            &nbsp;
+          </td>
+        </tr>
+      </table>
+    </form>
+    <script type="text/javascript">
+      document.F.style.display = "none";
+      ScriptBase = "../..";
+      LoadScript(["script/ui.js", "script/common.js"], function () {
+        LoadScripts(["script/sync.js"], ["addons/showhash/dialog.js"], function () {
+          InitDialog();
+        });
+      });
+    </script>
+  </body>
+</html>
