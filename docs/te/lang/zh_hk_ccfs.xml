@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 22.3.27 (2022/4/9) -->
+<!-- Version 22.5.20 (2022/5/25)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -326,6 +326,7 @@
 	<text s="Change the Date modified...">變更修改日期...</text>
 	<text s="Change the timestamp...">變更時間戳記...</text>
 	<text s="Change the Time Stamp...">變更時間戳記 ...</text>
+	<text s="Show hash">驗證值</text>
 	<text s="Virtual name">替代名稱</text>
 	<text s="Extension tooltips changer">依副檔名設定提示</text>
 	<text s="No infotip">不要提示</text>
@@ -457,7 +458,6 @@
 	<text s="Clear folder image cache">清除資料夾封面快取</text>
 	<text s="Archive image">抽取壓縮檔內圖片</text>
 	<text s="Susie Plug-in">Susie 外掛程式</text>
-	<text s="Ansi">ANSI</text>
 	<text s="Susie Plug-in plus">Susie 解壓縮</text>
 	<text s="Total Commander Packer Plug-in">Total Commander 壓縮外掛程式</text>
 	<text s="Replace command">替代程式</text>
