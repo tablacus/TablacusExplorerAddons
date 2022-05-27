@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources><!--"Copy/paste" generated from fr.22.3.27.updated.ods on 22/04/09-->
+<resources><!--"Copy/paste" generated from fr.22.5.20.updated.ods on 22/05/26-->
 	<lang author="Pierre le Lidgeu" en="French">Français</lang>
 
 <text s="General">Général</text>
@@ -480,6 +480,7 @@
 
 
 
+<text s="Show hash">Afficher l&apos;empreinte numérique (hash)</text>
 <text s="Virtual name">Nom virtuel</text>
 <text s="Extension tooltips changer">Adaptateur d&apos;infobulles par extension</text>
 <text s="Change tooltips with file extension">Adapter les infobulles en fonction de l&apos;extension du fichier.</text>
@@ -613,9 +614,9 @@
 <text s="Inner New folder">Intérieur : &apos;Nouveau dossier&apos;</text>
 <text s="New folder button of every pane">Placer un bouton &quot;Nouveau dossier&quot; dans chaque panneau.</text>
 <text s="Layout">Disposition</text>
-<text s="Layout button">Bouton &quot;Disposition&quot;</text>
+<text s="Adds a toolbar button that opens a popover listing all layouts">Ajoute un bouton de barre d&apos;outils pour dérouler la liste de toutes les dispositions</text>
 <text s="Tab groups">Groupes d&apos;onglet</text>
-<text s="Groups all panes containing several tabs into independent workspaces displayed as a tab bar">Regrouper tous les volets contenant plusieurs onglets en espaces de travail indépendants affichés sous forme de barre d&apos;onglets.</text>
+<text s="Groups all panes containing several tabs into independent workspaces displayed as a tab bar">Regroupe tous les volets contenant plusieurs onglets en espaces de travail indépendants affichés sous forme de barre d&apos;onglets.</text>
 <text s="Tab groups button">Bouton &quot;Groupes d&apos;onglets&quot;</text>
 <text s="Tab groups button *&quot;Tab groups&quot; is required.">Gérer des groupes d&apos;onglets. *&quot;Tab groups&quot; est requis.</text>
 <text s="Show frames button">Bouton &apos;Afficher les cadres&apos;</text>
@@ -702,7 +703,7 @@
 
 
 
-<text s="Ansi">ANSI</text>
+<text s="ANSI">ANSI</text>
 
 
 <text s="Open archive file using Susie Plug-in. *Susie Plug-in is required">Ouvrir un fichier archive avec un greffon Susie. *Susie Plug-in est requis.</text>
