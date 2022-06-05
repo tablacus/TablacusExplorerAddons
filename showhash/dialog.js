@@ -7,7 +7,7 @@ InitDialog = async function () {
 	const promise = [];
 	const alg = ["MD5", "SHA1", "SHA256", "SHA384", "SHA512"];
 	for (let i = 0; i < alg.length; ++i) {
-		promise.push(api.CreateProcess(["certutil -hashfile", path, alg[i]].join(" ")));
+		promise.push(api.CreateProcess(["certutil -hashfile", PathQuoteSpaces(path), alg[i]].join(" ")));
 	}
 	Promise.all(promise).then(async function (r) {
 		const html = [];
