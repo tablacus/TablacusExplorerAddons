@@ -203,7 +203,7 @@ if (window.Addon == 1) {
 					}
 					style.backgroundColor = "";
 				}
-				style.color = cl[1] || "currentColor";
+				style.color = cl[1] || "";
 				const p = Addons.TabPlus.Class(TC, i, FV);
 				if (wait) {
 					wait.push(p);
