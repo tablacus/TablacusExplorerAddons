@@ -1,27 +1,26 @@
-var Addon_Id = "stripes";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "stripes";
+let item = GetAddonElement(Addon_Id);
 
 Sync.Stripes = {
 	db: {},
-	Color: GetBGRA(GetWinColor(item.getAttribute("Color2") || "#cccccc"), (item.getAttribute("Alpha") & 0xff) || 128),
+	Color: GetBGRA(GetWinColor(item.getAttribute("Color2") || "#7f7f7f"), (item.getAttribute("Alpha") & 0xff) || 64),
 
 	Arrange: function (Ctrl, nDog) {
-		var FV = GetFolderView(Ctrl);
+		const FV = GetFolderView(Ctrl);
 		if (!FV) {
 			return;
 		}
-		var hwnd = FV.hwndList;
+		const hwnd = FV.hwndList;
 		InvokeUI("Addons.Stripes.DeleteTid", FV.hwnd);
 		if (hwnd) {
-			var lvbk = api.Memory("LVBKIMAGE");
+			const lvbk = api.Memory("LVBKIMAGE");
 			if (FV.CurrentViewMode == FVM_DETAILS && !api.SendMessage(hwnd, LVM_GETGROUPCOUNT, 0, 0) && !api.SendMessage(hwnd, LVM_HASGROUP, 9425, 0)) {
-				var rc = api.Memory("RECT");
+				const rc = api.Memory("RECT");
 				api.SendMessage(hwnd, LVM_GETITEMRECT, 0, rc);
-				var nHeight = rc.Bottom - rc.Top;
+				const nHeight = rc.Bottom - rc.Top;
 				api.GetWindowRect(hwnd, rc);
-				var w = rc.right - rc.left, h = rc.bottom - rc.top - nHeight;
-				var hHeader = api.SendMessage(hwnd, LVM_GETHEADER, 0, 0);
-				api.GetWindowRect(hHeader, rc);
+				let w = rc.right - rc.left, h = rc.bottom - rc.top - nHeight;
+				api.GetWindowRect(api.SendMessage(hwnd, LVM_GETHEADER, 0, 0), rc);
 				h -= rc.bottom - rc.top;
 				if (api.GetWindowLongPtr(hwnd, GWL_STYLE) & WS_HSCROLL) {
 					h -= api.GetSystemMetrics(SM_CYHSCROLL);
@@ -31,17 +30,19 @@ Sync.Stripes = {
 				}
 				if (nHeight > 0 && w > 0 && h > 0) {
 					if (Sync.Stripes.db[hwnd] != h * 65536 + w) {
-						Sync.Stripes.db[hwnd] = h * 65536 + w;
-						var image = api.CreateObject("WICBitmap").Create(w, h);
-						for (var i = 0; i < h; i += nHeight * 2) {
-							image.FillRect(0, i, w, nHeight, Sync.Stripes.Color);
+						const image = api.CreateObject("WICBitmap").Create(w, h);
+						if (image) {
+							Sync.Stripes.db[hwnd] = h * 65536 + w;
+							for (let i = 0; i < h; i += nHeight * 2) {
+								image.FillRect(0, i, w, nHeight, Sync.Stripes.Color);
+							}
+							lvbk.hbm = image.GetHBITMAP(-2);
+							lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
+							if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
+								api.DeleteObject(lvbk.hbm);
+							}
+							FV.ViewFlags |= 8;
 						}
-						lvbk.hbm = image.GetHBITMAP(-2);
-						lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
-						if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
-							api.DeleteObject(lvbk.hbm);
-						}
-						FV.ViewFlags |= 8;
 					}
 				} else {
 					InvokeUI("Addons.Stripes.Retry", Ctrl, nDog || 0);
@@ -58,25 +59,26 @@ Sync.Stripes = {
 
 	Resize: function (tm) {
 		setTimeout(function () {
-			var cFV = te.Ctrls(CTRL_FV, false);
-			for (var i in cFV) {
-				var hwnd = cFV[i].hwndList;
+			const cFV = te.Ctrls(CTRL_FV, false);
+			for (let i in cFV) {
+				const hwnd = cFV[i].hwndList;
 				if (hwnd) {
 					Sync.Stripes.Arrange(cFV[i]);
 				}
 			}
-		}, api.LowPart(tm) || 99);
+		}, Number(tm) || 99);
 	},
 
 	Clear: function () {
-		var lvbk = api.Memory("LVBKIMAGE");
+		const lvbk = api.Memory("LVBKIMAGE");
 		lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-		for (var hwnd in Sync.Stripes.db) {
+		for (let hwnd in Sync.Stripes.db) {
 			delete Sync.Stripes.db[hwnd];
 			api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
 		}
 	}
 }
+delete item;
 
 AddEvent("ContentsChanged", Sync.Stripes.Arrange);
 AddEvent("IconSizeChanged", Sync.Stripes.Arrange);

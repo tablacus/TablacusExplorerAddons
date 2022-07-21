@@ -1,5 +1,5 @@
-var Addon_Id = "stripes";
-var item = GetAddonElement(Addon_Id);
+const Addon_Id = "stripes";
+const item = GetAddonElement(Addon_Id);
 if (window.Addon == 1) {
 	Addons.Stripes = {
 		tid: {},
