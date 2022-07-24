@@ -36,7 +36,10 @@ Sync.Font = {
 	},
 
 	SetFrame: function(FV) {
-		Sync.Font.SetTV2(FindChildByClass(FV.hwnd, WC_TREEVIEW), Sync.Font.FrameHeight);
+		const hwnd = FV.hwnd;
+		if (hwnd) {
+			Sync.Font.SetTV2(FindChildByClass(hwnd, WC_TREEVIEW), Sync.Font.FrameHeight);
+		}
 	},
 
 	SetTV2: function (hwnd, nHeight) {

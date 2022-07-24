@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.24</Version>
-    <MinVersion>2022.3.27</MinVersion>
-    <pubDate>Sat, 16 Apr 2022 00:00:00 GMT</pubDate>
+    <Version>1.25</Version>
+    <MinVersion>2022.6.27</MinVersion>
+    <pubDate>Sun, 24 Jul 2022 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -14,6 +14,9 @@
     <Name>Font settings</Name>
     <Description>Font settings</Description>
   </en>
+  <fr>
+    <Name>Paramètre de police</Name>
+  </fr>
   <ja>
     <Name>フォント設定</Name>
   </ja>
