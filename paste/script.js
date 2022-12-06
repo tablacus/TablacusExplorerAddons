@@ -59,12 +59,10 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, [await GetImgTag({
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="Addons.Paste.Exec(this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: Addons.Paste.sName,
 			id: "ImgPaste_$",
 			src: item.getAttribute("Icon") || "icon:general,7",
-			onclick: "Addons.Paste.Exec(this)",
-			"class": "button"
 		}, GetIconSizeEx(item))]);
 	});
 
