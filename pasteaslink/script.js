@@ -17,7 +17,7 @@ if (window.Addon == 1) {
 						if (!nCount) {
 							return;
 						}
-						const wfd = api.Memory("WIN32_FIND_DATA");
+						const wfd = await api.Memory("WIN32_FIND_DATA");
 						const db = {
 							"1": "Symbolic link, absolute path",
 							"2": "Symbolic link, absolute path without drive",
@@ -186,12 +186,10 @@ if (window.Addon == 1) {
 	}
 
 	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, [await GetImgTag({
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Addons.PasteAsLink.Exec, this, 9)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: Addons.PasteAsLink.sName,
 			id: "ImgPasteAsLink_$",
 			src: item.getAttribute("Icon") || "icon:general,7",
-			onclick: "SyncExec(Addons.PasteAsLink.Exec, this, 9)",
-			"class": "button"
 		}, GetIconSizeEx(item))]);
 	});
 
