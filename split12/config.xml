@@ -1,0 +1,27 @@
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2022.11.3</MinVersion>
+    <pubDate>Sun, 01 Jan 2023 00:00:00 GMT</pubDate>
+    <Options>Common:6:6</Options>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Split12</Name>
+    <Description>Split a window into 12 frames. *"Split" is required.</Description>
+  </en>
+  <fr>
+    <Name>Fractionner en 12</Name>
+    <Description>Diviser la fenêtre en 12 panneaux. *&quot;Fractionner&quot; est requis.</Description>
+  </fr>
+  <ja>
+    <Name>12分割</Name>
+    <Description>画面の12分割 ※"分割"が必要</Description>
+  </ja>
+  <zh>
+    <Name>劃分12個窗格</Name>
+  </zh>
+</TablacusExplorer>
