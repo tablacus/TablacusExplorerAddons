@@ -92,7 +92,7 @@ if (window.Addon == 1) {
 					strName = await GetText(strName);
 				}
 				const strType = items[i].Type;
-				let img = await api.PathUnquoteSpaces(items[i].Icon);
+				let img = PathUnquoteSpaces(items[i].Icon);
 				let path = items[i].text;
 				let nOpen = 0;
 				if (SameText(strType, "Menus")) {
@@ -123,7 +123,7 @@ if (window.Addon == 1) {
 							pidl = await api.ILCreateFromPath(res[1]);
 						}
 					}
-					img = await GetImgTag({ src: await GetIconImage(pidl, await GetSysColor(COLOR_WINDOW)), "class": "favicon" });
+					img = await GetImgTag({ src: await GetIconImage(pidl, CLR_DEFAULT | COLOR_WINDOW), "class": "favicon" });
 				} else {
 					img = await GetImgTag({ src: "icon:shell32.dll,0", "class": "favicon" });
 				}
@@ -155,7 +155,7 @@ if (window.Addon == 1) {
 
 		GetPath: async function (items, i) {
 			const line = items[i].text.split("\n");
-			return await api.PathUnquoteSpaces(await ExtractMacro(te, line[0]));
+			return await ExtractPath(te, line[0]);
 		},
 
 		FromPt: async function (pt) {
