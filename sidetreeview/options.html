@@ -1,15 +1,22 @@
 <label>Align</label><br>
 <input type="hidden" name="Align">
 <label><input type="radio" name="_Align" id="Align=0" onclick="SetRadio(this)">Left</label>
-<label><input type="radio" name="_Align" id="Align=1" onclick="SetRadio(this)">Right</label><br>
+<label><input type="radio" name="_Align" id="Align=1" onclick="SetRadio(this)">Right</label>
 <br>
-<label>Style</label><br>
-<label><input type="checkbox" id="Depth" value="1">@shell32.dll,-32788[Expanded]</label><br>
-<label><input type="checkbox" id="List" value="1">List</label><br>
-<label><input type="checkbox" id="Collapse" value="1">@shell32.dll,-32789[Collapse Folders]<span> (</span>Auto<span>)</span></label><br>
 <br>
-<label>Height</label><br>
-<input type="text" name="Height" size="9"><br>
+<label>Style</label>
+<br>
+<label><input type="checkbox" id="Depth" value="1">@shell32.dll,-32788[Expanded]</label>
+<br>
+<label><input type="checkbox" id="List" value="1">List</label>
+<br>
+<label><input type="checkbox" id="Collapse" value="1">@shell32.dll,-32789[Collapse Folders]<span> (</span>Auto<span>)</span></label>
+<br>
+<br>
+<label>Height</label>
+<br>
+<input type="text" name="Height" size="12" placeholder="Number or %">
+<br>
 <br>
 <table style="width: 100%">
     <tr>
