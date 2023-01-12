@@ -37,4 +37,4 @@ if (item.getAttribute("MouseExec")) {
 	SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Sync.TouchEx.Exec, "Func");
 }
 
-AddTypeEx("Add-ons", "Change the Time Stamp...", Sync.TouchEx.Exec);
+AddTypeEx("Add-ons", "Change the timestamp", Sync.TouchEx.Exec);
