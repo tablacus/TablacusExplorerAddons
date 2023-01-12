@@ -97,5 +97,5 @@ if (window.Addon == 1) {
 		OpenHttpRequest("https://tablacus.github.io/TablacusExplorerAddons/index.xml", "http", "Addons.AddonsUpdater.List", arg);
 	}, true);
 
-	AddTypeEx("Add-ons", "Addons updater", Addons.AddonsUpdater.Exec);
+	AddTypeEx("Add-ons", "Add-ons updater", Addons.AddonsUpdater.Exec);
 }

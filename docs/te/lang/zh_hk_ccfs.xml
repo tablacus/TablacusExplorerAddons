@@ -561,7 +561,6 @@
 	<text s="Auto update">自動更新</text>
 	<text s="time 1m 1h">閒置時間 1m 1h</text>
 	<text s="Add-ons updater">更新附加元件&#160;</text>
-	<text s="Addons updater">更新附加元件</text>
 	<text s="WebView2 (Edge Blink engine)">下載 Edge Blink 元件</text>
 	<text s="Open Control Panel in Explorer">在檔案總管中開啟控制台</text>
 	<text s="Fix selection on sort and update dir">修正選取和排序問題</text>
