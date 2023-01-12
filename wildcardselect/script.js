@@ -49,5 +49,5 @@ if (window.Addon == 1) {
 		SetGestureExec(item.getAttribute("MouseOn"), item.getAttribute("Mouse"), Addons.WildcardSelect.Exec, "Async");
 	}
 
-	AddTypeEx("Add-ons", "Wildcard Select...", Addons.WildcardSelect.Exec);
+	AddTypeEx("Add-ons", "Wildcard selection", Addons.WildcardSelect.Exec);
 }
