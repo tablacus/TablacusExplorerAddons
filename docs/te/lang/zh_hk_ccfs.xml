@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 22.5.20 (2022/5/25)-->
+<!-- Version 23.1.12 (2023/1/14)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -152,7 +152,7 @@
 	<text s="Show all files">顯示所有檔案</text>
 	<text s="Thumbnail">縮圖</text>
 	<text s="Tile">並排</text>
-	<text s="Thumbstrip">單個預覽</text>
+	<text s="Thumbstrip">單個預覽 (XP)</text>
 	<text s="Content">內容</text>
 	<text s="Auto">自動</text>
 	<text s="Size">大小</text>
@@ -331,6 +331,7 @@
 	<text s="Extension tooltips changer">依副檔名設定提示</text>
 	<text s="No infotip">不要提示</text>
 	<text s="Side tree view">共用式樹狀目錄</text>
+	<text s="Number or %">數值或%</text>
 	<text s="Disable Tree drop">停用拖放到樹狀目錄</text>
 	<text s="Tree view filter">屏蔽樹狀目錄項目</text>
 	<text s="Add all tabs to favorites...">集合所有分頁成為一項我的最愛...</text>
@@ -389,6 +390,8 @@
 	<text s="4x2">4欄×2列</text>
 	<text s="Split9">劃分九個窗格</text>
 	<text s="3x3">3欄×3列</text>
+	<text s="Split12">劃分十二個窗格</text>
+	<text s="4x3">4欄×3列</text>
 	<text s="Switch to previous pane">上一個窗格</text>
 	<text s="Switch to next pane">下一個窗格</text>
 	<text s="Rotate pane">輪調所有窗格</text>
