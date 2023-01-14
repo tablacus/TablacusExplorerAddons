@@ -1,0 +1,137 @@
+<html>
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="MSThemeCompatible" content="Yes">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Attributes</title>
+  <link rel="stylesheet" type="text/css" href="../../script/options.css">
+  <script type="text/javascript" charset="utf-8" src="../../script/consts.js"></script>
+</head>
+
+<body>
+  <form name="F" style="width: 100%">
+    <table id="T" style="border: 1px solid gray; width: 100%">
+      <tr>
+        <td style="width: 50%"><input type="text" name="A" style="width: 100%" readonly></td>
+        <td style="width: 50%"><input type="text" name="B" style="width: 100%" readonly></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em; font-weight: bold">Select matches<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all items that are also listed in the other pane.<label></td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input name="selectmatches0" type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectMatches(false)"></td>
+        <td style="text-align: center"><input name="selectmatches1" type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectMatches(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em; font-weight: bold">Select uniques<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all items that are only listed in this pane.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input name="selectuniques0" type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectUniques(false)"></td>
+        <td style="text-align: center"><input name="selectuniques1" type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectUniques(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em; font-weight: bold">Select newer<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all matches with a more recent modified date.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input name="selectnewer0" type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectNewer(false)"></td>
+        <td style="text-align: center"><input name="selectnewer1" type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectNewer(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em; font-weight: bold">Select different<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all matches with a different size or modified date.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input name="selectdifferent0" type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectDifferent(false)"></td>
+        <td style="text-align: center"><input name="selectdifferent1" type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectDifferent(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em; font-weight: bold">Select uniques and newer<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all items that are unique or newer.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input name="selectuniquesnewer0" type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectUniquesNewer(false)"></td>
+        <td style="text-align: center"><input name="selectuniquesnewer1" type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectUniquesNewer(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em; font-weight: bold">Select uniques and different<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all items that are unique or different.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input name="selectuniquesdifferent0" type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectUniquesDifferent(false)"></td>
+        <td style="text-align: center"><input name="selectuniquesdifferent1" type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectUniquesDifferent(true)"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center">
+          <label style="font-size: 1.2em; font-weight: bold">Select selected<label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center"><label>Select all items that are selected in the other pane.<label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center"><input name="selectselected0" type="button" value="&lt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectSelected(false)"></td>
+        <td style="text-align: center"><input name="selectselected1" type="button" value="&gt;" style="font-size: 1.2em;  width:100%"
+            onclick="Sync.InnerSyncSelect.SelectSelected(true)"></td>
+      </tr>
+    </table>
+    <label><input type="checkbox" name="ext" onclick="Addons.InnerSyncSelect.SwitchExt(this)" onchange="Addons.InnerSyncSelect.SwitchExt(this)" checked>Ignore file extensions</label>
+  </form>
+  <script type="text/javascript">
+    document.body.style.visibility = "hidden";
+    ScriptBase = "../..";
+    LoadScript(["script/ui.js", "script/common.js"], function () {
+      LoadScripts(["script/sync.js"], ["addons/innersyncselect/dialog.js"], function () {
+        InitDialog();
+      });
+    });
+  </script>
+</body>
+
+</html>

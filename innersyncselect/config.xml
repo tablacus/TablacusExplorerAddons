@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2022.11.3</MinVersion>
+    <pubDate>Fri, 13 Jan 2023 00:00:00 GMT</pubDate>
+    <Options>Common:0,5:0</Options>
+    <Level>2</Level>
+    <Creator>bblackmoor</Creator>
+    <URL>https://github.com/bblackmoor/TablacusExplorerAddons</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Inner sync select</Name>
+    <Description>File sync selection button for each pane. Based on "Sync select" by Gaku.</Description>
+  </en>
+  <ja>
+    <Name>Inner 同期選択</Name>
+  </ja>
+</TablacusExplorer>
