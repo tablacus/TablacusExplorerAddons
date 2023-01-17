@@ -1,9 +1,9 @@
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
+    <Version>1.01</Version>
     <MinVersion>2022.3.24</MinVersion>
-    <pubDate>Sat, 26 Mar 2022 00:00:00 GMT</pubDate>
-    <Options>Common:4:4</Options>
+    <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
+    <Options>Common:4,5:4</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
     <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>

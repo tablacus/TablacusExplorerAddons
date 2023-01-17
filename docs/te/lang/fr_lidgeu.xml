@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources><!--"Copy/paste" generated from fr.22.5.20.updated.ods on 22/05/26-->
+<resources><!--"Copy/paste" generated from fr.23.1.12.updated.ods on 23/01/16-->
 	<lang author="Pierre le Lidgeu" en="French">Français</lang>
 
 <text s="General">Général</text>
@@ -13,7 +13,7 @@
 <text s="Context">Contexte</text>
 <text s="Background">Arrière-plan de l&apos;inventaire</text>
 <text s="Tabs">Onglets</text>
-<text s="Tree">Arbre</text>
+<text s="Tree">Arborescence</text>
 <text s="&amp;File">&amp;Fichier</text>
 <text s="&amp;Edit">&amp;Edition</text>
 <text s="&amp;View">Aff&amp;ichage</text>
@@ -140,7 +140,7 @@
 <text s="BarBreak">Coupure avec séparateur</text>
 <text s="Browser">Navigateur</text>
 <text s="Visible">Visible</text>
-<text s="Hidden">Cachée</text>
+<text s="Hidden">Masquée</text>
 <text s="Enumeration">Inventaire</text>
 
 <text s="Not folders">Non-dossiers</text>
@@ -488,6 +488,7 @@
 <text s="No infotip">Pas d&apos;infobulle</text>
 <text s="No infotip on Listview">Aucune infobulle disponible dans l&apos;affichage &quot;Détails&quot;</text>
 <text s="Side tree view">Affichage latéral d&apos;arborescence</text>
+<text s="Number or %">Nombre ou %</text>
 <text s="Disable Tree drop">Désactiver le dépôt dans d&apos;arborescence</text>
 <text s="Disable drop in tree view.">Désactiver &quot;Déposer&quot; dans l&apos;affichage en arborescence.</text>
 <text s="Tree view filter">Filtre d&apos;arborescence</text>
@@ -570,6 +571,9 @@
 <text s="Split9">Fractionner en 9</text>
 <text s="Split a window into 9 frames. *&quot;Split&quot; is required.">Diviser la fenêtre en 9 panneaux. *&quot;Fractionner&quot; est requis.</text>
 <text s="3x3">3x3</text>
+<text s="Split12">Fractionner en 12</text>
+<text s="Split a window into 12 frames. *&quot;Split&quot; is required.">Diviser la fenêtre en 12 panneaux. *&quot;Fractionner&quot; est requis.</text>
+<text s="4x3">4x3</text>
 <text s="Switch to previous pane">Basculer au panneau précédent</text>
 <text s="Command: &quot;Switch to previous pane&quot;, Environment: &quot;%prevpane%&quot;.">Commande : &quot;Switch to previous pane&quot;, Variable d&apos;environment : &quot;%prevpane%&quot;.</text>
 <text s="Switch to next pane">Basculer au panneau suivant</text>
@@ -780,7 +784,7 @@
 <text s="Icon change with filter">Changer l&apos;icône selon le filtre</text>
 <text s="Icon changer">Modificateur d&apos;icône</text>
 <text s="Small">Petites</text>
-<text s="SysSmall">Icône de dossier dans l&apos;arbre </text>
+<text s="SysSmall">Icône de dossier dans l&apos;arborescence</text>
 <text s="Large">Grandes</text>
 <text s="ExtraLarge">Très grandes</text>
 <text s="Folder closed">Dossier fermé</text>
