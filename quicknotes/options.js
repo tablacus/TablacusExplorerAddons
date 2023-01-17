@@ -1,4 +1,4 @@
-SetTabContents(4, "Color", '<form name="E" id="data1"><table id="T" class="full"></table></form>');
+SetTabContents(4, "General", '<form name="E" id="data1"><table id="T" class="full"></table></form>');
 document.getElementById("toolbar").innerHTML = '<button onclick=\'Add(["",""])\'>Add</button>&emsp;<button onclick="Up()">Up</button><button onclick="Down()">Down</button>&emsp;<button onclick="Remove()">Remove</button>';
 
 Addons.QuickNotes = {
