@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2023.1.12</MinVersion>
+    <pubDate>Thu, 26 Jan 2023 00:00:00 GMT</pubDate>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Go home automatically</Name>
+    <Description>Automatically go to home when switching tabs. *"Set home" is required.</Description>
+  </en>
+  <ja>
+    <Name>タブ切り替え時に自動的にホームへ移動</Name>
+  </ja>
+</TablacusExplorer>
