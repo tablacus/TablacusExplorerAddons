@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.09</Version>
+    <Version>1.10</Version>
     <MinVersion>2022.1.3</MinVersion>
-    <pubDate>Tue, 04 Jan 2022 00:00:00 GMT</pubDate>
+    <pubDate>Tue, 31 Jan 2023 00:00:00 GMT</pubDate>
     <Options>Common:0,7,8,9:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -21,6 +21,6 @@
     <Name>カラーラベル</Name>
   </ja>
   <zh>
-  	<Name>以背景色標示</Name>
+    <Name>以背景色標示</Name>
   </zh>
 </TablacusExplorer>

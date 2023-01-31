@@ -28,14 +28,19 @@ Sync.ColorLabels = {
 	Exec: function (Ctrl, pt) {
 		const Selected = GetSelectedArray(Ctrl, pt, true).shift();
 		if (Selected && Selected.Count) {
-			const cl = ChooseColor(Sync.ColorLabels.Get(Selected.Item(0)));
-			for (let i = Selected.Count; i--;) {
-				Sync.ColorLabels.Set(Selected.Item(i), cl);
-			}
-			if (Sync.ColorLabels.Tabs) {
-				const cTC = te.Ctrls(CTRL_TC, true);
-				for (let i in cTC) {
-					RunEvent3("SelectionChanged", cTC[i]);
+			let cl = ChooseColor(Sync.ColorLabels.Get(Selected.Item(0)));
+			if (cl != null) {
+				if (api.GetKeyState(VK_SHIFT) < 0) {
+					cl = void 0;
+				}
+				for (let i = Selected.Count; i--;) {
+					Sync.ColorLabels.Set(Selected.Item(i), cl);
+				}
+				if (Sync.ColorLabels.Tabs) {
+					const cTC = te.Ctrls(CTRL_TC, true);
+					for (let i in cTC) {
+						RunEvent3("SelectionChanged", cTC[i]);
+					}
 				}
 			}
 		}
