@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 23.1.12 (2023/1/14)-->
+<!-- Version 23.1.31 (2023/2/2)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -229,9 +229,10 @@
 	<text s="Quicker menu display">簡潔功能選單</text>
 	<text s="Link bar">冠名工具列</text>
 	<text s="Simple Tool bar">簡單工具列</text>
-	<text s="Quick notes">熱選單</text>
+	<text s="Quick notes">熱鍵選單</text>
 	<text s="Set home">設為本壘</text>
 	<text s="Go home">返回本壘</text>
+	<text s="Go home automatically">備用時自動返回本壘</text>
 	<text s="Drive bar">磁碟列</text>
 	<text s="Drive button">磁碟選單</text>
 	<text s="Recently closed tabs">最近關閉的分頁</text>
@@ -246,8 +247,8 @@
 	<text s="Columns">欄位</text>
 	<text s="Sort">排序</text>
 	<text s="Get the current folder view">取得目前資料夾檢視</text>
+	<text s="Folder settings">依路徑樣式設定資料夾檢視</text>
 	<text s="Take over folder view settings">記住資料夾檢視</text>
-	<text s="Folder settings">資料夾檢視規則</text>
 	<text s="Copy folder settings">複製資料夾檢視</text>
 	<text s="Reset columns">重設欄位</text>
 	<text s="Replace slow columns">替換慢速欄位</text>
@@ -324,8 +325,8 @@
 	<text s="Attributes...">屬性...</text>
 	<text s="Archive">保存</text>
 	<text s="Change the Date modified...">變更修改日期...</text>
-	<text s="Change the timestamp...">變更時間戳記...</text>
-	<text s="Change the Time Stamp...">變更時間戳記 ...</text>
+	<text s="Change the timestamp...">變更時間戳...</text>
+	<text s="Change the Time Stamp...">變更時間戳 ...</text>
 	<text s="Show hash">驗證值</text>
 	<text s="Virtual name">替代名稱</text>
 	<text s="Extension tooltips changer">依副檔名設定提示</text>
@@ -349,11 +350,11 @@
 	<text s="Tab design">頁籤設計室</text>
 	<text s="Underline">底線</text>
 	<text s="Load">載入</text>
-	<text s="Change tab color...">變更頁籤色彩...</text>
-	<text s="Tab color plus">頁籤色彩規則</text>
+	<text s="Change tab color...">依路徑為頁籤著色...</text>
+	<text s="Tab color plus">依路徑樣式為頁籤著色</text>
 	<text s="Tab drive name">在頁籤顯示磁碟代號</text>
 	<text s="Tab parent folder name">在頁籤顯示上層資料夾名稱</text>
-	<text s="Change tab name...">變更分頁名稱...</text>
+	<text s="Change tab name...">依路徑命名分頁...</text>
 	<text s="Fixed tab name...">固定分頁名稱...</text>
 	<text s="Tab position">分頁定位</text>
 	<text s="Active tab after tab closing">關閉目前分頁之後，前往哪個分頁</text>
@@ -428,7 +429,7 @@
 	<text s="Frame pane">自訂檔案總管模式</text>
 	<text s="It takes time to apply these changes.">請重新啟動程式令此設定生效。</text>
 	<text s="Folder button">資料夾按鈕</text>
-	<text s="Hot button">熱按鈕</text>
+	<text s="Hot button">資料夾內容按鈕</text>
 	<text s="Clip folder">剪貼資料夾</text>
 	<text s="Create clip folder...">新增剪貼資料夾...</text>
 	<text s="Save clip folder">儲存剪貼資料夾</text>
@@ -479,6 +480,7 @@
 	<text s="Label SQLite ODBC Driver">標籤資料庫 (SQLite ODBC)</text>
 	<text s="Label SQLite3">標籤資料庫 (SQLite)</text>
 	<text s="Color labels">以底色標示</text>
+	<text s="Color label sort">依標示色碼排序</text>
 	<text s="Colored with filter">依名稱樣式著色</text>
 	<text s="Colored with extension">依副檔名著色</text>
 	<text s="Colored with attributes">依屬性著色</text>
@@ -509,7 +511,7 @@
 	<text s="Segoe UI MDL2 Assets">Segoe MDL2 圖示集</text>
 	<text s="Font settings">字型</text>
 	<text s="Dark mode">黑色面板</text>
-	<text s="Background image">分頁背景</text>
+	<text s="Background image">依路徑樣式設定分頁背景</text>
 	<text s="Size bar chart">檔案大小條狀圖</text>
 	<text s="List width">自訂寬度的清單檢視</text>
 	<text s="Fast list mode">快速清單檢視</text>
