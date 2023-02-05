@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources><!--"Copy/paste" generated from fr.23.1.12.updated.ods on 23/01/16-->
+<resources><!--"Copy/paste" generated from fr.23.1.31 updated.ods on 23/02/05-->
 	<lang author="Pierre le Lidgeu" en="French">Français</lang>
 
 <text s="General">Général</text>
@@ -315,6 +315,8 @@
 <text s="Set home for each tab *&quot;Go home&quot; is required.">Définir le début pour chaque onglet *&quot;Aller au début&quot; est requis. </text>
 <text s="Go home">Aller au début</text>
 <text s="Navigate to home for each tab *&quot;Set home&quot; is required.">Naviguer au début pour chaque onglet *&quot;Définir le début&quot; est requis.</text>
+<text s="Go home automatically">Aller automatiquement au début</text>
+<text s="Automatically go to home when switching tabs. *&quot;Set home&quot; is required.">Aller automatiquement au début au changement d&apos;onglet *&quot;Définir le début&quot; est requis.</text>
 <text s="Drive bar">Barre de lecteur</text>
 <text s="Drive button">Bouton de lecteur</text>
 <text s="Recently closed tabs">Onglets fermés récemment</text>
@@ -334,9 +336,9 @@
 <text s="Columns">Colonnes</text>
 <text s="Sort">Trier</text>
 <text s="Get the current folder view">Obtenir la vue du dossier courant</text>
+<text s="Folder settings">Paramètres d&apos;affichage des dossiers</text>
 <text s="Take over folder view settings">Reprendre les paramètres d&apos;affichage des dossiers</text>
 <text s="Take over folder view settings.">Mémoriser les paramètres de l&apos;affichage actuel et l&apos;appliquer dans votre navigation.</text>
-<text s="Folder settings">Paramètres d&apos;affichage des dossiers</text>
 <text s="Copy folder settings">Copier les paramètres d&apos;affichage des dossiers</text>
 <text s="Copy the script for the current folder settings to the clipboard.">Copier dans le presse-papiers la configuration des paramètres d&apos;affichage du dossier actuel.</text>
 <text s="Reset columns">Rétablir les colonnes</text>
@@ -357,9 +359,9 @@
 <text s="Switch hidden filter">Afficher/masquer les éléments filtrés</text>
 <text s="Display items and their subfolders items as a flat list.">Afficher les éléments et sous-dossiers en liste plate.</text>
 
-<text s="Right key next">Suivant : touche droite →</text>
+<text s="Right key next">Suivant : touche droite ?</text>
 <text s="In Icon View. Right-arrow key: Move to the next item. Left-arrow key: Move to the previous item.">Affichage &quot;Icônes&quot;. Touche flèche-droite : élément suivant. Touche flèche-gauche : élément précédent.</text>
-<text s="Down key next">Suivant : touche bas ↓</text>
+<text s="Down key next">Suivant : touche bas ?</text>
 <text s="In Icon View (Align left). Down-arrow key: Move to the next item. Up-arrow key: Move to the previous item.">Affichage &quot;Icônes&quot; (Aligner à gauche). Touche flèche-bas : élément suivant. Touche flèche-haut : élément précédent.</text>
 <text s="Between files and folders">Entre dossiers et fichiers</text>
 <text s="Jump to the boundary between files and folders.">Sauter à la frontière entre les dossiers et fichiers.</text>
@@ -617,6 +619,9 @@
 <text s="Search bar for each pane">Placer une barre de recherche dans chaque panneau</text>
 <text s="Inner New folder">Intérieur : &apos;Nouveau dossier&apos;</text>
 <text s="New folder button of every pane">Placer un bouton &quot;Nouveau dossier&quot; dans chaque panneau.</text>
+<text s="Inner sync select">Sélection de synchronisation intérieure</text>
+<text s="File sync selection button for each pane. Based on &quot;Sync select&quot; by Gaku.">Bouton de sélection se synchronisation intérieure pour chaque panneau. Basé sur &quot;Sync select&quot; de Gaku.</text>
+<text s="Ignore file extensions">Ignorer les extensions de fichier</text>
 <text s="Layout">Disposition</text>
 <text s="Adds a toolbar button that opens a popover listing all layouts">Ajoute un bouton de barre d&apos;outils pour dérouler la liste de toutes les dispositions</text>
 <text s="Tab groups">Groupes d&apos;onglet</text>
@@ -763,9 +768,11 @@
 <text s="Label(SQLite3) *Label and sqlite3.dll is required">Etiquette (SQLite3). *&quot;Etiquette&quot; et &quot;sqlit3.dll&quot; sont requis.</text>
 
 <text s="Color labels">Colorier les étiquettes</text>
+<text s="Color label sort">Trier par étiquette de couleur</text>
+<text s="Sort by Color label. *&quot;Color labels&quot; is required.">Trier par étiquette de couleur *&quot;Colorier les étiquettes&quot; est requis</text>
 <text s="Colored with filter">Colorier selon filtre</text>
 <text s="Colored with extension">Colorier selon extension</text>
-<text s="Colored with file extension">Colorier selon l&apos;extension fichier</text>
+<text s="Colored with file extension">Colorier selon l&apos;extension de fichier</text>
 <text s="Colored with attributes">Colorier selon attributs</text>
 
 
