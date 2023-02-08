@@ -81,7 +81,7 @@ Sync.DragDropMenu = {
 		eventTE.menucommand = api.CreateObject("Array");
 		eventTA.menucommand = api.CreateObject("Array");
 		let i = api.GetMenuItemCount(hMenu);
-		if (eventTE.menus.dragdrop) {
+		if (eventTE.menus && eventTE.menus.dragdrop) {
 			i = eventTE.menus.dragdrop(Ctrl, hMenu, g_nPos, Items, Dest, ContextMenus, "DragDrop", pt);
 		}
 		if (i) {
@@ -195,7 +195,7 @@ Sync.DragDropMenu = {
 						return true;
 					}
 				}
-				if (eventTE.menus.dragdrop) {
+				if (eventTE.menus && eventTE.menus.dragdrop) {
 					const hr = InvokeFunc(eventTE.menucommand.dragdrop, [Ctrl, pt, "DragDrop", nVerb, hMenu, Items, Dest]);
 					if (isFinite(hr) && hr == S_OK) {
 						api.DestroyMenu(hMenu);
