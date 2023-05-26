@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 23.1.31 (2023/2/2)-->
+<!-- Version 23.1.31 (2023/5/25)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -107,7 +107,7 @@
 	<text s="&amp;Refresh">重新整理(&amp;R)</text>
 	<text s="Show frames">檔案總管模式</text>
 	<text s="Switch Explorer engine">切換檔案總管引擎</text>
-	<text s="Open in E&amp;xplorer">在檔案總管中開啟(&amp;X)</text>
+	<text s="Open in E&amp;xplorer">用檔案總管開啟(&amp;X)</text>
 	<text s="New folder">新增資料夾</text>
 	<text s="New file">新增檔案</text>
 	<text s="Copy full path">複製路徑</text>
@@ -142,7 +142,7 @@
 	<text s="Root has expando">根目錄有開合按鈕</text>
 	<text s="Auto horizontal scroll">自動水平捲動</text>
 	<text s="Fade in out expandos">淡入淡出開合按鈕</text>
-	<text s="Allow junctions">[無作用] 連結視為資料夾</text>
+	<text s="Allow junctions">視壓縮檔為資料夾</text>
 	<text s="Empty text">展開但無項目則顯示(空白)</text>
 	<text s="No order stream">[無作用] 不保留排位</text>
 	<text s="Rich tooltip">[無作用] 提示附圖示</text>
@@ -347,9 +347,6 @@
 	<text s="Hot track">指標感應</text>
 	<text s="Force icon left">強制圖示靠左</text>
 	<text s="Force label left">強制名稱靠左</text>
-	<text s="Tab design">頁籤設計室</text>
-	<text s="Underline">底線</text>
-	<text s="Load">載入</text>
 	<text s="Change tab color...">依路徑為頁籤著色...</text>
 	<text s="Tab color plus">依路徑樣式為頁籤著色</text>
 	<text s="Tab drive name">在頁籤顯示磁碟代號</text>
@@ -424,6 +421,7 @@
 	<text s="Inner New folder">窗格內新增資料夾</text>
 	<text s="Layout">版面</text>
 	<text s="Tab groups">工作區</text>
+	<text s="Load">載入</text>
 	<text s="Tab groups button">工作區選單</text>
 	<text s="Show frames button">檔案總管模式開關</text>
 	<text s="Frame pane">自訂檔案總管模式</text>
@@ -467,18 +465,18 @@
 	<text s="Replace command">替代程式</text>
 	<text s="Replace text">替代文字</text>
 	<text s="Verb">操作</text>
-	<text s="Order of Selected items">順序處理選擇項目</text>
 	<text s="Execution filter">依路徑樣式執行命令</text>
+	<text s="Order of Selected items">順序處理選擇項目</text>
 	<text s="Badge">徽章</text>
 	<text s="Label">標籤</text>
 	<text s="Confirm">確認</text>
-	<text s="Label button">標籤選單</text>
+	<text s="Label button">標籤按鈕</text>
 	<text s="Label groups">標籤群組</text>
 	<text s="Overlay label">蓋上標籤</text>
 	<text s="View flags">檢視&#160;</text>
 	<text s="Small icon">小圖示</text>
-	<text s="Label SQLite ODBC Driver">標籤資料庫 (SQLite ODBC)</text>
-	<text s="Label SQLite3">標籤資料庫 (SQLite)</text>
+	<text s="Label SQLite ODBC Driver">標籤資料庫 (ODBC)</text>
+	<text s="Label SQLite3">標籤資料庫</text>
 	<text s="Color labels">以底色標示</text>
 	<text s="Color label sort">依標示色碼排序</text>
 	<text s="Colored with filter">依名稱樣式著色</text>
@@ -512,13 +510,14 @@
 	<text s="Font settings">字型</text>
 	<text s="Dark mode">黑色面板</text>
 	<text s="Background image">依路徑樣式設定分頁背景</text>
+	<text s="Underline">底線</text>
 	<text s="Size bar chart">檔案大小條狀圖</text>
 	<text s="List width">自訂寬度的清單檢視</text>
 	<text s="Fast list mode">快速清單檢視</text>
 	<text s="Gridlines">格線</text>
 	<text s="Stripes">斑馬條紋</text>
 	<text s="Stripes lite">快速斑馬條紋</text>
-	<text s="No emphasis">無需排序欄位底色</text>
+	<text s="Tab design">頁籤設計室</text>
 	<text s="User style sheet">自訂樣式表</text>
 	<text s="VBS InputBox">簡潔輸入框</text>
 	<text s="Hide Title bar">隱藏標題列</text>
@@ -568,11 +567,12 @@
 	<text s="Add-ons updater">更新附加元件&#160;</text>
 	<text s="Addons updater">更新附加元件</text>
 	<text s="WebView2 (Edge Blink engine)">下載 Edge Blink 元件</text>
-	<text s="Open Control Panel in Explorer">在檔案總管中開啟控制台</text>
+	<text s="Open Control Panel in Explorer">用檔案總管開啟控制台</text>
 	<text s="Fix selection on sort and update dir">修正選取和排序問題</text>
 	<text s="Fix Windows 11 bug">修正 Windows 11 提示問題</text>
 	<text s="Fix Windows 10 Fall Creators Update bug">修正 Windows 10 滑鼠問題</text>
 	<text s="Fix Windows 10 Creators Update (RS2) bug">修正 Windows 10 檔案清單顯示問題</text>
+	<text s="No emphasis">無需排序欄位底色</text>
 	<text s="Dll directory">DLL 資料夾</text>
 	<text s="Total Commander File System Plug-in">Total Commander 檔案系統外掛程式</text>
 	<text s="Master Password">主密碼</text>
