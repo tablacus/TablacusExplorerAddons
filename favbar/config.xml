@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.27</Version>
+    <Version>1.28</Version>
     <MinVersion>2021.5.2</MinVersion>
-    <pubDate>Mon, 03 May 2021 00:00:00 GMT</pubDate>
+    <pubDate>Fri, 26 May 2023 00:00:00 GMT</pubDate>
     <Options>Common:0,6:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>
@@ -18,6 +18,9 @@
     <Name>お気に入りバー(水平)</Name>
   </ja>
   <zh>
-    <Name>我的最愛列</Name>
+    <Name>我的最愛列(水平)</Name>
   </zh>
+  <zh_cn>
+    <Name>收藏夹栏(水平)</Name>
+  </zh_cn>
 </TablacusExplorer>
