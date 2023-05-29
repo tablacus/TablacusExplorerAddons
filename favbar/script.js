@@ -81,8 +81,12 @@ if (window.Addon == 1) {
 					await RemoveCommand(hMenu, ContextMenu, "delete;rename");
 					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
 				}
-				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, await GetText("&Edit"));
-				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, await GetText("Add"));
+                const MENU_EDIT = 1;
+                const MENU_ADD = 2;
+                const MENU_REMOVE = 3;
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, MENU_EDIT, await GetText("&Edit"));
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, MENU_ADD, await GetText("Add"));
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, MENU_REMOVE, await GetText("Remove"));
 				const x = ev.screenX * ui_.Zoom, y = ev.screenY * ui_.Zoom;
 				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, ContextMenu);
 				if (nVerb >= 0x1001) {
@@ -93,11 +97,14 @@ if (window.Addon == 1) {
 						ContextMenu.InvokeCommand(0, ui_.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
 					}
 				}
-				if (nVerb == 1) {
+				if (nVerb == MENU_EDIT) {
 					this.ShowOptions(i);
 				}
-				if (nVerb == 2) {
+				if (nVerb == MENU_ADD) {
 					this.ShowOptions();
+				}
+				if (nVerb == MENU_REMOVE) {
+					this.RemoveItem(i);
 				}
 				api.DestroyMenu(hMenu);
 			}
@@ -136,6 +143,8 @@ if (window.Addon == 1) {
 					}
 				} else if (menus) {
 					continue;
+				} else if (/^\s*$/.exec(strName)) {
+                    continue;
 				} else if (strName == "/" || strFlag == "break") {
 					s.push('<br class="break">');
 					continue;
@@ -193,6 +202,19 @@ if (window.Addon == 1) {
 
 		ShowOptions: function (i) {
 			ShowOptions("Tab=Menus&Menus=Favorites" + (isFinite(i) ? "," + i : ""));
+		},
+
+		RemoveItem: function (i) {
+            const xml = te.Data.xmlMenus;
+            const menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
+            if (menus && menus.length > 0) {
+                const items = menus[0].getElementsByTagName("Item");
+                if (items && items[i]) {
+                    menus[0].removeChild(items[i]);
+                    SaveXmlEx("menus.xml", xml);
+                    FavoriteChanged();
+                }
+            }            
 		},
 
 		GetPath: async function (items, i) {
