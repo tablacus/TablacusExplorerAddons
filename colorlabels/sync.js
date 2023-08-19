@@ -15,14 +15,14 @@ Sync.ColorLabels = {
 			path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING) || "";
 		}
 		const cl = Sync.ColorLabels.DB && Sync.ColorLabels.DB.Get(path.toLowerCase());
-		return cl ? GetWinColor(cl) : null;
+		return cl ? GetWinColor(cl) : void 0;
 	},
 
 	GetWebColor: function (path) {
 		if (!/string/i.test(typeof path)) {
 			path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING) || "";
 		}
-		return Sync.ColorLabels.DB && Sync.ColorLabels.DB.Get(path.toLowerCase());
+		return Sync.ColorLabels.DB && (Sync.ColorLabels.DB.Get(path.toLowerCase()) || void 0); 
 	},
 
 	Exec: function (Ctrl, pt) {
