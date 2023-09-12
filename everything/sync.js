@@ -7,6 +7,7 @@ Sync.Everything = {
 	nPos: GetNum(item.getAttribute("MenuPos")),
 	Max: GetNum(item.getAttribute("Folders")) || 1000,
 	RE: GetNum(item.getAttribute("RE")),
+	Class: item.getAttribute("Class") || "EVERYTHING_TASKBAR_NOTIFICATION",
 	fncb: {},
 	nDog: 0,
 
@@ -94,7 +95,7 @@ Sync.Everything = {
 			return;
 		}
 		Sync.Everything.Busy = true;
-		const hwnd = api.FindWindow("EVERYTHING_TASKBAR_NOTIFICATION", null);
+		const hwnd = api.FindWindow(Sync.Everything.Class, null);
 		if (hwnd) {
 			const query = new ApiStruct({
 				reply_hwnd: [VT_I4, 4],
