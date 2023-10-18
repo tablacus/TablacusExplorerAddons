@@ -44,7 +44,9 @@ AddEvent("AppMessage", function (Ctrl, hwnd, msg, wParam, lParam) {
 		var hLock = api.SHChangeNotification_Lock(wParam, lParam, pidls);
 		if (hLock) {
 			api.SHChangeNotification_Unlock(hLock);
-			Common.SideTreeView.TV.Notify(pidls.lEvent, pidls[0], pidls[1], wParam, lParam);
+			if (pidls[0] && /^[A-Z]:\\|^\\\\\w/i.test(pidls[0].Path) && !IsCloud(pidls[0])) {
+				Common.SideTreeView.TV.Notify(pidls.lEvent, pidls[0], pidls[1], wParam, lParam);
+			}
 		}
 		return S_OK;
 	}
