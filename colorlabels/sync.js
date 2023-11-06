@@ -22,14 +22,14 @@ Sync.ColorLabels = {
 		if (!/string/i.test(typeof path)) {
 			path = api.GetDisplayNameOf(path, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING) || "";
 		}
-		return Sync.ColorLabels.DB && (Sync.ColorLabels.DB.Get(path.toLowerCase()) || void 0); 
+		return Sync.ColorLabels.DB && (Sync.ColorLabels.DB.Get(path.toLowerCase()) || void 0);
 	},
 
 	Exec: function (Ctrl, pt) {
 		const Selected = GetSelectedArray(Ctrl, pt, true).shift();
 		if (Selected && Selected.Count) {
 			let cl = ChooseColor(Sync.ColorLabels.Get(Selected.Item(0)));
-			if (cl != null) {
+			if (cl != null || confirmOk("Remove")) {
 				if (api.GetKeyState(VK_SHIFT) < 0) {
 					cl = void 0;
 				}
