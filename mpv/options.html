@@ -1,0 +1,34 @@
+<label>Filter</label>
+<table style="width: 100%">
+  <tr>
+    <td style="width: 100%"><input type="text" name="Filter" style="width: 100%" placeholder="*.bmp;*.gif;*.ico;*.jfif;*.jpeg;*.jpg;*.png;*.psd;*.tif;*.webp;*.3gp;*.avi;*.flv;*.mov;*.mkv;*.mp4;*.mpeg;*.mpg;*.ts;*.webm;*.wmv;*.mid;*.mp3;*.ogg;*.wav;*.wma"></td>
+    <td><button onclick="SetDefault(document.F.Filter, document.F.Filter.placeholder)">Default</button></td>
+  </tr>
+</table>
+<br>
+<!--<label>Extract</label>
+<table style="width: 100%">
+  <tr>
+    <td class="middle"><input type="checkbox" name="IsExtract"></td>
+    <td style="width: 100%"><input type="text" name="Extract" placeholder="*" style="width: 100%"></td>
+  </tr>
+</table>
+<br>-->
+<label>General</label><br>
+<label><input type="checkbox" name="Hover">Mouse</label><br>
+<br>
+<label>mpv</label>
+<table style="width: 100%">
+  <tr>
+    <td class="nowrap middle"><label>Path</label>&nbsp;</td>
+    <td style="width: 100%"><input type="text" name="AppPath" style="width: 100%"></td>
+    <td><button onclick="RefX('AppPath',0,0,1,'*.exe')">Browse...</button></td>
+  </tr>
+  <tr>
+    <td class="nowrap middle"><label>Options</label>&nbsp;</td>
+    <td style="width: 100%"><input type="text" name="AppOptions" style="width: 100%" placeholder="--geometry=480x270-10+300 --no-keepaspect-window --idle=yes --keep-open --reset-on-next-file=pause"></td>
+    <td><button onclick="SetDefault(document.F.AppOptions, document.F.AppOptions.placeholder)">Default</button></td>
+  </tr>
+</table>
+<br>
+<button title="https://mpv.io" onclick="wsh.Run(this.title)">Get mpv...</button>
