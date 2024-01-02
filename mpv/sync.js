@@ -10,6 +10,15 @@ Sync.mpv = {
 	Filter: item.getAttribute("Filter") || "*.bmp;*.gif;*.ico;*.jfif;*.jpeg;*.jpg;*.png;*.psd;*.tif;*.webp;*.3gp;*.avi;*.flv;*.mov;*.mkv;*.mp4;*.mpeg;*.mpg;*.ts;*.webm;*.wmv;*.mid;*.mp3;*.ogg;*.wav;*.wma",
 	Disabled: true,
 	LastPath: "",
+	pipe: "",
+
+	Click: function (Ctrl, pt) {
+		if (api.GetKeyState(VK_CONTROL) < 0) {
+			Sync.mpv.Detach();
+		} else {
+			Sync.mpv.Exec(Ctrl, pt);
+		}
+	},
 
 	Exec: function (Ctrl, pt) {
 		if (Sync.mpv.Disabled) {
@@ -17,19 +26,19 @@ Sync.mpv = {
 				const Item = Sync.mpv.GetCurrent();
 				const target = (Item ? Sync.mpv.GetTarget(Item) : "");
 				Sync.mpv.Start(target);
-				Sync.mpv.Disabled = false;
 				Sync.mpv.LastPath = (target ? Item.Path : "");
+				Sync.mpv.Disabled = false;
 			}
 		} else {
-			Sync.mpv.SendCmd("quit");
+			Sync.mpv.Quit();
 			Sync.mpv.Disabled = true;
-			Sync.mpv.LastPath = "";
 		}
 		InvokeUI("Addons.mpv.State", Sync.mpv.Disabled);
 	},
 
 	Start: function (target) {
-		const sExe = Sync.mpv.AppPath + " " + Sync.mpv.AppOptions + " --input-ipc-server=" + PIPE + ' "' + target + '"';
+		Sync.mpv.pipe = PIPE + String(Math.random()).replace(/^0?\./, "");
+		const sExe = Sync.mpv.AppPath + " " + Sync.mpv.AppOptions + " --input-ipc-server=" + Sync.mpv.pipe + (target ? ' "' + target + '"' : "");
 		wsh.Run(sExe, SW_SHOWNOACTIVATE);
 	},
 
@@ -57,8 +66,22 @@ Sync.mpv = {
 		}
 	},
 
+	Quit: function() {
+		Sync.mpv.SendCmd("quit");
+		Sync.mpv.LastPath = "";
+		Sync.mpv.pipe = "";
+	},
+
+	Detach: function () {
+		Sync.mpv.SendCmd("show-text ``" + GetText("I'm free!") + "``");
+		Sync.mpv.pipe = "";
+	},
+
 	SendCmd: function (sCmd) {
-		const hFile = api.CreateFile(PIPE, 0x40000000, 0, null, 3, FILE_ATTRIBUTE_NORMAL, null);
+		if (!Sync.mpv.pipe) {
+			return E_FAIL;
+		}
+		const hFile = api.CreateFile(Sync.mpv.pipe, 0x40000000, 0, null, 3, FILE_ATTRIBUTE_NORMAL, null);
 		if (hFile == INVALID_HANDLE_VALUE) {
 			return E_FAIL;
 		}
@@ -95,6 +118,8 @@ if (item.getAttribute("Hover")) {
 	}, true);
 }
 
+AddEvent("Finalize", Sync.mpv.Quit);
+
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
@@ -113,3 +138,4 @@ if (item.getAttribute("MouseExec")) {
 }
 
 AddTypeEx("Add-ons", "mpv", Sync.mpv.Exec);
+AddTypeEx("Add-ons", "mpv detach", Sync.mpv.Detach);

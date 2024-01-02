@@ -9,10 +9,10 @@ if (window.Addon == 1) {
 		}
 	}
 	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.mpv.Exec, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
+		SetAddon(Addon_Id, Default, ['<span class="button" onclick="SyncExec(Sync.mpv.Click, this)" onmouseover="MouseOver(this)" onmouseout="MouseOut()">', await GetImgTag({
 			title: item.getAttribute("MenuName") || await GetAddonInfo(Addon_Id).Name,
 			id: "Imgmpv_$",
-			src: item.getAttribute("Icon") || await Sync.mpv.AppPath || "icon:shell32.dll,137"
+			src: item.getAttribute("Icon") || await Sync.mpv.AppPath
 		}, GetIconSizeEx(item)), '</span>']);
 	});
 	AddEvent("PanelCreated", async function (Ctrl, Id) {
