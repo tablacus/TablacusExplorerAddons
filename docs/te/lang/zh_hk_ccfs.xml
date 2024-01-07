@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 23.1.31 (2023/5/25)-->
+<!-- Version 23.9.13 (2024/1/7)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -42,8 +42,9 @@
 	<text s="Tool bar icon">工具列圖示大小</text>
 	<text s="Internal Tool bar icon">窗格內工具列圖示大小</text>
 	<text s="Include hidden items">包含隱藏項目</text>
+	<text s="Icon">圖示</text>
 	<text s="Input">輸入</text>
-	<text s="Initialize config folder">初始化設定檔資料夾</text>
+	<text s="Initialize config folder">轉移版面資料夾</text>
 	<text s="If you installed Tablacus Explorer to the Program Files directory, please press this button.">如果您將 Tablacus Explorer 安裝在 Program Files 資料夾內，請按下此按鈕。</text>
 	<text s="Gestures">操控</text>
 	<text s="None">棄用</text>
@@ -124,7 +125,7 @@
 	<text s="Hidden">隱藏</text>
 	<text s="Enumeration">枝葉</text>
 	<text s="Not folders">非資料夾</text>
-	<text s="Shareable">[無作用] 共用</text>
+	<text s="Shareable">可共用</text>
 	<text s="Navigation enumeration">[無作用] 列舉</text>
 	<text s="Fast items">[無作用] 快速項目</text>
 	<text s="Flat">平面式</text>
@@ -150,7 +151,7 @@
 	<text s="or higher.">或後續版本。</text>
 	<text s="Expanded">展開</text>
 	<text s="Show all files">顯示所有檔案</text>
-	<text s="Thumbnail">縮圖</text>
+	<text s="Thumbnail">縮圖 (XP)</text>
 	<text s="Tile">並排</text>
 	<text s="Thumbstrip">單個預覽 (XP)</text>
 	<text s="Content">內容</text>
@@ -206,7 +207,6 @@
 	<text s="Tree view">樹狀目錄&#160;</text>
 	<text s="Main menu">主選單</text>
 	<text s="Tab plus">新式頁籤</text>
-	<text s="Icon">圖示</text>
 	<text s="Protected">保留</text>
 	<text s="Fixed width">固定寬度</text>
 	<text s="Align">排列</text>
@@ -274,6 +274,7 @@
 	<text s="Clear filter with &quot;Up&quot;">用上移來取消篩選</text>
 	<text s="Search bar">搜尋列</text>
 	<text s="Action">行動</text>
+	<text s="Class">類別</text>
 	<text s="Find files">尋找檔案</text>
 	<text s="Location">位址</text>
 	<text s="Information search">依資訊尋找檔案</text>
@@ -293,6 +294,7 @@
 	<text s="Full row select plus">彈性整行選框</text>
 	<text s="Classic style">傳統選框</text>
 	<text s="Disable classic style during drag">拖放時停用傳統選框</text>
+	<text s="Order of Selected items">順序處理選擇項目</text>
 	<text s="Status bar">狀態列</text>
 	<text s="Count bar">數量列</text>
 	<text s="Size status bar">大小列</text>
@@ -310,7 +312,7 @@
 	<text s="Order of clipboard">順序處理剪貼項目</text>
 	<text s="Clipboard copy">附加路徑到剪貼簿</text>
 	<text s="Clipboard image">貼上圖片到新檔案</text>
-	<text s="Duplicate copy">複本</text>
+	<text s="Duplicate copy...">複本...</text>
 	<text s="Move content up">移出資料夾內容</text>
 	<text s="Rename dialog box...">重新命名對話框...</text>
 	<text s="Rename dialog plus...">完整重新命名...</text>
@@ -328,7 +330,7 @@
 	<text s="Change the timestamp...">變更時間戳...</text>
 	<text s="Change the Time Stamp...">變更時間戳 ...</text>
 	<text s="Show hash">驗證值</text>
-	<text s="Virtual name">替代名稱</text>
+	<text s="Virtual name...">替代名稱...</text>
 	<text s="Extension tooltips changer">依副檔名設定提示</text>
 	<text s="No infotip">不要提示</text>
 	<text s="Side tree view">共用式樹狀目錄</text>
@@ -433,6 +435,8 @@
 	<text s="Save clip folder">儲存剪貼資料夾</text>
 	<text s="NETSCAPE Bookmarks">網景格式書籤</text>
 	<text s="Folder list menu">文字格式選單</text>
+	<text s="Folder menu settings">資料夾選單排序</text>
+	<text s="Folder menu filter">屏蔽資料夾選單項目</text>
 	<text s="Multi process">多程序檔案操作</text>
 	<text s="Different drive only">僅用於跨磁碟移動</text>
 	<text s="Overwrite all">覆蓋同名檔</text>
@@ -441,7 +445,6 @@
 	<text s="Sync">同步目的地</text>
 	<text s="No Confirm">無需確認</text>
 	<text s="Automatically start">自動開始</text>
-	<text s="Class">類別</text>
 	<text s="Preview">預覽窗格</text>
 	<text s="Limits">檔案大小上限</text>
 	<text s="@wmploc.dll,-1800">播放&#160;</text>
@@ -452,6 +455,8 @@
 	<text s="Menu image">選單彈出預覽</text>
 	<text s="Menu image plus">資料夾選單彈出預覽</text>
 	<text s="Retouch">修整圖片</text>
+	<text s="I&apos;m free!">我自由了！</text>
+	<text s="mpv detach">mpv 分離</text>
 	<text s="Total Commander Lister Plug-in">Total Commander 檢視器外掛程式</text>
 	<text s="Detect string">偵測字串</text>
 	<text s="Thumbnail engine">媒體及資料夾縮圖</text>
@@ -466,7 +471,6 @@
 	<text s="Replace text">替代文字</text>
 	<text s="Verb">操作</text>
 	<text s="Execution filter">依路徑樣式執行命令</text>
-	<text s="Order of Selected items">順序處理選擇項目</text>
 	<text s="Badge">徽章</text>
 	<text s="Label">標籤</text>
 	<text s="Confirm">確認</text>
@@ -532,10 +536,6 @@
 	<text s="Create symbolic link">建立符號連結</text>
 	<text s="FastCopy (Copy)">FastCopy (複製)</text>
 	<text s="FastCopy (Move)">FastCopy (移動)</text>
-	<text s="Folder menu settings">資料夾選單排序</text>
-	<text s="Folder menu filter">屏蔽資料夾選單項目</text>
-	<text s="Add-on switcher">附加元件開關&#160;</text>
-	<text s="Addon switcher">附加元件開關</text>
 	<text s="Launch the app on system startup">自動啟動程式</text>
 	<text s="Jump list">跳躍清單</text>
 	<text s="Minimize to tray">最小化到通知區域</text>
@@ -543,6 +543,8 @@
 	<text s="Always in tray">永遠顯示通知區域圖示</text>
 	<text s="&amp;Restore">還原(&amp;R)</text>
 	<text s="Hot key">快速鍵</text>
+	<text s="Add-on switcher">附加元件開關&#160;</text>
+	<text s="Addon switcher">附加元件開關</text>
 	<text s="Run at setup">載入設定時執行</text>
 	<text s="Startup settings">啟動程式時執行</text>
 	<text s="Restart">重新啟動程式</text>
