@@ -7,6 +7,7 @@ if (window.Addon == 1) {
 		Notify: 0,
 		Timeout: GetNum(item.getAttribute("Timeout")) || 500,
 		Tab: GetNum(item.getAttribute("Tab")),
+		Check: GetNum(item.getAttribute("Items")) ? 2 : 1,
 		db: {},
 		tid: {},
 
@@ -18,7 +19,7 @@ if (window.Addon == 1) {
 			Addons.ForceRefresh.tid[Id] = setTimeout(async function (Id) {
 				delete Addons.ForceRefresh.tid[Id];
 				if (await api.GetClassName(await api.GetFocus()) != WC_EDIT) {
-					FV.Refresh(true);
+					FV.Refresh(Addons.ForceRefresh.Check);
 				}
 			}, Addons.ForceRefresh.Timeout, Id);
 		},
@@ -32,19 +33,23 @@ if (window.Addon == 1) {
 			if (!await PathMatchEx(r[0], Addons.ForceRefresh.Filter) || await PathMatchEx(r[0], Addons.ForceRefresh.Disable)) {
 				return;
 			}
-			for (let i = r.length; i--;) {
-				r[i] = (r[i] || "").toLowerCase();
-			}
-			const res0 = /^([a-z]):\\|^\\\\\w/.exec(r[0]);
+			const res0 = /^([a-z]):\\|^\\\\\w/i.exec(r[0]);
 			if (!res0) {
 				return;
 			}
 			if (res0[1]) {
-				for (i = 1; i < r.length; ++i) {
-					const res1 = /^([a-z]):/i.exec(r[i]);
-					if (res1 && res0[1] != res1[1] && await api.PathIsSameRoot(r[0], r[i])) {
-						r[i] = res[0] + (r[i].substring(1));
+				for (let i = r.length; i--;) {
+					if (!await IsCloudPath(r[i])) {
+						const h = await api.CreateFile(r[i], 0x80000000, 7, null, 3, 0x02000000, null);
+						if (h != INVALID_HANDLE_VALUE) {
+							const path = await api.GetFinalPathNameByHandle(h, 0);
+							api.CloseHandle(h);
+							if (path) {
+								r[i] = path;
+							}
+						}
 					}
+					r[i] = (r[i] || "").toLowerCase();
 				}
 			}
 			if (r[0] == GetParentFolderName(r[1]) ||
@@ -142,7 +147,7 @@ if (window.Addon == 1) {
 									clearTimeout(Addons.ForceRefresh.tid[Id]);
 									delete Addons.ForceRefresh.tid[Id];
 								}
-								Ctrl.Selected.Refresh();
+								Ctrl.Selected.Refresh(Addons.ForceRefresh.Check);
 							}
 						}
 					}
