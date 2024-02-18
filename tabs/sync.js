@@ -1,4 +1,10 @@
+const Addon_Id = "tabs";
+const item = GetAddonElement(Addon_Id);
+
 Sync.Tabs = {
+	DropTo: !item.getAttribute("NoDropTo"),
+	DragOpen: !item.getAttribute("NoDragOpen"),
+
 	Init: function (Ctrl) {
 		api.SendMessage(Ctrl.hwnd, WM_SETFONT, Sync.Tabs.hFont, 1);
 		api.SendMessage(Ctrl.hwnd, TCM_SETIMAGELIST, 0, Sync.Tabs.himl);
@@ -65,7 +71,7 @@ AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 	if (Ctrl.Type == CTRL_TC) {
 		const nIndex = Ctrl.HitTest(pt, TCHT_ONITEM);
-		if (nIndex >= 0) {
+		if (nIndex >= 0 && Sync.Tabs.DragOpen) {
 			if (IsDrag(pt, g_ptDrag)) {
 				g_ptDrag = pt.Clone();
 				InvokeUI("Addons.Tabs.setTimeout", Sync.Tabs.Over, 300);
@@ -77,7 +83,7 @@ AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 			return S_OK;
 		}
 		if (nIndex >= 0) {
-			if (dataObj.Count) {
+			if (dataObj.Count && Sync.Tabs.DropTo) {
 				const Target = Ctrl.Item(nIndex).FolderItem;
 				if (!api.ILIsEqual(dataObj.Item(-1), Target)) {
 					const DropTarget = api.DropTarget(Target);
@@ -87,8 +93,10 @@ AddEvent("DragOver", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 					}
 				}
 			}
-			pdwEffect[0] = DROPEFFECT_NONE;
-			return S_OK;
+			if (Sync.Tabs.DropTo) {
+				pdwEffect[0] = DROPEFFECT_NONE;
+				return S_OK;
+			}
 		}
 		if (dataObj.Item(0) && dataObj.Item(0).IsFolder) {
 			pdwEffect[0] = DROPEFFECT_LINK;
@@ -107,7 +115,7 @@ AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 			}
 			Sync.Tabs.DragTab.Move(Sync.Tabs.DragIndex, nIndex, Ctrl);
 			Ctrl.SelectedIndex = nIndex;
-		} else if (nIndex >= 0) {
+		} else if (nIndex >= 0 && Sync.Tabs.DropTo) {
 			let hr = S_FALSE;
 			const DropTarget = Ctrl.Item(nIndex).DropTarget;
 			if (DropTarget) {
@@ -118,7 +126,7 @@ AddEvent("Drop", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 		} else if (dataObj.Count) {
 			for (let i = 0; i < dataObj.Count; i++) {
 				const FV = Ctrl.Selected.Navigate(dataObj.Item(i), SBSP_NEWBROWSER);
-				Ctrl.Move(FV.Index, Ctrl.Count - 1);
+				Ctrl.Move(FV.Index, nIndex >= 0 ? nIndex : Ctrl.Count - 1);
 			}
 		}
 	}
