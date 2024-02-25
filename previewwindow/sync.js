@@ -12,7 +12,7 @@ Sync.PreviewWindow = {
 	ppid: api.Memory("DWORD"),
 	Extract: GetNum(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 	TextFilter: GetNum(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
-	Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.mov;*.wmv;*.mpeg;*.avi;*.ogg;*.oga;*.swf;*.pdf",
+	Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.mov;*.wmv;*.mpeg;*.avi;*.ogg;*.oga;*.swf;*.pdf;*.html;*.htm;*.xml",
 	Charset: item.getAttribute("Charset"),
 	TextSize: item.getAttribute("TextSize") || 4000,
 	TextLimit: item.getAttribute("TextLimit") || 10000000,
