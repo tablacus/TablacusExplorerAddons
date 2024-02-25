@@ -5,7 +5,7 @@ if (window.Addon == 1) {
 		Align: SameText(item.getAttribute("Align"), "Right") ? "Right" : "Left",
 		Height: item.getAttribute("Height"),
 		TextFilter: GetNum(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
-		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
+		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.oga;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.ogg;*.swf;*.pdf",
 		Extract: GetNum(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 		Width: 0,
 		Charset: item.getAttribute("Charset"),
