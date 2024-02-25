@@ -178,8 +178,8 @@ if (window.Addon == 1) {
 				div1.innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 			} else {
 				img.style.display = "none";
-				if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
-					div1.innerHTML = '<video controls autoplay style="width: 100%"><source src="' + path + '"></video>';
+				if (((window.chrome || ui_.IEVer >= 11) && await api.PathMatchSpec(path, "*.mp4"))) {
+					div1.innerHTML = '<video controls autoplay style="width: 100%; max-height: 100%"><source src="' + path + '"></video>';
 				} else {
 					div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
 				}
