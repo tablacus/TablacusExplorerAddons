@@ -219,7 +219,7 @@ Addons.PreviewWindow = {
 				div1.style.height = g_.IEVer >= 8 ? "calc(100% - 5px)" : "99%";
 				img1.style.display = "none";
 				div1.style.display = "";
-				if ((window.chrome && await api.PathMatchSpec(path, "*.mp4;*.avi")) || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
+				if ((window.chrome && await api.PathMatchSpec(path, "*.mp4")) || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
 					div1.innerHTML = '<video controls autoplay style="background-color: #000; width: 100%; max-height: 100%"><source src="' + path + '"></video>';
 				} else {
 					div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
