@@ -5,7 +5,7 @@ if (window.Addon == 1) {
 		Align: SameText(item.getAttribute("Align"), "Right") ? "Right" : "Left",
 		Height: item.getAttribute("Height"),
 		TextFilter: GetNum(item.getAttribute("NoTextFilter")) ? "-" : item.getAttribute("TextFilter") || "*.txt;*.ini;*.css;*.js;*.vba;*.vbs",
-		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.swf;*.pdf",
+		Embed: item.getAttribute("Embed") || "*.mp3;*.m4a;*.webm;*.mp4;*.rm;*.ra;*.ram;*.asf;*.wma;*.wav;*.oga;*.aiff;*.mpg;*.avi;*.mov;*.wmv;*.mpeg;*.ogg;*.swf;*.pdf",
 		Extract: GetNum(item.getAttribute("IsExtract")) ? item.getAttribute("Extract") || "*" : "-",
 		Width: 0,
 		Charset: item.getAttribute("Charset"),
@@ -178,8 +178,8 @@ if (window.Addon == 1) {
 				div1.innerHTML = '<audio controls autoplay style="width: 100%"><source src="' + path + '"></audio>';
 			} else {
 				img.style.display = "none";
-				if (window.chrome || (ui_.IEVer >= 11 && await api.PathMatchSpec(path, "*.mp4"))) {
-					div1.innerHTML = '<video controls autoplay style="width: 100%"><source src="' + path + '"></video>';
+				if (((window.chrome || ui_.IEVer >= 11) && await api.PathMatchSpec(path, "*.mp4"))) {
+					div1.innerHTML = '<video controls autoplay style="width: 100%; max-height: 100%"><source src="' + path + '"></video>';
 				} else {
 					div1.innerHTML = '<embed width="100%" height="100%" src="' + path + '" autoplay="true"></embed>';
 				}
