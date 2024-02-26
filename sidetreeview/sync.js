@@ -3,7 +3,7 @@ Sync.SideTreeView = {
 		const FV = GetFolderView();
 		if (FV) {
 			const FolderItem = FV.FolderItem;
-			if (FolderItem) {
+			if (FolderItem && IsWitness(FolderItem)) {
 				const TV = Common.SideTreeView.TV;
 				if (TV && TV.Visible) {
 					if (Collapse) {
@@ -39,5 +39,7 @@ Sync.SideTreeView = {
 }
 
 AddEvent("ChangeNotify", function (Ctrl, pidls, wParam, lParam) {
-	Common.SideTreeView.TV.Notify(pidls.lEvent, pidls[0], pidls[1], wParam, lParam);
+	if (pidls.lEvent & (SHCNE_MKDIR | SHCNE_RMDIR | SHCNE_RENAMEFOLDER)) {
+		Common.SideTreeView.TV.Notify(pidls.lEvent, pidls[0], pidls[1], wParam, lParam);
+	}
 });

@@ -47,48 +47,46 @@ if (window.Addon == 1) {
 					if (Ctrl && path == await Item.Name) {
 						path = EncodeSC(BuildPath(await Ctrl.FolderItem.Path, path));
 					}
-					if (!await IsCloud(Item)) {
-						if (await PathMatchEx(path, Addons.Preview.TextFilter)) {
-							if (await Item.ExtendedProperty("Size") <= Addons.Preview.TextLimit) {
-								const ado = await OpenAdodbFromTextFile(path, Addons.Preview.Charset);
-								if (ado) {
-									img.style.display = "none";
-									desc.innerText = await ado.ReadText(Addons.Preview.TextSize);
-									ado.Close()
-									return;
-								}
+					if (await PathMatchEx(path, Addons.Preview.TextFilter)) {
+						if (await Item.ExtendedProperty("Size") <= Addons.Preview.TextLimit) {
+							const ado = await OpenAdodbFromTextFile(path, Addons.Preview.Charset);
+							if (ado) {
+								img.style.display = "none";
+								desc.innerText = await ado.ReadText(Addons.Preview.TextSize);
+								ado.Close()
+								return;
 							}
 						}
-						if (ui_.IEVer > 6) {
-							img.style.maxWidth = "100%";
-						} else {
-							const nWidth = await Item.ExtendedProperty("ImageX");
-							const nHeight = await Item.ExtendedProperty("ImageY");
-							img.style.width = nWidth > nHeight ? "100%" : (100 * nWidth / nHeight) + "%";
-						}
-						if (window.chrome || g_.IEVer > 8) {
-							if (/\.svg$/i.test(path)) {
-								const res = /(<svg)([\w\W]*?<\/svg[^>]*>)/i.exec(await ReadTextFile(path));
-								if (res) {
-									img.style.display = "none";
-									info.unshift(res[1] + ' style="max-width: 100%; max-height:' + document.getElementById("PreviewBar").offsetHeight + 'px" ' + res[2]);
-									desc.innerHTML = info.join("<br>");
-									return;
-								}
+					}
+					if (ui_.IEVer > 6) {
+						img.style.maxWidth = "100%";
+					} else {
+						const nWidth = await Item.ExtendedProperty("ImageX");
+						const nHeight = await Item.ExtendedProperty("ImageY");
+						img.style.width = nWidth > nHeight ? "100%" : (100 * nWidth / nHeight) + "%";
+					}
+					if (window.chrome || g_.IEVer > 8) {
+						if (/\.svg$/i.test(path)) {
+							const res = /(<svg)([\w\W]*?<\/svg[^>]*>)/i.exec(await ReadTextFile(path));
+							if (res) {
+								img.style.display = "none";
+								info.unshift(res[1] + ' style="max-width: 100%; max-height:' + document.getElementById("PreviewBar").offsetHeight + 'px" ' + res[2]);
+								desc.innerHTML = info.join("<br>");
+								return;
 							}
 						}
-						if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
-							info.unshift('<input id="previewplay1" type="button" value=" &#x25B6; " title="' + (await GetTextR("@wmploc.dll,-1800")) + '" onclick="Addons.Preview.Play()">');
-						}
-						Addons.Preview.info = info;
-						if (!REGEXP_IMAGE.test(path) || (!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) || !await fso.FileExists(path)) {
-							Addons.Preview.FromFile();
-							return;
-						}
-						img.onerror = Addons.Preview.FromFile;
-						img.src = path;
+					}
+					if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
+						info.unshift('<input id="previewplay1" type="button" value=" &#x25B6; " title="' + (await GetTextR("@wmploc.dll,-1800")) + '" onclick="Addons.Preview.Play()">');
+					}
+					Addons.Preview.info = info;
+					if (!REGEXP_IMAGE.test(path) || (!window.chrome && GetNum(Item.ExtendedProperty("System.Photo.Orientation")) > 1) || !await fso.FileExists(path)) {
+						Addons.Preview.FromFile();
 						return;
 					}
+					img.onerror = Addons.Preview.FromFile;
+					img.src = path;
+					return;
 				}
 			}
 			img.style.display = "none";

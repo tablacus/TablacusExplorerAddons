@@ -31,37 +31,35 @@ Common.PreviewWindow = async function (hwnd, bFocus) {
 		} else {
 			path = await Item.Path;
 		}
-		if (!await IsCloud(Item)) {
-			if (await PathMatchEx(path, await MainWindow.Sync.PreviewWindow.TextFilter)) {
-				if (await Item.ExtendedProperty("Size") <= await MainWindow.Sync.PreviewWindow.TextLimit) {
-					const ado = await OpenAdodbFromTextFile(path, await MainWindow.Sync.PreviewWindow.Charset);
-					if (ado) {
-						elText = document.createElement("textarea");
-						elText.readOnly = true;
-						elText.innerHTML = await ado.ReadText(await MainWindow.Sync.PreviewWindow.TextSize);
-						ado.Close();
-					}
-				}
-				Handled = elText;
-			}
-			if (window.chrome || g_.IEVer > 8) {
-				if (/\.svg$/i.test(path)) {
-					const res = /(<svg)([\w\W]*?<\/svg[^>]*>)/i.exec(await ReadTextFile(path));
-					if (res) {
-						ar.unshift(res[1] + ' style="max-width: 100%; max-height: calc(100vh - 6em)"' + res[2]);
-						Handled = true;
-					}
+		if (await PathMatchEx(path, await MainWindow.Sync.PreviewWindow.TextFilter)) {
+			if (await Item.ExtendedProperty("Size") <= await MainWindow.Sync.PreviewWindow.TextLimit) {
+				const ado = await OpenAdodbFromTextFile(path, await MainWindow.Sync.PreviewWindow.Charset);
+				if (ado) {
+					elText = document.createElement("textarea");
+					elText.readOnly = true;
+					elText.innerHTML = await ado.ReadText(await MainWindow.Sync.PreviewWindow.TextSize);
+					ado.Close();
 				}
 			}
-			if (await api.PathMatchSpec(path, await MainWindow.Sync.PreviewWindow.Embed)) {
-				ar.unshift('<input type="button" value=" &#x25B6; " title="' + (await GetTextR("@wmploc.dll,-1800")) + '" id="play1"" onclick="Addons.PreviewWindow.Play()">');
-				img1.onclick = Addons.PreviewWindow.Play;
-				img1.style.cursor = "pointer";
-				Handled = true;
-			} else {
-				img1.onclick = null;
-				img1.style.cursor = "";
+			Handled = elText;
+		}
+		if (window.chrome || g_.IEVer > 8) {
+			if (/\.svg$/i.test(path)) {
+				const res = /(<svg)([\w\W]*?<\/svg[^>]*>)/i.exec(await ReadTextFile(path));
+				if (res) {
+					ar.unshift(res[1] + ' style="max-width: 100%; max-height: calc(100vh - 6em)"' + res[2]);
+					Handled = true;
+				}
 			}
+		}
+		if (await api.PathMatchSpec(path, await MainWindow.Sync.PreviewWindow.Embed)) {
+			ar.unshift('<input type="button" value=" &#x25B6; " title="' + (await GetTextR("@wmploc.dll,-1800")) + '" id="play1"" onclick="Addons.PreviewWindow.Play()">');
+			img1.onclick = Addons.PreviewWindow.Play;
+			img1.style.cursor = "pointer";
+			Handled = true;
+		} else {
+			img1.onclick = null;
+			img1.style.cursor = "";
 		}
 		Addons.PreviewWindow.info = ar;
 		if (Handled) {
