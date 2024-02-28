@@ -191,7 +191,7 @@ AddEvent("ToolTip", function (Ctrl, Index, hwnd) {
 		if (!Sync.TooltipPreview.Folder && IsFolderEx(Item)) {
 			return;
 		}
-		if (IsCloud(Item)) {
+		if (!IsWitness(Item)) {
 			return;
 		}
 		const Item2 = Item.IsLink ? api.ILCreateFromPath(Item.ExtendedProperty("linktarget")) : Item;

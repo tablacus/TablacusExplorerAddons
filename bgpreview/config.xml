@@ -1,8 +1,8 @@
 <TablacusExplorer>
   <General>
-    <Version>1.10</Version>
-    <MinVersion>2022.2.3</MinVersion>
-    <pubDate>Wed, 23 Feb 2022 00:00:00 GMT</pubDate>
+    <Version>1.11</Version>
+    <MinVersion>2024.2.27</MinVersion>
+    <pubDate>Wed, 28 Feb 2024 00:00:00 GMT</pubDate>
     <Options>Common:0,5,6,7,8,9:0</Options>
     <Creator>Gaku</Creator>
     <Level>2</Level>

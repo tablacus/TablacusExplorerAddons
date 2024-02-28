@@ -38,7 +38,7 @@ AddEvent("HandleIcon", function (Ctrl, pid, iItem) {
 		}
 		const path = pid.Path;
 		if (IsFolderEx(pid) ? Sync.ThumbPlus.Folder : (api.PathMatchSpec(path, Sync.ThumbPlus.Priority) || (!api.HasThumbnail(pid) && api.PathMatchSpec(path, Sync.ThumbPlus.Filter) && !api.PathMatchSpec(path, Sync.ThumbPlus.Disable)))) {
-			if (!IsCloud(pid)) {
+			if (IsWitness(pid)) {
 				if (db[path]) {
 					return /object/i.test(typeof db[path]) ? true : void 0;
 				}
