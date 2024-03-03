@@ -29,7 +29,11 @@ if (window.Addon == 1) {
 		Update: function (s) {
 			const el = document.getElementById("drivebar");
 			if (el) {
+				const s0 = el.innerHTML;
 				el.innerHTML = s;
+				if (s0 != el.innerHTML) {
+					Resize();
+				}
 			} else {
 				setTimeout(Addons.DriveBar.Update, 999, s);
 			}
