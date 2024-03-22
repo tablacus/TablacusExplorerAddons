@@ -306,3 +306,4 @@
 <Item Id="opencpinexp"><General><Version>1.02</Version><MinVersion>2018.1.30</MinVersion><pubDate>Tue, 30 Jan 2018 00:00:00 GMT</pubDate><Creator>Gaku</Creator></General><en><Name>Open Control Panel in Explorer</Name><Description>Open Control Panel in Explorer.</Description></en><ja><Name>コントロールパネルをエクスプローラで開く</Name><Description>コントロールパネルをエクスプローラで開きます。</Description></ja></Item>
 <Item Id="fixwin10fcu"><General><Version>1.01</Version><MinVersion>2017.10.11</MinVersion><pubDate>Sat, 04 Nov 2017 00:00:00 GMT</pubDate><Creator>Gaku</Creator></General><en><Name>Fix Windows 10 Fall Creators Update bug</Name><Description>Fix: Mouse Cursor jumping to corner of screen on selection.</Description></en><ja><Name>Windows 10 Fall Creators Updateのバグ対策</Name><Description>選択時にマウスカーソルが画面端に飛ぶバグの対策</Description></ja></Item>
 </TablacusExplorer>
+
