@@ -156,7 +156,7 @@ if (window.Addon == 1) {
 			o.style.maxHeight = Math.max(document.getElementById("PreviewBar").offsetHeight - (/&#x25B6;/.test(Addons.Preview.info[0]) ? 60 : 0), 64) + "px"
 			o.style.display = "";
 			document.getElementById("previewdesc1").innerHTML = Addons.Preview.info.join("<br>");
-			const path = await Addons.Preview.Item.ExtendedProperty("linktarget") || await Addons.Preview.Item.Path;
+			const path = Addons.Preview.Item ? (await Addons.Preview.Item.ExtendedProperty("linktarget") || await Addons.Preview.Item.Path) : "";
 			if (await api.PathMatchSpec(path, Addons.Preview.Embed)) {
 				o.onclick = Addons.Preview.Play;
 				o.style.cursor = "pointer";
@@ -169,7 +169,7 @@ if (window.Addon == 1) {
 		Play: async function () {
 			const div1 = document.getElementById("previewdesc1");
 			const img = document.getElementById("previewimg2");
-			const path = await Addons.Preview.Item.ExtendedProperty("linktarget") || await Addons.Preview.Item.Path;
+			const path = Addons.Preview.Item ? (await Addons.Preview.Item.ExtendedProperty("linktarget") || await Addons.Preview.Item.Path) : "";
 			if (!window.chrome && await api.PathMatchSpec(path, "*.wav")) {
 				api.PlaySound(path, null, 3);
 			} else if (ui_.IEVer >= 11 && await api.PathMatchSpec(path, window.chrome ? "*.mp3;*.m4a;*.wav;*.pcm;*.oga;*.flac;*.fla" : "*.mp3;*.m4a")) {
