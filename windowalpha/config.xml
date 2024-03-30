@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.00</Version>
+    <Version>1.01</Version>
     <MinVersion>2022.2.5</MinVersion>
-    <pubDate>Tue Feb 13 2024 00:00:00 GMT</pubDate>
+    <pubDate>Sat Mar 30 2024 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Sho Nitta</Creator>
