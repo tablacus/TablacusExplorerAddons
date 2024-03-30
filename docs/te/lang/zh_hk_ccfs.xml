@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 23.9.13 (2024/1/7)-->
+<!-- Version 24.2.27 (patch 240328)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -162,7 +162,8 @@
 	<text s="Select by middle button">中按鈕選取</text>
 	<text s="Process selected items in view sequence">順序處理選擇項目&#160;</text>
 	<text s="Apply Filter to Libraries">篩選或屏蔽媒體櫃中資料夾內項目</text>
-	<text s="Auto arrange upon refresh">重新整理時自動排列</text>
+	<text s="Auto arrange upon refresh">自動排序新項目 (特定情況)</text>
+	<text s="Cloud Witness">監測雲端</text>
 	<text s="Group">分組</text>
 	<text s="Subset groups">└ 減省項目</text>
 	<text s="Column header">欄位標題</text>
@@ -199,18 +200,18 @@
 	<text s="◴">&#160;左&#160;</text>
 	<text s="Θ">&#160;中&#160;</text>
 	<text s="◷">&#160;右&#160;</text>
-	<text s="Notepad alternative">記事本替代程式</text>
-	<text s="Path">路徑</text>
 	<text s="Address bar">位址列</text>
 	<text s="Filter bar">篩選列</text>
 	<text s="Regular Expression">規則運算式</text>
 	<text s="Tree view">樹狀目錄&#160;</text>
 	<text s="Main menu">主選單</text>
+	<text s="Path">路徑</text>
 	<text s="Tab plus">新式頁籤</text>
 	<text s="Protected">保留</text>
 	<text s="Fixed width">固定寬度</text>
 	<text s="Align">排列</text>
 	<text s="Bottom">下</text>
+	<text s="Drop to %1">複製/移動到資料夾</text>
 	<text s="Multi thread">多線程檔案操作</text>
 	<text s="File is in operation.">檔案操作進行中。</text>
 	<text s="Remember folder view settings">記住每個資料夾檢視</text>
@@ -257,6 +258,7 @@
 	<text s="Explorer browser filter">依路徑樣式切換到替代引擎</text>
 	<text s="Force refresh">自動重新整理</text>
 	<text s="Rename">重新命名</text>
+	<text s="Monitored Folders">監測資料夾</text>
 	<text s="Switch hidden items">隱藏項目開關</text>
 	<text s="Switch hidden filter">屏蔽項目開關</text>
 	<text s="Right key next">左右鍵換行移動</text>
@@ -281,8 +283,9 @@
 	<text s="Search by date modified">依修改日期尋找檔案</text>
 	<text s="Search by size">依大小尋找檔案</text>
 	<text s="Empty folder">尋找空資料夾</text>
-	<text s="Wildcard selection">依名稱樣式選取&#160;</text>
-	<text s="Wildcard Select...">依名稱樣式選取...</text>
+	<text s="rmdir">永久刪除</text>
+	<text s="Wildcard selection...">依名稱樣式選取...</text>
+	<text s="Wildcard Select...">依名稱樣式選取&#160;...</text>
 	<text s="Select nonexistent items">選取不存在的項目</text>
 	<text s="Save selected items">儲存選擇</text>
 	<text s="Save">儲存</text>
@@ -328,7 +331,7 @@
 	<text s="Archive">保存</text>
 	<text s="Change the Date modified...">變更修改日期...</text>
 	<text s="Change the timestamp...">變更時間戳...</text>
-	<text s="Change the Time Stamp...">變更時間戳 ...</text>
+	<text s="Change the Time Stamp...">變更時間戳&#160;...</text>
 	<text s="Show hash">驗證值</text>
 	<text s="Virtual name...">替代名稱...</text>
 	<text s="Extension tooltips changer">依副檔名設定提示</text>
@@ -467,11 +470,12 @@
 	<text s="Susie Plug-in">Susie 外掛程式</text>
 	<text s="Susie Plug-in plus">Susie 解壓縮</text>
 	<text s="Total Commander Packer Plug-in">Total Commander 壓縮外掛程式</text>
+	<text s="Notepad alternative">記事本替代程式</text>
 	<text s="Replace command">替代程式</text>
 	<text s="Replace text">替代文字</text>
 	<text s="Verb">操作</text>
 	<text s="Execution filter">依路徑樣式執行命令</text>
-	<text s="Badge">徽章</text>
+	<text s="Badge">評級</text>
 	<text s="Label">標籤</text>
 	<text s="Confirm">確認</text>
 	<text s="Label button">標籤按鈕</text>
@@ -513,6 +517,7 @@
 	<text s="Segoe UI MDL2 Assets">Segoe MDL2 圖示集</text>
 	<text s="Font settings">字型</text>
 	<text s="Dark mode">黑色面板</text>
+	<text s="Window Alpha">半透明視窗</text>
 	<text s="Background image">依路徑樣式設定分頁背景</text>
 	<text s="Underline">底線</text>
 	<text s="Size bar chart">檔案大小條狀圖</text>
@@ -554,7 +559,10 @@
 	<text s="Auto backup">自動備份設定</text>
 	<text s="Run on exit">離開程式時執行</text>
 	<text s="Multiple executions">多個執行個體</text>
-	<text s="Always">無限制</text>
+	<text s="Run TE">執行 TE</text>
+	<text s="Run TE with a command line option">執行 TE (含命令選項)</text>
+	<text s="/nw for new window">用 /nw 開啟新視窗</text>
+	<text s="Always new window">總是新視窗</text>
 	<text s="Open in new window">在新視窗中開啟</text>
 	<text s="Shell execute hook">取代檔案總管</text>
 	<text s="Registry">登錄</text>
