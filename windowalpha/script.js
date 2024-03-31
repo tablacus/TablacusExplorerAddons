@@ -10,4 +10,5 @@ if (window.Addon == 1) {
 } else {
 	SetTabContents(0, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 	document.getElementById('rangeValue').textContent = Alpha;
+	document.querySelector("#panel0 > input[type=range]").value = Alpha;
 }
