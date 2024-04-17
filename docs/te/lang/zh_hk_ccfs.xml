@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 24.2.27 (patch 240328)-->
+<!-- Version 24.2.27 (patch 240401 date 2024/4/15)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -429,6 +429,13 @@
 	<text s="Load">載入</text>
 	<text s="Tab groups button">工作區選單</text>
 	<text s="Show frames button">檔案總管模式開關</text>
+	<text s="Frame plus">進階檔案總管模式</text>
+	<text s="Button">按鈕&#160;</text>
+	<text s="Hide Details Pane when Preview Pane shows, and vice versa.">顯示預覽窗格時隱藏詳細資料窗格，反之亦然。</text>
+	<text s="New tab follows current tab layout">新分頁版面跟從目前分頁</text>
+	<text s="Save / load tab layouts">儲存 / 載入分頁版面</text>
+	<text s="Reset &quot;Show frames&quot; tabs">重設檔案總管模式分頁</text>
+	<text s="This check box will be cleared afterwards.">此核取方塊隨後會自動清除</text>
 	<text s="Frame pane">自訂檔案總管模式</text>
 	<text s="It takes time to apply these changes.">請重新啟動程式令此設定生效。</text>
 	<text s="Folder button">資料夾按鈕</text>
