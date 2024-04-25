@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 24.2.27 (patch 240401 date 2024/4/15)-->
+<!-- Version 24.3.28 (patch 240424)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -401,6 +401,7 @@
 	<text s="Inactive pane">備用窗格變暗</text>
 	<text s="Synchronize">同步瀏覽</text>
 	<text s="Sync select">比對式選取</text>
+	<text s="Compact window">精簡視窗</text>
 	<text s="Select matches">選取相符</text>
 	<text s="Select all items that are also listed in the other pane.">選取亦列出在另一分頁的項目。</text>
 	<text s="Select uniques">選取僅有</text>
