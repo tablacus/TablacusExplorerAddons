@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 24.3.28 (patch 240424)-->
+<!-- Version 24.4.21 (patch 240428)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -374,8 +374,11 @@
 	<text s="Close tab when deleting">資料夾被刪除後自動關閉分頁</text>
 	<text s="Close duplicate tabs">關閉重複分頁</text>
 	<text s="Prevent duplicate tabs">防止重複分頁</text>
-	<text s="Open the same locked tab instead">重用已鎖分頁</text>
+	<text s="Open the same locked tab instead">重用分頁</text>
 	<text s="Multiple panes">檢查所有窗格</text>
+	<text s="Locked tabs only">僅限已鎖分頁</text>
+	<text s="Skip tabs with filter">略過有篩選分頁</text>
+	<text s="Close current tab">關閉目前分頁</text>
 	<text s="Lock only disables &quot;Close tab&quot;">可以在已鎖分頁上瀏覽</text>
 	<text s="Protect tabs">保留分頁</text>
 	<text s="Split">劃分窗格</text>
