@@ -2,8 +2,8 @@ const Addon_Id = "forcerefresh";
 if (window.Addon == 1) {
 	const item = await GetAddonElement(Addon_Id);
 	Addons.ForceRefresh = {
-		Filter: await ExtractFilter(item.getAttribute("Filter") || "-"),
-		Disable: await ExtractFilter(item.getAttribute("Disable") || "-"),
+		Filter: "-",
+		Disable: "-",
 		Notify: 0,
 		Timeout: GetNum(item.getAttribute("Timeout")) || 500,
 		Tab: GetNum(item.getAttribute("Tab")),
@@ -72,6 +72,14 @@ if (window.Addon == 1) {
 			}
 		}
 	};
+
+	AddEvent("Load", function () {
+		Promise.all([ExtractFilter(item.getAttribute("Filter") || "-"), ExtractFilter(item.getAttribute("Disable") || "-")]).then(function (r) {
+			Addons.ForceRefresh.Filter = r[0];
+			Addons.ForceRefresh.Disable = r[1]
+		})
+	});
+
 
 	let db = {
 		"NewFile": SHCNE_CREATE,
