@@ -7,7 +7,7 @@
 <input type="checkbox" id="Subfolders"><label for="Subfolders">@shell32.dll,-23357[Subfolders]</label><br>
 <br>
 <label>Number of items</label><br>
-<input type="text" name="Folders" placeholder="1000" class="number"><input type="button" onclick="SetDefault(document.F.Folders, 1000);" value="Default"><br>
+<input type="text" name="Folders" placeholder="1000" class="number"><input type="button" onclick="SetDefault(document.F.Folders, '');" value="Default"><br>
 <br>
 <label>Exec</label>
 <table class="full">
@@ -15,6 +15,13 @@
     <td class="full"><input type="text" name="Exec" class="full"></td>
     <td><input type="button" onclick="RefX('Exec',0,0,1)" value="Browse..."></td>
     <td><input type="button" onclick="SetExe()" value="Default"></td>
+  </tr>
+</table>
+<label>Class</label>
+<table class="full">
+  <tr>
+    <td class="full"><input type="text" name="Class" placeholder="EVERYTHING_TASKBAR_NOTIFICATION" class="full"></td>
+    <td><input type="button" value="Default" onclick="SetDefault(document.F['Class'], '');"></td>
   </tr>
 </table>
 <br>

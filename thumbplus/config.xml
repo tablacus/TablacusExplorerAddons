@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TablacusExplorer>
   <General>
-    <Version>1.21</Version>
-    <MinVersion>2021.12.18</MinVersion>
-    <pubDate>Tue, 21 Dec 2021 00:00:00 GMT</pubDate>
+    <Version>1.22</Version>
+    <MinVersion>2024.2.27</MinVersion>
+    <pubDate>Wed, 28 Feb 2024 00:00:00 GMT</pubDate>
     <Options>Common:0:0</Options>
     <Level>2</Level>
     <Creator>Gaku</Creator>

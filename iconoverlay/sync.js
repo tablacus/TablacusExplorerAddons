@@ -1,6 +1,10 @@
 const Addon_Id = "iconoverlay";
+const item = GetAddonElement(Addon_Id);
+
 Sync.IconOverlay = {
 	DLL: api.DllGetClassObject(BuildPath(te.Data.Installed, ["addons\\iconoverlay\\ticonoverlay", api.sizeof("HANDLE") * 8, ".dll"].join("")), "{ADB2CB70-5C00-4fa2-B121-CB60B556FFA7}"),
+	List: !item.getAttribute("NoList"),
+	Tree: !item.getAttribute("NoTree"),
 	Icon: [],
 	db: {},
 
@@ -32,7 +36,7 @@ AddEvent("AddonDisabled", function (Id) {
 });
 
 if (Sync.IconOverlay.DLL) {
-	Sync.IconOverlay.DLL.Init(GetAddonOption(Addon_Id, "Base") || 11, Sync.IconOverlay.Callback);
+	Sync.IconOverlay.DLL.Init(item.getAttribute("Base") || 11, Sync.IconOverlay.Callback);
 	const o = {};
 	for (let i = 0; ; i++) {
 		const hr = Sync.IconOverlay.DLL.GetOverlayInfo(i, o);
@@ -47,9 +51,9 @@ if (Sync.IconOverlay.DLL) {
 			if (!pid || !Sync.IconOverlay.DLL) {
 				return;
 			}
-			let hwnd = Ctrl.hwndList;
+			let hwnd = Sync.IconOverlay.List && Ctrl.hwndList;
 			const Id = hwnd ? Ctrl.Id : 0;
-			if (!hwnd) {
+			if (!hwnd && Sync.IconOverlay.Tree) {
 				hwnd = Ctrl.hwndTree;
 			}
 			if (!hwnd) {
@@ -89,12 +93,14 @@ if (Sync.IconOverlay.DLL) {
 			}
 		});
 
-		AddEvent("ListViewCreated", function (Ctrl) {
-			Sync.IconOverlay.db[Ctrl.Id] = {};
-			if (Sync.IconOverlay.db[0] && Sync.IconOverlay.db[0][Ctrl.FolderItem.Path] != null) {
-				Sync.IconOverlay.DLL.GetOverlayIconIndex(Ctrl.FolderItem.Path, api.GetAttributesOf(Ctrl.FolderItem, SFGAO_STORAGECAPMASK), 0);
-			}
-		});
+		if (Sync.IconOverlay.List) {
+			AddEvent("ListViewCreated", function (Ctrl) {
+				Sync.IconOverlay.db[Ctrl.Id] = {};
+				if (Sync.IconOverlay.db[0] && Sync.IconOverlay.db[0][Ctrl.FolderItem.Path] != null) {
+					Sync.IconOverlay.DLL.GetOverlayIconIndex(Ctrl.FolderItem.Path, api.GetAttributesOf(Ctrl.FolderItem, SFGAO_STORAGECAPMASK), 0);
+				}
+			});
+		}
 
 		AddEvent("Command", function (Ctrl, hwnd, msg, wParam, lParam) {
 			if (msg == WM_NULL) {

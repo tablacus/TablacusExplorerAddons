@@ -3,7 +3,7 @@ Sync.SideTreeView = {
 		const FV = GetFolderView();
 		if (FV) {
 			const FolderItem = FV.FolderItem;
-			if (FolderItem) {
+			if (FolderItem && IsWitness(FolderItem)) {
 				const TV = Common.SideTreeView.TV;
 				if (TV && TV.Visible) {
 					if (Collapse) {
@@ -44,7 +44,9 @@ AddEvent("AppMessage", function (Ctrl, hwnd, msg, wParam, lParam) {
 		var hLock = api.SHChangeNotification_Lock(wParam, lParam, pidls);
 		if (hLock) {
 			api.SHChangeNotification_Unlock(hLock);
-			Common.SideTreeView.TV.Notify(pidls.lEvent, pidls[0], pidls[1], wParam, lParam);
+			if (pidls[0] && /^[A-Z]:\\|^\\\\\w/i.test(pidls[0].Path) && IsWitness(pidls[0])) {
+				Common.SideTreeView.TV.Notify(pidls.lEvent, pidls[0], pidls[1], wParam, lParam);
+			}
 		}
 		return S_OK;
 	}

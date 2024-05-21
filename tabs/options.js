@@ -1,7 +1,16 @@
 g_win = MainWindow.g_.OptionsWindow;
 g_doc = parent.document;
 
-await SetTabContents(4, "General", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
+const tabs = document.getElementById('tabs');
+const tab = document.getElementById('tab0');
+tabs.removeChild(tab);
+tabs.appendChild(tab);
+
+const ar = (await ReadTextFile(BuildPath(ui_.Installed, "addons", Addon_Id, "options.html"))).split("<!--panel-->");
+await SetTabContents(4, "General", ar[0]);
+await SetTabContents(0, "Drag-and-Drop", ar[1]);
+
+document.getElementById("_DropTo").innerHTML = (await GetTextR("@SRH.dll,-8110[Drop to %1]")).replace(/%1/, await GetText("Folder"));
 
 SetText = function (o) {
 	g_doc.F[o.name].value = o.value;

@@ -1,8 +1,8 @@
 InitDialog = async function () {
     await ApplyLang(document);
     RunEventUI("BrowserCreatedEx");
-    var Focused = await dialogArguments.Focused;
-    var s = await IsFileHideExt(Focused) && !await dialogArguments.ResultsFolder ? GetFileName(await api.GetDisplayNameOf(Focused, SHGDN_FORPARSING)) : await api.GetDisplayNameOf(Focused, SHGDN_FOREDITING);
+    const Focused = await dialogArguments.Focused;
+    const s = await IsFileHideExt(Focused) && !await dialogArguments.ResultsFolder ? GetFileName(await api.GetDisplayNameOf(Focused, SHGDN_FORPARSING)) : await api.GetDisplayNameOf(Focused, SHGDN_FOREDITING);
     document.getElementById("P").innerText = s;
     if (await IsFolderEx(Focused)) {
         document.F.N.value = s;
@@ -28,9 +28,9 @@ AddEventEx(document.body, "keydown", function (ev) {
 });
 
 DoRename = async function () {
-    var Focused = await dialogArguments.Focused;
-    var s = document.getElementById("P").innerText;
-    var r = document.F.E.value ? [document.F.N.value, document.F.E.value].join(".") : document.F.N.value;
+    const Focused = await dialogArguments.Focused;
+    const s = document.getElementById("P").innerText;
+    const r = document.F.E.value ? [document.F.N.value, document.F.E.value].join(".") : document.F.N.value;
     if (r && s != r) {
         if (/[\\\/:\*\?"<>\|]/.test(r)) {
             MessageBox(await api.LoadString(hShell32, 4109), null, MB_ICONSTOP | MB_OK);

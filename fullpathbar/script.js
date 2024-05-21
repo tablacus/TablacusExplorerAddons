@@ -1,15 +1,18 @@
 const Addon_Id = "fullpathbar";
 const Default = "BottomBar3Left";
+const item = GetAddonElement(Addon_Id);
+
 if (window.Addon == 1) {
 	Addons.FullPathBar = {
-		Title: await GetAddonOptionEx(Addon_Id, "Title"),
+		Title: item.getAttribute("Title"),
+		Selected: !item.getAttribute("NoSelected"),
 
 		Show: async function (Ctrl) {
 			if (Ctrl) {
 				let s;
 				const nType = await Ctrl.Type;
 				if (nType == CTRL_SB || nType == CTRL_EB) {
-					s = await api.GetDisplayNameOf(await Ctrl.SelectedItems().Item(0) || Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
+					s = await api.GetDisplayNameOf((Addons.FullPathBar.Selected && await Ctrl.SelectedItems().Item(0)) || Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING);
 				} else {
 					s = await Ctrl.Path;
 				}
@@ -34,5 +37,5 @@ if (window.Addon == 1) {
 		Addons.FullPathBar.Show(await te.Ctrl(CTRL_FV));
 	});
 } else {
-	SetTabContents(0, "View", '<label><input type="checkbox" id="Title">Title Bar</label>');
+	SetTabContents(0, "View", '<label><input type="checkbox" id="Title">Title bar</label><br><label><input type="checkbox" id="!NoSelected">Selected items</label>');
 }

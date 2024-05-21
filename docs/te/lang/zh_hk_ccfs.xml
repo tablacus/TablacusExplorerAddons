@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 23.1.31 (2023/5/25)-->
+<!-- Version 24.4.21 (patch 240428)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -42,8 +42,9 @@
 	<text s="Tool bar icon">工具列圖示大小</text>
 	<text s="Internal Tool bar icon">窗格內工具列圖示大小</text>
 	<text s="Include hidden items">包含隱藏項目</text>
+	<text s="Icon">圖示</text>
 	<text s="Input">輸入</text>
-	<text s="Initialize config folder">初始化設定檔資料夾</text>
+	<text s="Initialize config folder">轉移版面資料夾</text>
 	<text s="If you installed Tablacus Explorer to the Program Files directory, please press this button.">如果您將 Tablacus Explorer 安裝在 Program Files 資料夾內，請按下此按鈕。</text>
 	<text s="Gestures">操控</text>
 	<text s="None">棄用</text>
@@ -124,7 +125,7 @@
 	<text s="Hidden">隱藏</text>
 	<text s="Enumeration">枝葉</text>
 	<text s="Not folders">非資料夾</text>
-	<text s="Shareable">[無作用] 共用</text>
+	<text s="Shareable">可共用</text>
 	<text s="Navigation enumeration">[無作用] 列舉</text>
 	<text s="Fast items">[無作用] 快速項目</text>
 	<text s="Flat">平面式</text>
@@ -150,7 +151,7 @@
 	<text s="or higher.">或後續版本。</text>
 	<text s="Expanded">展開</text>
 	<text s="Show all files">顯示所有檔案</text>
-	<text s="Thumbnail">縮圖</text>
+	<text s="Thumbnail">縮圖 (XP)</text>
 	<text s="Tile">並排</text>
 	<text s="Thumbstrip">單個預覽 (XP)</text>
 	<text s="Content">內容</text>
@@ -161,7 +162,8 @@
 	<text s="Select by middle button">中按鈕選取</text>
 	<text s="Process selected items in view sequence">順序處理選擇項目&#160;</text>
 	<text s="Apply Filter to Libraries">篩選或屏蔽媒體櫃中資料夾內項目</text>
-	<text s="Auto arrange upon refresh">重新整理時自動排列</text>
+	<text s="Auto arrange upon refresh">自動排序新項目 (特定情況)</text>
+	<text s="Cloud Witness">監測雲端</text>
 	<text s="Group">分組</text>
 	<text s="Subset groups">└ 減省項目</text>
 	<text s="Column header">欄位標題</text>
@@ -198,19 +200,18 @@
 	<text s="◴">&#160;左&#160;</text>
 	<text s="Θ">&#160;中&#160;</text>
 	<text s="◷">&#160;右&#160;</text>
-	<text s="Notepad alternative">記事本替代程式</text>
-	<text s="Path">路徑</text>
 	<text s="Address bar">位址列</text>
 	<text s="Filter bar">篩選列</text>
 	<text s="Regular Expression">規則運算式</text>
 	<text s="Tree view">樹狀目錄&#160;</text>
 	<text s="Main menu">主選單</text>
+	<text s="Path">路徑</text>
 	<text s="Tab plus">新式頁籤</text>
-	<text s="Icon">圖示</text>
 	<text s="Protected">保留</text>
 	<text s="Fixed width">固定寬度</text>
 	<text s="Align">排列</text>
 	<text s="Bottom">下</text>
+	<text s="Drop to %1">複製/移動到資料夾</text>
 	<text s="Multi thread">多線程檔案操作</text>
 	<text s="File is in operation.">檔案操作進行中。</text>
 	<text s="Remember folder view settings">記住每個資料夾檢視</text>
@@ -257,6 +258,7 @@
 	<text s="Explorer browser filter">依路徑樣式切換到替代引擎</text>
 	<text s="Force refresh">自動重新整理</text>
 	<text s="Rename">重新命名</text>
+	<text s="Monitored Folders">監測資料夾</text>
 	<text s="Switch hidden items">隱藏項目開關</text>
 	<text s="Switch hidden filter">屏蔽項目開關</text>
 	<text s="Right key next">左右鍵換行移動</text>
@@ -274,14 +276,16 @@
 	<text s="Clear filter with &quot;Up&quot;">用上移來取消篩選</text>
 	<text s="Search bar">搜尋列</text>
 	<text s="Action">行動</text>
+	<text s="Class">類別</text>
 	<text s="Find files">尋找檔案</text>
 	<text s="Location">位址</text>
 	<text s="Information search">依資訊尋找檔案</text>
 	<text s="Search by date modified">依修改日期尋找檔案</text>
 	<text s="Search by size">依大小尋找檔案</text>
 	<text s="Empty folder">尋找空資料夾</text>
-	<text s="Wildcard selection">依名稱樣式選取&#160;</text>
-	<text s="Wildcard Select...">依名稱樣式選取...</text>
+	<text s="rmdir">永久刪除</text>
+	<text s="Wildcard selection...">依名稱樣式選取...</text>
+	<text s="Wildcard Select...">依名稱樣式選取&#160;...</text>
 	<text s="Select nonexistent items">選取不存在的項目</text>
 	<text s="Save selected items">儲存選擇</text>
 	<text s="Save">儲存</text>
@@ -293,6 +297,7 @@
 	<text s="Full row select plus">彈性整行選框</text>
 	<text s="Classic style">傳統選框</text>
 	<text s="Disable classic style during drag">拖放時停用傳統選框</text>
+	<text s="Order of Selected items">順序處理選擇項目</text>
 	<text s="Status bar">狀態列</text>
 	<text s="Count bar">數量列</text>
 	<text s="Size status bar">大小列</text>
@@ -310,7 +315,7 @@
 	<text s="Order of clipboard">順序處理剪貼項目</text>
 	<text s="Clipboard copy">附加路徑到剪貼簿</text>
 	<text s="Clipboard image">貼上圖片到新檔案</text>
-	<text s="Duplicate copy">複本</text>
+	<text s="Duplicate copy...">複本...</text>
 	<text s="Move content up">移出資料夾內容</text>
 	<text s="Rename dialog box...">重新命名對話框...</text>
 	<text s="Rename dialog plus...">完整重新命名...</text>
@@ -326,9 +331,9 @@
 	<text s="Archive">保存</text>
 	<text s="Change the Date modified...">變更修改日期...</text>
 	<text s="Change the timestamp...">變更時間戳...</text>
-	<text s="Change the Time Stamp...">變更時間戳 ...</text>
+	<text s="Change the Time Stamp...">變更時間戳&#160;...</text>
 	<text s="Show hash">驗證值</text>
-	<text s="Virtual name">替代名稱</text>
+	<text s="Virtual name...">替代名稱...</text>
 	<text s="Extension tooltips changer">依副檔名設定提示</text>
 	<text s="No infotip">不要提示</text>
 	<text s="Side tree view">共用式樹狀目錄</text>
@@ -369,8 +374,11 @@
 	<text s="Close tab when deleting">資料夾被刪除後自動關閉分頁</text>
 	<text s="Close duplicate tabs">關閉重複分頁</text>
 	<text s="Prevent duplicate tabs">防止重複分頁</text>
-	<text s="Open the same locked tab instead">重用已鎖分頁</text>
+	<text s="Open the same locked tab instead">重用分頁</text>
 	<text s="Multiple panes">檢查所有窗格</text>
+	<text s="Locked tabs only">僅限已鎖分頁</text>
+	<text s="Skip tabs with filter">略過有篩選分頁</text>
+	<text s="Close current tab">關閉目前分頁</text>
 	<text s="Lock only disables &quot;Close tab&quot;">可以在已鎖分頁上瀏覽</text>
 	<text s="Protect tabs">保留分頁</text>
 	<text s="Split">劃分窗格</text>
@@ -396,6 +404,7 @@
 	<text s="Inactive pane">備用窗格變暗</text>
 	<text s="Synchronize">同步瀏覽</text>
 	<text s="Sync select">比對式選取</text>
+	<text s="Compact window">精簡視窗</text>
 	<text s="Select matches">選取相符</text>
 	<text s="Select all items that are also listed in the other pane.">選取亦列出在另一分頁的項目。</text>
 	<text s="Select uniques">選取僅有</text>
@@ -424,6 +433,13 @@
 	<text s="Load">載入</text>
 	<text s="Tab groups button">工作區選單</text>
 	<text s="Show frames button">檔案總管模式開關</text>
+	<text s="Frame plus">進階檔案總管模式</text>
+	<text s="Button">按鈕&#160;</text>
+	<text s="Hide Details Pane when Preview Pane shows, and vice versa.">顯示預覽窗格時隱藏詳細資料窗格，反之亦然。</text>
+	<text s="New tab follows current tab layout">新分頁版面跟從目前分頁</text>
+	<text s="Save / load tab layouts">儲存 / 載入分頁版面</text>
+	<text s="Reset &quot;Show frames&quot; tabs">重設檔案總管模式分頁</text>
+	<text s="This check box will be cleared afterwards.">此核取方塊隨後會自動清除</text>
 	<text s="Frame pane">自訂檔案總管模式</text>
 	<text s="It takes time to apply these changes.">請重新啟動程式令此設定生效。</text>
 	<text s="Folder button">資料夾按鈕</text>
@@ -433,6 +449,8 @@
 	<text s="Save clip folder">儲存剪貼資料夾</text>
 	<text s="NETSCAPE Bookmarks">網景格式書籤</text>
 	<text s="Folder list menu">文字格式選單</text>
+	<text s="Folder menu settings">資料夾選單排序</text>
+	<text s="Folder menu filter">屏蔽資料夾選單項目</text>
 	<text s="Multi process">多程序檔案操作</text>
 	<text s="Different drive only">僅用於跨磁碟移動</text>
 	<text s="Overwrite all">覆蓋同名檔</text>
@@ -441,7 +459,6 @@
 	<text s="Sync">同步目的地</text>
 	<text s="No Confirm">無需確認</text>
 	<text s="Automatically start">自動開始</text>
-	<text s="Class">類別</text>
 	<text s="Preview">預覽窗格</text>
 	<text s="Limits">檔案大小上限</text>
 	<text s="@wmploc.dll,-1800">播放&#160;</text>
@@ -452,6 +469,8 @@
 	<text s="Menu image">選單彈出預覽</text>
 	<text s="Menu image plus">資料夾選單彈出預覽</text>
 	<text s="Retouch">修整圖片</text>
+	<text s="I&apos;m free!">我自由了！</text>
+	<text s="mpv detach">mpv 分離</text>
 	<text s="Total Commander Lister Plug-in">Total Commander 檢視器外掛程式</text>
 	<text s="Detect string">偵測字串</text>
 	<text s="Thumbnail engine">媒體及資料夾縮圖</text>
@@ -462,12 +481,12 @@
 	<text s="Susie Plug-in">Susie 外掛程式</text>
 	<text s="Susie Plug-in plus">Susie 解壓縮</text>
 	<text s="Total Commander Packer Plug-in">Total Commander 壓縮外掛程式</text>
+	<text s="Notepad alternative">記事本替代程式</text>
 	<text s="Replace command">替代程式</text>
 	<text s="Replace text">替代文字</text>
 	<text s="Verb">操作</text>
 	<text s="Execution filter">依路徑樣式執行命令</text>
-	<text s="Order of Selected items">順序處理選擇項目</text>
-	<text s="Badge">徽章</text>
+	<text s="Badge">評級</text>
 	<text s="Label">標籤</text>
 	<text s="Confirm">確認</text>
 	<text s="Label button">標籤按鈕</text>
@@ -509,6 +528,7 @@
 	<text s="Segoe UI MDL2 Assets">Segoe MDL2 圖示集</text>
 	<text s="Font settings">字型</text>
 	<text s="Dark mode">黑色面板</text>
+	<text s="Window Alpha">半透明視窗</text>
 	<text s="Background image">依路徑樣式設定分頁背景</text>
 	<text s="Underline">底線</text>
 	<text s="Size bar chart">檔案大小條狀圖</text>
@@ -532,10 +552,6 @@
 	<text s="Create symbolic link">建立符號連結</text>
 	<text s="FastCopy (Copy)">FastCopy (複製)</text>
 	<text s="FastCopy (Move)">FastCopy (移動)</text>
-	<text s="Folder menu settings">資料夾選單排序</text>
-	<text s="Folder menu filter">屏蔽資料夾選單項目</text>
-	<text s="Add-on switcher">附加元件開關&#160;</text>
-	<text s="Addon switcher">附加元件開關</text>
 	<text s="Launch the app on system startup">自動啟動程式</text>
 	<text s="Jump list">跳躍清單</text>
 	<text s="Minimize to tray">最小化到通知區域</text>
@@ -543,6 +559,8 @@
 	<text s="Always in tray">永遠顯示通知區域圖示</text>
 	<text s="&amp;Restore">還原(&amp;R)</text>
 	<text s="Hot key">快速鍵</text>
+	<text s="Add-on switcher">附加元件開關&#160;</text>
+	<text s="Addon switcher">附加元件開關</text>
 	<text s="Run at setup">載入設定時執行</text>
 	<text s="Startup settings">啟動程式時執行</text>
 	<text s="Restart">重新啟動程式</text>
@@ -552,7 +570,10 @@
 	<text s="Auto backup">自動備份設定</text>
 	<text s="Run on exit">離開程式時執行</text>
 	<text s="Multiple executions">多個執行個體</text>
-	<text s="Always">無限制</text>
+	<text s="Run TE">執行 TE</text>
+	<text s="Run TE with a command line option">執行 TE (含命令選項)</text>
+	<text s="/nw for new window">用 /nw 開啟新視窗</text>
+	<text s="Always new window">總是新視窗</text>
 	<text s="Open in new window">在新視窗中開啟</text>
 	<text s="Shell execute hook">取代檔案總管</text>
 	<text s="Registry">登錄</text>

@@ -9,7 +9,7 @@ body {
 	background-color: #202020;
 }
 
-input[type="text"], input[type="number"], select, textarea {
+input[type="text"], input[type="number"], input[type="search"], select, textarea {
 	color: #fff;
 	background-color: #191919;
 	border: solid 1px #555;

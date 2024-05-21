@@ -27,7 +27,7 @@ Sync.BGPreview = {
 			Item = FV.SelectedItems().Item(0);
 		}
 		const hwnd = FV.hwndList;
-		if (!Item || IsCloud(Item)) {
+		if (!Item) {
 			const lvbk = api.Memory("LVBKIMAGE");
 			lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
 			api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
