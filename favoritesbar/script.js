@@ -46,18 +46,23 @@ if (window.Addon == 1) {
 
 		Popup: async function (ev, i) {
 			const items = ui_.MenuFavorites;
-			if (i >= 0) {
+			if (i >= 0 && i < items.length) {
 				const hMenu = await api.CreatePopupMenu();
-				const path = await this.GetPath(items, i);
+				const path = await this.GetPath(items[i]);
 				const ContextMenu = await api.ContextMenu(path);
+                const MENU_EDIT = 1;
+                const MENU_ADD = 2;
+                const MENU_REMOVE = 3;
+                const MENU_OPEN_CONTAINS = 4;
 				if (ContextMenu) {
 					await ContextMenu.QueryContextMenu(hMenu, 0, 0x1001, 0x7FFF, CMF_DEFAULTONLY);
 					await RemoveCommand(hMenu, ContextMenu, "delete;rename");
 					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_SEPARATOR, 0, null);
-					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 3, await api.LoadString(hShell32, 31368));
+					await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, MENU_OPEN_CONTAINS, await api.LoadString(hShell32, 31368));
 				}
-				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 1, await GetText("&Edit"));
-				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, 2, await GetText("Add"));
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, MENU_EDIT, await GetText("&Edit"));
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, MENU_ADD, await GetText("Add"));
+				await api.InsertMenu(hMenu, MAXINT, MF_BYPOSITION | MF_STRING, MENU_REMOVE, await GetText("Remove"));
 				const x = ev.screenX * ui_.Zoom;
 				const y = ev.screenY * ui_.Zoom;
 				const nVerb = await api.TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, ui_.hwnd, null, ContextMenu);
@@ -69,14 +74,17 @@ if (window.Addon == 1) {
 						ContextMenu.InvokeCommand(0, ui_.hwnd, nVerb - 0x1001, null, null, SW_SHOWNORMAL, 0, 0);
 					}
 				}
-				if (nVerb == 1) {
+				if (nVerb == MENU_EDIT) {
 					this.ShowOptions(i);
 				}
-				if (nVerb == 2) {
+				if (nVerb == MENU_ADD) {
 					this.ShowOptions();
 				}
-				if (nVerb == 3) {
+				if (nVerb == MENU_OPEN_CONTAINS) {
 					this.OpenContains(path);
+				}
+				if (nVerb == MENU_REMOVE) {
+					this.RemoveItem(i);
 				}
 				api.DestroyMenu(hMenu);
 			}
@@ -87,13 +95,17 @@ if (window.Addon == 1) {
 			let nLevel = 0;
 			const items = await Addons.FavoritesBar.GetFovorites();
 			for (let i = 0; i < items.length; ++i) {
-				let strName = items[i].Name;
-				if (!items[i].Org) {
+                const item = items[i];
+				let strName = item.Name;
+				if (!item.Org) {
 					strName = await GetText(strName);
 				}
-				const strType = items[i].Type;
-				let img = PathUnquoteSpaces(items[i].Icon);
-				let path = items[i].text;
+                if (!strName || /^\s*$/.exec(strName)) {
+                    continue;
+                }
+				const strType = item.Type;
+				let img = PathUnquoteSpaces(item.Icon);
+				let path = item.text;
 				let nOpen = 0;
 				if (SameText(strType, "Menus")) {
 					if (SameText(path, "Open")) {
@@ -110,24 +122,25 @@ if (window.Addon == 1) {
 					s.splice(s.length, 0, '<div style="width: 90%; width: calc(100% - 8px); height: 3px; background-color: ' + await GetWebColor(await GetSysColor(COLOR_ACTIVEBORDER)) + '; border: 1px solid ' + await GetWebColor(await GetSysColor(COLOR_WINDOW)) + '; font-size: 1px"></div>');
 					continue;
 				}
-				path = await Addons.FavoritesBar.GetPath(items, i);
+				path = await Addons.FavoritesBar.GetPath(item);
+                const h = GetIconSize(item.Height, 16);
 				if (nOpen) {
 					img = '<a id="fav' + i + '_button" class="treebutton">' + Addons.FavoritesBar.arExpand[0] + '</a>' + await GetImgTag({ src: img || "folder:closed", "class": "favicon" });
 				} else if (img) {
-					img = await GetImgTag({ src: img, "class": "favicon" });
+                    img = await GetImgTag({ src: img, "class": "favicon" }, h);
 				} else if (await api.PathMatchSpec(strType, "Open;Open in New Tab;Open in Background;Exec")) {
-					let pidl = await api.ILCreateFromPath(path);
-					if (await api.ILIsEmpty(pidl) || await pidl.Unavailable) {
-						let res = /"([^"]*)"/.exec(path) || /([^ ]*)/.exec(path);
-						if (res) {
-							pidl = await api.ILCreateFromPath(res[1]);
-						}
-					}
-					img = await GetImgTag({ src: await GetIconImage(pidl, CLR_DEFAULT | COLOR_WINDOW), "class": "favicon" });
+                    let pidl = await api.ILCreateFromPath(path);
+                    if (await api.ILIsEmpty(pidl) || await pidl.Unavailable) {
+                        const res = /"([^"]*)"/.exec(path) || /([^\s]*)/.exec(path);
+                        if (res) {
+                            pidl = await api.ILCreateFromPath(res[1]);
+                        }
+                    }
+                    img = await GetImgTag({ src: await GetIconImage(pidl, CLR_DEFAULT | COLOR_WINDOW), "class": "favicon" }, h);
 				} else {
 					img = await GetImgTag({ src: "icon:shell32.dll,0", "class": "favicon" });
 				}
-				s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(event,', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(event,' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(event,', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(items[i].text), '" draggable="true" ondragstart="Addons.FavoritesBar.Start5(event,this)" ondragend="Addons.FavoritesBar.End5(this)" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", EncodeSC(strName.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")), '</div> ');
+				s.splice(s.length, 0, '<div id="fav', i, '" onclick="Addons.FavoritesBar.Open(event,', i, ')" oncontextmenu="Addons.FavoritesBar.Popup(event,' + i + '); return false" onmousedown="return Addons.FavoritesBar.Down(event,', i, ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button" title="', EncodeSC(item.text), '" draggable="false" ondragstart="Addons.FavoritesBar.Start5(event,this)" ondragend="Addons.FavoritesBar.End5(this)" style="width: 100%">', new Array(nLevel + (nOpen ? 1 : 2)).join('<span class="treespace">' + BUTTONS.opened + '</span>'), img, " ", EncodeSC(strName.replace(/\\t.*$/g, "").replace(/&(.)/g, "$1")), '</div> ');
 				if (nOpen) {
 					s.push('<div id="fav', i, '_"', Addons.FavoritesBar.arExpand[1], '>');
 					++nLevel;
@@ -153,9 +166,26 @@ if (window.Addon == 1) {
 			}, 99);
 		},
 
-		GetPath: async function (items, i) {
-			const line = items[i].text.split("\n");
-			return await ExtractPath(te, line[0]);
+		RemoveItem: function (i) {
+            const xml = te.Data.xmlMenus;
+            const menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
+            if (menus && menus.length > 0) {
+                const items = menus[0].getElementsByTagName("Item");
+                if (items && items[i]) {
+                    menus[0].removeChild(items[i]);
+                    SaveXmlEx("menus.xml", xml);
+                    FavoriteChanged();
+                }
+            }            
+		},
+
+		GetPath: async function (item) {
+            if(item && typeof(item.text) !== 'undefined') {
+                const line = item.text.split("\n");
+                return await ExtractPath(te, line[0]);
+            } else {
+                return '';
+            }
 		},
 
 		FromPt: async function (pt) {
