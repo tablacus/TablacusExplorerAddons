@@ -1,4 +1,4 @@
-const Addon_Id = "addressbar";
+﻿const Addon_Id = "addressbar";
 const Default = "ToolBar2Center";
 const item = GetAddonElement(Addon_Id);
 if (!item.getAttribute("Set")) {
@@ -23,11 +23,21 @@ if (window.Addon == 1) {
 		KeyDown: function (ev, o) {
 			if (ev.keyCode ? ev.keyCode == VK_RETURN : /^Enter/i.test(ev.key)) {
 				setTimeout(async function (o, str) {
-					if (str == o.value) {
+					let uri = str.trim().replace(/\//g, "\\");
+					
+					if (fso.FileExists(uri)) {
+						let pos = uri.lastIndexOf("\\");
+						uri = uri.substr(0, pos) 
+					}
+
+					if (fso.FolderExists(uri)) {
+						// If it is a file or folder path, navigate to the folder.
+						Navigate(uri, SBSP_NEWBROWSER);
+					} else if (uri == o.value) {
 						const pt = await GetPosEx(o, 9);
-						$.Input = str;
+						$.Input = uri;
 						if (await ExecMenu(await te.Ctrl(CTRL_WB), "Alias", pt, 2) != S_OK) {
-							NavigateFV(await te.Ctrl(CTRL_FV), str, await GetNavigateFlags(), true);
+							NavigateFV(await te.Ctrl(CTRL_FV), uri, await GetNavigateFlags(), true);
 						}
 					}
 				}, 99, o, o.value);
