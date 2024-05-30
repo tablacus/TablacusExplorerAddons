@@ -84,7 +84,7 @@ if (window.Addon == 1) {
 					this.OpenContains(path);
 				}
 				if (nVerb == MENU_REMOVE) {
-					this.RemoveItem(i);
+					Sync.FavoritesBar.RemoveItem(i);
 				}
 				api.DestroyMenu(hMenu);
 			}
@@ -164,19 +164,6 @@ if (window.Addon == 1) {
 				FV = await te.Ctrl(CTRL_FV);
 				FV.SelectItem(path, SVSI_SELECT | SVSI_FOCUSED | SVSI_ENSUREVISIBLE | SVSI_NOTAKEFOCUS);
 			}, 99);
-		},
-
-		RemoveItem: function (i) {
-            const xml = te.Data.xmlMenus;
-            const menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
-            if (menus && menus.length > 0) {
-                const items = menus[0].getElementsByTagName("Item");
-                if (items && items[i]) {
-                    menus[0].removeChild(items[i]);
-                    SaveXmlEx("menus.xml", xml);
-                    FavoriteChanged();
-                }
-            }            
 		},
 
 		GetPath: async function (item) {

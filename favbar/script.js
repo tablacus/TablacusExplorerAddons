@@ -104,7 +104,7 @@ if (window.Addon == 1) {
 					this.ShowOptions();
 				}
 				if (nVerb == MENU_REMOVE) {
-					this.RemoveItem(i);
+					Sync.FavBar.RemoveItem(i);
 				}
 				api.DestroyMenu(hMenu);
 			}
@@ -202,19 +202,6 @@ if (window.Addon == 1) {
 
 		ShowOptions: function (i) {
 			ShowOptions("Tab=Menus&Menus=Favorites" + (isFinite(i) ? "," + i : ""));
-		},
-
-		RemoveItem: function (i) {
-            const xml = te.Data.xmlMenus;
-            const menus = te.Data.xmlMenus.getElementsByTagName('Favorites');
-            if (menus && menus.length > 0) {
-                const items = menus[0].getElementsByTagName("Item");
-                if (items && items[i]) {
-                    menus[0].removeChild(items[i]);
-                    SaveXmlEx("menus.xml", xml);
-                    FavoriteChanged();
-                }
-            }            
 		},
 
 		GetPath: async function (items, i) {

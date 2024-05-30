@@ -23,14 +23,14 @@ if (window.Addon == 1) {
 		KeyDown: function (ev, o) {
 			if (ev.keyCode ? ev.keyCode == VK_RETURN : /^Enter/i.test(ev.key)) {
 				setTimeout(async function (o, str) {
-					let uri = str.trim().replace(/\//g, "\\");
-					
-					if (fso.FileExists(uri)) {
+					let uri = str.replace(/^\s+|\s+$/g, '').replace(/\//g, "\\");
+
+					if (await fso.FileExists(uri)) {
 						let pos = uri.lastIndexOf("\\");
-						uri = uri.substr(0, pos) 
+						uri = uri.substr(0, pos)
 					}
 
-					if (fso.FolderExists(uri)) {
+					if (await fso.FolderExists(uri)) {
 						// If it is a file or folder path, navigate to the folder.
 						Navigate(uri, SBSP_NEWBROWSER);
 					} else if (uri == o.value) {
@@ -366,7 +366,7 @@ if (window.Addon == 1) {
 		const z = screen.deviceYDPI / 96;
 		s = ['<div style="position: relative; overflow: hidden">',
 		'<div id="breadcrumbbuttons" class="breadcrumb" style="vertical-align: middle; position: absolute; margin-top:1px; margin-bottom:1px; top:1px; bottom: 1px; left: 1px; padding-left: ', 16 * z + 4, 'px" onclick="Addons.AddressBar.Click1(event)" oncontextmenu="Addons.AddressBar.Popup1(event); return false;" onmousedown="Addons.AddressBar.Down1(event)" onmouseup="return Addons.AddressBar.Up1(event); return false"></div>',
-		'<input id="addressbar" type="text" autocomplate="on" list="AddressList" onkeydown="return Addons.AddressBar.KeyDown(event, this)" onfocus="Addons.AddressBar.Focus()" onblur="Addons.AddressBar.Blur()" onresize="Addons.AddressBar.Resize()" oninput="AdjustAutocomplete(this.value)" oncontextmenu="Addons.AddressBar.ContextMenu(this)" style="width: ', EncodeSC(s), '; vertical-align: middle; padding-left: ', 16 * z + 4, 'px; padding-top:2px;padding-bottom:2px; padding-right: 16px">',       
+		'<input id="addressbar" type="text" autocomplate="on" list="AddressList" onkeydown="return Addons.AddressBar.KeyDown(event, this)" onfocus="Addons.AddressBar.Focus()" onblur="Addons.AddressBar.Blur()" onresize="Addons.AddressBar.Resize()" oninput="AdjustAutocomplete(this.value)" oncontextmenu="Addons.AddressBar.ContextMenu(this)" style="width: ', EncodeSC(s), '; vertical-align: middle; padding-left: ', 16 * z + 4, 'px; padding-top:2px;padding-bottom:2px; padding-right: 16px">',
 		'<div class="breadcrumb"><div id="addressbarselect" class="button" style="vertical-align: middle; position: absolute; margin-top:1px; margin-bottom:1px; top: 1px; bottom: 1px; " onmouseover="MouseOver(this);" onmouseout="MouseOut()" onclick="Addons.AddressBar.Popup3(this)">', BUTTONS.dropdown, '</div></div>'];
 
 		s.push('<img id="addr_img"');
