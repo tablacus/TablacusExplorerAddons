@@ -23,7 +23,7 @@ if (window.Addon == 1) {
 		KeyDown: function (ev, o) {
 			if (ev.keyCode ? ev.keyCode == VK_RETURN : /^Enter/i.test(ev.key)) {
 				setTimeout(async function (o, str) {
-					let uri = str.replace(/^\s+|\s+$/g, '').replace(/\//g, "\\");
+					let uri = str.trim().replace(/\//g, "\\");
 
 					if (await fso.FileExists(uri)) {
 						let pos = uri.lastIndexOf("\\");
