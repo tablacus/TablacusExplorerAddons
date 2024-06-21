@@ -1,4 +1,11 @@
 ﻿{
+  "cs.xml": {
+    "name": "Česky",
+    "en": "Czech",
+    "author": "OUBRECHT.com",
+    "pubDate": "Fri, 21 Jun 2024 13:45:40 GMT",
+    "size": 8891
+  },
   "de.xml": {
     "name": "Deutsch",
     "en": "German",
