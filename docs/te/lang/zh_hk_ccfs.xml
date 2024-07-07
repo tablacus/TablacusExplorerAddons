@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 24.6.16 (patch 240619)-->
+<!-- Version 24.6.16 (patch 240706)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -257,8 +257,8 @@
 	<text s="Space free column">可用空間欄位</text>
 	<text s="Explorer browser filter">依路徑樣式切換到替代引擎</text>
 	<text s="Force refresh">自動重新整理</text>
-	<text s="Rename">重新命名</text>
-	<text s="Monitored Folders">監測資料夾</text>
+	<text s="File operation">檔案操作</text>
+	<text s="Tab switching">分頁切換</text>
 	<text s="Switch hidden items">隱藏項目開關</text>
 	<text s="Switch hidden filter">屏蔽項目開關</text>
 	<text s="Right key next">左右鍵換行移動</text>
@@ -318,6 +318,7 @@
 	<text s="Duplicate copy...">複本...</text>
 	<text s="Move content up">移出資料夾內容</text>
 	<text s="Rename dialog box...">重新命名對話框...</text>
+	<text s="Rename">重新命名</text>
 	<text s="Rename dialog plus...">完整重新命名...</text>
 	<text s="Toggle selection while inline renaming">輪選命名部份</text>
 	<text s="Fix selection on renaming">修正重新命名</text>
@@ -406,6 +407,9 @@
 	<text s="Switch to next pane">下一個窗格</text>
 	<text s="Rotate pane">輪調所有窗格</text>
 	<text s="Inactive pane">備用窗格變暗</text>
+	<text s="Pane">窗格&#160;</text>
+	<text s="Inactive">備用</text>
+	<text s="Active">目前</text>
 	<text s="Synchronize">同步瀏覽</text>
 	<text s="Sync select">比對式選取</text>
 	<text s="Compact window">精簡視窗</text>
