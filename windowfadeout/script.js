@@ -5,16 +5,11 @@ const fadeOutTime = parseInt(item.getAttribute("fadeOutTime")) || 5;
 const fadeInStep = parseInt(item.getAttribute("fadeInStep")) || 2;
 const fadeOutStep = parseInt(item.getAttribute("fadeOutStep")) || -1;
 const fadeInDelay = parseInt(item.getAttribute("fadeInDelay")) || 1;
-const fadeOutDelay = parseInt(item.getAttribute("fadeOutDelay")) || 120;
+const fadeOutDelay = parseInt(item.getAttribute("fadeOutDelay")) || 1;
 
 if (window.Addon == 1) {
 	let currentAlpha = alpha;
 	let currentAnimation = null;
-
-	AddEvent("Arrange", function (Ctrl, rc) {
-		SetWindowAlpha(ui_.hwnd, alpha);
-		ui_.Show = 2;
-	});
 
 	async function fade(targetAlpha) {
 		if (currentAnimation) {
@@ -48,17 +43,47 @@ if (window.Addon == 1) {
 
 	let fadeOutTimer = null;
 
-	window.addEventListener("mousemove", async function() {
-		await fade(alpha);
+	function mouseMove() {
+		fade(alpha);
 
 		if (fadeOutTimer) {
 			clearTimeout(fadeOutTimer);
 		}
 
-		fadeOutTimer = setTimeout(async function() {
-			await fade(1);
+		fadeOutTimer = setTimeout( function() {
+			fade(1);
+		}, fadeOutTime * 1000);
+	};
+
+	function throttle(fn, limit) {
+		let lastCall = 0;
+		return function(...args) {
+			const now = (new Date).getTime();
+			if (now - lastCall >= limit) {
+				lastCall = now;
+				return fn(...args);
+			}
+		};
+	}
+
+	const throttledHandle = throttle(mouseMove, 500);
+
+	AddEvent("Arrange", function (Ctrl, rc) {
+		SetWindowAlpha(ui_.hwnd, alpha);
+		ui_.Show = 2;
+		fadeOutTimer = setTimeout( function() {
+			fade(1);
 		}, fadeOutTime * 1000);
 	});
+
+	window.addEventListener("mousemove", function() {
+		throttledHandle();
+	});
+
+	AddEvent("MouseMessage", function (Ctrl, hwnd, msg, mouseData, pt, wHitTestCode, dwExtraInfo) {
+		throttledHandle();
+	});
+
 } else {
 	SetTabContents(0, "", await ReadTextFile("addons\\" + Addon_Id + "\\options.html"));
 	document.getElementById('AlphaValue').textContent = alpha;
