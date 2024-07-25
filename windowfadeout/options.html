@@ -1,0 +1,84 @@
+<br>
+<style>
+    .slider-container {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    .slider-label {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .slider-range {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+    .slider-value {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: -1.5em;
+    }
+    input[type="range"] {
+        width: 100%;
+    }
+</style>
+<div class="slider-container">
+    <div class="slider-label">Alpha</div>
+    <div class="slider-value" id="AlphaValue"></div>
+    <div class="slider-range">
+        <label>@mspaint.exe,-23202[Transparent]</label>
+        <label>@mspaint.exe,-23201[Opaque]</label>
+    </div>
+    <input type="range" name="alpha" min="1" max="255" oninput="document.getElementById('AlphaValue').textContent = this.value;">
+</div>
+
+<div class="slider-container">
+    <div class="slider-label">FadeOutTime (Second)</div>
+    <div class="slider-value" id="FadeOutTimeValue"></div>
+    <div class="slider-range">
+        <label>1</label>
+        <label>3600</label>
+    </div>
+    <input type="range" name="fadeOutTime" min="1" max="3600" oninput="document.getElementById('FadeOutTimeValue').textContent = this.value;">
+</div>
+
+<div class="slider-container">
+    <div class="slider-label">FadeInStep</div>
+    <div class="slider-value" id="FadeInStepValue"></div>
+    <div class="slider-range">
+        <label>1</label>
+        <label>10</label>
+    </div>
+    <input type="range" name="fadeInStep" min="1" max="10" oninput="document.getElementById('FadeInStepValue').textContent = this.value;">
+</div>
+
+<div class="slider-container">
+    <div class="slider-label">FadeOutStep</div>
+    <div class="slider-value" id="FadeOutStepValue"></div>
+    <div class="slider-range">
+        <label>-10</label>
+        <label>-1</label>
+    </div>
+    <input type="range" name="fadeOutStep" min="-10" max="-1" oninput="document.getElementById('FadeOutStepValue').textContent = this.value;">
+</div>
+
+<div class="slider-container">
+    <div class="slider-label">FadeInDelay (Millisecond)</div>
+    <div class="slider-value" id="FadeInDelayValue"></div>
+    <div class="slider-range">
+        <label>1</label>
+        <label>10</label>
+    </div>
+    <input type="range" name="fadeInDelay" min="1" max="10" oninput="document.getElementById('FadeInDelayValue').textContent = this.value;">
+</div>
+
+<div class="slider-container">
+    <div class="slider-label">FadeOutDelay (Millisecond)</div>
+    <div class="slider-value" id="FadeOutDelayValue"></div>
+    <div class="slider-range">
+        <label>1</label>
+        <label>1000</label>
+    </div>
+    <input type="range" name="fadeOutDelay" min="1" max="1000" oninput="document.getElementById('FadeOutDelayValue').textContent = this.value;">
+</div>
