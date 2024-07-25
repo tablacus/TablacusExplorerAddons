@@ -1,7 +1,7 @@
 const Addon_Id = "windowfadeout";
 const item = GetAddonElement(Addon_Id);
 const alpha = parseInt(item.getAttribute("alpha")) || 230;
-const fadeOutTime = parseInt(item.getAttribute("fadeOutTime")) || 60;
+const fadeOutTime = parseInt(item.getAttribute("fadeOutTime")) || 5;
 const fadeInStep = parseInt(item.getAttribute("fadeInStep")) || 2;
 const fadeOutStep = parseInt(item.getAttribute("fadeOutStep")) || -1;
 const fadeInDelay = parseInt(item.getAttribute("fadeInDelay")) || 1;
@@ -71,7 +71,9 @@ if (window.Addon == 1) {
 	AddEvent("Arrange", function (Ctrl, rc) {
 		SetWindowAlpha(ui_.hwnd, alpha);
 		ui_.Show = 2;
-		throttledHandle()
+		fadeOutTimer = setTimeout( function() {
+			fade(1);
+		}, fadeOutTime * 1000);
 	});
 
 	window.addEventListener("mousemove", function() {
