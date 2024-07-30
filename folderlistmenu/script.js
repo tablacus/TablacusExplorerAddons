@@ -24,7 +24,7 @@ if (window.Addon == 1) {
 					api.DestroyMenu(await oMenu[await list.item()]);
 				}
 				if (nVerb) {
-					FolderMenu.Invoke(await api.ILCreateFromPath(await items[nVerb - 1]), await Addons.FolderListMenu.NewTab ? SBSP_NEWBROWSER : 0);
+					FolderMenu.Invoke(await items[nVerb - 1], await Addons.FolderListMenu.NewTab ? SBSP_NEWBROWSER : 0);
 				}
 			}, 99);
 		}

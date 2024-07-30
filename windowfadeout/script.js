@@ -78,7 +78,7 @@ if (window.Addon == 1) {
 	AddEvent("Arrange", function (Ctrl, rc) {
 		SetWindowAlpha(ui_.hwnd, alpha);
 		ui_.Show = 2;
-		throttledHandle()
+		throttledHandle();
 	});
 
 	window.addEventListener("mousemove", function() {
@@ -94,13 +94,13 @@ if (window.Addon == 1) {
 	document.getElementById('AlphaValue').textContent = alpha;
 	document.querySelector("input[name='alpha']").value = alpha;
 	document.getElementById('FadeOutTimeValue').textContent = fadeOutTime;
-	document.querySelector("input[name=fadeOutTime]").value = fadeOutTime;
+	document.querySelector("input[name='fadeOutTime']").value = fadeOutTime;
 	document.getElementById('FadeInStepValue').textContent = fadeInStep;
-	document.querySelector("input[name=fadeInStep]").value = fadeInStep;
+	document.querySelector("input[name='fadeInStep']").value = fadeInStep;
 	document.getElementById('FadeOutStepValue').textContent = fadeOutStep;
-	document.querySelector("input[name=fadeOutStep]").value = fadeOutStep;
+	document.querySelector("input[name='fadeOutStep']").value = fadeOutStep;
 	document.getElementById('FadeInDelayValue').textContent = fadeInDelay;
-	document.querySelector("input[name=fadeInDelay]").value = fadeInDelay;
+	document.querySelector("input[name='fadeInDelay']").value = fadeInDelay;
 	document.getElementById('FadeOutDelayValue').textContent = fadeOutDelay;
-	document.querySelector("input[name=fadeOutDelay]").value = fadeOutDelay;
+	document.querySelector("input[name='fadeOutDelay']").value = fadeOutDelay;
 }

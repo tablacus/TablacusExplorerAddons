@@ -1,9 +1,36 @@
 <br>
-<table style="width: 100%">
-    <tr>
-        <td style="white-space: nowrap;"><label>@mspaint.exe,-23202[Transparent]</label></td>
-        <td style="text-align: center; width: 100%" id="rangeValue"></td>
-        <td style="white-space: nowrap"><label>@mspaint.exe,-23201[Opaque]</label></td>
-    </tr>
-</table>
-<input type="range" name="Alpha" min="1" max="255" style="width: 100%" oninput="document.getElementById('rangeValue').textContent = this.value;">
+<style>
+    .slider-container {
+        width: 100%;
+        margin-bottom: 15px;
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+    .slider-label {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .slider-range {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+    .slider-value {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: -1.5em;
+    }
+    input[type="range"] {
+        width: 100%;
+    }
+</style>
+<div class="slider-container">
+    <div class="slider-label"><label>Alpha</label></div>
+    <div class="slider-value" id="AlphaValue"></div>
+    <div class="slider-range">
+        <label>@mspaint.exe,-23202[Transparent]</label>
+        <label>@mspaint.exe,-23201[Opaque]</label>
+    </div>
+    <input type="range" name="alpha" min="1" max="255" oninput="document.getElementById('AlphaValue').textContent = this.value;" onchange="document.getElementById('AlphaValue').textContent = this.value;">
+</div>
