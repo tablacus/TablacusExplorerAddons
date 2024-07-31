@@ -23,7 +23,6 @@ if (window.Addon == 1) {
 		const delay = targetAlpha > currentAlpha ? fadeInDelay : fadeOutDelay;
 
 		function fading() {
-			console.log(step, delay, currentAlpha);
 			if (newAnimation.cancel) {
 				return;
 			}
