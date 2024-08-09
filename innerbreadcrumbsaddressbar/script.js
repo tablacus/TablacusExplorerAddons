@@ -18,6 +18,7 @@ if (window.Addon == 1) {
 		path2: [],
 		bClose: false,
 		nLevel: {},
+		SplitPathItems: {},
 
 		KeyDown: function (ev, o, Id) {
 			if (ev.keyCode ? ev.keyCode == VK_RETURN : /^Enter/i.test(ev.key)) {
@@ -62,7 +63,7 @@ if (window.Addon == 1) {
 				const height = oAddr.offsetHeight - 6;
 				o.style.height = (oAddr.offsetHeight - 2) + "px";
 				const bRoot = api.ILIsEmpty(FolderItem);
-				const Items = JSON.parse(await Sync.InnerBreadcrumbsAddressBar.SplitPath(FolderItem));
+				const Items = Addons.InnerBreadcrumbsAddressBar.SplitPathItems[Id];
 				o.style.width = "auto";
 				let bEmpty = true, n;
 				o.innerHTML = "";
@@ -350,6 +351,7 @@ if (window.Addon == 1) {
 
 	AddEvent("ChangeView2", async function (Ctrl) {
 		const r = await Promise.all([Ctrl.Parent.Id, Ctrl.FolderItem, api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)]);
+		Addons.InnerBreadcrumbsAddressBar.SplitPathItems[r[0]] = JSON.parse(await Sync.InnerBreadcrumbsAddressBar.SplitPath(r[1]));
 		Addons.InnerBreadcrumbsAddressBar.Blur(r[0]);
 		Addons.InnerBreadcrumbsAddressBar.path2[r[0]] = r[2];
 		await Addons.InnerBreadcrumbsAddressBar.Arrange(r[1], r[0]);
