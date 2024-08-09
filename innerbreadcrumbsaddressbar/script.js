@@ -37,19 +37,16 @@ if (window.Addon == 1) {
 
 		Resize: function (Id) {
 			clearTimeout(this.tid[Id]);
-			this.tid[Id] = setTimeout(function (Id) {
-				Addons.InnerBreadcrumbsAddressBar.Arrange(null, Id);
+			this.tid[Id] = setTimeout(async function (Id) {
+				const TC = await te.Ctrl(CTRL_TC, Id);
+				if (TC && await TC.Selected) {
+					Addons.InnerBreadcrumbsAddressBar.Arrange(await TC.Selected.FolderItem, Id);
+				}
 			}, 500, Id);
 		},
 
 		Arrange: async function (FolderItem, Id) {
 			delete this.tid[Id];
-			if (!FolderItem) {
-				const TC = await te.Ctrl(CTRL_TC, Id);
-				if (TC && await TC.Selected) {
-					FolderItem = await TC.Selected.FolderItem;
-				}
-			}
 			if (FolderItem) {
 				const arHTML = [];
 				const o = document.getElementById("breadcrumbsbuttons_" + Id);
@@ -62,7 +59,6 @@ if (window.Addon == 1) {
 				const width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetWidth - 2;
 				const height = oAddr.offsetHeight - 6;
 				o.style.height = (oAddr.offsetHeight - 2) + "px";
-				const bRoot = api.ILIsEmpty(FolderItem);
 				const Items = Addons.InnerBreadcrumbsAddressBar.SplitPathItems[Id];
 				o.style.width = "auto";
 				let bEmpty = true, n;
@@ -84,7 +80,7 @@ if (window.Addon == 1) {
 				}
 				o.style.width = (oAddr.offsetWidth - 2) + "px";
 				if (bEmpty) {
-					if (!await bRoot) {
+					if (!Items[0].bRoot) {
 						o.insertAdjacentHTML("AfterBegin", '<span id="breadcrumbsaddressbar_' + Id + '_' + n + '" class="button" style="line-height: ' + height + 'px" onclick="Addons.InnerBreadcrumbsAddressBar.Popup(this, ' + n + ', ' + Id + ')" onmouseover="MouseOver(this)" onmouseout="MouseOut()">' + BUTTONS.next + '</span>');
 					}
 				} else {
@@ -350,13 +346,14 @@ if (window.Addon == 1) {
 	};
 
 	AddEvent("ChangeView2", async function (Ctrl) {
-		const r = await Promise.all([Ctrl.Parent.Id, Ctrl.FolderItem, api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)]);
-		Addons.InnerBreadcrumbsAddressBar.SplitPathItems[r[0]] = JSON.parse(await Sync.InnerBreadcrumbsAddressBar.SplitPath(r[1]));
-		Addons.InnerBreadcrumbsAddressBar.Blur(r[0]);
-		Addons.InnerBreadcrumbsAddressBar.path2[r[0]] = r[2];
-		await Addons.InnerBreadcrumbsAddressBar.Arrange(r[1], r[0]);
-		(document.getElementById("breadcrumbsaddressbar_" + r[0]) || {}).value = r[2];
-		(document.getElementById("breadcrumbsaddr_img_" + r[0]) || {}).src = await GetIconImage(r[1], CLR_DEFAULT | COLOR_WINDOW);
+		Promise.all([Ctrl.Parent.Id, Ctrl.FolderItem, api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING)]).then(async function (r) {
+			Addons.InnerBreadcrumbsAddressBar.SplitPathItems[r[0]] = JSON.parse(await Sync.InnerBreadcrumbsAddressBar.SplitPath(r[1]));
+			Addons.InnerBreadcrumbsAddressBar.Blur(r[0]);
+			Addons.InnerBreadcrumbsAddressBar.path2[r[0]] = r[2];
+			await Addons.InnerBreadcrumbsAddressBar.Arrange(r[1], r[0]);
+			(document.getElementById("breadcrumbsaddressbar_" + r[0]) || {}).value = r[2];
+			(document.getElementById("breadcrumbsaddr_img_" + r[0]) || {}).src = await GetIconImage(r[1], CLR_DEFAULT | COLOR_WINDOW);
+		});
 	});
 
 	AddEvent("PanelCreated", function (Ctrl, Id) {

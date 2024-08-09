@@ -11,6 +11,7 @@ Sync.InnerBreadcrumbsAddressBar = {
 	},
 
 	SplitPath: function (FolderItem) {
+		const bRoot = api.ILIsEmpty(FolderItem);
 		const Items = [];
 		let n = 0;
 		do {
@@ -21,6 +22,7 @@ Sync.InnerBreadcrumbsAddressBar = {
 			FolderItem = api.ILGetParent(FolderItem);
 			n++;
 		} while (!api.ILIsEmpty(FolderItem) && n < 99);
+		Items[0].bRoot = bRoot;
 		return JSON.stringify(Items);
 	}
 }
