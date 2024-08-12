@@ -48,6 +48,15 @@ if (window.Addon == 1) {
 		Arrange: async function (FolderItem, Id) {
 			delete this.tid[Id];
 			if (FolderItem) {
+				let Items = Addons.InnerBreadcrumbsAddressBar.SplitPathItems[Id];
+				if (!Items) {
+					Items = JSON.parse(await Sync.InnerBreadcrumbsAddressBar.SplitPath(FolderItem));
+					if (Items) {
+						Addons.InnerBreadcrumbsAddressBar.SplitPathItems[Id] = Items;
+					} else {
+						return;
+					}
+				}
 				const arHTML = [];
 				const o = document.getElementById("breadcrumbsbuttons_" + Id);
 				const oAddr = document.getElementById("breadcrumbsaddressbar_" + Id);
@@ -59,7 +68,6 @@ if (window.Addon == 1) {
 				const width = oAddr.offsetWidth - oImg.offsetWidth + oPopup.offsetWidth - 2;
 				const height = oAddr.offsetHeight - 6;
 				o.style.height = (oAddr.offsetHeight - 2) + "px";
-				const Items = Addons.InnerBreadcrumbsAddressBar.SplitPathItems[Id];
 				o.style.width = "auto";
 				let bEmpty = true, n;
 				o.innerHTML = "";
