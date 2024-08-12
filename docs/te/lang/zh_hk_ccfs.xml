@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 24.7.28 (2024/8/5)-->
+<!-- Version 24.8.6 (2024/8/12)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -255,6 +255,9 @@
 	<text s="Replace slow columns">替換慢速欄位</text>
 	<text s="Items count">資料夾內項數</text>
 	<text s="Space free column">可用空間欄位</text>
+	<text s="Path column">查詢結果清單欄位</text>
+	<text s="URL">網址</text>
+	<text s="Query">查詢</text>
 	<text s="Explorer browser filter">依路徑樣式切換到替代引擎</text>
 	<text s="Force refresh">自動重新整理</text>
 	<text s="File operation">檔案操作</text>
