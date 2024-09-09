@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 24.8.6 (2024/8/12)-->
+<!-- Version 24.8.6 (2024/9/8)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -505,6 +505,8 @@
 	<text s="Overlay label">蓋上標籤</text>
 	<text s="View flags">檢視&#160;</text>
 	<text s="Small icon">小圖示</text>
+	<text s="Font">字型&#160;</text>
+	<text s="Padding">填入</text>
 	<text s="Label SQLite ODBC Driver">標籤資料庫 (ODBC)</text>
 	<text s="Label SQLite3">標籤資料庫</text>
 	<text s="Color labels">以底色標示</text>
