@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 24.8.6 (2024/9/8)-->
+<!-- Version 24.8.6 (2024/9/16)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -500,6 +500,9 @@
 	<text s="Badge">評級</text>
 	<text s="Label">標籤</text>
 	<text s="Confirm">確認</text>
+	<text s="Synchronize label records under a folder upon folder operation">資料夾變更時同步其下標籤記錄</text>
+	<text s="Cross-drive move is not supported">不支援跨磁碟移動</text>
+	<text s="Caution: labels will be permanently deleted">注意: 標籤將被永久刪除</text>
 	<text s="Label button">標籤按鈕</text>
 	<text s="Label groups">標籤群組</text>
 	<text s="Overlay label">蓋上標籤</text>
