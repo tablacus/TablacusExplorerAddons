@@ -3,7 +3,7 @@ const Addon_Id = "iconlabelplus";
 Sync.IconLabelPlus = {
 	ReplaceColumns: function (FV, pid, s) {
 		const hList = FV.hwndList;
-		if (hList && !api.SendMessage(hList, LVM_GETVIEW, 0, 0)) {
+		if (s && hList && !api.SendMessage(hList, LVM_GETVIEW, 0, 0)) {
 			const hdc = api.GetDC(hList);
 			const hOld = api.SelectObject(hdc, CreateFont(DefaultFont));
 			const rc = api.Memory("RECT");
