@@ -13,7 +13,7 @@ Sync.WCX = {
 			return;
 		}
 		const lib = {
-			file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL),
+			file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING),
 			path: ""
 		}
 		if (!Sync.WCX.Obj) {
@@ -41,7 +41,7 @@ Sync.WCX = {
 		for (let i = 0; i < items.length; i++) {
 			const item = items[i];
 			const filter = item.getAttribute("Filter");
-			const dllPath = (ExtractMacro(te, api.PathUnquoteSpaces(item.getAttribute("Path"))) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1");
+			const dllPath = (ExtractPath(te, item.getAttribute("Path")) + (api.sizeof("HANDLE") > 4 ? "64" : "")).replace(/\.u(wcx64)$/, ".$1");
 			const WCX = Sync.WCX.DLL.Open(dllPath);
 			if (WCX && WCX.OpenArchive) {
 				Sync.WCX.Obj.push({ X: WCX, filter: filter });
@@ -87,8 +87,8 @@ Sync.WCX = {
 	},
 
 	LocalList: function (Items, fl, nLevel) {
-		for (let i = 0; i < Items.Count; i++) {
-			if (Sync.WCX.Progress.HasUserCancelled()) {
+		for (let i = 0; i < Items.Count; ++i) {
+			if (Sync.WCX.Progress.HasUserCancelled(i, Items.Count, 2)) {
 				return 1;
 			}
 			const Item = Items.Item(i);
@@ -201,11 +201,12 @@ Sync.WCX = {
 		}
 	},
 
-	Enum: function (pid, Ctrl, fncb) {
+	Enum: function (pid, Ctrl, fncb, SessionId) {
 		const lib = Sync.WCX.GetObject(pid.Path);
-		if (Ctrl && lib) {
+		if (lib) {
 			const Items = api.CreateObject("FolderItems");
-			const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+			const root = SessionId ? BuildPath(te.Data.TempFolder, SessionId.toString(16)) : pid.Path;
+
 			const OpenData = {
 				ArcName: lib.file,
 				OpenMode: 0
@@ -288,21 +289,20 @@ Sync.WCX = {
 
 	ProcessDataProc: function (FileName, Size) {
 		if (Sync.WCX.Progress) {
-			let points = 0;
+			let nCurrent = 0, nTotal = 100;
 			if (Size >= 0) {
 				Sync.WCX.SizeCurrent += Size;
-				points = Math.min(Math.floor(Sync.WCX.SizeCurrent * 100 / Sync.WCX.SizeTotal), 100);
+				nCurrent = Sync.WCX.SizeCurrent;
+				nTotal = Sync.WCX.SizeTotal;
 			} else if (Size >= -100) {
-				points = Math.abs(Size);
+				nCurrent = Math.abs(Size);
 			}
 			if (FileName && Sync.WCX.StartProgress) {
 				Sync.WCX.StartProgress = false;
 				Sync.WCX.Progress.StartProgressDialog(te.hwnd, null, 2);
 			}
-			Sync.WCX.Progress.SetTitle(points + "%");
-			Sync.WCX.Progress.SetProgress(points, 100);
 			Sync.WCX.Progress.SetLine(2, (FileName || "").replace(Sync.WCX.RootPath, ""), true);
-			return Sync.WCX.Progress.HasUserCancelled() ? 0 : 1;
+			return Sync.WCX.Progress.HasUserCancelled(nCurrent, nTotal, 2) ? 0 : 1;
 		}
 		return 1;
 	},
@@ -314,7 +314,7 @@ Sync.WCX = {
 	}
 }
 
-const twcxPath = BuildPath(GetParentFolderName(api.GetModuleFileName(null)), ["addons\\wcx\\twcx", api.sizeof("HANDLE") * 8, ".dll"].join(""));
+const twcxPath = BuildPath(te.Data.Installed, ["addons\\wcx\\twcx", g_.bit, ".dll"].join(""));
 Sync.WCX.DLL = api.DllGetClassObject(twcxPath, "{56297D71-E778-4dfd-8678-6F4079A2BC50}");
 
 AddEvent("Finalize", Sync.WCX.Finalize);
@@ -339,18 +339,21 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 		return;
 	}
 	let hr = S_OK;
-	const root = BuildPath(fso.GetSpecialFolder(2).Path, "tablacus");
+	let strSessionId;
+	const root = te.Data.TempFolder;
 	const ar = [];
 	for (let i = Items.Count; i--;) {
 		const path = Items.Item(i).Path;
 		if (!api.StrCmpNI(root, path, root.length) && !fso.FileExists(path)) {
 			ar.unshift(GetFileName(path).toLowerCase());
+			if (!strSessionId) {
+				strSessionId = GetParentFolderName(path).replace(root + "\\", "").replace(/\\.*/, "");
+			}
 		}
 	}
 	if (!ar.length) {
 		return;
 	}
-	const strSessionId = GetParentFolderName(ar[0]).replace(root + "\\", "").replace(/\\.*/, "");
 	dir = {};
 	const lib = Sync.WCX.GetObject(strSessionId == Sync.WCX.ClipId ? Sync.WCX.ClipPath : Ctrl);
 	if (lib) {
@@ -361,7 +364,7 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 		try {
 			Sync.WCX.Progress.SetLine(1, api.LoadString(hShell32, 33260) || api.LoadString(hShell32, 6478), true);
 			const o = {};
-			const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+			const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 			Sync.WCX.RootPath = root + "\\";
 			const fh = {}, sh = {}, fl = [];
 			Sync.WCX.ArcList(lib, fh, sh);
@@ -384,9 +387,9 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 			Sync.WCX.ShowLine(5954, 32946, fl.length);
 			const harc = lib.X.OpenArchive(OpenData);
 			if (harc) {
-				let op;
+				let op, dest;
 				do {
-					let dest = null;
+					dest = null;
 					const info = [];
 					if (lib.X.ReadHeaderEx(harc, info)) {
 						break;
@@ -432,7 +435,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 
 AddEvent("DefaultCommand", function (Ctrl, Selected) {
 	if (Selected.Count == 1) {
-		let path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+		let path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 		if (Sync.WCX.IsHandle(path)) {
 			Ctrl.Navigate(path);
 			return S_OK;
@@ -440,7 +443,7 @@ AddEvent("DefaultCommand", function (Ctrl, Selected) {
 		if (Selected.Item(0).IsFolder) {
 			const lib = Sync.WCX.GetObject(Ctrl);
 			if (lib) {
-				const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+				const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 				path = path.replace(root, lib.file);
 				Ctrl.Navigate(path);
 				return S_OK;
@@ -456,7 +459,7 @@ AddEvent("ILGetParent", function (FolderItem) {
 });
 
 AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-	const path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+	const path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 	if (Sync.WCX.IsHandle(path)) {
 		RemoveCommand(hMenu, ContextMenu, "rename");
 	}
@@ -500,7 +503,7 @@ AddEvent("AddonDisabled", function (Id) {
 
 AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 	if (Ctrl.Type <= CTRL_EB && Sync.WCX.IsHandle(Prev)) {
-		const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+		const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 		DeleteItem(root);
 	}
 });

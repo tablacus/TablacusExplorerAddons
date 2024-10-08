@@ -151,7 +151,7 @@ Sync.T7Zip = {
 				Folder: {},
 				Folder2: {},
 				lib: lib,
-				root: BuildPath(te.Data.TempFolder, SessionId.toString(16)),
+				root: SessionId ? BuildPath(te.Data.TempFolder, SessionId.toString(16)) : pid.Path,
 				GetProperty: Sync.T7Zip.GetProperty,
 				GetPassword: Sync.T7Zip.GetPassword
 			}

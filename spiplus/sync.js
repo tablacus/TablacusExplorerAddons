@@ -78,7 +78,7 @@ Sync.SPIPlus = {
 			const Items = api.CreateObject("FolderItems");
 			const Folder = {};
 			const Folder2 = {};
-			const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", SessionId));
+			const root = SessionId ? BuildPath(te.Data.TempFolder, SessionId.toString(16)) : pid.Path;
 			const pFileInfo = [];
 			lib.SPI.GetArchiveInfo(lib.file, 0, 0, pFileInfo, function () {
 				return {};
@@ -193,7 +193,7 @@ AddEvent("Load", function () {
 			if (!Items.Count) {
 				return;
 			}
-			const root = BuildPath(fso.GetSpecialFolder(2).Path, "tablacus");
+			const root = te.Data.TempFolder;
 			const ar = [];
 			for (let i = Items.Count; i--;) {
 				const Item = Items.Item(i);
@@ -287,7 +287,7 @@ AddEvent("Load", function () {
 				if (Sync.SPIPlus.IsFolder(Item)) {
 					const lib = Sync.SPIPlus.GetObject(Ctrl);
 					if (lib) {
-						const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+						const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 						path = path.replace(root, lib.file);
 						Ctrl.Navigate(path);
 						return S_OK;
@@ -311,7 +311,7 @@ AddEvent("Load", function () {
 
 		AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 			if (Ctrl.Type <= CTRL_EB && Sync.SPIPlus.IsHandle(Prev)) {
-				const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+				const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 				DeleteItem(root);
 			}
 		});

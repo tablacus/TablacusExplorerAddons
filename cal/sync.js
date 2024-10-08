@@ -10,7 +10,7 @@ Sync.CAL = {
 			return;
 		}
 		const lib = {
-			file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING | SHGDN_ORIGINAL),
+			file: "string" === typeof Ctrl ? Ctrl : api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING),
 			path: ""
 		}
 		if (!Sync.CAL.Obj) {
@@ -36,7 +36,7 @@ Sync.CAL = {
 					}
 				}
 			}
-			lib.path = BuildPath(fso.GetFileName(lib.file), lib.path);
+			lib.path = BuildPath(GetFileName(lib.file), lib.path);
 			lib.file = GetParentFolderName(lib.file);
 		};
 	},
@@ -46,7 +46,7 @@ Sync.CAL = {
 		const items = Sync.CAL.xml.getElementsByTagName("Item");
 		for (let i = 0; i < items.length; i++) {
 			const item = items[i];
-			const dllPath = ExtractMacro(te, api.PathUnquoteSpaces(item.getAttribute("Path")).replace(/\*/g, api.sizeof("HANDLE") * 8));
+			const dllPath = ExtractPath(te, item.getAttribute("Path")).replace(/\*/g, g_.bit);
 			const procName = item.getAttribute("Name").replace(/\W.*$/, "");
 			if (/\.exe"?\s*/i.test(dllPath)) {
 				CAL = Sync.CAL.OpenExe(dllPath);
@@ -90,7 +90,7 @@ Sync.CAL = {
 	},
 
 	Exec: function (Ctrl, lib, strCmd, strPath, arList, bRefresh, arFull) {
-		strCmd = strCmd.replace(/%archive%/i, api.PathQuoteSpaces(lib.file));
+		strCmd = strCmd.replace(/%archive%/i, PathQuoteSpaces(lib.file));
 		strCmd = strCmd.replace(/%base%/i, lib.path);
 		if (/%path%/i.test(strCmd)) {
 			strCmd = strCmd.replace(/%path%/i, strPath);
@@ -156,7 +156,7 @@ Sync.CAL = {
 		if (lib) {
 			let ar = [], arFull = [], root;
 			if (lib.path) {
-				root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+				root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 				const path = BuildPath(root, lib.path);
 				DeleteItem(path);
 				Sync.CAL.CreateFolder(path);
@@ -170,8 +170,8 @@ Sync.CAL = {
 				root = Items.Item(-1).Path;
 				for (let i = Items.Count; i-- > 0;) {
 					const Item = Items.Item(i);
-					ar.unshift(api.PathQuoteSpaces(Item.Path.replace(root, "").replace(/^\\/, "")));
-					arFull.unshift(api.PathQuoteSpaces(Item.Path));
+					ar.unshift(PathQuoteSpaces(Item.Path.replace(root, "").replace(/^\\/, "")));
+					arFull.unshift(PathQuoteSpaces(Item.Path));
 				}
 			}
 			Sync.CAL.Exec(Ctrl, lib, lib.X.Add, root, ar, true, arFull);
@@ -189,10 +189,10 @@ Sync.CAL = {
 			if (!confirmOk()) {
 				return;
 			}
-			const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+			const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 			const ar = [];
 			for (let i = Items.Count; i-- > 0;) {
-				ar.unshift(api.PathQuoteSpaces(Items.Item(i).Path.replace(root, "").replace(/^\\/, "")));
+				ar.unshift(PathQuoteSpaces(Items.Item(i).Path.replace(root, "").replace(/^\\/, "")));
 			}
 			Sync.CAL.Exec(Ctrl, lib, lib.X.Delete, root, ar, true);
 			return true;
@@ -209,7 +209,7 @@ Sync.CAL = {
 				return;
 			}
 			const Items = te.FolderItems();
-			const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+			const root = SessionId ? BuildPath(te.Data.TempFolder, SessionId.toString(16)) : pid.Path;
 			const harc = lib.X.OpenArchive(te.hwnd, lib.file, 1);
 			if (harc) {
 				const info = {};
@@ -308,7 +308,7 @@ Sync.CAL = {
 	}
 }
 
-Sync.CAL.DLL = api.DllGetClassObject(BuildPath(te.Data.Installed, "addons\\cal\\tcal" + (api.sizeof("HANDLE") * 8) + '.dll'), "{D45DF22D-DA6A-406b-8C1E-5A6642B5BEE3}");
+Sync.CAL.DLL = api.DllGetClassObject(BuildPath(te.Data.Installed, "addons\\cal\\tcal" + g_.bit + '.dll'), "{D45DF22D-DA6A-406b-8C1E-5A6642B5BEE3}");
 
 Sync.CAL.xml = OpenXml("cal.xml", false, true);
 
@@ -333,7 +333,7 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 	if (!Items.Count) {
 		return;
 	}
-	const root = BuildPath(fso.GetSpecialFolder(2).Path, "tablacus");
+	const root = te.Data.TempFolder;
 	const ar = [];
 	for (let i = Items.Count; i--;) {
 		const path = Items.Item(i).Path;
@@ -349,7 +349,7 @@ AddEvent("BeforeGetData", function (Ctrl, Items, nMode) {
 	if (lib) {
 		const dest = BuildPath(root, strSessionId);
 		for (let i = ar.length; i--;) {
-			ar[i] = api.PathQuoteSpaces(ar[i].replace(dest, "").replace(/^\\/, ""));
+			ar[i] = PathQuoteSpaces(ar[i].replace(dest, "").replace(/^\\/, ""));
 		}
 		Sync.CAL.CreateFolder(dest);
 		Sync.CAL.Exec(Ctrl, lib, lib.X.Extract, dest, ar);
@@ -367,7 +367,7 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 
 AddEvent("DefaultCommand", function (Ctrl, Selected) {
 	if (Selected.Count == 1) {
-		let path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+		let path = api.GetDisplayNameOf(Selected.Item(0), SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 		if (Sync.CAL.IsHandle(path)) {
 			Ctrl.Navigate(path);
 			return S_OK;
@@ -375,7 +375,7 @@ AddEvent("DefaultCommand", function (Ctrl, Selected) {
 		if (Selected.Item(0).IsFolder) {
 			const lib = Sync.CAL.GetObject(Ctrl);
 			if (lib) {
-				const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+				const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 				path = path.replace(root, lib.file);
 				Ctrl.Navigate(path);
 				return S_OK;
@@ -391,7 +391,7 @@ AddEvent("ILGetParent", function (FolderItem) {
 });
 
 AddEvent("Context", function (Ctrl, hMenu, nPos, Selected, item, ContextMenu) {
-	const path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR | SHGDN_ORIGINAL);
+	const path = api.GetDisplayNameOf(Ctrl.FolderItem, SHGDN_FORPARSING | SHGDN_FORADDRESSBAR);
 	if (Sync.CAL.IsHandle(path)) {
 		RemoveCommand(hMenu, ContextMenu, "rename");
 	}
@@ -437,7 +437,7 @@ AddEvent("AddonDisabled", function (Id) {
 
 AddEvent("BeforeNavigate", function (Ctrl, fs, wFlags, Prev) {
 	if (Ctrl.Type <= CTRL_EB && Sync.CAL.IsHandle(Prev)) {
-		const root = BuildPath(fso.GetSpecialFolder(2).Path, api.sprintf(99, "tablacus\\%x", Ctrl.SessionId));
+		const root = BuildPath(te.Data.TempFolder, Ctrl.FolderItem.Id.toString(16));
 		DeleteItem(root);
 	}
 });

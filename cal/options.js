@@ -126,7 +126,7 @@ SetProp = async function () {
 	for (let i = arHtml.length; i--;) {
 		document.getElementById("prop" + i).innerHTML = arHtml[i].join("");
 	}
-	const ar = [await fso.GetFileName(DLL.Path)];
+	const ar = [GetFileName(DLL.Path)];
 	if (CAL && await CAL.GetVersion) {
 		const v = await CAL.GetVersion();
 		if (v) {
@@ -160,11 +160,11 @@ AddArchiver = async function () {
 	o = o[o.selectedIndex];
 	const a = o.value.split("/");
 	a.unshift(o.text);
-	let path = await api.PathUnquoteSpaces(a[1]);
+	let path = PathUnquoteSpaces(a[1]);
 	if (/Program Files/.test(path)) {
-		if (!fso.FileExists(path)) {
-			path = api.PathUnquoteSpaces(path.replace(/(Program Files)/, "$1 (x86)"));
-			if (fso.FileExists(path)) {
+		if (!await fso.FileExists(path)) {
+			path = PathUnquoteSpaces(path.replace(/(Program Files)/, "$1 (x86)"));
+			if (await fso.FileExists(path)) {
 				a[1] = exe;
 			}
 		}
