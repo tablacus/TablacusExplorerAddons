@@ -1,9 +1,18 @@
 // Tablacus Explorer WebView2 html maker
 var en_file = "../../../tablacus.github.io/tewv2.html";
 var ja_file = "../../../tablacus.github.io/tewv2_ja.html";
+var json_file = "./webview2.json";
+
 var wsh = new ActiveXObject('WScript.Shell');
-var oExec = wsh.Exec("curl https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/latest");
-var s = oExec.StdOut.ReadAll();
+var oExec = wsh.Exec("curl https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/latest -o " + json_file + " -L");
+oExec.StdOut.ReadAll();
+
+var ado = new ActiveXObject("ADODB.Stream");
+ado.CharSet = "utf-8";
+ado.Open();
+ado.LoadFromFile(json_file);
+var s = ado.ReadText(-1);
+ado.Close();
 var ar = [];
 ar.push(s);
 var res = /"tag_name":\s*"(.*?)"/.exec(s);
@@ -67,4 +76,6 @@ ado.WriteText(s);
 ado.SaveToFile(ja_file, 2);
 ado.Close();
 
-WScript.Echo(ar.join("\n"));
+var fn = browser_download_url.replace(/^.+\//, "");
+wsh.Run("curl " + browser_download_url + " -o " + fn + " -L", 1);
+WScript.Echo(fn);
