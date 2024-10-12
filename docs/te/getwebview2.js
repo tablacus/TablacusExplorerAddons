@@ -3,7 +3,9 @@ var en_file = "../../../tablacus.github.io/tewv2.html";
 var ja_file = "../../../tablacus.github.io/tewv2_ja.html";
 var json_file = "./webview2.json";
 
+
 var wsh = new ActiveXObject('WScript.Shell');
+wsh.Run("cmd /cdel tewv2*.zip", 1, true);
 var oExec = wsh.Exec("curl https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/latest -o " + json_file + " -L");
 oExec.StdOut.ReadAll();
 
@@ -78,4 +80,4 @@ ado.Close();
 
 var fn = browser_download_url.replace(/^.+\//, "");
 wsh.Run("curl " + browser_download_url + " -o " + fn + " -L", 1);
-WScript.Echo(fn);
+

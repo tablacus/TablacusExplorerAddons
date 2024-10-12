@@ -4,9 +4,9 @@ var json_file = "./releases.json";
 var en_file = "../../../tablacus.github.io/explorer_en.html";
 var ja_file = "../../../tablacus.github.io/explorer.html";
 
-var cmd = 'powershell [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri "%url%" -OutFile "%file%"';
+var cmd = 'curl "%url%" -O "%file%" -L';
 var wsh = new ActiveXObject('WScript.Shell');
-wsh.Run("cmd /cdel *.zip", 1, true);
+wsh.Run("cmd /cdel te2*.zip", 1, true);
 wsh.Run(cmd.replace(/%url%/ig, "https://api.github.com/repos/tablacus/TablacusExplorer/releases/latest").replace(/%file%/ig, json_file), 1, true);
 
 var ado = new ActiveXObject("ADODB.Stream");
