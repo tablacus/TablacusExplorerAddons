@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 24.8.6 (2024/9/18)-->
+<!-- Version 24.10.11 (2024/10/13)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -561,6 +561,7 @@
 	<text s="Size bar chart">檔案大小條狀圖</text>
 	<text s="List width">自訂寬度的清單檢視</text>
 	<text s="Fast list mode">快速清單檢視</text>
+	<text s="Icon label plus">兩行項目名稱</text>
 	<text s="Gridlines">格線</text>
 	<text s="Stripes">斑馬條紋</text>
 	<text s="Stripes lite">快速斑馬條紋</text>
