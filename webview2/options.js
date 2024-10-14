@@ -29,7 +29,7 @@ Addons.WebView2 = {
 	},
 
 	CheckUpdate: function () {
-		OpenHttpRequest("https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/latest", "", "Addons.WebView2.CheckUpdate2");
+		OpenHttpRequest("https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/latest", "http://tablacus.github.io/TablacusExplorerAddons/te/webview2.json", "Addons.WebView2.CheckUpdate2");
 	},
 
 	CheckUpdate2: async function (xhr) {
@@ -64,7 +64,7 @@ Addons.WebView2 = {
 		arg.zipfile = BuildPath(temp, await arg.file);
 		arg.temp = BuildPath(temp, "explorer");
 		await CreateFolder(await arg.temp);
-		OpenHttpRequest(await arg.url, "", "Addons.WebView2.CheckUpdate3", arg);
+		OpenHttpRequest(await arg.url, "http://tablacus.github.io/TablacusExplorerAddons/te/" + ((await arg.url).replace(/^.*\//, "")), "Addons.WebView2.CheckUpdate3", arg);
 	},
 
 	CheckUpdate3: async function (xhr, url, arg) {
