@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 24.10.11 (2024/10/13)-->
+<!-- Version 24.10.11 (2024/11/1)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -103,6 +103,8 @@
 	<text s="&amp;Lock">鎖定(&amp;L)</text>
 	<text s="Previous tab">上一個分頁</text>
 	<text s="Next tab">下一個分頁</text>
+	<text s="Move left">左移</text>
+	<text s="Move right">右移</text>
 	<text s="Back">上一頁</text>
 	<text s="Forward">下一頁</text>
 	<text s="&amp;Refresh">重新整理(&amp;R)</text>
@@ -293,6 +295,7 @@
 	<text s="Save selected items">儲存選擇</text>
 	<text s="Save">儲存</text>
 	<text s="Remember selection">記住選擇</text>
+	<text s="Select first">自動選取第一個項目</text>
 	<text s="Select plus">自動選取新項目</text>
 	<text s="Check box">核取方塊</text>
 	<text s="shift key to select in X-Finder style">X-Finder 風格選取</text>
