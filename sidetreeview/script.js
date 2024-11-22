@@ -29,6 +29,7 @@ if (window.Addon == 1) {
 
 		Create: async function () {
 			Common.SideTreeView = await api.CreateObject("Object");
+			Common.SideTreeView.Refresh = GetNum(item.getAttribute("Refresh"));
 			Common.SideTreeView.TV = await te.CreateCtrl(CTRL_TV);
 			Common.SideTreeView.TV.Style = await te.Data.Tree_Style;
 			Common.SideTreeView.TV.SetRoot(Addons.SideTreeView.Root || await te.Data.Tree_Root, await te.Data.Tree_EnumFlags, await te.Data.Tree_RootStyle);
