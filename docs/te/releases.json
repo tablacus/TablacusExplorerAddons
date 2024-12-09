@@ -1,228 +1,130 @@
-﻿{"url":"https://api.github.com/repos/tablacus/TablacusExplorer/releases/179541451",
+﻿{
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/189722415",
 
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/189722415/assets",
 
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/189722415/assets{?name,label}",
 
-"assets_url":"https://api.github.com/repos/tablacus/TablacusExplorer/releases/179541451/assets",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/24.12.9",
 
+  "id": 189722415,
+  "author": {
+    "login": "tablacus",
 
+    "id": 5156977,
+    "node_id": "MDQ6VXNlcjUxNTY5Nzc=",
 
-"upload_url":"https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/179541451/assets{?name,label}",
+    "avatar_url": "https://avatars.githubusercontent.com/u/5156977?v=4",
 
+    "gravatar_id": "",
 
+    "url": "https://api.github.com/users/tablacus",
 
-"html_url":"https://github.com/tablacus/TablacusExplorer/releases/tag/24.10.11",
+    "html_url": "https://github.com/tablacus",
 
+    "followers_url": "https://api.github.com/users/tablacus/followers",
 
+    "following_url": "https://api.github.com/users/tablacus/following{/other_user}",
 
-"id":179541451,
+    "gists_url": "https://api.github.com/users/tablacus/gists{/gist_id}",
 
+    "starred_url": "https://api.github.com/users/tablacus/starred{/owner}{/repo}",
 
+    "subscriptions_url": "https://api.github.com/users/tablacus/subscriptions",
 
-"author":{"login":"tablacus",
+    "organizations_url": "https://api.github.com/users/tablacus/orgs",
 
+    "repos_url": "https://api.github.com/users/tablacus/repos",
 
+    "events_url": "https://api.github.com/users/tablacus/events{/privacy}",
 
-"id":5156977,
+    "received_events_url": "https://api.github.com/users/tablacus/received_events",
 
+    "type": "User",
 
+    "user_view_type": "public",
 
-"node_id":"MDQ6VXNlcjUxNTY5Nzc=",
+    "site_admin": false
+  },
+  "node_id": "RE_kwDOALVDDs4LTu8v",
 
+  "tag_name": "24.12.9",
 
+  "target_commitish": "master",
 
-"avatar_url":"https://avatars.githubusercontent.com/u/5156977?v=4",
+  "name": "",
 
+  "draft": false,
+  "prerelease": false,
+  "created_at": "2024-12-09T13:31:59Z",
 
+  "published_at": "2024-12-09T13:36:47Z",
 
-"gravatar_id":"",
+  "assets": [
+    {
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/212121212",
 
+      "id": 212121212,
+      "node_id": "RA_kwDOALVDDs4MpLZ8",
 
+      "name": "te241209.zip",
 
-"url":"https://api.github.com/users/tablacus",
+      "label": null,
+      "uploader": {
+        "login": "tablacus",
 
+        "id": 5156977,
+        "node_id": "MDQ6VXNlcjUxNTY5Nzc=",
 
+        "avatar_url": "https://avatars.githubusercontent.com/u/5156977?v=4",
 
-"html_url":"https://github.com/tablacus",
+        "gravatar_id": "",
 
+        "url": "https://api.github.com/users/tablacus",
 
+        "html_url": "https://github.com/tablacus",
 
-"followers_url":"https://api.github.com/users/tablacus/followers",
+        "followers_url": "https://api.github.com/users/tablacus/followers",
 
+        "following_url": "https://api.github.com/users/tablacus/following{/other_user}",
 
+        "gists_url": "https://api.github.com/users/tablacus/gists{/gist_id}",
 
-"following_url":"https://api.github.com/users/tablacus/following{/other_user}",
+        "starred_url": "https://api.github.com/users/tablacus/starred{/owner}{/repo}",
 
+        "subscriptions_url": "https://api.github.com/users/tablacus/subscriptions",
 
+        "organizations_url": "https://api.github.com/users/tablacus/orgs",
 
-"gists_url":"https://api.github.com/users/tablacus/gists{/gist_id}",
+        "repos_url": "https://api.github.com/users/tablacus/repos",
 
+        "events_url": "https://api.github.com/users/tablacus/events{/privacy}",
 
+        "received_events_url": "https://api.github.com/users/tablacus/received_events",
 
-"starred_url":"https://api.github.com/users/tablacus/starred{/owner}{/repo}",
+        "type": "User",
 
+        "user_view_type": "public",
 
+        "site_admin": false
+      },
+      "content_type": "application/x-zip-compressed",
 
-"subscriptions_url":"https://api.github.com/users/tablacus/subscriptions",
+      "state": "uploaded",
 
+      "size": 773993,
+      
+      "created_at": "2024-12-09T13:57:46Z",
 
+      "updated_at": "2024-12-09T13:57:48Z",
 
-"organizations_url":"https://api.github.com/users/tablacus/orgs",
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/24.12.9/te241209.zip"
+    }
+  ],
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/24.12.9",
 
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/24.12.9",
 
-
-"repos_url":"https://api.github.com/users/tablacus/repos",
-
-
-
-"events_url":"https://api.github.com/users/tablacus/events{/privacy}",
-
-
-
-"received_events_url":"https://api.github.com/users/tablacus/received_events",
-
-
-
-"type":"User",
-
-
-
-"site_admin":false},"node_id":"RE_kwDOALVDDs4Ks5XL",
-
-
-
-"tag_name":"24.10.11",
-
-
-
-"target_commitish":"master",
-
-
-
-"name":"",
-
-
-
-"draft":false,"prerelease":false,"created_at":"2024-10-11T13:45:12Z",
-
-
-
-"published_at":"2024-10-11T13:46:39Z",
-
-
-
-"assets":[{"url":"https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/198438974",
-
-
-
-"id":198438974,
-
-
-
-"node_id":"RA_kwDOALVDDs4L0_A-",
-
-
-
-"name":"te241011.zip",
-
-
-
-"label":null,"uploader":{"login":"tablacus",
-
-
-
-"id":5156977,
-
-
-
-"node_id":"MDQ6VXNlcjUxNTY5Nzc=",
-
-
-
-"avatar_url":"https://avatars.githubusercontent.com/u/5156977?v=4",
-
-
-
-"gravatar_id":"",
-
-
-
-"url":"https://api.github.com/users/tablacus",
-
-
-
-"html_url":"https://github.com/tablacus",
-
-
-
-"followers_url":"https://api.github.com/users/tablacus/followers",
-
-
-
-"following_url":"https://api.github.com/users/tablacus/following{/other_user}",
-
-
-
-"gists_url":"https://api.github.com/users/tablacus/gists{/gist_id}",
-
-
-
-"starred_url":"https://api.github.com/users/tablacus/starred{/owner}{/repo}",
-
-
-
-"subscriptions_url":"https://api.github.com/users/tablacus/subscriptions",
-
-
-
-"organizations_url":"https://api.github.com/users/tablacus/orgs",
-
-
-
-"repos_url":"https://api.github.com/users/tablacus/repos",
-
-
-
-"events_url":"https://api.github.com/users/tablacus/events{/privacy}",
-
-
-
-"received_events_url":"https://api.github.com/users/tablacus/received_events",
-
-
-
-"type":"User",
-
-
-
-"site_admin":false},"content_type":"application/x-zip-compressed",
-
-
-
-"state":"uploaded",
-
-
-
-"size":773992,
-
-
-
-"created_at":"2024-10-11T13:46:32Z",
-
-
-
-"updated_at":"2024-10-11T13:46:34Z",
-
-
-
-"browser_download_url":"https://github.com/tablacus/TablacusExplorer/releases/download/24.10.11/te241011.zip"}],"tarball_url":"https://api.github.com/repos/tablacus/TablacusExplorer/tarball/24.10.11",
-
-
-
-"zipball_url":"https://api.github.com/repos/tablacus/TablacusExplorer/zipball/24.10.11",
-
-
-
-"body":"Some fix (Backup recommended)\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/840efe5892458c8c3d55f11a8098a732f8c79ee550580814d31bcfbd58cc8910)\r\n\r\nTablacus Explorer WebView2 バージョン 24.9.20を使っていてTablacus Explorer本体がバージョンアップできない場合は\r\nアドオンの「ダウンロード」を有効にして「cURL」をクリックしてcURLでダウンロードするようにしてください。\r\n\r\n![image](https://github.com/user-attachments/assets/f0b96063-a037-4c62-962c-dfa1b4488154)\r\n\r\n24.10.11にアップデートしたらとりあえず戻しても大丈夫です。"}
-
-
+  "body": "Some fix (Backup recommended)\r\n\r\n- JavaScriptで非推奨になっている`substr`を置き換えた。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/04f0e44b2949673eaf2900316c90338fdf2b045ae3085adcf68a5537cdcbc5c4)\r\n"
+}
 
