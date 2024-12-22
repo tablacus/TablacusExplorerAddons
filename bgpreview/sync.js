@@ -8,6 +8,7 @@ Sync.BGPreview = {
 	Size: GetNum(item.getAttribute("Size")) || 256,
 	Visible: !GetNum(item.getAttribute("Hidden")),
 	Alpha: GetNum(item.getAttribute("Alpha")) || 100,
+	Limits: GetNum(item.getAttribute("Limits")) || 10000000,
 	Items: {},
 
 	Exec: function (Ctrl, pt) {
@@ -34,51 +35,55 @@ Sync.BGPreview = {
 			return;
 		}
 		if (Sync.BGPreview.Visible && hwnd) {
-			if (!api.ILIsEqual(Item, Sync.BGPreview.Items[hwnd])) {
-				const bClear = Sync.BGPreview.Items[hwnd] === null;
-				Sync.BGPreview.Items[hwnd] = Item;
-				Threads.GetImage({
-					FV: FV,
-					hwnd: hwnd,
-					path: Item,
-					cx: Sync.BGPreview.Size,
-					f: true,
-					Extract: Sync.BGPreview.Extract,
-					bClear: bClear,
-					type: -2,
-					mix: Sync.BGPreview.Alpha,
+			if (api.UQuadCmp(Item.ExtendedProperty("Size"), Sync.BGPreview.Limits) > 0) {
+				return;
+			}
+			if (api.ILIsEqual(Item, Sync.BGPreview.Items[hwnd])) {
+				return;
+			}
+			const bClear = Sync.BGPreview.Items[hwnd] === null;
+			Sync.BGPreview.Items[hwnd] = Item;
+			Threads.GetImage({
+				FV: FV,
+				hwnd: hwnd,
+				path: Item,
+				cx: Sync.BGPreview.Size,
+				f: true,
+				Extract: Sync.BGPreview.Extract,
+				bClear: bClear,
+				type: -2,
+				mix: Sync.BGPreview.Alpha,
 
-					onload: function (o) {
-						if (o.path === Sync.BGPreview.Items[o.hwnd]) {
-							Sync.BGPreview.Items[o.hwnd] = null;
-							const lvbk = api.Memory("LVBKIMAGE");
-							lvbk.hbm = o.out;
-							lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
-							if (!api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
-								api.DeleteObject(lvbk.hbm);
-							}
+				onload: function (o) {
+					if (o.path === Sync.BGPreview.Items[o.hwnd]) {
+						Sync.BGPreview.Items[o.hwnd] = null;
+						const lvbk = api.Memory("LVBKIMAGE");
+						lvbk.hbm = o.out;
+						lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
+						if (!api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
+							api.DeleteObject(lvbk.hbm);
 						}
-					},
-					onerror: function (o) {
-						if (Sync.BGPreview.Items[o.hwnd]) {
-							if (o.bClear) {
-								const lvbk = api.Memory("LVBKIMAGE");
-								lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-								api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk);
-							}
-							if (!IsFolderEx(o.path) && api.PathMatchSpec(o.path.Path, o.Extract)) {
-								const Items = api.CreateObject("FolderItems");
-								Items.AddItem(o.path);
-								te.OnBeforeGetData(o.FV, Items, 11);
-								if (IsExists(o.path.Path)) {
-									o.onerror = null;
-									MainWindow.Threads.GetImage(o);
-								}
+					}
+				},
+				onerror: function (o) {
+					if (Sync.BGPreview.Items[o.hwnd]) {
+						if (o.bClear) {
+							const lvbk = api.Memory("LVBKIMAGE");
+							lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
+							api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk);
+						}
+						if (!IsFolderEx(o.path) && api.PathMatchSpec(o.path.Path, o.Extract)) {
+							const Items = api.CreateObject("FolderItems");
+							Items.AddItem(o.path);
+							te.OnBeforeGetData(o.FV, Items, 11);
+							if (IsExists(o.path.Path)) {
+								o.onerror = null;
+								MainWindow.Threads.GetImage(o);
 							}
 						}
 					}
-				});
-			}
+				}
+			});
 		}
 	},
 
