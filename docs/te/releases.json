@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/192105636",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/195132647",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/192105636/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/195132647/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/192105636/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/195132647/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/24.12.23",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.1.16",
 
-  "id": 192105636,
+  "id": 195132647,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4Lc0yk",
+  "node_id": "RE_kwDOALVDDs4LoXzn",
 
-  "tag_name": "24.12.23",
+  "tag_name": "25.1.16",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2024-12-23T13:19:46Z",
+  "created_at": "2025-01-16T13:53:11Z",
 
-  "published_at": "2024-12-23T13:22:28Z",
+  "published_at": "2025-01-16T13:54:56Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/215352195",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/220903792",
 
-      "id": 215352195,
-      "node_id": "RA_kwDOALVDDs4M1gOD",
+      "id": 220903792,
+      "node_id": "RA_kwDOALVDDs4NKrlw",
 
-      "name": "te241223.zip",
+      "name": "te250116.zip",
 
       "label": null,
       "uploader": {
@@ -112,19 +112,33 @@
 
       "state": "uploaded",
 
-      "size": 773991,
+      "size": 774040,
       
-      "created_at": "2024-12-23T13:21:14Z",
+      "created_at": "2025-01-16T13:54:47Z",
 
-      "updated_at": "2024-12-23T13:21:17Z",
+      "updated_at": "2025-01-16T13:54:50Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/24.12.23/te241223.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.1.16/te250116.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/24.12.23",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.1.16",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/24.12.23",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.1.16",
 
-  "body": "- Trident版でもキー関連のアドオンでブラウザでのキーを無効にするようにしました。 #541\r\nイベントで捕らえたい場合はJavaScriptのイベント`OnKeyDown`などを使ってください。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/e0a1d1cc5749d2e40e5cd349ab49b940f636d331316a82cf9c5279a2fb4f969d)\r\n"
+  "body": "Some fix (Backup recommended)\r\n\r\n- たまに起こるツールチップがずっと消えない場合があるのを修正\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/126035fbf2320b5dbc3ef81f29832e4db25e37844093ab79094bffeb8943008d)\r\n",
+
+  "reactions": {
+    "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/195132647/reactions",
+
+    "total_count": 1,
+    "+1": 1,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  }
 }
 
