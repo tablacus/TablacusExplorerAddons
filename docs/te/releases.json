@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/201849679",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/202023264",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/201849679/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/202023264/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/201849679/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/202023264/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.2.22",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.2.24",
 
-  "id": 201849679,
+  "id": 202023264,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4MB_tP",
+  "node_id": "RE_kwDOALVDDs4MCqFg",
 
-  "tag_name": "25.2.22",
+  "tag_name": "25.2.24",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-02-22T14:58:54Z",
+  "created_at": "2025-02-24T12:40:07Z",
 
-  "published_at": "2025-02-22T15:10:31Z",
+  "published_at": "2025-02-24T12:41:21Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/231596466",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/232079971",
 
-      "id": 231596466,
-      "node_id": "RA_kwDOALVDDs4NzeGy",
+      "id": 232079971,
+      "node_id": "RA_kwDOALVDDs4N1UJj",
 
-      "name": "te250222.zip",
+      "name": "te250224.zip",
 
       "label": null,
       "uploader": {
@@ -112,19 +112,19 @@
 
       "state": "uploaded",
 
-      "size": 774060,
+      "size": 773944,
       
-      "created_at": "2025-02-22T15:13:17Z",
+      "created_at": "2025-02-24T12:40:57Z",
 
-      "updated_at": "2025-02-22T15:13:19Z",
+      "updated_at": "2025-02-24T12:41:01Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.2.22/te250222.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.2.24/te250224.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.2.22",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.2.24",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.2.22",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.2.24",
 
-  "body": "Some fix (Backup recommended)\r\n\r\n- ツリーのツールチップを使用すると落ちるようになったので、暫定的にツリーのツールチップを無効にしました。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/34c9f19836494ec0ed49bd00f4d974c6bd0bd56c84acec6854932dac570012c3)\r\n"
+  "body": "Some fix (Backup recommended)\r\n\r\n- 25.2.24でツリーのツールチップを無効にしたのを、とりあえず改善。\r\n現時点では`CteTreeView::OnGetToolTip`からスクリプトを呼び出すと落ちることが判明したので`OnGetToolTip`からスクリプトを呼び出す処理を暫定的に無効にしました。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/bc7b851061a8c50adbf7f4a68c375eeac10b5b2855eb5127cfbd65ec97e530d3)\r\n"
 }
 
