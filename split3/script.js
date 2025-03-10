@@ -6,12 +6,12 @@ Addons.Split3 = {
 	en: ["left", "right", "top", "bottom"],
 	ww: [],
 
-	Init: function () {
+	Init: async function () {
 		const ww = [];
 		for (let i = 0; i < Addons.Split3.en.length; ++i) {
 			ww.push(GetText(Addons.Split3.en[i]));
 		}
-		Promise.all(ww).then(function (r) {
+		await Promise.all(ww).then(function (r) {
 			Addons.Split3.ww = r;
 		});
 	},
@@ -23,9 +23,9 @@ Addons.Split3 = {
 		return n;
 	}
 }
-Addons.Split3.Init();
 
 if (window.Addon == 1) {
+	Addons.Split3.Init();
 	Addons.Split3.Exec = async function (nMax, nMode) {
 		if (!Addons.Split) {
 			return;
@@ -155,6 +155,7 @@ if (window.Addon == 1) {
 		Addons.Split.SetButtons(Addon_Id, Default, item, 3, ar);
 	});
 } else {
+	await Addons.Split3.Init();
 	const s = ['<label>View</label><br>'];
 	for (let i = 0; i < Addons.Split3.ar.length; ++i) {
 		s.push('<label><input type="checkbox" id="!No', Addons.Split3.ar[i], '">', Addons.Split3.GetText(Addons.Split3.ar[i]), '</label><br>');
