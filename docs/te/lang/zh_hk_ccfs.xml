@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 24.10.11 (2024/11/1)-->
+<!-- Version 25.2.24 (2025/3/11)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -214,6 +214,7 @@
 	<text s="Align">排列</text>
 	<text s="Bottom">下</text>
 	<text s="Drop to %1">複製/移動到資料夾</text>
+	<text s="No icon for open">開啟資料夾: 不顯示圖示</text>
 	<text s="Multi thread">多線程檔案操作</text>
 	<text s="File is in operation.">檔案操作進行中。</text>
 	<text s="Remember folder view settings">記住每個資料夾檢視</text>
@@ -362,6 +363,9 @@
 	<text s="Change tab color...">依路徑為頁籤著色...</text>
 	<text s="Tab color plus">依路徑樣式為頁籤著色</text>
 	<text s="Tab drive name">在頁籤顯示磁碟代號</text>
+	<text s="Custom">自訂</text>
+	<text s="Drive letter">磁碟代號</text>
+	<text s="Folder name">資料夾名稱</text>
 	<text s="Tab parent folder name">在頁籤顯示上層資料夾名稱</text>
 	<text s="Change tab name...">依路徑命名分頁...</text>
 	<text s="Fixed tab name...">固定分頁名稱...</text>
@@ -577,6 +581,7 @@
 	<text s="Minimize button">最小化按鈕</text>
 	<text s="Maximize button">最大化按鈕</text>
 	<text s="Close button">關閉按鈕</text>
+	<text s="Always on top">最上層顯示</text>
 	<text s="To the top in the drag">迎接拖放</text>
 	<text s="Confirm drop">確認拖放</text>
 	<text s="Right button drag-and-drop menu">右按鈕拖放選單</text>
