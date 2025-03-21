@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/202023264",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/205009948",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/202023264/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/205009948/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/202023264/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/205009948/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.2.24",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.3.11",
 
-  "id": 202023264,
+  "id": 205009948,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4MCqFg",
+  "node_id": "RE_kwDOALVDDs4MODQc",
 
-  "tag_name": "25.2.24",
+  "tag_name": "25.3.11",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-02-24T12:40:07Z",
+  "created_at": "2025-03-11T12:56:49Z",
 
-  "published_at": "2025-02-24T12:41:21Z",
+  "published_at": "2025-03-11T12:58:58Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/232079971",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/236485883",
 
-      "id": 232079971,
-      "node_id": "RA_kwDOALVDDs4N1UJj",
+      "id": 236485883,
+      "node_id": "RA_kwDOALVDDs4OGHz7",
 
-      "name": "te250224.zip",
+      "name": "te250311.zip",
 
       "label": null,
       "uploader": {
@@ -112,19 +112,19 @@
 
       "state": "uploaded",
 
-      "size": 773944,
+      "size": 773951,
       
-      "created_at": "2025-02-24T12:40:57Z",
+      "created_at": "2025-03-11T12:58:49Z",
 
-      "updated_at": "2025-02-24T12:41:01Z",
+      "updated_at": "2025-03-11T12:58:51Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.2.24/te250224.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.3.11/te250311.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.2.24",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.3.11",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.2.24",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.3.11",
 
-  "body": "Some fix (Backup recommended)\r\n\r\n- 25.2.24でツリーのツールチップを無効にしたのを、とりあえず改善。\r\n現時点では`CteTreeView::OnGetToolTip`からスクリプトを呼び出すと落ちることが判明したので`OnGetToolTip`からスクリプトを呼び出す処理を暫定的に無効にしました。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/bc7b851061a8c50adbf7f4a68c375eeac10b5b2855eb5127cfbd65ec97e530d3)\r\n"
+  "body": "Some fix (Backup recommended)\r\n\r\n- Ctrl+W で最後のタブを閉じると about:blank が2重に開いてしまう問題を対策\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/1660cd8be8f1c7c69b91f7b37d2c0ec30fd62a423b72a1159b56462d3607ac74)\r\n"
 }
 
