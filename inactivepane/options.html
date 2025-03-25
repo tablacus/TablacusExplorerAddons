@@ -1,7 +1,20 @@
-<label>@mspaint.exe,-36044[Text]</label><br>
-<input type="text" id="TextColor" style="width: 7em" onchange="ChangeColor1(this)">
-<input id="Color_TextColor" type="button" value=" " class="color" onclick="ChooseColor2(this)">
+<div class="panel" style="display: block;">
+  <label>@wmploc.dll,-2101[Text]</label><br>
+  <input type="text" id="TextColor" placeholder="#444444" style="width: 7em" onchange="ChangeColor1(this)">
+  <input id="Color_TextColor" type="button" value=" " class="color" onclick="ChooseColor2(this)">
+  <br>
+  <label>Background</label><br>
+  <input type="text" id="Color" placeholder="#aaaaaa" style="width: 7em" onchange="ChangeColor1(this)">
+  <input id="Color_Color" type="button" value=" " class="color" onclick="ChooseColor2(this)">
+</div>
 <br>
-<label>Background</label><br>
-<input type="text" id="Color" style="width: 7em" onchange="ChangeColor1(this)">
-<input id="Color_Color" type="button" value=" " class="color" onclick="ChooseColor2(this)">
+<b>Dark mode</b><br>
+<div class="panel" style="display: block;">
+  <label>@wmploc.dll,-2101[Text]</label><br>
+  <input type="text" id="DarkTextColor" placeholder="#aaaaaa" style="width: 7em" onchange="ChangeColor1(this)">
+  <input id="Color_DarkTextColor" type="button" value=" " class="color" onclick="ChooseColor2(this)">
+  <br>
+  <label>Background</label><br>
+  <input type="text" id="DarkColor" placeholder="#444444" style="width: 7em" onchange="ChangeColor1(this)">
+  <input id="Color_DarkColor" type="button" value=" " class="color" onclick="ChooseColor2(this)">
+</div>

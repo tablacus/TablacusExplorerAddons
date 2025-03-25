@@ -2,8 +2,10 @@ const Addon_Id = "inactivepane";
 const item = GetAddonElement(Addon_Id);
 
 Sync.InactivePane = {
-	TextColor: item.getAttribute("TextColor"),
-	Color: item.getAttribute("Color"),
+	TextColor: GetWinColor(item.getAttribute("TextColor") || "#444444"),
+	Color: GetWinColor(item.getAttribute("Color") || "#aaaaaa"),
+	DarkTextColor: GetWinColor(item.getAttribute("DarkTextColor") || "#aaaaaa"),
+	DarkColor: GetWinColor(item.getAttribute("DarkColor") || "#444444"),
 
 	Arrange: function (Ctrl, rc, Type, Id, FV) {
 		if (Type == null) {
@@ -15,7 +17,8 @@ Sync.InactivePane = {
 				if (Sync.InactivePane.IsActive(FV)) {
 					return Sync.InactivePane.Active(FV, hwnd);
 				}
-				Sync.InactivePane.SetBKColor(FV, hwnd, Sync.InactivePane.Color, Sync.InactivePane.TextColor);
+				const bDark = Sync.InactivePane.IsDark();
+				Sync.InactivePane.SetBKColor(FV, hwnd, bDark ? Sync.InactivePane.DarkColor : Sync.InactivePane.Color, bDark ? Sync.InactivePane.DarkTextColor : Sync.InactivePane.TextColor);
 				api.InvalidateRect(hwnd, null, true);
 			}
 		}
@@ -76,11 +79,6 @@ AddEventId("AddonDisabledEx", "inactivepane", function () {
 });
 
 AddEvent("Load", function () {
-	let cl = Sync.InactivePane.TextColor;
-	const bDark = Sync.InactivePane.IsDark();
-	Sync.InactivePane.TextColor = cl ? GetWinColor(cl) : bDark ? 0xaaaaaa : 0x444444;
-	cl = Sync.InactivePane.Color;
-	Sync.InactivePane.Color = cl ? GetWinColor(cl) : bDark ? 0x444444 : 0xaaaaaa;
 	const cTC = te.Ctrls(CTRL_TC, true);
 	for (let i = cTC.length; i-- > 0;) {
 		const TC = cTC[i];
