@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 25.2.24 (2025/3/11)-->
+<!-- Version 25.3.11 (2025/3/26)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -41,8 +41,11 @@
 	<text s="Right bar">右欄</text>
 	<text s="Tool bar icon">工具列圖示大小</text>
 	<text s="Internal Tool bar icon">窗格內工具列圖示大小</text>
-	<text s="Include hidden items">包含隱藏項目</text>
+	<text s="Main menu">主選單</text>
 	<text s="Icon">圖示</text>
+	<text s="Folder menu">資料夾選單</text>
+	<text s="Include hidden items">包含隱藏項目</text>
+	<text s="Thumbnail icon">縮圖圖示</text>
 	<text s="Input">輸入</text>
 	<text s="Initialize config folder">轉移版面資料夾</text>
 	<text s="If you installed Tablacus Explorer to the Program Files directory, please press this button.">如果您將 Tablacus Explorer 安裝在 Program Files 資料夾內，請按下此按鈕。</text>
@@ -206,7 +209,6 @@
 	<text s="Filter bar">篩選列</text>
 	<text s="Regular Expression">規則運算式</text>
 	<text s="Tree view">樹狀目錄&#160;</text>
-	<text s="Main menu">主選單</text>
 	<text s="Path">路徑</text>
 	<text s="Tab plus">新式頁籤</text>
 	<text s="Protected">保留</text>
@@ -313,7 +315,7 @@
 	<text s="Paste">貼上</text>
 	<text s="Paste as link">貼上連結</text>
 	<text s="Symbolic link, absolute path">符號連結，絕對路徑</text>
-	<text s="Symbolic link, absolute path without drive">符號連結，絕對路徑但無磁碟代號</text>
+	<text s="Symbolic link, absolute path without drive">符號連結，絕對路徑但無磁碟機代號</text>
 	<text s="Symbolic link, relative path">符號連結，相對路徑</text>
 	<text s="Junction">目錄連接</text>
 	<text s="Clipboard">剪貼簿</text>
@@ -362,9 +364,9 @@
 	<text s="Force label left">強制名稱靠左</text>
 	<text s="Change tab color...">依路徑為頁籤著色...</text>
 	<text s="Tab color plus">依路徑樣式為頁籤著色</text>
-	<text s="Tab drive name">在頁籤顯示磁碟代號</text>
+	<text s="Tab drive name">在頁籤顯示磁碟機代號</text>
 	<text s="Custom">自訂</text>
-	<text s="Drive letter">磁碟代號</text>
+	<text s="Drive letter">磁碟機代號</text>
 	<text s="Folder name">資料夾名稱</text>
 	<text s="Tab parent folder name">在頁籤顯示上層資料夾名稱</text>
 	<text s="Change tab name...">依路徑命名分頁...</text>
@@ -417,9 +419,11 @@
 	<text s="Switch to next pane">下一個窗格</text>
 	<text s="Rotate pane">輪調所有窗格</text>
 	<text s="Inactive pane">備用窗格變暗</text>
-	<text s="Pane">窗格&#160;</text>
-	<text s="Inactive">備用</text>
-	<text s="Active">目前</text>
+	<text s="Text">文字</text>
+	<text s="Dark mode">黑色面板</text>
+	<text s="Apply to">套用到</text>
+	<text s="Inactive panes">備用窗格</text>
+	<text s="Active pane">目前窗格</text>
 	<text s="Synchronize">同步瀏覽</text>
 	<text s="Sync select">比對式選取</text>
 	<text s="Compact window">精簡視窗</text>
@@ -554,7 +558,6 @@
 	<text s="Application Icon">程式圖示</text>
 	<text s="Segoe UI MDL2 Assets">Segoe MDL2 圖示集</text>
 	<text s="Font settings">字型</text>
-	<text s="Dark mode">黑色面板</text>
 	<text s="Window Alpha">半透明視窗</text>
 	<text s="Alpha">透明度</text>
 	<text s="Window Fadeout">淡出淡入視窗</text>
