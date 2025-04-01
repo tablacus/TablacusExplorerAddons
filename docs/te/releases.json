@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/205009948",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/208671532",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/205009948/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/208671532/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/205009948/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/208671532/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.3.11",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.3.27",
 
-  "id": 205009948,
+  "id": 208671532,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4MODQc",
+  "node_id": "RE_kwDOALVDDs4McBMs",
 
-  "tag_name": "25.3.11",
+  "tag_name": "25.3.27",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-03-11T12:56:49Z",
+  "created_at": "2025-03-27T12:55:39Z",
 
-  "published_at": "2025-03-11T12:58:58Z",
+  "published_at": "2025-03-27T12:57:41Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/236485883",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/241281493",
 
-      "id": 236485883,
-      "node_id": "RA_kwDOALVDDs4OGHz7",
+      "id": 241281493,
+      "node_id": "RA_kwDOALVDDs4OYanV",
 
-      "name": "te250311.zip",
+      "name": "te250327.zip",
 
       "label": null,
       "uploader": {
@@ -112,19 +112,19 @@
 
       "state": "uploaded",
 
-      "size": 773951,
+      "size": 773943,
       
-      "created_at": "2025-03-11T12:58:49Z",
+      "created_at": "2025-03-27T12:57:25Z",
 
-      "updated_at": "2025-03-11T12:58:51Z",
+      "updated_at": "2025-03-27T12:57:29Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.3.11/te250311.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.3.27/te250327.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.3.11",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.3.27",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.3.11",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.3.27",
 
-  "body": "Some fix (Backup recommended)\r\n\r\n- Ctrl+W で最後のタブを閉じると about:blank が2重に開いてしまう問題を対策\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/1660cd8be8f1c7c69b91f7b37d2c0ec30fd62a423b72a1159b56462d3607ac74)\r\n"
+  "body": "Some fix (Backup recommended)\r\n\r\n- アドレスバーにコマンドを入力して実行した場合の特殊フォルダの場合のディレクトリを調整 #814\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/509709ac5719e544af9f9476d438958b322715c5ac75a0c2bddf3b2917efc4ba)\r\n"
 }
 
