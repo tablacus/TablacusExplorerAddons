@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/208671532",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/209608288",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/208671532/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/209608288/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/208671532/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/209608288/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.3.27",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.4.1",
 
-  "id": 208671532,
+  "id": 209608288,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4McBMs",
+  "node_id": "RE_kwDOALVDDs4Mfl5g",
 
-  "tag_name": "25.3.27",
+  "tag_name": "25.4.1",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-03-27T12:55:39Z",
+  "created_at": "2025-04-01T13:36:17Z",
 
-  "published_at": "2025-03-27T12:57:41Z",
+  "published_at": "2025-04-01T13:40:02Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/241281493",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/242615963",
 
-      "id": 241281493,
-      "node_id": "RA_kwDOALVDDs4OYanV",
+      "id": 242615963,
+      "node_id": "RA_kwDOALVDDs4Odgab",
 
-      "name": "te250327.zip",
+      "name": "te250401.zip",
 
       "label": null,
       "uploader": {
@@ -112,19 +112,19 @@
 
       "state": "uploaded",
 
-      "size": 773943,
+      "size": 955428,
       
-      "created_at": "2025-03-27T12:57:25Z",
+      "created_at": "2025-04-01T13:39:57Z",
 
-      "updated_at": "2025-03-27T12:57:29Z",
+      "updated_at": "2025-04-01T13:39:59Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.3.27/te250327.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.4.1/te250401.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.3.27",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.4.1",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.3.27",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.4.1",
 
-  "body": "Some fix (Backup recommended)\r\n\r\n- アドレスバーにコマンドを入力して実行した場合の特殊フォルダの場合のディレクトリを調整 #814\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/509709ac5719e544af9f9476d438958b322715c5ac75a0c2bddf3b2917efc4ba)\r\n"
+  "body": "Thank you for everything, Trident\r\n- [Tablacus Explorer WebView2](https://tablacus.github.io/tewv2.html)を同梱しました。\r\nWebView2ランタイムが入っている場合はBlinkエンジンが使用されます。\r\n古いOS等でWebView2ランタイムが無い場合はIEエンジンが使用されます。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/6f04489f742d31c8ccdf4661f7251e02a1909514c6bfe470b92e1ea30529a42f)\r\n"
 }
 
