@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/209608288",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/211024909",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/209608288/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/211024909/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/209608288/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/211024909/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.4.1",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.4.8",
 
-  "id": 209608288,
+  "id": 211024909,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4Mfl5g",
+  "node_id": "RE_kwDOALVDDs4Mk_wN",
 
-  "tag_name": "25.4.1",
+  "tag_name": "25.4.8",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-04-01T13:36:17Z",
+  "created_at": "2025-04-08T13:31:17Z",
 
-  "published_at": "2025-04-01T13:40:02Z",
+  "published_at": "2025-04-08T13:32:59Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/242615963",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/244569491",
 
-      "id": 242615963,
-      "node_id": "RA_kwDOALVDDs4Odgab",
+      "id": 244569491,
+      "node_id": "RA_kwDOALVDDs4Ok9WT",
 
-      "name": "te250401.zip",
+      "name": "te250408.zip",
 
       "label": null,
       "uploader": {
@@ -112,19 +112,19 @@
 
       "state": "uploaded",
 
-      "size": 955428,
+      "size": 964376,
       
-      "created_at": "2025-04-01T13:39:57Z",
+      "created_at": "2025-04-08T13:32:21Z",
 
-      "updated_at": "2025-04-01T13:39:59Z",
+      "updated_at": "2025-04-08T13:32:24Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.4.1/te250401.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.4.8/te250408.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.4.1",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.4.8",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.4.1",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.4.8",
 
-  "body": "Thank you for everything, Trident\r\n- [Tablacus Explorer WebView2](https://tablacus.github.io/tewv2.html)を同梱しました。\r\nWebView2ランタイムが入っている場合はBlinkエンジンが使用されます。\r\n古いOS等でWebView2ランタイムが無い場合はIEエンジンが使用されます。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/6f04489f742d31c8ccdf4661f7251e02a1909514c6bfe470b92e1ea30529a42f)\r\n"
+  "body": "__Thank you for everything, Trident__\r\n\r\n- ツリーの削除の通知処理を修正\r\nクラウドドライブで遅くなる問題が直っていたら良いのだけれど、私の環境だとならないので確認できない。\r\n- 25.4.4でx64版の`te64.exe`のSDKをVisual Studio 2017 (v141)でビルドしたものにしたが、うまく動かないDLLがあったので、Windows SDK v7.1でビルドしたものに戻した。\r\n- Blink版がうまく動かない場合\r\n表示やドラッグ＆ドロップがおかしい場合\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\nこれでもダメな場合はとりあえずの回避策で\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\nPlease close Tablacus Eplorer and delete `tewv32.dll` and `tewv64.dll` in the folder `lib`.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/dff0c98984abb2e06095e8ccee97a129988a23b362d40125838f478b249fc0b8)\r\n"
 }
 
