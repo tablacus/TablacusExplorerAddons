@@ -66,6 +66,7 @@ if (window.Addon == 1) {
 		},
 
 		Exec: function () {
+			WebBrowser.Focus();
 			document.F.search.focus();
 		}
 	};
