@@ -1,9 +1,9 @@
 {
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/176114270",
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/176114270/assets",
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorerWebView2/releases/176114270/assets{?name,label}",
-  "html_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/24.9.20",
-  "id": 176114270,
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/212210993",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/212210993/assets",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorerWebView2/releases/212210993/assets{?name,label}",
+  "html_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.4.14",
+  "id": 212210993,
   "author": {
     "login": "tablacus",
     "id": 5156977,
@@ -22,22 +22,23 @@
     "events_url": "https://api.github.com/users/tablacus/events{/privacy}",
     "received_events_url": "https://api.github.com/users/tablacus/received_events",
     "type": "User",
+    "user_view_type": "public",
     "site_admin": false
   },
-  "node_id": "RE_kwDOEXAnm84Kf0pe",
-  "tag_name": "24.9.20",
+  "node_id": "RE_kwDOEXAnm84MphUx",
+  "tag_name": "25.4.14",
   "target_commitish": "master",
   "name": "",
   "draft": false,
   "prerelease": false,
-  "created_at": "2024-09-20T13:18:50Z",
-  "published_at": "2024-09-20T13:20:00Z",
+  "created_at": "2025-04-14T13:21:37Z",
+  "published_at": "2025-04-14T13:25:24Z",
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/assets/193836974",
-      "id": 193836974,
-      "node_id": "RA_kwDOEXAnm84Ljbeu",
-      "name": "tewv2_240920.zip",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/assets/246286026",
+      "id": 246286026,
+      "node_id": "RA_kwDOEXAnm84OrgbK",
+      "name": "tewv2_250414.zip",
       "label": null,
       "uploader": {
         "login": "tablacus",
@@ -57,18 +58,19 @@
         "events_url": "https://api.github.com/users/tablacus/events{/privacy}",
         "received_events_url": "https://api.github.com/users/tablacus/received_events",
         "type": "User",
+        "user_view_type": "public",
         "site_admin": false
       },
       "content_type": "application/x-zip-compressed",
       "state": "uploaded",
-      "size": 181628,
-      "download_count": 120,
-      "created_at": "2024-09-20T13:19:41Z",
-      "updated_at": "2024-09-20T13:19:43Z",
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/download/24.9.20/tewv2_240920.zip"
+      "size": 182173,
+      "download_count": 3,
+      "created_at": "2025-04-14T13:25:15Z",
+      "updated_at": "2025-04-14T13:25:17Z",
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/download/25.4.14/tewv2_250414.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/tarball/24.9.20",
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/zipball/24.9.20",
-  "body": "- GPUをオフにしてみました\r\nどうもネットワークが重い環境では例外が発生しているという情報があり、そのエラーコードを調べてみたらDCOMとEdgeのGPUプロセスが相性が悪いとの事なのでとりあえず、GPUを使用しない設定を試してみた。\r\n私のテストしている環境にネットワークが重い環境がないのでこれが効果があるのかは未知数\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/7c1ce5da007b6a048310a7598ceb116db373f9e9537ade04e8acdfa2f5d83031)"
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/tarball/25.4.14",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/zipball/25.4.14",
+  "body": "- WebView2の一時フォルダを起動時間で別になるようにした\r\n一時フォルダのキャッシュで表示がおかしくなる場合があった\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/6ac06267b9a3cb3b4962323eb6995ba9f49d74adf9cdf3aa5af690e830c2502e?nocache=1)"
 }
