@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/211997583",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/212213943",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/211997583/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/212213943/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/211997583/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/212213943/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.4.11",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.4.14",
 
-  "id": 211997583,
+  "id": 212213943,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4MotOP",
+  "node_id": "RE_kwDOALVDDs4MpiC3",
 
-  "tag_name": "25.4.11",
+  "tag_name": "25.4.14",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-04-12T06:05:31Z",
+  "created_at": "2025-04-14T13:29:02Z",
 
-  "published_at": "2025-04-12T06:07:39Z",
+  "published_at": "2025-04-14T13:37:24Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/245763590",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/246288394",
 
-      "id": 245763590,
-      "node_id": "RA_kwDOALVDDs4Opg4G",
+      "id": 246288394,
+      "node_id": "RA_kwDOALVDDs4OrhAK",
 
-      "name": "te250411.zip",
+      "name": "te250414.zip",
 
       "label": null,
       "uploader": {
@@ -112,19 +112,19 @@
 
       "state": "uploaded",
 
-      "size": 964486,
+      "size": 964974,
       
-      "created_at": "2025-04-12T06:06:26Z",
+      "created_at": "2025-04-14T13:37:00Z",
 
-      "updated_at": "2025-04-12T06:06:28Z",
+      "updated_at": "2025-04-14T13:37:03Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.4.11/te250411.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.4.14/te250414.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.4.11",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.4.14",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.4.11",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.4.14",
 
-  "body": "__Thank you for everything, Trident__\r\n\r\n- Blink版でicoファイルがうまく表示されない問題を修正 [#webview2-issue-13](https://github.com/tablacus/TablacusExplorerWebView2/issues/13)\r\n- キー設定を保存する際に Ctrl や Shift を英語名で保存していたが、元の言語に復元されない問題を修正 #821\r\n日本語は英語と同じなので今まで気付かなかった…… この 821 の問題はアドオンSearch barの更新も必要です。\r\n\r\n- Blink版がうまく動かない場合\r\n_WebView2のキャッシュを削除_\r\n一度、Tablacus Explorerをすべて終了してから、エクスプローラーのアドレスバーに`%temp%\\tablacus`と入力してEnterを押して開いてください。そこに「EBWebView」というフォルダがあるので削除してからTablacus Explorerを起動してみて下さい。\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2 Cache_\r\nFirst, close all instances of Tablacus Explorer. Then, open File Explorer, enter %temp%\\tablacus in the address bar, and press Enter. You’ll see a folder named \"EBWebView\" — please delete that folder, then try launching Tablacus Explorer again.\r\n_Delete WebView2's dll_\r\nIf that still doesn’t work, as a temporary workaround, close Tablacus Explorer once more, delete tewv32.dll and tewv64.dll from the lib folder, and try launching the application again.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/79cbb928db9e600859308e5e8a1eee23bd3a72a0d04793b59d3e9aea3513d5e9)\r\n"
+  "body": "__Thank you for everything, Trident__\r\n\r\n- [Tablacus Explorer WebView2のバージョンを25.4.14](https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.4.14)にアップデートしました。\r\n- 25.4.13のアップデート時のWebView2のキャッシュを削除をやめて元に戻した\r\n新バージョンでWebView2のキャッシュ位置を毎回変えてキャッシュされないようになりました。\r\n\r\n- Blink版がうまく動かない場合\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/7fb69741364bc5fef41b056792a6c5ff435463b55681988f17ad42afef6d85f0)\r\n"
 }
 
