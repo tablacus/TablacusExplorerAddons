@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/212213943",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/213555042",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/212213943/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/213555042/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/212213943/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/213555042/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.4.14",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.4.20",
 
-  "id": 212213943,
+  "id": 213555042,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4MpiC3",
+  "node_id": "RE_kwDOALVDDs4Mupdi",
 
-  "tag_name": "25.4.14",
+  "tag_name": "25.4.20",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-04-14T13:29:02Z",
+  "created_at": "2025-04-20T13:17:59Z",
 
-  "published_at": "2025-04-14T13:37:24Z",
+  "published_at": "2025-04-20T13:20:44Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/246288394",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/247924291",
 
-      "id": 246288394,
-      "node_id": "RA_kwDOALVDDs4OrhAK",
+      "id": 247924291,
+      "node_id": "RA_kwDOALVDDs4OxwZD",
 
-      "name": "te250414.zip",
+      "name": "te250420.zip",
 
       "label": null,
       "uploader": {
@@ -112,19 +112,19 @@
 
       "state": "uploaded",
 
-      "size": 964974,
+      "size": 965052,
       
-      "created_at": "2025-04-14T13:37:00Z",
+      "created_at": "2025-04-20T13:20:37Z",
 
-      "updated_at": "2025-04-14T13:37:03Z",
+      "updated_at": "2025-04-20T13:20:39Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.4.14/te250414.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.4.20/te250420.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.4.14",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.4.20",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.4.14",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.4.20",
 
-  "body": "__Thank you for everything, Trident__\r\n\r\n- [Tablacus Explorer WebView2のバージョンを25.4.14](https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.4.14)にアップデートしました。\r\n- 25.4.13のアップデート時のWebView2のキャッシュを削除をやめて元に戻した\r\n新バージョンでWebView2のキャッシュ位置を毎回変えてキャッシュされないようになりました。\r\n\r\n- Blink版がうまく動かない場合\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/7fb69741364bc5fef41b056792a6c5ff435463b55681988f17ad42afef6d85f0)\r\n"
+  "body": "__Thank you for everything, Trident__\r\n\r\n- [Tablacus Explorer WebView2のバージョンを25.4.20](https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.4.20)にアップデートしました。\r\n\r\n- Blink版がうまく動かない場合\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/1e5c3c2a6cd6e188ba8087882951f3a3ba490f0d65b080afc704bf20dfcb88fd)\r\n"
 }
 
