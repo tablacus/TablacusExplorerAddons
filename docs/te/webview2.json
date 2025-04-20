@@ -1,9 +1,9 @@
 {
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/212210993",
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/212210993/assets",
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorerWebView2/releases/212210993/assets{?name,label}",
-  "html_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.4.14",
-  "id": 212210993,
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/213554910",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/213554910/assets",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorerWebView2/releases/213554910/assets{?name,label}",
+  "html_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.4.20",
+  "id": 213554910,
   "author": {
     "login": "tablacus",
     "id": 5156977,
@@ -25,20 +25,20 @@
     "user_view_type": "public",
     "site_admin": false
   },
-  "node_id": "RE_kwDOEXAnm84MphUx",
-  "tag_name": "25.4.14",
+  "node_id": "RE_kwDOEXAnm84Mupbe",
+  "tag_name": "25.4.20",
   "target_commitish": "master",
   "name": "",
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-04-14T13:21:37Z",
-  "published_at": "2025-04-14T13:25:24Z",
+  "created_at": "2025-04-20T13:16:06Z",
+  "published_at": "2025-04-20T13:17:20Z",
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/assets/246286026",
-      "id": 246286026,
-      "node_id": "RA_kwDOEXAnm84OrgbK",
-      "name": "tewv2_250414.zip",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/assets/247924074",
+      "id": 247924074,
+      "node_id": "RA_kwDOEXAnm84OxwVq",
+      "name": "tewv2_250420.zip",
       "label": null,
       "uploader": {
         "login": "tablacus",
@@ -63,14 +63,14 @@
       },
       "content_type": "application/x-zip-compressed",
       "state": "uploaded",
-      "size": 182173,
-      "download_count": 3,
-      "created_at": "2025-04-14T13:25:15Z",
-      "updated_at": "2025-04-14T13:25:17Z",
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/download/25.4.14/tewv2_250414.zip"
+      "size": 182231,
+      "download_count": 0,
+      "created_at": "2025-04-20T13:17:14Z",
+      "updated_at": "2025-04-20T13:17:15Z",
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/download/25.4.20/tewv2_250420.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/tarball/25.4.14",
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/zipball/25.4.14",
-  "body": "- WebView2の一時フォルダを起動時間で別になるようにした\r\n一時フォルダのキャッシュで表示がおかしくなる場合があった\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/6ac06267b9a3cb3b4962323eb6995ba9f49d74adf9cdf3aa5af690e830c2502e?nocache=1)"
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/tarball/25.4.20",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/zipball/25.4.20",
+  "body": "- `--force-device-scale-factor=` で拡大率を指定するようにしました。\r\nこれで拡大の問題が解決できたら良いのだけれど\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/8e4196a4635230848f09e0bf83be5b0834daf39db0ed1baafb4b2b1f8c20d1df)\r\n"
 }
