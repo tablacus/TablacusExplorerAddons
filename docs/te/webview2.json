@@ -1,9 +1,9 @@
 {
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/213554910",
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/213554910/assets",
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorerWebView2/releases/213554910/assets{?name,label}",
-  "html_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.4.20",
-  "id": 213554910,
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/213682556",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/213682556/assets",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorerWebView2/releases/213682556/assets{?name,label}",
+  "html_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.4.21",
+  "id": 213682556,
   "author": {
     "login": "tablacus",
     "id": 5156977,
@@ -25,20 +25,20 @@
     "user_view_type": "public",
     "site_admin": false
   },
-  "node_id": "RE_kwDOEXAnm84Mupbe",
-  "tag_name": "25.4.20",
+  "node_id": "RE_kwDOEXAnm84MvIl8",
+  "tag_name": "25.4.21",
   "target_commitish": "master",
   "name": "",
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-04-20T13:16:06Z",
-  "published_at": "2025-04-20T13:17:20Z",
+  "created_at": "2025-04-21T13:19:17Z",
+  "published_at": "2025-04-21T13:21:05Z",
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/assets/247924074",
-      "id": 247924074,
-      "node_id": "RA_kwDOEXAnm84OxwVq",
-      "name": "tewv2_250420.zip",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/assets/248162089",
+      "id": 248162089,
+      "node_id": "RA_kwDOEXAnm84Oyqcp",
+      "name": "tewv2_250421.zip",
       "label": null,
       "uploader": {
         "login": "tablacus",
@@ -63,14 +63,14 @@
       },
       "content_type": "application/x-zip-compressed",
       "state": "uploaded",
-      "size": 182231,
-      "download_count": 0,
-      "created_at": "2025-04-20T13:17:14Z",
-      "updated_at": "2025-04-20T13:17:15Z",
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/download/25.4.20/tewv2_250420.zip"
+      "size": 182735,
+      "download_count": 12,
+      "created_at": "2025-04-21T13:20:53Z",
+      "updated_at": "2025-04-21T13:20:54Z",
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/download/25.4.21/tewv2_250421.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/tarball/25.4.20",
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/zipball/25.4.20",
-  "body": "- `--force-device-scale-factor=` で拡大率を指定するようにしました。\r\nこれで拡大の問題が解決できたら良いのだけれど\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/8e4196a4635230848f09e0bf83be5b0834daf39db0ed1baafb4b2b1f8c20d1df)\r\n"
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/tarball/25.4.21",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/zipball/25.4.21",
+  "body": "25.4.21 Some fix\r\n- `--force-device-scale-factor=1` で拡大率を1にした。\r\nBlink版も`ui_.Zoom`が必ず1になったのでスクリプトでの`ui_.Zoom`の補正は不要になりました。\r\n- 終了時にuserフォルダをPowerShellで削除するようにした。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/9ca8a0990929a566d2f67900849d55e751f983111fa1741b562b2f84023b60b5)\r\n"
 }

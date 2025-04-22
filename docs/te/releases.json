@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/213555042",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/213925024",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/213555042/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/213925024/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/213555042/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/213925024/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.4.20",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.4.22",
 
-  "id": 213555042,
+  "id": 213925024,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4Mupdi",
+  "node_id": "RE_kwDOALVDDs4MwDyg",
 
-  "tag_name": "25.4.20",
+  "tag_name": "25.4.22",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-04-20T13:17:59Z",
+  "created_at": "2025-04-22T12:48:18Z",
 
-  "published_at": "2025-04-20T13:20:44Z",
+  "published_at": "2025-04-22T12:49:41Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/247924291",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/248431023",
 
-      "id": 247924291,
-      "node_id": "RA_kwDOALVDDs4OxwZD",
+      "id": 248431023,
+      "node_id": "RA_kwDOALVDDs4OzsGv",
 
-      "name": "te250420.zip",
+      "name": "te250422.zip",
 
       "label": null,
       "uploader": {
@@ -112,19 +112,19 @@
 
       "state": "uploaded",
 
-      "size": 965052,
+      "size": 965537,
       
-      "created_at": "2025-04-20T13:20:37Z",
+      "created_at": "2025-04-22T12:49:34Z",
 
-      "updated_at": "2025-04-20T13:20:39Z",
+      "updated_at": "2025-04-22T12:49:36Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.4.20/te250420.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.4.22/te250422.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.4.20",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.4.22",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.4.20",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.4.22",
 
-  "body": "__Thank you for everything, Trident__\r\n\r\n- [Tablacus Explorer WebView2のバージョンを25.4.20](https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.4.20)にアップデートしました。\r\n\r\n- Blink版がうまく動かない場合\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/1e5c3c2a6cd6e188ba8087882951f3a3ba490f0d65b080afc704bf20dfcb88fd)\r\n"
+  "body": "__Thank you for everything, Trident__\r\n\r\n- Windows 7で起動時にエラーが出る問題を対策  (5ch#12-114)\r\n\r\n- Blink版がうまく動かない場合\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/33ada8cd7661e9a8ba694f6b9d564adbe46c1773d2fda000ae67d3de9b83ae3a)\r\n"
 }
 
