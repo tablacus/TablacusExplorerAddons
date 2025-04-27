@@ -1,10 +1,11 @@
 const Addon_Id = "tabposition";
 const item = GetAddonElement(Addon_Id);
 
-Sync.TabPositon = {
+Sync.TabPosition = {
 	nNew: GetNum(item.getAttribute("NewTab")),
 	nClose: GetNum(item.getAttribute("Close"))
 };
+g_.OpenReverse = Sync.TabPosition.nNew ? 0 : SBSP_ACTIVATE_NOFOCUS;
 
 AddEvent("Close", function (Ctrl) {
 	let FV;
@@ -12,7 +13,7 @@ AddEvent("Close", function (Ctrl) {
 		const TC = Ctrl.Parent;
 		let nIndex = TC.SelectedIndex;
 		if (nIndex == Ctrl.Index) {
-			switch (Sync.TabPositon.nClose) {
+			switch (Sync.TabPosition.nClose) {
 				case 0:
 					let nActive = MAXINT;
 					for (let i = TC.Count; i-- > 0;) {
@@ -71,7 +72,7 @@ AddEvent("SelectionChanged", function (Ctrl, uChange) {
 				FV.Data.nActive = (FV.Data.nActive || 0) + 1;
 				if (FV.Data.Created) {
 					delete FV.Data.Created;
-					if (Sync.TabPositon.nNew && !g_.LockUpdate) {
+					if (Sync.TabPosition.nNew && !g_.LockUpdate) {
 						nMove = i;
 					}
 				}
@@ -82,7 +83,7 @@ AddEvent("SelectionChanged", function (Ctrl, uChange) {
 			FV.Data.nActive = 0;
 		}
 		if (nMove >= 0) {
-			Ctrl.Move(nMove, Sync.TabPositon.nNew == 1 ? Ctrl.Count - 1 : Math.max(nMove - 1, 0));
+			Ctrl.Move(nMove, Sync.TabPosition.nNew == 1 ? Ctrl.Count - 1 : Math.max(nMove - 1, 0));
 		}
 	}
 });
@@ -92,3 +93,4 @@ AddEvent("Create", function (Ctrl) {
 		Ctrl.Data.Created = true;
 	}
 });
+

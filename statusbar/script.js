@@ -4,9 +4,10 @@ if (window.Addon == 1) {
 	Addons.StatusBar = {
 		arg: await api.CreateObject("Object"),
 
-		Set: await GetAddonOptionEx(Addon_Id, "Title") ? function (s) {
+		Set: await GetAddonOptionEx(Addon_Id, "Title") ? async function (s) {
 			document.title = s + " - " + TITLE;
-		} : function (s, Id) {
+		} : async function (s) {
+			const Id = await Addons.StatusBar.arg.FV.Parent.Id;
 			(document.getElementById("statusbar_" + Id) || document.getElementById("statusbar_$") || {}).innerHTML = "&nbsp;" + EncodeSC(s);
 		}
 	};
@@ -22,12 +23,13 @@ if (window.Addon == 1) {
 			if (await Ctrl.Type <= CTRL_EB) {
 				if (await Ctrl.ItemCount(SVGIO_SELECTION) == 1) {
 					Addons.StatusBar.arg.FV = Ctrl;
-					api.ExecScript('var Selected = FV.SelectedItems(); api.Invoke(Set, Selected && Selected.Count == 1 && Selected.Item(0).ExtendedProperty("infotip") || "' + Text.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '", FV.Parent.Id);', "JScript", Addons.StatusBar.arg, true);
+					api.ExecScript('var Selected = FV.SelectedItems(); api.Invoke(Set, Selected && Selected.Count == 1 && Selected.Item(0).ExtendedProperty("infotip") || "' + Text.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '");', "JScript", Addons.StatusBar.arg, true);
 					return;
 				}
 			}
 		}
-		Addons.StatusBar.Set(Text, await GetFolderView(Ctrl).Parent.Id);
+		Addons.StatusBar.arg.FV = await GetFolderView(Ctrl)
+		Addons.StatusBar.Set(Text);
 	});
 } else {
 	EnableInner();
