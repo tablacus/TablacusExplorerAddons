@@ -1,9 +1,9 @@
 {
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/215781317",
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/215781317/assets",
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorerWebView2/releases/215781317/assets{?name,label}",
-  "html_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.4.30",
-  "id": 215781317,
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/216182145",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/216182145/assets",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorerWebView2/releases/216182145/assets{?name,label}",
+  "html_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/tag/25.5.2",
+  "id": 216182145,
   "author": {
     "login": "tablacus",
     "id": 5156977,
@@ -25,20 +25,20 @@
     "user_view_type": "public",
     "site_admin": false
   },
-  "node_id": "RE_kwDOEXAnm84M3I_F",
-  "tag_name": "25.4.30",
+  "node_id": "RE_kwDOEXAnm84M4q2B",
+  "tag_name": "25.5.2",
   "target_commitish": "master",
   "name": "",
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-04-30T14:40:45Z",
-  "published_at": "2025-04-30T14:41:55Z",
+  "created_at": "2025-05-02T14:05:30Z",
+  "published_at": "2025-05-02T14:08:52Z",
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/assets/250757752",
-      "id": 250757752,
-      "node_id": "RA_kwDOEXAnm84O8kJ4",
-      "name": "tewv2_250430.zip",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/releases/assets/251327126",
+      "id": 251327126,
+      "node_id": "RA_kwDOEXAnm84O-vKW",
+      "name": "tewv2_250502.zip",
       "label": null,
       "uploader": {
         "login": "tablacus",
@@ -63,14 +63,14 @@
       },
       "content_type": "application/x-zip-compressed",
       "state": "uploaded",
-      "size": 181849,
+      "size": 181581,
       "download_count": 0,
-      "created_at": "2025-04-30T14:41:39Z",
-      "updated_at": "2025-04-30T14:41:41Z",
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/download/25.4.30/tewv2_250430.zip"
+      "created_at": "2025-05-02T14:08:46Z",
+      "updated_at": "2025-05-02T14:08:48Z",
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorerWebView2/releases/download/25.5.2/tewv2_250502.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/tarball/25.4.30",
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/zipball/25.4.30",
-  "body": "- 終了時にuserフォルダを削除するのをやめた。\r\n- userフォルダを時刻を元に作成ではなくDPIによって作成するようにした。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/602fd92409aea7cc6b890f03c2597ff920f4527fb703cdc7d7d7c1aa3e3316cc)\r\n"
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/tarball/25.5.2",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorerWebView2/zipball/25.5.2",
+  "body": "25.5.2 Some fix\r\n- 今の設定ではDPIが異なっても問題なさそうだったので、userフォルダのDPIによって分けるのもやめた。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/19bd9dd90985d8aa247624797c49ad1f19605040c1bf15c40b93634dd633884b)\r\n"
 }
