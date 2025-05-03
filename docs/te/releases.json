@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/215788357",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/216182414",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/215788357/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/216182414/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/215788357/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/216182414/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.4.30",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.5.2",
 
-  "id": 215788357,
+  "id": 216182414,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4M3KtF",
+  "node_id": "RE_kwDOALVDDs4M4q6O",
 
-  "tag_name": "25.4.30",
+  "tag_name": "25.5.2",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-04-30T15:04:00Z",
+  "created_at": "2025-05-02T14:09:30Z",
 
-  "published_at": "2025-04-30T15:05:05Z",
+  "published_at": "2025-05-02T14:10:15Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/250762566",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/251327372",
 
-      "id": 250762566,
-      "node_id": "RA_kwDOALVDDs4O8lVG",
+      "id": 251327372,
+      "node_id": "RA_kwDOALVDDs4O-vOM",
 
-      "name": "te250430.zip",
+      "name": "te250502.zip",
 
       "label": null,
       "uploader": {
@@ -112,19 +112,19 @@
 
       "state": "uploaded",
 
-      "size": 964879,
+      "size": 964613,
       
-      "created_at": "2025-04-30T15:04:56Z",
+      "created_at": "2025-05-02T14:10:08Z",
 
-      "updated_at": "2025-04-30T15:04:58Z",
+      "updated_at": "2025-05-02T14:10:09Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.4.30/te250430.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.5.2/te250502.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.4.30",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.5.2",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.4.30",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.5.2",
 
-  "body": "__Thank you for everything, Trident__\r\n- 他アプリから戻った際のフォーカス関連の調整\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/6ac9be57d21024d01eae92ffc1f8e1d00bcb0324d085e335ee6384281c7f18d0)\r\n"
+  "body": "__Thank you for everything, Trident__\r\n- 終了時にテンポラリフォルダのWebView2のキャッシュを削除しないようにしました。\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/28b39817c5134e4b5e5bbe1ddff471467f728516e23c9c64f014d7f8a46bfed7)\r\n"
 }
 
