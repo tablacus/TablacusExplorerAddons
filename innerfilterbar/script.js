@@ -53,8 +53,10 @@ if (window.Addon == 1) {
 						CancelFilterView(FV);
 					}
 					setTimeout(function (o) {
-						WebBrowser.Focus();
-						o.focus();
+						if (o == document.activeElement) {
+							WebBrowser.Focus();
+							o.focus();
+						}
 					}, 999, o);
 				}
 				return;
@@ -100,6 +102,7 @@ if (window.Addon == 1) {
 				SetFilterView(FV);
 				FV.Focus();
 			}
+			o.focus();
 		},
 
 		ShowButton: function (oFilter, Id) {

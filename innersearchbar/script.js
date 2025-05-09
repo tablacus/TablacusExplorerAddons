@@ -54,8 +54,10 @@ if (window.Addon == 1) {
 		},
 
 		Clear: function (Id) {
-			document.F.elements["search_" + Id].value = "";
+			const el = document.F.elements["search_" + Id]
+			el.value = "";
 			this.ShowButton(Id);
+			el.focus();
 		},
 
 		ShowButton: function (Id) {

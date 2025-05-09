@@ -50,6 +50,7 @@ if (window.Addon == 1) {
 		Clear: function () {
 			document.F.everythingsearch.value = "";
 			Addons.Everything.ShowButton();
+			document.F.everythingsearch.focus();
 		},
 
 		ShowButton: function () {

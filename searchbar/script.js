@@ -57,6 +57,7 @@ if (window.Addon == 1) {
 		Clear: function () {
 			document.F.search.value = "";
 			this.ShowButton();
+			document.F.search.focus();
 		},
 
 		ShowButton: function () {
