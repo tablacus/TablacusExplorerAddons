@@ -189,9 +189,9 @@ if (window.Addon == 1) {
 			let res = el && /^breadcrumbsaddressbar_(\d+)_(\d+)_$/.exec(el.id);
 			if (Math.abs(ev.screenX - ev1.screenX) < 4 && Math.abs(ev.screenY - ev1.screenY) < 4) {
 				if (res) {
-					if (buttons & 4) {
+					if (buttons & 5) {
 						Promise.all([GetInnerFV(res[1]), Sync.InnerBreadcrumbsAddressBar.GetPath(res[2], res[1]), GetNavigateFlags()]).then(function (r) {
-							NavigateFV(r[0], r[1], r[2] | SBSP_NEWBROWSER);
+							NavigateFV(r[0], r[1], r[2] | (buttons & 4 ? SBSP_NEWBROWSER : SBSP_SAMEBROWSER));
 						});
 						return;
 					}
