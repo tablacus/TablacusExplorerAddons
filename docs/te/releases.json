@@ -62,10 +62,10 @@
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/253404071",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/253411429",
 
-      "id": 253404071,
-      "node_id": "RA_kwDOALVDDs4PGqOn",
+      "id": 253411429,
+      "node_id": "RA_kwDOALVDDs4PGsBl",
 
       "name": "te250509.zip",
 
@@ -112,11 +112,11 @@
 
       "state": "uploaded",
 
-      "size": 964684,
+      "size": 964691,
       
-      "created_at": "2025-05-10T05:49:01Z",
+      "created_at": "2025-05-10T06:50:57Z",
 
-      "updated_at": "2025-05-10T05:49:03Z",
+      "updated_at": "2025-05-10T06:50:59Z",
 
       "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.5.9/te250509.zip"
     }
@@ -125,7 +125,7 @@
 
   "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.5.9",
 
-  "body": "__Thank you for everything, Trident__\r\n- フォーカス関連を調整 #832\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/255b5d4ecc07316744662682eb9020be5c7ef940e4675ccdd1572fbef2ab3ca8)\r\n",
+  "body": "__Thank you for everything, Trident__\r\n- フォーカス関連を調整 #832\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/59d861d14a16bd671df2770a9e97c061813af61b526e82321c18c658ac306cb1)\r\n",
 
   "reactions": {
     "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/217635662/reactions",
