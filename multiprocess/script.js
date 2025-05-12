@@ -1,11 +1,6 @@
 const Addon_Id = "multiprocess";
 const item = GetAddonElement(Addon_Id);
-if (!GetNum(item.getAttribute("Delete")) && !GetNum(item.getAttribute("Paste")) && !GetNum(item.getAttribute("Drop")) && !GetNum(item.getAttribute("RDrop"))) {
-	item.setAttribute("Delete", 1);
-	item.setAttribute("Paste", 1);
-	item.setAttribute("Drop", 1);
-	item.setAttribute("RDrop", 1);
-}
+
 Addons.MultiProcess = {
 	File: item.getAttribute("File"),
 

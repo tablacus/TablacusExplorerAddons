@@ -2,10 +2,10 @@ const Addon_Id = "multiprocess";
 const item = GetAddonElement(Addon_Id);
 
 Sync.MultiProcess = {
-	Delete: GetNum(item.getAttribute("Delete")),
-	Paste: GetNum(item.getAttribute("Paste")),
-	Drop: GetNum(item.getAttribute("Drop")),
-	RDrop: GetNum(item.getAttribute("RDrop")),
+	NoDelete: item.getAttribute("NoDelete"),
+	NoPaste: item.getAttribute("NoPaste"),
+	NoDrop: item.getAttribute("NoDrop"),
+	NoRDrop: item.getAttribute("NoRDrop"),
 	NoTemp: item.getAttribute("NoTemp"),
 	pids: {},
 
@@ -29,20 +29,20 @@ Sync.MultiProcess = {
 		}
 		if (nMode == 0) {
 			if (grfKeyState & MK_RBUTTON) {
-				if (!Sync.MultiProcess.RDrop) {
+				if (Sync.MultiProcess.NoRDrop) {
 					return false;
 				}
 			} else {
-				if (!Sync.MultiProcess.Drop) {
+				if (Sync.MultiProcess.NoDrop) {
 					return false;
 				}
 			}
 		} else if (nMode == 1) {
-			if (!Sync.MultiProcess.Delete) {
+			if (Sync.MultiProcess.NoDelete) {
 				return false;
 			}
 		} else if (nMode == 2) {
-			if (!Sync.MultiProcess.Paste) {
+			if (Sync.MultiProcess.NoPaste) {
 				return false;
 			}
 		}
