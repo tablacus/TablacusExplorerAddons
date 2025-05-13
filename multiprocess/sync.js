@@ -20,7 +20,7 @@ Sync.MultiProcess = {
 				return false;
 			}
 			if (nMode == 0) {
-				if (!(grfKeyState & MK_CONTROL) && api.ILIsEqual(Dest, Items.Item(-1))) {
+				if (!(grfKeyState & (MK_CONTROL | MK_RBUTTON)) && api.ILIsEqual(Dest, Items.Item(-1))) {
 					return false;
 				}
 				const DropTarget = api.DropTarget(Dest);
