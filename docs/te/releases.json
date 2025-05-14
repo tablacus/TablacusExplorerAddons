@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/217635662",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/218270105",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/217635662/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/218270105/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/217635662/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/218270105/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.5.9",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.5.13",
 
-  "id": 217635662,
+  "id": 218270105,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4M-NtO",
+  "node_id": "RE_kwDOALVDDs4NAomZ",
 
-  "tag_name": "25.5.9",
+  "tag_name": "25.5.13",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-05-09T15:11:40Z",
+  "created_at": "2025-05-13T13:19:11Z",
 
-  "published_at": "2025-05-09T15:13:09Z",
+  "published_at": "2025-05-13T13:21:17Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/253411429",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/254260659",
 
-      "id": 253411429,
-      "node_id": "RA_kwDOALVDDs4PGsBl",
+      "id": 254260659,
+      "node_id": "RA_kwDOALVDDs4PJ7Wz",
 
-      "name": "te250509.zip",
+      "name": "te250513.zip",
 
       "label": null,
       "uploader": {
@@ -112,33 +112,19 @@
 
       "state": "uploaded",
 
-      "size": 964691,
+      "size": 955931,
       
-      "created_at": "2025-05-10T06:50:57Z",
+      "created_at": "2025-05-13T13:21:08Z",
 
-      "updated_at": "2025-05-10T06:50:59Z",
+      "updated_at": "2025-05-13T13:21:10Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.5.9/te250509.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.5.13/te250513.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.5.9",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.5.13",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.5.9",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.5.13",
 
-  "body": "__Thank you for everything, Trident__\r\n- フォーカス関連を調整 #832\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/59d861d14a16bd671df2770a9e97c061813af61b526e82321c18c658ac306cb1)\r\n",
-
-  "reactions": {
-    "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/217635662/reactions",
-
-    "total_count": 2,
-    "+1": 1,
-    "-1": 0,
-    "laugh": 0,
-    "hooray": 1,
-    "confused": 0,
-    "heart": 0,
-    "rocket": 0,
-    "eyes": 0
-  }
+  "body": "__Thank you for everything, Trident__\r\n- マルチプロセス時にダークモードが適用されない問題を修正しました。\r\n- Fixed a problem where dark mode was not applied when using multiple processes.\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/68e89f23c4b9fca9220c07b1449ad664ccd65ab641f60117fcbf21c37bb85d19)"
 }
 

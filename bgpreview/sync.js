@@ -29,9 +29,7 @@ Sync.BGPreview = {
 		}
 		const hwnd = FV.hwndList;
 		if (!Item) {
-			const lvbk = api.Memory("LVBKIMAGE");
-			lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-			api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
+			Sync.BGPreview.SetImage(hwnd, LVBKIF_TYPE_WATERMARK, null);
 			return;
 		}
 		if (Sync.BGPreview.Visible && hwnd) {
@@ -49,28 +47,23 @@ Sync.BGPreview = {
 				path: Item,
 				cx: Sync.BGPreview.Size,
 				f: true,
+				Items: Sync.BGPreview.Items,
 				Extract: Sync.BGPreview.Extract,
+				SetImage: Sync.BGPreview.SetImage,
 				bClear: bClear,
 				type: -2,
 				mix: Sync.BGPreview.Alpha,
 
 				onload: function (o) {
-					if (o.path === Sync.BGPreview.Items[o.hwnd]) {
-						Sync.BGPreview.Items[o.hwnd] = null;
-						const lvbk = api.Memory("LVBKIMAGE");
-						lvbk.hbm = o.out;
-						lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
-						if (!api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
-							api.DeleteObject(lvbk.hbm);
-						}
+					if (o.path === o.Items[o.hwnd]) {
+						o.Items[o.hwnd] = null;
+						o.SetImage(o.hwnd, LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND, o.out);
 					}
 				},
 				onerror: function (o) {
-					if (Sync.BGPreview.Items[o.hwnd]) {
+					if (o.Items[o.hwnd]) {
 						if (o.bClear) {
-							const lvbk = api.Memory("LVBKIMAGE");
-							lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-							api.SendMessage(o.hwnd, LVM_SETBKIMAGE, 0, lvbk);
+							o.SetImage(o.hwnd, LVBKIF_TYPE_WATERMARK, null);
 						}
 						if (!IsFolderEx(o.path) && api.PathMatchSpec(o.path.Path, o.Extract)) {
 							const Items = api.CreateObject("FolderItems");
@@ -87,12 +80,28 @@ Sync.BGPreview = {
 		}
 	},
 
-	Clear: function () {
-		const lvbk = api.Memory("LVBKIMAGE");
+	SetImage: function (hwnd, ulFlags, hbm) {
+		let lvbk = api.Memory("LVBKIMAGE");
 		lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
+		if (api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk)) {
+			if (lvbk.hbm) {
+				api.DeleteObject(lvbk.hbm);
+			}
+		}
+		lvbk = api.Memory("LVBKIMAGE");
+		lvbk.ulFlags = ulFlags;
+		lvbk.hbm = hbm;
+		if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
+			if (hbm) {
+				api.DeleteObject(hbm);
+			}
+		}
+	},
+
+	Clear: function () {
 		for (let hwnd in Sync.BGPreview.Items) {
 			if (Sync.BGPreview.Items[hwnd] === null) {
-				api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
+				Sync.BGPreview.SetImage(hwnd, LVBKIF_TYPE_WATERMARK, null);
 			}
 			delete Sync.BGPreview.Items[hwnd];
 		}

@@ -62,12 +62,7 @@ Sync.BGImage = {
 		for (hwnd in db) {
 			if (hwnd !== "image") {
 				delete db[hwnd];
-				const lvbk = api.Memory("LVBKIMAGE");
-				lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
-				lvbk.hbm = db.image.GetHBITMAP(-2);
-				if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
-					api.DeleteObject(lvbk.hbm);
-				}
+				Sync.BGImage.SetImage(hwnd, LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND, db.image.GetHBITMAP(-2));
 			}
 		}
 	},
@@ -100,12 +95,28 @@ Sync.BGImage = {
 		}
 	},
 
-	Clear: function () {
-		const lvbk = api.Memory("LVBKIMAGE");
+	SetImage: function (hwnd, ulFlags, hbm) {
+		let lvbk = api.Memory("LVBKIMAGE");
 		lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
+		if (api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk)) {
+			if (lvbk.hbm) {
+				api.DeleteObject(lvbk.hbm);
+			}
+		}
+		lvbk = api.Memory("LVBKIMAGE");
+		lvbk.ulFlags = ulFlags;
+		lvbk.hbm = hbm;
+		if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
+			if (hbm) {
+				api.DeleteObject(hbm);
+			}
+		}
+	},
+
+	Clear: function () {
 		for (let hwnd in Sync.BGImage.db) {
 			delete Sync.BGImage.db[hwnd];
-			api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
+			Sync.BGImage.SetImage(null, LVBKIF_TYPE_WATERMARK, null);
 		}
 	}
 }
