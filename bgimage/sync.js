@@ -96,14 +96,8 @@ Sync.BGImage = {
 	},
 
 	SetImage: function (hwnd, ulFlags, hbm) {
-		let lvbk = api.Memory("LVBKIMAGE");
-		lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-		if (api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk)) {
-			if (lvbk.hbm) {
-				api.DeleteObject(lvbk.hbm);
-			}
-		}
-		lvbk = api.Memory("LVBKIMAGE");
+		Sync.BGImage.ClearImage(hwnd);
+		const lvbk = api.Memory("LVBKIMAGE");
 		lvbk.ulFlags = ulFlags;
 		lvbk.hbm = hbm;
 		if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
@@ -113,15 +107,34 @@ Sync.BGImage = {
 		}
 	},
 
+	ClearImage: function (hwnd) {
+		const lvbk = api.Memory("LVBKIMAGE");
+		lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
+		if (api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk)) {
+			if (lvbk.hbm) {
+				api.DeleteObject(lvbk.hbm);
+			}
+		}
+	},
+
+	Unload: function (Ctrl, fs, wFlags, Prev) {
+		const hwnd = Ctrl.hwndList;
+		if (hwnd) {
+			Sync.BGImage.ClearImage(hwnd);
+		}
+	},
+
 	Clear: function () {
 		for (let hwnd in Sync.BGImage.db) {
 			delete Sync.BGImage.db[hwnd];
-			Sync.BGImage.SetImage(null, LVBKIF_TYPE_WATERMARK, null);
+			Sync.BGImage.SetImage(hwnd, LVBKIF_TYPE_WATERMARK, null);
 		}
 	}
 }
 
 AddEvent("ListViewCreated", Sync.BGImage.Arrange);
+
+AddEvent("BeforeNavigate", Sync.BGImage.Unload, true);
 
 AddEventId("AddonDisabledEx", "bgimage", Sync.BGImage.Clear);
 

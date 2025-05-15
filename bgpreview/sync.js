@@ -81,20 +81,31 @@ Sync.BGPreview = {
 	},
 
 	SetImage: function (hwnd, ulFlags, hbm) {
-		let lvbk = api.Memory("LVBKIMAGE");
-		lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-		if (api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk)) {
-			if (lvbk.hbm) {
-				api.DeleteObject(lvbk.hbm);
-			}
-		}
-		lvbk = api.Memory("LVBKIMAGE");
+		Sync.BGPreview.ClearImage(hwnd);
+		const lvbk = api.Memory("LVBKIMAGE");
 		lvbk.ulFlags = ulFlags;
 		lvbk.hbm = hbm;
 		if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
 			if (hbm) {
 				api.DeleteObject(hbm);
 			}
+		}
+	},
+
+	ClearImage: function (hwnd) {
+		const lvbk = api.Memory("LVBKIMAGE");
+		lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
+		if (api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk)) {
+			if (lvbk.hbm) {
+				api.DeleteObject(lvbk.hbm);
+			}
+		}
+	},
+
+	Unload: function (Ctrl, fs, wFlags, Prev) {
+		const hwnd = Ctrl.hwndList;
+		if (hwnd) {
+			Sync.BGPreview.ClearImage(hwnd);
 		}
 	},
 
@@ -126,6 +137,8 @@ if (!item.getAttribute("NoMouse")) {
 		}
 	}, true);
 }
+
+AddEvent("BeforeNavigate", Sync.BGPreview.Unload, true);
 
 AddEventId("AddonDisabledEx", "bgpreview", Sync.BGPreview.Clear);
 

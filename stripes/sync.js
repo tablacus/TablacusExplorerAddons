@@ -13,7 +13,6 @@ Sync.Stripes = {
 		const hwnd = FV.hwndList;
 		InvokeUI("Addons.Stripes.DeleteTid", FV.hwnd);
 		if (hwnd) {
-			const lvbk = api.Memory("LVBKIMAGE");
 			if (FV.CurrentViewMode == FVM_DETAILS && !api.SendMessage(hwnd, LVM_GETGROUPCOUNT, 0, 0) && !api.SendMessage(hwnd, LVM_HASGROUP, 9425, 0)) {
 				const rc = api.Memory("RECT");
 				api.SendMessage(hwnd, LVM_GETITEMRECT, 0, rc);
@@ -36,11 +35,7 @@ Sync.Stripes = {
 							for (let i = 0; i < h; i += nHeight * 2) {
 								image.FillRect(0, i, w, nHeight, Sync.Stripes.Color);
 							}
-							lvbk.hbm = image.GetHBITMAP(-2);
-							lvbk.ulFlags = LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND;
-							if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
-								api.DeleteObject(lvbk.hbm);
-							}
+							Sync.Stripes.SetImage(hwnd, LVBKIF_TYPE_WATERMARK | LVBKIF_FLAG_ALPHABLEND, image.GetHBITMAP(-2));
 							FV.ViewFlags |= 8;
 						}
 					}
@@ -49,8 +44,7 @@ Sync.Stripes = {
 				}
 			} else {
 				delete Sync.Stripes.db[hwnd];
-				lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
-				api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
+				Sync.Stripes.ClearImage(hwnd);
 			}
 		} else {
 			InvokeUI("Addons.Stripes.Retry", Ctrl, nDog || 0);
@@ -69,12 +63,38 @@ Sync.Stripes = {
 		}, Number(tm) || 99);
 	},
 
-	Clear: function () {
+	SetImage: function (hwnd, ulFlags, hbm) {
+		Sync.Stripes.ClearImage(hwnd);
+		const lvbk = api.Memory("LVBKIMAGE");
+		lvbk.ulFlags = ulFlags;
+		lvbk.hbm = hbm;
+		if (!api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk)) {
+			if (hbm) {
+				api.DeleteObject(hbm);
+			}
+		}
+	},
+	ClearImage: function (hwnd) {
 		const lvbk = api.Memory("LVBKIMAGE");
 		lvbk.ulFlags = LVBKIF_TYPE_WATERMARK;
+		if (api.SendMessage(hwnd, LVM_GETBKIMAGE, 0, lvbk)) {
+			if (lvbk.hbm) {
+				api.DeleteObject(lvbk.hbm);
+			}
+		}
+	},
+
+	Unload: function (Ctrl, fs, wFlags, Prev) {
+		const hwnd = Ctrl.hwndList;
+		if (hwnd) {
+			Sync.Stripes.ClearImage(hwnd);
+		}
+	},
+
+	Clear: function () {
 		for (let hwnd in Sync.Stripes.db) {
 			delete Sync.Stripes.db[hwnd];
-			api.SendMessage(hwnd, LVM_SETBKIMAGE, 0, lvbk);
+			Sync.Stripes.SetImage(hwnd, LVBKIF_TYPE_WATERMARK, null);
 		}
 	}
 }
@@ -83,5 +103,6 @@ delete item;
 AddEvent("ContentsChanged", Sync.Stripes.Arrange);
 AddEvent("IconSizeChanged", Sync.Stripes.Arrange);
 AddEvent("ViewModeChanged", Sync.Stripes.Arrange);
+AddEvent("BeforeNavigate", Sync.Stripes.Unload, true);
 AddEventId("AddonDisabledEx", "stripes", Sync.Stripes.Clear);
 Sync.Stripes.Resize(5000);
