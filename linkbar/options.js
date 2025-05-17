@@ -1,5 +1,6 @@
 const ar = (await ReadTextFile("addons\\" + Addon_Id + "\\options.html")).split("<!--panel-->");
-SetTabContents(0, "View", ar[0]);
+await SetTabContents(0, "View", ar[0]);
+document.getElementById("_DropTo").innerHTML = (await GetTextR("@SRH.dll,-8110[Drop to %1]")).replace(/%1/, await GetText("Folder"));
 SetTabContents(4, "General", ar[1]);
 
 SaveLocation = async function () {

@@ -1,8 +1,12 @@
 const Addon_Id = "linkbar";
 const Default = "ToolBar4Center";
 if (window.Addon == 1) {
+	let item = await GetAddonElement(Addon_Id);
+
 	Addons.LinkBar = {
-		DD: !await GetAddonOptionEx(Addon_Id, "NoDD"),
+		DD: !item.getAttribute("NoDD"),
+		Fill: !item.getAttribute("NoFill"),
+		DropTo: !item.getAttribute("NoDropTo"),
 
 		Click: async function (i, bNew) {
 			const items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
@@ -136,8 +140,11 @@ if (window.Addon == 1) {
 					}
 				}
 			}
-			s.push('<label id="_linkbar+" title="', await GetText("Add"), '" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button">');
-			s.push('&nbsp;</label>');
+			s.push('<label id="_linkbar+" title="', await GetText("Add"), '" onclick="Addons.LinkBar.ShowOptions()"  onmouseover="MouseOver(this)" onmouseout="MouseOut()" class="button"');
+			if (Addons.LinkBar.Fill) {
+				s.push(' style="flex: 1"');
+			}
+			s.push('>&nbsp;</label>');
 
 			document.getElementById('_linkbar').innerHTML = s.join("");
 			Resize();
@@ -161,20 +168,23 @@ if (window.Addon == 1) {
 
 		SetRects: async function () {
 			const items = await GetXmlItems(await te.Data.xmlLinkBar.getElementsByTagName("Item"));
-			Common.LinkBar.Count = items.length;
-			for (let i = 0; i < items.length; ++i) {
-				const el = document.getElementById("_linkbar" + i);
-				if (el) {
-					Common.LinkBar.Items[i] = await GetRect(el);
+			if (Addons.LinkBar.DropTo) {
+				Common.LinkBar.Count = items.length;
+				for (let i = 0; i < items.length; ++i) {
+					const el = document.getElementById("_linkbar" + i);
+					if (el) {
+						Common.LinkBar.Items[i] = await GetRect(el);
+					}
 				}
 			}
 			Common.LinkBar.Append = await GetRect(document.getElementById('_linkbar'));
 		}
 
 	};
+	delete item;
 
 	AddEvent("Layout", async function () {
-		SetAddon(Addon_Id, Default, '<span id="_linkbar"></span>');
+		SetAddon(Addon_Id, Default, Addons.LinkBar.Fill ? '<span id="_linkbar" style="display: flex"></span>' : '<span id="_linkbar"></span>');
 	});
 
 	AddEvent("Load", Addons.LinkBar.Arrange);

@@ -9,7 +9,7 @@ Sync.BGImage = {
 	Arrange: function (Ctrl, nDog) {
 		delete Sync.BGImage.tid[Ctrl.Id];
 		const hwnd = Ctrl.hwndList;
-		if (hwnd) {
+		if (hwnd && Ctrl.FolderItem) {
 			const path = Ctrl.FolderItem.Path;
 			let db = Sync.BGImage.db[path];
 			if (db) {

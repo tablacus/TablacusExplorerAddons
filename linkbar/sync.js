@@ -1,11 +1,17 @@
+const Addon_Id = "linkbar";
 Common.LinkBar = api.CreateObject("Object");
 Common.LinkBar.Items = api.CreateObject("Array");
 
+let item = await GetAddonElement(Addon_Id);
 Sync.LinkBar = {
+	DropTo: !item.getAttribute("NoDropTo"),
+
 	FromPt: function (ptc) {
-		for (let i = Common.LinkBar.Count; --i >= 0;) {
-			if (PtInRect(Common.LinkBar.Items[i], ptc)) {
-				return i;
+		if (Sync.LinkBar.DropTo) {
+			for (let i = Common.LinkBar.Count; --i >= 0;) {
+				if (PtInRect(Common.LinkBar.Items[i], ptc)) {
+					return i;
+				}
 			}
 		}
 		return -1;
@@ -38,6 +44,7 @@ Sync.LinkBar = {
 		}
 	}
 }
+delete item;
 
 AddEvent("DragEnter", function (Ctrl, dataObj, grfKeyState, pt, pdwEffect) {
 	if (Ctrl.Type == CTRL_WB) {
@@ -87,4 +94,3 @@ AddEvent("DragLeave", function (Ctrl) {
 	MouseOut();
 	return S_OK;
 });
-
