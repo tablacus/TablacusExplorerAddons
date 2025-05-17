@@ -5,7 +5,7 @@ if (window.Addon == 1) {
 
 	Addons.LinkBar = {
 		DD: !item.getAttribute("NoDD"),
-		Fill: !item.getAttribute("NoFill"),
+		Fill: item.getAttribute("Fill"),
 		DropTo: !item.getAttribute("NoDropTo"),
 
 		Click: async function (i, bNew) {
