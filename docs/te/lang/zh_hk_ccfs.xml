@@ -1,5 +1,5 @@
 ﻿<!-- Tablacus Explorer and add-ons language file -->
-<!-- Version 25.3.11 (2025/3/26)-->
+<!-- Version 25.5.15 (2025/5/22)-->
 <resources>
 	<lang author="ccfs" en="Traditional Chinese">正體中文</lang>
 	<text s="General">一般</text>
@@ -41,7 +41,6 @@
 	<text s="Right bar">右欄</text>
 	<text s="Tool bar icon">工具列圖示大小</text>
 	<text s="Internal Tool bar icon">窗格內工具列圖示大小</text>
-	<text s="Main menu">主選單</text>
 	<text s="Icon">圖示</text>
 	<text s="Folder menu">資料夾選單</text>
 	<text s="Include hidden items">包含隱藏項目</text>
@@ -209,6 +208,7 @@
 	<text s="Filter bar">篩選列</text>
 	<text s="Regular Expression">規則運算式</text>
 	<text s="Tree view">樹狀目錄&#160;</text>
+	<text s="Main menu">主選單</text>
 	<text s="Path">路徑</text>
 	<text s="Tab plus">新式頁籤</text>
 	<text s="Protected">保留</text>
@@ -234,6 +234,7 @@
 	<text s="Menu item filter">屏蔽選單項目</text>
 	<text s="Quicker menu display">簡潔功能選單</text>
 	<text s="Link bar">冠名工具列</text>
+	<text s="Drop to button">拖放到按鈕</text>
 	<text s="Simple Tool bar">簡單工具列</text>
 	<text s="Quick notes">熱鍵選單</text>
 	<text s="Set home">設為本壘</text>
@@ -577,6 +578,7 @@
 	<text s="Stripes lite">快速斑馬條紋</text>
 	<text s="Tab design">頁籤設計室</text>
 	<text s="User style sheet">自訂樣式表</text>
+	<text s="Input Context Menu">簡潔編輯選單</text>
 	<text s="VBS InputBox">簡潔輸入框</text>
 	<text s="Hide Title bar">隱藏標題列</text>
 	<text s="Grab bar">窗柄</text>
