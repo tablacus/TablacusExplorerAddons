@@ -128,4 +128,3 @@
 
   "body": "__Thank you for everything, Trident__\r\n- システムメニューの問題を対策\r\nシステムメニューにダークモードがうまく適用されていなかった問題を対策しました。\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/4dafe0be52d1a7b6ba6a2fb7f40746ab129a1d58115008ed4ab4e67dc3ab6eb1)\r\n"
 }
-
