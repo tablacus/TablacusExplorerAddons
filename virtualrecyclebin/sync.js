@@ -4,10 +4,15 @@ const item = GetAddonElement(Addon_Id);
 Sync.VirtualRecycleBin = {
 	nPos: 0,
 	Path: item.getAttribute("Path") || "recyclebin",
-	Use: [0, GetNum(item.getAttribute("Removable")), 0, GetNum(item.getAttribute("Network"))],
+	Use: [0, !item.getAttribute("NoRemovable"), 0, !item.getAttribute("NoNetwork")],
 	nPos: GetNum(item.getAttribute("MenuPos")),
+	Filter: ExtractFilter(item.getAttribute("Filter") || "*"),
+	Disable: ExtractFilter(item.getAttribute("Disable") || "-"),
 
 	Get: function (path) {
+		if (!PathMatchEx(path, Sync.VirtualRecycleBin.Filter) || PathMatchEx(path, Sync.VirtualRecycleBin.Disable)) {
+			return;
+		}
 		const drive = fso.GetDriveName(path);
 		if (drive) {
 			try {
@@ -68,7 +73,7 @@ Sync.VirtualRecycleBin = {
 					}
 					message = api.sprintf(99, GetTextR("@shell32.dll,-38192[-6466|%s items]").replace("%1!ls!", "%s"), n);
 				}
-				if (confirmOk(api.LoadString(hShell32, 4369) + "\n" + message, Sync.VirtualRecycleBin.strName)) {
+				if (confirmOk(api.LoadString(hShell32, 4369) + "\n" + message, Sync.VirtualRecycleBin.sName)) {
 					CreateFolder2(path);
 					api.SHFileOperation(FO_MOVE, arFrom.join("\0"), path, FOF_RENAMEONCOLLISION, true);
 				}
@@ -113,13 +118,13 @@ AddEvent("InvokeCommand", function (ContextMenu, fMask, hwnd, Verb, Parameters, 
 
 AddEvent("EmptyRecycleBin", Sync.VirtualRecycleBin.EmptyRecycleBin);
 
-Sync.VirtualRecycleBin.strName = item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name;
+Sync.VirtualRecycleBin.sName = item.getAttribute("MenuName") || GetAddonInfo(Addon_Id).Name;
 //Menu
 if (item.getAttribute("MenuExec")) {
 	AddEvent(item.getAttribute("Menu"), function (Ctrl, hMenu, nPos) {
 		const path = Sync.VirtualRecycleBin.Get(api.GetDisplayNameOf(Ctrl, SHGDN_FORADDRESSBAR | SHGDN_FORPARSING));
 		if (path && fso.FolderExists(path)) {
-			api.InsertMenu(hMenu, Sync.VirtualRecycleBin.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.VirtualRecycleBin.strName);
+			api.InsertMenu(hMenu, Sync.VirtualRecycleBin.nPos, MF_BYPOSITION | MF_STRING, ++nPos, Sync.VirtualRecycleBin.sName);
 			ExtraMenuCommand[nPos] = Sync.VirtualRecycleBin.Exec;
 			return nPos;
 		}
