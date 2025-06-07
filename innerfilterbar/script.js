@@ -24,6 +24,9 @@ if (window.Addon == 1) {
 		},
 
 		KeyUp: function (ev, Id) {
+			if (ev.isComposing || !window.chrome) {
+				return;
+			}
 			const k = ev.keyCode;
 			if (k == VK_UP || k == VK_DOWN) {
 				(async function () {
