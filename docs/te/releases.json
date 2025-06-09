@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/222434176",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/223856702",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/222434176/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/223856702/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/222434176/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/223856702/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.6.2",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.6.8",
 
-  "id": 222434176,
+  "id": 223856702,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4NQhOA",
+  "node_id": "RE_kwDOALVDDs4NV8g-",
 
-  "tag_name": "25.6.2",
+  "tag_name": "25.6.8",
 
   "target_commitish": "master",
 
@@ -56,18 +56,18 @@
 
   "draft": false,
   "prerelease": false,
-  "created_at": "2025-06-02T13:08:25Z",
+  "created_at": "2025-06-08T12:57:14Z",
 
-  "published_at": "2025-06-02T13:10:42Z",
+  "published_at": "2025-06-08T13:12:25Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/260224059",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/262041649",
 
-      "id": 260224059,
-      "node_id": "RA_kwDOALVDDs4PgrQ7",
+      "id": 262041649,
+      "node_id": "RA_kwDOALVDDs4PnnAx",
 
-      "name": "te250602.zip",
+      "name": "te250608.zip",
 
       "label": null,
       "uploader": {
@@ -112,35 +112,21 @@
 
       "state": "uploaded",
 
-      "size": 959228,
-      "digest": "sha256:6576e12537700b20fe9fba538936708a1117655af6f218965237ecdfc1a02fda",
+      "size": 959787,
+      "digest": "sha256:f02cbbff1d7ff3c377c20fa46f2f9fe60a292d73eaa7f9fe0e9647d2ab89d2d2",
 
       
-      "created_at": "2025-06-02T13:10:36Z",
+      "created_at": "2025-06-08T13:12:18Z",
 
-      "updated_at": "2025-06-02T13:10:38Z",
+      "updated_at": "2025-06-08T13:12:20Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.6.2/te250602.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.6.8/te250608.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.6.2",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.6.8",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.6.2",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.6.8",
 
-  "body": "__Thank you for everything, Trident__\r\n- アドオンの起動の安定化 [TablacusExplorerWebView2#14](https://github.com/tablacus/TablacusExplorerWebView2/issues/14)\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/6576e12537700b20fe9fba538936708a1117655af6f218965237ecdfc1a02fda)\r\n",
-
-  "reactions": {
-    "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/222434176/reactions",
-
-    "total_count": 1,
-    "+1": 1,
-    "-1": 0,
-    "laugh": 0,
-    "hooray": 0,
-    "confused": 0,
-    "heart": 0,
-    "rocket": 0,
-    "eyes": 0
-  }
+  "body": "__Thank you for everything, Trident__\r\n- スクリプトエラーの表示周りの調整\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Eplorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/f02cbbff1d7ff3c377c20fa46f2f9fe60a292d73eaa7f9fe0e9647d2ab89d2d2)\r\n"
 }
 
