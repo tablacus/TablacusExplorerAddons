@@ -1,8 +1,8 @@
 <TablacusExplorer>
   <General>
-    <Version>1.05</Version>
-    <MinVersion>2022.2.23</MinVersion>
-    <pubDate>Thu, 24 Feb 2022 00:00:00 GMT</pubDate>
+    <Version>1.06</Version>
+    <MinVersion>2025.6.8</MinVersion>
+    <pubDate>Fri, 27 Jun 2025 00:00:00 GMT</pubDate>
     <Options>Common:4,7,8,9:4</Options>
     <DllVersion>1.0.0.0</DllVersion>
     <Level>2</Level>

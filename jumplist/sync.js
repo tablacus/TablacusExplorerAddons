@@ -47,7 +47,7 @@ if (item.getAttribute("MouseExec")) {
 if (Sync.JumpList.DLL) {
 	const obj = {};
 	try {
-		const ado = OpenAdodbFromTextFile(fso.BuildPath(te.Data.DataFolder, "config\\jumplist.tsv"));
+		const ado = OpenAdodbFromTextFile(BuildPath(te.Data.DataFolder, "config\\jumplist.tsv"));
 		while (!ado.EOS) {
 			const ar = ExtractMacro(te, ado.ReadText(adReadLine)).split("\t");
 			const cat = ar[3] || GetText("List");
