@@ -3,7 +3,7 @@ const Addon_Id = "regexpincsearch";
 Sync.RegExpIncSearch = {
 	str: "",
 	Timeout: GetAddonOptionEx(Addon_Id, "Timeout") || 2000,
-	ErrMsg: (api.LoadString(api.GetModuleHandle(fso.BuildPath(system32, "shell32.dll")), 6456) || "%s").replace("%1!ls!", "%s"),
+	ErrMsg: (api.LoadString(api.GetModuleHandle(BuildPath(system32, "shell32.dll")), 6456) || "%s").replace("%1!ls!", "%s"),
 
 	Search: function () {
 		if (Sync.RegExpIncSearch.str && Sync.RegExpIncSearch.str != '^') {
