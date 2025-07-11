@@ -65,11 +65,11 @@ Sync.EscapeUnicode = {
 				for (let i in List) {
 					const Data = List[i].split("\0");
 					s.push(Data[0] + ' -> ' + Data[1]);
-					From.push(fso.BuildPath(Data[2], Data[0]));
-					To.push(fso.BuildPath(Data[2], Data[1]));
+					From.push(BuildPath(Data[2], Data[0]));
+					To.push(BuildPath(Data[2], Data[1]));
 				}
 				if (confirmOk(s.join("\n"))) {
-					api.SHFileOperation(FO_MOVE, From.join("\0"), To.join("\0"), FOF_MULTIDESTFILES | FOF_RENAMEONCOLLISION | FOF_ALLOWUNDO | FOF_NORECURSION, false);
+					api.SHFileOperation(FO_MOVE, From, To, FOF_MULTIDESTFILES | FOF_RENAMEONCOLLISION | FOF_ALLOWUNDO | FOF_NORECURSION, false);
 				}
 			}
 		}
