@@ -64,7 +64,7 @@ if (window.Addon == 1) {
 					return;
 				}
 				const configxml = dest + "\\config.xml";
-				for (let nDog = 300; !await fso.FileExists(configxml);) {
+				for (let nDog = 300; !await api.PathFileExists(configxml);) {
 					if (wsh.Popup(await GetText("Please wait."), 1, TITLE, MB_ICONINFORMATION | MB_OKCANCEL) == IDCANCEL || nDog-- == 0) {
 						return;
 					}

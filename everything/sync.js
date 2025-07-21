@@ -214,11 +214,11 @@ AddEvent("ILGetParent", function (FolderItem) {
 
 Sync.Everything.ExePath = ExtractMacro(te, item.getAttribute("Exec"));
 if (!Sync.Everything.ExePath) {
-	let path = fso.BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
-	if (!fso.FileExists(path)) {
+	let path = BuildPath(api.GetDisplayNameOf(ssfPROGRAMFILES, SHGDN_FORPARSING), "Everything\\Everything.exe");
+	if (!api.PathFileExists(path)) {
 		path = path.replace(/ \(x86\)\\/, "\\");
 	}
-	if (fso.FileExists(path)) {
+	if (api.PathFileExists(path)) {
 		Sync.Everything.ExePath = PathQuoteSpaces(path) + " -startup";
 	}
 }
@@ -226,7 +226,7 @@ let icon = ExtractPath(te, item.getAttribute("Icon"));
 if (!icon) {
 	if (Sync.Everything.ExePath) {
 		const path = ExtractPath(te, Sync.Everything.ExePath.replace(/\s*\-startup$/, ""));
-		if (fso.FileExists(path)) {
+		if (api.PathFileExists(path)) {
 			icon = 'icon:' + path + ',0';
 		}
 	}
