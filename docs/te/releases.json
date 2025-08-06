@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/229117390",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/237975673",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/229117390/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/237975673/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/229117390/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/237975673/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.7.1",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.8.6",
 
-  "id": 229117390,
+  "id": 237975673,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4NqA3O",
+  "node_id": "RE_kwDOALVDDs4OLzh5",
 
-  "tag_name": "25.7.1",
+  "tag_name": "25.8.6",
 
   "target_commitish": "master",
 
@@ -57,18 +57,18 @@
   "draft": false,
   "immutable": false,
   "prerelease": false,
-  "created_at": "2025-07-01T13:15:24Z",
+  "created_at": "2025-08-06T13:26:12Z",
 
-  "published_at": "2025-07-01T13:18:12Z",
+  "published_at": "2025-08-06T13:30:28Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/269001273",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/279914663",
 
-      "id": 269001273,
-      "node_id": "RA_kwDOALVDDs4QCKI5",
+      "id": 279914663,
+      "node_id": "RA_kwDOALVDDs4Qryin",
 
-      "name": "te250701.zip",
+      "name": "te250806.zip",
 
       "label": null,
       "uploader": {
@@ -113,35 +113,21 @@
 
       "state": "uploaded",
 
-      "size": 962019,
-      "digest": "sha256:16e7c5474f24e4cff1359dead3fa271a76b8c5f006896875b30fe5e25c075a45",
+      "size": 962046,
+      "digest": "sha256:8b73310a7072bbc536b85021b978d2ec35728955247a07fac31a12a4635e3044",
 
       
-      "created_at": "2025-07-01T13:17:22Z",
+      "created_at": "2025-08-06T13:30:23Z",
 
-      "updated_at": "2025-07-01T13:17:24Z",
+      "updated_at": "2025-08-06T13:30:25Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.7.1/te250701.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.8.6/te250806.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.7.1",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.8.6",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.7.1",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.8.6",
 
-  "body": "- 25.6.27の`api.SHFileOperation(`調整でエンバグしていたので修正しました。#853\r\n- 近い将来VBScriptがWindowsから削除され、それに伴って`Scripting.FileSystemObject`が使えなくなる可能性があります。それまでに`Scripting.FileSystemObject`を使わないようにしたり、代替の互換オブジェクトを用意していく予定です。\r\nとりあえず、Tablacus Explorer本体の`Scripting.FileSystemObject`を使わない方法に置き換えました。これでしばらくプレリリース版で様子をみてみます。\r\n\r\n|Scripting.FileSystemObject|置き換え|置き換え2|\r\n|--|--|--|\r\n|fso.BuildPath(path, name)|PathBuildPath(path, name)|\r\n|fso.GetDriveName(path)|GetDriveName(path)|\r\n|fso.GetParentFolderName(path)|PathGetParentFolderName(path)|\r\n|fso.GetBaseName(path)|GetBaseName(path)|\r\n|fso.GetFileName(path)|GetFileName(path)|\r\n|fso.GetExtensionName(path)|GetExtensionName(path)|\r\n|fso.CreateFolder(path)|api.CreateDirectory(path)|\r\n|fso.FileExists(path)|api.PathFileExists(path)|\r\n|fso.FolderExists(path)|api.PathIsDirectory(path)|\r\n|fso.GetFileVersion(path)|api.GetFileVersionInfo(path)|\r\n|fso.GetSpecialFolder(0).Path|api.GetDisplayNameOf(ssfWINDOWS, SHGDN_FORPARSING)|GetWindowsPath()|\r\n|fso.GetSpecialFolder(1).Path|system32|\r\n|fso.GetSpecialFolder(2).Path|wsh.ExpandEnvironmentStrings(\"%TEMP%\")|GetTempPath(0)\r\n|fso.GetFile(path).Attributes = attr|api.SetFileAttributes(path, attr)|\r\n|fso.GetFolder(path).Attributes = attr|api.SetFileAttributes(path, attr)|\r\n|fso.DeleteFile(path)|api.DeleteFile(path)|api.SHFileOperation(FO_DELETE, path, null, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.MoveFile(src, dest)|api.MoveFileEx(path,src, dest, MOVEFILE_COPY_ALLOWED)|api.SHFileOperation(FO_MOVE, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.MoveFolder(src, dest)|api.MoveFileEx(path,src, dest, MOVEFILE_COPY_ALLOWED)|api.SHFileOperation(FO_MOVE, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.MoveFile(src, dest)|api.MoveFileEx(path,src, dest, MOVEFILE_COPY_ALLOWED)|api.SHFileOperation(FO_MOVE, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.MoveFolder(src, dest)|api.MoveFileEx(path,src, dest, MOVEFILE_COPY_ALLOWED)|api.SHFileOperation(FO_MOVE, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.CopyFile(src, dest)|api.CopyFile(path,src, dest, true)|api.SHFileOperation(FO_COPY, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.CopyFolder(src, dest)|api.SHFileOperation(FO_COPY, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n\r\n`fso.Drives`は`WMI`の`Win32_LogicalDisk`を使って置き換えました。\r\n`fso.CreateTextFile`は`Adodb.Stream`を使って置き換えました。\r\n`fso.GetFolder(...).SubFolders`は`api.FindFirstFile`と`api.FindNextFile`を使って置き換えました。\r\n`vbscript.dll`が削除されている場合、`VBScript`の`InputBox`はPowerShell`の`Microsoft.VisualBasic`の`InputBox`を使って置き換えます。\r\n\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Explorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- In the near future, VBScript will be removed from Windows, and along with that, `Scripting.FileSystemObject` may become unavailable. Before that happens, we plan to stop using `Scripting.FileSystemObject` and prepare a compatible alternative.\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/16e7c5474f24e4cff1359dead3fa271a76b8c5f006896875b30fe5e25c075a45)\r\n",
-
-  "reactions": {
-    "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/229117390/reactions",
-
-    "total_count": 1,
-    "+1": 1,
-    "-1": 0,
-    "laugh": 0,
-    "hooray": 0,
-    "confused": 0,
-    "heart": 0,
-    "rocket": 0,
-    "eyes": 0
-  }
+  "body": "- PathFileExists がファイルだけでなくフォルダーもあれば true を返すので「お気に入りの追加」でフォルダとファイルの判別がおかしくなってしまっていた問題を対策\r\n- 近い将来VBScriptがWindowsから削除され、それに伴って`Scripting.FileSystemObject`が使えなくなる可能性があります。それまでに`Scripting.FileSystemObject`を使わないようにしたり、代替の互換オブジェクトを用意していく予定です。\r\nとりあえず、Tablacus Explorer本体の`Scripting.FileSystemObject`を使わない方法に置き換えました。これでしばらくプレリリース版で様子をみてみます。\r\n\r\n|Scripting.FileSystemObject|置き換え|置き換え2|\r\n|--|--|--|\r\n|fso.BuildPath(path, name)|PathBuildPath(path, name)|\r\n|fso.GetDriveName(path)|GetDriveName(path)|\r\n|fso.GetParentFolderName(path)|PathGetParentFolderName(path)|\r\n|fso.GetBaseName(path)|GetBaseName(path)|\r\n|fso.GetFileName(path)|GetFileName(path)|\r\n|fso.GetExtensionName(path)|GetExtensionName(path)|\r\n|fso.CreateFolder(path)|api.CreateDirectory(path)|\r\n|fso.FileExists(path)|api.PathFileExists(path) && !api.PathIsDirectory(path)|\r\n|fso.FolderExists(path)|api.PathIsDirectory(path)|\r\n|fso.GetFileVersion(path)|api.GetFileVersionInfo(path)|\r\n|fso.GetSpecialFolder(0).Path|api.GetDisplayNameOf(ssfWINDOWS, SHGDN_FORPARSING)|GetWindowsPath()|\r\n|fso.GetSpecialFolder(1).Path|system32|\r\n|fso.GetSpecialFolder(2).Path|wsh.ExpandEnvironmentStrings(\"%TEMP%\")|GetTempPath(0)\r\n|fso.GetFile(path).Attributes = attr|api.SetFileAttributes(path, attr)|\r\n|fso.GetFolder(path).Attributes = attr|api.SetFileAttributes(path, attr)|\r\n|fso.DeleteFile(path)|api.DeleteFile(path)|api.SHFileOperation(FO_DELETE, path, null, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.MoveFile(src, dest)|api.MoveFileEx(path,src, dest, MOVEFILE_COPY_ALLOWED)|api.SHFileOperation(FO_MOVE, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.MoveFolder(src, dest)|api.MoveFileEx(path,src, dest, MOVEFILE_COPY_ALLOWED)|api.SHFileOperation(FO_MOVE, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.MoveFile(src, dest)|api.MoveFileEx(path,src, dest, MOVEFILE_COPY_ALLOWED)|api.SHFileOperation(FO_MOVE, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.MoveFolder(src, dest)|api.MoveFileEx(path,src, dest, MOVEFILE_COPY_ALLOWED)|api.SHFileOperation(FO_MOVE, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.CopyFile(src, dest)|api.CopyFile(path,src, dest, true)|api.SHFileOperation(FO_COPY, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n|fso.CopyFolder(src, dest)|api.SHFileOperation(FO_COPY, src, dest, FOF_SILENT \\| FOF_NOCONFIRMATION, false)|\r\n\r\n`fso.Drives`は`WMI`の`Win32_LogicalDisk`を使って置き換えました。\r\n`fso.CreateTextFile`は`Adodb.Stream`を使って置き換えました。\r\n`fso.GetFolder(...).SubFolders`は`api.FindFirstFile`と`api.FindNextFile`を使って置き換えました。\r\n`vbscript.dll`が削除されている場合、`VBScript`の`InputBox`はPowerShell`の`Microsoft.VisualBasic`の`InputBox`を使って置き換えます。\r\n\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Explorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- In the near future, VBScript will be removed from Windows, and along with that, `Scripting.FileSystemObject` may become unavailable. Before that happens, we plan to stop using `Scripting.FileSystemObject` and prepare a compatible alternative.\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/8b73310a7072bbc536b85021b978d2ec35728955247a07fac31a12a4635e3044)\r\n"
 }
 
