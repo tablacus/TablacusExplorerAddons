@@ -1,5 +1,5 @@
+const Addon_Id = "titlebar";
 if (window.Addon == 1) {
-	const Addon_Id = "titlebar";
 	const item = GetAddonElement(Addon_Id);
 	const show_fullpath = GetNum(item.getAttribute("ShowFullPath"));
 
