@@ -1,0 +1,23 @@
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2025.12.20</MinVersion>
+    <pubDate>Sun, 21 Dec 2025 00:00:00 GMT</pubDate>
+    <Creator>Gaku</Creator>
+    <Level>2</Level>
+    <Creator>Gaku</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+  </General>
+  <en>
+    <Name>Drag image</Name>
+    <Description>Simplifies drag images and displays them semi-transparently.</Description>
+  </en>
+  <ja>
+    <Name>ドラッグ画像</Name>
+    <Description>ドラッグするアイコンの画像を簡易化し、半透明で表示します。</Description>
+  </ja>
+  <zh_cn>
+    <Name>拖曳影像</Name>
+    <Description>簡化拖曳圖示的影像，並以半透明方式顯示。</Description>
+  </zh_cn>
+</TablacusExplorer>
