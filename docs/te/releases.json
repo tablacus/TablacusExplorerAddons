@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/272218107",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/273395671",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/272218107/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/273395671/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/272218107/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/273395671/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.12.22",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.12.30",
 
-  "id": 272218107,
+  "id": 273395671,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4QObf7",
+  "node_id": "RE_kwDOALVDDs4QS6_X",
 
-  "tag_name": "25.12.22",
+  "tag_name": "25.12.30",
 
   "target_commitish": "master",
 
@@ -57,20 +57,20 @@
   "draft": false,
   "immutable": false,
   "prerelease": false,
-  "created_at": "2025-12-22T14:06:14Z",
+  "created_at": "2025-12-30T12:45:07Z",
 
-  "updated_at": "2025-12-22T14:08:04Z",
+  "updated_at": "2025-12-30T12:46:26Z",
 
-  "published_at": "2025-12-22T14:08:04Z",
+  "published_at": "2025-12-30T12:46:26Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/331749650",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/334467902",
 
-      "id": 331749650,
-      "node_id": "RA_kwDOALVDDs4TxhkS",
+      "id": 334467902,
+      "node_id": "RA_kwDOALVDDs4T75M-",
 
-      "name": "te251222.zip",
+      "name": "te251230.zip",
 
       "label": null,
       "uploader": {
@@ -115,21 +115,21 @@
 
       "state": "uploaded",
 
-      "size": 967206,
-      "digest": "sha256:594b12f5507321af61e49f384b2bcf7775c64863477324f1b86580c01a6dfa57",
+      "size": 967277,
+      "digest": "sha256:5a8e7f9680860b53b2c8f4d875ebed1c865cec96998eceea11de43c2a9da720d",
 
       
-      "created_at": "2025-12-22T14:07:26Z",
+      "created_at": "2025-12-30T12:46:15Z",
 
-      "updated_at": "2025-12-22T14:07:28Z",
+      "updated_at": "2025-12-30T12:46:17Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.12.22/te251222.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.12.30/te251230.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.12.22",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.12.30",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.12.22",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.12.30",
 
-  "body": "- Some fix\r\n\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Explorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- In the near future, VBScript will be removed from Windows, and along with that, `Scripting.FileSystemObject` may become unavailable. Before that happens, we plan to stop using `Scripting.FileSystemObject` and prepare a compatible alternative.\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/594b12f5507321af61e49f384b2bcf7775c64863477324f1b86580c01a6dfa57)\r\n"
+  "body": "-  25.5.9での調整でエンバグしていたので再調整 #891\r\n\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Explorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- In the near future, VBScript will be removed from Windows, and along with that, `Scripting.FileSystemObject` may become unavailable. Before that happens, we plan to stop using `Scripting.FileSystemObject` and prepare a compatible alternative.\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/5a8e7f9680860b53b2c8f4d875ebed1c865cec96998eceea11de43c2a9da720d)\r\n"
 }
 
