@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/273600841",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/282173840",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/273600841/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/282173840/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/273600841/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/282173840/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/25.12.31",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/26.2.2",
 
-  "id": 273600841,
+  "id": 282173840,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4QTtFJ",
+  "node_id": "RE_kwDOALVDDs4Q0aGQ",
 
-  "tag_name": "25.12.31",
+  "tag_name": "26.2.2",
 
   "target_commitish": "master",
 
@@ -57,20 +57,20 @@
   "draft": false,
   "immutable": false,
   "prerelease": false,
-  "created_at": "2025-12-31T14:17:19Z",
+  "created_at": "2026-02-02T13:08:26Z",
 
-  "updated_at": "2025-12-31T14:19:21Z",
+  "updated_at": "2026-02-05T13:55:26Z",
 
-  "published_at": "2025-12-31T14:19:21Z",
+  "published_at": "2026-02-02T13:10:27Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/334870458",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/349552939",
 
-      "id": 334870458,
-      "node_id": "RA_kwDOALVDDs4T9be6",
+      "id": 349552939,
+      "node_id": "RA_kwDOALVDDs4U1cEr",
 
-      "name": "te251231.zip",
+      "name": "te260202.zip",
 
       "label": null,
       "uploader": {
@@ -115,21 +115,35 @@
 
       "state": "uploaded",
 
-      "size": 967276,
-      "digest": "sha256:98a43d91dd2c640d34b5474c5b0521cb1fc12ca7c012a0c86686c899defed77d",
+      "size": 967563,
+      "digest": "sha256:712a79e907ed0ee206ed69aa4d05278ce3e0525ff43ca30a3a583f0d46ac273c",
 
       
-      "created_at": "2025-12-31T14:19:12Z",
+      "created_at": "2026-02-02T13:10:13Z",
 
-      "updated_at": "2025-12-31T14:19:15Z",
+      "updated_at": "2026-02-02T13:10:16Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/25.12.31/te251231.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/26.2.2/te260202.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/25.12.31",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/26.2.2",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/25.12.31",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/26.2.2",
 
-  "body": "- マウスジェスチャーのツールチップの設定が逆になっていたので訂正 #839\r\n\r\n_表示やドラッグ＆ドロップがおかしい場合_\r\nhttps://wooty.hatenadiary.org/entry/2025/02/03/233544\r\n_これでもダメな場合のとりあえずの回避策_\r\nTablacus Explorerを閉じてから フォルダ`lib`にある`tewv32.dll`と`tewv64.dll`を削除してみて下さい。\r\n- In the near future, VBScript will be removed from Windows, and along with that, `Scripting.FileSystemObject` may become unavailable. Before that happens, we plan to stop using `Scripting.FileSystemObject` and prepare a compatible alternative.\r\n- If the Blink version doesn't work\r\n_Delete WebView2's dll_\r\nAs a temporary workaround, close Tablacus Explorer again, delete tewv32.dll and tewv64.dll from the lib folder, and then try launching the application once more.\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/98a43d91dd2c640d34b5474c5b0521cb1fc12ca7c012a0c86686c899defed77d)\r\n"
+  "body": "- Changed the default setting for configuration file backups to not keep *.bak files.\r\nEven with this setting, configuration files are now less likely to be corrupted compared to last year’s version.\r\n- 設定ファイルのバックアップのデフォルト設定が*.bakファイルを残さない設定になりました。\r\n残さない設定でも去年のバージョンに比べて設定ファイルが壊れにくくなっています。\r\n\r\n[VirusTotal](https://www.virustotal.com/gui/file/712a79e907ed0ee206ed69aa4d05278ce3e0525ff43ca30a3a583f0d46ac273c)\r\n",
+
+  "reactions": {
+    "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/282173840/reactions",
+
+    "total_count": 1,
+    "+1": 0,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 1,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  }
 }
 
