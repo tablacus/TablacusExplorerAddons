@@ -1,13 +1,13 @@
 ﻿{
-  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/338034543",
+  "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/392446191",
 
-  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/338034543/assets",
+  "assets_url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/392446191/assets",
 
-  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/338034543/assets{?name,label}",
+  "upload_url": "https://uploads.github.com/repos/tablacus/TablacusExplorer/releases/392446191/assets{?name,label}",
 
-  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/26.6.11",
+  "html_url": "https://github.com/tablacus/TablacusExplorer/releases/tag/26.9.20",
 
-  "id": 338034543,
+  "id": 392446191,
   "author": {
     "login": "tablacus",
 
@@ -46,9 +46,9 @@
 
     "site_admin": false
   },
-  "node_id": "RE_kwDOALVDDs4UJf9v",
+  "node_id": "RE_kwDOALVDDs4XZEDv",
 
-  "tag_name": "26.6.11",
+  "tag_name": "26.9.20",
 
   "target_commitish": "master",
 
@@ -57,20 +57,20 @@
   "draft": false,
   "immutable": false,
   "prerelease": false,
-  "created_at": "2026-06-11T14:31:10Z",
+  "created_at": "2026-09-20T13:44:36Z",
 
-  "updated_at": "2026-07-03T14:08:24Z",
+  "updated_at": "2026-09-23T10:33:52Z",
 
-  "published_at": "2026-06-11T14:43:13Z",
+  "published_at": "2026-09-20T13:46:41Z",
 
   "assets": [
     {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/452214470",
+      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/576888581",
 
-      "id": 452214470,
-      "node_id": "RA_kwDOALVDDs4a9D7G",
+      "id": 576888581,
+      "node_id": "RA_kwDOALVDDs4iYp8F",
 
-      "name": "te260611.zip",
+      "name": "te260920.zip",
 
       "label": null,
       "uploader": {
@@ -115,94 +115,33 @@
 
       "state": "uploaded",
 
-      "size": 969642,
-      "digest": "sha256:b55e6384b3cbb8495c893606867d0f4e17b306c03f7b4cc30b13c279b35ab29e",
+      "size": 970144,
+      "digest": "sha256:eeec9af13377a52316ed4aa902921c23a42e57aa5964380279dfb2b71a4cf41f",
 
       
-      "created_at": "2026-06-19T13:49:12Z",
+      "created_at": "2026-09-20T13:46:25Z",
 
-      "updated_at": "2026-06-19T13:49:15Z",
+      "updated_at": "2026-09-20T13:46:28Z",
 
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/26.6.11/te260611.zip"
-    },
-    {
-      "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/assets/452214508",
-
-      "id": 452214508,
-      "node_id": "RA_kwDOALVDDs4a9D7s",
-
-      "name": "tearm_260611.zip",
-
-      "label": null,
-      "uploader": {
-        "login": "tablacus",
-
-        "id": 5156977,
-        "node_id": "MDQ6VXNlcjUxNTY5Nzc=",
-
-        "avatar_url": "https://avatars.githubusercontent.com/u/5156977?v=4",
-
-        "gravatar_id": "",
-
-        "url": "https://api.github.com/users/tablacus",
-
-        "html_url": "https://github.com/tablacus",
-
-        "followers_url": "https://api.github.com/users/tablacus/followers",
-
-        "following_url": "https://api.github.com/users/tablacus/following{/other_user}",
-
-        "gists_url": "https://api.github.com/users/tablacus/gists{/gist_id}",
-
-        "starred_url": "https://api.github.com/users/tablacus/starred{/owner}{/repo}",
-
-        "subscriptions_url": "https://api.github.com/users/tablacus/subscriptions",
-
-        "organizations_url": "https://api.github.com/users/tablacus/orgs",
-
-        "repos_url": "https://api.github.com/users/tablacus/repos",
-
-        "events_url": "https://api.github.com/users/tablacus/events{/privacy}",
-
-        "received_events_url": "https://api.github.com/users/tablacus/received_events",
-
-        "type": "User",
-
-        "user_view_type": "public",
-
-        "site_admin": false
-      },
-      "content_type": "application/x-zip-compressed",
-
-      "state": "uploaded",
-
-      "size": 331987,
-      "digest": "sha256:9462b711d56042dba66227532aa9d2031ecd67acc2c2ca856ada22eae37576d5",
-
-      "download_count": 51,
-      "created_at": "2026-06-19T13:49:18Z",
-
-      "updated_at": "2026-06-19T13:49:18Z",
-
-      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/26.6.11/tearm_260611.zip"
+      "browser_download_url": "https://github.com/tablacus/TablacusExplorer/releases/download/26.9.20/te260920.zip"
     }
   ],
-  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/26.6.11",
+  "tarball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/tarball/26.9.20",
 
-  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/26.6.11",
+  "zipball_url": "https://api.github.com/repos/tablacus/TablacusExplorer/zipball/26.9.20",
 
-  "body": "__Added ARM64 support. (Backup recommended)__\r\n- ARM64版を作ってみました。ただARM版Windowsを持っていないのでテストできていません。\r\nARM版Windowsをお持ちの方は、[tearm_260611.zip](https://github.com/tablacus/TablacusExplorer/releases/download/26.6.11/tearm_260611.zip) をダウンロードして既存の環境に上書きし、`TEARM64.exe` を実行してみてください。\r\nフィードバックをいただけると助かります。正常に動作したか、問題が発生したかをぜひ教えてください。\r\n- Added an ARM64 build. However, I do not have a Windows ARM device, so I have not been able to test it.\r\nIf you have a Windows ARM device, please download [tearm_260611.zip](https://github.com/tablacus/TablacusExplorer/releases/download/26.6.11/tearm_260611.zip), extract it over your existing installation, and run `TEARM64.exe`.\r\nFeedback would be greatly appreciated. Please let me know whether it works correctly or if you encounter any issues.\r\n\r\n[VirusToatl](https://www.virustotal.com/gui/file/b55e6384b3cbb8495c893606867d0f4e17b306c03f7b4cc30b13c279b35ab29e?nocache=1)\r\n[VirusToatl(ARM64)](https://www.virustotal.com/gui/file/9462b711d56042dba66227532aa9d2031ecd67acc2c2ca856ada22eae37576d5?nocache=1)",
+  "body": "__Some fix (Backup recommended)__\r\n- システムのライトモードとダークモードを切り替えた際に、フレームのツールバーとステータスバーの色がおかしくなる問題を修正しました。\r\n- Fixed an issue where the colors of the frame toolbar and status bar became incorrect when switching between the system light and dark modes.\r\n\r\n[VirusToatl](https://www.virustotal.com/gui/file/eeec9af13377a52316ed4aa902921c23a42e57aa5964380279dfb2b71a4cf41f?nocache=1)\r\n",
 
   "reactions": {
-    "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/338034543/reactions",
+    "url": "https://api.github.com/repos/tablacus/TablacusExplorer/releases/392446191/reactions",
 
     "total_count": 2,
-    "+1": 0,
+    "+1": 1,
     "-1": 0,
     "laugh": 0,
     "hooray": 0,
     "confused": 0,
-    "heart": 2,
+    "heart": 1,
     "rocket": 0,
     "eyes": 0
   }
