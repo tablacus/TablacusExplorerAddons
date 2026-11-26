@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TablacusExplorer>
+  <General>
+    <Version>1.00</Version>
+    <MinVersion>2026.09.23</MinVersion>
+    <pubDate>Sat, 10 Oct 2026 00:00:00 GMT</pubDate>
+    <Level>2</Level>
+    <Creator>Osakana Sankawa</Creator>
+    <URL>https://tablacus.github.io/TablacusExplorerAddons/</URL>
+    <License>MIT License</License>
+  </General>
+  <en>
+    <Name>Disambiguate duplicate tab names</Name>
+    <Description>Display parent folder names to distinguish tabs with the same name.</Description>
+  </en>
+  <ja>
+    <Name>重複タブ名を親フォルダで区別</Name>
+    <Description>同名のタブを親フォルダ名を付けて区別します。</Description>
+  </ja>
+</TablacusExplorer>
